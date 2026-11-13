@@ -202,6 +202,24 @@ export function gateInPage() {
     return `${el.tagName.toLowerCase()}${role ? `[role=${role}]` : ""}${marks.map((m) => `[${m}]`).join("")}${words ? ` "${words}"` : ""}`;
   }
 
+  /** The data marks of the boxes it stands in, nearest first: where to find it in the code when it has none of its own. */
+  function trailOf(el) {
+    const out = [];
+    for (let q = el && el.parentElement, n = 0; q && q !== document.body && n < 14; q = q.parentElement, n++) {
+      for (const a of q.attributes) if (a.name.startsWith("data-") && !/^data-(tapwalk|mock|gate|tour)/.test(a.name) && !out.includes(a.name)) out.push(a.name);
+    }
+    return out;
+  }
+
+  /** The data marks from a drawn piece up to its layer's own box (not included), nearest first. */
+  function innerMarks(el, root) {
+    const out = [];
+    for (let q = el; q && q !== root && q !== document.body; q = q.parentElement) {
+      for (const a of q.attributes) if (a.name.startsWith("data-") && !/^data-(tapwalk|mock|gate|tour)/.test(a.name) && !out.includes(a.name)) out.push(a.name);
+    }
+    return out;
+  }
+
   /** The element's classes, as a fingerprint to find it in the code by. */
   function classesOf(el) {
     return typeof el.className === "string" ? el.className.trim().split(/\s+/).slice(0, 8).join(" ") : "";
@@ -367,7 +385,10 @@ export function gateInPage() {
               const h = r.bottom - r.top;
               area += w * h;
               box = box ? { left: Math.min(box.left, r.left), right: Math.max(box.right, r.right), top: Math.min(box.top, r.top), bottom: Math.max(box.bottom, r.bottom) } : r;
-              if (!pieces || w * h > pieces.area) pieces = { area: w * h, front: nameOf(F.el), back: nameOf(K.el) };
+              if (!pieces || w * h > pieces.area) {
+                const frontLayer = inFrontLayer;
+                pieces = { area: w * h, front: nameOf(F.el), back: nameOf(K.el), frontIs: frontLayer === a ? "a" : "b", frontMarks: innerMarks(F.el, frontLayer.el), backMarks: innerMarks(K.el, backLayer.el) };
+              }
             }
           }
           if (!box) continue;
@@ -380,6 +401,10 @@ export function gateInPage() {
             bClass: classesOf(b.el),
             aMarks: [...a.el.attributes].filter((x) => x.name.startsWith("data-")).map((x) => x.name),
             bMarks: [...b.el.attributes].filter((x) => x.name.startsWith("data-")).map((x) => x.name),
+            aTrail: trailOf(a.el),
+            bTrail: trailOf(b.el),
+            aInner: pieces ? (pieces.frontIs === "a" ? pieces.frontMarks : pieces.backMarks) : [],
+            bInner: pieces ? (pieces.frontIs === "b" ? pieces.frontMarks : pieces.backMarks) : [],
             box: round(box),
             area: Math.round(area),
             pieces: pieces && { front: pieces.front, back: pieces.back },
@@ -478,7 +503,7 @@ export function gateInPage() {
       if (opacityOf(el) < 0.05) return;
       const off = right <= 0 || left >= W || (fixed && (bottom <= 0 || top >= H));
       const side = [outLeft > TOL && `the left edge by ${outLeft}px`, outRight > TOL && `the right edge by ${outRight}px`, outTop > TOL && `the top by ${outTop}px`, outBottom > TOL && `the foot by ${outBottom}px`].filter(Boolean).join(" and ");
-      found.push({ el, name: nameOf(el), cls: classesOf(el), marks: [...el.attributes].filter((x) => x.name.startsWith("data-")).map((x) => x.name), what, off, side, past, box: round({ left, right, top, bottom }), fixed: !!fixed, words: what === "words" ? (el.innerText || el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 50) : "" });
+      found.push({ el, name: nameOf(el), cls: classesOf(el), marks: [...el.attributes].filter((x) => x.name.startsWith("data-")).map((x) => x.name), trail: trailOf(el), what, off, side, past, box: round({ left, right, top, bottom }), fixed: !!fixed, words: what === "words" ? (el.innerText || el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 50) : "" });
     };
     for (const el of document.body.getElementsByTagName("*")) {
       const b = el.getBoundingClientRect();
@@ -584,6 +609,8 @@ export function gateInPage() {
             sources: (e.sources || []).map((x) => ({
               node: x.node && x.node.nodeType === 1 ? nameOf(x.node) : x.node ? nameOf(x.node.parentElement) : null,
               cls: x.node && x.node.nodeType === 1 ? classesOf(x.node) : "",
+              marks: x.node && x.node.nodeType === 1 ? [...x.node.attributes].filter((a) => a.name.startsWith("data-")).map((a) => a.name) : [],
+              trail: x.node ? trailOf(x.node.nodeType === 1 ? x.node : x.node.parentElement) : [],
               from: [Math.round(x.previousRect.x), Math.round(x.previousRect.y), Math.round(x.previousRect.width), Math.round(x.previousRect.height)],
               to: [Math.round(x.currentRect.x), Math.round(x.currentRect.y), Math.round(x.currentRect.width), Math.round(x.currentRect.height)],
             })),
@@ -643,19 +670,28 @@ export function gateInPage() {
       for (const n of s.fresh.splice(0)) {
         for (const el of [n, ...[...n.getElementsByTagName("*")].slice(0, 30)]) {
           const r = el.getBoundingClientRect();
-          if (r.width >= 8 && r.height >= 8 && !s.watch.has(el)) s.watch.set(el, { first: { x: r.left, y: r.top }, frames: 0 });
+          if (r.width >= 8 && r.height >= 8 && !s.watch.has(el)) s.watch.set(el, { first: { x: r.left, y: r.top, w: r.width, h: r.height }, frames: 0 });
         }
       }
+      // A box a reader could see: on the screen where it was first drawn, or where it stands now.
+      // A feed settling far below the screen moves nothing a reader sees.
+      const onScreen = (x, y, w, h) => x < innerWidth && x + w > 0 && y < innerHeight && y + h > 0;
+      const moved = [];
       for (const [el, w] of s.watch) {
         w.frames++;
         if (w.frames === 1) continue;
         const r = el.getBoundingClientRect();
         const far = Math.max(Math.abs(r.left - w.first.x), Math.abs(r.top - w.first.y));
         if (far > 40 && w.frames <= 3 && el.isConnected && opacityOf(el) >= 0.05 && !animated(el)) {
-          const corner = Math.abs(w.first.x) <= 2 && Math.abs(w.first.y) <= 2;
-          s.misplaced.push({ t: performance.timeOrigin + t, name: nameOf(el), cls: classesOf(el), from: [Math.round(w.first.x), Math.round(w.first.y)], to: [Math.round(r.left), Math.round(r.top)], corner });
+          if (onScreen(w.first.x, w.first.y, w.first.w, w.first.h) || onScreen(r.left, r.top, r.width, r.height)) moved.push({ el, w, r });
           s.watch.delete(el);
         } else if (w.frames > 3) s.watch.delete(el);
+      }
+      // The outermost of what moved together: the boxes inside it moved with it.
+      for (const m of moved) {
+        if (moved.some((o) => o !== m && o.el.contains(m.el))) continue;
+        const corner = Math.abs(m.w.first.x) <= 2 && Math.abs(m.w.first.y) <= 2;
+        s.misplaced.push({ t: performance.timeOrigin + t, name: nameOf(m.el), cls: classesOf(m.el), from: [Math.round(m.w.first.x), Math.round(m.w.first.y)], to: [Math.round(m.r.left), Math.round(m.r.top)], corner });
       }
       const scroller = document.scrollingElement || document.documentElement;
       for (const el of s.styled) if (s.wasStyled.has(el)) move++;

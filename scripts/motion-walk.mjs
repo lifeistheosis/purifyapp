@@ -20,8 +20,11 @@
 //      tap walk's own way: scripts/lib/tap.mjs), each from the screen as it
 //      first stood, tapped and recorded frame by frame (scripts/gate/frames.mjs:
 //      a cut, a blank frame, a flash, a box drawn in the wrong place, a jump;
-//      and a card that opens its own page without carrying its picture into
-//      it, CLAUDE.md's rule; a screen slow to answer is listed for the eye),
+//      and a card that opens a page showing its picture without carrying the
+//      picture into it, CLAUDE.md's rule (a picture the page does not show
+//      leaves with its page, app/globals.css's own rule above
+//      `::view-transition-group(carried)`); a screen slow to answer is listed
+//      for the eye),
 //      with the layers measured twice on the way (a crossing in passing is
 //      listed for the eye: the house's sheets rise as the bars behind them
 //      sink) and once at rest (a meeting there fails), and the edge at rest. The tab bar's and the top bar's own controls are the same on
@@ -57,6 +60,7 @@ import { installGate } from "./gate/inpage.mjs";
 import { measureLayers, sayMeeting } from "./gate/layers.mjs";
 import { measureEdge, sayCut } from "./gate/page-edge.mjs";
 import { mainWeb } from "./lib/main-web.mjs";
+import { pageFileOf } from "./lib/route-files.mjs";
 import { assertMotion, motionOptions, motionWords, pinMotion } from "./lib/motion.mjs";
 import { screens } from "./lib/screens.mjs";
 import { SELLS_PLUS, asAndroidShell, checkSells, readerWords } from "./lib/sells-plus.mjs";
@@ -189,7 +193,7 @@ async function judged(rec, at, tag) {
   const fails = [];
   for (const [n, f] of v.fails.entries()) {
     const still = SHOTS ? await stripOf(rec, f.frames, path.join(SHOTS, `${slug(at)}-${tag}-${f.kind}-${n}.png`)).catch(() => null) : null;
-    fails.push({ kind: f.kind, detail: f.detail, still, times: stripTimes(rec, f.frames) });
+    fails.push({ kind: f.kind, detail: f.detail, still, times: stripTimes(rec, f.frames), ...(f.node ? { node: f.node } : {}) });
   }
   return { fails, unsure: v.unsure, dips: v.dips ?? [], change: v.change, frames: v.frames, answered: v.answered, vtNames: v.vtNames ?? [], error: rec.error };
 }
@@ -218,6 +222,22 @@ async function recordAct(page, cdp, act, at, tag, again) {
     if (!v.unsure.length || v.fails.length) break;
   }
   return last;
+}
+
+/** In the page: the first of `names` (pictures' file names) that the page shows in its first screen and a half, or null. */
+function pictureOnPage(names) {
+  const want = new Set(names);
+  for (const p of document.querySelectorAll("img, [style*='background-image']")) {
+    const r = p.getBoundingClientRect();
+    if (r.width < 48 || r.height < 48 || r.top > innerHeight * 1.5 || r.bottom < 0) continue;
+    const src = p.tagName === "IMG" ? p.currentSrc || p.src : (/url\(["']?([^"')]+)/.exec(p.style.backgroundImage) || [])[1];
+    if (!src) continue;
+    try {
+      const name = decodeURIComponent(new URL(src, location.href).pathname.split("/").pop());
+      if (want.has(name)) return name;
+    } catch {}
+  }
+  return null;
 }
 
 // ── A screen ───────────────────────────────────────────────────────────
@@ -347,14 +367,34 @@ async function walkScreen(ctx, at, kept) {
         }
         const before = await page.evaluate(() => location.pathname);
         // A card that opens its own page carries its picture into it (CLAUDE.md, "Every page switch
-        // is a transition"): does the control hold a picture (not an icon)?
-        const picture = await page.evaluate((i) => {
+        // is a transition"): the pictures the control holds (not icons), by their file's name.
+        row.own = await page.evaluate((i) => {
           const el = document.querySelector(`[data-tapwalk="${i}"]`);
-          if (!el) return false;
-          return [...el.querySelectorAll("img, picture, [style*='background-image']")].some((p) => {
-            const r = p.getBoundingClientRect();
-            return r.width >= 64 && r.height >= 64;
-          });
+          if (!el) return null;
+          const trail = [];
+          for (let q = el.parentElement, n = 0; q && q !== document.body && n < 14; q = q.parentElement, n++) {
+            for (const a of q.attributes) if (a.name.startsWith("data-") && !/^data-(tapwalk|mock|gate|tour)/.test(a.name) && !trail.includes(a.name)) trail.push(a.name);
+          }
+          return { marks: [...el.attributes].filter((a) => a.name.startsWith("data-") && a.name !== "data-tapwalk").map((a) => a.name), trail, cls: typeof el.className === "string" ? el.className.trim().split(/\s+/).slice(0, 8).join(" ") : "" };
+        }, c.i);
+        const pictures = await page.evaluate((i) => {
+          const el = document.querySelector(`[data-tapwalk="${i}"]`);
+          if (!el) return [];
+          return [...el.querySelectorAll("img, [style*='background-image']")]
+            .filter((p) => {
+              const r = p.getBoundingClientRect();
+              return r.width >= 64 && r.height >= 64;
+            })
+            .map((p) => (p.tagName === "IMG" ? p.currentSrc || p.src : (/url\(["']?([^"')]+)/.exec(p.style.backgroundImage) || [])[1]))
+            .filter(Boolean)
+            .map((src) => {
+              try {
+                return decodeURIComponent(new URL(src, location.href).pathname.split("/").pop());
+              } catch {
+                return null;
+              }
+            })
+            .filter(Boolean);
         }, c.i);
         const r = await recordAct(page, cdp, () => tapAt(cdp, aim.x, aim.y), at, `c${c.i}`, async () => {
           const again = await ready();
@@ -365,8 +405,11 @@ async function walkScreen(ctx, at, kept) {
         row.change = r.v.change;
         row.answered = r.v.answered;
         row.fails = r.v.fails;
-        if (row.went && picture && MODE === "on" && !r.v.vtNames.some((n) => /\(carried/.test(n))) {
-          row.fails = [...row.fails, { kind: "carried", detail: `the card's picture is not carried into ${row.went} (no View Transition carried it; ${r.v.vtNames.length ? `it ran ${[...new Set(r.v.vtNames.map((n) => n.replace(/^::view-transition-\w+/, "")))].join(", ")}` : "none ran"})`, still: null, times: [] }];
+        // Only where the page it opens shows the same picture in its first screen and a half: a card
+        // whose picture the page does not show has nothing to carry.
+        const shown = row.went && pictures.length && MODE === "on" ? await page.evaluate(pictureOnPage, pictures).catch(() => null) : null;
+        if (shown && !r.v.vtNames.some((n) => /\(carried/.test(n))) {
+          row.fails = [...row.fails, { kind: "carried", detail: `the card's picture (${shown}) is on ${row.went} and was not carried into it (no View Transition carried it; ${r.v.vtNames.length ? `it ran ${[...new Set(r.v.vtNames.map((n) => n.replace(/^::view-transition-\w+/, "")))].join(", ")}` : "none ran"})`, still: null, times: [] }];
         }
         row.unsure = r.v.unsure;
         row.dips = r.v.dips;
@@ -438,15 +481,20 @@ results.sort((a, b) => a.at.localeCompare(b.at));
 
 // ── The report ─────────────────────────────────────────────────────────
 
-// Where a finding lives in the code: its own data marks first, then its classes.
+// Where a finding lives in the code. A data mark leads to the file that sets it on an element (a
+// JSX attribute: `data-x=` or a bare `data-x`, never a selector that reads it, "[data-x]"), the
+// most particular first (the mark set in the fewest files): its own marks, then the marks of the
+// boxes it stands in, nearest first. Without a mark, its words lead to where they are written, and
+// a class of the house's own (one app/globals.css defines) to the files that use it. Tailwind's
+// utility classes are shared by hundreds of files and lead nowhere, so they are not asked.
 const SOURCES = [];
-for (const dir of ["components", "app", "lib"]) {
+for (const dir of ["components", "app", "lib", "data"]) {
   const walk = (d) => {
     for (const name of fs.readdirSync(d)) {
       const full = path.join(d, name);
       if (name === "__tests__" || name === "node_modules") continue;
       if (fs.statSync(full).isDirectory()) walk(full);
-      else if (/\.(tsx|ts|css)$/.test(name)) SOURCES.push(full);
+      else if (/\.(tsx|ts|css|json)$/.test(name)) SOURCES.push(full);
     }
   };
   if (fs.existsSync(dir)) walk(dir);
@@ -456,20 +504,60 @@ const read = (f) => {
   if (!text.has(f)) text.set(f, fs.readFileSync(f, "utf8"));
   return text.get(f);
 };
-function fileFor(marks = [], cls = "") {
-  const own = marks.filter((m) => !/^data-(tapwalk|mock|gate|state|hl|tour|place|testid)/.test(m));
-  for (const m of own) {
-    const hit = SOURCES.filter((f) => f.endsWith(".tsx") && read(f).includes(`${m}=`));
-    if (hit.length) return hit.slice(0, 2).join(", ");
+const escapeRe = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const setters = new Map();
+/** The .tsx files that set a data mark on an element. */
+function settersOf(mark) {
+  if (!setters.has(mark)) {
+    const re = new RegExp(`(^|[\\s{(,])${escapeRe(mark)}(?=\\s*=|\\s*\\/?>|\\s*\\n|\\s+[a-zA-Z-]+=)`, "m");
+    setters.set(mark, SOURCES.filter((f) => f.endsWith(".tsx") && re.test(read(f))));
   }
-  const words = cls.split(/\s+/).filter((w) => w.length > 6 && !/^(md:|lg:|max-|min-|hover:|focus)/.test(w)).slice(0, 3);
-  if (words.length) {
-    const hit = SOURCES.filter((f) => f.endsWith(".tsx") && words.every((w) => read(f).includes(w)));
-    if (hit.length) return hit.slice(0, 2).join(", ");
+  return setters.get(mark);
+}
+const IGNORED_MARK = /^data-(tapwalk|mock|gate|state|hl|tour|place|testid|screen-edge|overlay|open|active|side|motion|theme|reading-mode)$/;
+const houseClasses = new Set([...read("app/globals.css").matchAll(/^\.([a-z][a-z0-9-]{3,})\b/gm)].map((m) => m[1]));
+function fileFor(marks = [], cls = "", trail = [], words = "", inner = []) {
+  const fromMarks = (list) => {
+    const asked = list.filter((m) => !IGNORED_MARK.test(m)).map((m) => ({ m, hit: settersOf(m) })).filter((x) => x.hit.length && x.hit.length <= 3);
+    return asked;
+  };
+  const own = fromMarks(marks).sort((a, b) => a.hit.length - b.hit.length);
+  if (own.length) return own[0].hit.join(", ");
+  // The piece of it that was drawn in the meeting, and the boxes between that piece and it.
+  const drawn = fromMarks(inner);
+  if (drawn.length) return `${drawn[0].hit.join(", ")} (its piece carries ${drawn[0].m})`;
+  const within = fromMarks(trail);
+  if (within.length) return `in ${within[0].hit.join(", ")} (its box carries ${within[0].m})`;
+  const said = (words || "").replace(/["\u201c\u201d]/g, "").trim();
+  if (said.length >= 16) {
+    const probe = said.slice(0, 28);
+    const hit = SOURCES.filter((f) => read(f).includes(probe));
+    if (hit.length && hit.length <= 3) return `its words are in ${hit.join(", ")}`;
+  }
+  const own2 = cls.split(/\s+/).filter((w) => houseClasses.has(w));
+  for (const c of own2) {
+    const hit = SOURCES.filter((f) => f.endsWith(".tsx") && new RegExp(`["'\`\\s]${escapeRe(c)}["'\`\\s]`).test(read(f)));
+    if (hit.length && hit.length <= 3) return `${hit.join(", ")} (class ${c})`;
   }
   return "not found by its marks; see the still";
 }
 const sigOf = (marks, cls, name) => (marks?.filter((m) => !/^data-(tapwalk|mock|gate|state|hl|tour|place)/.test(m)).join("+") || cls?.split(/\s+/).slice(0, 4).join(" ") || name.replace(/".*$/, "").trim());
+
+/** Where a transition's finding lives: the page it lands on (or the screen it stays on), the component holding the control tapped, and for a jump the box that jumped. */
+function transitionFile(r, m, f) {
+  const found = (x) => x && !/^not found/.test(x);
+  const parts = [];
+  if (f.kind === "jump" && f.node) {
+    const jumped = fileFor(f.node.marks, f.node.cls, f.node.trail);
+    if (found(jumped)) parts.push(`the box that jumped: ${jumped}`);
+  }
+  parts.push(m.went ? `lands on ${pageFileOf(m.went) ?? m.went}` : `on ${pageFileOf(r.at) ?? r.at}`);
+  if (m.own) {
+    const control = fileFor(m.own.marks, m.own.cls, m.own.trail);
+    if (found(control)) parts.push(`the control: ${control}`);
+  }
+  return parts.join("; ");
+}
 
 const findings = new Map();
 const note = (key, entry, at, still) => {
@@ -481,27 +569,27 @@ const note = (key, entry, at, still) => {
 for (const r of results) {
   if (r.motion) note(`motion\u0000${r.motion}`, { check: "motion", what: r.motion, file: "scripts/lib/motion.mjs" }, r.at);
   const moments = [
-    ...(r.arrival ? [{ where: `the page switch from ${r.arrival.from}`, fails: r.arrival.fails, passing: r.arrival.passing ?? [], meetings: [], cuts: [] }] : []),
+    ...(r.arrival ? [{ where: `the page switch from ${r.arrival.from}`, went: r.at, fails: r.arrival.fails, passing: r.arrival.passing ?? [], meetings: [], cuts: [] }] : []),
     ...(r.rest ? [{ where: "at rest", fails: [], passing: [], meetings: r.rest.meetings, cuts: r.rest.cuts }] : []),
     ...r.gestures.map((g) => ({ where: g.name, fails: g.fails ?? [], passing: g.passing ?? [], meetings: g.meetings ?? [], cuts: g.cuts ?? [] })),
-    ...r.controls.map((c) => ({ where: `tap ${c.name}${c.went ? ` (went to ${c.went})` : ""}`, fails: c.fails ?? [], passing: c.passing ?? [], meetings: c.meetings ?? [], cuts: c.cuts ?? [] })),
+    ...r.controls.map((c) => ({ where: `tap ${c.name}${c.went ? ` (went to ${c.went})` : ""}`, went: c.went, own: c.own, fails: c.fails ?? [], passing: c.passing ?? [], meetings: c.meetings ?? [], cuts: c.cuts ?? [] })),
   ];
   for (const m of moments) {
     for (const f of m.fails) {
       const where = m.where.replace(/ \(went to .*\)$/, "");
-      note(`transitions\u0000${f.kind}\u0000${where}\u0000${r.at.split("/")[1]}`, { check: "transitions", kind: f.kind, what: `${m.where}: ${f.detail}`, times: f.times }, r.at, f.still);
+      note(`transitions\u0000${f.kind}\u0000${where}\u0000${r.at.split("/")[1]}`, { check: "transitions", kind: f.kind, what: `${m.where}: ${f.detail}`, times: f.times, file: transitionFile(r, m, f) }, r.at, f.still);
     }
     for (const x of m.meetings) {
       const key = `layers\u0000${sigOf(x.aMarks, x.aClass, x.a)}\u0000${sigOf(x.bMarks, x.bClass, x.b)}`;
-      note(key, { check: "layers", what: `${m.where}: ${sayMeeting(x)}`, file: [fileFor(x.aMarks, x.aClass), fileFor(x.bMarks, x.bClass)].join(" | ") }, r.at, x.still);
+      note(key, { check: "layers", what: `${m.where}: ${sayMeeting(x)}`, file: [fileFor(x.aMarks, x.aClass, x.aTrail, "", x.aInner), fileFor(x.bMarks, x.bClass, x.bTrail, "", x.bInner)].join(" | ") }, r.at, x.still);
     }
     for (const x of m.passing) {
       const key = `layers in passing\u0000${sigOf(x.aMarks, x.aClass, x.a)}\u0000${sigOf(x.bMarks, x.bClass, x.b)}`;
-      note(key, { check: "layers in passing", what: `${m.where}: ${sayMeeting(x)}`, file: [fileFor(x.aMarks, x.aClass), fileFor(x.bMarks, x.bClass)].join(" | ") }, r.at, null);
+      note(key, { check: "layers in passing", what: `${m.where}: ${sayMeeting(x)}`, file: [fileFor(x.aMarks, x.aClass, x.aTrail, "", x.aInner), fileFor(x.bMarks, x.bClass, x.bTrail, "", x.bInner)].join(" | ") }, r.at, null);
     }
     for (const x of m.cuts) {
       const key = `edge\u0000${sigOf(x.marks, x.cls, x.name)}\u0000${x.side.replace(/\d+px/g, "")}`;
-      note(key, { check: "edge", what: `${m.where}: ${sayCut(x)}`, file: fileFor(x.marks, x.cls) }, r.at, x.still);
+      note(key, { check: "edge", what: `${m.where}: ${sayCut(x)}`, file: fileFor(x.marks, x.cls, x.trail, x.said || x.words) }, r.at, x.still);
     }
   }
 }

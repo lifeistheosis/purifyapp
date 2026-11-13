@@ -11,20 +11,20 @@
 // sample). It fails:
 //
 //   cut      outside reduced motion, half or more of the whole change in one
-//            frame: the screen went most of the way from where it stood to
-//            where it ends between two frames (the house's transitions take a
-//            third of a second on a curve that carries about a fifth of the way
-//            in a first frame). A change under 8% of the screen is not asked.
-//   blank    frames that show almost nothing of either screen where the screen
-//            changes, between a screen that had words and pictures and one that
-//            has them again: each frame fitted as a share of the screen before
-//            plus a share of the screen after, under a third together (note 5's
-//            first frame shows 9%; a cross-fade's middle shows about all; a
-//            chapter that leaves the reading area empty under its bars shows
-//            almost none), where the screen
-//            emptied at once or stayed empty past a fifth of a second. A
-//            shorter dip at the foot of a fade out and a fade in (the house's
-//            own cross-fade between tabs) is listed as a dip, for the eye.
+//            frame, by distance and along a fade through the ground both: the
+//            screen went most of the way from where it stood to where it ends
+//            between two frames. The house's page switch takes the page being
+//            left nearly away in its first frame on purpose (a fifth of it still
+//            shows); build 95's search took it away whole (note 5). A change
+//            under 8% of the screen is not asked.
+//   blank    frames with nothing drawn where the screen changes, between a
+//            screen that draws there and one that draws there again: under a
+//            third of the two together by the fit, and almost nothing inked,
+//            for more than a fifth of a second. The house's own switch is empty
+//            for 50ms at the most (a dip, listed for the eye, not failed); Discover's
+//            Saints door on build 95 left it empty for over a quarter of a
+//            second. A page whose picture has come while its words follow is
+//            not empty, and neither is a sheet in the middle of its rise.
 //   flash    something drawn for one or two frames and gone, where the frames
 //            either side of it agree; at the corner when it is in one.
 //   misplaced  a new box drawn in its first frame far from where it stands two
@@ -43,10 +43,12 @@
 //   node scripts/gate/frames.mjs --self-test
 //
 // proves it on a page of planted changes: an instant cut, note 5's shape (the
-// ground at once, the words faded in later), blank frames, a box flashed at the
-// corner, a jump and, with motion reduced, a slide all fail; a crossfade and a
-// sheet rising on the house curve, a cross-fade both ways (two pages at half in
-// its middle), a fade out and in through the ground (listed as a dip), an
+// screen before gone whole in one frame, the words faded in later), blank
+// frames, a box flashed at the corner, a jump and, with motion reduced, a slide
+// all fail; a crossfade and a sheet rising on the house curve, a cross-fade
+// both ways (two pages at half in its middle), a fade out and in through the
+// ground (listed as a dip), the house's page switch from a page heavy with
+// words to a light one, a page whose picture comes before its words, an
 // instant change with motion reduced, and no change at all pass.
 
 import fs from "node:fs";
@@ -65,15 +67,23 @@ const SCALE = 3;
 const CHANGED = 24;
 /** Two frames this close are one frame apart (a 60Hz screen draws one every 16.7ms). */
 const NEXT_FRAME_MS = 25;
-/** A cut carries this much of the whole change in one frame. */
+/** A cut carries this much of the whole change in one frame, by distance... */
 const CUT_SHARE = 0.5;
+/** ...and this much of the way along a fade through the ground (half less a margin for the fit). */
+const CUT_PATH = 0.45;
 /** A change smaller than this share of the screen is not asked whether it cut. */
 const CUT_AREA = 0.08;
 /** A frame is blank when it shows under this share of the screens either side of it, the two together. */
 const BLANK_SHARE = 0.35;
 /** ...and only between screens that each draw at least this much. */
 const BLANK_FLOOR = 0.03;
-/** Empty this long, a screen is blank whatever led to it (twelve frames): the house's dip between tabs is shorter. */
+/** A pixel inks the changing region past this difference from the ground in any channel. */
+const INK_LEVEL = 28;
+/** A frame is empty where it inks under this share of what the lighter screen inks there... */
+const EMPTY_SHARE = 0.15;
+/** ...and never more than this, when the lighter screen inks little. */
+const EMPTY_FLOOR = 0.03;
+/** Empty this long, a screen is blank (twelve frames): the house's own dip is 50ms at the most. */
 const BLANK_MS = 200;
 /** A layout shift this far in one frame is a jump. */
 const JUMP_PX = 24;
@@ -274,7 +284,61 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
   const after = frames.map((f, i) => i).filter((i) => i > startAt);
   const at = (i) => Math.round(frames[i].t - rec.tapped);
 
-  // Cut: the share of the way from where the screen stood to where it ends, frame by frame.
+  // Where the screen changes: the pixels that differ between the screen before and the screen
+  // after, and the ground they change on. Each frame there is fitted as a share of the one plus a
+  // share of the other (on that ground): a cross-fade's middle shows half of each (together, about
+  // all), a fade through the ground shows a share of the one and then of the other, and a frame with
+  // nothing on it shows none of either. Whether a frame draws anything at all there is its ink.
+  const region = [];
+  for (let i = 0, p = 0; i < F0.length; i += 3, p++) {
+    if (mask[p]) continue;
+    if (Math.max(Math.abs(F0[i] - FE[i]), Math.abs(F0[i + 1] - FE[i + 1]), Math.abs(F0[i + 2] - FE[i + 2])) > CHANGED) region.push(i);
+  }
+  const fitted = region.length >= 0.03 * w * h;
+  const ground = groundOf(F0, mask);
+  const fitOf = (px1) => {
+    let a00 = 0;
+    let a01 = 0;
+    let a11 = 0;
+    let b0 = 0;
+    let b1 = 0;
+    for (const i of region) {
+      for (let c = 0; c < 3; c++) {
+        const x0 = F0[i + c] - ground[c];
+        const x1 = FE[i + c] - ground[c];
+        const y = px1[i + c] - ground[c];
+        a00 += x0 * x0;
+        a01 += x0 * x1;
+        a11 += x1 * x1;
+        b0 += x0 * y;
+        b1 += x1 * y;
+      }
+    }
+    const det = a00 * a11 - a01 * a01;
+    if (Math.abs(det) < 1e-6) return { before: 0, after: 0 };
+    return { before: Math.max(0, (b0 * a11 - b1 * a01) / det), after: Math.max(0, (a00 * b1 - a01 * b0) / det) };
+  };
+  /** The share of the changing region a frame draws on: its pixels that stand apart from the ground. */
+  const inkIn = (px1) => {
+    let n = 0;
+    for (const i of region) if (Math.max(Math.abs(px1[i] - ground[0]), Math.abs(px1[i + 1] - ground[1]), Math.abs(px1[i + 2] - ground[2])) > INK_LEVEL) n++;
+    return region.length ? n / region.length : 0;
+  };
+  const fits = new Map();
+  const fit = (i) => {
+    if (!fits.has(i)) fits.set(i, fitOf(px[i]));
+    return fits.get(i);
+  };
+
+  // Cut: half the change or more in one frame, by two measures that must agree. The first is the
+  // share of the way from where the screen stood to where it ends (its distance from each). The
+  // second is the share of the way along a fade through the ground: the screen before at whole,
+  // the ground, the screen after at whole. The house's own page switch (app/globals.css, "Every
+  // page switch moves") takes the page being left nearly away in its first frame on purpose, and
+  // when that page draws much more than the next, the distance alone counts that first frame as
+  // half the change; along the fade it is less than half, since a fifth of the old page still
+  // shows. Build 95's search (note 5) took the screen before away whole in one frame: half along
+  // the fade, and more than half by distance.
   if (motion === "on" && change >= CUT_AREA) {
     const whole = distance(F0, FE, mask);
     const p = (i) => {
@@ -282,14 +346,22 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
       const b = distance(px[i], FE, mask);
       return a + b > 0 ? a / (a + b) : 0;
     };
+    const along = (i) => {
+      if (!fitted) return p(i);
+      const f = fit(i);
+      return Math.min(1, Math.max(0, 0.5 * (1 - Math.min(1, f.before)) + 0.5 * Math.min(1, f.after)));
+    };
     let prev = startAt;
     let prevP = 0;
+    let prevS = 0;
     let stillBefore = true;
     for (const i of after) {
       const pi = p(i);
+      const si = along(i);
       const step = pi - prevP;
+      const stepS = si - prevS;
       const gap = frames[i].t - frames[prev].t;
-      if (step >= CUT_SHARE && whole > 0) {
+      if (step >= CUT_SHARE && stepS >= CUT_PATH && whole > 0) {
         if (stillBefore || gap <= NEXT_FRAME_MS) {
           fails.push({ kind: "cut", detail: `${Math.round(step * 100)}% of the change in one frame (${at(i)}ms after the tap), outside reduced motion: an instant cut, not a transition`, frames: [prev, i, end] });
         } else {
@@ -299,78 +371,45 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
       if (changedShare(px[i], F0, mask) > 0.005) stillBefore = false;
       prev = i;
       prevP = pi;
+      prevS = si;
     }
   }
 
-  // Blank: a frame that shows almost nothing of either screen, where the screen changes, between
-  // two screens that draw. Each frame is fitted, over the pixels that differ between the screen
-  // before and the screen after, as a share of the one plus a share of the other (on their common
-  // ground): a cross-fade's middle shows half of each (together, about all); a page switch that
-  // leaves the reading area empty while the bars stand shows almost none of either, whatever the
-  // bars draw. Whether the screens either side draw at all is their ink.
+  // Blank: frames with nothing drawn where the screen changes, between two screens that draw there:
+  // under a third of the screens either side together, and almost none of the changing region
+  // inked (under a seventh of what the lighter screen inks there, or under 3% when a seventh is
+  // less). The house's page switch is empty there for 50ms at the most between the page leaving
+  // and the page arriving (measured on build 95's export: a tab, a page, Back), which is a dip, listed
+  // and not failed; empty past a fifth of a second is a blank screen. A page whose picture has come
+  // and whose words follow is not empty, and neither is a sheet in the middle of its rise.
   const inkStart = inkOf(F0, mask);
   const inkEnd = inkOf(FE, mask);
   const least = Math.min(inkStart, inkEnd);
   const dips = [];
-  const region = [];
-  for (let i = 0, p = 0; i < F0.length; i += 3, p++) {
-    if (mask[p]) continue;
-    if (Math.max(Math.abs(F0[i] - FE[i]), Math.abs(F0[i + 1] - FE[i + 1]), Math.abs(F0[i + 2] - FE[i + 2])) > CHANGED) region.push(i);
-  }
-  if (least >= BLANK_FLOOR && region.length >= 0.03 * w * h) {
-    const ground = groundOf(F0, mask);
-    const shown = (px1) => {
-      let a00 = 0;
-      let a01 = 0;
-      let a11 = 0;
-      let b0 = 0;
-      let b1 = 0;
-      for (const i of region) {
-        for (let c = 0; c < 3; c++) {
-          const x0 = F0[i + c] - ground[c];
-          const x1 = FE[i + c] - ground[c];
-          const y = px1[i + c] - ground[c];
-          a00 += x0 * x0;
-          a01 += x0 * x1;
-          a11 += x1 * x1;
-          b0 += x0 * y;
-          b1 += x1 * y;
-        }
-      }
-      const det = a00 * a11 - a01 * a01;
-      if (Math.abs(det) < 1e-6) return { before: 0, after: 0 };
-      const before = Math.max(0, (b0 * a11 - b1 * a01) / det);
-      const after = Math.max(0, (a00 * b1 - a01 * b0) / det);
-      return { before, after };
-    };
-    const ink = new Map(after.map((i) => [i, shown(px[i])]));
-    const blank = after.filter((i) => i !== end && ink.get(i).before + ink.get(i).after <= BLANK_SHARE);
-    // Each run of empty frames: a fail when the screen emptied at once (the frame before still drew
-    // half of what stood) or stayed empty past BLANK_MS; a short dip at the foot of a fade out and a
-    // fade in is the house's own cross-fade, listed for the eye and not failed.
+  if (least >= BLANK_FLOOR && fitted) {
+    const emptyAt = Math.max(EMPTY_FLOOR, EMPTY_SHARE * Math.min(inkIn(F0), inkIn(FE)));
+    const inks = new Map(after.map((i) => [i, inkIn(px[i])]));
+    const blank = after.filter((i) => i !== end && fit(i).before + fit(i).after <= BLANK_SHARE && inks.get(i) <= emptyAt);
     const runs = [];
     for (const i of blank) {
       const run = runs[runs.length - 1];
       if (run && run[run.length - 1] === i - 1) run.push(i);
       else runs.push([i]);
     }
-    // Emptied at once: the frame just before the empty run still showed the screen nearly whole
-    // (four fifths or more), a frame away or still from before the tap. A fade shows it part way
-    // first; a frame the recording missed in a fast fade leaves a gap, and a gap is not "at once".
-    const atOnceOf = (first) => {
-      const prev = first - 1;
-      const was = prev === startAt ? 1 : ink.get(prev).before + ink.get(prev).after;
-      return was >= 0.8 && (prev === startAt || frames[first].t - frames[prev].t <= NEXT_FRAME_MS);
-    };
     for (const run of runs) {
       const first = run[0];
       const last = run[run.length - 1];
       const prev = first - 1;
       const lasted = frames[Math.min(last + 1, end)].t - frames[first].t;
-      const atOnce = atOnceOf(first);
-      const most = run.reduce((m, i) => Math.max(m, ink.get(i).before + ink.get(i).after), 0);
-      const said = `${run.length} frame${run.length === 1 ? "" : "s"} with almost nothing drawn where the screen changes (showing at most ${Math.round(most * 100)}% of the screen before and after together) for ${Math.round(lasted)}ms, from ${at(first)}ms after the tap${atOnce ? ", the screen emptied at once" : ""}`;
-      if (atOnce || lasted > BLANK_MS) fails.push({ kind: "blank", detail: said, frames: [prev, first, Math.min(last + 1, end), end] });
+      const most = run.reduce((m, i) => Math.max(m, fit(i).before + fit(i).after), 0);
+      const inked = run.reduce((m, i) => Math.max(m, inks.get(i)), 0);
+      const said = `${run.length} frame${run.length === 1 ? "" : "s"} with nothing drawn where the screen changes (at most ${Math.round(inked * 100)}% of it inked, ${Math.round(most * 100)}% of the screen before and after together) for ${Math.round(lasted)}ms, from ${at(first)}ms after the tap`;
+      // The still shows the emptiest frame of the run (its middle, among equals), not its first,
+      // which is often the last trace of the page leaving.
+      const leastInk = Math.min(...run.map((i) => inks.get(i)));
+      const emptiest = run.filter((i) => inks.get(i) === leastInk);
+      const shown = emptiest[Math.floor(emptiest.length / 2)];
+      if (lasted > BLANK_MS) fails.push({ kind: "blank", detail: said, frames: [prev, shown, Math.min(last + 1, end), end] });
       else dips.push(said);
     }
   }
@@ -458,7 +497,7 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
         if (far >= JUMP_PX && src.from[2] >= 8 && src.from[3] >= 8 && src.to[2] >= 8 && src.to[3] >= 8 && (!worst || far > worst.far)) worst = { far, src, t: s.t };
       }
     }
-    if (worst) fails.push({ kind: "jump", detail: `${worst.src.node ?? "a box"} jumped ${worst.far}px in one frame (from ${worst.src.from.slice(0, 2).join(",")} to ${worst.src.to.slice(0, 2).join(",")}), ${Math.round(worst.t - rec.tapped)}ms after the tap: something above it changed size at once`, frames: nearest(frames, worst.t) });
+    if (worst) fails.push({ kind: "jump", detail: `${worst.src.node ?? "a box"} jumped ${worst.far}px in one frame (from ${worst.src.from.slice(0, 2).join(",")} to ${worst.src.to.slice(0, 2).join(",")}), ${Math.round(worst.t - rec.tapped)}ms after the tap: something above it changed size at once`, frames: nearest(frames, worst.t), node: { marks: worst.src.marks ?? [], trail: worst.src.trail ?? [], cls: worst.src.cls ?? "" } });
     if (motion === "reduce") {
       const moving = new Set();
       for (const f of inPage.frames) if (f.t >= rec.tapped) for (const m of f.moving) moving.add(m);
@@ -560,14 +599,14 @@ function plant(kind) {
         el.style.opacity = "1";
       }
     } else if (kind === "blank") {
-      // The old screen fades away on the house's time, nothing stands for nine frames, then the
-      // new one fades in: no frame carries half the change, and the screen is empty for more than a
-      // fifth of a second.
+      // The old screen fades away on the house's time, nothing stands for fifteen frames (a quarter
+      // of a second, Discover's Saints door on build 95), then the new one fades in: no frame
+      // carries half the change, and the screen is empty for more than a fifth of a second.
       A.style.transition = "opacity 200ms linear";
       A.style.opacity = "0";
       await new Promise((r) => setTimeout(r, 230));
       A.hidden = true;
-      for (let n = 0; n < 9; n++) await frame();
+      for (let n = 0; n < 15; n++) await frame();
       B.style.opacity = "0";
       B.hidden = false;
       await frame();
@@ -594,6 +633,41 @@ function plant(kind) {
       await frame();
       B.style.transition = `opacity 320ms ${curve}`;
       B.style.opacity = "1";
+    } else if (kind === "house") {
+      // The house's page switch (app/globals.css, "Every page switch moves"), from a page heavy with
+      // words to a light one: the page being left goes on the house curve in 140ms, nearly away in
+      // its first frame, and the next arrives from 40ms on, in 260ms.
+      for (const el of [...B.children].slice(2)) el.hidden = true;
+      B.style.opacity = "0";
+      B.hidden = false;
+      A.style.position = "absolute";
+      A.style.inset = "0";
+      await frame();
+      A.style.transition = `opacity 140ms ${curve}`;
+      A.style.opacity = "0";
+      B.style.transition = `opacity 260ms ${curve} 40ms`;
+      B.style.opacity = "1";
+    } else if (kind === "staged") {
+      // A page whose picture comes with it and whose words follow it (the house's page-open words
+      // start after the switch): not empty, since the picture is drawn.
+      const pic = document.createElement("div");
+      pic.style.cssText = "height:300px;margin:0 -20px 16px;background:linear-gradient(160deg,#8a6a3a,#3a2a1a 60%,#1a1410)";
+      B.prepend(pic);
+      const words = [...B.children].slice(1);
+      for (const el of words) el.style.opacity = "0";
+      B.style.opacity = "0";
+      A.style.position = "absolute";
+      A.style.inset = "0";
+      B.hidden = false;
+      await frame();
+      A.style.transition = `opacity 140ms ${curve}`;
+      A.style.opacity = "0";
+      B.style.transition = `opacity 260ms ${curve} 40ms`;
+      B.style.opacity = "1";
+      for (const el of words) {
+        el.style.transition = `opacity 380ms ${curve} 500ms`;
+        el.style.opacity = "1";
+      }
     } else if (kind === "corner") {
       const box = document.createElement("div");
       box.textContent = "Search Purify";
@@ -620,7 +694,7 @@ function plant(kind) {
 const CASES = [
   // [name, kind, motion, the fails it must have (none for a pass)]
   ["an instant cut from one screen to another", "cut", "on", ["cut"]],
-  ["build 95 note 5's shape: the ground at once, the words faded in after", "note5", "on", ["cut", "blank"]],
+  ["build 95 note 5's shape: the screen before gone whole in one frame, the words faded in after", "note5", "on", ["cut"]],
   ["blank frames between two screens that fade", "blank", "on", ["blank"]],
   ["a box flashed at the corner before it is placed (and moved there at once)", "corner", "on", ["flash", "misplaced", "jump"]],
   ["a jump: something above grows 140px at once (an instant change, so a cut too)", "jump", "on", ["jump", "cut"]],
@@ -629,6 +703,8 @@ const CASES = [
   ["a fade out and a fade in through the ground (listed as a dip, not failed)", "dip", "on", [], { dip: true }],
   ["a cross-fade both ways, two pages at half in its middle (not blank)", "both", "on", []],
   ["a sheet that rises on the house curve", "sheet", "on", []],
+  ["the house's page switch from a page heavy with words to a light one (the old page nearly gone in a frame)", "house", "on", []],
+  ["a page whose picture comes with it and whose words follow half a second later (not empty)", "staged", "on", []],
   ["with motion reduced, an instant change", "cut", "reduce", []],
   ["no change at all", "none", "on", []],
 ];
