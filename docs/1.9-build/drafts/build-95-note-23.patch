@@ -1,0 +1,2024 @@
+From f2569941ea89a2015a8f429dcbd5ec551b664efe Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 13 Nov 2026 14:38:07 +0000
+Subject: [PATCH] Build 95 note 23 (held for his yes): every download in the
+ phone's bar and the bell's sheet
+
+Not pushed: held until the owner's yes, relayed by the arbiter.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VuYTwbYDV4ZZh3k81isTay
+---
+ android/app/proguard-rules.pro                |   5 +-
+ .../net/purifyapp/purify/MainActivity.java    |   4 +
+ .../downloads/DownloadNoticePlugin.java       | 176 +++++++++++++++++
+ android/app/src/main/res/values/strings.xml   |   4 +
+ components/layout/RootFrame.tsx               |   2 +
+ components/native/DownloadsBridge.tsx         | 148 +++++++++++++++
+ components/nav/DownloadsSection.tsx           |  63 ++++++
+ components/nav/NotificationsButton.tsx        |  15 +-
+ components/nav/NotificationsSheet.tsx         |  11 ++
+ ios/App/App.xcodeproj/project.pbxproj         |   4 +
+ ios/App/App/DownloadNoticePlugin.swift        | 103 ++++++++++
+ ios/App/App/PurifyBridgeViewController.swift  |   2 +
+ lib/downloads/__tests__/log.test.ts           |  82 ++++++++
+ lib/downloads/__tests__/notice.test.ts        |  98 ++++++++++
+ lib/downloads/__tests__/shell.test.ts         | 103 ++++++++++
+ lib/downloads/__tests__/watch.test.ts         | 108 +++++++++++
+ lib/downloads/log.ts                          | 179 ++++++++++++++++++
+ lib/downloads/notice.ts                       | 142 ++++++++++++++
+ lib/downloads/watch.ts                        | 119 ++++++++++++
+ lib/i18n/messages/ar.json                     |   5 +
+ lib/i18n/messages/bg.json                     |   5 +
+ lib/i18n/messages/de.json                     |   5 +
+ lib/i18n/messages/el.json                     |   5 +
+ lib/i18n/messages/en.json                     |   5 +
+ lib/i18n/messages/es.json                     |   5 +
+ lib/i18n/messages/fil.json                    |   5 +
+ lib/i18n/messages/fr.json                     |   5 +
+ lib/i18n/messages/hu.json                     |   5 +
+ lib/i18n/messages/id.json                     |   5 +
+ lib/i18n/messages/it.json                     |   5 +
+ lib/i18n/messages/ka.json                     |   5 +
+ lib/i18n/messages/ne.json                     |   5 +
+ lib/i18n/messages/pl.json                     |   5 +
+ lib/i18n/messages/pt.json                     |   5 +
+ lib/i18n/messages/ro.json                     |   5 +
+ lib/i18n/messages/ru.json                     |   5 +
+ lib/i18n/messages/sr.json                     |   5 +
+ lib/i18n/messages/tr.json                     |   5 +
+ lib/i18n/messages/uk.json                     |   5 +
+ lib/i18n/messages/ur.json                     |   5 +
+ 40 files changed, 1470 insertions(+), 3 deletions(-)
+ create mode 100644 android/app/src/main/java/net/purifyapp/purify/downloads/DownloadNoticePlugin.java
+ create mode 100644 components/native/DownloadsBridge.tsx
+ create mode 100644 components/nav/DownloadsSection.tsx
+ create mode 100644 ios/App/App/DownloadNoticePlugin.swift
+ create mode 100644 lib/downloads/__tests__/log.test.ts
+ create mode 100644 lib/downloads/__tests__/notice.test.ts
+ create mode 100644 lib/downloads/__tests__/shell.test.ts
+ create mode 100644 lib/downloads/__tests__/watch.test.ts
+ create mode 100644 lib/downloads/log.ts
+ create mode 100644 lib/downloads/notice.ts
+ create mode 100644 lib/downloads/watch.ts
+
+diff --git a/android/app/proguard-rules.pro b/android/app/proguard-rules.pro
+index e8d0473f..e0df250a 100644
+--- a/android/app/proguard-rules.pro
++++ b/android/app/proguard-rules.pro
+@@ -16,7 +16,10 @@
+ #   - Capacitor keeps every plugin class and its @PluginMethod methods
+ #     (node_modules/@capacitor/android/capacitor/proguard-rules.pro). The
+ #     bridge reads plugin class names out of capacitor.plugins.json and calls
+-#     their methods by the name JavaScript sends.
++#     their methods by the name JavaScript sends. The app's own plugins,
++#     registered in MainActivity (the widgets' bridge, and from 1.9 the
++#     downloads' notice, downloads/DownloadNoticePlugin), are kept the same
++#     way: each is a Plugin with @CapacitorPlugin and @PluginMethod.
+ #   - @capgo/capacitor-social-login keeps its own classes, and with them all
+ #     of com.getcapacitor, okhttp3, Google sign-in, Credential Manager and
+ #     com.auth0.android.jwt.
+diff --git a/android/app/src/main/java/net/purifyapp/purify/MainActivity.java b/android/app/src/main/java/net/purifyapp/purify/MainActivity.java
+index 0dc6916c..ef34b0bb 100644
+--- a/android/app/src/main/java/net/purifyapp/purify/MainActivity.java
++++ b/android/app/src/main/java/net/purifyapp/purify/MainActivity.java
+@@ -14,6 +14,7 @@ import androidx.activity.EdgeToEdge;
+ 
+ import com.getcapacitor.BridgeActivity;
+ 
++import net.purifyapp.purify.downloads.DownloadNoticePlugin;
+ import net.purifyapp.purify.widget.WidgetBridgePlugin;
+ 
+ public class MainActivity extends BridgeActivity {
+@@ -42,6 +43,9 @@ public class MainActivity extends BridgeActivity {
+         // The app's own plugin for the home screen widgets: registered before
+         // the bridge starts, as Capacitor asks of a plugin that lives in the app.
+         registerPlugin(WidgetBridgePlugin.class);
++        // And the one that shows a download in the notification bar (1.9,
++        // build 95 note 23; lib/downloads/notice.ts).
++        registerPlugin(DownloadNoticePlugin.class);
+         super.onCreate(savedInstanceState);
+         // The on-device content store of 1.5 (lib/content): about 33 MB that
+         // every phone which installed 1.5 still held, for a layer switched off
+diff --git a/android/app/src/main/java/net/purifyapp/purify/downloads/DownloadNoticePlugin.java b/android/app/src/main/java/net/purifyapp/purify/downloads/DownloadNoticePlugin.java
+new file mode 100644
+index 00000000..e2eb4436
+--- /dev/null
++++ b/android/app/src/main/java/net/purifyapp/purify/downloads/DownloadNoticePlugin.java
+@@ -0,0 +1,176 @@
++package net.purifyapp.purify.downloads;
++
++import android.Manifest;
++import android.app.NotificationChannel;
++import android.app.NotificationManager;
++import android.app.PendingIntent;
++import android.content.Context;
++import android.content.Intent;
++import android.content.pm.PackageManager;
++import android.os.Build;
++import android.os.Bundle;
++import android.service.notification.StatusBarNotification;
++
++import androidx.core.app.NotificationCompat;
++import androidx.core.app.NotificationManagerCompat;
++import androidx.core.content.ContextCompat;
++
++import com.getcapacitor.Plugin;
++import com.getcapacitor.PluginCall;
++import com.getcapacitor.PluginMethod;
++import com.getcapacitor.annotation.CapacitorPlugin;
++
++import net.purifyapp.purify.R;
++
++/**
++ * A download in the notification bar (1.9, build 95 note 23; the owner, 2026-11-13:
++ * "whenever you are downloading something it should show up on your
++ * notification bar"). The app's side is lib/downloads/notice.ts, which says
++ * what each download is doing in the reader's own words.
++ *
++ * One notification for each download, on a channel of its own, "Downloads":
++ * low importance, so it never sounds, never drops over what the reader is
++ * doing, and puts no badge on the icon (CONTRIBUTING: no badge, no unread
++ * count). While it runs, a progress bar and the words of how far it has come;
++ * when it ends, the words of its end, and a tap opens Purify.
++ *
++ * No foreground service, so no store declaration: the download is the app's
++ * own, and runs while the app does. A running notice the app stops refreshing
++ * (the app paused in the background, or closed) clears itself after
++ * STALE_MS, and one left by an app that was closed is cleared when the app
++ * starts again (load), so no notice stands at a number nobody is moving.
++ *
++ * Nothing is posted without the reader's leave: on Android 13 and later that
++ * is POST_NOTIFICATIONS, which the manifest already declares for the reminders.
++ *
++ * Registered in MainActivity, as the widgets' bridge is. Capacitor's own keep
++ * rules keep it and its methods under R8 (android/app/proguard-rules.pro).
++ */
++@CapacitorPlugin(name = "DownloadNotice")
++public class DownloadNoticePlugin extends Plugin {
++
++    /** The channel, made once; a reader's own setting for it always wins. */
++    public static final String CHANNEL = "purify-downloads";
++
++    /** Every download's notice carries this tag, apart from the reminders' notifications. */
++    static final String TAG = "purify-download";
++
++    /** Set on a notice while its download runs or waits. */
++    static final String RUNNING = "net.purifyapp.purify.download.running";
++
++    /** A running notice nobody has refreshed for this long is stale (the app refreshes it every minute). */
++    static final long STALE_MS = 150_000L;
++
++    @Override
++    public void load() {
++        createChannel(getContext());
++        clearLeftRunning(getContext());
++    }
++
++    @PluginMethod
++    public void post(PluginCall call) {
++        Integer id = call.getInt("id");
++        if (id == null) {
++            call.reject("A download's notice needs its id.");
++            return;
++        }
++        Context context = getContext();
++        if (!mayPost(context)) {
++            // No leave from the reader: the bell's sheet in the app still shows it.
++            call.resolve();
++            return;
++        }
++        String state = call.getString("state", "running");
++        boolean running = "running".equals(state);
++        boolean waiting = "waiting".equals(state);
++        double share = call.getDouble("share", 0.0);
++        int percent = (int) Math.round(Math.max(0.0, Math.min(1.0, share)) * 100.0);
++
++        NotificationCompat.Builder notice = new NotificationCompat.Builder(context, CHANNEL)
++            .setSmallIcon(R.drawable.ic_stat_purify)
++            .setContentTitle(call.getString("title", ""))
++            .setContentText(call.getString("text", ""))
++            .setOnlyAlertOnce(true)
++            .setSilent(true)
++            .setPriority(NotificationCompat.PRIORITY_LOW)
++            .setContentIntent(openPurify(context));
++
++        if (running || waiting) {
++            Bundle extras = new Bundle();
++            extras.putBoolean(RUNNING, true);
++            notice
++                .setCategory(NotificationCompat.CATEGORY_PROGRESS)
++                .setProgress(100, percent, false)
++                .setShowWhen(false)
++                // Running, it stays until it ends; waiting for Wi-Fi or a signal, the reader may swipe it away.
++                .setOngoing(running)
++                .setAutoCancel(false)
++                .addExtras(extras);
++            if (running) notice.setTimeoutAfter(STALE_MS);
++        } else {
++            notice
++                .setCategory("failed".equals(state) ? NotificationCompat.CATEGORY_ERROR : NotificationCompat.CATEGORY_STATUS)
++                .setProgress(0, 0, false)
++                .setShowWhen(true)
++                .setOngoing(false)
++                .setAutoCancel(true);
++        }
++        NotificationManagerCompat.from(context).notify(TAG, id, notice.build());
++        call.resolve();
++    }
++
++    @PluginMethod
++    public void clear(PluginCall call) {
++        Integer id = call.getInt("id");
++        if (id != null) NotificationManagerCompat.from(getContext()).cancel(TAG, id);
++        call.resolve();
++    }
++
++    /** The reader's leave to post: always before Android 13, POST_NOTIFICATIONS from it, and the app's notifications not turned off. */
++    private static boolean mayPost(Context context) {
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
++            && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
++            return false;
++        }
++        return NotificationManagerCompat.from(context).areNotificationsEnabled();
++    }
++
++    /** A tap opens Purify where the reader left it. */
++    private static PendingIntent openPurify(Context context) {
++        Intent open = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
++        if (open == null) open = new Intent();
++        open.setPackage(context.getPackageName());
++        open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
++        return PendingIntent.getActivity(context, 0, open, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
++    }
++
++    /** The "Downloads" channel: low, silent, no badge. Making a channel that exists changes nothing. */
++    private static void createChannel(Context context) {
++        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
++        NotificationManager manager = context.getSystemService(NotificationManager.class);
++        if (manager == null) return;
++        NotificationChannel channel = new NotificationChannel(
++            CHANNEL,
++            context.getString(R.string.download_channel_name),
++            NotificationManager.IMPORTANCE_LOW
++        );
++        channel.setDescription(context.getString(R.string.download_channel_description));
++        channel.setShowBadge(false);
++        manager.createNotificationChannel(channel);
++    }
++
++    /** A running notice left by an app that was closed: its download stopped with it. */
++    private static void clearLeftRunning(Context context) {
++        NotificationManager manager = context.getSystemService(NotificationManager.class);
++        if (manager == null) return;
++        try {
++            for (StatusBarNotification shown : manager.getActiveNotifications()) {
++                if (TAG.equals(shown.getTag()) && shown.getNotification().extras.getBoolean(RUNNING, false)) {
++                    manager.cancel(TAG, shown.getId());
++                }
++            }
++        } catch (RuntimeException ignored) {
++            // The phone would not say what it shows: the stale timeout clears them instead.
++        }
++    }
++}
+diff --git a/android/app/src/main/res/values/strings.xml b/android/app/src/main/res/values/strings.xml
+index 4b8ba2d1..35d52321 100644
+--- a/android/app/src/main/res/values/strings.xml
++++ b/android/app/src/main/res/values/strings.xml
+@@ -6,6 +6,10 @@
+     <string name="custom_url_scheme">net.purifyapp.purify</string>
+     <string name="push_channel_name">Reminders and news</string>
+     <string name="push_channel_description">Prayer reminders you set, and news from Purify.</string>
++    <!-- The downloads' channel (1.9, build 95 note 23): quiet, a download's
++         progress while it runs and its end (downloads/DownloadNoticePlugin). -->
++    <string name="download_channel_name">Downloads</string>
++    <string name="download_channel_description">What you download, while it downloads and when it is done.</string>
+     <!-- The app icon's shortcuts (res/xml/shortcuts.xml), which can only take
+          their labels from here. A launcher shows the long label where there
+          is room and the short one where there is not; the same words serve
+diff --git a/components/layout/RootFrame.tsx b/components/layout/RootFrame.tsx
+index 73d713a1..d6283be6 100644
+--- a/components/layout/RootFrame.tsx
++++ b/components/layout/RootFrame.tsx
+@@ -31,6 +31,7 @@ import { AppNudge } from "@/components/marketing/AppNudge";
+ import { NativeBridge } from "@/components/native/NativeBridge";
+ import { PackBridge } from "@/components/native/PackBridge";
+ import { PressToCopy } from "@/components/native/PressToCopy";
++import { DownloadsBridge } from "@/components/native/DownloadsBridge";
+ import { SavingBridge } from "@/components/native/SavingBridge";
+ import { ShortcutListener } from "@/components/native/ShortcutListener";
+ import { WidgetBridgeSync } from "@/components/native/WidgetBridgeSync";
+@@ -199,6 +200,7 @@ export function RootFrame({
+           (lib/readAloud/saving.ts). Renders nothing, and does nothing in a
+           browser. */}
+       <SavingBridge />
++      <DownloadsBridge />
+     </>
+   );
+ }
+diff --git a/components/native/DownloadsBridge.tsx b/components/native/DownloadsBridge.tsx
+new file mode 100644
+index 00000000..86fae52d
+--- /dev/null
++++ b/components/native/DownloadsBridge.tsx
+@@ -0,0 +1,148 @@
++"use client";
++
++import { useEffect, useRef, useState } from "react";
++
++import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { getBook, localBookNames } from "@/lib/bible/books";
++import { downloadableBible } from "@/lib/bible/downloads/catalog";
++import { useBibles } from "@/lib/bible/downloads/store";
++import { chantTitleKey } from "@/lib/chants/names";
++import { savedChants, useChantSaving } from "@/lib/chants/offline";
++import type { ChantIndexRow } from "@/lib/chants/types";
++import { downloadOf, dropDownload, isEnded, putDownload, readDownloads, type Download } from "@/lib/downloads/log";
++import { askOnceToNotify, clearPhone, HEARTBEAT_MS, tellPhone } from "@/lib/downloads/notice";
++import { endOf, lineOf, liveDownloads, readsTheSame, STOPPED, type Live, type Names } from "@/lib/downloads/watch";
++import { isTextShelf, shelfName } from "@/lib/listen/shelf";
++import { useIsNative } from "@/lib/platform/native";
++import { loadChantIndex } from "@/lib/player/chants";
++import { savedChapters } from "@/lib/readAloud/offline";
++import { useSaving } from "@/lib/readAloud/saving";
++
++/**
++ * A download left running when the app last closed is said to have stopped
++ * once this long has passed with nothing taking it up again (a book's saving
++ * picks itself up after five seconds, components/native/SavingBridge.tsx).
++ */
++const STOPPED_AFTER_MS = 12_000;
++
++/**
++ * Every download a reader starts, told to the bell's sheet and to the phone
++ * (1.9, build 95 note 23; lib/downloads/log.ts). It watches the three stores,
++ * a Bible's download, a book's saving to listen offline and a chant's, and
++ * writes what each is doing: when it begins, as it goes (a whole percent at a
++ * time), when it waits, and how it ends. A download let go by the reader is
++ * not kept, and its notice leaves the phone. Renders nothing, and does
++ * nothing on the website, where nothing is downloaded.
++ */
++export function DownloadsBridge() {
++  const native = useIsNative();
++  const bibles = useBibles();
++  const saving = useSaving();
++  const chants = useChantSaving();
++  const { t } = useTranslate();
++  const was = useRef<Map<string, Live>>(new Map());
++  const [index, setIndex] = useState<ChantIndexRow[] | null>(null);
++
++  // A chant is named as the player names it, from the chants' list, read once a chant is saved.
++  const chantJob = chants.job?.ref ?? null;
++  useEffect(() => {
++    if (!native || !chantJob || index) return;
++    let alive = true;
++    void loadChantIndex().then((rows) => {
++      if (alive && rows) setIndex(rows);
++    });
++    return () => {
++      alive = false;
++    };
++  }, [native, chantJob, index]);
++
++  useEffect(() => {
++    if (!native) return;
++    const books = localBookNames(t);
++    const names: Names = {
++      bible: (id) => downloadableBible(id)?.title ?? id,
++      book: (slug) => (isTextShelf(slug) ? shelfName(slug) : books[slug] ?? getBook(slug)?.name ?? slug),
++      chant: (ref) => {
++        const [slug, version] = ref.split("/");
++        const row = index?.find((r) => r.slug === slug);
++        const variant = row?.variants.find((v) => v.id === version);
++        return row && variant ? `${t(chantTitleKey(row.key))} (${variant.label})` : slug.replace(/-/g, " ");
++      },
++    };
++    const say = (d: Download) => {
++      const line = lineOf(d);
++      return t(line.key, line.vars);
++    };
++    const stamp = new Date().toISOString();
++    const stores = { bibles, saving, chants };
++    const now = new Map(liveDownloads(stores, names).map((l) => [l.key, l]));
++
++    for (const live of now.values()) {
++      const kept = downloadOf(live.key);
++      const began = !was.current.has(live.key);
++      if (kept && !isEnded(kept) && readsTheSame(kept, live)) {
++        void tellPhone(kept, kept.name, say(kept));
++        continue;
++      }
++      const d: Download = { ...live, at: kept && !isEnded(kept) ? kept.at : stamp };
++      putDownload(d);
++      if (began) void askOnceToNotify();
++      void tellPhone(d, d.name, say(d));
++    }
++
++    for (const [key, live] of was.current) {
++      if (now.has(key)) continue;
++      const end = endOf(live, stores, {
++        bookChapters: (book) => Object.keys(savedChapters()).filter((k) => k.startsWith(`${book}/`)).length,
++        chant: (ref) => Boolean(savedChants()[ref]),
++      });
++      if (!end) {
++        dropDownload(key);
++        void clearPhone(key);
++        continue;
++      }
++      const kept = downloadOf(key);
++      const d: Download = {
++        ...live,
++        at: kept?.at ?? stamp,
++        state: end.state,
++        share: end.state === "done" ? 1 : live.share,
++        ...(end.state === "failed" ? { failure: end.failure } : {}),
++        ended: stamp,
++        seen: false,
++      };
++      putDownload(d);
++      void tellPhone(d, d.name, say(d));
++    }
++    was.current = now;
++  }, [native, bibles, saving, chants, index, t]);
++
++  // A running notice is told again now and then, so the phone never takes a slow download's for a stale one.
++  useEffect(() => {
++    if (!native) return;
++    const beat = window.setInterval(() => {
++      for (const d of readDownloads()) {
++        if (d.state !== "running" || !was.current.has(d.key)) continue;
++        const line = lineOf(d);
++        void tellPhone(d, d.name, t(line.key, line.vars));
++      }
++    }, HEARTBEAT_MS);
++    return () => window.clearInterval(beat);
++  }, [native, t]);
++
++  // What was running when the app last closed and was not taken up again: said as it is, stopped.
++  useEffect(() => {
++    if (!native) return;
++    const timer = window.setTimeout(() => {
++      const stamp = new Date().toISOString();
++      for (const d of readDownloads()) {
++        if (isEnded(d) || was.current.has(d.key)) continue;
++        putDownload({ ...d, state: "failed", failure: STOPPED, ended: stamp, seen: false });
++        void clearPhone(d.key);
++      }
++    }, STOPPED_AFTER_MS);
++    return () => window.clearTimeout(timer);
++  }, [native]);
++
++  return null;
++}
+diff --git a/components/nav/DownloadsSection.tsx b/components/nav/DownloadsSection.tsx
+new file mode 100644
+index 00000000..32040dc2
+--- /dev/null
++++ b/components/nav/DownloadsSection.tsx
+@@ -0,0 +1,63 @@
++"use client";
++
++import { InboxHeading as Heading } from "@/components/community/NotificationsInbox";
++import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
++import { SaveOfflineMark } from "@/components/player/SaveOffline";
++import { Check } from "@/components/ui/icons/Check";
++import { cn } from "@/lib/cn";
++import { relativeTime } from "@/lib/community/relativeTime";
++import { isEnded, useDownloads, type Download } from "@/lib/downloads/log";
++import { lineOf } from "@/lib/downloads/watch";
++
++/**
++ * The bell's sheet's first part (1.9, build 95 note 23; the owner: "show up
++ * on your notifications in the app (its status and when it finishes)"):
++ * every download on this phone, what it is doing and how it ended, from
++ * lib/downloads/log.ts. Shown only when there is one, so a new reader meets
++ * no empty list. A row is said, not a link: its state is the news. Running,
++ * it wears the player's own ring (SaveOfflineMark), dimmed while it waits;
++ * done, the check a chosen translation wears; failed, its words alone.
++ */
++export function DownloadsSection({ fresh }: { fresh: ReadonlySet<string> }) {
++  const { t } = useTranslate();
++  const downloads = useDownloads();
++  if (downloads.length === 0) return null;
++  return (
++    <section className="mb-6" data-downloads="">
++      <Heading>{t("notifications.downloads")}</Heading>
++      <ul className={INDEX_LIST_LOOK}>
++        {downloads.map((d, i) => (
++          <DownloadRow key={d.key} d={d} first={i === 0} bright={!isEnded(d) || fresh.has(d.key)} />
++        ))}
++      </ul>
++    </section>
++  );
++}
++
++/** One download: its name, its state or its end and when, and its mark. */
++function DownloadRow({ d, first, bright }: { d: Download; first: boolean; bright: boolean }) {
++  const { t, locale } = useTranslate();
++  const line = lineOf(d);
++  const said = t(line.key, line.vars);
++  const ended = isEnded(d);
++  return (
++    <li data-download={d.state} className={cn("flex items-center gap-3 px-4 py-3", !first && "border-t border-paper/[0.06]")}>
++      <span className="min-w-0 flex-1">
++        <span className={cn("block font-sans text-detail leading-snug", bright ? "text-paper" : "text-paper/70")}>
++          {/* A Bible's own title keeps its own direction (an Arabic title in an English list). */}
++          <span dir="auto">{d.name}</span>
++        </span>
++        <span aria-live={ended ? undefined : "polite"} className="mt-0.5 block font-sans text-caption leading-snug text-paper/60">
++          {said}
++          {ended ? ` · ${relativeTime(d.ended ?? d.at, locale)}` : null}
++        </span>
++      </span>
++      {ended ? (
++        d.state === "done" ? <Check size={18} className="me-1 shrink-0 text-paper/70" /> : null
++      ) : (
++        <SaveOfflineMark look={d.state === "waiting" ? "waiting" : "saving"} share={d.share} label={said} className="-me-2" />
++      )}
++    </li>
++  );
++}
+diff --git a/components/nav/NotificationsButton.tsx b/components/nav/NotificationsButton.tsx
+index 300ac51a..e08da0fa 100644
+--- a/components/nav/NotificationsButton.tsx
++++ b/components/nav/NotificationsButton.tsx
+@@ -6,6 +6,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { NotificationsSheet } from "@/components/nav/NotificationsSheet";
+ import { Bell } from "@/components/ui/icons/Bell";
+ import { getInbox, markInboxRead, refreshInbox, useInbox } from "@/lib/community/inbox";
++import { hasUnseenEnd, isEnded, markDownloadsSeen, readDownloads, useDownloads } from "@/lib/downloads/log";
+ import { readLocalSessionUser } from "@/lib/supabase/localSession";
+ import { haptic } from "@/lib/ui/motion";
+ import { getSeenSnapshot, markWhatsNewSeen, subscribeSeen } from "@/lib/whatsNew/seenStore";
+@@ -40,12 +41,15 @@ export function NotificationsButton() {
+   const [signedIn, setSignedIn] = useState(false);
+   const [fresh, setFresh] = useState<ReadonlySet<string>>(() => new Set());
+   const [whatsNewFresh, setWhatsNewFresh] = useState(false);
++  const [freshDownloads, setFreshDownloads] = useState<ReadonlySet<string>>(() => new Set());
++  const downloads = useDownloads();
+ 
+   useEffect(() => {
+     if (!getInbox().loaded && readLocalSessionUser()) void refreshInbox();
+   }, []);
+ 
+-  const lit = inbox.unread > 0 || whatsNewUnseen(seen);
++  // A download's end the reader has not seen lights it too (1.9, build 95 note 23).
++  const lit = inbox.unread > 0 || whatsNewUnseen(seen) || hasUnseenEnd(downloads);
+ 
+   function openSheet() {
+     haptic("light");
+@@ -57,6 +61,8 @@ export function NotificationsButton() {
+     setWhatsNewFresh(whatsNewUnseen(getSeenSnapshot()));
+     markWhatsNewSeen(CURRENT_VERSION);
+     setFresh(new Set(getInbox().notifications.filter((n) => !n.read_at).map((n) => n.id)));
++    setFreshDownloads(new Set(readDownloads().filter((d) => isEnded(d) && !d.seen).map((d) => d.key)));
++    markDownloadsSeen();
+     setOpen(true);
+     if (!account) return;
+     void refreshInbox().then(() => {
+@@ -83,10 +89,15 @@ export function NotificationsButton() {
+       </button>
+       <NotificationsSheet
+         open={open}
+-        onClose={() => setOpen(false)}
++        onClose={() => {
++          // An end that came while the sheet was up was seen there.
++          markDownloadsSeen();
++          setOpen(false);
++        }}
+         signedIn={signedIn}
+         fresh={fresh}
+         whatsNewFresh={whatsNewFresh}
++        freshDownloads={freshDownloads}
+       />
+     </>
+   );
+diff --git a/components/nav/NotificationsSheet.tsx b/components/nav/NotificationsSheet.tsx
+index ebf8b383..38bbca09 100644
+--- a/components/nav/NotificationsSheet.tsx
++++ b/components/nav/NotificationsSheet.tsx
+@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
+ 
+ import { InboxHeading as Heading, NoticeAppeal, NoticeLine } from "@/components/community/NotificationsInbox";
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { DownloadsSection } from "@/components/nav/DownloadsSection";
+ import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
+ import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+ import { Sheet } from "@/components/ui/Sheet";
+@@ -17,6 +18,8 @@ import { relativeTime } from "@/lib/community/relativeTime";
+ /** Rows shown here; the whole inbox is in Chat. */
+ const SHOWN = 20;
+ 
++const NO_KEYS: ReadonlySet<string> = new Set();
++
+ const ROW = "flex items-center gap-3 px-4 py-3";
+ 
+ /** Where a row opens: the person, or what was said. Chat opens either on load. */
+@@ -100,6 +103,10 @@ function NoticeRow({
+  * dot, and no count: the sheet is already the place the reader chose to look.
+  * The inbox itself is lib/community/inbox.ts, the one store the Chat list and
+  * the tab bar read too.
++ *
++ * Above both, while there is one, every download on this phone with its state
++ * and its end (1.9, build 95 note 23; DownloadsSection): the app's own
++ * notifications of what the reader asked for, which need no account.
+  */
+ export function NotificationsSheet({
+   open,
+@@ -107,6 +114,7 @@ export function NotificationsSheet({
+   signedIn,
+   fresh,
+   whatsNewFresh,
++  freshDownloads = NO_KEYS,
+ }: {
+   open: boolean;
+   onClose: () => void;
+@@ -116,6 +124,8 @@ export function NotificationsSheet({
+   fresh: ReadonlySet<string>;
+   /** Whether this release's notes were new to the device as the sheet opened. */
+   whatsNewFresh: boolean;
++  /** The downloads whose end was new as the sheet opened. */
++  freshDownloads?: ReadonlySet<string>;
+ }) {
+   const { t, locale } = useTranslate();
+   const pathname = usePathname() ?? "/";
+@@ -127,6 +137,7 @@ export function NotificationsSheet({
+ 
+   return (
+     <Sheet open={open} onClose={onClose} title={t("settings.notifications")} bodyClassName="pt-1">
++      <DownloadsSection fresh={freshDownloads} />
+       <section>
+         <Heading>{t("community.notifications")}</Heading>
+         {!signedIn ? (
+diff --git a/ios/App/App.xcodeproj/project.pbxproj b/ios/App/App.xcodeproj/project.pbxproj
+index 39e03fed..06681369 100644
+--- a/ios/App/App.xcodeproj/project.pbxproj
++++ b/ios/App/App.xcodeproj/project.pbxproj
+@@ -27,6 +27,7 @@
+ 		844F13B476995C05D4312B96 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1E27DDB5F390A556BE0CAB27 /* PrivacyInfo.xcprivacy */; };
+ 		9395A169D0544FDE07D5DEDE /* LockViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22CEFE3DCA55C977ED895B50 /* LockViews.swift */; };
+ 		A57EE3E7FD17AF10F154B6CA /* WidgetBridgePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA8FB95B917400388262509 /* WidgetBridgePlugin.swift */; };
++		D274041EB6981C50098C8911 /* DownloadNoticePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC93D1F6FD1AC01162B8F870 /* DownloadNoticePlugin.swift */; };
+ 		AAEF5995AE7BDDDF099C96C7 /* HomeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4953A540A170D7AB13C089B6 /* HomeViews.swift */; };
+ 		DB57C1DBFF2C31F5619BEC7D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 411E3BB58268421220F81FD4 /* Assets.xcassets */; };
+ 		F6FC3B1026625CB0CBF1BB76 /* PurifyWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C67FF447D5157EDDE57A43 /* PurifyWidgets.swift */; };
+@@ -84,6 +85,7 @@
+ 		F36FA2EB7D079C8E7E8ED50E /* PurifyWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PurifyWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		F58E9020BDE6B1392C945217 /* LookIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LookIntents.swift; sourceTree = "<group>"; };
+ 		FBA8FB95B917400388262509 /* WidgetBridgePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBridgePlugin.swift; sourceTree = "<group>"; };
++		DC93D1F6FD1AC01162B8F870 /* DownloadNoticePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadNoticePlugin.swift; sourceTree = "<group>"; };
+ /* End PBXFileReference section */
+ 
+ /* Begin PBXFrameworksBuildPhase section */
+@@ -145,6 +147,7 @@
+ 				504EC3071FED79650016851F /* AppDelegate.swift */,
+ 				FBA8FB95B917400388262509 /* WidgetBridgePlugin.swift */,
+ 				96E950FABE25F99C56F30571 /* PurifyBridgeViewController.swift */,
++				DC93D1F6FD1AC01162B8F870 /* DownloadNoticePlugin.swift */,
+ 				504EC30B1FED79650016851F /* Main.storyboard */,
+ 				504EC30E1FED79650016851F /* Assets.xcassets */,
+ 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
+@@ -312,6 +315,7 @@
+ 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
+ 				A57EE3E7FD17AF10F154B6CA /* WidgetBridgePlugin.swift in Sources */,
+ 				369B4227C3E74744302CF2E7 /* PurifyBridgeViewController.swift in Sources */,
++				D274041EB6981C50098C8911 /* DownloadNoticePlugin.swift in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+diff --git a/ios/App/App/DownloadNoticePlugin.swift b/ios/App/App/DownloadNoticePlugin.swift
+new file mode 100644
+index 00000000..c99782cf
+--- /dev/null
++++ b/ios/App/App/DownloadNoticePlugin.swift
+@@ -0,0 +1,103 @@
++import Capacitor
++import UIKit
++import UserNotifications
++
++/// A download's end as a notification (1.9, build 95 note 23; the owner,
++/// 2026-11-13: "whenever you are downloading something it should show up on
++/// your notification bar"). An iPhone shows no progress there, so a download
++/// is told when it ends: done, or failed and why, in the reader's own words
++/// (lib/downloads/notice.ts says them). The same name and methods as on
++/// Android (android/.../downloads/DownloadNoticePlugin.java): post({ id,
++/// title, text, share, state }) and clear({ id }).
++///
++/// While a download runs, the app asks iOS for the few moments it gives an
++/// app that has just been left (a background task), so a download nearly
++/// done can finish; iOS pauses it after that, and it goes on when Purify is
++/// opened again. No background mode is declared for it.
++///
++/// While Purify is open, its own list in the bell's sheet already says the
++/// download ended, so the notification waits in Notification Center with no
++/// banner over the app (willPresent). A push is the push plugin's, as before:
++/// this answers only for the app's own notices.
++///
++/// Nothing is shown without the reader's leave: iOS drops a notification the
++/// reader has not allowed.
++///
++/// Registered by PurifyBridgeViewController, as the widgets' bridge is.
++@objc(DownloadNoticePlugin)
++public class DownloadNoticePlugin: CAPPlugin, CAPBridgedPlugin, NotificationHandlerProtocol {
++    public let identifier = "DownloadNoticePlugin"
++    public let jsName = "DownloadNotice"
++    public let pluginMethods: [CAPPluginMethod] = [
++        CAPPluginMethod(name: "post", returnType: CAPPluginReturnPromise),
++        CAPPluginMethod(name: "clear", returnType: CAPPluginReturnPromise)
++    ]
++
++    /// The background task held for each download that runs, by its id.
++    private var held: [Int: UIBackgroundTaskIdentifier] = [:]
++
++    override public func load() {
++        bridge?.notificationRouter.localNotificationHandler = self
++    }
++
++    private static func identifier(_ id: Int) -> String {
++        return "purify.download.\(id)"
++    }
++
++    @objc func post(_ call: CAPPluginCall) {
++        guard let id = call.getInt("id") else {
++            call.reject("A download's notice needs its id.")
++            return
++        }
++        let state = call.getString("state") ?? "running"
++        if state == "running" || state == "waiting" {
++            DispatchQueue.main.async { self.hold(id) }
++            call.resolve()
++            return
++        }
++        DispatchQueue.main.async { self.release(id) }
++        let content = UNMutableNotificationContent()
++        content.title = call.getString("title") ?? ""
++        content.body = call.getString("text") ?? ""
++        content.threadIdentifier = "purify-downloads"
++        let request = UNNotificationRequest(identifier: DownloadNoticePlugin.identifier(id), content: content, trigger: nil)
++        UNUserNotificationCenter.current().add(request) { _ in
++            call.resolve()
++        }
++    }
++
++    @objc func clear(_ call: CAPPluginCall) {
++        guard let id = call.getInt("id") else {
++            call.resolve()
++            return
++        }
++        DispatchQueue.main.async { self.release(id) }
++        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [DownloadNoticePlugin.identifier(id)])
++        call.resolve()
++    }
++
++    // MARK: The app's own notices while Purify is open
++
++    public func willPresent(notification: UNNotification) -> UNNotificationPresentationOptions {
++        // Into Notification Center, no banner over the app: the bell's sheet says it here.
++        return [.list]
++    }
++
++    public func didReceive(response: UNNotificationResponse) {
++        // A tap opens Purify where the reader left it; nothing more to do.
++    }
++
++    // MARK: The moments iOS gives an app just left
++
++    private func hold(_ id: Int) {
++        guard held[id] == nil else { return }
++        held[id] = UIApplication.shared.beginBackgroundTask(withName: DownloadNoticePlugin.identifier(id)) { [weak self] in
++            self?.release(id)
++        }
++    }
++
++    private func release(_ id: Int) {
++        guard let task = held.removeValue(forKey: id) else { return }
++        UIApplication.shared.endBackgroundTask(task)
++    }
++}
+diff --git a/ios/App/App/PurifyBridgeViewController.swift b/ios/App/App/PurifyBridgeViewController.swift
+index 940bc8f2..008a1c91 100644
+--- a/ios/App/App/PurifyBridgeViewController.swift
++++ b/ios/App/App/PurifyBridgeViewController.swift
+@@ -14,6 +14,8 @@ class PurifyBridgeViewController: CAPBridgeViewController {
+     override open func capacitorDidLoad() {
+         // Home screen widgets: docs/WIDGETS.md, section 2.
+         bridge?.registerPluginInstance(WidgetBridgePlugin())
++        // A download's end as a notification (1.9, build 95 note 23).
++        bridge?.registerPluginInstance(DownloadNoticePlugin())
+         // No scroll indicator at the screen's edge (the owner, 2026-10-30):
+         // the app shows where a reader is with its own marks. The page's own
+         // bars are hidden in app/globals.css.
+diff --git a/lib/downloads/__tests__/log.test.ts b/lib/downloads/__tests__/log.test.ts
+new file mode 100644
+index 00000000..4b15e2f4
+--- /dev/null
++++ b/lib/downloads/__tests__/log.test.ts
+@@ -0,0 +1,82 @@
++// The downloads kept on the phone for the bell's sheet (1.9, build 95 note 23):
++// newest first, changed where they stand, the last eight and an ended one a
++// week, a download let go not kept, and an end unseen lighting the bell until
++// the sheet is opened.
++
++import { beforeEach, describe, expect, it } from "vitest";
++
++const store = new Map<string, string>();
++Object.assign(globalThis, {
++  window: {
++    localStorage: {
++      getItem: (k: string) => store.get(k) ?? null,
++      setItem: (k: string, v: string) => void store.set(k, v),
++      removeItem: (k: string) => void store.delete(k),
++    },
++    addEventListener: () => {},
++    removeEventListener: () => {},
++  },
++});
++
++const { putDownload, dropDownload, readDownloads, hasUnseenEnd, markDownloadsSeen, keep, KEPT, KEPT_MS, resetDownloadsForTests } = await import("@/lib/downloads/log");
++type Download = import("@/lib/downloads/log").Download;
++
++const at = "2026-11-13T10:00:00.000Z";
++const bible = (over: Partial<Download> = {}): Download => ({ key: "bible:ru-synodal", kind: "bible", name: "Синодальный перевод (1876)", state: "running", share: 0.4, done: 0, total: 0, at, ...over });
++
++beforeEach(() => {
++  store.clear();
++  resetDownloadsForTests();
++});
++
++describe("the downloads kept on the phone", () => {
++  it("keeps a new one at the top and changes one already kept where it stands", () => {
++    putDownload(bible());
++    putDownload({ ...bible(), key: "book:luke", kind: "book", name: "Luke", done: 3, total: 24 });
++    expect(readDownloads().map((d) => d.key)).toEqual(["book:luke", "bible:ru-synodal"]);
++    putDownload(bible({ share: 0.9 }));
++    expect(readDownloads().map((d) => d.key)).toEqual(["book:luke", "bible:ru-synodal"]);
++    expect(readDownloads()[1].share).toBe(0.9);
++    // Written on the phone, read back after a restart.
++    resetDownloadsForTests();
++    expect(readDownloads().map((d) => d.key)).toEqual(["book:luke", "bible:ru-synodal"]);
++  });
++
++  it("puts one that begins again (a Bible tried again) back at the top", () => {
++    putDownload(bible({ state: "failed", failure: { key: "bible.downloads.failedUnavailable" }, ended: at }));
++    putDownload({ ...bible(), key: "book:luke", kind: "book", name: "Luke" });
++    putDownload(bible({ state: "running", share: 0 }));
++    expect(readDownloads().map((d) => [d.key, d.state])).toEqual([
++      ["bible:ru-synodal", "running"],
++      ["book:luke", "running"],
++    ]);
++  });
++
++  it("does not keep a download let go before its end", () => {
++    putDownload(bible());
++    dropDownload("bible:ru-synodal");
++    expect(readDownloads()).toEqual([]);
++  });
++
++  it("keeps the last eight, and an ended one a week", () => {
++    const now = Date.parse("2026-11-20T10:00:00.000Z");
++    const list: Download[] = Array.from({ length: 10 }, (_, i) => bible({ key: `chant:c${i}/en`, kind: "chant", state: "done", ended: new Date(now - i * 60_000).toISOString() }));
++    expect(keep(list, now)).toHaveLength(KEPT);
++    const old = bible({ state: "done", ended: new Date(now - KEPT_MS - 1).toISOString() });
++    const running = bible({ key: "book:luke", kind: "book", at: new Date(now - KEPT_MS - 1).toISOString() });
++    // An old end goes; a download under way stays however long it has run.
++    expect(keep([old, running], now).map((d) => d.key)).toEqual(["book:luke"]);
++    // Anything that is not a download is not kept.
++    expect(keep([{ nonsense: true } as unknown as Download, bible()], now).map((d) => d.key)).toEqual(["bible:ru-synodal"]);
++  });
++
++  it("lights the bell for an end not yet seen, until the sheet is opened", () => {
++    putDownload(bible());
++    expect(hasUnseenEnd()).toBe(false);
++    putDownload(bible({ state: "done", share: 1, ended: at, seen: false }));
++    expect(hasUnseenEnd()).toBe(true);
++    markDownloadsSeen();
++    expect(hasUnseenEnd()).toBe(false);
++    expect(readDownloads()[0].seen).toBe(true);
++  });
++});
+diff --git a/lib/downloads/__tests__/notice.test.ts b/lib/downloads/__tests__/notice.test.ts
+new file mode 100644
+index 00000000..1fef8d4a
+--- /dev/null
++++ b/lib/downloads/__tests__/notice.test.ts
+@@ -0,0 +1,98 @@
++// A download told to the phone (1.9, build 95 note 23): each change of state
++// at once, its progress a whole percent at a time and not more than once a
++// second, a heartbeat for a slow one, one number for each download, the
++// first download asking once whether Purify may notify, and nothing at all
++// where the app's own plugin is not.
++
++import { beforeEach, describe, expect, it } from "vitest";
++
++const store = new Map<string, string>();
++Object.assign(globalThis, {
++  window: {
++    localStorage: {
++      getItem: (k: string) => store.get(k) ?? null,
++      setItem: (k: string, v: string) => void store.set(k, v),
++      removeItem: (k: string) => void store.delete(k),
++    },
++  },
++});
++
++const { tellPhone, clearPhone, askOnceToNotify, noticeId, resetNoticeForTests, HEARTBEAT_MS, STEP_MS, ASK_AT_FIRST_DOWNLOAD } = await import("@/lib/downloads/notice");
++
++type Posted = { id: number; title: string; text: string; share: number; state: string };
++const posted: Posted[] = [];
++const cleared: number[] = [];
++const phone = {
++  post: async (o: Posted) => void posted.push(o),
++  clear: async (o: { id: number }) => void cleared.push(o.id),
++};
++
++beforeEach(() => {
++  store.clear();
++  posted.length = 0;
++  cleared.length = 0;
++  resetNoticeForTests({ plugin: phone });
++});
++
++const d = (state: "running" | "waiting" | "done" | "failed", share: number) => ({ key: "bible:ru-synodal", state, share });
++
++describe("telling the phone", () => {
++  it("tells each change of state at once, and progress a whole percent at a time, not more than once a second", async () => {
++    const t0 = 1_000_000;
++    expect(await tellPhone(d("running", 0), "Синодальный", "Downloading, 0%", t0)).toBe(true);
++    expect(await tellPhone(d("running", 0.004), "Синодальный", "Downloading, 0%", t0 + 2000)).toBe(false);
++    expect(await tellPhone(d("running", 0.2), "Синодальный", "Downloading, 20%", t0 + 300)).toBe(false);
++    expect(await tellPhone(d("running", 0.2), "Синодальный", "Downloading, 20%", t0 + STEP_MS)).toBe(true);
++    expect(await tellPhone(d("done", 1), "Синодальный", "Downloaded", t0 + STEP_MS + 1)).toBe(true);
++    expect(await tellPhone(d("done", 1), "Синодальный", "Downloaded", t0 + STEP_MS + 5000)).toBe(false);
++    expect(posted.map((p) => [p.state, p.text])).toEqual([
++      ["running", "Downloading, 0%"],
++      ["running", "Downloading, 20%"],
++      ["done", "Downloaded"],
++    ]);
++  });
++
++  it("tells a slow download again within a minute, so the phone never clears it as stale", async () => {
++    const t0 = 5_000_000;
++    await tellPhone(d("running", 0.5), "Luke", "Saving 12 of 24", t0);
++    expect(await tellPhone(d("running", 0.5), "Luke", "Saving 12 of 24", t0 + HEARTBEAT_MS - 1)).toBe(false);
++    expect(await tellPhone(d("running", 0.5), "Luke", "Saving 12 of 24", t0 + HEARTBEAT_MS)).toBe(true);
++    // The phone's side clears an unrefreshed notice after 150 seconds: more than two beats.
++    expect(HEARTBEAT_MS * 2).toBeLessThan(150_000);
++  });
++
++  it("gives each download one number, always the same, and takes its notice away when it is let go", async () => {
++    expect(noticeId("bible:ru-synodal")).toBe(noticeId("bible:ru-synodal"));
++    expect(noticeId("bible:ru-synodal")).not.toBe(noticeId("book:luke"));
++    await clearPhone("bible:ru-synodal");
++    expect(cleared).toEqual([noticeId("bible:ru-synodal")]);
++  });
++
++  it("tells nothing where the app's own plugin is not (the website, a shell built before it)", async () => {
++    resetNoticeForTests({ plugin: null });
++    expect(await tellPhone(d("running", 0.1), "x", "y", 1)).toBe(false);
++    expect(posted).toEqual([]);
++  });
++});
++
++describe("asking whether Purify may notify", () => {
++  it("asks once, at the first download, only when the phone has not been asked", async () => {
++    expect(ASK_AT_FIRST_DOWNLOAD).toBe(true);
++    let asked = 0;
++    let answer = "prompt";
++    resetNoticeForTests({ plugin: phone, permissions: { check: async () => answer, request: async () => ((asked += 1), (answer = "denied")) } });
++    await askOnceToNotify();
++    await askOnceToNotify();
++    expect(asked).toBe(1);
++  });
++
++  it("never asks when the reader already answered, either way", async () => {
++    for (const answer of ["granted", "denied", "prompt-with-rationale"]) {
++      store.clear();
++      let asked = 0;
++      resetNoticeForTests({ plugin: phone, permissions: { check: async () => answer, request: async () => ((asked += 1), "granted") } });
++      await askOnceToNotify();
++      expect(asked, answer).toBe(0);
++    }
++  });
++});
+diff --git a/lib/downloads/__tests__/shell.test.ts b/lib/downloads/__tests__/shell.test.ts
+new file mode 100644
+index 00000000..76e6a064
+--- /dev/null
++++ b/lib/downloads/__tests__/shell.test.ts
+@@ -0,0 +1,103 @@
++// Where a download shows (1.9, build 95 note 23): the app's own plugin in
++// both shells, named alike, registered as the widgets' bridge is, on a quiet
++// channel, with nothing a store must be told of; and the bell's sheet with
++// its Downloads part first, the bell lit by an end unseen.
++
++import fs from "node:fs";
++import path from "node:path";
++
++import { describe, expect, it } from "vitest";
++
++const ROOT = path.resolve(__dirname, "../../..");
++const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8");
++
++const ANDROID = "android/app/src/main/java/net/purifyapp/purify/downloads/DownloadNoticePlugin.java";
++const IOS = "ios/App/App/DownloadNoticePlugin.swift";
++
++describe("the app's own plugin, DownloadNotice", () => {
++  it("is named alike in both shells, with the methods lib/downloads/notice.ts calls", () => {
++    const java = read(ANDROID);
++    const swift = read(IOS);
++    expect(java).toContain('@CapacitorPlugin(name = "DownloadNotice")');
++    expect(swift).toContain('public let jsName = "DownloadNotice"');
++    for (const method of ["post", "clear"]) {
++      expect(java).toMatch(new RegExp(`@PluginMethod\\s+public void ${method}\\(PluginCall call\\)`));
++      expect(swift).toContain(`CAPPluginMethod(name: "${method}", returnType: CAPPluginReturnPromise)`);
++    }
++    expect(read("lib/downloads/notice.ts")).toContain('nativePlugin<DownloadNotice>("DownloadNotice")');
++  });
++
++  it("is registered before the page loads, as the widgets' bridge is", () => {
++    expect(read("android/app/src/main/java/net/purifyapp/purify/MainActivity.java")).toMatch(/registerPlugin\(DownloadNoticePlugin\.class\);[\s\S]*super\.onCreate/);
++    expect(read("ios/App/App/PurifyBridgeViewController.swift")).toContain("bridge?.registerPluginInstance(DownloadNoticePlugin())");
++    // An app's own Swift file is built only when the project names it in the app's sources.
++    const project = read("ios/App/App.xcodeproj/project.pbxproj");
++    const ref = /([0-9A-F]{24}) \/\* DownloadNoticePlugin\.swift in Sources \*\/ = \{isa = PBXBuildFile/.exec(project)?.[1];
++    expect(ref).toBeTruthy();
++    const appSources = /\/\* PurifyBridgeViewController\.swift in Sources \*\/,[\s\S]*?\);/.exec(project)?.[0] ?? "";
++    expect(project.split(`${ref} /* DownloadNoticePlugin.swift in Sources */,`).length).toBe(2);
++    expect(appSources + project).toContain(`${ref} /* DownloadNoticePlugin.swift in Sources */,`);
++  });
++
++  it("posts on a quiet channel of its own: low, silent, no badge, apart from the reminders", () => {
++    const java = read(ANDROID);
++    expect(java).toContain('CHANNEL = "purify-downloads"');
++    expect(java).toContain("NotificationManager.IMPORTANCE_LOW");
++    expect(java).toContain("channel.setShowBadge(false)");
++    expect(java).toContain(".setSilent(true)");
++    expect(java).toContain("notify(TAG, id,");
++    // Never posted without the reader's leave on Android 13 and later.
++    expect(java).toMatch(/POST_NOTIFICATIONS\) != PackageManager\.PERMISSION_GRANTED/);
++    // A notice nobody refreshes clears itself, and one left by a closed app goes at the next start.
++    expect(java).toContain("setTimeoutAfter(STALE_MS)");
++    expect(java).toMatch(/public void load\(\) \{[\s\S]*clearLeftRunning/);
++    const strings = read("android/app/src/main/res/values/strings.xml");
++    expect(strings).toContain('<string name="download_channel_name">Downloads</string>');
++  });
++
++  it("needs nothing a store must be told of: no new permission, no service, no foreground service type", () => {
++    const manifest = read("android/app/src/main/AndroidManifest.xml");
++    const permissions = [...manifest.matchAll(/<uses-permission\s+android:name="([^"]+)"/g)].map((m) => m[1]).sort();
++    expect(permissions).toEqual([
++      "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
++      "android.permission.INTERNET",
++      "android.permission.POST_NOTIFICATIONS",
++      "com.google.android.gms.permission.AD_ID",
++    ]);
++    expect(manifest).not.toMatch(/dataSync|FOREGROUND_SERVICE_DATA_SYNC/);
++    expect(read(ANDROID)).not.toMatch(/startForeground|extends \w*Service\b|ServiceInfo\.FOREGROUND/);
++    // On an iPhone no background mode is declared for it: only the moments iOS gives an app just left.
++    expect(read(IOS)).toContain("beginBackgroundTask");
++    expect(read("ios/App/App/Info.plist")).not.toMatch(/<string>fetch<\/string>|<string>processing<\/string>/);
++  });
++
++  it("on an iPhone, while Purify is open, puts a download's end in Notification Center without a banner over the app", () => {
++    const swift = read(IOS);
++    expect(swift).toContain("bridge?.notificationRouter.localNotificationHandler = self");
++    expect(swift).toMatch(/func willPresent\(notification: UNNotification\) -> UNNotificationPresentationOptions \{[\s\S]*?return \[\.list\]/);
++  });
++});
++
++describe("the bell's sheet", () => {
++  it("shows the downloads first, only when there is one, from the phone's own record", () => {
++    const sheet = read("components/nav/NotificationsSheet.tsx");
++    expect(sheet.indexOf("<DownloadsSection")).toBeGreaterThan(-1);
++    expect(sheet.indexOf("<DownloadsSection")).toBeLessThan(sheet.indexOf('t("community.notifications")'));
++    const section = read("components/nav/DownloadsSection.tsx");
++    expect(section).toContain("useDownloads()");
++    expect(section).toMatch(/if \(downloads\.length === 0\) return null;/);
++    // Its marks are the house's: the player's ring, the check a chosen translation wears.
++    expect(section).toContain("<SaveOfflineMark");
++    expect(section).toContain("<Check ");
++  });
++
++  it("is lit by a download's end not yet seen, and opening it is seeing it", () => {
++    const bell = read("components/nav/NotificationsButton.tsx");
++    expect(bell).toContain("hasUnseenEnd(downloads)");
++    expect(bell.match(/markDownloadsSeen\(\)/g)?.length).toBe(2);
++  });
++
++  it("is told by a bridge every screen of the apps carries", () => {
++    expect(read("components/layout/RootFrame.tsx")).toMatch(/<SavingBridge \/>\s*<DownloadsBridge \/>/);
++  });
++});
+diff --git a/lib/downloads/__tests__/watch.test.ts b/lib/downloads/__tests__/watch.test.ts
+new file mode 100644
+index 00000000..6111f4b5
+--- /dev/null
++++ b/lib/downloads/__tests__/watch.test.ts
+@@ -0,0 +1,108 @@
++// Each store's download as one kind of thing (1.9, build 95 note 23): a
++// Bible's, a book's saving to listen offline and a chant's, as they begin,
++// go, wait and end, and the words each says in the bell's sheet and on the
++// phone, in every language.
++
++import fs from "node:fs";
++import path from "node:path";
++
++import { describe, expect, it } from "vitest";
++
++import { endOf, lineOf, liveDownloads, LINE_KEYS, readsTheSame, STOPPED, type Stores } from "@/lib/downloads/watch";
++
++const ROOT = path.resolve(__dirname, "../../..");
++const names = { bible: (id: string) => `Bible ${id}`, book: (slug: string) => `Book ${slug}`, chant: (ref: string) => `Chant ${ref}` };
++const idle: Stores = { bibles: { saved: {}, downloads: {} }, saving: { job: null, failed: null }, chants: { job: null, failed: null } };
++const kept = { bookChapters: () => 0, chant: () => false };
++
++describe("the downloads under way", () => {
++  it("are none when nothing downloads", () => {
++    expect(liveDownloads(idle, names)).toEqual([]);
++  });
++
++  it("are a Bible's, a book's and a chant's, each as far as it has come", () => {
++    const live = liveDownloads(
++      {
++        bibles: { saved: {}, downloads: { "ru-synodal": { state: "downloading", done: 3_000_000, total: 7_500_000 }, "grc-lxx-patriarchal": { state: "failed", reason: "offline" } } },
++        saving: { job: { book: "luke", done: 6, total: 24, waiting: null }, failed: null },
++        chants: { job: { ref: "psalm-135/en", share: 0.5 }, failed: null },
++      },
++      names,
++    );
++    expect(live).toEqual([
++      { key: "bible:ru-synodal", kind: "bible", name: "Bible ru-synodal", state: "running", share: 0.4, done: 0, total: 0 },
++      { key: "book:luke", kind: "book", name: "Book luke", state: "running", share: 0.25, done: 6, total: 24 },
++      { key: "chant:psalm-135/en", kind: "chant", name: "Chant psalm-135/en", state: "running", share: 0.5, done: 0, total: 0 },
++    ]);
++  });
++
++  it("say a book that waits for Wi-Fi or a signal is waiting, and what for", () => {
++    const [book] = liveDownloads({ ...idle, saving: { job: { book: "luke", done: 6, total: 24, waiting: "wifi" }, failed: null } }, names);
++    expect(book).toMatchObject({ state: "waiting", waiting: "wifi" });
++    expect(lineOf(book)).toEqual({ key: "player.offline.waitingWifi", vars: { done: 6, total: 24 } });
++  });
++});
++
++describe("how a download ends", () => {
++  const bible = liveDownloads({ ...idle, bibles: { saved: {}, downloads: { "ru-synodal": { state: "downloading", done: 1, total: 2 } } } }, names)[0];
++  const book = liveDownloads({ ...idle, saving: { job: { book: "luke", done: 23, total: 24, waiting: null }, failed: null } }, names)[0];
++  const chant = liveDownloads({ ...idle, chants: { job: { ref: "psalm-135/en", share: 0.9 }, failed: null } }, names)[0];
++
++  it("a Bible: done once on the phone, failed with its own true words, let go otherwise", () => {
++    const saved = { "ru-synodal": { version: "v", bytes: 1, books: [], at: "" } };
++    expect(endOf(bible, { ...idle, bibles: { saved, downloads: {} } }, kept)).toEqual({ state: "done" });
++    // Note 21's words follow it into the sheet and the bar.
++    expect(endOf(bible, { ...idle, bibles: { saved: {}, downloads: { "ru-synodal": { state: "failed", reason: "unavailable" } } } }, kept)).toEqual({
++      state: "failed",
++      failure: { key: "bible.downloads.failedUnavailable" },
++    });
++    expect(endOf(bible, idle, kept)).toBeNull();
++  });
++
++  it("a book: done once every chapter is on the phone, failed when the website would not give some, let go otherwise", () => {
++    expect(endOf(book, idle, { ...kept, bookChapters: () => 24 })).toEqual({ state: "done" });
++    expect(endOf(book, { ...idle, saving: { job: null, failed: "luke" } }, kept)).toEqual({ state: "failed", failure: { key: "player.offline.failed" } });
++    // Cancelled: some chapters saved, not all.
++    expect(endOf(book, idle, { ...kept, bookChapters: () => 10 })).toBeNull();
++  });
++
++  it("a chant: done once saved, failed in the player's own words, let go otherwise", () => {
++    expect(endOf(chant, idle, { ...kept, chant: () => true })).toEqual({ state: "done" });
++    expect(endOf(chant, { ...idle, chants: { job: null, failed: "psalm-135/en" } }, kept)).toEqual({
++      state: "failed",
++      failure: { key: "player.offline.failedOne", vars: { book: "Chant psalm-135/en" } },
++    });
++    expect(endOf(chant, idle, kept)).toBeNull();
++  });
++});
++
++describe("the words of a download", () => {
++  it("say how far it has come, and how it ended", () => {
++    const base = { kind: "bible" as const, share: 0.426, done: 0, total: 0 };
++    expect(lineOf({ ...base, state: "running" })).toEqual({ key: "bible.downloads.downloading", vars: { percent: 42 } });
++    expect(lineOf({ ...base, kind: "chant", state: "running" })).toEqual({ key: "downloads.saving", vars: { percent: 42 } });
++    expect(lineOf({ ...base, kind: "book", state: "running", done: 6, total: 24 })).toEqual({ key: "player.offline.saving", vars: { done: 6, total: 24 } });
++    expect(lineOf({ ...base, state: "done" })).toEqual({ key: "downloads.downloaded" });
++    expect(lineOf({ ...base, kind: "book", state: "done" })).toEqual({ key: "downloads.savedToListen" });
++    expect(lineOf({ ...base, state: "failed", failure: { key: "bible.downloads.failedOffline" } })).toEqual({ key: "bible.downloads.failedOffline" });
++    expect(lineOf({ ...base, state: "failed" })).toEqual(STOPPED);
++  });
++
++  it("are in every language, with every value they name", () => {
++    const dir = path.join(ROOT, "lib/i18n/messages");
++    const catalogs = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
++    expect(catalogs).toHaveLength(21);
++    for (const file of catalogs) {
++      const words = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8")) as Record<string, string>;
++      for (const key of [...LINE_KEYS, "notifications.downloads"]) expect(words[key], `${file} ${key}`).toBeTruthy();
++      for (const key of ["downloads.saving", "bible.downloads.downloading"]) expect(words[key], `${file} ${key}`).toContain("{percent}");
++    }
++  });
++
++  it("are told again only when what they say changes", () => {
++    const a = liveDownloads({ ...idle, saving: { job: { book: "luke", done: 6, total: 24, waiting: null }, failed: null } }, names)[0];
++    expect(readsTheSame(a, { ...a })).toBe(true);
++    expect(readsTheSame(a, { ...a, done: 7, share: 7 / 24 })).toBe(false);
++    expect(readsTheSame(a, { ...a, share: a.share + 0.001 })).toBe(true);
++  });
++});
+diff --git a/lib/downloads/log.ts b/lib/downloads/log.ts
+new file mode 100644
+index 00000000..75923034
+--- /dev/null
++++ b/lib/downloads/log.ts
+@@ -0,0 +1,179 @@
++"use client";
++
++// Every download on this phone, for the bell's sheet and the phone's own
++// notifications (1.9, build 95 note 23; the owner, 2026-11-13: "whenever you
++// are downloading something it should show up on your notification bar and
++// also show up on your notifications in the app (its status and when it
++// finishes)").
++//
++// A reader downloads three things, each kept by its own store: a Bible
++// (lib/bible/downloads/store.ts), a book's readings to listen offline
++// (lib/readAloud/saving.ts) and a chant's recording (lib/chants/offline.ts).
++// components/native/DownloadsBridge.tsx watches the three and writes here what
++// each is doing; the bell's sheet reads it (components/nav/NotificationsSheet.tsx),
++// and the phone is told (./notice.ts).
++//
++// Kept on the device (purify:downloads), newest first: the last eight, and an
++// ended one for a week. Nothing here leaves the phone.
++
++import { useSyncExternalStore } from "react";
++
++export type DownloadKind = "bible" | "book" | "chant";
++
++/** Running, waiting (for Wi-Fi or a signal), or ended: done, or failed. */
++export type DownloadState = "running" | "waiting" | "done" | "failed";
++
++/** The words of a download's line: a message key and its values. */
++export type DownloadWords = { key: string; vars?: Record<string, string | number> };
++
++export type Download = {
++  /** "bible:ru-synodal", "book:luke", "chant:<slug>/<version>". */
++  key: string;
++  kind: DownloadKind;
++  /** What it is, in the reader's words as it began: a Bible's own title, a book's name, a chant with its version. */
++  name: string;
++  state: DownloadState;
++  /** How far it has come, 0 to 1. */
++  share: number;
++  /** A book's chapters saved and in all; 0 for the others. */
++  done: number;
++  total: number;
++  /** While waiting: what for. */
++  waiting?: "wifi" | "signal";
++  /** Once failed: why, in its own words. */
++  failure?: DownloadWords;
++  /** When it began, and when it ended. */
++  at: string;
++  ended?: string;
++  /** Its end has been seen in the bell's sheet. */
++  seen?: boolean;
++};
++
++const KEY = "purify:downloads";
++/** The most kept. */
++export const KEPT = 8;
++/** How long an ended one is kept. */
++export const KEPT_MS = 7 * 24 * 60 * 60 * 1000;
++
++const STATES: readonly DownloadState[] = ["running", "waiting", "done", "failed"];
++const KINDS: readonly DownloadKind[] = ["bible", "book", "chant"];
++
++export const isEnded = (d: Pick<Download, "state">): boolean => d.state === "done" || d.state === "failed";
++
++function valid(d: unknown): d is Download {
++  if (!d || typeof d !== "object") return false;
++  const x = d as Partial<Download>;
++  return (
++    typeof x.key === "string" &&
++    KINDS.includes(x.kind as DownloadKind) &&
++    typeof x.name === "string" &&
++    STATES.includes(x.state as DownloadState) &&
++    typeof x.share === "number" &&
++    typeof x.at === "string"
++  );
++}
++
++/** What is kept, as it should be: valid, newest first, ended ones a week, at most eight. */
++export function keep(list: readonly Download[], now: number = Date.now()): Download[] {
++  const out: Download[] = [];
++  const seenKeys = new Set<string>();
++  for (const d of list) {
++    if (!valid(d) || seenKeys.has(d.key)) continue;
++    seenKeys.add(d.key);
++    if (isEnded(d) && now - Date.parse(d.ended ?? d.at) > KEPT_MS) continue;
++    out.push(d);
++  }
++  return out.slice(0, KEPT);
++}
++
++function readRaw(): Download[] {
++  try {
++    const raw = window.localStorage.getItem(KEY);
++    const parsed = raw ? (JSON.parse(raw) as unknown) : [];
++    return Array.isArray(parsed) ? keep(parsed as Download[]) : [];
++  } catch {
++    return [];
++  }
++}
++
++const listeners = new Set<() => void>();
++const NONE: Download[] = [];
++let snapshot: Download[] | null = null;
++
++function write(list: Download[]): void {
++  try {
++    window.localStorage.setItem(KEY, JSON.stringify(list));
++  } catch {
++    /* a full or private store: this session still sees it */
++  }
++  snapshot = list;
++  for (const l of listeners) l();
++}
++
++/** Every download kept, newest first. Empty on the server. */
++export function readDownloads(): Download[] {
++  if (typeof window === "undefined") return NONE;
++  snapshot ??= readRaw();
++  return snapshot;
++}
++
++/**
++ * A download as it is now: a new one goes to the top, one already kept is
++ * changed where it stands, and one that begins again (a Bible tried again)
++ * goes back to the top as new.
++ */
++export function putDownload(d: Download): void {
++  const list = readDownloads();
++  const at = list.findIndex((x) => x.key === d.key);
++  const again = at >= 0 && isEnded(list[at]) && !isEnded(d);
++  const next = at < 0 || again ? [d, ...list.filter((x) => x.key !== d.key)] : list.map((x, i) => (i === at ? d : x));
++  write(keep(next));
++}
++
++/** A download let go before its end (stopped by the reader): not kept. */
++export function dropDownload(key: string): void {
++  const list = readDownloads();
++  if (list.some((d) => d.key === key)) write(list.filter((d) => d.key !== key));
++}
++
++/** The kept download for a key, if any. */
++export function downloadOf(key: string): Download | null {
++  return readDownloads().find((d) => d.key === key) ?? null;
++}
++
++/** An end the reader has not yet seen in the bell's sheet: it lights the bell. */
++export function hasUnseenEnd(list: readonly Download[] = readDownloads()): boolean {
++  return list.some((d) => isEnded(d) && !d.seen);
++}
++
++/** The bell's sheet was opened: every end in it is seen. */
++export function markDownloadsSeen(): void {
++  const list = readDownloads();
++  if (list.some((d) => isEnded(d) && !d.seen)) write(list.map((d) => (isEnded(d) ? { ...d, seen: true } : d)));
++}
++
++function subscribe(listener: () => void) {
++  listeners.add(listener);
++  const onStorage = (e: StorageEvent) => {
++    if (e.key === KEY) {
++      snapshot = null;
++      listener();
++    }
++  };
++  window.addEventListener("storage", onStorage);
++  return () => {
++    listeners.delete(listener);
++    window.removeEventListener("storage", onStorage);
++  };
++}
++
++/** The downloads kept, in step with every change. */
++export function useDownloads(): Download[] {
++  return useSyncExternalStore(subscribe, readDownloads, () => NONE);
++}
++
++/** For tests: forget what was read. */
++export function resetDownloadsForTests(): void {
++  snapshot = null;
++  listeners.clear();
++}
+diff --git a/lib/downloads/notice.ts b/lib/downloads/notice.ts
+new file mode 100644
+index 00000000..7d533f0c
+--- /dev/null
++++ b/lib/downloads/notice.ts
+@@ -0,0 +1,142 @@
++"use client";
++
++// A download told to the phone (1.9, build 95 note 23): on Android one
++// notification for it in the bar, its progress while it runs and then its
++// end; on an iPhone, which shows no progress there, a notification when it
++// ends. Posted by the app's own plugin, DownloadNotice
++// (android/app/src/main/java/net/purifyapp/purify/downloads/DownloadNoticePlugin.java,
++// ios/App/App/DownloadNoticePlugin.swift), registered as the widgets' bridge
++// is. Nothing on the website.
++//
++// No foreground service and nothing that needs a store's declaration: a
++// download goes on while Purify runs, and the phone may pause it once Purify
++// is left; Android clears a progress notice nobody has refreshed in a while
++// (STALE_MS on the phone's side), so none is left standing at a number.
++//
++// The phone posts nothing the reader has not allowed. The first download asks
++// once whether Purify may (ASK_AT_FIRST_DOWNLOAD, his call): the bar needs it
++// on Android 13 and later and on an iPhone. A no is kept, and the bell's sheet
++// still shows every download.
++
++import { nativePlugin } from "@/lib/platform/nativePlugin";
++
++import type { Download, DownloadState } from "./log";
++
++type DownloadNotice = {
++  post(o: { id: number; title: string; text: string; share: number; state: DownloadState }): Promise<void>;
++  clear(o: { id: number }): Promise<void>;
++};
++
++/** Ask whether Purify may notify, once, at the first download (his call, build 95 note 23). */
++export const ASK_AT_FIRST_DOWNLOAD = true;
++
++/** A running notice is told again at least this often, so a slow download's never goes stale. */
++export const HEARTBEAT_MS = 60_000;
++/** And not more often than this as it moves, a whole percent at a time. */
++export const STEP_MS = 1000;
++
++const ASKED_KEY = "purify:downloads.askedToNotify";
++
++/** A download's number on the phone: always the same for the same download. */
++export function noticeId(key: string): number {
++  let h = 0;
++  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0;
++  return 70_000 + (Math.abs(h) % 10_000);
++}
++
++type Told = { state: DownloadState; percent: number; at: number };
++const told = new Map<string, Told>();
++
++/** Whether this state of a download is worth telling the phone: a change of state always, progress a whole percent at a time and not too often, and a heartbeat. */
++export function worthTelling(d: Pick<Download, "key" | "state" | "share">, now: number): boolean {
++  const before = told.get(d.key);
++  if (!before || before.state !== d.state) return true;
++  if (d.state !== "running") return false;
++  if (now - before.at >= HEARTBEAT_MS) return true;
++  return Math.floor(d.share * 100) !== before.percent && now - before.at >= STEP_MS;
++}
++
++function askedBefore(): boolean {
++  try {
++    return window.localStorage.getItem(ASKED_KEY) === "1";
++  } catch {
++    return true;
++  }
++}
++
++function markAsked(): void {
++  try {
++    window.localStorage.setItem(ASKED_KEY, "1");
++  } catch {
++    /* asked again next time, which the phone itself answers without asking twice */
++  }
++}
++
++type Permissions = {
++  check(): Promise<string>;
++  request(): Promise<string>;
++};
++
++/** The phone's own answer on notifications, as the reminders ask it (lib/push/native.ts). */
++const phonePermissions: Permissions = {
++  async check() {
++    const { PushNotifications } = await import("@capacitor/push-notifications");
++    return (await PushNotifications.checkPermissions()).receive;
++  },
++  async request() {
++    const { PushNotifications } = await import("@capacitor/push-notifications");
++    return (await PushNotifications.requestPermissions()).receive;
++  },
++};
++
++let permissions: Permissions = phonePermissions;
++let plugin: () => Promise<{ api: DownloadNotice } | null> = () => nativePlugin<DownloadNotice>("DownloadNotice");
++
++/**
++ * At a download's start: the first one ever asks the phone, once, whether
++ * Purify may show notifications, when the phone has not been asked; never
++ * again after, whatever the answer.
++ */
++export async function askOnceToNotify(): Promise<void> {
++  if (!ASK_AT_FIRST_DOWNLOAD || askedBefore()) return;
++  try {
++    if ((await permissions.check()) !== "prompt") return;
++    markAsked();
++    await permissions.request();
++  } catch {
++    /* no answer: the bell's sheet still shows the download */
++  }
++}
++
++/** Tell the phone a download's state, in the reader's words; nothing when not worth it, or on the website. */
++export async function tellPhone(d: Pick<Download, "key" | "state" | "share">, title: string, text: string, now: number = Date.now()): Promise<boolean> {
++  if (!worthTelling(d, now)) return false;
++  told.set(d.key, { state: d.state, percent: Math.floor(d.share * 100), at: now });
++  const box = await plugin();
++  if (!box) return false;
++  try {
++    await box.api.post({ id: noticeId(d.key), title, text, share: d.share, state: d.state });
++    return true;
++  } catch {
++    return false;
++  }
++}
++
++/** A download let go: its notice taken off the phone. */
++export async function clearPhone(key: string): Promise<void> {
++  told.delete(key);
++  const box = await plugin();
++  if (!box) return;
++  try {
++    await box.api.clear({ id: noticeId(key) });
++  } catch {
++    /* already gone */
++  }
++}
++
++/** For tests: a stand-in plugin and permissions, and nothing told yet. */
++export function resetNoticeForTests(stand: { plugin?: DownloadNotice | null; permissions?: Permissions } = {}): void {
++  told.clear();
++  permissions = stand.permissions ?? phonePermissions;
++  plugin = "plugin" in stand ? async () => (stand.plugin ? { api: stand.plugin } : null) : () => nativePlugin<DownloadNotice>("DownloadNotice");
++}
+diff --git a/lib/downloads/watch.ts b/lib/downloads/watch.ts
+new file mode 100644
+index 00000000..303b4a48
+--- /dev/null
++++ b/lib/downloads/watch.ts
+@@ -0,0 +1,119 @@
++// What each store's download is doing, as one kind of thing (1.9, build 95
++// note 23; ./log.ts says why). Pure: the three stores' states in, the
++// downloads under way out, the end of one that has left them, and the words
++// of a download's line, which the bell's sheet and the phone both say.
++
++import type { BiblesState } from "@/lib/bible/downloads/store";
++import { FAILED_WORDS } from "@/lib/bible/downloads/store";
++
++import type { Download, DownloadKind, DownloadWords } from "./log";
++
++/** A book's saving to listen offline, as lib/readAloud/saving.ts keeps it. */
++export type BookSaving = {
++  job: { book: string; done: number; total: number; waiting: "wifi" | "signal" | null } | null;
++  /** The last book whose saving ended with chapters the website would not give. */
++  failed: string | null;
++};
++
++/** A chant's saving, as lib/chants/offline.ts keeps it. */
++export type ChantSaving = { job: { ref: string; share: number } | null; failed: string | null };
++
++export type Stores = { bibles: Pick<BiblesState, "saved" | "downloads">; saving: BookSaving; chants: ChantSaving };
++
++/** What each download is called, by what it is. */
++export type Names = { bible: (id: string) => string; book: (slug: string) => string; chant: (ref: string) => string };
++
++/** A download under way. */
++export type Live = Pick<Download, "key" | "kind" | "name" | "state" | "share" | "done" | "total" | "waiting">;
++
++export const keyOf = (kind: DownloadKind, id: string): string => `${kind}:${id}`;
++export const idOf = (key: string): string => key.slice(key.indexOf(":") + 1);
++
++const share = (done: number, total: number) => (total > 0 ? Math.min(1, Math.max(0, done / total)) : 0);
++
++/** The downloads under way now, in the three stores. */
++export function liveDownloads(s: Stores, names: Names): Live[] {
++  const out: Live[] = [];
++  for (const [id, d] of Object.entries(s.bibles.downloads)) {
++    if (d?.state !== "downloading") continue;
++    out.push({ key: keyOf("bible", id), kind: "bible", name: names.bible(id), state: "running", share: share(d.done, d.total), done: 0, total: 0 });
++  }
++  const job = s.saving.job;
++  if (job) {
++    out.push({
++      key: keyOf("book", job.book),
++      kind: "book",
++      name: names.book(job.book),
++      state: job.waiting ? "waiting" : "running",
++      share: share(job.done, job.total),
++      done: job.done,
++      total: job.total,
++      ...(job.waiting ? { waiting: job.waiting } : {}),
++    });
++  }
++  const chant = s.chants.job;
++  if (chant) out.push({ key: keyOf("chant", chant.ref), kind: "chant", name: names.chant(chant.ref), state: "running", share: Math.min(1, Math.max(0, chant.share)), done: 0, total: 0 });
++  return out;
++}
++
++/** What is on the phone now, asked of the stores' own lists. */
++export type Kept = { bookChapters: (book: string) => number; chant: (ref: string) => boolean };
++
++/** How a download that has left the stores ended: done, failed and why, or let go (null), which is not kept. */
++export type End = { state: "done" } | { state: "failed"; failure: DownloadWords } | null;
++
++export function endOf(was: Live, s: Stores, kept: Kept): End {
++  const id = idOf(was.key);
++  if (was.kind === "bible") {
++    const d = s.bibles.downloads[id as keyof Stores["bibles"]["downloads"]];
++    if (d?.state === "failed") return { state: "failed", failure: { key: FAILED_WORDS[d.reason] } };
++    return s.bibles.saved[id] ? { state: "done" } : null;
++  }
++  if (was.kind === "book") {
++    if (s.saving.failed === id) return { state: "failed", failure: { key: "player.offline.failed" } };
++    return was.total > 0 && kept.bookChapters(id) >= was.total ? { state: "done" } : null;
++  }
++  if (s.chants.failed === id) return { state: "failed", failure: { key: "player.offline.failedOne", vars: { book: was.name } } };
++  return kept.chant(id) ? { state: "done" } : null;
++}
++
++/** A download the app was closed in the middle of, said as it is (build 95 note 23). */
++export const STOPPED: DownloadWords = { key: "downloads.stopped" };
++
++/** The words of a download's line: what it is doing, or how it ended. */
++export function lineOf(d: Pick<Download, "kind" | "state" | "share" | "done" | "total" | "waiting" | "failure">): DownloadWords {
++  if (d.state === "failed") return d.failure ?? STOPPED;
++  if (d.state === "done") return { key: d.kind === "bible" ? "downloads.downloaded" : "downloads.savedToListen" };
++  if (d.state === "waiting") {
++    return { key: d.waiting === "wifi" ? "player.offline.waitingWifi" : "player.offline.waitingSignal", vars: { done: d.done, total: d.total } };
++  }
++  if (d.kind === "book") return { key: "player.offline.saving", vars: { done: d.done, total: d.total } };
++  return { key: d.kind === "bible" ? "bible.downloads.downloading" : "downloads.saving", vars: { percent: Math.floor(d.share * 100) } };
++}
++
++/** Whether two states of one download read the same: then nothing is written or told again. */
++export function readsTheSame(a: Live | Download, b: Live | Download): boolean {
++  return (
++    a.state === b.state &&
++    a.name === b.name &&
++    a.done === b.done &&
++    a.total === b.total &&
++    a.waiting === b.waiting &&
++    Math.floor(a.share * 100) === Math.floor(b.share * 100)
++  );
++}
++
++/** Every message key a download's line can say: each must be in every language. */
++export const LINE_KEYS: readonly string[] = [
++  ...Object.values(FAILED_WORDS),
++  "player.offline.failed",
++  "player.offline.failedOne",
++  STOPPED.key,
++  "downloads.downloaded",
++  "downloads.savedToListen",
++  "player.offline.waitingWifi",
++  "player.offline.waitingSignal",
++  "player.offline.saving",
++  "bible.downloads.downloading",
++  "downloads.saving",
++];
+diff --git a/lib/i18n/messages/ar.json b/lib/i18n/messages/ar.json
+index eb458ebb..035a4b95 100644
+--- a/lib/i18n/messages/ar.json
++++ b/lib/i18n/messages/ar.json
+@@ -2783,6 +2783,11 @@
+   "notifications.readersEmpty": "لا شيء من القرّاء الآخرين بعد.",
+   "notifications.signInForReaders": "سجّل الدخول لترى الردود والإشارات والصلوات من القرّاء الآخرين.",
+   "notifications.fromPurify": "من Purify",
++  "notifications.downloads": "التنزيلات",
++  "downloads.downloaded": "تم التنزيل",
++  "downloads.savedToListen": "محفوظ للاستماع دون اتصال",
++  "downloads.saving": "جارٍ الحفظ: {percent}%",
++  "downloads.stopped": "توقّف عند إغلاق Purify. ابدأه من جديد لإكماله.",
+   "community.repliedToYou": "ردّ على منشورك",
+   "community.kindDiscussion": "نقاش",
+   "community.kindScripture": "الكتاب المقدس",
+diff --git a/lib/i18n/messages/bg.json b/lib/i18n/messages/bg.json
+index c615d6d7..dfcc31ab 100644
+--- a/lib/i18n/messages/bg.json
++++ b/lib/i18n/messages/bg.json
+@@ -2707,6 +2707,11 @@
+   "notifications.readersEmpty": "Все още нищо от други читатели.",
+   "notifications.signInForReaders": "Влезте, за да виждате отговори, споменавания и молитви от други читатели.",
+   "notifications.fromPurify": "От Purify",
++  "notifications.downloads": "Изтегляния",
++  "downloads.downloaded": "Изтеглено",
++  "downloads.savedToListen": "Запазено за слушане без мрежа",
++  "downloads.saving": "Запазване: {percent}%",
++  "downloads.stopped": "Спря, когато Purify се затвори. Започнете отново, за да завърши.",
+   "community.repliedToYou": "отговори на публикацията ви",
+   "community.kindDiscussion": "Разговор",
+   "community.kindScripture": "Писание",
+diff --git a/lib/i18n/messages/de.json b/lib/i18n/messages/de.json
+index 70836afe..4d6e222b 100644
+--- a/lib/i18n/messages/de.json
++++ b/lib/i18n/messages/de.json
+@@ -2707,6 +2707,11 @@
+   "notifications.readersEmpty": "Noch nichts von anderen Lesern.",
+   "notifications.signInForReaders": "Melde dich an, um Antworten, Erwähnungen und Gebete von anderen Lesern zu sehen.",
+   "notifications.fromPurify": "Von Purify",
++  "notifications.downloads": "Downloads",
++  "downloads.downloaded": "Heruntergeladen",
++  "downloads.savedToListen": "Zum Offline-Hören gespeichert",
++  "downloads.saving": "Wird gespeichert, {percent} %",
++  "downloads.stopped": "Angehalten, als Purify geschlossen wurde. Starte es erneut, um es abzuschließen.",
+   "community.repliedToYou": "hat auf deinen Beitrag geantwortet",
+   "community.kindDiscussion": "Gespräch",
+   "community.kindScripture": "Heilige Schrift",
+diff --git a/lib/i18n/messages/el.json b/lib/i18n/messages/el.json
+index bf490ce6..fb6d34b9 100644
+--- a/lib/i18n/messages/el.json
++++ b/lib/i18n/messages/el.json
+@@ -2707,6 +2707,11 @@
+   "notifications.readersEmpty": "Τίποτα ακόμη από άλλους αναγνώστες.",
+   "notifications.signInForReaders": "Συνδεθείτε για να βλέπετε απαντήσεις, αναφορές και προσευχές από άλλους αναγνώστες.",
+   "notifications.fromPurify": "Από το Purify",
++  "notifications.downloads": "Λήψεις",
++  "downloads.downloaded": "Η λήψη ολοκληρώθηκε",
++  "downloads.savedToListen": "Αποθηκεύτηκε για ακρόαση εκτός σύνδεσης",
++  "downloads.saving": "Αποθήκευση: {percent}%",
++  "downloads.stopped": "Σταμάτησε όταν έκλεισε το Purify. Ξεκινήστε το ξανά για να ολοκληρωθεί.",
+   "community.repliedToYou": "απάντησε στην ανάρτησή σας",
+   "community.kindDiscussion": "Συζήτηση",
+   "community.kindScripture": "Αγία Γραφή",
+diff --git a/lib/i18n/messages/en.json b/lib/i18n/messages/en.json
+index 332ab7bd..f5507d9b 100644
+--- a/lib/i18n/messages/en.json
++++ b/lib/i18n/messages/en.json
+@@ -2715,6 +2715,11 @@
+   "notifications.readersEmpty": "Nothing from other readers yet.",
+   "notifications.signInForReaders": "Sign in to see replies, mentions and prayers from other readers.",
+   "notifications.fromPurify": "From Purify",
++  "notifications.downloads": "Downloads",
++  "downloads.downloaded": "Downloaded",
++  "downloads.savedToListen": "Saved to listen offline",
++  "downloads.saving": "Saving, {percent}%",
++  "downloads.stopped": "Stopped when Purify closed. Start it again to finish.",
+   "community.repliedToYou": "replied to your post",
+   "community.kindDiscussion": "Discussion",
+   "community.kindScripture": "Scripture",
+diff --git a/lib/i18n/messages/es.json b/lib/i18n/messages/es.json
+index 1c1969c5..b5158b7f 100644
+--- a/lib/i18n/messages/es.json
++++ b/lib/i18n/messages/es.json
+@@ -2709,6 +2709,11 @@
+   "notifications.readersEmpty": "Todavía nada de otros lectores.",
+   "notifications.signInForReaders": "Inicia sesión para ver respuestas, menciones y oraciones de otros lectores.",
+   "notifications.fromPurify": "De Purify",
++  "notifications.downloads": "Descargas",
++  "downloads.downloaded": "Descargado",
++  "downloads.savedToListen": "Guardado para escuchar sin conexión",
++  "downloads.saving": "Guardando, {percent} %",
++  "downloads.stopped": "Se detuvo al cerrarse Purify. Vuelve a iniciarlo para terminar.",
+   "community.repliedToYou": "respondió a tu publicación",
+   "community.kindDiscussion": "Conversación",
+   "community.kindScripture": "Escritura",
+diff --git a/lib/i18n/messages/fil.json b/lib/i18n/messages/fil.json
+index c995072a..e294c7bb 100644
+--- a/lib/i18n/messages/fil.json
++++ b/lib/i18n/messages/fil.json
+@@ -2707,6 +2707,11 @@
+   "notifications.readersEmpty": "Wala pa mula sa ibang mambabasa.",
+   "notifications.signInForReaders": "Mag-sign in para makita ang mga sagot, pagbanggit at panalangin mula sa ibang mambabasa.",
+   "notifications.fromPurify": "Mula sa Purify",
++  "notifications.downloads": "Mga download",
++  "downloads.downloaded": "Na-download na",
++  "downloads.savedToListen": "Naka-save para mapakinggan nang offline",
++  "downloads.saving": "Sine-save: {percent}%",
++  "downloads.stopped": "Huminto nang magsara ang Purify. Simulan itong muli para matapos.",
+   "community.repliedToYou": "sumagot sa iyong post",
+   "community.kindDiscussion": "Talakayan",
+   "community.kindScripture": "Banal na Kasulatan",
+diff --git a/lib/i18n/messages/fr.json b/lib/i18n/messages/fr.json
+index 5060bcc2..4bd99c48 100644
+--- a/lib/i18n/messages/fr.json
++++ b/lib/i18n/messages/fr.json
+@@ -2710,6 +2710,11 @@
+   "notifications.readersEmpty": "Rien d'autres lecteurs pour l'instant.",
+   "notifications.signInForReaders": "Connectez-vous pour voir les réponses, les mentions et les prières d'autres lecteurs.",
+   "notifications.fromPurify": "De la part de Purify",
++  "notifications.downloads": "Téléchargements",
++  "downloads.downloaded": "Téléchargé",
++  "downloads.savedToListen": "Enregistré pour l'écoute hors ligne",
++  "downloads.saving": "Enregistrement, {percent} %",
++  "downloads.stopped": "Interrompu à la fermeture de Purify. Relancez-le pour terminer.",
+   "community.repliedToYou": "a répondu à votre message",
+   "community.kindDiscussion": "Discussion",
+   "community.kindScripture": "Écriture",
+diff --git a/lib/i18n/messages/hu.json b/lib/i18n/messages/hu.json
+index 9bcb68f2..7322c913 100644
+--- a/lib/i18n/messages/hu.json
++++ b/lib/i18n/messages/hu.json
+@@ -2707,6 +2707,11 @@
+   "notifications.readersEmpty": "Még semmi más olvasóktól.",
+   "notifications.signInForReaders": "Jelentkezz be, hogy lásd más olvasók válaszait, említéseit és imáit.",
+   "notifications.fromPurify": "A Purifytól",
++  "notifications.downloads": "Letöltések",
++  "downloads.downloaded": "Letöltve",
++  "downloads.savedToListen": "Mentve offline hallgatáshoz",
++  "downloads.saving": "Mentés: {percent}%",
++  "downloads.stopped": "Leállt, amikor a Purify bezárult. Indítsd újra a befejezéshez.",
+   "community.repliedToYou": "válaszolt a bejegyzésedre",
+   "community.kindDiscussion": "Beszélgetés",
+   "community.kindScripture": "Szentírás",
+diff --git a/lib/i18n/messages/id.json b/lib/i18n/messages/id.json
+index a442c5db..ebe36efc 100644
+--- a/lib/i18n/messages/id.json
++++ b/lib/i18n/messages/id.json
+@@ -2705,6 +2705,11 @@
+   "notifications.readersEmpty": "Belum ada apa pun dari pembaca lain.",
+   "notifications.signInForReaders": "Masuk untuk melihat balasan, sebutan, dan doa dari pembaca lain.",
+   "notifications.fromPurify": "Dari Purify",
++  "notifications.downloads": "Unduhan",
++  "downloads.downloaded": "Selesai diunduh",
++  "downloads.savedToListen": "Tersimpan untuk didengarkan offline",
++  "downloads.saving": "Menyimpan: {percent}%",
++  "downloads.stopped": "Berhenti saat Purify ditutup. Mulai lagi untuk menyelesaikannya.",
+   "community.repliedToYou": "membalas kiriman Anda",
+   "community.kindDiscussion": "Diskusi",
+   "community.kindScripture": "Kitab Suci",
+diff --git a/lib/i18n/messages/it.json b/lib/i18n/messages/it.json
+index e4a11cab..73bb41b6 100644
+--- a/lib/i18n/messages/it.json
++++ b/lib/i18n/messages/it.json
+@@ -2709,6 +2709,11 @@
+   "notifications.readersEmpty": "Ancora niente da altri lettori.",
+   "notifications.signInForReaders": "Accedi per vedere risposte, menzioni e preghiere di altri lettori.",
+   "notifications.fromPurify": "Da Purify",
++  "notifications.downloads": "Download",
++  "downloads.downloaded": "Scaricato",
++  "downloads.savedToListen": "Salvato per l'ascolto offline",
++  "downloads.saving": "Salvataggio, {percent}%",
++  "downloads.stopped": "Interrotto alla chiusura di Purify. Riavvialo per completarlo.",
+   "community.repliedToYou": "ha risposto al tuo post",
+   "community.kindDiscussion": "Discussione",
+   "community.kindScripture": "Scrittura",
+diff --git a/lib/i18n/messages/ka.json b/lib/i18n/messages/ka.json
+index b93fa563..f786d9b3 100644
+--- a/lib/i18n/messages/ka.json
++++ b/lib/i18n/messages/ka.json
+@@ -2707,6 +2707,11 @@
+   "notifications.readersEmpty": "სხვა მკითხველებისგან ჯერ არაფერია.",
+   "notifications.signInForReaders": "შედით სისტემაში, რომ ნახოთ სხვა მკითხველების პასუხები, მოხსენიებები და ლოცვები.",
+   "notifications.fromPurify": "Purify-სგან",
++  "notifications.downloads": "ჩამოტვირთვები",
++  "downloads.downloaded": "ჩამოტვირთულია",
++  "downloads.savedToListen": "შენახულია ხაზგარეშე მოსასმენად",
++  "downloads.saving": "ინახება: {percent}%",
++  "downloads.stopped": "შეჩერდა, როცა Purify დაიხურა. დაიწყეთ ხელახლა დასასრულებლად.",
+   "community.repliedToYou": "უპასუხა თქვენს პოსტს",
+   "community.kindDiscussion": "მსჯელობა",
+   "community.kindScripture": "წმინდა წერილი",
+diff --git a/lib/i18n/messages/ne.json b/lib/i18n/messages/ne.json
+index 9c5d5496..a968559f 100644
+--- a/lib/i18n/messages/ne.json
++++ b/lib/i18n/messages/ne.json
+@@ -2707,6 +2707,11 @@
+   "notifications.readersEmpty": "अरू पाठकहरूबाट अहिलेसम्म केही छैन।",
+   "notifications.signInForReaders": "अरू पाठकहरूका जवाफ, उल्लेख र प्रार्थनाहरू हेर्न साइन इन गर्नुहोस्।",
+   "notifications.fromPurify": "Purify बाट",
++  "notifications.downloads": "डाउनलोडहरू",
++  "downloads.downloaded": "डाउनलोड भयो",
++  "downloads.savedToListen": "अफलाइन सुन्न सुरक्षित गरियो",
++  "downloads.saving": "सुरक्षित हुँदै: {percent}%",
++  "downloads.stopped": "Purify बन्द हुँदा रोकियो। पूरा गर्न फेरि सुरु गर्नुहोस्।",
+   "community.repliedToYou": "तपाईंको पोस्टमा जवाफ दिनुभयो",
+   "community.kindDiscussion": "छलफल",
+   "community.kindScripture": "धर्मशास्त्र",
+diff --git a/lib/i18n/messages/pl.json b/lib/i18n/messages/pl.json
+index e9a1536e..0321d1d6 100644
+--- a/lib/i18n/messages/pl.json
++++ b/lib/i18n/messages/pl.json
+@@ -2754,6 +2754,11 @@
+   "notifications.readersEmpty": "Na razie nic od innych czytelników.",
+   "notifications.signInForReaders": "Zaloguj się, aby widzieć odpowiedzi, wzmianki i modlitwy innych czytelników.",
+   "notifications.fromPurify": "Od Purify",
++  "notifications.downloads": "Pobrane",
++  "downloads.downloaded": "Pobrano",
++  "downloads.savedToListen": "Zapisano do słuchania offline",
++  "downloads.saving": "Zapisywanie: {percent}%",
++  "downloads.stopped": "Zatrzymano po zamknięciu Purify. Uruchom ponownie, aby dokończyć.",
+   "community.repliedToYou": "odpowiedział na twój wpis",
+   "community.kindDiscussion": "Dyskusja",
+   "community.kindScripture": "Pismo Święte",
+diff --git a/lib/i18n/messages/pt.json b/lib/i18n/messages/pt.json
+index 54568032..5ffdf81a 100644
+--- a/lib/i18n/messages/pt.json
++++ b/lib/i18n/messages/pt.json
+@@ -2709,6 +2709,11 @@
+   "notifications.readersEmpty": "Ainda nada de outros leitores.",
+   "notifications.signInForReaders": "Entre para ver respostas, menções e orações de outros leitores.",
+   "notifications.fromPurify": "Do Purify",
++  "notifications.downloads": "Downloads",
++  "downloads.downloaded": "Baixado",
++  "downloads.savedToListen": "Guardado para ouvir offline",
++  "downloads.saving": "A guardar, {percent}%",
++  "downloads.stopped": "Parou quando o Purify foi fechado. Comece de novo para terminar.",
+   "community.repliedToYou": "respondeu à sua publicação",
+   "community.kindDiscussion": "Conversa",
+   "community.kindScripture": "Escritura",
+diff --git a/lib/i18n/messages/ro.json b/lib/i18n/messages/ro.json
+index 15ee0213..270de9c8 100644
+--- a/lib/i18n/messages/ro.json
++++ b/lib/i18n/messages/ro.json
+@@ -2738,6 +2738,11 @@
+   "notifications.readersEmpty": "Încă nimic de la alți cititori.",
+   "notifications.signInForReaders": "Autentificați-vă pentru a vedea răspunsuri, mențiuni și rugăciuni de la alți cititori.",
+   "notifications.fromPurify": "De la Purify",
++  "notifications.downloads": "Descărcări",
++  "downloads.downloaded": "Descărcat",
++  "downloads.savedToListen": "Salvat pentru ascultare offline",
++  "downloads.saving": "Se salvează, {percent}%",
++  "downloads.stopped": "S-a oprit când Purify s-a închis. Pornește-l din nou ca să se termine.",
+   "community.repliedToYou": "a răspuns la postarea ta",
+   "community.kindDiscussion": "Discuție",
+   "community.kindScripture": "Scriptura",
+diff --git a/lib/i18n/messages/ru.json b/lib/i18n/messages/ru.json
+index 7365ebdd..0a4a137c 100644
+--- a/lib/i18n/messages/ru.json
++++ b/lib/i18n/messages/ru.json
+@@ -2752,6 +2752,11 @@
+   "notifications.readersEmpty": "Пока ничего от других читателей.",
+   "notifications.signInForReaders": "Войдите, чтобы видеть ответы, упоминания и молитвы других читателей.",
+   "notifications.fromPurify": "От Purify",
++  "notifications.downloads": "Загрузки",
++  "downloads.downloaded": "Скачано",
++  "downloads.savedToListen": "Сохранено, можно слушать без сети",
++  "downloads.saving": "Сохранение: {percent}%",
++  "downloads.stopped": "Остановлено при закрытии Purify. Запустите снова, чтобы завершить.",
+   "community.repliedToYou": "ответил на вашу запись",
+   "community.kindDiscussion": "Обсуждение",
+   "community.kindScripture": "Писание",
+diff --git a/lib/i18n/messages/sr.json b/lib/i18n/messages/sr.json
+index 788a8663..ade7f528 100644
+--- a/lib/i18n/messages/sr.json
++++ b/lib/i18n/messages/sr.json
+@@ -2732,6 +2732,11 @@
+   "notifications.readersEmpty": "Још ништа од других читалаца.",
+   "notifications.signInForReaders": "Пријавите се да видите одговоре, помињања и молитве других читалаца.",
+   "notifications.fromPurify": "Од Purify",
++  "notifications.downloads": "Преузимања",
++  "downloads.downloaded": "Преузето",
++  "downloads.savedToListen": "Сачувано за слушање ван мреже",
++  "downloads.saving": "Чување: {percent}%",
++  "downloads.stopped": "Заустављено када се Purify затворио. Покрените поново да се заврши.",
+   "community.repliedToYou": "одговорио на вашу објаву",
+   "community.kindDiscussion": "Разговор",
+   "community.kindScripture": "Свето Писмо",
+diff --git a/lib/i18n/messages/tr.json b/lib/i18n/messages/tr.json
+index 2977203a..2fc76d18 100644
+--- a/lib/i18n/messages/tr.json
++++ b/lib/i18n/messages/tr.json
+@@ -2707,6 +2707,11 @@
+   "notifications.readersEmpty": "Diğer okurlardan henüz bir şey yok.",
+   "notifications.signInForReaders": "Diğer okurlardan gelen yanıtları, bahsetmeleri ve duaları görmek için oturum açın.",
+   "notifications.fromPurify": "Purify'dan",
++  "notifications.downloads": "İndirmeler",
++  "downloads.downloaded": "İndirildi",
++  "downloads.savedToListen": "Çevrimdışı dinlemek için kaydedildi",
++  "downloads.saving": "Kaydediliyor: %{percent}",
++  "downloads.stopped": "Purify kapanınca durdu. Bitirmek için yeniden başlatın.",
+   "community.repliedToYou": "gönderinize yanıt verdi",
+   "community.kindDiscussion": "Sohbet",
+   "community.kindScripture": "Kutsal Kitap",
+diff --git a/lib/i18n/messages/uk.json b/lib/i18n/messages/uk.json
+index a6114409..ee10108c 100644
+--- a/lib/i18n/messages/uk.json
++++ b/lib/i18n/messages/uk.json
+@@ -2751,6 +2751,11 @@
+   "notifications.readersEmpty": "Поки нічого від інших читачів.",
+   "notifications.signInForReaders": "Увійдіть, щоб бачити відповіді, згадки та молитви інших читачів.",
+   "notifications.fromPurify": "Від Purify",
++  "notifications.downloads": "Завантаження",
++  "downloads.downloaded": "Завантажено",
++  "downloads.savedToListen": "Збережено, можна слухати без мережі",
++  "downloads.saving": "Збереження: {percent}%",
++  "downloads.stopped": "Зупинено, коли Purify закрився. Запустіть знову, щоб завершити.",
+   "community.repliedToYou": "відповів на ваш допис",
+   "community.kindDiscussion": "Обговорення",
+   "community.kindScripture": "Святе Письмо",
+diff --git a/lib/i18n/messages/ur.json b/lib/i18n/messages/ur.json
+index baad7593..2ae7ae30 100644
+--- a/lib/i18n/messages/ur.json
++++ b/lib/i18n/messages/ur.json
+@@ -2707,6 +2707,11 @@
+   "notifications.readersEmpty": "دوسرے قارئین کی طرف سے ابھی کچھ نہیں۔",
+   "notifications.signInForReaders": "دوسرے قارئین کے جوابات، ذکر اور دعائیں دیکھنے کے لیے سائن اِن کریں۔",
+   "notifications.fromPurify": "Purify کی طرف سے",
++  "notifications.downloads": "ڈاؤن لوڈز",
++  "downloads.downloaded": "ڈاؤن لوڈ ہو گیا",
++  "downloads.savedToListen": "آف لائن سننے کے لیے محفوظ ہے",
++  "downloads.saving": "محفوظ ہو رہا ہے: {percent}%",
++  "downloads.stopped": "Purify بند ہونے پر رک گیا۔ مکمل کرنے کے لیے دوبارہ شروع کریں۔",
+   "community.repliedToYou": "نے آپ کی پوسٹ کا جواب دیا",
+   "community.kindDiscussion": "گفتگو",
+   "community.kindScripture": "کلامِ مقدس",
+-- 
+2.43.0
+
