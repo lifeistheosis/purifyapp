@@ -188,3 +188,11 @@ His word, 2026-11-13 about 08:17 UTC: "make the theme switching smoother its bug
 The theme is the reading mode, chosen in Settings (and wherever else a mode is picked); the switch is the whole app taking the new look (`components/theme/AppThemeController.tsx`, the look blocks in `app/globals.css`, the status bar in `components/native/statusBar.ts`). He named no single fault, so every one is found: recorded frame by frame on the export, motion on and reduced, across the palettes and looks.
 
 Done is: one change, in the house's motion, everything at once (no surface late in its old colours, no foot picture popping, the status and navigation bars with it, the chooser not jumping under the finger); under reduced motion an instant change with no flash; a test that fails on the old code. With Updates 11, beside the mode scroller.
+
+## Note 27 (asked): earning a theme by reading, made something to look forward to
+
+His word, 2026-11-13 about 08:21 UTC: "make the read to unlock themes cooler"
+
+The two looks earned by reading (`lib/reader/earned.ts`): Councils, every council's page read to its end (19), and Cappadocian, one work by each of the three Cappadocian Fathers read to its end. Today they are dimmed cards with "0 of 19" and "0 of 3" in the chooser and one long line in Settings, and nothing marks the moment a look is earned.
+
+Done is, one version, for his yes before it ships: the locked card shows the look itself and the progress as what it is (the councils as marks that fill, the three Fathers lighting as each is read), not a bare count; a tap on it opens what is left to read, each a door to it; the moment it is earned, at the foot of the last page, the new look is revealed in the house's own reveal language (the soft flood of light, embers and mandorla of the gift; never rays, sparkle or confetti), with a haptic and one tap to wear it; still and clear under reduced motion. With the Fable chat on the looks; the cards in the chooser built by Updates 11 from its spec.
