@@ -20,7 +20,7 @@ import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { FACTS, DERIVED } from "../facts.mjs";
-import { FPS, SECONDS, SCENE_ONE, NUMERALS, SIX, FIGURE, CAPTION, SOURCE_LINE, TITLE, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY } from "./words.mjs";
+import { FPS, SECONDS, SCENE_ONE, SCENE_TWO, NUMERALS, SIX, FIGURE, CAPTION, SOURCE_LINE, TITLE, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY, PARISHES, CAPTION_PARISHES } from "./words.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../../../..");
@@ -34,7 +34,7 @@ const has = (flag) => process.argv.includes(flag);
 // promo script (rays) and the sparkle's glyphs. The same measure here, with
 // the 3D words for the same things, and the house's other rules.
 const problems = [];
-const CODE = ["shot.js", "shot.html", "words.mjs"];
+const CODE = ["shot.js", "church.js", "shot.html", "words.mjs"];
 for (const file of CODE) {
   const source = fs.readFileSync(path.join(HERE, file), "utf8");
   const no = (re, what) => { if (re.test(source)) problems.push(`${file}: ${what}`); };
@@ -69,9 +69,13 @@ for (const n of [ROLLS, SUNDAY]) {
 const derived = DERIVED.find((d) => d.show.includes(`${SHARE}%`));
 if (!derived) problems.push(`facts.mjs (DERIVED) does not show ${SHARE}%`);
 else if (Math.round((derived.of[0] / derived.of[1]) * 100) !== Number(SHARE) || derived.of[0] !== SUNDAY || derived.of[1] !== ROLLS) problems.push(`${SHARE}% is not ${SUNDAY} divided by ${ROLLS}`);
+// Scene three: the parishes, as the first film checked them (its scene "six").
+const par = FACTS.filter((f) => f.show.includes(PARISHES.toLocaleString("en-US")));
+if (!par.length) problems.push(`facts.mjs does not show ${PARISHES.toLocaleString("en-US")}`);
+else if (!par.some((f) => f.says.includes(`${PARISHES.toLocaleString("en-US")} Eastern Orthodox`))) problems.push(`the source's words do not give ${PARISHES.toLocaleString("en-US")} Eastern Orthodox parishes`);
 if (Number(KEY[1]) !== PEOPLE_A_POINT) problems.push("the key does not say what a point stands for");
 if (!fs.readFileSync(path.join(TOOLS, NUMERALS.from, "package.json"), "utf8").includes('"OFL-1.1"')) problems.push(`${NUMERALS.family} is not under the Open Font Licence`);
-for (const line of [CAPTION, SOURCE_LINE, ...TITLE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, ...KEY]) if (/[–—]/.test(line)) problems.push(`a dash in "${line}"`);
+for (const line of [CAPTION, SOURCE_LINE, ...TITLE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, ...KEY, CAPTION_PARISHES]) if (/[–—]/.test(line)) problems.push(`a dash in "${line}"`);
 
 // ---- The page, served from this folder and the tools -----------------------
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".mjs": "text/javascript", ".json": "application/json", ".woff2": "font/woff2" };
@@ -128,11 +132,12 @@ const lum = (c) => { const v = c / 255; return v <= 0.03928 ? v / 12.92 : ((v + 
 const against = (ground, ink) => (lum(ink) + 0.05) / (lum(ground) + 0.05);
 let least = 99, smallest = 999, pieces = 0;
 const seen = new Set();
-for (const t of [1.25, 2.3, info.landed + 0.6, 7.5, 9.9, info.stood + 0.6, info.thin - 0.1, info.thinned + 0.5, info.shareAt + 0.6, SECONDS - 0.05]) {
+for (const t of [1.25, 2.3, info.landed + 0.6, 7.5, 9.9, info.stood + 0.6, info.thin - 0.1, info.thinned + 0.5, info.shareAt + 0.6, SCENE_TWO - 0.05, info.go3 + 1.7, info.go3 + 4.5, info.built - 0.2, info.parishAt + 1, SECONDS - 0.05]) {
   for (const w of await tab.evaluate((t) => window.__words(t), t)) {
     pieces++; seen.add(w.name);
     const r = against(w.behind, w.name === "source" ? 0xd6 : 0xff);
     least = Math.min(least, r); smallest = Math.min(smallest, w.px);
+    if (has("--verbose") && r < 7) console.log(`  ${w.name} at ${t.toFixed(2)} s: ${r.toFixed(2)}:1, ${w.px}px`);
     if (!w.inside) problems.push(`${w.name} at ${t} s leaves the frame: ${w.box}`);
     if (r < 4.5) problems.push(`${w.name} at ${t} s is ${r.toFixed(2)}:1 on the brightest ground behind it (${w.behind} of 255)`);
     if (w.px < 30) problems.push(`${w.name} at ${t.toFixed(2)} s has letters of ${w.px}px, under 30 (10.8 on a phone 390 wide)`);
@@ -144,9 +149,12 @@ if (info.points !== Math.round(ROLLS / PEOPLE_A_POINT) || info.stay !== Math.rou
 if (info.fromSix !== SIX.reduce((n, s) => n + Math.round((s.share / 100) * info.points), 0)) problems.push("the six states do not give their shares of the points");
 if (String(info.count) !== String([0, info.count[1], ROLLS, ROLLS, info.count[4], SUNDAY, SUNDAY]) || info.count[1] > ROLLS || info.count[4] < SUNDAY) problems.push(`the count does not land on the figures: ${info.count}`);
 if (info.go !== SCENE_ONE) problems.push("scene two does not begin where scene one's hold ends");
-for (const name of ["title", "figure", "source", "count", "share", "key", ...SIX.map((s) => `label ${s.name}`)]) if (!seen.has(name)) problems.push(`${name} was never on screen when measured`);
-const checked = `checked: ${pieces} readings of ${seen.size} pieces of words, least contrast ${least.toFixed(2)}:1, smallest letters ${smallest}px; ${SIX.length + 4} figures held to facts.mjs; the ten digits of ${NUMERALS.family} each ${info.digitWidths[0].toFixed(1)} wide at 100; ${info.points} points, ${info.stay} stay, ${info.fromSix} leave from the six states; ${info.renderer}`;
+if (info.go3 !== SCENE_TWO) problems.push("scene three does not begin where scene two's hold ends");
+if (info.flock !== info.stay) problems.push(`the church is not drawn by those who stay: ${info.flock} points, not ${info.stay}`);
+for (const name of ["title", "figure", "source", "count", "share", "key", "parishes", ...SIX.map((s) => `label ${s.name}`)]) if (!seen.has(name)) problems.push(`${name} was never on screen when measured`);
+const checked = `checked: ${pieces} readings of ${seen.size} pieces of words, least contrast ${least.toFixed(2)}:1, smallest letters ${smallest}px; ${SIX.length + 5} figures held to facts.mjs; the ten digits of ${NUMERALS.family} each ${info.digitWidths[0].toFixed(1)} wide at 100; ${info.points} points, ${info.stay} stay, ${info.fromSix} leave from the six states; ${info.flock} draw the church (${info.tradition}, ${info.stone} triangles of stone); ${info.renderer}`;
 console.log(checked);
+if (has("--verbose")) console.log(JSON.stringify(info.camera3));
 if (!problems.length) fs.writeFileSync(path.join(OUT, "check.txt"), checked + "\n");
 if (problems.length) { console.error("refused:\n  " + problems.join("\n  ")); if (!has("--anyway")) await done(1); }
 if (mode === "--check") await done();
@@ -179,7 +187,7 @@ if (made) {
 }
 await browser.close(); server.close();
 
-const file = path.join(OUT, draft ? "draft.mp4" : "orthodox-america-3d-sample-2.mp4");
+const file = path.join(OUT, draft ? "draft.mp4" : "orthodox-america-3d-sample-3.mp4");
 // Fine grain, the same on every render (a fixed seed), over the whole picture
 // as film has it; grey only; then H.264 for any editor or phone.
 const look = draft ? "format=gray,format=yuv420p" : "format=gray,noise=c0s=6:c0f=t:all_seed=1113,format=yuv420p";
@@ -187,12 +195,12 @@ const enc = (extra) => execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-fra
   "-c:v", "libx264", "-profile:v", "high", "-preset", "slow", "-pix_fmt", "yuv420p", "-an", ...extra], { cwd: OUT, stdio: "inherit" });
 if (draft) enc(["-crf", "24", "-movflags", "+faststart", file]);
 else {
-  // Grain is costly to keep, so the size is set, not the quality: two passes to about 18 MB for the twenty seconds
+  // Grain is costly to keep, so the size is set, not the quality: two passes to about 19 MB for the whole sample
   // (the page's own store holds 20 MB a file), which a phone plays at once.
-  const kbps = Math.floor((18 * 8192) / SECONDS);
+  const kbps = Math.floor((19 * 8192) / SECONDS);
   enc(["-b:v", `${kbps}k`, "-pass", "1", "-f", "null", "/dev/null"]);
   enc(["-b:v", `${kbps}k`, "-pass", "2", "-movflags", "+faststart", file]);
 }
-if (!draft) fs.copyFileSync(path.join(frames, `f${String(Math.round(18.6 * FPS)).padStart(5, "0")}.png`), path.join(OUT, "poster.png"));
+if (!draft) fs.copyFileSync(path.join(frames, `f${String(Math.round(30.8 * FPS)).padStart(5, "0")}.png`), path.join(OUT, "poster.png"));
 console.log(path.relative(ROOT, file), fs.statSync(file).size, "bytes");
 process.exit(0);

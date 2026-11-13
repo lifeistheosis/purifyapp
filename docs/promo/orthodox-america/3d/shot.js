@@ -18,7 +18,8 @@
 import * as THREE from "three";
 import { feature, mesh as borders } from "topojson-client";
 import { geoEquirectangular, geoPath, geoAlbersUsa } from "d3-geo";
-import { FPS, SECONDS, SCENE_ONE, NUMERALS, TITLE, SIX, FIGURE, CAPTION, SOURCE_LINE, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY } from "/words.mjs";
+import { FPS, SECONDS, SCENE_ONE, SCENE_TWO, NUMERALS, TITLE, SIX, FIGURE, CAPTION, SOURCE_LINE, ROLLS, SUNDAY, PEOPLE_A_POINT, SHARE, CAPTION_ROLLS, CAPTION_SUNDAY, SHARE_LINE, KEY, PARISHES, CAPTION_PARISHES } from "/words.mjs";
+import { CHURCH, DIM as FORM, TOP, TRADITION, stands } from "/church.js";
 
 const QUERY = new URLSearchParams(location.search);
 const S = Number(QUERY.get("size") || 1080); // the frame is S by S
@@ -41,6 +42,18 @@ const THIN = 14.2, SWEEP = 1.0, STRAGGLE = 0.5, FALL_FOR = 0.5; // the falling a
 const THINNED = THIN + SWEEP + STRAGGLE + FALL_FOR; // 16.2: the count reads a typical Sunday
 const CLOSE_FOR = 0.9, SHARE_AT = THINNED + CLOSE_FOR; // 17.1: those who stay have drawn together and the share lands
 const SWING = 100, TILT_TWO = Number(new URLSearchParams(location.search).get("tilt2") || -2), LIFT_TWO = Number(new URLSearchParams(location.search).get("lift2") || -0.093);
+// Scene three's time. Like scene two's, everything it adds is nothing, and at rest, until GO3: no frame before it is changed.
+const GO3 = SCENE_TWO; // the hold on those who stay ends and they begin to draw
+const PLAN_AT = GO3 + 0.25, PLAN_LAG = 0.55, PLAN_FOR = 0.95; // the points leave their round body for the lines of a plan
+const DRAW = GO3 + 1.5, DRAWN = GO3 + 4.3; // the drawing rises from the floor to the crown of the dome
+const IN_AT = GO3 + 1.9, IN_LAG = 0.6, IN_FOR = 1.0; // the points go in and stand in the nave
+const BUILD = GO3 + 2.7, BUILT = GO3 + 6.7; // the stone rises after the drawing and closes over them
+const SIGN = BUILT + 0.1, SIGNED = SIGN + 0.9; // the cross, last, like a signature
+const SETTLE = GO3 + 9.5; // the camera comes to rest
+const PARISH_AT = GO3 + 8.3; // the figure lands
+const KEY_OFF = BUILT - 0.4; // the key to the points goes when the vaults hide them
+const Q3 = (name, value) => Number(QUERY.get(name) ?? value);
+const TURN3 = Q3("turn3", 85), TILT3_IN = Q3("tilt3in", 10), TILT3_DOWN = Q3("tilt3down", 32), AIM3 = Q3("aim3", 1.5), PUSH3 = Q3("push3", 3.4), LIFT3 = Q3("lift3", -0.09);
 const R_UNITS = 13; // one Earth radius in map units (us-atlas draws Albers USA at 1300 px a radius; a map unit is 100 px)
 const D_SET = 19.5; // the camera's distance from the map once settled, in map units
 const FOV = 36;
@@ -60,6 +73,8 @@ const RUSH = 3.2, COVERED = 0.76, LAND = (COVERED * RUSH * (1 - PEAK)) / (PEAK *
 const push = (u) => (u <= PEAK ? COVERED * Math.pow(u / PEAK, RUSH) : 1 - (1 - COVERED) * Math.pow((1 - clamp(u)) / (1 - PEAK), LAND));
 const softLine = (x) => (x <= 0 ? 0 : x - (1 - Math.exp(-3 * x)) / 3); // a drift that starts from rest
 const move = (t) => inOutCubic(span(t, GO, GO + MOVE)); // scene two's one move: it starts from the drift's own speed and ends at rest
+const move3 = (t) => inOutCubic(span(t, GO3, SETTLE)); // scene three's one slow turn about the church
+const look3 = (t) => inOutCubic(span(t, GO3 + 4.2, SETTLE)); // the camera comes down from looking in to looking at
 const rush = (t) => span(t, GO + 0.3, GO + 0.8) * (1 - span(t, GO + 1.6, GO + MOVE)); // its fast middle
 
 /** The camera's height over the ground, in Earth radii, through both shots. */
@@ -72,15 +87,15 @@ function height(t) {
   return h - 0.012 * softLine(t - BEAT - WHIP);
 }
 /** The turn about the line of sight, in degrees: the globe's lean, then the map's bearing. */
-const turn = (t) => 23.4 - 32.4 * push(span(t, BEAT, BEAT + WHIP)) - 5 * (softLine(t - BEAT - WHIP) / softLine(SCENE_ONE - BEAT - WHIP)) - SWING * move(t);
+const turn = (t) => 23.4 - 32.4 * push(span(t, BEAT, BEAT + WHIP)) - 5 * (softLine(t - BEAT - WHIP) / softLine(SCENE_ONE - BEAT - WHIP)) - SWING * move(t) + TURN3 * move3(t);
 /** How far the picture is lifted off the frame's centre (a lens shift): the globe sits high, the map low. */
-const lift = (t) => 0.2 * (1 - inOutCubic(span(t, BEAT, CUT))) - 0.34 * inOutCubic(span(t, CUT + 0.05, CUT + 1.4)) + (LIFT_TWO + 0.34) * move(t);
-const tilt = (t) => 90 - 52 * inOutCubic(span(t, CUT + 0.05, CUT + 1.4)) + TILT_TWO * move(t); // straight down, then a low angle, then a little higher over the field
+const lift = (t) => 0.2 * (1 - inOutCubic(span(t, BEAT, CUT))) - 0.34 * inOutCubic(span(t, CUT + 0.05, CUT + 1.4)) + (LIFT_TWO + 0.34) * move(t) + LIFT3 * look3(t);
+const tilt = (t) => 90 - 52 * inOutCubic(span(t, CUT + 0.05, CUT + 1.4)) + TILT_TWO * move(t) + TILT3_IN * inOutCubic(span(t, GO3, GO3 + 2.5)) - TILT3_DOWN * look3(t); // straight down, then a low angle, then a little higher over the field
 /** The lens opening, in the shot's own units: wide while the map tilts (near and far go soft), then stopped down for the words. */
 const openA = () => 0.003;
 const openB = (t) => lerp(0.26, 0.07, inOutCubic(span(t, 4.5, 5.6))) + 0.08 * inOutCubic(span(t, GO, GO + 1)) - 0.04 * inOutCubic(span(t, GO + 1.3, GO + MOVE)) - 0.04 * inOutCubic(span(t, THINNED, SHARE_AT));
 const shutter = (t) => lerp(0.5, 0.95, span(t, BEAT + 0.3, BEAT + 0.9) * (1 - span(t, CUT + 0.25, CUT + 0.6))) + 0.4 * rush(t); // of a frame
-const samples = (t) => Math.round(lerp(20, 72, span(t, BEAT + 0.2, BEAT + 0.8) * (1 - span(t, 4.7, 5.5))) + 8 * (1 - span(t, 0, 2.9)) + 36 * rush(t));
+const samples = (t) => Math.round(lerp(20, 72, span(t, BEAT + 0.2, BEAT + 0.8) * (1 - span(t, 4.7, 5.5))) + 8 * (1 - span(t, 0, 2.9)) + 36 * rush(t) + 16 * span(t, GO3 + 1.6, GO3 + 2.6));
 /** 0 is the globe, 1 is the map; three frames of one dissolving into the other inside the blur. */
 const shotMix = (t) => span(t, CUT - 0.05, CUT + 0.05);
 
@@ -354,11 +369,11 @@ const Y_FIELD = 3.0, R_FIELD = 4.5; // scene two: how high over the map the fiel
 function cameraB(t, cam) {
   const e = inOutCubic(span(t, CUT + 0.05, CUT + 1.4));
   const at = T0.clone().lerp(T1, e);
-  at.y += Y_FIELD * move(t); // scene two: the camera rises with the points it follows
+  at.y += Y_FIELD * move(t) + AIM3 * look3(t); // scene two: the camera rises with the points it follows; scene three: it looks at the middle of the church
   qa.setFromAxisAngle(Y_AXIS, THREE.MathUtils.degToRad(-turn(t)));
   qb.setFromAxisAngle(X_AXIS, THREE.MathUtils.degToRad(-tilt(t)));
   cam.quaternion.copy(qa).multiply(qb);
-  const d = height(t) * R_UNITS;
+  const d = height(t) * R_UNITS - PUSH3 * inOutCubic(span(t, GO3, GO3 + 5.5));
   cam.position.set(0, 0, d).applyQuaternion(cam.quaternion).add(at);
   return d;
 }
@@ -572,6 +587,168 @@ share.mesh.material.opacity = 0;
 sceneB.add(share.mesh);
 if (Math.round((SUNDAY / ROLLS) * 100) !== Number(SHARE)) throw new Error("the share is not the two counts divided");
 
+// ============================================================================
+// Scene three: the Church. The same scene and the same camera as the map and
+// the field: no cut. Those who stay leave their round body for the lines of a
+// plan, the drawing rises from the plan, they go in and stand in the nave, and
+// the stone rises after the drawing and closes over them. Their light is then
+// the light in the windows. The cross is drawn last.
+// ============================================================================
+const FLOOR = CENTRE.clone(); // the church's floor is the level of the field, and its dome stands over the field's middle
+const FACE3_AT = GO3 + 10.6; // the moment scene three's words stand square to the camera
+const facing3 = new THREE.PerspectiveCamera(FOV, 1, 0.1, 300);
+const FACE3_D = cameraB(FACE3_AT, facing3);
+facing3.updateMatrixWorld();
+const up3 = new THREE.Vector3(0, 1, 0).applyQuaternion(facing3.quaternion);
+const UNIT3 = FACE3_D / PX;
+
+const church = (() => {
+  const group = new THREE.Group(); group.position.copy(FLOOR); group.visible = false; sceneB.add(group);
+  const f32 = (list) => new THREE.BufferAttribute(new Float32Array(list), 3);
+  const SHADE = 1536, shade = new THREE.WebGLRenderTarget(SHADE, SHADE, { depthBuffer: true, depthTexture: new THREE.DepthTexture(SHADE, SHADE) });
+  const U = { level: { value: -1 }, sun: { value: new THREE.Vector3(0, 1, 0) }, power: { value: 0 }, shade: { value: shade.depthTexture }, toLight: { value: new THREE.Matrix4() }, eye: { value: new THREE.Vector3() }, ink: { value: -1 }, glow: { value: 0 }, ground: { value: 0 } };
+  const LEVEL = { value: -1 }; // the cross has a level of its own: it comes last
+  // Matte stone in soft light. Each drawing of a frame is lit from one direction, with a true shadow from a map of
+  // depths seen from the light; a frame is three dozen drawings, a third of them from about the key light and the
+  // rest from all over the sky, so the average is a soft key, soft shadows and the darkening of every corner.
+  const HEAD = `uniform float level, power; uniform vec3 sun, eye; uniform sampler2D shade; uniform mat4 toLight; varying vec3 vW; varying vec3 vN; varying float vH;
+    float lit(vec3 p){ vec4 q = toLight * vec4(p, 1.); vec3 c = q.xyz / q.w * .5 + .5; float s = 0.;
+      for (int x = -1; x <= 1; x++) for (int y = -1; y <= 1; y++) s += step(c.z - .0009, texture2D(shade, c.xy + vec2(float(x), float(y)) * ${(1.2 / SHADE).toFixed(6)}).r);
+      return s / 9.; }`;
+  const VERT = "varying vec3 vW; varying vec3 vN; varying float vH; void main(){ vec4 w = modelMatrix * vec4(position, 1.); vW = w.xyz; vN = normal; vH = position.y; gl_Position = projectionMatrix * viewMatrix * w; }";
+  const stoneMat = (level) => new THREE.ShaderMaterial({ side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1, uniforms: { ...U, level }, vertexShader: VERT,
+    fragmentShader: `${HEAD} void main(){ if (vH > level) discard;
+      vec3 N = normalize(vN); if (dot(N, eye - vW) < 0.) N = -N;
+      float c = .86 * power * max(dot(N, sun), 0.) * lit(vW + N * .014);
+      c += 1.5 * exp(-(level - vH) / .03);               // the course being laid: a fine bright line at the stone's own top
+      gl_FragColor = vec4(vec3(c), 1.); }` });
+  const depthMat = (level) => new THREE.ShaderMaterial({ side: THREE.DoubleSide, uniforms: { level }, vertexShader: "varying float vH; void main(){ vH = position.y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }", fragmentShader: "uniform float level; varying float vH; void main(){ if (vH > level) discard; gl_FragColor = vec4(1.); }" });
+  const shadeScene = new THREE.Scene();
+  const solid = (geo, level) => { const m = new THREE.Mesh(geo, stoneMat(level)); m.frustumCulled = false; group.add(m); const s = new THREE.Mesh(geo, depthMat(level)); s.position.copy(FLOOR); s.frustumCulled = false; shadeScene.add(s); return m; };
+
+  const stoneGeo = new THREE.BufferGeometry(); stoneGeo.setAttribute("position", f32(CHURCH.tri)); stoneGeo.setAttribute("normal", f32(CHURCH.nor));
+  solid(stoneGeo, U.level);
+  // The plain cross: one upright and one bar, across the church.
+  const k = FORM.cross, foot = TOP + k.foot;
+  const upright = new THREE.BoxGeometry(k.bar, k.h, k.bar).translate(0, foot + k.h / 2, 0), bar = new THREE.BoxGeometry(k.bar, k.bar, k.w).translate(0, foot + k.at + k.bar / 2, 0);
+  solid(upright, LEVEL); solid(bar, LEVEL);
+  // The ground it stands on: a soft pool of light that falls away to black before the ring.
+  const pool = new THREE.Mesh(new THREE.CircleGeometry(4.4, 96).rotateX(-Math.PI / 2).translate(0, -0.004, 0), new THREE.ShaderMaterial({ uniforms: U, vertexShader: VERT,
+    fragmentShader: `${HEAD} uniform float ground; void main(){ float r = length(vW.xz - vec2(${FLOOR.x.toFixed(4)}, ${FLOOR.z.toFixed(4)}));
+      float c = .5 * power * max(sun.y, 0.) * lit(vW + vec3(0., .014, 0.)) * (1. - smoothstep(1.3, 3.4, r)) * ground; gl_FragColor = vec4(vec3(c), 1.); }` }));
+  pool.frustumCulled = false; group.add(pool);
+  // The windows: dark glass until the stone has passed them, then the light of those inside.
+  const glassGeo = new THREE.BufferGeometry(); glassGeo.setAttribute("position", f32(CHURCH.glass)); glassGeo.setAttribute("sill", new THREE.BufferAttribute(new Float32Array(CHURCH.sill), 1));
+  const glass = new THREE.Mesh(glassGeo, new THREE.ShaderMaterial({ side: THREE.DoubleSide, uniforms: U,
+    vertexShader: "attribute float sill; varying float vH; varying float vS; void main(){ vH = position.y; vS = sill; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }",
+    fragmentShader: "uniform float level, glow; varying float vH; varying float vS; void main(){ if (vH > level) discard; gl_FragColor = vec4(vec3(.012 + 1.7 * glow * smoothstep(vS + .1, vS + .7, level)), 1.); }" }));
+  glass.frustumCulled = false; group.add(glass);
+  // The drawing: fine lines of light, shown from the floor up, brightest where the pen is, and gone where the stone has come.
+  const lineGeo = new THREE.BufferGeometry(); lineGeo.setAttribute("position", f32(CHURCH.lines));
+  const drawing = new THREE.LineSegments(lineGeo, new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: U,
+    vertexShader: "varying float vH; void main(){ vH = position.y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }",
+    fragmentShader: "uniform float level, ink; varying float vH; void main(){ if (vH > ink) discard; float left = 1. - smoothstep(-.04, .22, level - vH); gl_FragColor = vec4(vec3((1.15 + 2.6 * exp(-(ink - vH) / .1)) * left), 1.); }" }));
+  drawing.frustumCulled = false; drawing.renderOrder = 3; group.add(drawing);
+  const planPts = []; for (const line of CHURCH.plan) for (let i = 0; i + 1 < line.length; i++) planPts.push(line[i][0], 0.006, line[i][1], line[i + 1][0], 0.006, line[i + 1][1]);
+  const planGeo = new THREE.BufferGeometry(); planGeo.setAttribute("position", f32(planPts));
+  const plan = new THREE.LineSegments(planGeo, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+  plan.frustumCulled = false; plan.renderOrder = 3; group.add(plan);
+  // The cross's own outline, drawn round once before it stands in stone.
+  const outline = []; { const o = CHURCH.crossOutline, per = 10; for (let i = 0; i + 1 < o.length; i++) for (let j = 0; j < per; j++) outline.push(lerp(o[i][0], o[i + 1][0], j / per), lerp(o[i][1], o[i + 1][1], j / per), lerp(o[i][2], o[i + 1][2], j / per)); outline.push(...o[o.length - 1]); }
+  const signGeo = new THREE.BufferGeometry(); signGeo.setAttribute("position", f32(outline));
+  const sign = new THREE.Line(signGeo, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+  sign.frustumCulled = false; sign.renderOrder = 3; group.add(sign);
+
+  // ---- The 1,830 who stay, now in the hand's own keeping: each from its place in the round body, to a place on
+  // the plan's lines, to a place to stand in the nave. They are the same points, the same size and light, at GO3.
+  const src = people.points.geometry.attributes, ids = [];
+  for (let i = 0; i < src.how.count; i++) if (src.how.getZ(i) > 0.5) ids.push(i);
+  const N = ids.length;
+  const from = ids.map((i) => [src.close.getX(i) - FLOOR.x, src.close.getZ(i) - FLOOR.z]);
+  const onPlan = (() => { // N places, evenly along every line of the plan
+    const legs = []; let total = 0;
+    for (const line of CHURCH.plan) for (let i = 0; i + 1 < line.length; i++) { const len = Math.hypot(line[i + 1][0] - line[i][0], line[i + 1][1] - line[i][1]); legs.push([line[i], line[i + 1], total, len]); total += len; }
+    const out = []; let leg = 0;
+    for (let n = 0; n < N; n++) { const s = ((n + 0.5) / N) * total; while (leg + 1 < legs.length && legs[leg][2] + legs[leg][3] < s) leg++; const [p, q, at, len] = legs[leg], u = (s - at) / len; out.push([lerp(p[0], q[0], u), lerp(p[1], q[1], u)]); }
+    return out;
+  })();
+  const inNave = (() => { // N places to stand: a lattice of equal triangles over the nave and the narthex, west of the icon screen
+    let sites = [];
+    for (let pitch = 0.075; sites.length < N; pitch *= 0.985) {
+      sites = []; const row = (pitch * Math.sqrt(3)) / 2;
+      for (let j = -40; j <= 40; j++) for (let i = -60; i <= 60; i++) { const x = (i + (j & 1) * 0.5) * pitch, z = j * row; if (stands(x, z)) sites.push([x, z]); }
+    }
+    return sites.sort((p, q) => Math.hypot(p[0] + 0.3, p[1]) - Math.hypot(q[0] + 0.3, q[1])).slice(0, N);
+  })();
+  // Each keeps its bearing about the middle, and its order outward within a bearing, so paths do not cross.
+  const ordered = (list) => { const by = list.map((p, i) => ({ i, a: Math.atan2(p[1], p[0]), r: Math.hypot(p[0], p[1]) })).sort((u, v) => u.a - v.a), per = Math.ceil(Math.sqrt(list.length)), out = []; for (let n = 0; n < by.length; n += per) out.push(...by.slice(n, n + per).sort((u, v) => u.r - v.r)); return out.map((o) => o.i); };
+  const oa = ordered(from), ob = ordered(onPlan), oc = ordered(inNave), roll = dice(2014);
+  const way = new Float32Array(N * 9), pos = new Float32Array(N * 3), light = new Float32Array(N);
+  for (let n = 0; n < N; n++) way.set([...from[oa[n]], ...onPlan[ob[n]], ...inNave[oc[n]], roll(), roll(), roll()], n * 9);
+  const flockGeo = new THREE.BufferGeometry(); flockGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3)); flockGeo.setAttribute("glow", new THREE.BufferAttribute(light, 1));
+  const flock = new THREE.Points(flockGeo, new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { px: { value: PX * K }, k: { value: K }, size: { value: 0.026 } },
+    vertexShader: "attribute float glow; uniform float px, k, size; varying float vA; void main(){ vec4 v = modelViewMatrix * vec4(position, 1.); float wide = 2. * size * px / max(-v.z, .5), least = 1.6 * k; gl_PointSize = max(wide, least); vA = glow * min(1., (wide * wide) / (least * least)); gl_Position = projectionMatrix * v; }",
+    fragmentShader: "varying float vA; void main(){ float d = length(gl_PointCoord - .5) * 2.; gl_FragColor = vec4(vec3(vA * (1. - smoothstep(.55, 1., d))), 1.); }" }));
+  flock.frustumCulled = false; flock.renderOrder = 5; flock.visible = false; sceneB.add(flock);
+  const io = (x) => inOutCubic(clamp(x));
+  function gather(t) {
+    for (let n = 0; n < N; n++) {
+      const o = n * 9, e1 = io((t - PLAN_AT - PLAN_LAG * way[o + 6]) / PLAN_FOR), e2 = io((t - IN_AT - IN_LAG * way[o + 7]) / IN_FOR);
+      const x = lerp(lerp(way[o], way[o + 2], e1), way[o + 4], e2), z = lerp(lerp(way[o + 1], way[o + 3], e1), way[o + 5], e2);
+      pos[n * 3] = FLOOR.x + x; pos[n * 3 + 1] = FLOOR.y + Math.sin(Math.PI * e1) * (0.12 + 0.3 * way[o + 8]) + 0.02 * e2; pos[n * 3 + 2] = FLOOR.z + z;
+      light[n] = lerp(lerp(2.1, 0.7, e1), 1.3, e2); // close along a line they would burn, so each dims as it lands
+    }
+    flockGeo.attributes.position.needsUpdate = true; flockGeo.attributes.glow.needsUpdate = true;
+    flock.material.uniforms.size.value = lerp(0.026, 0.02, io((t - IN_AT) / (IN_LAG + IN_FOR)));
+  }
+
+  const rise = (x) => lerp(x, x * x * (3 - 2 * x), 0.7); // steady, with a soft start and a soft end
+  const HEIGHT = TOP + 0.2, CROSS_TOP = foot + k.h + 0.02;
+  function pose(t) {
+    const on = t > GO3;
+    group.visible = on; flock.visible = on && t < BUILT + 0.2;
+    if (!on) return;
+    gather(t);
+    U.ink.value = t < DRAW ? -1 : HEIGHT * rise(span(t, DRAW, DRAWN));
+    U.level.value = t < BUILD ? -1 : HEIGHT * rise(span(t, BUILD, BUILT));
+    U.ground.value = inOutCubic(span(t, BUILD - 0.5, BUILD + 1.2));
+    U.glow.value = lerp(0.6, 1, inOutCubic(span(t, BUILT - 0.8, BUILT + 0.8)));
+    plan.material.color.setScalar(0.9 * inOutCubic(span(t, PLAN_AT + 0.3, PLAN_AT + PLAN_LAG + PLAN_FOR)) * (1 - 0.6 * span(t, BUILD, BUILD + 1.5)));
+    plan.visible = t < BUILT;
+    const drawn = span(t, SIGN, SIGN + 0.55), stood = span(t, SIGN + 0.4, SIGNED);
+    sign.visible = drawn > 0 && stood < 1; signGeo.setDrawRange(0, Math.max(2, Math.round(drawn * (outline.length / 3))));
+    sign.material.color.setScalar(2.4 * (1 - inOutCubic(stood)));
+    LEVEL.value = stood <= 0 ? -1 : lerp(foot, CROSS_TOP, outCubic(stood));
+  }
+  // The light for one drawing of a frame.
+  const KEY_LIGHT = new THREE.Vector3(-0.6, 0.62, 0.5).normalize(), KEY_POWER = 0.82, SKY_POWER = 0.55;
+  const lamp = new THREE.OrthographicCamera(-5.2, 5.2, 5.2, -5.2, 8, 34), target = FLOOR.clone().setY(FLOOR.y + 1.4);
+  const side = new THREE.Vector3().crossVectors(KEY_LIGHT, Y_AXIS).normalize(), over = new THREE.Vector3().crossVectors(side, KEY_LIGHT).normalize();
+  function light_(i, n, t, cam) {
+    const keys = Math.ceil(n / 3), u = halton(i + 1, 5), v = halton(i + 1, 7), sun = U.sun.value;
+    if (i % 3 === 0) { sun.copy(KEY_LIGHT).addScaledVector(side, (u - 0.5) * 0.2).addScaledVector(over, (v - 0.5) * 0.2).normalize(); U.power.value = (KEY_POWER * n) / keys; }
+    else { const y = 0.25 + 0.72 * u, r = Math.sqrt(1 - y * y); sun.set(r * Math.cos(2 * Math.PI * v), y, r * Math.sin(2 * Math.PI * v)); U.power.value = (SKY_POWER * n) / (n - keys); }
+    U.eye.value.copy(cam.position);
+    if (U.level.value < 0 && U.ground.value <= 0) return;
+    lamp.position.copy(target).addScaledVector(sun, 20); lamp.lookAt(target); lamp.updateMatrixWorld(true);
+    U.toLight.value.multiplyMatrices(lamp.projectionMatrix, lamp.matrixWorldInverse);
+    renderer.setRenderTarget(shade); renderer.clear(); renderer.render(shadeScene, lamp);
+  }
+  return { pose, light: light_, flock: N, stone: CHURCH.tri.length / 9 };
+})();
+
+// The figure of scene three: over the dome, in the dark above the cross.
+const parishes = plane("parishes", 760, 250, 37, (ctx, caption = 0) => {
+  ctx.textBaseline = "alphabetic"; ctx.textAlign = "center";
+  ctx.font = `${NUM}150px ${NUMFACE}`; ctx.fillText(PARISHES.toLocaleString("en-US"), 380, 150);
+  ctx.globalAlpha = caption; ctx.font = `400 37px ${SANS}`; ctx.fillText(CAPTION_PARISHES, 380, 218 + (1 - caption) * 10); ctx.globalAlpha = 1;
+}, [60, 30, 700, 235]);
+const PARISH_UP = Q3("parishup", 520); // its middle, in px above the point the camera looks at
+parishes.mesh.quaternion.copy(facing3.quaternion);
+parishes.mesh.position.copy(FLOOR).setY(FLOOR.y + AIM3).addScaledVector(up3, PARISH_UP * UNIT3);
+parishes.mesh.material.opacity = 0;
+sceneB.add(parishes.mesh);
+
 // Motes of dust near the lens, far out of focus: drawn once a frame as soft discs the size the lens would give them.
 const DUST = 46;
 const dust = (() => {
@@ -618,15 +795,20 @@ function poseB(t) {
   const arrive = span(t, RISE + 0.42, RISE + 0.8), settle = span(t, LANDED - 0.05, LANDED + 0.3);
   figure.mesh.material.opacity = inOutCubic(arrive) * (1 - inOutCubic(span(t, GO + 0.05, GO + 0.6)));
   // The people, the ring that keeps the size of the rolls, and scene two's words.
-  people.points.visible = t > GO; people.mat.uniforms.t.value = t;
-  people.ring.material.opacity = inOutCubic(span(t, THIN + 0.2, THINNED)); people.ring.visible = t > THIN + 0.2;
+  people.points.visible = t > GO && t < GO3; people.mat.uniforms.t.value = t;
+  people.ring.material.opacity = inOutCubic(span(t, THIN + 0.2, THINNED)) * (1 - inOutCubic(span(t, GO3 + 0.4, GO3 + 2.0))); people.ring.visible = t > THIN + 0.2 && t < GO3 + 2.0; // the ring kept the size of the rolls; the plan takes its place
   const read = span(t, STOOD - 0.55, STOOD - 0.15), landed2 = span(t, STOOD - 0.02, STOOD + 0.3), sunday2 = span(t, THINNED - 0.02, THINNED + 0.3);
-  count.mesh.material.opacity = inOutCubic(read);
+  const gone3 = 1 - inOutCubic(span(t, GO3 + 0.05, GO3 + 0.6));
+  count.mesh.material.opacity = inOutCubic(read) * gone3;
   count.mesh.scale.setScalar(UNIT2 * (lerp(1.1, 1, outCubic(read)) + 0.02 * Math.sin(Math.PI * landed2) * (1 - landed2) + 0.02 * Math.sin(Math.PI * sunday2) * (1 - sunday2)));
   const lands = span(t, SHARE_AT - 0.1, SHARE_AT + 0.25), settles = span(t, SHARE_AT + 0.2, SHARE_AT + 0.55);
-  share.mesh.material.opacity = inOutCubic(lands);
+  share.mesh.material.opacity = inOutCubic(lands) * gone3;
   share.mesh.scale.setScalar(UNIT2 * (lerp(1.14, 1, outCubic(lands)) + 0.02 * Math.sin(Math.PI * settles) * (1 - settles)));
   figure.mesh.scale.setScalar(UNIT * (lerp(1.12, 1, outCubic(arrive)) + 0.022 * Math.sin(Math.PI * settle) * (1 - settle)));
+  church.pose(t);
+  const lands3 = span(t, PARISH_AT - 0.1, PARISH_AT + 0.25), settles3 = span(t, PARISH_AT + 0.2, PARISH_AT + 0.55);
+  parishes.mesh.material.opacity = inOutCubic(lands3);
+  parishes.mesh.scale.setScalar(UNIT3 * (lerp(1.12, 1, outCubic(lands3)) + 0.02 * Math.sin(Math.PI * settles3) * (1 - settles3)));
   return { cam: camB, focus: d, open: openB(t), sum };
 }
 // The count on the figure is the sum of the shares of the states that have risen. Drawn once a frame.
@@ -643,8 +825,9 @@ function drawFigure(t) {
     const key2 = `${people.count(t)} ${rolls.toFixed(3)} ${sunday.toFixed(3)}`;
     if (key2 !== drawn2) { count.redraw(people.count(t), rolls, sunday); drawn2 = key2; }
   }
+  if (t > PARISH_AT - 0.5) { const key3 = inOutCubic(span(t, PARISH_AT + 0.25, PARISH_AT + 0.7)).toFixed(3); if (key3 !== drawn3) { parishes.redraw(Number(key3)); drawn3 = key3; } }
 }
-let drawn2 = "";
+let drawn2 = "", drawn3 = "";
 /** The key to the points, flat on the glass over the source: its figure in the numerals' face. */
 function keyLine(alpha, measureOnly = false) {
   let x = 44 * K; const y = S - 86 * K;
@@ -681,6 +864,7 @@ function drawFrame(t, quality = 1) {
     right.set(1, 0, 0).applyQuaternion(cam.quaternion); upv.set(0, 1, 0).applyQuaternion(cam.quaternion);
     cam.position.addScaledVector(right, ox).addScaledVector(upv, oy);
     cam.updateMatrixWorld(true);
+    if (useB && ts > GO3) church.light(i, n, ts, cam);
     for (const w of words) w.mesh.visible = !hideWords && w.mesh.material.opacity > 0.001;
     for (const s of six) s.pin.visible = !hideWords;
     renderer.setRenderTarget(rtScene); renderer.clear();
@@ -713,13 +897,13 @@ function drawFrame(t, quality = 1) {
     pen.save(); pen.globalAlpha = src; pen.fillStyle = "#d6d6d6"; pen.textAlign = "left"; pen.textBaseline = "alphabetic";
     pen.font = `400 ${30 * K}px ${SANS}`; pen.fillText(SOURCE_LINE, 44 * K, S - 42 * K); pen.restore();
   }
-  const keyed = hideWords ? 0 : inOutCubic(span(t, STOOD, STOOD + 0.4));
+  const keyed = hideWords ? 0 : inOutCubic(span(t, STOOD, STOOD + 0.4)) * (1 - inOutCubic(span(t, KEY_OFF - 0.5, KEY_OFF)));
   if (keyed > 0) keyLine(keyed);
   return n;
 }
 
 // ---- What render.mjs calls ---------------------------------------------------
-window.__info = { fps: FPS, seconds: SECONDS, frames: FPS * SECONDS, size: S, landed: LANDED, cut: CUT, beat: BEAT, go: GO, stood: STOOD, thin: THIN, thinned: THINNED, shareAt: SHARE_AT,
+window.__info = { fps: FPS, seconds: SECONDS, frames: FPS * SECONDS, size: S, landed: LANDED, cut: CUT, beat: BEAT, go: GO, stood: STOOD, thin: THIN, thinned: THINNED, shareAt: SHARE_AT, go3: GO3, built: BUILT, signed: SIGNED, parishAt: PARISH_AT, keyOff: KEY_OFF, flock: church.flock, tradition: TRADITION, stone: church.stone, camera3: [GO3, GO3 + 4.6, SETTLE, SECONDS].map((t) => ({ t, turn: Math.round(turn(t) * 10) / 10, tilt: Math.round(tilt(t) * 10) / 10, lift: Math.round(lift(t) * 1000) / 1000, away: Math.round(cameraB(t, facing3) * 100) / 100 })),
   points: N_ROLLS, stay: N_SUNDAY, fromSix: people.fromSix, digitWidths, count: [GO, STOOD - 0.01, STOOD, THIN, THINNED - 0.01, THINNED, SECONDS].map((t) => people.count(t)), renderer: renderer.getContext().getParameter(renderer.getContext().getExtension("WEBGL_debug_renderer_info").UNMASKED_RENDERER_WEBGL) };
 window.__frame = (i, quality = 1) => { const n = drawFrame(i / FPS, quality); return { n, png: out.toDataURL("image/png") }; };
 window.__still = (t, quality = 1) => { drawFrame(t, quality); return out.toDataURL("image/png"); };
@@ -750,7 +934,7 @@ window.__words = (t, quality = 0.5) => {
     measure(w.name, Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys), (w.smallest * tall) / K, w.mesh.material.opacity);
   }
   if (t >= LANDED + 0.55) { pen.font = `400 ${30 * K}px ${SANS}`; measure("source", 44 * K, S - 72 * K, 44 * K + pen.measureText(SOURCE_LINE).width, S - 34 * K, 30, 1); }
-  if (t >= STOOD + 0.4) measure("key", 44 * K, S - 116 * K, keyLine(1, true), S - 78 * K, 30, 1);
+  if (t >= STOOD + 0.4 && t < KEY_OFF - 0.5) measure("key", 44 * K, S - 116 * K, keyLine(1, true), S - 78 * K, 30, 1);
   return found;
 };
 window.__ready = true;

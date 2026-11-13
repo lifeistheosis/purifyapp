@@ -4,7 +4,8 @@
 
 export const FPS = 30;
 export const SCENE_ONE = 10; // seconds: the first scene's hold ends here and its drift becomes the move into the second
-export const SECONDS = 20;
+export const SCENE_TWO = 20; // seconds: the second scene's hold ends here and those who stay begin to draw the church
+export const SECONDS = 32;
 
 // One face for every figure in the film (his word, 2026-11-13: "id change the # font").
 // Archivo Narrow by Omnibus-Type, SIL Open Font Licence 1.1, from @fontsource/archivo-narrow.
@@ -41,3 +42,9 @@ export const CAPTION_ROLLS = "on Eastern Orthodox parish rolls.";
 export const CAPTION_SUNDAY = "at the Liturgy on a typical Sunday.";
 export const SHARE_LINE = "of the rolls";
 export const KEY = ["One point of light is ", "100", " people."]; // the figure in the middle takes the numerals' face
+
+// Scene three, the Church. The same source, p. 3 (facts.mjs, scene "six"): "2,014
+// Eastern Orthodox and 895 Oriental Orthodox parishes", 2020. The church itself
+// is drawn by the 1,830 points of scene two; its form is church.js.
+export const PARISHES = 2014;
+export const CAPTION_PARISHES = "Eastern Orthodox parishes, 2020.";
