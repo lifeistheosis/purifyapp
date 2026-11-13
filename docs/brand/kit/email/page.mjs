@@ -100,9 +100,11 @@ const CONTENT = `
 </main>
 `;
 
-const style = (D, L) => `
+const FACES_1 = "--serif:Lora,Georgia,'Times New Roman',serif;--sans:'DM Sans',Arial,Helvetica,sans-serif";
+const FACES_2 = "--serif:Georgia,'Noto Serif','Times New Roman',serif;--sans:'Segoe UI',Roboto,-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif";
+const style = (D, L, faces = FACES_1) => `
 /* One column for words, and each email at a phone's width beside its other scheme. */
-:root{${tokens(D)};color-scheme:dark;--serif:Lora,Georgia,'Times New Roman',serif;--sans:'DM Sans',Arial,Helvetica,sans-serif}
+:root{${tokens(D)};color-scheme:dark;${faces}}
 @media (prefers-color-scheme: light){:root:not([data-theme="dark"]){${tokens(L)};color-scheme:light}}
 :root[data-theme="light"]{${tokens(L)};color-scheme:light}
 *{box-sizing:border-box}
@@ -139,45 +141,57 @@ li{margin-top:8px}
 const RETENTION = `
 <main>
 <header>
-  <p class="small">docs/brand/kit/email &middot; 13 November 2026</p>
+  <p class="small">Round 2 &middot; 13 November 2026</p>
   <h1>Three emails that bring a reader back</h1>
-  <p class="lede">The first week, where you left off, and the fasting companion. Each is one thing with one button, on the same look. Yes or no to each is yours.</p>
+  <p class="lede">The first week, where you left off, and the fasting companion, designed again at your word. One version of each. Yes or no to each is yours.</p>
   <span class="rule"></span>
 </header>
 
 <section>
+  <h2>What changed</h2>
+  <ul>
+    <li><strong>Each email has a face.</strong> It opens on one night card, as the app's own cards stand on Today: the step's picture from the app, the step as the title at its foot, and the one button.</li>
+    <li><strong>Type that holds in a mail app.</strong> Designed in Georgia and each phone's own sans. No web font is waited on, so nothing falls back to Times.</li>
+    <li><strong>The app's own button.</strong> A white pill with its arrow, as wide as its words. Unsubscribe is a plain link.</li>
+    <li><strong>Nothing said twice.</strong> The first week's steps are one short strip. The fast's week is seven days across with the calendar's own marks, and a short key.</li>
+    <li><strong>One button in every email.</strong> The fasting companion had two; the calendar stays.</li>
+  </ul>
+</section>
+
+<section>
   <h2>The first week</h2>
-  <p>Three emails for a new reader, on days 1, 3 and 7. Each names one thing to do and gives the one button that does it, on the app's own card in the app's own words. Under it, the three steps as a short leaf, with today's set heavier. Then they stop, and the foot says so.</p>
+  <p>Three emails for a new reader, on days 1, 3 and 7. Morning prayers opens on the icon of the Resurrection, the picture the app sets on morning prayers. The calendar opens on the app's own calendar, a real screen of 1.9. The verse opens on the icon the app sets behind a shared verse, and sets the day's verse whole. Under each, the three steps as one strip, today's under a heavier rule. Then they stop, and the foot says so.</p>
   <div class="row">
-    ${shot("first-week-1.dark.png", "Day 1, dark", "The first email of the first week: the title Pray your first morning prayers, a card with Morning prayers, 8 min and the button Begin, and the three steps.")}
-    ${shot("first-week-1.light.png", "Day 1, light", "The same email on a light screen, clean white in the app's ink.")}
-    ${shot("first-week-3.dark.png", "Day 3", "The second email: Choose your calendar, with the card New or Old and its button.")}
-    ${shot("first-week-7.dark.png", "Day 7", "The third email: Save your first verse, with the Verse of the Day on its card and the button Save.")}
+    ${shot("first-week-1.dark.png", "Day 1, dark", "The first email of the first week: a night card that opens on the icon of the Resurrection, with the title Pray your first morning prayers and the button Begin, then the three steps as a strip.")}
+    ${shot("first-week-1.light.png", "Day 1, where the screen is light", "The same email on a light screen: a clean white page, and the night card still a night.")}
+    ${shot("first-week-3.dark.png", "Day 3", "The second email: the app's calendar for December 2026 with New and Old above it, the title Choose your calendar and its button.")}
+    ${shot("first-week-7.dark.png", "Day 7", "The third email: the icon of Christ, the title Save your first verse, the Verse of the Day set whole, and the button Save.")}
   </div>
 </section>
 
 <section>
   <h2>Pick up where you left off</h2>
-  <p>One personal line, as the title: the reader's own last place, or a saint they saved whose feast is near. One card, one button back to it. It says nothing else about the reader, and it is the shortest email Purify sends.</p>
+  <p>One personal line, as the title: the reader's own last place, or a saint they saved whose feast is near. Its picture is the cover of the book they were reading. One button back to it. It says nothing else about the reader, and it is still the shortest email Purify sends.</p>
   <div class="row">
-    ${shot("pick-up.dark.png", "Dark", "The email Pick up where you left off: the title You were reading Romans 8, and a card with Romans 8, chapter 8 of 16, and the button Continue reading.")}
-    ${shot("pick-up.light.png", "Light", "The same email on a light screen.")}
+    ${shot("pick-up.dark.png", "Dark", "Pick up where you left off: a night card that opens on the icon of St Paul, with the title You were reading Romans 8 and the button Continue reading.")}
+    ${shot("pick-up.light.png", "Where the screen is light", "The same email on a light screen.")}
   </div>
 </section>
 
 <section>
   <h2>The fasting companion</h2>
-  <p>For the Nativity Fast first. It opens on the fast's first day and comes once a week while the fast lasts. It wears the season: the night of the app's Nativity card, with the star higher each week. The week's fast is set day by day in the calendar's own words. It gives no counsel: how a reader keeps the fast is for their priest to say.</p>
+  <p>For the Nativity Fast first. It keeps the night of the app's Nativity card, with the star higher each week, and now the title stands under the hill in the same card. The week's fast is one leaf of the calendar: seven days across, each with the calendar's own mark, and a key that names each fast once in the calendar's words. One button, the calendar. It gives no counsel: how a reader keeps the fast is for their priest to say.</p>
   <div class="row">
-    ${shot("fast-opening.dark.png", "The opening, dark", "The fasting companion's opening email: a night sky with the star just above the horizon, the title The fast begins, and each day of the week with its fast.")}
-    ${shot("fast-opening.light.png", "The opening, light", "The same email on a light screen: the night stays dark at the head of a clean white page.")}
-    ${shot("fast-week.dark.png", "A week in", "The weekly email: the star a little higher, the title The second week, and the week's fast day by day.")}
+    ${shot("fast-opening.dark.png", "The opening, dark", "The fasting companion's opening email: the night sky with the star just above the hill, the title The fast begins, the button Open the calendar, and the week's seven days each with a fish or a stalk of wheat.")}
+    ${shot("fast-opening.light.png", "The opening, where the screen is light", "The same email on a light screen: the night card stays dark on a clean white page.")}
+    ${shot("fast-week.dark.png", "A week in", "The weekly email: the star a little higher, the title The second week, and that week's fast.")}
+    ${shot("fast-opening.no-pictures.png", "With every picture blocked", "The opening email with no pictures shown: the picture's words stand in a band of the night, and the title, the button, the week and its key are all there.")}
   </div>
 </section>
 
 <section>
-  <h2>Why they look this way</h2>
-  <p>Each choice, its reason, and what it does for the reader and for the goal, which is that a reader comes back.</p>
+  <h2>Why it looks this way</h2>
+  <p>One line for each choice: what it is, why, and what it does for the reader and for the goal, which is that a reader comes back.</p>
   __WHY__
 </section>
 
@@ -185,14 +199,15 @@ const RETENTION = `
   <h2>What waits on your yes</h2>
   <ul>
     <li><strong>The designs</strong>, each of the three.</li>
-    <li><strong>The new words.</strong> The titles, the line under each, and each foot's sentence of why the email came are written for these emails. Everything on a card is the app's own words.</li>
+    <li><strong>The words.</strong> The titles, the line under each, and each foot's sentence of why the email came are as in round 1 and still wait. Two small ones are new: &ldquo;Saturday and Sunday:&rdquo; before the weekend's rule, and &ldquo;The Bible&rdquo; before the chapter's line.</li>
     <li><strong>Saving a verse.</strong> Day 7 says a saved verse is kept for the reader. That holds only if saving is free for every reader; the sending's chat confirms it before the switch goes on.</li>
   </ul>
 </section>
 
 <section>
   <h2>The check</h2>
-  <p>Run with <code>node docs/brand/kit/check.mjs</code> on 13 November 2026. It passed: all six emails at 360, 390, 412 and 1032 wide, on the four dark palettes and the clean light, in Arabic's direction, the fast's two on Night sky as well. Each is under 20KB of HTML. No script, no parchment, nothing on the heritage list. Not yet seen in real Gmail, Apple Mail or Outlook.</p>
+  <p>Run with <code>node docs/brand/kit/check.mjs</code> on 13 November 2026. It passed: all six emails at 360, 390, 412 and 1032 wide, on the four dark palettes and the clean light, in Arabic's direction, the fast's two on Night sky as well. Each email is 9 to 22KB of HTML and no picture is over 60KB. No script, no font fetched, no parchment. No picture, and no file a picture is cut from, is on the heritage list.</p>
+  <p>These stills are drawn by a browser in Georgia's open twin and in Roboto, the faces a phone's mail app has. Not done here, and still to do before any send: a look in real Gmail, Apple Mail and Outlook, light and dark. In Outlook on Windows the card's corners will be square; the button is drawn there as its own rounded shape. Gmail keeps a dark email dark, so its forced darkening has nothing to turn.</p>
 </section>
 </main>
 `;
@@ -211,7 +226,7 @@ export function page({ standalone, palettes, why = [] }) {
 /** The retention emails' page: the same style, their own stills and reasons. */
 export function retentionPage({ standalone, palettes, why = [] }) {
   const reasons = why.map(([choice, reason, reader]) => `<h3>${esc(choice)}</h3>\n  <p>${esc(reason)}</p>\n  <p class="for"><span class="small">For the reader, and for coming back</span>${esc(reader)}</p>`).join("\n  ");
-  const head = `<title>Purify retention emails</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<style>${style(palettes.Dark.wears, palettes.Light.wears)}</style>`;
+  const head = `<title>Purify retention emails</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<style>${style(palettes.Dark.wears, palettes.Light.wears, FACES_2)}</style>`;
   const content = RETENTION.replace("__WHY__", reasons);
   if (!standalone) return `${head}\n${content}`;
   return `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n${head}\n</head>\n<body>${content}</body>\n</html>\n`;

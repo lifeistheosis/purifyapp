@@ -29,9 +29,10 @@
 //   reader.html                 the reader email (the Sunday email as its sample)
 //   reader-nativity-fast.html   the same email in the Nativity Fast
 //   brief.html                  the owner's brief
+//   first-week-*, pick-up, fast-*  the retention emails
 //   img/                        the pictures the emails show
 //   shots/                      each email as a mail client draws it, for the page
-//   index.html                  the page that shows them
+//   index.html, retention.html  the pages that show them
 //
 // Each email is one file for a mail client: tables, inline styles, no script.
 // Its inline colours are the dark scheme, and one style block in its head
@@ -191,11 +192,39 @@ const SLOTS = Object.keys(PALETTES.Dark.wears);
 const NIGHT = { ground: toHex(toRgb(KIT_DARK["k-well"])), ink: toHex(toRgb(KIT_DARK["k-ink-base"])) };
 NIGHT.line = mix(NIGHT.ink, NIGHT.ground, 0.12); // the card's own edge: border-paper/12
 NIGHT.words = mix(NIGHT.ink, NIGHT.ground, share(KIT_DARK["k-ink-2-share"]));
+NIGHT.quiet = mix(NIGHT.ink, NIGHT.ground, 0.6); // the cards' own small line: text-paper/60 (components/today/PrayNowCard.tsx)
 
-// The faces, as lib/email/theme.ts names them: Lora and DM Sans where a reader
-// has them, Georgia and Arial everywhere else. Named, never fetched.
-const SERIF = "Lora,Georgia,'Times New Roman',serif";
-const SANS = "'DM Sans',Arial,Helvetica,sans-serif";
+// Two rounds of the look stand here. Round 1 is the reader email and the
+// owner's brief as he said yes to them on 2026-11-13 ("yes look"): they are
+// written exactly as they were. Round 2 is the retention emails, redone at
+// his "retention emails could use a better design" and waiting on his yes.
+// Whether round 2's faces, button and foot go to the reader emails too is his
+// to say, through the arbiter; until then each email wears its own round
+// (`wear(1)` or `wear(2)` at the head of its maker).
+//
+// Round 1's faces are the ones lib/email/theme.ts names: Lora and DM Sans
+// where a reader has them, Georgia and Arial everywhere else.
+//
+// Round 2's are the faces a mail app really has. A web font does not load in
+// most mail apps (the arbiter's stills of round 1 fell back to plain Times),
+// so nothing waits on one: the look is designed in Georgia, which Apple Mail
+// and Outlook have, with Noto Serif for Android, whose Gmail has no Georgia.
+// The sans is each system's own: Segoe UI first, since Outlook on Windows
+// takes the first name it knows, then Android's Roboto, then Apple's. Named,
+// never fetched.
+const FACES = {
+  1: { serif: "Lora,Georgia,'Times New Roman',serif", sans: "'DM Sans',Arial,Helvetica,sans-serif" },
+  2: { serif: "Georgia,'Noto Serif','Times New Roman',serif", sans: "'Segoe UI',Roboto,-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif" },
+};
+let ROUND = 1;
+let SERIF = FACES[1].serif;
+let SANS = FACES[1].sans;
+/** Set the round an email is drawn in. Each maker calls it first; drawing is one pass, so nothing else is drawn between. */
+function wear(round) {
+  ROUND = round;
+  SERIF = FACES[round].serif;
+  SANS = FACES[round].sans;
+}
 
 // ── Drawing ─────────────────────────────────────────────────────────────
 
@@ -239,14 +268,15 @@ const rules = (wears, important) => {
 /** The head's style block. */
 function sheet(how, { season }) {
   // The inline sizes are a phone's. A wide screen lets the title and the figures out.
-  const phone = `@media (min-width:600px){.e-title{font-size:34px !important;line-height:42px !important}.e-fig{font-size:30px !important;line-height:36px !important}}`;
+  const two = ROUND === 2;
+  const phone = `@media (min-width:600px){.e-title{font-size:34px !important;line-height:42px !important}.e-fig{font-size:30px !important;line-height:36px !important}}${two ? `\n[dir="rtl"] .e-arrow{transform:scaleX(-1)}` : ""}`;
   if (how === "email") {
     // Dark is inline. Where a client says the reader's screen is light, the clean light.
     return `${phone}
 @media (prefers-color-scheme: light){
 ${rules(PALETTES.Light.wears, true)}
 .only-dark{display:none !important}
-.only-light{display:block !important}
+.only-light{display:block !important}${two ? "\n.only-light.e-arrow{display:inline-block !important}" : ""}
 }`;
   }
   const vars = (w) => SLOTS.map((s) => `--e-${s}:${w[s]}`).join(";");
@@ -259,7 +289,7 @@ ${Object.values(PALETTES)
 ${season ? `html[data-look="nightsky"]{${vars(NIGHT_SKY)}}` : ""}
 ${SLOTS.map((s) => `.g-${s}{background-color:var(--e-${s})}.t-${s}{color:var(--e-${s})}.b-${s}{border-color:var(--e-${s})}`).join("\n")}
 html[data-reading-mode="parchment"] .only-dark{display:none !important}
-html[data-reading-mode="parchment"] .only-light{display:block !important}`;
+html[data-reading-mode="parchment"] .only-light{display:block !important}${two ? `\nhtml[data-reading-mode="parchment"] .only-light.e-arrow{display:inline-block !important}` : ""}`;
 }
 
 /** A gap between two cells. A cell, not a padding, so the row mirrors in a right-to-left language. */
@@ -276,11 +306,11 @@ function shell(p, { title, preheader, kind, rows, foot, season = false }) {
     `<img class="only-dark" src="img/cross.png" width="15" height="26" alt="" style="display:block;border:0;outline:none">` +
     `<img class="only-light" src="img/cross-ink.png" width="15" height="26" alt="" style="display:none;mso-hide:all;border:0;outline:none">`;
   return `<!doctype html>
-<html lang="en">
+<html lang="en"${ROUND === 2 ? ` xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"` : ""}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="x-apple-disable-message-reformatting">
+<meta name="x-apple-disable-message-reformatting">${ROUND === 2 ? "\n<!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->" : ""}
 <meta name="color-scheme" content="dark light">
 <meta name="supported-color-schemes" content="dark light">
 <title>${esc(title)}</title>
@@ -343,20 +373,69 @@ const link = (p, href, text) =>
   `<a href="${esc(href)}"${p.c({ fg: "ink" }, `display:inline-block;padding:13px 0;font-family:${SANS};font-size:15px;line-height:18px;font-weight:600;text-decoration:underline;`)}>${esc(text)}</a>`;
 const linkRow = (p, href, text, top = 0) => `<tr><td style="padding:${top}px 0 0">${link(p, href, text)}</td></tr>`;
 
-/** The one button: the app's own, its ink on its page, 48 tall. A table, because Outlook pads no link. */
-const button = (p, { href, text }) =>
-  `<table ${TABLE} width="100%" style="border-collapse:separate"><tr><td align="center"${p.bgcolor("button")}${p.c({ bg: "button" }, "border-radius:999px;text-align:center;")}>` +
-  `<a href="${esc(href)}"${p.c({ fg: "onButton" }, `display:block;padding:15px 18px;font-family:${SANS};font-size:15px;line-height:18px;font-weight:600;text-decoration:none;border-radius:999px;`)}>${esc(text)}</a>` +
-  `</td></tr></table>`;
+/**
+ * The one button. In round 2, as the app draws its own (the Pray now card's "Begin",
+ * components/today/PrayNowCard.tsx: `inline-flex min-h-11 rounded-pill
+ * bg-paper px-[18px] font-sans text-ui font-semibold text-night`, with its
+ * arrow after the words): a pill in the ink that keeps to its words, 48 tall,
+ * never the width of the page. A long name wraps inside it, the arrow kept
+ * with its last word. `island`: the button stands on a night card,
+ * which is dark on every palette, so it wears the night's own ink.
+ *
+ * Outlook on Windows pads no link and rounds no corner, so there it is drawn
+ * as a rounded shape of its own (VML), the same pill with the same words.
+ */
+function button(p, { href, text, island = false }) {
+  // Round 1's button, as he said yes to it on the reader email: the ink across its card.
+  if (ROUND === 1) {
+    return (
+      `<table ${TABLE} width="100%" style="border-collapse:separate"><tr><td align="center"${p.bgcolor("button")}${p.c({ bg: "button" }, "border-radius:999px;text-align:center;")}>` +
+      `<a href="${esc(href)}"${p.c({ fg: "onButton" }, `display:block;padding:15px 18px;font-family:${SANS};font-size:15px;line-height:18px;font-weight:600;text-decoration:none;border-radius:999px;`)}>${esc(text)}</a>` +
+      `</td></tr></table>`
+    );
+  }
+  const fill = island ? NIGHT.ink : p.dark.button;
+  const words = island ? NIGHT.ground : p.dark.onButton;
+  const arrowStyle = "vertical-align:-2px;border:0;outline:none;";
+  const arrow = island
+    ? `<img class="e-arrow" src="img/arrow.png" width="15" height="15" alt="" style="display:inline-block;${arrowStyle}">`
+    : `<img class="e-arrow only-dark" src="img/arrow.png" width="15" height="15" alt="" style="display:inline-block;${arrowStyle}">` +
+      `<img class="e-arrow only-light" src="img/arrow-light.png" width="15" height="15" alt="" style="display:none;mso-hide:all;${arrowStyle}">`;
+  const type = `font-family:${SANS};font-size:15px;line-height:20px;font-weight:600;`;
+  const cell = island
+    ? ` bgcolor="${fill}" style="border-radius:999px;background-color:${fill};"`
+    : `${p.bgcolor("button")}${p.c({ bg: "button" }, "border-radius:999px;")}`;
+  const link = island
+    ? ` style="display:inline-block;padding:14px 22px;${type}text-decoration:none;border-radius:999px;color:${words};"`
+    : p.c({ fg: "onButton" }, `display:inline-block;padding:14px 22px;${type}text-decoration:none;border-radius:999px;`);
+  const wide = Math.round(text.length * 8.6 + 56);
+  return (
+    `<!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${esc(href)}" style="height:48px;v-text-anchor:middle;width:${wide}px;" arcsize="50%" stroke="f" fillcolor="${fill}"><w:anchorlock/><center style="color:${words};font-family:'Segoe UI',Arial,sans-serif;font-size:15px;font-weight:bold;">${esc(text)}</center></v:roundrect><![endif]-->` +
+    `<!--[if !mso]><!-- --><table ${TABLE} style="border-collapse:separate"><tr><td${cell}>` +
+    `<a href="${esc(href)}"${link}>${esc(text)}&nbsp;&nbsp;${arrow}</a>` +
+    `</td></tr></table><!--<![endif]-->`
+  );
+}
 
-/** A quiet button, outlined: Unsubscribe, Hold. 44 tall. */
+/** A quiet button, outlined: round 1's Unsubscribe, and the brief's Hold. 44 tall. */
 const quietButton = (p, { href, text }) =>
   `<a href="${esc(href)}"${p.c({ fg: "ink", bd: "rule" }, `display:inline-block;padding:13px 22px;border-width:1px;border-style:solid;border-radius:999px;font-family:${SANS};font-size:13px;line-height:16px;font-weight:600;text-decoration:none;`)}>${esc(text)}</a>`;
 
+/**
+ * Round 2's foot links: plain words, underlined, side by side, each 44 tall.
+ * Unsubscribe is a text link and never a button: it is said honestly and it
+ * does not compete with the one thing the email asks.
+ */
+const footLink = (p, href, text) =>
+  `<a href="${esc(href)}"${p.c({ fg: "quiet" }, `display:inline-block;padding:12px 0;font-family:${SANS};font-size:14px;line-height:20px;text-decoration:underline;`)}>${esc(text)}</a>`;
+const footLinks = (p, list) =>
+  `<table ${TABLE} align="center" style="margin:8px auto 0"><tr>${list.map(([href, text]) => `<td>${footLink(p, href, text)}</td>`).join(gap(28))}</tr></table>`;
+
 const FAST = {
-  fish: { slot: "fastFish", words: "Fish allowed" }, // calendar.fast.fish
-  strict: { slot: "fastStrict", words: "Strict fast" }, // calendar.fast.strict
-  wineOil: { slot: "fastWineOil", words: "Wine and oil" }, // calendar.fast.wineOil
+  // `icon` and `file`: the calendar's own mark for the register (components/calendar/fastMeta.tsx), as a picture.
+  fish: { slot: "fastFish", words: "Fish allowed", icon: "Fish", file: "fast-fish", short: "Fish" }, // calendar.fast.fish
+  strict: { slot: "fastStrict", words: "Strict fast", icon: "Wheat", file: "fast-strict", short: "Strict" }, // calendar.fast.strict
+  wineOil: { slot: "fastWineOil", words: "Wine and oil", icon: "Grapes", file: "fast-wine-oil", short: "Wine and oil" }, // calendar.fast.wineOil
   free: { slot: "fastFree", words: "Fast-free" }, // calendar.fast.fastFree
 };
 
@@ -433,8 +512,12 @@ const signOff = (p) =>
 const LIBRARY_WHY = "You are getting this because you turned on \u201cWhat is new in the library\u201d in your Purify settings.";
 const readerFoot = (p, extra, why = LIBRARY_WHY) => `<p style="margin:0">${extra ? `${esc(extra)} ` : ""}${esc(why)}</p>
   <p style="margin:6px 0 0">The company's name and its postal address stand here.</p>
-  <p style="margin:18px 0 0">${quietButton(p, { href: "https://purifyapp.net/unsubscribe", text: "Unsubscribe" })}</p>
-  <p style="margin:8px 0 0">${link(p, "https://purifyapp.net", "purifyapp.net")}</p>`;
+  ${
+    ROUND === 2
+      ? footLinks(p, [["https://purifyapp.net/unsubscribe", "Unsubscribe"], ["https://purifyapp.net", "purifyapp.net"]])
+      : `<p style="margin:18px 0 0">${quietButton(p, { href: "https://purifyapp.net/unsubscribe", text: "Unsubscribe" })}</p>
+  <p style="margin:8px 0 0">${link(p, "https://purifyapp.net", "purifyapp.net")}</p>`
+  }`;
 
 // ── The sample ──────────────────────────────────────────────────────────
 // The week of 15 November 2026 as the app's own calendar gives it
@@ -463,6 +546,7 @@ const SAINT = {
 // ── The reader email ────────────────────────────────────────────────────
 
 export function reader(how) {
+  wear(1);
   const p = pen(how, PALETTES.Dark.wears);
   return shell(p, {
     title: "The week ahead: Holy Apostle and Evangelist Matthew",
@@ -483,6 +567,7 @@ export function reader(how) {
 export const FAST_DAY = 1;
 
 export function readerNativityFast(how, day = FAST_DAY) {
+  wear(1);
   const p = pen(how, NIGHT_SKY);
   const { c } = p;
   const n = String(day).padStart(2, "0");
@@ -660,6 +745,7 @@ function pairs(p, list) {
 }
 
 export function brief(how) {
+  wear(1);
   const p = pen(how, PALETTES.Dark.wears);
   const b = BRIEF;
   return shell(p, {
@@ -696,22 +782,87 @@ export function brief(how) {
 // ── The retention emails ────────────────────────────────────────────────
 // Three kinds, each on the same look and each one thing with one button (his
 // word, 2026-11-13: "perfect let's build and I say yes or no to the design").
-// The sending is another chat's, behind a switch that stays off until his
-// yes. Every new line of words below waits for that yes too; the app's own
-// words are named where they are used. No urging, no countdown, no streak:
-// the calendar is the only urgency Purify uses (docs/brand/voice.md).
+// Round 2, at his word of 2026-11-13 about 05:31 UTC: "retention emails could
+// use a better design". Each now opens on one night card, as the app's own
+// cards stand on Today (the Pray now card, the Nativity card): the step's own
+// picture from the app, the step as the title at its foot, and the app's own
+// button. The sending is another chat's, behind a switch that stays off
+// until his yes. Every new line of words waits for that yes too; the app's
+// own words are named where they are used. No urging, no countdown, no
+// streak: the calendar is the only urgency Purify uses (docs/brand/voice.md).
 
-/** A card with no picture: a small line, a name, a line, and the one button. Today's card in the app. */
-function stepCard(p, { small, name, line, href, action }) {
-  const { c, bgcolor } = p;
-  return `<tr><td style="padding:30px 0 0">
-  <table ${TABLE} width="100%"${bgcolor("raised")}${c({ bg: "raised", bd: "line" }, "border-collapse:separate;border-width:1px;border-style:solid;border-radius:20px;")}>
-  <tr><td style="padding:16px">
-    <p${c({ fg: "quiet" }, `margin:0;font-family:${SANS};font-size:12px;line-height:18px;font-weight:600;`)}>${esc(small)}</p>
-    <p${c({ fg: "ink" }, `margin:4px 0 0;font-family:${SERIF};font-size:21px;line-height:27px;font-weight:600;`)}>${esc(name)}</p>
-    ${line ? `<p${c({ fg: "quiet" }, `margin:4px 0 0;font-family:${SANS};font-size:14px;line-height:20px;`)}>${esc(line)}</p>` : ""}
-    <table ${TABLE} width="100%"><tr><td height="16" style="height:16px;font-size:0;line-height:0">&nbsp;</td></tr></table>
-    ${button(p, { href, text: action })}
+/**
+ * The pictures the night cards open on. Each is the app's own picture for
+ * the step, never one drawn for the email, cut to the card's width with the
+ * app's own fade into the night at its foot (as the Prayers screen's picture
+ * fades into its page). `from` is the app's file; `alt` its words for a
+ * reader who sees no picture, short enough to stand on one line in the band
+ * of night that takes its place. None may be on the heritage list
+ * (lib/marketing/heritagePictures.ts): pictures() refuses one that is.
+ */
+export const HEROES = {
+  // Morning prayers' own picture: lib/prayers/serviceArt.ts, morning: "anastasis" ("rising from sleep, as from the tomb").
+  "morning-prayers": {
+    from: "public/icons/prayer/anastasis.jpg",
+    focus: [50, 43],
+    h: 392,
+    alt: "The icon of the Resurrection",
+  },
+  // The calendar itself, a real screen of the 1.9 app from its native export (docs/plans/v1.9/store, the App Store iPhone picture 07, taken 2026-11-12).
+  calendar: {
+    from: "docs/plans/v1.9/store/appstore-iphone-6.9-07-calendar.png",
+    crop: { left: 200, top: 600, width: 920, height: 730 },
+    h: 571,
+    fade: [85, 97],
+    alt: "The Church calendar in Purify",
+  },
+  // The picture the app sets behind a verse made into a card: lib/share/verseCard.ts, the look "christ".
+  verse: {
+    from: "public/sections/prayers.v4.jpg",
+    focus: [50, 24],
+    h: 530,
+    fade: [62, 98],
+    alt: "The icon of Christ",
+  },
+  // The reader's own place: the cover of the book they were reading (lib/readAloud/covers.ts, paul, for Romans), with the cover's own words.
+  romans: {
+    from: "public/covers/paul.v1.jpg",
+    focus: [42, 24],
+    h: 392,
+    alt: "St Paul the Apostle",
+  },
+};
+const hero = (name) => ({ src: `img/hero-${name}.jpg`, alt: HEROES[name].alt });
+
+/**
+ * The night card an email opens on: Today's own card in the app
+ * (`rounded-[24px] border border-paper/12 bg-night-deep`), a night on every
+ * palette as the Nativity card is (`dark-island`). The picture, a small line,
+ * the step as the title, a line under it, and the one button. With pictures
+ * blocked the picture's cell is a short band of the night holding its words.
+ *
+ *   picture   { src, alt }, and `night: true` for the Nativity card's night;
+ *             none (a cover or a saint on the heritage list) and the card stands on its words
+ *   verse     { label, text }: a verse set whole, word for word, above the button
+ */
+function lead(p, { picture, small, title, sub, line, verse, action }) {
+  const night = picture?.night === true;
+  const tall = night ? 110 : 64;
+  const say = (style, colour) => ` style="${style}color:${colour};"`;
+  const hair = `<table ${TABLE} width="100%" style="margin:18px 0 0"><tr><td height="1" bgcolor="${NIGHT.line}" style="height:1px;font-size:0;line-height:0;background-color:${NIGHT.line}">&nbsp;</td></tr></table>`;
+  return `<tr><td style="padding:24px 0 0">
+  <table ${TABLE} width="100%" class="dark-island" bgcolor="${NIGHT.ground}" style="border-collapse:separate;background-color:${NIGHT.ground};border:1px solid ${NIGHT.line};border-radius:22px">
+  ${picture ? `<tr><td height="${tall}" align="center" valign="middle" style="height:${tall}px;text-align:center;font-size:0;line-height:0">
+    <img src="${esc(picture.src)}" width="598" alt="${esc(picture.alt)}" style="display:block;width:100%;height:auto;border:0;outline:none;border-radius:21px 21px 0 0;font-family:${SANS};font-size:13px;line-height:20px;color:${NIGHT.words}">
+  </td></tr>` : ""}
+  <tr><td style="padding:${!picture ? 22 : night ? 16 : 4}px 20px 22px">
+    <p${say(`margin:0;font-family:${SANS};font-size:13px;line-height:18px;font-weight:600;`, NIGHT.quiet)}>${esc(small)}</p>
+    <h1 class="e-title"${say(`margin:6px 0 0;font-family:${SERIF};font-size:28px;line-height:34px;font-weight:700;`, NIGHT.ink)}>${esc(title)}</h1>
+    ${sub ? `<p${say(`margin:10px 0 0;font-family:${SERIF};font-style:italic;font-size:17px;line-height:26px;`, NIGHT.words)}>${esc(sub)}</p>` : ""}
+    ${line ? `<p${say(`margin:10px 0 0;font-family:${SANS};font-size:14px;line-height:21px;`, NIGHT.quiet)}>${esc(line)}</p>` : ""}
+    ${verse ? `${hair}<p${say(`margin:16px 0 0;font-family:${SANS};font-size:13px;line-height:18px;font-weight:600;`, NIGHT.quiet)}>${esc(verse.label)}</p><p${say(`margin:6px 0 0;font-family:${SERIF};font-size:19px;line-height:29px;`, NIGHT.ink)}>${esc(verse.text)}</p>` : ""}
+    <table ${TABLE} width="100%"><tr><td height="20" style="height:20px;font-size:0;line-height:0">&nbsp;</td></tr></table>
+    ${button(p, { ...action, island: true })}
   </td></tr>
   </table>
 </td></tr>`;
@@ -724,27 +875,51 @@ const FIRST_WEEK = [
     day: 1,
     title: "Pray your first morning prayers",
     sub: "About eight minutes, whenever your day begins.",
-    // today.prayNow.eyebrow, .morningFallback and .begin, and the card's own "8 min".
-    card: { small: "Pray now", name: "Morning prayers", line: "8 min", href: "https://purifyapp.net/prayers", action: "Begin" },
+    picture: "morning-prayers",
+    name: "Morning prayers", // today.prayNow.morningFallback
+    action: { href: "https://purifyapp.net/prayers", text: "Begin" }, // today.prayNow.begin
   },
   {
     day: 3,
     title: "Choose your calendar",
     sub: "Every feast and fast in Purify follows the one you choose.",
-    // calendar.reckoning.new and .old.
-    card: { small: "The calendar", name: "New or Old", line: "New (Revised Julian) or Old (Julian), as your parish keeps it.", href: "https://purifyapp.net/calendar", action: "Choose your calendar" },
+    picture: "calendar",
+    name: "The calendar",
+    line: "New (Revised Julian) or Old (Julian), as your parish keeps it.", // calendar.reckoning.new and .old
+    action: { href: "https://purifyapp.net/calendar", text: "Choose your calendar" },
   },
   {
     day: 7,
     title: "Save your first verse",
     sub: "A verse you save is kept for you to find again.",
-    // today.verseOfDay and common.save. The verse is the day's own from the app, word for word (here Luke 9:48, King James).
-    card: { small: "Verse of the Day", name: "Luke 9:48", line: "he that is least among you all, the same shall be great.", href: "https://purifyapp.net/", action: "Save" },
+    picture: "verse",
+    name: "Verse of the Day", // today.verseOfDay
+    // The verse is the day's own from the app, word for word (here Luke 9:48, King James). The sender fills it.
+    verse: { label: "Verse of the Day · Luke 9:48", text: "he that is least among you all, the same shall be great." },
+    action: { href: "https://purifyapp.net/", text: "Save" }, // common.save
   },
 ];
 const FIRST_WEEK_WHY = "You are getting this because you opened a Purify account this week. There are three of these, on days 1, 3 and 7, and then they stop.";
 
+/**
+ * The three steps, as one short strip: each step's day and its name in the
+ * app (never the title over again), today's under a heavier rule and in
+ * heavier words. It shows that the week is three small things and has an end.
+ */
+function steps(p, day) {
+  const { c } = p;
+  const cell = (s) => {
+    const now = s.day === day;
+    return `<td width="30%" valign="top"${c({ bd: now ? "ink" : "line" }, "width:30%;padding:12px 0 0;border-top-width:2px;border-top-style:solid;")}>
+      <p${c({ fg: now ? "ink" : "quiet" }, `margin:0;font-family:${SANS};font-size:12px;line-height:16px;font-weight:600;`)}>Day ${s.day}${now ? " · today" : ""}</p>
+      <p${c({ fg: now ? "ink" : "body" }, `margin:3px 0 0;font-family:${SERIF};font-size:16px;line-height:22px;${now ? "font-weight:700;" : ""}`)}>${esc(s.name)}</p>
+    </td>`;
+  };
+  return `<tr><td style="padding:10px 0 0"><table ${TABLE} width="100%"><tr>${FIRST_WEEK.map(cell).join(gap(12))}</tr></table></td></tr>`;
+}
+
 export function firstWeek(how, day = 1) {
+  wear(2);
   const p = pen(how, PALETTES.Dark.wears);
   const step = FIRST_WEEK.find((s) => s.day === day);
   return shell(p, {
@@ -752,10 +927,9 @@ export function firstWeek(how, day = 1) {
     preheader: step.sub,
     kind: `Day ${day} of 7`,
     rows: [
-      opening(p, { eyebrow: "Your first week", title: step.title, sub: step.sub }),
-      stepCard(p, step.card),
-      label(p, "The three steps", 34),
-      days(p, FIRST_WEEK.map((s) => ({ weekday: "Day", date: String(s.day), name: s.title, heavy: s.day === day, mark: s.day === day ? "Today" : null }))).replace("padding:22px 0 0", "padding:2px 0 0"),
+      lead(p, { picture: hero(step.picture), small: "Your first week", title: step.title, sub: step.sub, line: step.line, verse: step.verse, action: step.action }),
+      label(p, "The three steps", 32),
+      steps(p, day),
       signOff(p),
     ],
     foot: readerFoot(p, "", FIRST_WEEK_WHY),
@@ -765,21 +939,27 @@ export function firstWeek(how, day = 1) {
 // Pick up where you left off: one personal line, and the way back to it. The
 // line is the reader's own last place ("You were reading Romans 8") or a
 // saint they saved whose feast is near ("St. Nicholas, whom you saved, is
-// kept on December 6"). Nothing else about the reader is said.
+// kept on December 6"). Nothing else about the reader is said. Its picture is
+// the cover of the book they were reading, or that saint's own picture from
+// the library; one on the heritage list is left out, and the card stands on
+// its words.
 const PICK_UP = {
   title: "You were reading Romans 8",
   sub: "It is where you left it.",
-  card: { small: "The Bible", name: "Romans 8", line: "Chapter 8 of 16", href: "https://purifyapp.net/bible/romans/8", action: "Continue reading" },
+  picture: "romans",
+  line: "The Bible · Chapter 8 of 16",
+  action: { href: "https://purifyapp.net/bible/romans/8", text: "Continue reading" },
 };
 const PICK_UP_WHY = "You are getting this because you have not opened Purify in two weeks. It comes once now and once more after a month, and then stops.";
 
 export function pickUp(how) {
+  wear(2);
   const p = pen(how, PALETTES.Dark.wears);
   return shell(p, {
     title: PICK_UP.title,
     preheader: PICK_UP.sub,
     kind: "Friday, November 13",
-    rows: [opening(p, { eyebrow: "Where you left off", title: PICK_UP.title, sub: PICK_UP.sub }), stepCard(p, PICK_UP.card), signOff(p)],
+    rows: [lead(p, { picture: hero(PICK_UP.picture), small: "Where you left off", title: PICK_UP.title, sub: PICK_UP.sub, line: PICK_UP.line, action: PICK_UP.action }), signOff(p)],
     foot: readerFoot(p, "", PICK_UP_WHY),
   });
 }
@@ -792,40 +972,87 @@ export function pickUp(how) {
 const FISH = "Fish, wine, and oil allowed."; // calendar.fast.nativityWeekend.rule, for Saturday and Sunday
 const STRICT = "No meat, dairy, fish, wine, or oil."; // calendar.fast.nativityWedFri.rule
 const fastWeek = (first) =>
-  ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((weekday, i) => {
-    const strict = weekday === "Wed" || weekday === "Fri";
-    const weekend = weekday === "Sat" || weekday === "Sun";
-    // A weekday's rule in the calendar says fish and no more, so its name says it all.
-    return { weekday, date: String(first + i), name: strict ? "Strict fast" : "Fish allowed", dot: strict ? "strict" : "fish", under: strict ? STRICT : weekend ? FISH : "" };
-  });
+  ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((weekday, i) => ({ weekday, date: String(first + i), fast: weekday === "Wed" || weekday === "Fri" ? "strict" : "fish" }));
+/** The key under the week: each fast the week holds, once, with the calendar's own rule for it. */
+const FAST_KEY = [
+  { fast: "strict", rule: STRICT },
+  { fast: "fish", rule: `Saturday and Sunday: ${FISH}` },
+];
 const FAST_WHY = "You are getting this because you asked for the fasting companion. It comes on a fast's first day and once a week while the fast lasts.";
 const FASTS = {
   opening: { day: 1, first: 15, title: "The fast begins", sub: "Forty days to the Nativity of Christ, from 15 November to 24 December.", week: "This week's fast" },
   week: { day: 8, first: 22, title: "The second week", sub: "Seven days in. Thirty-three to the feast.", week: "This week's fast" },
 };
 
+/** A fast's mark from the calendar, as a picture in the register's own colour; its short word stands in where pictures are blocked. */
+function fastMark(p, kind, margin) {
+  const f = FAST[kind];
+  const style = `margin:${margin};border:0;outline:none;font-family:${SANS};font-size:11px;line-height:18px;`;
+  return (
+    `<img src="img/${f.file}.png" width="18" height="18" alt="${esc(f.short)}"${p.c({ fg: f.slot, cls: "only-dark" }, `display:block;${style}`)}>` +
+    `<img src="img/${f.file}-ink.png" width="18" height="18" alt="${esc(f.short)}"${p.c({ fg: f.slot, cls: "only-light" }, `display:none;mso-hide:all;${style}`)}>`
+  );
+}
+
+/**
+ * The week's fast as one leaf of the app's calendar: seven days across, each
+ * with its date and the calendar's own mark for its fast (the fish, the stalk
+ * of wheat: components/calendar/fastMeta.tsx), and under them a short key
+ * that names each fast once, with its mark, its colour, its days and its
+ * rule in the calendar's words, so the week reads whole where pictures are
+ * blocked. A fast is never told by its colour alone: each has its
+ * own mark and its name.
+ */
+function weekStrip(p, list, key) {
+  const { c, bgcolor } = p;
+  const day = (l) => `<td width="14%" align="center" valign="top" style="width:14.28%;text-align:center">
+      <p${c({ fg: "quiet" }, `margin:0;font-family:${SANS};font-size:12px;line-height:16px;`)}>${esc(l.weekday)}</p>
+      <p${c({ fg: "ink" }, `margin:3px 0 0;font-family:${SANS};font-size:17px;line-height:24px;`)}>${esc(l.date)}</p>
+      ${fastMark(p, l.fast, "5px auto 0")}
+    </td>`;
+  const row = (k, i) => `<tr>
+      ${gap(8)}
+      <td width="18" valign="top" style="width:18px;padding:${i === 0 ? 0 : 12}px 0 0">${fastMark(p, k.fast, "2px 0 0")}</td>
+      ${gap(12)}
+      <td width="100%" valign="top" style="padding:${i === 0 ? 0 : 12}px 0 0">
+        <p${c({ fg: "ink" }, `margin:0;font-family:${SANS};font-size:15px;line-height:22px;font-weight:600;`)}>${esc(FAST[k.fast].words)}<span${c({ fg: "quiet" }, "font-weight:400;")}> · ${esc(list.filter((l) => l.fast === k.fast).map((l) => l.weekday).join(", ").replace(/, (?=[^,]*$)/, ",\u00a0"))}</span></p>
+        <p${c({ fg: "quiet" }, `margin:1px 0 0;font-family:${SANS};font-size:14px;line-height:21px;`)}>${esc(k.rule)}</p>
+      </td>
+      ${gap(8)}
+    </tr>`;
+  return `<tr><td style="padding:10px 0 0">
+  <table ${TABLE} width="100%"${bgcolor("raised")}${c({ bg: "raised", bd: "line" }, "border-collapse:separate;border-width:1px;border-style:solid;border-radius:20px;")}>
+  <tr><td style="padding:16px 8px 16px">
+    <table ${TABLE} width="100%" role="img" aria-label="${esc(list.map((l) => `${l.weekday} ${l.date}: ${FAST[l.fast].words}`).join(", "))}"><tr>${list.map(day).join("")}</tr></table>
+    <table ${TABLE} width="100%" style="margin:14px 0"><tr>${gap(8)}<td${c({ bd: "line" }, "border-top-width:1px;border-top-style:solid;font-size:0;line-height:0;height:0;")}>&nbsp;</td>${gap(8)}</tr></table>
+    <table ${TABLE} width="100%">${key.map(row).join("\n")}</table>
+  </td></tr>
+  </table>
+</td></tr>`;
+}
+
 export function fastingCompanion(how, which = "opening") {
+  wear(2);
   const p = pen(how, NIGHT_SKY);
   const f = FASTS[which];
   const n = String(f.day).padStart(2, "0");
-  const night = `<tr><td style="padding:24px 0 0">
-  <table ${TABLE} width="100%" class="dark-island" bgcolor="${NIGHT.ground}" style="border-collapse:separate;background-color:${NIGHT.ground};border:1px solid ${NIGHT.line};border-radius:22px"><tr><td height="110" align="center" valign="middle" style="height:110px;text-align:center;font-size:0;line-height:0">
-    <img src="img/nativity-night-${n}.png" width="558" alt="A night sky over a dark hill. The star stands above the horizon: day ${f.day} of 40." style="display:block;width:100%;height:auto;border:0;outline:none;border-radius:21px;font-family:${SANS};font-size:13px;line-height:20px;color:${NIGHT.words}">
-  </td></tr></table>
-</td></tr>`;
   return shell(p, {
     season: true,
     title: `The Nativity Fast: ${f.title.charAt(0).toLowerCase()}${f.title.slice(1)}`,
     preheader: f.sub,
     kind: `Sunday, November ${f.first}`,
     rows: [
-      night,
-      opening(p, { eyebrow: `Nativity Fast · day ${f.day} of 40`, title: f.title, sub: f.sub, top: 30 }),
-      label(p, f.week, 30),
-      days(p, fastWeek(f.first)).replace("padding:22px 0 0", "padding:2px 0 0"),
-      para(p, "A path for the fast: the Fathers, a day at a time.", 26),
-      linkRow(p, "https://purifyapp.net/reading/paths/nativity", "Open the path"),
-      stepCard(p, { small: "The calendar", name: "Every day of the fast", line: "Each day's fast, its feast and its saints.", href: "https://purifyapp.net/calendar", action: "Open the calendar" }),
+      // The night of the app's Nativity card, and the card's own small line (today.nativityStar.eyebrow).
+      // One button: the calendar, which is what this email is. The path for the fast is the Sunday email's and Today's.
+      lead(p, {
+        picture: { night: true, src: `img/nativity-night-${n}.png`, alt: `The night sky, the star above the hill: day ${f.day} of 40` },
+        small: `Nativity Fast · day ${f.day} of 40`,
+        title: f.title,
+        sub: f.sub,
+        action: { href: "https://purifyapp.net/calendar", text: "Open the calendar" },
+      }),
+      label(p, f.week, 32),
+      weekStrip(p, fastWeek(f.first), FAST_KEY),
       signOff(p),
     ],
     foot: readerFoot(p, "Dates and fasting follow the new calendar.", FAST_WHY),
@@ -837,12 +1064,13 @@ export const EMAILS = [
   { file: "reader-nativity-fast.html", name: "The reader email in the Nativity Fast", make: readerNativityFast, season: true },
   { file: "brief.html", name: "The owner's brief", make: brief, season: false },
   // The retention emails. `light: false`: no light still is kept for it (its light is checked all the same).
-  { file: "first-week-1.html", name: "The first week, day 1", make: (how) => firstWeek(how, 1), season: false },
-  { file: "first-week-3.html", name: "The first week, day 3", make: (how) => firstWeek(how, 3), season: false, light: false },
-  { file: "first-week-7.html", name: "The first week, day 7", make: (how) => firstWeek(how, 7), season: false, light: false },
-  { file: "pick-up.html", name: "Pick up where you left off", make: pickUp, season: false },
-  { file: "fast-opening.html", name: "The fasting companion, its opening", make: (how) => fastingCompanion(how, "opening"), season: true },
-  { file: "fast-week.html", name: "The fasting companion, a week in", make: (how) => fastingCompanion(how, "week"), season: true, light: false },
+  // `round: 2`: drawn, and measured, in the faces a mail app has (wearFaces).
+  { file: "first-week-1.html", name: "The first week, day 1", make: (how) => firstWeek(how, 1), season: false, round: 2 },
+  { file: "first-week-3.html", name: "The first week, day 3", make: (how) => firstWeek(how, 3), season: false, light: false, round: 2 },
+  { file: "first-week-7.html", name: "The first week, day 7", make: (how) => firstWeek(how, 7), season: false, light: false, round: 2 },
+  { file: "pick-up.html", name: "Pick up where you left off", make: pickUp, season: false, round: 2 },
+  { file: "fast-opening.html", name: "The fasting companion, its opening", make: (how) => fastingCompanion(how, "opening"), season: true, round: 2 },
+  { file: "fast-week.html", name: "The fasting companion, a week in", make: (how) => fastingCompanion(how, "week"), season: true, light: false, round: 2 },
 ];
 
 // ── The pictures ────────────────────────────────────────────────────────
@@ -896,9 +1124,79 @@ async function crossInInk(b, to) {
   await page.close();
 }
 
+/** One of the app's own icons (components/ui/icons), read from its source and drawn in one colour on nothing. */
+async function iconPicture(b, { inner, strokeWidth }, colour, to, px = 18) {
+  const page = await b.newPage({ viewport: { width: px, height: px }, deviceScaleFactor: 3 });
+  await page.setContent(`<!doctype html><html><body style="margin:0;background:transparent"><svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="0 0 24 24" fill="none" stroke="${colour}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" style="display:block;color:${colour}">${inner}</svg></body></html>`);
+  await page.screenshot({ path: to, omitBackground: true, clip: { x: 0, y: 0, width: px, height: px } });
+  await page.close();
+}
+/** An icon's marks as the app's file has them: what stands inside its <svg>, its JSX turned to plain SVG. */
+function appIcon(name) {
+  const src = read(`components/ui/icons/${name}.tsx`);
+  const svg = src.slice(src.indexOf("<svg"), src.indexOf("</svg>"));
+  const inner = svg
+    .slice(svg.indexOf(">", svg.indexOf("{...props}")) + 1)
+    .replace(/\{\/\*[\s\S]*?\*\/\}/g, "")
+    .replace(/(\w+)=\{([^}]+)\}/g, '$1="$2"')
+    .replace(/strokeWidth/g, "stroke-width")
+    .replace(/strokeLinecap/g, "stroke-linecap")
+    .replace(/strokeLinejoin/g, "stroke-linejoin");
+  if (/[{}]/.test(inner)) throw new Error(`the icon ${name} holds what this cannot read as plain SVG`);
+  return { inner, strokeWidth: /strokeWidth=\{([\d.]+)\}/.exec(svg)[1] };
+}
+/** The arrow of the app's own button (components/today/PrayNowCard.tsx, ArrowRight). */
+function appArrow() {
+  const src = read("components/today/PrayNowCard.tsx");
+  const fn = src.slice(src.indexOf("function ArrowRight"));
+  return { inner: `<path d="${/<path d="([^"]+)"/.exec(fn)[1]}"/>`, strokeWidth: /strokeWidth=\{([\d.]+)\}/.exec(fn)[1] };
+}
+
+/**
+ * A night card's picture: the app's own file, cut to the card's width, with
+ * the app's fade into the night at its foot so the title stands at the foot
+ * of the picture. Written as a JPEG, held under 100KB.
+ */
+async function heroPicture(b, name, to) {
+  const sharp = (await import("node:module")).createRequire(path.join(ROOT, "package.json"))("sharp");
+  const { heritageNamedIn, HERITAGE_PICTURES } = await import(path.join(ROOT, "lib/marketing/heritagePictures.ts"));
+  const h = HEROES[name];
+  const held = HERITAGE_PICTURES.flatMap((x) => x.files).some((f) => h.from.endsWith(f));
+  if (held || Object.keys(heritageNamedIn(h.from)).length) throw new Error(`${h.from} is on the heritage list: it goes in no email (lib/marketing/heritagePictures.ts)`);
+  let source = sharp(path.join(ROOT, h.from));
+  if (h.crop) source = source.extract(h.crop);
+  const data = (await source.png().toBuffer()).toString("base64");
+  const W = 720;
+  const [from, till] = h.fade ?? [34, 96];
+  const [r, g, bl] = toRgb(NIGHT.ground);
+  const page = await b.newPage({ viewport: { width: W, height: h.h }, deviceScaleFactor: 1 });
+  await page.setContent(`<!doctype html><html><body style="margin:0;background:${NIGHT.ground}">
+<div style="position:relative;width:${W}px;height:${h.h}px;overflow:hidden;background:${NIGHT.ground}">
+  <img src="data:image/png;base64,${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${h.focus ? `${h.focus[0]}% ${h.focus[1]}%` : "50% 0%"}">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgb(${r} ${g} ${bl} / 0) ${from}%, rgb(${r} ${g} ${bl} / 0.62) ${Math.round(from + (till - from) * 0.55)}%, rgb(${r} ${g} ${bl}) ${till}%)"></div>
+</div></body></html>`);
+  await page.waitForFunction(() => [...document.images].every((i) => i.complete && i.naturalWidth > 0));
+  const shot = await page.screenshot({ clip: { x: 0, y: 0, width: W, height: h.h } });
+  await page.close();
+  for (const quality of [82, 76, 70, 64]) {
+    const jpeg = await sharp(shot).jpeg({ quality, mozjpeg: true }).toBuffer();
+    if (jpeg.length < 96 * 1024 || quality === 64) return fs.writeFileSync(to, jpeg);
+  }
+}
+
 async function pictures(b) {
   const img = path.join(HERE, "img");
   fs.mkdirSync(img, { recursive: true });
+  // The button's arrow: in the night's ground on the white pill, and in white where a light page's button is the ink.
+  await iconPicture(b, appArrow(), NIGHT.ground, path.join(img, "arrow.png"), 15);
+  await iconPicture(b, appArrow(), PALETTES.Light.wears.onButton, path.join(img, "arrow-light.png"), 15);
+  // The calendar's marks for a fast, in the register's colour on a dark page and on a light one.
+  for (const f of Object.values(FAST).filter((x) => x.icon)) {
+    if (NIGHT_SKY[f.slot] !== PALETTES.Dark.wears[f.slot]) throw new Error(`Night sky has its own ${f.slot}: the fast's marks need a picture for it`);
+    await iconPicture(b, appIcon(f.icon), PALETTES.Dark.wears[f.slot], path.join(img, `${f.file}.png`));
+    await iconPicture(b, appIcon(f.icon), PALETTES.Light.wears[f.slot], path.join(img, `${f.file}-ink.png`));
+  }
+  for (const name of Object.keys(HEROES)) await heroPicture(b, name, path.join(img, `hero-${name}.jpg`));
   fs.copyFileSync(path.join(ROOT, "public/purify-cross-mark.png"), path.join(img, "cross.png"));
   fs.copyFileSync(path.join(ROOT, "public/saints/icons/paisius-velichkovsky.v3.jpg"), path.join(img, "paisius-velichkovsky.jpg"));
   await crossInInk(b, path.join(img, "cross-ink.png"));
@@ -906,25 +1204,56 @@ async function pictures(b) {
   for (const day of [FAST_DAY, FASTS.week.day]) await nightPicture(b, day, path.join(img, `nativity-night-${String(day).padStart(2, "0")}.png`));
 }
 
+/**
+ * The faces a still is drawn in. This machine has neither Georgia nor a
+ * phone's sans, and a still in its own fallbacks (Liberation, a Times and an
+ * Arial) shows what no reader will see. So each still of a round 2 email, and
+ * each check of its widths, wears Gelasio as Georgia (its open twin, made to Georgia's own
+ * widths) and Roboto (Android's own sans), from faces/ beside this file.
+ * Nothing in an email fetches them: they are for the pictures only.
+ */
+export async function wearFaces(page) {
+  const dir = path.join(HERE, "faces");
+  if (!fs.existsSync(dir)) return;
+  const face = (family, file, weight, style = "normal") => `@font-face{font-family:"${family}";src:url("file://${path.join(dir, file)}") format("woff2");font-weight:${weight};font-style:${style}}`;
+  await page.addStyleTag({
+    content: [
+      face("Georgia", "gelasio-latin-400-normal.woff2", 400),
+      face("Georgia", "gelasio-latin-400-italic.woff2", 400, "italic"),
+      face("Georgia", "gelasio-latin-700-normal.woff2", 700),
+      face("Georgia", "gelasio-latin-700-italic.woff2", 700, "italic"),
+      face("Roboto", "roboto-latin-400-normal.woff2", 400),
+      face("Roboto", "roboto-latin-600-normal.woff2", 600),
+      face("Roboto", "roboto-latin-700-normal.woff2", 700),
+    ].join("\n"),
+  });
+  await page.evaluate(() => Promise.all(["400 16px Georgia", "italic 400 16px Georgia", "700 16px Georgia", "400 16px Roboto", "600 16px Roboto", "700 16px Roboto"].map((f) => document.fonts.load(f))).then(() => document.fonts.ready));
+}
+
 /** Each email as a mail client that honours the reader's scheme draws it, at a phone's width. */
 async function shots(b) {
   const dir = path.join(HERE, "shots");
   fs.mkdirSync(dir, { recursive: true });
-  const take = async (file, scheme, name, { blocked = false } = {}) => {
+  const take = async (file, scheme, name, { blocked = false, faces = true } = {}) => {
     const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, colorScheme: scheme, isMobile: true, hasTouch: true });
     const page = await ctx.newPage();
     if (blocked) await page.route(/\.(png|jpg)$/, (r) => r.abort());
     await page.goto(`file://${path.join(HERE, file)}`);
+    if (faces) await wearFaces(page);
     await page.waitForTimeout(300);
     await page.screenshot({ path: path.join(dir, name), fullPage: true });
     await ctx.close();
   };
   for (const e of EMAILS) {
     const stem = e.file.replace(".html", "");
-    await take(e.file, "dark", `${stem}.dark.png`);
-    if (e.light !== false) await take(e.file, "light", `${stem}.light.png`);
+    // Round 1's stills stay as he saw them; round 2's are drawn in a mail app's faces.
+    const faces = e.round === 2;
+    await take(e.file, "dark", `${stem}.dark.png`, { faces });
+    if (e.light !== false) await take(e.file, "light", `${stem}.light.png`, { faces });
   }
-  await take("reader-nativity-fast.html", "dark", "reader-nativity-fast.no-pictures.png", { blocked: true });
+  await take("reader-nativity-fast.html", "dark", "reader-nativity-fast.no-pictures.png", { blocked: true, faces: false });
+  await take("first-week-1.html", "dark", "first-week-1.no-pictures.png", { blocked: true });
+  await take("fast-opening.html", "dark", "fast-opening.no-pictures.png", { blocked: true });
 }
 
 // ── The run ─────────────────────────────────────────────────────────────
@@ -953,7 +1282,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   if (to) fs.writeFileSync(to.slice("--artifact=".length), page({ standalone: false, palettes: PALETTES, why }));
   // The retention emails' own page, with their own reasons.
   const { retentionPage } = await import("./page.mjs");
-  const kept = readme.slice(readme.indexOf("### Why the retention emails look as they do"));
+  const kept = readme.slice(readme.indexOf("### Why the retention emails look as they do"), readme.indexOf("## Where every colour comes from"));
   const whyKept = kept.split("\n").filter((l) => l.startsWith("| ") && !l.startsWith("| The choice") && !l.startsWith("|---")).map((l) => l.slice(1, -1).split("|").map((c) => c.trim()));
   fs.writeFileSync(path.join(HERE, "retention.html"), retentionPage({ standalone: true, palettes: PALETTES, why: whyKept }));
   const toKept = process.argv.find((a) => a.startsWith("--artifact-retention="));

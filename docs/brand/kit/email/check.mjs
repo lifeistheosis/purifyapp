@@ -18,7 +18,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { EMAILS, browser } from "./build.mjs";
+import { EMAILS, HEROES, browser, wearFaces } from "./build.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../../../..");
@@ -50,19 +50,24 @@ try {
       const ctx = await b.newContext({ viewport: { width, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: width < 500, hasTouch: width < 500 });
       const page = await ctx.newPage();
       await page.goto(drawing(e), { waitUntil: "load" });
+      // Round 2's widths are measured in the faces a mail app has (Georgia is wider than this machine's own serif).
+      if (e.round === 2) await wearFaces(page);
       const result = await checkMock(page, "body", { palettes: e.season ? [...PALETTES, NIGHT_SKY] : PALETTES });
       ok = printMockCheck(result, `${e.name}, ${width} wide`) && ok;
       // Phone first: nothing runs past the screen's edge, and no word is cut by its box.
-      const spill = await page.evaluate(() => {
+      // Held to the width asked for, not to window.innerWidth: a phone's browser
+      // widens its own window to fit what spills, and then nothing seems to spill
+      // (found 2026-11-13: a long button's name ran 3px past a 390 screen unseen).
+      const spill = await page.evaluate((asked) => {
         const out = [];
-        if (document.documentElement.scrollWidth > window.innerWidth) out.push("the page scrolls sideways");
+        if (document.documentElement.scrollWidth > asked) out.push(`the page scrolls sideways (${document.documentElement.scrollWidth} wide)`);
         for (const el of document.body.querySelectorAll("p, td, a, h1")) {
           const r = el.getBoundingClientRect();
-          if (r.width && (r.right > window.innerWidth + 0.5 || r.left < -0.5)) out.push(`past the edge: ${(el.innerText || "").slice(0, 40)}`);
+          if (r.width && (r.right > asked + 0.5 || r.left < -0.5)) out.push(`past the edge: ${(el.innerText || "").slice(0, 40)}`);
           if (el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).display !== "inline") out.push(`cut by its box: ${(el.innerText || "").slice(0, 40)}`);
         }
         return out;
-      });
+      }, width);
       for (const line of spill) {
         ok = false;
         console.log(`  FAIL  ${e.name} at ${width}: ${line}`);
@@ -123,6 +128,11 @@ try {
   const kept = shown.filter((f) => held.has(f));
   console.log(`  ${kept.length ? "FAIL" : "ok  "}  the heritage list (${held.size} files): ${kept.length ? kept.join(", ") : `none of img/'s ${shown.length} pictures is on it`}`);
   ok = kept.length === 0 && ok;
+  // A night card's picture is cut from one of the app's files under a new name, so its source is held to the list too.
+  const listed = new Set(HERITAGE_PICTURES.flatMap((h) => h.files));
+  const cut = Object.values(HEROES).map((h) => h.from).filter((f) => [...listed].some((l) => f.endsWith(l)));
+  console.log(`  ${cut.length ? "FAIL" : "ok  "}  the night cards' pictures: ${cut.length ? `${cut.join(", ")} on the heritage list` : `none of their ${Object.keys(HEROES).length} sources is on the heritage list`}`);
+  ok = cut.length === 0 && ok;
 } finally {
   await b.close();
   for (const e of EMAILS) fs.rmSync(path.join(HERE, `.check-${e.file}`), { force: true });
