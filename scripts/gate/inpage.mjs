@@ -745,9 +745,22 @@ export function gateInPage() {
           if (!props.length || !target) continue;
           const r = target.getBoundingClientRect();
           if (!pseudo && (r.width < 2 || r.height < 2 || r.bottom < 0 || r.top > innerHeight || opacityOf(target) < 0.05)) continue;
-          const d = a.effect.getComputedTiming ? a.effect.getComputedTiming().duration : 0;
+          const timing = a.effect.getComputedTiming ? a.effect.getComputedTiming() : { duration: 0 };
+          const d = timing.duration;
           if (typeof d === "number" && d < 40) continue;
-          moving.push(`${pseudo ? `${pseudo} of ` : ""}${nameOf(target)}: ${props.join(", ")} over ${Math.round(Number(d) || 0)}ms`);
+          // A scroll-driven animation (a view or scroll timeline) has no time of its own: its duration
+          // reads "auto", and it moves only as its scroller does. EIKON's story keeps its scroll-driven
+          // motion on by design (components/shop/eikon/EikonStory.tsx), and this listed it as
+          // "transform over 0ms" on every tap on the shop item while nothing moved (Updates 13 and 18,
+          // the shop item's zero-length transform). So it is listed only in a frame where its progress
+          // changed from the frame before.
+          if (typeof d !== "number") {
+            const seen = (s.progress ??= new WeakMap());
+            const before = seen.get(a);
+            seen.set(a, timing.progress);
+            if (before === undefined || before === timing.progress) continue;
+          }
+          moving.push(`${pseudo ? `${pseudo} of ` : ""}${nameOf(target)}: ${props.join(", ")} ${typeof d === "number" ? `over ${Math.round(d)}ms` : "with the scroll"}`);
         }
       }
       // New boxes: where each is drawn in its first frame, then in the next three. Where it stands

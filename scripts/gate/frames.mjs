@@ -968,7 +968,10 @@ function plant(kind) {
       A.insertBefore(grow, A.children[1]);
       await frame();
       grow.style.height = "140px";
-    } else if (kind === "slide") {
+    } else if (kind === "scrolldriven") {
+      // The tap's own change, at once, as the still path makes it: the page does not scroll.
+      A.querySelector("h1").textContent = "Saints";
+    } else if (kind === "slide" || kind === "scrolldrivenslide") {
       S.style.transition = `transform 320ms ${curve}`;
       await frame();
       S.style.transform = "translateY(0)";
@@ -996,6 +999,17 @@ function plant(kind) {
 
 /** What a planted change needs standing before the recording: the swap's bar and the route's box. */
 function prepare(kind) {
+  // A picture moved by the scroll alone, as EIKON's story moves its pieces (app/globals.css, .eikon-drift):
+  // a view timeline, which runs as long as the picture is on the screen and moves only as the page scrolls.
+  if (kind.startsWith("scrolldriven")) {
+    const st = document.createElement("style");
+    st.textContent = "@keyframes drift{from{transform:translateY(-8%)}to{transform:translateY(8%)}}#drift{animation:drift linear both;animation-timeline:view()}";
+    document.head.append(st);
+    const pic = document.createElement("div");
+    pic.id = "drift";
+    pic.style.cssText = "height:180px;margin:12px;background:#5a4630";
+    document.getElementById("a").append(pic);
+  }
   if (kind.startsWith("feed")) {
     document.getElementById("a").hidden = true;
     document.getElementById("feed").hidden = false;
@@ -1054,6 +1068,8 @@ const CASES = [
   ["a block that appears whole with no travel", "feedappear", "on", ["cut"]],
   ["a block that appears whole where a thread opens, as the posts below glide 160px to make room", "feedappearglide", "on", ["cut"]],
   ["with motion reduced, an instant change", "cut", "reduce", []],
+  ["with motion reduced, a picture moved by the scroll alone (EIKON's story) while the page stands still", "scrolldriven", "reduce", []],
+  ["with motion reduced, a picture moved by the scroll alone, and a sheet that slides up", "scrolldrivenslide", "reduce", ["moves"]],
   ["no change at all", "none", "on", []],
 ];
 
