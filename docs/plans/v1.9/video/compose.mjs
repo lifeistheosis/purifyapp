@@ -443,6 +443,8 @@ function encode() {
   const record = { file: path.relative(ROOT, FILE), bytes, megabytes: Number((bytes / 1048576).toFixed(2)), seconds: Number(Number(info.format.duration).toFixed(2)), codec: `${v.codec_name} ${v.profile}`, size: [v.width, v.height], fps: v.r_frame_rate, pixels: v.pix_fmt, frames: Number(v.nb_frames), sound: info.streams.length > 1 ? "has a sound stream" : "none" };
   if (bytes > 15 * 1048576) fail(`the file is ${record.megabytes} MB, over 15`);
   if (record.sound !== "none") fail("the file has a sound stream");
+  // The commit the export was cut from: the head, unless VIDEO_EXPORT names an earlier one (no file of the app changed since).
+  record.export = process.env.VIDEO_EXPORT || execFileSync("git", ["rev-parse", "--short", "HEAD"], { cwd: ROOT }).toString().trim();
   fs.writeFileSync(path.join(MADE, "video.json"), JSON.stringify(record, null, 1));
   return record;
 }

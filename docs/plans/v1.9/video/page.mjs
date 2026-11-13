@@ -18,7 +18,6 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { execSync } from "node:child_process";
 import { HERE, MADE, ROOT, SLOW } from "./lib.mjs";
 import { OVER, SCENES } from "./scenes.mjs";
 
@@ -35,8 +34,7 @@ for (const s of SCENES) {
 const video = readJson("video.json");
 const checks = readJson("check.json");
 const takes = [...new Set(SCENES.filter((s) => s.take).map((s) => s.take))].map((id) => readJson(`takes/${id}/take.json`));
-const commit = execSync("git rev-parse --short HEAD", { cwd: ROOT }).toString().trim();
-const exportCommit = process.env.VIDEO_EXPORT || commit;
+const exportCommit = video.export; // written when the file was made (compose.mjs)
 const made = new Date().toISOString().slice(0, 10);
 const clockOf = (t) => `0:${String(Math.floor(t)).padStart(2, "0")}`;
 const wordsOf = (s) => (s.keep ? null : [s.title, s.sub].filter(Boolean).join(" "));
@@ -67,6 +65,8 @@ ${kitStyle}
    shape, and the scenes as rows with hairlines between (each a time, the words on screen, what it shows, why). */
 .v-film { margin: var(--k-space-5) auto; max-width: 380px; }
 .v-film video { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; border-radius: 22px; border: 1px solid var(--k-line); background-color: var(--k-well); }
+.v-save { display: flex; width: 100%; margin-block-start: var(--k-space-4); }
+.v-said { margin: var(--k-space-2) 0 0; min-height: 19px; font-size: var(--k-text-detail); line-height: 19px; color: var(--k-ink-2); text-align: center; }
 .v-film figcaption { margin-block-start: var(--k-space-3); font-size: var(--k-text-detail); line-height: 19px; color: var(--k-ink-3); text-align: center; }
 .v-scenes { list-style: none; margin: var(--k-space-4) 0 0; padding: 0; }
 .v-scene { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: var(--k-space-3); padding-block: var(--k-space-4); }
@@ -90,6 +90,8 @@ ${kitStyle}
     <figure class="v-film">
       ${videoSrc ? `<video controls playsinline muted loop preload="metadata"${arg("poster") ? ` poster="${esc(arg("poster"))}"` : ""} src="${esc(videoSrc)}" aria-label="The Purify 1.9 video, ${Math.round(video.seconds)} seconds, silent"></video>` : `<div role="img" aria-label="The video is not on the page yet"></div>`}
       <figcaption>${Math.round(video.seconds)} seconds, 1080 by 1920, no sound. Tap to play.</figcaption>
+      ${videoSrc ? `<button class="k-button v-save" id="save-film" type="button" hidden>Save the video</button>
+      <p class="v-said" id="save-said" role="status"></p>` : ""}
     </figure>
     <div class="k-stats">
       <div class="k-stat"><span class="k-stat-label">Length</span><span class="k-stat-change">Asked for: 30 to 45 seconds</span><span class="k-stat-value">${video.seconds.toFixed(1)}s</span></div>
@@ -142,6 +144,28 @@ ${SCENES.map(sceneRow).join("\n")}
     <p class="k-meta">Source: docs/plans/v1.9/video/</p>
   </footer>
 </main>
+${videoSrc ? `<script>
+// The file, to keep: the button shows only where this view can hand a file over, and nothing is saved unless he says yes.
+(async () => {
+  const button = document.getElementById("save-film");
+  const said = document.getElementById("save-said");
+  const downloads = await window.claude?.use?.("downloads");
+  if (!button || !downloads) return;
+  button.hidden = false;
+  button.addEventListener("click", async () => {
+    button.disabled = true;
+    said.textContent = "Getting the file.";
+    try {
+      const file = await (await fetch(${JSON.stringify(videoSrc)})).blob();
+      await downloads.save({ filename: "purify-1.9.mp4", data: file });
+      said.textContent = "Saved.";
+    } catch (error) {
+      said.textContent = error && error.code === "declined" ? "Not saved." : "It could not be saved from here. Ask for the file and it will be sent.";
+    }
+    button.disabled = false;
+  });
+})();
+</script>` : ""}
 `;
 }
 
