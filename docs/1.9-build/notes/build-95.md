@@ -157,7 +157,7 @@ His word, 2026-11-13 about 08:05 UTC, with a screenshot of the Translation sheet
 
 **The Bible versions: they live on the website, and the main web runs 1.8 until the merge.** The apps fetch a version from purifyapp.net (`lib/bible/downloads/store.ts`, `/bibles/<id>/`, a streamed folder of `lib/media/streamed.ts`). The six versions are new in 1.9, and the main web answers 404 for them (probed 2026-11-13 08:06 UTC: `ru-synodal/index.json` and `grc-lxx-patriarchal/index.json`, both 404). So every download fails in this test build and works from the merge. Not a fault in the app, but the arbiter did not name it to him before he walked, as with campaigns in note 2: the arbiter's miss, again. From now on, everything a test build fetches from the website that the main web does not yet have is listed to him before he walks, and the merge-day walk (MERGE-DAY 6.11) includes downloading a version.
 
-Two faults found in it, with Updates 4: the sheet tells a reader to check their connection when the server simply has no such file (the words must say what is true: offline, or not available right now); and the World English Bible stands greyed as "Coming soon" in a release that ships finished, which waits on his word (hide the row until it is real, recommended).
+Two faults found in it, with Updates 4: the sheet tells a reader to check their connection when the server simply has no such file (the words must say what is true: offline, or not available right now); and the World English Bible stands greyed as "Coming soon" in a release that ships finished, which waits on his word (hide the row until it is real, recommended). Both settled by note 25: the voices and the World English Bible are in 1.9.
 
 
 ## Notes 22, 23 and 24 (asked): the ambience with photographs; downloads in the notification bar and the app's notifications; Share opens the phone's share sheet
@@ -171,3 +171,12 @@ Note 22, done is: each sound's tile carries a real photograph that fits it and t
 Note 23, done is: every download in the app (a Bible version, a book saved to listen offline, and any other) shows in the phone's notification bar while it runs and when it ends, and in the app's own notifications with its state and its end. On iPhone, where the bar shows no progress, a notification when it finishes. Nothing that needs a Play or App Store declaration without his word first. Stills of both for his yes. With Updates 4, after its notes 5, 7 and 8, beside note 21's honest words.
 
 Note 24, done is: every Share in the app opens the phone's own share sheet, on Android and iPhone (the Android web view has no Web Share, so today every share there copies the link); copying stays only where no share sheet exists, and says so. One way to share for the whole app. With Updates 8, before its Share row is built.
+
+## Note 25: everything in 1.9 (fresh eyes' fifteen screens, the choice of voices, the World English Bible)
+
+His word, 2026-11-13 about 08:13 UTC, to the arbiter's recommendation (faults in 1.9, whole-screen redesigns in 2.0): "I want everything fixed in v1.9 no pushing out to 2". Asked at once, he answered: "Both" (the choice of voices, by the phone's own voices, and the World English Bible shipped, both in 1.9), and "Fable (Recommended)" for who designs the screens.
+
+So, in 1.9, and the drop day moves for it:
+- Fresh eyes' fifteen screens (https://claude.ai/artifact/7brw1qS4JPzb61tAHqQk8p) and its four patterns across the app (zeros as a new reader's first sight; spaced-capital labels in 28 files; an icon tile on every row in 8 places; one small choice asked five ways). One Fable designer works through them in batches, one version a screen, pictures with reasons for his yes; on his yes the screen's change goes to an Opus chat to harden and push. With Fable 5.2, the fifteen screens.
+- The choice of voices: the phone's own voices (Android's speech engine, iPhone's), fast and offline; Kokoro stays out (it read at 0.07 of speaking speed). This replaces the 2.0 parking of 2026-11-11 for the choice itself. Its free and Plus split is his to decide (pricing). With Updates 5, after the ambience.
+- The World English Bible ships instead of standing greyed as "Coming soon". With Updates 8, after its shares.
