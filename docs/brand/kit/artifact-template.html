@@ -551,6 +551,15 @@ body {
 
 .k-table tbody tr:last-child td { border-block-end: 0; }
 
+/* Two columns of words keep a gutter between them, and begin on one line.
+   They touched, and a short first cell hung in the middle of a long second
+   (a table of choices and their reasons, 2026-11-13). A column of numbers
+   keeps its own gutter (.k-num). */
+.k-table td { vertical-align: top; }
+
+.k-table td + td:not(.k-num),
+.k-table th + th:not(.k-num) { padding-inline-start: var(--k-space-4); }
+
 .k-table td.k-num,
 .k-table th.k-num { text-align: end; padding-inline-start: var(--k-space-4); white-space: nowrap; }
 

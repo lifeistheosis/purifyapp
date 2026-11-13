@@ -1,0 +1,1494 @@
+From b4425780b78d8674f2d7bcc2ea7c88ae0e799726 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 13 Nov 2026 07:55:52 +0000
+Subject: [PATCH] HELD LOCALLY, not for push until his yes: the Fast and the
+ Journal redrawn in the approved look (build 95 notes 3 and 4)
+
+Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VuYTwdj2AXx6xhs4145quw
+---
+ components/fasting/FastingTrackerClient.tsx | 337 ++++++++++----------
+ components/journal/JournalClient.tsx        |  52 +--
+ components/journal/JournalFeed.tsx          |  58 ++--
+ components/journal/PageBlocks.tsx           | 131 +++++---
+ components/journal/TodayPage.tsx            |   6 +-
+ components/journal/WriteButton.tsx          |  23 +-
+ components/journal/usePage.ts               |   2 +-
+ lib/fasting/__tests__/build95.test.ts       |  80 +++++
+ lib/journal/__tests__/blockForms.test.ts    |  96 +++---
+ lib/journal/__tests__/build95.test.ts       |  85 +++++
+ lib/journal/__tests__/churchDay.test.ts     |   3 +-
+ lib/journal/__tests__/writingSheet.test.ts  |   3 +-
+ lib/ui/__tests__/gateRunOne.test.ts         |  36 ++-
+ lib/ui/__tests__/storePicturesRun.test.ts   |   3 +-
+ scripts/mock-journal.mjs                    |  30 +-
+ 15 files changed, 614 insertions(+), 331 deletions(-)
+ create mode 100644 lib/fasting/__tests__/build95.test.ts
+
+diff --git a/components/fasting/FastingTrackerClient.tsx b/components/fasting/FastingTrackerClient.tsx
+index 1a4177a80..5446b8af3 100644
+--- a/components/fasting/FastingTrackerClient.tsx
++++ b/components/fasting/FastingTrackerClient.tsx
+@@ -1,8 +1,14 @@
+ "use client";
+ 
+-import { useCallback, useMemo } from "react";
+-import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { useCallback, useId, useMemo, useState } from "react";
+ import Link from "next/link";
++
++import { FAST_META } from "@/components/calendar/fastMeta";
++import { useTranslate } from "@/components/i18n/MessagesProvider";
++import { Track } from "@/components/settings/LitPanel";
++import { ChevronDown } from "@/components/ui/icons/ChevronDown";
++import { PurifyMark } from "@/components/ui/PurifyMark";
++import { cn } from "@/lib/cn";
+ import {
+   fastingStatus,
+   type CalStyle,
+@@ -31,84 +37,57 @@ const ruleFor = (d: Date, style: CalStyle) =>
+   fastingStatus(localDayToUtcNoon(d), style);
+ 
+ /**
+- * The fasting tracker: today's rule, a gentle check-in, the current streak,
+- * and a short history of the days recently kept. Deliberately "kept, not
+- * tracked": companion tone, forgives today until the day is out, counts a
+- * partial keeping, and never scolds. Marks are local-first (lib/fasting);
+- * Plus carries them across devices.
++ * The fasting tracker: today's rule, a gentle check-in, the days kept, and a
++ * short history of the recent fasting days. Deliberately "kept, not tracked":
++ * companion tone, forgives today until the day is out, counts a partial
++ * keeping, and never scolds. Marks are local-first (lib/fasting); Plus
++ * carries them across devices.
++ *
++ * Redrawn for build 95 (note 3, the owner on 2026-11-13: "the fast is
++ * clearly outdated"), in the look he approved that day, from the house's own
++ * parts and nothing new:
++ *
++ *   the opening     as a chapter opens (components/saints/WorkHead.tsx): the
++ *                   mark, the small line, the title, the short rule.
++ *   today           the one thing that leads, on the night (the Nativity
++ *                   card's own ground, dark on every palette), named with
++ *                   the calendar's own mark for the day
++ *                   (components/calendar/fastMeta.tsx).
++ *   the mark        one switch of three, the house's carved track
++ *                   (components/settings/LitPanel.tsx, Track). It was three
++ *                   outlined pills, and three more on every recent day:
++ *                   forty-eight on the screen.
++ *   the count       two quiet lines, a number and its sentence each. They
++ *                   were two bordered tiles of uneven height, a 0 in each,
++ *                   and the first thing a new reader saw.
++ *   recent days     rows in one tray (.theology-tray), each a day, its fast
++ *                   and its mark; a tap opens the same switch under it.
++ *
++ * Every word is the calendar's or the page's own as it was. No mark wears a
++ * colour: Kept, In part and Broke are lit alike, so none reads as a verdict.
+  */
+ 
+-const DOT: Record<FastKind, string> = {
+-  strict: "bg-crimson",
+-  "wine-oil": "bg-gold",
+-  fish: "bg-sage",
+-  fast: "bg-paper/40",
+-  "fast-free": "bg-emerald-400",
+-  normal: "bg-paper/30",
+-};
+-
+ const STATUS_KEY: Record<CheckinStatus, string> = {
+   kept: "fasting.status.kept",
+   partial: "fasting.status.partial",
+   broken: "fasting.status.broken",
+ };
++const ORDER: readonly CheckinStatus[] = ["kept", "partial", "broken"];
++
++/** The calendar's own mark for a kind of day, in its own tone: never the tone alone, always beside the day's name. */
++function FastGlyph({ kind, size }: { kind: FastKind; size: number }) {
++  const { Icon, rgb } = FAST_META[kind];
++  if (!Icon) return null;
++  return <Icon aria-hidden size={size} className="shrink-0" style={{ color: `rgb(${rgb})` }} />;
++}
+ 
+-function CheckControl({
+-  value,
+-  onSet,
+-  size = "sm",
+-}: {
+-  value?: CheckinStatus;
+-  onSet: (s: CheckinStatus) => void;
+-  size?: "lg" | "sm";
+-}) {
++/**
++ * Kept, In part, Broke: one switch, one of them lit, or none. The lit one
++ * tapped again takes the mark off, as it always has.
++ */
++function MarkSwitch({ value, onSet, label }: { value?: CheckinStatus; onSet: (s: CheckinStatus) => void; label: string }) {
+   const { t } = useTranslate();
+-  const order: CheckinStatus[] = ["kept", "partial", "broken"];
+-  // A mark that is on wears the palette's own soft tone for its word and its
+-  // edge: the green the calendar keeps for a fish day, the red it keeps for a
+-  // strict fast. Each palette sets its soft tones to be read on it, so the
+-  // word turns with the palette a reader is in.
+-  //
+-  // Kept was a fixed emerald, the one colour on the page that followed no
+-  // palette (fresh eyes M5, 2026-11-11). And walked with marks on, which the
+-  // gate's walk at rest cannot see: Broke's word, the red itself at 80
+-  // percent, was 2.3:1 on Dark and 3.2:1 on Light, and Kept's green on Light
+-  // was 4.25:1 over its own 15 percent fill. So the words are the soft tones
+-  // whole, and Kept has an edge and no fill: on Light its green is 4.58:1 on
+-  // a card with nothing under it, 4.45:1 over a fill of even 5 percent.
+-  const active: Record<CheckinStatus, string> = {
+-    kept: "border-sage-soft/50 bg-transparent text-sage-soft",
+-    partial: "border-gold/60 bg-gold/15 text-gold-pale",
+-    broken: "border-crimson-soft/50 bg-crimson-soft/10 text-crimson-soft",
+-  };
+-  const pad = size === "lg" ? "px-4 py-2.5 text-ui" : "px-2.5 py-1 text-caption";
+-  // hit-44 (app/globals.css): each pill takes a finger over 44px, and is
+-  // drawn as it was. The small ones stood 29px tall, thirty of them down the
+-  // recent days (the pre-build gate's first run, gate-run-1.md); drawn 44px
+-  // tall they would have made every day's row a wall of buttons. The rows
+-  // stand 74px apart, so one day's reach never lies over the next day's.
+-  return (
+-    <div className="flex gap-2">
+-      {order.map((s) => {
+-        const on = value === s;
+-        return (
+-          <button
+-            key={s}
+-            type="button"
+-            onClick={() => onSet(s)}
+-            aria-pressed={on}
+-            className={`hit-44 rounded-pill border font-sans font-semibold transition-colors ${pad} ${
+-              on
+-                ? active[s]
+-                : "border-paper/15 bg-paper/[0.03] text-paper/55 hover:bg-paper/[0.07]"
+-            }`}
+-          >
+-            {t(STATUS_KEY[s])}
+-          </button>
+-        );
+-      })}
+-    </div>
+-  );
++  return <Track value={value ?? null} options={ORDER.map((s) => ({ value: s, label: t(STATUS_KEY[s]) }))} onChange={onSet} label={label} />;
+ }
+ 
+ export function FastingTrackerClient() {
+@@ -172,124 +151,149 @@ export function FastingTrackerClient() {
+   const fmtDay = (d: Date) =>
+     d.toLocaleDateString(dateLocale(locale), { weekday: "short", month: "short", day: "numeric" });
+ 
++  // The recent days whose switch is open. Each opens and shuts on its own:
++  // were one to shut as the next opened, the row under the finger would
++  // move up by the height of the switch above it.
++  const [opened, setOpened] = useState<ReadonlySet<string>>(() => new Set());
++  const toggle = (key: string) =>
++    setOpened((was) => {
++      const next = new Set(was);
++      if (next.has(key)) next.delete(key);
++      else next.add(key);
++      return next;
++    });
++  const ids = useId();
++  const todayLabel = t(`calendar.fast.${todayFast.ruleId}.label`);
++  const notAllowed = fastNotAllowedKey(todayFast.kind);
++
+   return (
+     <section className="min-h-[calc(100dvh-72px)] bg-night px-5 py-10 md:px-8 md:py-14">
+       <div className="mx-auto w-full max-w-[620px]">
+-        {/* Masthead */}
+-        <div className="reveal-rise" style={{ animationDelay: "40ms" }}>
+-          <p className="font-sans text-detail font-semibold text-paper/55">
+-            {t("today.fastEyebrow")}
+-          </p>
+-          <h1 className="mt-2 font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.02em] text-paper">
++        {/* The opening, as a chapter opens: the mark, the small line, the title, the short rule. */}
++        <header className="text-center">
++          <PurifyMark aria-hidden size={22} className="page-open-sub mx-auto block text-paper" />
++          <p className="page-open-sub mt-3 font-sans text-detail font-semibold text-paper/60">{t("today.fastEyebrow")}</p>
++          <h1 className="page-open-title mx-auto mt-1.5 max-w-[14ch] text-balance font-heading text-[34px] font-normal leading-[1.08] tracking-[-0.3px] text-paper md:max-w-none md:text-[44px]">
+             {t("fasting.h1")}
+           </h1>
+-        </div>
++          <span aria-hidden className="page-open-rule mx-auto mt-5 block h-px w-7 bg-paper/25" />
++        </header>
+ 
+-        {/* Streak / summary */}
+-        <div
+-          className="reveal-rise mt-7 flex items-stretch gap-3"
++        {/* Today: the one thing that leads, on the night. */}
++        <section
++          aria-labelledby={`${ids}-today`}
++          data-fast-today=""
++          className="dark-island reveal-rise relative mt-7 overflow-hidden rounded-[22px] border border-paper/12 bg-night-deep px-5 pb-5 pt-5"
+           style={{ animationDelay: "120ms" }}
+         >
+-          <div className="flex-1 rounded-2xl border border-gold/25 bg-gold/[0.05] p-5">
+-            <p className="font-display-serif text-display-sm leading-none text-gold-pale">
+-              {streak}
+-            </p>
+-            {/* Both lines stand in the one place and only one is seen, so the
+-                card keeps the taller one's height. The line changes when a
+-                day is marked, and a card that changed height with it moved
+-                Kept, In part and Broke 19px under the finger (fresh eyes
+-                M5). */}
+-            <p className="mt-2 grid font-sans text-caption text-paper/60">
++          <p className="font-sans text-caption font-semibold text-paper/60">{t("calendar.todayLink")}</p>
++          <h2 id={`${ids}-today`} className="mt-1.5 flex items-center gap-2.5 font-heading text-[26px] font-normal leading-[1.15] text-paper">
++            <FastGlyph kind={todayFast.kind} size={22} />
++            <span className="min-w-0">{todayLabel}</span>
++          </h2>
++          <p className="mt-2.5 font-sans text-ui leading-relaxed text-paper/75">{t(`calendar.fast.${todayFast.ruleId}.rule`)}</p>
++          {/* What the day keeps from, beside what it allows (1.7). */}
++          {notAllowed ? <p className="mt-0.5 font-sans text-ui leading-relaxed text-paper/75">{t(notAllowed)}</p> : null}
++          {todayIsFast ? (
++            <>
++              <div data-fast-mark="today" className="mt-2">
++                <MarkSwitch value={todayMark} onSet={(s) => setDay(todayKey, todayFast.kind, s)} label={`${t("calendar.todayLink")}: ${todayLabel}`} />
++              </div>
++              {/* The pastoral line, in the house's italic: it stands on its own type, with no box and no rule beside it. */}
++              <p data-fast-pastoral="" className="mt-4 font-serif text-detail italic leading-[1.6] text-paper/70">
++                {t("fasting.pastoralNote")}
++              </p>
++            </>
++          ) : (
++            <p className="mt-4 font-serif text-detail italic leading-[1.6] text-paper/70">{t("fasting.noFastToday")}</p>
++          )}
++        </section>
++
++        {/* The count: two quiet lines, a number and its sentence each, with a
++            hairline between. Both lines of each stand in the one place and
++            only one is seen, so the line keeps the taller one's height: it
++            changes when a day is marked, and a line that changed height with
++            it moved every row under it (fresh eyes M5). */}
++        <div data-fast-count="" className={cn("reveal-rise mt-5 divide-y px-1", keptInAll === 0 ? "divide-transparent" : "divide-paper/10")} style={{ animationDelay: "180ms" }}>
++          <p className="flex items-baseline gap-3 py-3">
++            <span className={cn("w-9 shrink-0 text-center font-heading text-title leading-none tabular-nums", streak === 0 ? "text-paper/60" : "text-paper")}>{streak}</span>
++            <span className="grid min-w-0 flex-1 font-sans text-detail leading-snug text-paper/70">
+               <span aria-hidden={streak !== 0} className={`col-start-1 row-start-1 ${streak === 0 ? "" : "invisible"}`}>
+                 {t("fasting.streakNone")}
+               </span>
+               <span aria-hidden={streak === 0} className={`col-start-1 row-start-1 ${streak === 0 ? "invisible" : ""}`}>
+                 {tn("fasting.streakKept", Math.max(streak, 1))}
+               </span>
+-            </p>
+-          </div>
+-          <div className="flex-1 rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
+-            <p className="font-display-serif text-title leading-none text-paper">
+-              {keptInAll}
+-            </p>
+-            {/* The same: "in part" joins this line when a day is marked so.
+-                The line is counted with the number over it (tn): it read "1
+-                days kept in all." with one day marked, in every language
+-                (the gate's tap walk, 2026-11-11). */}
+-            <p className="mt-2 grid font-sans text-caption text-paper/60">
++            </span>
++          </p>
++          {/* The line is counted with its number (tn): it read "1 days kept in
++              all." with one day marked, in every language (the gate's tap
++              walk, 2026-11-11). "in part" joins it when a day is marked so. */}
++          {/* With nothing kept yet the second line keeps its room and says
++              nothing: a new reader meets one sentence, not a column of
++              zeros, and nothing moves when the first day is marked. */}
++          <p aria-hidden={keptInAll === 0} className={cn("flex items-baseline gap-3 py-3", keptInAll === 0 && "invisible")}>
++            <span className="w-9 shrink-0 text-center font-heading text-title leading-none tabular-nums text-paper">{keptInAll}</span>
++            <span className="grid min-w-0 flex-1 font-sans text-detail leading-snug text-paper/70">
+               <span aria-hidden={Boolean(summary.partial)} className={`col-start-1 row-start-1 ${summary.partial ? "invisible" : ""}`}>
+                 {tn("fasting.keptInAll", keptInAll)}
+               </span>
+               <span aria-hidden={!summary.partial} className={`col-start-1 row-start-1 ${summary.partial ? "" : "invisible"}`}>
+                 {tn("fasting.keptInAllPartial", keptInAll, { partial: Math.max(summary.partial, 1) })}
+               </span>
+-            </p>
+-          </div>
+-        </div>
+-
+-        {/* Today */}
+-        <div
+-          className="reveal-rise mt-4 rounded-2xl border border-paper/12 bg-paper/[0.04] p-5"
+-          style={{ animationDelay: "180ms" }}
+-        >
+-          <p className="font-sans text-caption text-paper/55">{t("calendar.todayLink")}</p>
+-          <h2 className="mt-1 flex items-center gap-2 font-serif text-lede leading-tight text-paper">
+-            <span aria-hidden className={`inline-block h-2.5 w-2.5 rounded-full ${DOT[todayFast.kind]}`} />
+-            {t(`calendar.fast.${todayFast.ruleId}.label`)}
+-          </h2>
+-          <p className="mt-2 font-sans text-ui leading-relaxed text-paper/70">
+-            {t(`calendar.fast.${todayFast.ruleId}.rule`)}
++            </span>
+           </p>
+-          {/* What the day keeps from, beside what it allows (1.7). */}
+-          {fastNotAllowedKey(todayFast.kind) ? (
+-            <p className="mt-0.5 font-sans text-ui leading-relaxed text-paper/70">
+-              {t(fastNotAllowedKey(todayFast.kind)!)}
+-            </p>
+-          ) : null}
+-          {todayIsFast ? (
+-            <div className="mt-4">
+-              <CheckControl
+-                size="lg"
+-                value={todayMark}
+-                onSet={(s) => setDay(todayKey, todayFast.kind, s)}
+-              />
+-              <p className="mt-3 font-sans text-caption text-paper/45">
+-                {t("fasting.pastoralNote")}
+-              </p>
+-            </div>
+-          ) : (
+-            <p className="mt-3 font-sans text-caption text-paper/45">
+-              {t("fasting.noFastToday")}
+-            </p>
+-          )}
+         </div>
+ 
+-        {/* Recent history */}
+-        <p
+-          className="reveal-rise mt-8 font-sans text-caption font-semibold text-paper/45"
+-          style={{ animationDelay: "240ms" }}
+-        >
++        {/* Recent days: rows in one tray. A day, its fast and its mark; a tap opens the switch under it. */}
++        <h2 className="reveal-rise mt-8 font-serif text-[20px] font-semibold leading-[1.25] text-paper" style={{ animationDelay: "240ms" }}>
+           {t("fasting.recentDays")}
+-        </p>
+-        <ul className="reveal-rise mt-3 space-y-2" style={{ animationDelay: "280ms" }}>
++        </h2>
++        <ul data-fast-days="" className="theology-tray reveal-rise mt-3 overflow-hidden rounded-[20px] px-1.5 py-1" style={{ animationDelay: "280ms" }}>
+           {recent.map((r) => {
+             const m = byDay.get(r.key)?.status;
+             const isToday = r.key === todayKey;
++            const open = opened.has(r.key);
++            const day = isToday ? t("calendar.todayLink") : fmtDay(r.date);
++            const label = t(`calendar.fast.${r.ruleId}.label`);
+             return (
+-              <li
+-                key={r.key}
+-                className="flex items-center justify-between gap-3 rounded-xl border border-paper/8 bg-paper/[0.02] px-3.5 py-2.5"
+-              >
+-                <div className="min-w-0">
+-                  <p className="font-sans text-ui text-paper/85">
+-                    {isToday ? t("calendar.todayLink") : fmtDay(r.date)}
+-                  </p>
+-                  <p className="mt-0.5 flex items-center gap-1.5 font-sans text-caption text-paper/50">
+-                    <span aria-hidden className={`inline-block h-1.5 w-1.5 rounded-full ${DOT[r.kind]}`} />
+-                    {t(`calendar.fast.${r.ruleId}.label`)}
+-                  </p>
++              <li key={r.key} className="theology-rule relative">
++                <button
++                  type="button"
++                  aria-expanded={open}
++                  aria-controls={`${ids}-${r.key}`}
++                  onClick={() => toggle(r.key)}
++                  data-fast-day={r.key}
++                  className="theology-row flex min-h-[56px] w-full items-center gap-3 rounded-[14px] px-2.5 py-2.5 text-start"
++                >
++                  <span className="min-w-0 flex-1">
++                    <span className="block font-sans text-ui font-semibold text-paper">{day}</span>
++                    <span className="mt-0.5 flex items-center gap-1.5 font-sans text-caption text-paper/60">
++                      <FastGlyph kind={r.kind} size={13} />
++                      <span className="min-w-0">{label}</span>
++                    </span>
++                  </span>
++                  {m ? (
++                    <span data-fast-day-mark="" className="shrink-0 font-sans text-detail font-semibold text-paper/85">
++                      {t(STATUS_KEY[m])}
++                    </span>
++                  ) : null}
++                  <ChevronDown aria-hidden size={14} className={cn("shrink-0 text-paper/50 motion-safe:transition-transform motion-safe:duration-300", open && "rotate-180")} />
++                </button>
++                {/* The switch opens under its day on the house curve, and is
++                    out of reach of a finger, a keyboard and a screen reader
++                    while it is shut. */}
++                <div
++                  id={`${ids}-${r.key}`}
++                  inert={!open}
++                  className={cn("grid ease-[var(--ease-house)] motion-safe:transition-[grid-template-rows] motion-safe:duration-300", open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}
++                >
++                  <div className={cn("min-h-0 overflow-hidden", !open && "invisible")}>
++                    <div className="px-2.5 pb-3">
++                      <MarkSwitch value={m} onSet={(s) => setDay(r.key, r.kind, s)} label={`${day}: ${label}`} />
++                    </div>
++                  </div>
+                 </div>
+-                <CheckControl value={m} onSet={(s) => setDay(r.key, r.kind, s)} />
+               </li>
+             );
+           })}
+@@ -297,17 +301,18 @@ export function FastingTrackerClient() {
+ 
+         {/* 45, a share the faint-text rules draw at each palette's own safe
+             strength (app/globals.css): at 40 this line was 2.31:1 on Light
+-            and 2.86:1 on Candlelight (fresh eyes M5). */}
++            and 2.86:1 on Candlelight (fresh eyes M5). The way to the
++            calendar is a line of its own, 44px to the touch, not a word
++            inside the sentence. */}
+         <p
+           className="reveal-rise mt-8 font-sans text-caption leading-[1.6] text-paper/45"
+           style={{ animationDelay: "340ms" }}
+         >
+-          {t("fasting.deviceNote")}{" "}
+-          <Link href="/calendar" className="text-gold-pale/70 underline-offset-2 hover:underline">
+-            {t("fasting.seeFullCalendar")}
+-          </Link>
+-          .
++          {t("fasting.deviceNote")}
+         </p>
++        <Link href="/calendar" data-fast-calendar="" className="tap-press mt-1 inline-flex min-h-11 items-center font-sans text-detail font-semibold text-paper/80 underline underline-offset-4 hover:text-paper">
++          {t("fasting.seeFullCalendar")}
++        </Link>
+       </div>
+     </section>
+   );
+diff --git a/components/journal/JournalClient.tsx b/components/journal/JournalClient.tsx
+index bdead03bd..b09bfdee9 100644
+--- a/components/journal/JournalClient.tsx
++++ b/components/journal/JournalClient.tsx
+@@ -6,6 +6,8 @@ import { useUpgradeModal } from "@/components/billing/UpgradeModal";
+ import { PlusMark } from "@/components/billing/PlusMark";
+ import { ClosedBook } from "@/components/ui/icons/ClosedBook";
+ import { Flower } from "@/components/ui/icons/Flower";
++import { Pen } from "@/components/ui/icons/Pen";
++import { PurifyMark } from "@/components/ui/PurifyMark";
+ import { cn } from "@/lib/cn";
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { JournalComposer } from "@/components/journal/JournalComposer";
+@@ -271,15 +273,19 @@ export function JournalClient() {
+       <div className={cn(rail ? "md:mx-auto md:grid md:max-w-[968px] md:grid-cols-[200px_minmax(0,1fr)] md:gap-12 native-md-block" : "mx-auto max-w-[760px]")}>
+         {rail ? <NotebookRail notebooks={notebooks} gatherings={gatherings} chosen={book} onChoose={setBook} /> : null}
+         <div className="min-w-0">
+-          <header className="flex items-end justify-between gap-6">
+-            <div className="min-w-0">
+-              <h1 id="journal-title" className="text-title font-bold leading-[1.12] tracking-[-0.01em] text-paper md:text-heading">
+-                {t("journal.title")}
+-              </h1>
+-              <p className="mt-2 max-w-[60ch] font-sans text-detail leading-[1.6] text-paper/55">{t("journal.lede")}</p>
+-            </div>
++          {/* The journal opens as a chapter does (components/saints/WorkHead.tsx):
++              the mark, its name, one line under it in italics, the short
++              rule. On a computer Write stands under the rule; on a phone it
++              is at the foot of the screen (WriteButton). */}
++          <header className="text-center">
++            <PurifyMark aria-hidden size={22} className="page-open-sub mx-auto block text-paper" />
++            <h1 id="journal-title" className="page-open-title mt-3 font-heading text-[34px] font-normal leading-[1.08] tracking-[-0.3px] text-paper md:text-[44px]">
++              {t("journal.title")}
++            </h1>
++            <p className="page-open-sub mx-auto mt-2.5 max-w-[34ch] text-balance font-serif text-[17px] italic leading-[1.45] text-paper/75">{t("journal.lede")}</p>
++            <span aria-hidden className="page-open-rule mx-auto mt-5 block h-px w-7 bg-paper/25" />
+             {mounted ? (
+-              <div className="hidden shrink-0 md:block native-md-hidden">
++              <div className="mt-5 hidden justify-center md:flex native-md-hidden">
+                 <WriteButton placement="inline" onClick={write} draft={waitingDraft} />
+               </div>
+             ) : null}
+@@ -333,19 +339,27 @@ export function JournalClient() {
+               ) : null}
+ 
+               {items.length === 0 ? (
+-                <section aria-labelledby="journal-empty" data-journal-empty="" className="mt-8 border-y border-paper/10 py-6">
+-                  <p id="journal-empty" role="heading" aria-level={2} className="font-sans text-caption font-semibold text-paper/60">
++                <section aria-labelledby="journal-empty" data-journal-empty="" className="mt-8">
++                  <p id="journal-empty" role="heading" aria-level={2} className="font-serif text-[20px] font-semibold leading-[1.25] text-paper">
+                     {t("journal.emptyTitle")}
+                   </p>
+-                  <button
+-                    type="button"
+-                    onClick={() => begin({ kind: "reflection", body: "", prompt: { text: t(emptyPromptKey(now)) } })}
+-                    // 44 to the touch where it stands on one line (a tablet: 28.5px tall, the store pictures' run of 2026-11-12).
+-                    className="tap-press hit-44 mt-2 block text-start font-serif text-lede leading-[1.5] text-paper"
+-                  >
+-                    {t(emptyPromptKey(now))}
+-                  </button>
+-                  <p className="mt-4 font-sans text-detail leading-[1.6] text-paper/55">{t("journal.emptyLine")}</p>
++                  {/* A thing to act on is a row in the house's tray, with the
++                      pen today's readings wear: until build 95 the question
++                      stood as plain words between two hairlines, and nothing
++                      said a tap on it begins a page. */}
++                  <div className="theology-tray mt-3 overflow-hidden rounded-[20px] px-1.5 py-1">
++                    <button
++                      type="button"
++                      onClick={() => begin({ kind: "reflection", body: "", prompt: { text: t(emptyPromptKey(now)) } })}
++                      className="theology-row tap-press flex min-h-[64px] w-full items-center gap-3 rounded-[14px] px-2.5 py-3 text-start"
++                    >
++                      <span className="min-w-0 flex-1 font-serif text-lede leading-[1.45] text-paper">{t(emptyPromptKey(now))}</span>
++                      <span className="shrink-0 text-paper/70">
++                        <Pen size={18} />
++                      </span>
++                    </button>
++                  </div>
++                  <p className="mt-3 px-1 font-sans text-detail leading-[1.6] text-paper/55">{t("journal.emptyLine")}</p>
+                 </section>
+               ) : (
+                 <>
+diff --git a/components/journal/JournalFeed.tsx b/components/journal/JournalFeed.tsx
+index 975d9e06b..de8367ab0 100644
+--- a/components/journal/JournalFeed.tsx
++++ b/components/journal/JournalFeed.tsx
+@@ -34,6 +34,7 @@ import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault"
+ import { gatheringHref } from "@/lib/florilegium/href";
+ import { dateLocale } from "@/lib/i18n/deviceDates";
+ import { churchDayLine, dayFromKey } from "@/lib/journal/churchDay";
++import { coverById } from "@/lib/journal/covers";
+ import { gatheringOf } from "@/lib/journal/gatherings";
+ import { pageText, parsePage } from "@/lib/journal/page";
+ import type { JournalSource } from "@/lib/journal/entries";
+@@ -107,7 +108,7 @@ export function JournalFeed({
+   // The list shows the writer's own words; a verse card is named in the small
+   // line under them, so a reference never reads as the writer's words.
+   const pages = useMemo(() => {
+-    const out = new Map<string, { title: string; text: string; cards: string[]; all: string; notebook?: string; sans?: boolean }>();
++    const out = new Map<string, { title: string; text: string; cards: string[]; all: string; notebook?: string; sans?: boolean; cover?: string }>();
+     for (const i of items) {
+       if (!i.record) {
+         out.set(i.key, { title: "", text: i.body, cards: [], all: i.body });
+@@ -117,7 +118,7 @@ export function JournalFeed({
+       const words = pageText({ ...page, blocks: page.blocks.filter((b) => b.type !== "verse") }, verseLabel);
+       const cards = page.blocks.flatMap((b) => (b.type === "verse" ? [verseLabel(b)] : []));
+       const all = [pageText(page, verseLabel), page.notebook, ...(page.tags ?? [])].filter(Boolean).join("\n");
+-      out.set(i.key, { title: page.title, text: words, cards, all, notebook: page.notebook, sans: page.style?.font === "sans" });
++      out.set(i.key, { title: page.title, text: words, cards, all, notebook: page.notebook, sans: page.style?.font === "sans", cover: coverById(page.cover)?.src });
+     }
+     return out;
+     // verseLabel is remade each render; the book names behind it follow t.
+@@ -305,37 +306,44 @@ export function JournalFeed({
+             {g.day === today ? <span className="hidden print:inline">{`, ${dayName(g.day, false)}`}</span> : null}
+           </p>
+           {lines.get(g.day) ? (
+-            <p data-journal-day-line="" className="mt-1 font-sans text-caption leading-[1.45] text-paper/70">
++            <p data-journal-day-line="" className="mt-1 text-pretty font-sans text-caption leading-[1.45] text-paper/70">
+               {lines.get(g.day)}
+             </p>
+           ) : null}
+           <ul className="mt-1 divide-y divide-paper/8 border-b border-paper/8">
+             {g.items.map((item) => (
+               <SwipeRow key={item.key} onRemove={() => onRemove(item)} removeLabel={t("common.remove")}>
+-                <button type="button" onClick={() => onOpen(item)} data-journal-entry="" className="block w-full py-4 pe-1 text-start active:opacity-80">
+-                  {item.prompt ? <span dir="auto" className="block font-sans text-caption text-paper/55">{item.prompt.text}</span> : null}
+-                  {pages.get(item.key)?.title ? (
+-                    <span
+-                      dir="auto"
+-                      data-journal-entry-title=""
+-                      className={`block ${pages.get(item.key)?.sans ? "font-sans" : "font-serif"} text-[19px] font-semibold leading-[1.3] text-paper${item.prompt ? " mt-1" : ""}`}
+-                    >
+-                      {pages.get(item.key)?.title}
++                <button type="button" onClick={() => onOpen(item)} data-journal-entry="" className="flex w-full items-start gap-3 py-4 pe-1 text-start active:opacity-80">
++                  <span className="block min-w-0 flex-1">
++                    {item.prompt ? <span dir="auto" className="block font-sans text-caption text-paper/55">{item.prompt.text}</span> : null}
++                    {pages.get(item.key)?.title ? (
++                      <span
++                        dir="auto"
++                        data-journal-entry-title=""
++                        className={`block ${pages.get(item.key)?.sans ? "font-sans" : "font-serif"} text-[19px] font-semibold leading-[1.3] text-paper${item.prompt ? " mt-1" : ""}`}
++                      >
++                        {pages.get(item.key)?.title}
++                      </span>
++                    ) : null}
++                    {pages.get(item.key)?.text ? (
++                      <span
++                        dir="auto"
++                        className={`block whitespace-pre-line line-clamp-4 ${pages.get(item.key)?.sans ? "font-sans" : "font-serif"} text-body leading-[1.6] text-paper/90 print:line-clamp-none${item.prompt || pages.get(item.key)?.title ? " mt-1" : ""}`}
++                      >
++                        {pages.get(item.key)?.text}
++                      </span>
++                    ) : null}
++                    <span className="mt-1.5 block truncate font-sans text-caption text-paper/50">
++                      {[t(KIND_KEY[item.kind]), pages.get(item.key)?.notebook ?? null, item.source ? sourceLabel(item.source) : null, ...(pages.get(item.key)?.cards.slice(0, 2) ?? []), timeOf(item.at)]
++                        .filter(Boolean)
++                        .join(" · ")}
+                     </span>
+-                  ) : null}
+-                  {pages.get(item.key)?.text ? (
+-                    <span
+-                      dir="auto"
+-                      className={`block whitespace-pre-line line-clamp-4 ${pages.get(item.key)?.sans ? "font-sans" : "font-serif"} text-body leading-[1.6] text-paper/90 print:line-clamp-none${item.prompt || pages.get(item.key)?.title ? " mt-1" : ""}`}
+-                    >
+-                      {pages.get(item.key)?.text}
+-                    </span>
+-                  ) : null}
+-                  <span className="mt-1.5 block truncate font-sans text-caption text-paper/50">
+-                    {[t(KIND_KEY[item.kind]), pages.get(item.key)?.notebook ?? null, item.source ? sourceLabel(item.source) : null, ...(pages.get(item.key)?.cards.slice(0, 2) ?? []), timeOf(item.at)]
+-                      .filter(Boolean)
+-                      .join(" · ")}
+                   </span>
++                  {/* A page with a cover shows it (build 95 note 6): the picture a reader chose is part of how the page is found again. Decoration here; the sheet names it. */}
++                  {pages.get(item.key)?.cover ? (
++                    // eslint-disable-next-line @next/next/no-img-element -- a file the apps carry; the export has no image server
++                    <img src={pages.get(item.key)?.cover} alt="" loading="lazy" data-journal-entry-cover="" className="mt-0.5 size-14 shrink-0 rounded-[12px] object-cover object-[50%_22%] print:hidden" />
++                  ) : null}
+                 </button>
+               </SwipeRow>
+             ))}
+diff --git a/components/journal/PageBlocks.tsx b/components/journal/PageBlocks.tsx
+index 291888d90..bd4b21643 100644
+--- a/components/journal/PageBlocks.tsx
++++ b/components/journal/PageBlocks.tsx
+@@ -34,6 +34,7 @@ import { Flower } from "@/components/ui/icons/Flower";
+ import { Heart } from "@/components/ui/icons/Heart";
+ import { Info } from "@/components/ui/icons/Info";
+ import { Minus } from "@/components/ui/icons/Minus";
++import { Picture } from "@/components/ui/icons/Picture";
+ import { Heading } from "@/components/ui/icons/Heading";
+ import { Plus } from "@/components/ui/icons/Plus";
+ import { Highlighter } from "@/components/ui/icons/Highlighter";
+@@ -97,12 +98,16 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
+   const hasProps = !!page.notebook || (page.tags?.length ?? 0) > 0;
+   return (
+     <div className="mt-5">
+-      {/* Plus: the page's cover, edge to edge, credited under it (lib/journal/covers.ts). */}
++      {/* Plus: the page's cover, at the page's head, rounded as the app's
++          cards are and credited under it (lib/journal/covers.ts). The
++          pictures are icons, whose faces stand high in the frame, so the cut
++          is taken from there. Until build 95 it was a flat strip from edge to
++          edge of the sheet, 160px, cut through the middle of the icon. */}
+       {cover ? (
+-        <figure data-page-cover="" className="-mx-4 mb-3">
++        <figure data-page-cover="" className="mb-4">
+           {/* eslint-disable-next-line @next/next/no-img-element -- a file the apps carry; the export has no image server */}
+-          <img src={cover.src} alt={cover.alt} className="block h-40 w-full object-cover" />
+-          <figcaption className="mt-1 px-4 font-sans text-[12px] text-paper/70">{cover.credit}</figcaption>
++          <img src={cover.src} alt={cover.alt} className="block h-44 w-full rounded-[18px] object-cover object-[50%_22%]" />
++          <figcaption className="mt-1.5 px-1 font-sans text-[12px] text-paper/70">{cover.credit}</figcaption>
+         </figure>
+       ) : null}
+       <label className="block">
+@@ -264,14 +269,6 @@ function TextBlock({
+   );
+ }
+ 
+-/**
+- * What each block is from, in one line: its mark and its name. The mark is
+- * its tool's own glyph, so a reader tells the three apart at a glance: the
+- * Book for Scripture, the Quill for the Fathers, the speech mark for a quote
+- * of one's own. The line the Florilegium's gathered lines carry
+- * (components/florilegium/FlorilegiumDetail.tsx, ItemCard).
+- */
+-const BLOCK_SOURCE = "inline-flex min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/65";
+ /**
+  * Where a block's words begin: under its name, past its mark (15px and the
+  * 8px after it). So the marks hang in the margin and everything brought onto
+@@ -281,15 +278,21 @@ const BLOCK_SOURCE = "inline-flex min-w-0 items-center gap-2 font-sans text-capt
+ const BLOCK_INSET = "ps-[23px]";
+ 
+ /**
+- * Scripture on the page: its place as its heading, which opens the passage at
+- * the verse, and under it the words from the app's own Bible, verbatim, in the
+- * size the app reads at. Never edited here.
++ * Scripture on the page: a raised card, the house's own (.theology-tray). Its
++ * place is its heading, in the reading face, and opens the passage at the
++ * verse; under it the words from the app's own Bible, verbatim, in the size
++ * the app reads at. Never edited here.
+  *
+- * Until 2026-11-11 a verse, a quote of one's own and a quote from the library
+- * were three boxes alike, the verse's place a small line at its foot (build 93
+- * note 8, the owner: "I want all of them to actually be unique in their
+- * context and their use"). Now none is in a box and none stands beside a rule
+- * (CLAUDE.md, "No side stripes"): each is told by its mark and its own shape.
++ * The page's quoting, redrawn for build 95 (note 6, the owner on 2026-11-13:
++ * "visuals aren't really that good. even the image system and the quoting
++ * system"), by one rule a reader can see: what is brought onto the page from
++ * the app's library is raised, and opens where it is from; what the writer
++ * types is the page itself. So Scripture and a Father's words are cards, each
++ * its own (Scripture's place at its head, a Father's source at his words'
++ * foot, as an epigraph's is), and a quote of one's own stays on the page in
++ * italics. None stands beside a rule (CLAUDE.md, "No side stripes"). Until
++ * then all three were small grey lines of 13px over or under plain words,
++ * told apart only by a 15px glyph.
+  */
+ function VerseCard({ index, block, label, noticed, onRemove }: { index: number; block: VerseCardBlock; label: string; noticed: boolean; onRemove: () => void }) {
+   const { t } = useTranslate();
+@@ -300,12 +303,15 @@ function VerseCard({ index, block, label, noticed, onRemove }: { index: number;
+       data-page-verse=""
+       data-page-noticed={noticed ? "" : undefined}
+       // Asked for a second time, the verse is not laid again: it is brought
+-      // into view and lit for a moment (usePage, show).
+-      className={cn("relative -mx-2 rounded-2xl pb-1.5 pe-12 ps-2 motion-safe:transition-colors motion-safe:duration-500", noticed ? "bg-paper/[0.09]" : "bg-paper/0")}
++      // into view and its edge lit for a moment (usePage, show).
++      className={cn(
++        "theology-tray relative rounded-[18px] px-4 pb-4 pt-1.5 outline outline-1 -outline-offset-1 motion-safe:transition-[outline-color] motion-safe:duration-500",
++        noticed ? "outline-paper/60" : "outline-transparent",
++      )}
+     >
+-      <figcaption>
+-        <Link href={`/bible/${block.book}/${block.chapter}#v${block.from}`} data-page-verse-place="" className={cn(BLOCK_SOURCE, "min-h-11 hover:text-paper")}>
+-          <Book size={15} aria-hidden className="shrink-0 text-paper/55" />
++      <figcaption className="pe-9">
++        <Link href={`/bible/${block.book}/${block.chapter}#v${block.from}`} data-page-verse-place="" className="inline-flex min-h-11 min-w-0 items-center gap-2 font-serif text-[17px] font-semibold leading-tight text-paper">
++          <Book size={16} aria-hidden className="shrink-0 text-paper/70" />
+           <span className="min-w-0">{label}</span>
+         </Link>
+       </figcaption>
+@@ -327,7 +333,7 @@ function VerseCardWords({ block, verses }: { block: VerseCardBlock; verses: numb
+   const states = verses.map((v, i) => ({ v, words: words[i] ?? { text: null, status: "loading" as const } }));
+   if (states.every((s) => s.words.status === "missing")) {
+     return (
+-      <span className={cn("block", BLOCK_INSET)}>
++      <span className="block">
+         <Link href={`/bible/${block.book}/${block.chapter}#v${block.from}`} className="-mt-1.5 inline-flex min-h-11 items-center font-sans text-detail text-paper/70 underline underline-offset-4 hover:text-paper">
+           {t("saved.openToRead")}
+         </Link>
+@@ -335,7 +341,7 @@ function VerseCardWords({ block, verses }: { block: VerseCardBlock; verses: numb
+     );
+   }
+   return (
+-    <blockquote dir="auto" className={cn("font-serif text-body leading-[1.7] text-paper/90", BLOCK_INSET)}>
++    <blockquote dir="auto" className="font-serif text-body leading-[1.7] text-paper/90">
+       {states.map(({ v, words }) =>
+         words.text ? (
+           <span key={v}>
+@@ -351,29 +357,30 @@ function VerseCardWords({ block, verses }: { block: VerseCardBlock; verses: numb
+ }
+ 
+ /**
+- * A quote from Purify's library (Quote in journal): the words as the page has
+- * them, never edited here as the source's; then the library's mark, which
++ * A quote from Purify's library (Quote in journal): a raised card, as
++ * Scripture's is, and its own: the words first, as the page they are from
++ * has them, never edited here; then at their foot the library's mark, which
+  * only these wear, with the page they are from as the way back to it. The
+- * shape a Father's line has in the Florilegium.
++ * shape an epigraph has, and a Father's line in the Florilegium.
+  */
+ function LibraryCard({ index, block, onRemove }: { index: number; block: Extract<PageBlock, { type: "library" }>; onRemove: () => void }) {
+   const { t } = useTranslate();
+   return (
+-    <figure data-page-block={index} data-page-library="" className="relative pe-12">
+-      <blockquote dir="auto" className={cn("whitespace-pre-line font-serif text-body leading-[1.7] text-paper/90", BLOCK_INSET)}>
++    <figure data-page-block={index} data-page-library="" className="theology-tray relative rounded-[18px] px-4 pb-1 pt-4">
++      <blockquote dir="auto" className="whitespace-pre-line pe-8 font-serif text-body leading-[1.7] text-paper/90">
+         {block.text}
+       </blockquote>
+-      <figcaption>
+-        <Link href={block.href} data-page-library-source="" className={cn(BLOCK_SOURCE, "min-h-11 hover:text-paper")}>
+-          <Quill size={15} aria-hidden className="shrink-0 text-paper/55" />
++      <figcaption className="mt-1">
++        <Link href={block.href} data-page-library-source="" className="inline-flex min-h-11 min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/80 hover:text-paper">
++          <Quill size={15} aria-hidden className="shrink-0 text-paper/70" />
+           <span dir="auto" className="min-w-0">
+             {block.cite || t("journal.page.fromLibrary")}
+           </span>
+         </Link>
+         {/* Under a source's name, what kind of quote this is, where the name begins. */}
+-        {block.cite ? <p className={cn("-mt-2 pb-1 font-sans text-caption text-paper/60", BLOCK_INSET)}>{t("journal.page.fromLibrary")}</p> : null}
++        {block.cite ? <p className={cn("-mt-2 pb-2 font-sans text-caption text-paper/70", BLOCK_INSET)}>{t("journal.page.fromLibrary")}</p> : null}
+       </figcaption>
+-      <RemoveButton high onClick={onRemove} label={t("common.remove")} />
++      <RemoveButton onClick={onRemove} label={t("common.remove")} />
+     </figure>
+   );
+ }
+@@ -721,9 +728,27 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
+                 } else setPanel("props");
+               }}
+             />
++            {/* The page's cover, a row of its own (build 95 note 6, "even the
++                image system"). Until then it was the last thing in the
++                notebook's panel, under the notebook, the tags, the font and
++                the alignment: a reader looking for a picture met "Add to a
++                notebook" and no word of one. */}
++            <MoreChoice
++              cover
++              icon={<Picture size={18} />}
++              label={t("journal.page.cover")}
++              locked={locked}
++              onClick={() => {
++                if (locked) {
++                  setPanel(null);
++                  upgrade.open("journal");
++                } else setPanel("cover");
++              }}
++            />
+           </ul>
+         </div>
+       ) : null}
++      {panel === "cover" ? <CoverPanel editor={editor} onDone={() => setPanel(null)} /> : null}
+       {/* Four tiles, each a quarter of the row, the icon over its name: the row
+           fits a 360px phone in every language, and never scrolls sideways. */}
+       <div role="toolbar" aria-label={t("journal.page.tools")} className="grid grid-cols-4 gap-1 px-2 py-1.5">
+@@ -856,26 +881,35 @@ function PropsPanel({ editor, notebooks, onDone }: { editor: PageEditor; noteboo
+         </label>
+       ) : null}
+       <StyleRows editor={editor} />
+-      <CoverRow editor={editor} />
+     </div>
+   );
+ }
+ 
+-/** Plus: a cover from the verified artwork the apps carry, or none. */
+-function CoverRow({ editor }: { editor: PageEditor }) {
++/**
++ * Plus: a cover from the verified artwork the apps carry, or none. A panel
++ * of its own: the pictures in one row that moves sideways, each large enough
++ * to be told from the next (88 by 112, the upright shape an icon has), the
++ * chosen one edged. They were a grid of five to a row, 60px squares, at the
++ * foot of the notebook's panel.
++ */
++function CoverPanel({ editor, onDone }: { editor: PageEditor; onDone: () => void }) {
+   const { t } = useTranslate();
+   const current = editor.page.cover;
++  const quiet = "tap-press inline-flex h-11 shrink-0 items-center rounded-pill px-3 font-sans text-detail font-semibold text-paper/85";
+   return (
+-    <div data-page-cover-choices="" className="mt-4 pb-2">
+-      <div className="flex items-center justify-between gap-3">
+-        <p className="font-sans text-caption font-semibold text-paper/70">{t("journal.page.cover")}</p>
++    <div data-page-cover-choices="" className="px-3 pt-2">
++      <div className="flex items-center gap-1">
++        <p className="min-w-0 flex-1 font-sans text-caption font-semibold text-paper/70">{t("journal.page.cover")}</p>
+         {current ? (
+-          <button type="button" onClick={() => editor.setCover(undefined)} className="tap-press inline-flex h-11 shrink-0 items-center rounded-pill px-3 font-sans text-detail font-semibold text-paper/85">
++          <button type="button" onClick={() => editor.setCover(undefined)} className={quiet}>
+             {t("journal.page.noCover")}
+           </button>
+         ) : null}
++        <button type="button" onClick={onDone} className={quiet}>
++          {t("common.done")}
++        </button>
+       </div>
+-      <div role="radiogroup" aria-label={t("journal.page.cover")} className="mt-1 grid grid-cols-5 gap-2">
++      <div role="radiogroup" aria-label={t("journal.page.cover")} className="no-scrollbar -mx-3 mt-1 flex snap-x gap-2 overflow-x-auto scroll-px-3 px-3 pb-2">
+         {COVERS.map((c) => (
+           <button
+             key={c.id}
+@@ -884,10 +918,10 @@ function CoverRow({ editor }: { editor: PageEditor }) {
+             aria-checked={current === c.id}
+             aria-label={c.alt}
+             onClick={() => editor.setCover(c.id)}
+-            className={cn("tap-press aspect-square min-h-11 overflow-hidden rounded-xl border-2", current === c.id ? "border-paper" : "border-transparent")}
++            className={cn("tap-press h-[112px] w-[88px] shrink-0 snap-start overflow-hidden rounded-[14px] border-2", current === c.id ? "border-paper" : "border-transparent")}
+           >
+             {/* eslint-disable-next-line @next/next/no-img-element -- a file the apps carry */}
+-            <img src={c.src} alt="" loading="lazy" className="h-full w-full object-cover" />
++            <img src={c.src} alt="" loading="lazy" className="h-full w-full object-cover object-[50%_22%]" />
+           </button>
+         ))}
+       </div>
+@@ -934,7 +968,7 @@ function StyleRows({ editor }: { editor: PageEditor }) {
+ const MORE_TRAY = "overflow-hidden rounded-[18px] bg-paper/[0.03] ring-1 ring-inset ring-paper/[0.08]";
+ 
+ /** One of More's rows: its glyph, its whole name on as many lines as it needs, and without Plus the mark. */
+-function MoreChoice({ icon, label, locked, page = false, onClick }: { icon: ReactNode; label: string; locked: boolean; page?: boolean; onClick: () => void }) {
++function MoreChoice({ icon, label, locked, page = false, cover = false, onClick }: { icon: ReactNode; label: string; locked: boolean; page?: boolean; cover?: boolean; onClick: () => void }) {
+   return (
+     <li className="relative">
+       {/* The hairline between rows begins where the words do; the first row has none over it. */}
+@@ -944,6 +978,7 @@ function MoreChoice({ icon, label, locked, page = false, onClick }: { icon: Reac
+         onClick={onClick}
+         onPointerDown={(e) => e.preventDefault()}
+         data-page-more-props={page ? "" : undefined}
++        data-page-more-cover={cover ? "" : undefined}
+         className="tap-press flex min-h-12 w-full min-w-0 items-center gap-2.5 px-3 py-1.5 text-start font-sans text-detail font-semibold text-paper/90 hover:bg-paper/[0.04]"
+       >
+         <span className="shrink-0 text-paper/80">{icon}</span>
+diff --git a/components/journal/TodayPage.tsx b/components/journal/TodayPage.tsx
+index 853dfcad1..ff9e9ff12 100644
+--- a/components/journal/TodayPage.tsx
++++ b/components/journal/TodayPage.tsx
+@@ -84,11 +84,11 @@ export function TodayPage({ onWriteFrom }: { onWriteFrom: (source: JournalSource
+   const line = [date, day.headline?.name, fasting ? t(`calendar.fast.${day.fast.ruleId}.label`) : null].filter(Boolean).join(" · ");
+ 
+   return (
+-    <section aria-labelledby="journal-today" data-journal-today="" data-tour="journal-today" className="mt-6 rounded-[28px] border border-paper/10 bg-night-soft px-5 pb-3 pt-5">
+-      <p id="journal-today" role="heading" aria-level={2} className="font-serif text-[32px] font-semibold leading-[1.1] text-paper">
++    <section aria-labelledby="journal-today" data-journal-today="" data-tour="journal-today" className="dark-island page-open-after relative mt-7 overflow-hidden rounded-[22px] border border-paper/12 bg-night-deep px-5 pb-3 pt-5">
++      <p id="journal-today" role="heading" aria-level={2} className="font-heading text-[34px] font-normal leading-[1.1] text-paper">
+         {weekday}
+       </p>
+-      <p className="mt-1.5 font-sans text-caption leading-[1.45] text-paper/70">{line}</p>
++      <p className="mt-1.5 text-pretty font-sans text-caption leading-[1.45] text-paper/70">{line}</p>
+ 
+       {day.readings.length > 0 ? (
+         <>
+diff --git a/components/journal/WriteButton.tsx b/components/journal/WriteButton.tsx
+index f07b61544..92af350b0 100644
+--- a/components/journal/WriteButton.tsx
++++ b/components/journal/WriteButton.tsx
+@@ -9,9 +9,12 @@
+ // Everyone writes, from 1.9 (docs/1.9-build/JOURNAL.md): the pill no longer
+ // carries the Plus mark.
+ 
++import type { CSSProperties } from "react";
++
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { Pen } from "@/components/ui/icons/Pen";
+ import { cn } from "@/lib/cn";
++import { useKeyboardUp } from "@/lib/ui/viewport";
+ 
+ export function WriteButton({
+   onClick,
+@@ -24,6 +27,7 @@ export function WriteButton({
+   placement: "foot" | "inline";
+ }) {
+   const { t } = useTranslate();
++  const keyboard = useKeyboardUp();
+   const button = (
+     <button
+       type="button"
+@@ -39,11 +43,28 @@ export function WriteButton({
+     </button>
+   );
+   if (placement === "inline") return button;
++  // While a field of the journal's own has the keyboard (its search), the
++  // button stands down: it rode up on the keyboard and lay over the field
++  // being typed in (build 95, the walk with a keyboard of 320px).
++  if (keyboard) return null;
+   return (
+     <div
+       className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[50] flex justify-center px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] md:hidden native-md-flex"
+-      style={{ transform: "translateY(calc(-1 * var(--now-playing-h, 0px)))" }}
++      style={
++        {
++          transform: "translateY(calc(-1 * var(--now-playing-h, 0px)))",
++          // How far this stands off the foot of the screen, for the fade under it (globals.css, .pill-fade).
++          "--pill-lift": "calc(var(--tab-bar-h, 0px) + var(--now-playing-h, 0px) + env(safe-area-inset-bottom, 0px))",
++        } as CSSProperties
++      }
+     >
++      {/* The fade the chapter's pill floats on (components/bible/
++          MobileChapterPill.tsx): the list's words go quiet as they near the
++          button, and none runs raw under it. Until build 95 the button lay
++          straight on the words: on arrival, over the first entry's own line.
++          Always there: with it off for an empty journal, the button lay on
++          the line under the journal's first question (seen on the export). */}
++      <span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -z-10" />
+       {button}
+     </div>
+   );
+diff --git a/components/journal/usePage.ts b/components/journal/usePage.ts
+index 34f6965b1..c9fa601d3 100644
+--- a/components/journal/usePage.ts
++++ b/components/journal/usePage.ts
+@@ -17,7 +17,7 @@ function fresh(body: string): Page {
+ }
+ 
+ /** The panel open over the tools at the sheet's foot, if any. */
+-export type PagePanel = "verse" | "color" | "more" | "props" | null;
++export type PagePanel = "verse" | "color" | "more" | "props" | "cover" | null;
+ 
+ /**
+  * The page being written (lib/journal/page.ts), held as blocks while the sheet
+diff --git a/lib/fasting/__tests__/build95.test.ts b/lib/fasting/__tests__/build95.test.ts
+new file mode 100644
+index 000000000..b5ae3a992
+--- /dev/null
++++ b/lib/fasting/__tests__/build95.test.ts
+@@ -0,0 +1,80 @@
++import { readFileSync } from "node:fs";
++import { join } from "node:path";
++
++import { describe, expect, it } from "vitest";
++
++/**
++ * The Fast, redrawn (build 95 note 3, the owner on 2026-11-13: "the fast is
++ * clearly outdated"). His screenshot showed two bordered tiles of uneven
++ * height with a 0 in each, three outlined pills on today's card, and the
++ * same three pills on every recent day. What stands there now is the house's
++ * own: a chapter's opening, today on the night, one switch, two quiet lines,
++ * and rows in one tray. This holds the shape; the walk on the export holds
++ * the rest (scripts/guardrail-walk.mjs --only /fasting).
++ */
++
++const read = (rel: string) => readFileSync(join(process.cwd(), rel), "utf8");
++const code = (s: string) => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, "").replace(/^\s*\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "");
++const page = code(read("components/fasting/FastingTrackerClient.tsx"));
++
++describe("the Fast opens as a chapter opens", () => {
++  it("the mark, the small line, the title and the short rule, with the house's own motion", () => {
++    expect(page).toMatch(/<header className="text-center">/);
++    expect(page).toMatch(/<PurifyMark aria-hidden size=\{22\} className="page-open-sub /);
++    expect(page).toMatch(/<h1 className="page-open-title [^"]*font-heading/);
++    expect(page).toMatch(/className="page-open-rule mx-auto mt-5 block h-px w-7 bg-paper\/25"/);
++  });
++});
++
++describe("today leads, on the night", () => {
++  it("is the one dark island of the page, named with the calendar's own mark", () => {
++    expect(page.match(/\bdark-island\b/g)).toHaveLength(1);
++    expect(page).toMatch(/data-fast-today=""\s+className="dark-island [^"]*rounded-\[22px\] border border-paper\/12 bg-night-deep/);
++    expect(page).toContain("<FastGlyph kind={todayFast.kind} size={22} />");
++    // The day's own words, as the calendar has them, and what the day keeps from.
++    expect(page).toContain("t(`calendar.fast.${todayFast.ruleId}.rule`)");
++    expect(page).toContain("fastNotAllowedKey(todayFast.kind)");
++  });
++
++  it("keeps the pastoral line, whole, under the mark, and gives no counsel of its own", () => {
++    expect(page).toMatch(/data-fast-pastoral=""[^>]*>\s*\{t\("fasting\.pastoralNote"\)\}/);
++    // Every word on the page is a key the app already had: nothing is written here.
++    const drawn = page.slice(page.lastIndexOf("  return (\n    <section"));
++    const said = [...drawn.matchAll(/>\s*([A-Za-z][^<>{}=]*[a-z.])\s*<\//g)].map((m) => m[1]);
++    expect(said).toEqual([]);
++  });
++});
++
++describe("one switch, not rows of pills", () => {
++  it("draws no pill for a mark: the house's carved track, once for today and once under each day", () => {
++    expect(page).not.toMatch(/rounded-pill/);
++    expect(page.match(/<MarkSwitch\b/g)).toHaveLength(2);
++  });
++
++  it("a recent day is one row: its day, its fast, its mark, and a tap opens its switch", () => {
++    expect(page).toMatch(/<ul data-fast-days="" className="theology-tray /);
++    expect(page).toMatch(/aria-expanded=\{open\}\s+aria-controls=\{`\$\{ids\}-\$\{r\.key\}`\}/);
++    // Shut, the switch is out of reach of a finger, a keyboard and a screen reader.
++    expect(page).toMatch(/inert=\{!open\}/);
++    // It opens on the house curve, and stands still with motion off.
++    expect(page).toContain("ease-[var(--ease-house)] motion-safe:transition-[grid-template-rows]");
++  });
++});
++
++describe("the count is two quiet lines, not two tiles", () => {
++  it("has no bordered tile and no pair of boxes side by side", () => {
++    expect(page).not.toMatch(/flex items-stretch gap-3/);
++    expect(page).not.toMatch(/rounded-2xl border/);
++    expect(page).toMatch(/<div data-fast-count="" className=\{cn\("reveal-rise mt-5 divide-y px-1"/);
++  });
++
++  it("a new reader meets one sentence: the second line waits, unseen, for a day kept", () => {
++    expect(page).toMatch(/aria-hidden=\{keptInAll === 0\}/);
++  });
++});
++
++describe("the way to the calendar", () => {
++  it("is a line of its own, 44px to the touch, not a word inside the sentence", () => {
++    expect(page).toMatch(/<Link href="\/calendar" data-fast-calendar="" className="[^"]*\bmin-h-11\b[^"]*\bunderline\b/);
++  });
++});
+diff --git a/lib/journal/__tests__/blockForms.test.ts b/lib/journal/__tests__/blockForms.test.ts
+index f58d85f71..96115e41e 100644
+--- a/lib/journal/__tests__/blockForms.test.ts
++++ b/lib/journal/__tests__/blockForms.test.ts
+@@ -13,15 +13,24 @@ import { describe, expect, it } from "vitest";
+  * three boxes alike. The verse's place was a small line at its foot; the
+  * library quote's way back was a separate "Open" at its side.
+  *
+- * Now none is in a box and none stands beside a rule. Each wears the mark of
+- * what it is, the glyph of the tool that lays it, and has its own shape:
++ * Build 93 took all three out of their boxes, and build 95 (note 6, the
++ * owner on 2026-11-13: "visuals aren't really that good. even the image
++ * system and the quoting system") found the result too faint: three small
++ * grey lines of 13px, told apart by a 15px glyph. What stands now is one rule
++ * a reader can see: what is brought onto the page from the app's library is
++ * raised (the house's tray) and opens where it is from; what the writer types
++ * is the page itself. The raised two are not alike: each has its own form.
++ * None stands beside a rule.
+  *
+- *   Scripture          the Book and its place as a heading that opens the
+- *                      passage at the verse, then the words
+- *   a Father's words   the words, then the Quill and the source as the way
+- *                      back: the form a gathered line has in the Florilegium
+- *   a quote of one's   the words in italic, then the speech mark and who
+- *   own                said it, typed by the writer; no link, never the Quill
++ *   Scripture          a raised card: the Book and its place as a heading,
++ *                      in the reading face, that opens the passage at the
++ *                      verse; then the words
++ *   a Father's words   a raised card: the words, then at their foot the
++ *                      Quill and the source as the way back, as an epigraph
++ *                      names its author
++ *   a quote of one's   on the page itself: the words in italic, then the
++ *   own                speech mark and who said it, typed by the writer; no
++ *                      link, never the Quill
+  *
+  * How they are drawn in a built app is scripts/mock-journal.mjs.
+  */
+@@ -36,33 +45,32 @@ const verseWords = part("function VerseCardWords(", "function LibraryCard(");
+ const father = part("function LibraryCard(", "function QuoteCard(");
+ const own = part("function QuoteCard(", "function HeadingBlock(");
+ 
+-describe("none of the three is in a box, and none stands beside a rule", () => {
+-  it("no border round a verse, a Father's words or a quote of one's own", () => {
+-    for (const [name, src] of [["verse", verse], ["library", father], ["quote", own]] as const) {
+-      const figure = src.slice(src.indexOf("<figure"), src.indexOf(">", src.indexOf("className=", src.indexOf("<figure"))));
+-      expect(figure, name).not.toMatch(/\bborder\b|border-paper|border-(s|e|l|r)\b/);
+-    }
+-    // A Father's words and a quote of one's own have no ground of their own either.
+-    expect(father.slice(father.indexOf("<figure"), father.indexOf("<blockquote"))).not.toMatch(/\bbg-/);
+-    expect(own.slice(own.indexOf("<figure"), own.indexOf("<label"))).not.toMatch(/\bbg-/);
++describe("what is brought in is raised, what is typed is the page, and none stands beside a rule", () => {
++  const figureOf = (src: string) => src.slice(src.indexOf("<figure"), src.indexOf(">", src.indexOf("className=", src.indexOf("<figure"))) + 200);
++
++  it("Scripture and a Father's words stand on the house's tray; a quote of one's own on the page itself", () => {
++    expect(figureOf(verse)).toContain("theology-tray relative rounded-[18px]");
++    expect(figureOf(father)).toContain("theology-tray relative rounded-[18px]");
++    expect(own.slice(own.indexOf("<figure"), own.indexOf("<label"))).not.toMatch(/theology-tray|\bbg-|\bborder\b/);
++  });
++
++  it("no rule down a side of any of them", () => {
++    for (const src of [verse, verseWords, father, own]) expect(src).not.toMatch(/border-(s|e|l|r)\b|border-(s|e|l|r)-/);
+   });
+ 
+   it("the words of all three are in the size the app reads at", () => {
+     expect(verseWords).toContain('"font-serif text-body leading-[1.7] text-paper/90"');
+-    expect(father).toContain('"whitespace-pre-line font-serif text-body leading-[1.7] text-paper/90"');
++    expect(father).toContain('"whitespace-pre-line pe-8 font-serif text-body leading-[1.7] text-paper/90"');
+     expect(own).toMatch(/font-serif text-body italic leading-\[1\.7\] text-paper /);
+   });
+ 
+-  it("what is brought onto the page is set in from the writer's own words, by an indent and never a rule", () => {
+-    // The marks hang in the margin; the words begin under the block's name, past its mark (15px and its 8px).
++  it("the writer's own words stand at the margin, and a quote of one's own is set in from them", () => {
+     expect(blocks).toContain('const BLOCK_INSET = "ps-[23px]";');
+-    expect(verseWords.match(/BLOCK_INSET/g)).toHaveLength(2);
+-    expect(father.match(/BLOCK_INSET/g)).toHaveLength(2);
+     expect(own.match(/BLOCK_INSET/g)).toHaveLength(1);
+-    // The writer's own words stand at the margin.
+-    const words = part("function TextBlock(", "const BLOCK_SOURCE");
++    const words = part("function TextBlock(", "const BLOCK_INSET");
+     expect(words).not.toContain("BLOCK_INSET");
+-    for (const src of [verse, verseWords, father, own]) expect(src).not.toMatch(/border-(s|e|l|r)\b|border-(s|e|l|r)-/);
++    // Inside its card Scripture begins at the card's own edge, with its heading.
++    expect(verseWords).not.toContain("BLOCK_INSET");
+   });
+ });
+ 
+@@ -71,12 +79,12 @@ describe("each wears the mark of what it is: its tool's own glyph (build 93 note
+ 
+   it("Scripture wears the Book, as the Verse tool does", () => {
+     expect(toolbar).toMatch(/<Tool icon=\{<Book size=\{18\} \/>\} label=\{t\("journal\.page\.addVerse"\)\}/);
+-    expect(verse).toContain('<Book size={15} aria-hidden className="shrink-0 text-paper/55" />');
++    expect(verse).toContain('<Book size={16} aria-hidden className="shrink-0 text-paper/70" />');
+     expect(verse).not.toMatch(/<Quill|<ChatBubble/);
+   });
+ 
+   it("a Father's words wear the Quill, as a gathered line of a Father does", () => {
+-    expect(father).toContain('<Quill size={15} aria-hidden className="shrink-0 text-paper/55" />');
++    expect(father).toContain('<Quill size={15} aria-hidden className="shrink-0 text-paper/70" />');
+     expect(read("components/florilegium/FlorilegiumDetail.tsx")).toContain("<Quill size={15} aria-hidden");
+     expect(father).not.toMatch(/<Book |<ChatBubble/);
+   });
+@@ -87,28 +95,27 @@ describe("each wears the mark of what it is: its tool's own glyph (build 93 note
+     expect(own).not.toMatch(/<Quill|<Book |<Link/);
+   });
+ 
+-  it("the three source lines are one line, the Florilegium's", () => {
+-    const line = blocks.match(/const BLOCK_SOURCE = "([^"]+)";/)![1];
+-    expect(line).toBe("inline-flex min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/65");
+-    // The gathered line's own, which also carries its 44px.
+-    expect(read("components/florilegium/FlorilegiumDetail.tsx")).toContain('const SOURCE = "inline-flex min-h-11 min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/65";');
++  it("the two raised forms are not alike: Scripture's place is a heading in the reading face, a Father's source a small line", () => {
++    expect(verse).toMatch(/data-page-verse-place="" className="[^"]*\bfont-serif text-\[17px\] font-semibold\b/);
++    expect(father).toMatch(/data-page-library-source="" className="[^"]*\bfont-sans text-caption font-semibold\b/);
+   });
+ });
+ 
+ describe("Scripture: its place is its heading", () => {
+   it("the place comes before the words, and opens the passage at the verse", () => {
+-    expect(verse.indexOf("<figcaption>")).toBeGreaterThan(-1);
+-    expect(verse.indexOf("<figcaption>")).toBeLessThan(verse.indexOf("<VerseCardWords"));
+-    expect(verse).toMatch(/<Link href=\{`\/bible\/\$\{block\.book\}\/\$\{block\.chapter\}#v\$\{block\.from\}`\} data-page-verse-place="" className=\{cn\(BLOCK_SOURCE, "min-h-11 hover:text-paper"\)\}>/);
++    expect(verse.indexOf("<figcaption")).toBeGreaterThan(-1);
++    expect(verse.indexOf("<figcaption")).toBeLessThan(verse.indexOf("<VerseCardWords"));
++    expect(verse).toMatch(/<Link href=\{`\/bible\/\$\{block\.book\}\/\$\{block\.chapter\}#v\$\{block\.from\}`\} data-page-verse-place="" className="inline-flex min-h-11 /);
+   });
+ 
+   it("with no signal and nothing kept, the heading still stands, and under it the way to read", () => {
+     expect(verseWords).toMatch(/states\.every\(\(s\) => s\.words\.status === "missing"\)[\s\S]*?<Link href=\{`\/bible\/\$\{block\.book\}\/\$\{block\.chapter\}#v\$\{block\.from\}`\}[\s\S]*?min-h-11[\s\S]*?t\("saved\.openToRead"\)/);
+   });
+ 
+-  it("asked for again it is lit for a moment, with no edge to light", () => {
+-    expect(verse).toContain('noticed ? "bg-paper/[0.09]" : "bg-paper/0"');
+-    expect(verse).toContain("motion-safe:transition-colors");
++  it("asked for again its edge is lit for a moment, and nothing on the page moves for it", () => {
++    // An outline takes no room: the card is the same size lit and unlit.
++    expect(verse).toContain('noticed ? "outline-paper/60" : "outline-transparent"');
++    expect(verse).toContain("outline outline-1 -outline-offset-1 motion-safe:transition-[outline-color]");
+   });
+ 
+   it("its words are never typed here", () => {
+@@ -118,8 +125,8 @@ describe("Scripture: its place is its heading", () => {
+ 
+ describe("a Father's words: the words, then the way back", () => {
+   it("the source is the way back, 44px to a finger, under the words", () => {
+-    expect(father.indexOf("<blockquote")).toBeLessThan(father.indexOf("<figcaption>"));
+-    expect(father).toMatch(/<Link href=\{block\.href\} data-page-library-source="" className=\{cn\(BLOCK_SOURCE, "min-h-11 hover:text-paper"\)\}>/);
++    expect(father.indexOf("<blockquote")).toBeLessThan(father.indexOf("<figcaption"));
++    expect(father).toMatch(/<Link href=\{block\.href\} data-page-library-source="" className="inline-flex min-h-11 /);
+     // One way back, not a source and a separate Open beside it.
+     expect(father.match(/<Link /g)).toHaveLength(1);
+     expect(father).not.toContain('t("journal.composer.open")');
+@@ -136,14 +143,17 @@ describe("a Father's words: the words, then the way back", () => {
+ });
+ 
+ describe("a block's remove sits level with the block's first line", () => {
+-  it("a Father's words and a quote of one's own open on words, so their remove is raised to them; Scripture's sits with its heading", () => {
+-    expect(father).toContain("<RemoveButton high onClick={onRemove}");
+-    expect(own).toContain("<RemoveButton high onClick={onRemove}");
++  it("in a card it sits in the card's own corner; a quote of one's own opens on words, so its remove is raised to them", () => {
++    expect(father).toContain("<RemoveButton onClick={onRemove}");
+     expect(verse).toContain("<RemoveButton onClick={onRemove}");
++    expect(own).toContain("<RemoveButton high onClick={onRemove}");
+     const remove = code(blocks.slice(blocks.indexOf("function RemoveButton("), blocks.indexOf("// ── The tools")));
+     expect(remove).toContain('high && "-mt-2.5"');
+     // Still a finger wide and high.
+     expect(remove).toContain("inline-flex h-11 w-11");
++    // And the card's words keep clear of it.
++    expect(verse).toContain('<figcaption className="pe-9">');
++    expect(father).toContain("whitespace-pre-line pe-8");
+   });
+ });
+ 
+diff --git a/lib/journal/__tests__/build95.test.ts b/lib/journal/__tests__/build95.test.ts
+index 1facfea53..1b37dd86f 100644
+--- a/lib/journal/__tests__/build95.test.ts
++++ b/lib/journal/__tests__/build95.test.ts
+@@ -202,3 +202,88 @@ describe("the keyboard comes only from the reader's tap where they write", () =>
+     expect(finder.match(/\.focus\(/g)).toHaveLength(1);
+   });
+ });
++
++/**
++ * The journal's page, redrawn in the approved look (note 4, "needs to be
++ * refined + smoother"): it opens as a chapter does, today's page stands on
++ * the night, the question of an empty journal is a row to tap, and Write
++ * stands on the house's fade, out of the keyboard's way.
++ */
++describe("the journal's page in the approved look", () => {
++  const client = code(read("components/journal/JournalClient.tsx"));
++  const today = code(read("components/journal/TodayPage.tsx"));
++  const write = code(read("components/journal/WriteButton.tsx"));
++
++  it("opens as a chapter opens: the mark, its name, one line in italics, the short rule", () => {
++    expect(client).toMatch(/<header className="text-center">\s*<PurifyMark aria-hidden size=\{22\}/);
++    expect(client).toMatch(/<h1 id="journal-title" className="page-open-title [^"]*font-heading/);
++    expect(client).toMatch(/className="page-open-sub [^"]*italic[^"]*">\{t\("journal\.lede"\)\}/);
++    expect(client).toContain('className="page-open-rule mx-auto mt-5 block h-px w-7 bg-paper/25"');
++  });
++
++  it("today's page stands on the night, as the one thing that leads", () => {
++    expect(today).toMatch(/className="dark-island [^"]*rounded-\[22px\] border border-paper\/12 bg-night-deep/);
++  });
++
++  it("an empty journal's question is a row to tap, in the house's tray, with the pen", () => {
++    const empty = client.slice(client.indexOf('data-journal-empty=""'), client.indexOf("<JournalFeed"));
++    expect(empty).toMatch(/<div className="theology-tray /);
++    expect(empty).toMatch(/className="theology-row tap-press flex min-h-\[64px\] w-full/);
++    expect(empty).toContain("<Pen size={18} />");
++  });
++
++  it("Write stands on the fade the chapter's pill floats on, and stands down for the keyboard", () => {
++    expect(write).toContain('<span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -z-10" />');
++    expect(write).toContain('"--pill-lift":');
++    expect(write).toMatch(/if \(keyboard\) return null;/);
++    // Still the journal's one way to write, and still not Plus's.
++    expect(write.match(/data-journal-write=""/g)).toHaveLength(1);
++    expect(write).not.toMatch(/PlusMark/);
++    // The fade is always under it: no state of the journal leaves the button lying on words.
++    expect(write).not.toMatch(/\bfade\b\s*\?/);
++  });
++});
++
++/**
++ * Note 6: "visuals aren't really that good. even the image system". A page's
++ * picture is its cover (Plus, from the verified artwork the apps carry). It
++ * was chosen at the foot of the notebook's panel, from 60px squares, and shown
++ * as a flat strip cut through the middle of the icon, and nowhere else.
++ */
++describe("the page's picture", () => {
++  const blocks = code(read("components/journal/PageBlocks.tsx"));
++  const feed = code(read("components/journal/JournalFeed.tsx"));
++
++  it("has a row of its own in More, with Plus's mark for a reader without Plus, and promises it to no one", () => {
++    const more = blocks.slice(blocks.indexOf('data-page-more=""'), blocks.indexOf('role="toolbar"'));
++    expect(more).toMatch(/<MoreChoice\s+cover\s+icon=\{<Picture size=\{18\} \/>\}\s+label=\{t\("journal\.page\.cover"\)\}\s+locked=\{locked\}/);
++    // Without Plus the row opens the upgrade sheet, and never the pictures.
++    expect(more).toMatch(/if \(locked\) \{\s*setPanel\(null\);\s*upgrade\.open\("journal"\);\s*\} else setPanel\("cover"\);/);
++  });
++
++  it("is chosen from one row of pictures large enough to tell apart, the chosen one edged", () => {
++    const panel = blocks.slice(blocks.indexOf("function CoverPanel("), blocks.indexOf("function StyleRows("));
++    expect(panel).toContain('role="radiogroup"');
++    expect(panel).toMatch(/className="no-scrollbar -mx-3 mt-1 flex snap-x gap-2 overflow-x-auto/);
++    expect(panel).toMatch(/h-\[112px\] w-\[88px\] shrink-0 snap-start/);
++    expect(panel).toContain('current === c.id ? "border-paper" : "border-transparent"');
++    // Each is named for a screen reader by what it shows, from the rights registry.
++    expect(panel).toContain("aria-label={c.alt}");
++    // And it is no longer at the foot of the notebook's panel.
++    expect(blocks.slice(blocks.indexOf("function PropsPanel("), blocks.indexOf("function CoverPanel("))).not.toMatch(/<CoverPanel|COVERS\.map/);
++  });
++
++  it("stands at the page's head, rounded as the app's cards are, cut from where an icon's face is, and credited", () => {
++    const head = blocks.slice(blocks.indexOf('data-page-cover=""'), blocks.indexOf('data-journal-title=""'));
++    expect(head).toContain('className="block h-44 w-full rounded-[18px] object-cover object-[50%_22%]"');
++    expect(head).toContain("{cover.credit}");
++    expect(head).toContain("alt={cover.alt}");
++  });
++
++  it("shows on its page in the journal's list", () => {
++    expect(feed).toContain("cover: coverById(page.cover)?.src");
++    expect(feed).toMatch(/data-journal-entry-cover="" className="[^"]*size-14 shrink-0 rounded-\[12px\] object-cover/);
++    // The row is still one button, the words first.
++    expect(feed).toMatch(/data-journal-entry="" className="flex w-full items-start gap-3 py-4 pe-1 text-start/);
++  });
++});
+diff --git a/lib/journal/__tests__/churchDay.test.ts b/lib/journal/__tests__/churchDay.test.ts
+index 41123ffb6..6cc4ff257 100644
+--- a/lib/journal/__tests__/churchDay.test.ts
++++ b/lib/journal/__tests__/churchDay.test.ts
+@@ -88,7 +88,8 @@ describe("the journal is headed by the Church's day", () => {
+ 
+   it("today's page: the weekday in Lora, the day's line, the readings and today's highlights", () => {
+     expect(today).toContain("useChurchDayAtOnce()");
+-    expect(today).toMatch(/font-serif text-\[32px\][^"]*text-paper"/);
++    // The weekday in the house's heading face, as a chapter's name is (build 95, the approved look).
++    expect(today).toMatch(/font-heading text-\[34px\][^"]*text-paper"/);
+     // Write is the journal's one button, always in reach: not drawn here twice.
+     expect(today).not.toContain('t("journal.write")');
+     expect(today).toContain("day.readings.map");
+diff --git a/lib/journal/__tests__/writingSheet.test.ts b/lib/journal/__tests__/writingSheet.test.ts
+index 3625b7e31..ea9a10c02 100644
+--- a/lib/journal/__tests__/writingSheet.test.ts
++++ b/lib/journal/__tests__/writingSheet.test.ts
+@@ -189,7 +189,8 @@ describe("More's choices can be read", () => {
+     expect(more).not.toContain("grid-cols-2");
+     expect(choice).not.toContain("col-span-2");
+     expect(choice).toMatch(/<button[\s\S]*?className="[^"]*\bw-full\b/);
+-    expect(more.match(/<MoreChoice/g)).toHaveLength(5);
++    // Plus's four blocks, and the page's own two: its notebook and, from build 95, its cover.
++    expect(more.match(/<MoreChoice/g)).toHaveLength(6);
+   });
+ 
+   it("a name is never cut: it takes as many lines as it needs", () => {
+diff --git a/lib/ui/__tests__/gateRunOne.test.ts b/lib/ui/__tests__/gateRunOne.test.ts
+index edd703e18..36cc17fca 100644
+--- a/lib/ui/__tests__/gateRunOne.test.ts
++++ b/lib/ui/__tests__/gateRunOne.test.ts
+@@ -58,10 +58,14 @@ describe("a finger's 44px", () => {
+   });
+ 
+   it("the fasting marks reach 44px without growing: Kept, In part and Broke on every day", () => {
++    // Redrawn for build 95 (note 3): the three marks are one switch, the house's carved track, whose
++    // choices each lean on the same helper. The page draws that switch and no button of its own for a mark.
+     const src = code("components/fasting/FastingTrackerClient.tsx");
+-    const control = src.slice(src.indexOf("function CheckControl"), src.indexOf("export function FastingTrackerClient"));
+-    expect(control.match(/<button\b/g)).toHaveLength(1);
+-    expect(control).toMatch(/className=\{`hit-44 rounded-pill border /);
++    const control = src.slice(src.indexOf("function MarkSwitch"), src.indexOf("export function FastingTrackerClient"));
++    expect(control).toMatch(/return <Track value=\{value \?\? null\}/);
++    expect(control).not.toMatch(/<button\b/);
++    const track = code("components/settings/LitPanel.tsx");
++    expect(track.slice(track.indexOf("export function Track"))).toMatch(/role="radio"[\s\S]{0,160}className="hit-44"/);
+     // The helper they lean on is still the house's.
+     expect(read("app/globals.css")).toMatch(/\.hit-44::after \{[^}]*min-width: 44px;[^}]*min-height: 44px;/);
+   });
+@@ -166,27 +170,29 @@ describe("words a reader can read", () => {
+ });
+ 
+ describe("a fasting mark that is on", () => {
+-  it("wears the palette's own soft tones, which turn with it, and a word that can be read", () => {
++  it("wears no tone of its own: lit as the house's switch lights a choice, and a word that can be read", () => {
+     // Walked with marks on, which a walk at rest cannot see: Broke's word (the red at 80 percent) was
+     // 2.3:1 on Dark, and Kept's green on Light 4.25:1 over its own fill. Kept was a fixed emerald before that.
++    // Redrawn for build 95 (note 3), a mark that is on is the switch's raised plate, the same for Kept, In
++    // part and Broke: none is green and none is red, so none reads as a verdict, and none can fall short of
++    // its ground on a palette. A recent day says its mark in the page's own ink.
+     const src = code("components/fasting/FastingTrackerClient.tsx");
+-    const on = src.slice(src.indexOf("const active: Record<CheckinStatus, string> = {"), src.indexOf("const pad ="));
+-    expect(on).toContain('kept: "border-sage-soft/50 bg-transparent text-sage-soft"');
+-    expect(on).toContain('broken: "border-crimson-soft/50 bg-crimson-soft/10 text-crimson-soft"');
+-    // No colour that follows no palette, and no word in a share of the red itself.
+-    expect(on).not.toMatch(/emerald|text-crimson\/|border-crimson\/|border-sage\/|bg-sage\//);
+-    // Each palette sets the soft tones for its own ground: Light's are dark, the dark palettes' pale.
+-    const css = read("app/globals.css");
+-    expect(css).toMatch(/html\[data-reading-mode="parchment"\] \{\s*--color-crimson-soft: #9b2c26;[\s\S]{0,120}--color-sage-soft: #2f6b58;/);
+-    expect(css).toMatch(/--color-sage-soft: #bfd6cc;/);
++    expect(src).not.toMatch(/\b(?:text|bg|border|ring)-(?:emerald|crimson|sage|gold)/);
++    expect(src).toMatch(/data-fast-day-mark="" className="[^"]*\btext-paper\/85\b/);
++    // The calendar's own mark for the day is its own tone, never alone: beside the day's name (fastMeta.tsx).
++    expect(src).toContain("const { Icon, rgb } = FAST_META[kind];");
+   });
+ 
+   it("moves nothing when it changes: the two summary lines keep the taller line's height", () => {
+     const src = code("components/fasting/FastingTrackerClient.tsx");
+-    // Both wordings stand in one grid cell and one is seen, so a card never changes height under the finger (it moved the marks 19px).
+-    expect(src.match(/<p className="mt-2 grid font-sans text-caption text-paper\/60">/g)).toHaveLength(2);
++    // Both wordings stand in one grid cell and one is seen, so a line never changes height under the finger (it moved the marks 19px).
++    expect(src.match(/<span className="grid min-w-0 flex-1 font-sans text-detail leading-snug text-paper\/70">/g)).toHaveLength(2);
+     expect(src.match(/className=\{`col-start-1 row-start-1 \$\{/g)).toHaveLength(4);
+     expect(src).not.toMatch(/\{streak === 0\s*\?\s*t\("fasting\.streakNone"\)/);
++    // With nothing kept the second line keeps its room and is not seen: it is never taken out of the page.
++    expect(src).toMatch(/<p aria-hidden=\{keptInAll === 0\} className=\{cn\("flex items-baseline gap-3 py-3", keptInAll === 0 && "invisible"\)\}>/);
++    // A recent day's switch opens and shuts on its own, so no row moves up under a finger as another shuts.
++    expect(src).toContain("const [opened, setOpened] = useState<ReadonlySet<string>>(() => new Set());");
+   });
+ });
+ 
+diff --git a/lib/ui/__tests__/storePicturesRun.test.ts b/lib/ui/__tests__/storePicturesRun.test.ts
+index 7c2a18db6..0525adafb 100644
+--- a/lib/ui/__tests__/storePicturesRun.test.ts
++++ b/lib/ui/__tests__/storePicturesRun.test.ts
+@@ -169,7 +169,8 @@ describe("c. the wide calendar", () => {
+ 
+ describe("d. the wide journal", () => {
+   it("gives the prompt under Nothing written yet 44px to the touch", () => {
+-    expect(read("components/journal/JournalClient.tsx")).toContain('className="tap-press hit-44 mt-2 block text-start font-serif text-lede leading-[1.5] text-paper"');
++    // Redrawn for build 95 (note 4): the prompt is a row in the house's tray, 64px tall at the least, with its pen.
++    expect(read("components/journal/JournalClient.tsx")).toContain('className="theology-row tap-press flex min-h-[64px] w-full items-center gap-3 rounded-[14px] px-2.5 py-3 text-start"');
+   });
+ });
+ 
+diff --git a/scripts/mock-journal.mjs b/scripts/mock-journal.mjs
+index 67329b37c..7448b6ef2 100644
+--- a/scripts/mock-journal.mjs
++++ b/scripts/mock-journal.mjs
+@@ -779,14 +779,15 @@ await flow("more: the page's notebook is there under Plus's four, opens its pane
+   await tap(page, tools(page).nth(MORE), "More");
+   await wait(400);
+   const choices = await page.locator("[data-page-more] button").allInnerTexts();
+-  expectThat(choices.map((c) => c.trim()).join(", ") === "Heading, Checklist, Divider, Callout, Add to a notebook", `More holds ${choices.join(", ")}`);
++  expectThat(choices.map((c) => c.trim()).join(", ") === "Heading, Checklist, Divider, Callout, Add to a notebook, Cover", `More holds ${choices.join(", ")}`);
+   // Rows the width of the sheet, one under another, a hairline between two and none over the first.
+   const rows = await page.locator("[data-page-more] button").evaluateAll((els) =>
+     els.map((el) => ({ w: el.getBoundingClientRect().width, h: el.getBoundingClientRect().height, y: el.getBoundingClientRect().y, line: getComputedStyle(el.parentElement.querySelector("span[aria-hidden]")).display !== "none" })),
+   );
+   expectThat(rows.every((r) => r.w >= 340 && r.h >= 44), `a row is ${rows.map((r) => `${Math.round(r.w)} by ${Math.round(r.h)}`).join(", ")}`);
+   expectThat(rows.every((r, i) => i === 0 || r.y > rows[i - 1].y), "the rows are not one under another");
+-  expectThat(rows.map((r) => r.line).join() === "false,true,true,true,false", `the hairlines are ${rows.map((r) => r.line).join()}`);
++  // Two trays: Plus's four blocks, then the page's own two (its notebook and, from build 95, its cover).
++  expectThat(rows.map((r) => r.line).join() === "false,true,true,true,false,true", `the hairlines are ${rows.map((r) => r.line).join()}`);
+   await tap(page, page.locator("[data-page-more-props]"), "Add to a notebook");
+   await wait(500);
+   expectThat((await page.locator("[data-page-props-panel]").count()) === 1, "the notebook panel did not open");
+@@ -968,7 +969,7 @@ await flow("a page with a notebook, without Plus: its line wears the Plus mark a
+ 
+ // ── Push 2: each block its own, and the ways in ───────────────────────────
+ 
+-await flow("the blocks: a verse, a quote of one's own and a Father's words are in no box, and each wears its own mark", async (page) => {
++await flow("the blocks: Scripture and a Father's words are raised, each its own; a quote of one's own is the page itself; and each wears its own mark", async (page) => {
+   const from = await pageOfEveryBlock(page);
+   await write(page);
+   const looks = await page.evaluate(() =>
+@@ -977,18 +978,33 @@ await flow("the blocks: a verse, a quote of one's own and a Father's words are i
+       const cs = getComputedStyle(el);
+       return {
+         sel,
+-        border: ["Top", "Right", "Bottom", "Left"].map((side) => parseFloat(cs[`border${side}Width`])).reduce((a, b) => a + b, 0),
++        borders: ["Top", "Right", "Bottom", "Left"].map((side) => parseFloat(cs[`border${side}Width`])),
+         ground: cs.backgroundColor,
++        raised: cs.backgroundImage !== "none",
+         marks: el.querySelectorAll("svg[aria-hidden=true]").length,
+       };
+     }),
+   );
++  // Build 95 note 6: what is brought from the library is raised (the house's tray), what the writer types is the page.
+   for (const l of looks) {
+-    expectThat(l.border === 0, `${l.sel} has a border`);
+-    // Clear: an alpha of nothing, however the browser writes the colour (rgba(0, 0, 0, 0), oklab(0 0 0 / 0)).
+-    expectThat(/(,|\/) ?0\)$|^transparent$/.test(l.ground), `${l.sel} stands on a ground of its own (${l.ground})`);
++    const own = l.sel === "[data-page-quote]";
++    // A tray's edge is the same all round: never a line down one side.
++    expectThat(l.borders.every((b) => b === l.borders[0]), `${l.sel} has an edge on one side only (${l.borders.join(", ")})`);
++    if (own) {
++      expectThat(l.borders[0] === 0 && !l.raised, `${l.sel}, the writer's own, is raised`);
++      // Clear: an alpha of nothing, however the browser writes the colour (rgba(0, 0, 0, 0), oklab(0 0 0 / 0)).
++      expectThat(/(,|\/) ?0\)$|^transparent$/.test(l.ground), `${l.sel} stands on a ground of its own (${l.ground})`);
++    } else {
++      expectThat(l.borders[0] > 0 && l.raised, `${l.sel}, brought from the library, is not raised`);
++    }
+     expectThat(l.marks >= 2, `${l.sel} wears no mark`);
+   }
++  // The two raised are not alike: Scripture's place is at its head, a Father's source at his words' foot.
++  const order = await page.evaluate(() => ({
++    verse: document.querySelector("[data-page-verse-place]").getBoundingClientRect().top < document.querySelector("[data-page-verse] blockquote, [data-page-verse] > span").getBoundingClientRect().top,
++    father: document.querySelector("[data-page-library-source]").getBoundingClientRect().top > document.querySelector("[data-page-library] blockquote").getBoundingClientRect().top,
++  }));
++  expectThat(order.verse && order.father, "Scripture's place is not over its words, or a Father's source not under his");
+   // Scripture: its place is its heading, over where its words go.
+   const place = page.locator("[data-page-verse-place]");
+   expectThat((await place.innerText()).trim() === "John 3:16", `the verse's heading says "${await place.innerText()}"`);
+-- 
+2.43.0
+
