@@ -74,6 +74,25 @@ He sent, 2026-11-13 07:38 UTC, a screenshot of a reader's Discussion post in Com
 
 A reader's report during the release's making, so it goes into 1.9 (CLAUDE.md, "A release ships finished"). A reader can edit and remove what they wrote, posts and replies alike. An edited one says so. A removed reply leaves the thread readable. Moderation keeps what it needs to keep for reports, as the privacy lines say. Any change to the database's rules is a migration, safe to run twice, signed by him before the merge.
 
+### Note 10, built (2026-11-13, the Community: edit and remove chat)
+
+**What a reader could do before.** Posts: delete their own from its ⋯ menu, asked first, and the delete took every reply under it, other readers' words included. No edit. Replies: nothing at all. The ⋯ menu on one's own reply was empty and no route took an edit or a delete. (A comment under a prayer campaign could already be taken off by its writer, from the campaign: lib/campaigns/thread.ts, removeNote. Untouched.) Both tables are read only where status = 'visible' (a group's only by its members), and nothing is written except by the website's routes with the service role.
+
+**What 1.9 does.**
+
+- Edit, from the post's or the reply's own ⋯ menu (Edit beside Delete; no new pattern). The words open as fields where they stood (components/community/EditWords.tsx): a discussion's title and words, a share's own words and never its line, a reply's words. Cancel and Save, 44px each. The same word filter (asked first, masked, held for a moderator) and the same spam filter as writing; what a new post would wait for, an edit is refused with nothing changed. An edited one says "· edited" after its time. An edit sends no new notices; the notices that quote it are made to quote the new words.
+- Delete, asked first. When nobody else answered, it goes. When others did (a post's replies; for a reply, a reply from someone else after it), it stays as "Removed by its author", with no words, no name, no picture and no menu, so the thread still reads (lib/community/withdrawn.ts, the state 'withdrawn'). No new replies under a removed post. A placeholder with nothing left after it is not shown.
+- Moderation: while a report on it is open it cannot be edited ("A moderator is looking at this..."), so a moderator judges what was reported; it can always be deleted. The word filter's waiting copy of old words is dropped on an edit, since approving it would put the old words back over the edit. A placeholder cannot be reported, used to block whoever deleted it, or removed by a moderator, which would have sent "we removed your post" for words they took down themselves.
+- Privacy: nothing new is kept. The policy's "kept until you delete them" and "deleted with the post" hold: a delete clears the words, and the reports, holds and notices that carried them.
+- Limits: an edit 60 an hour per address and 30 per account; a delete 120 an hour per address and 60 per account.
+- The database: `supabase/migrations/20261113075725_community_own_words.sql`, **not signed**: `edited_at` on both tables, the state 'withdrawn' on both, and a withdrawn post excused from the two checks that ask a post for words. No policy changes. Until it runs: an edit answers "Editing isn't available yet" and a delete deletes outright, as before.
+
+**Named, for an app from before 1.9.** A 1.8 app, until it updates, draws a placeholder as a post or reply with no words by "Reader". Nothing breaks and nothing of the writer shows.
+
+**For his word, not built: keeping what was reported.** Keeping a reported post's words as they stood when reported, for a moderator, after its writer edits or deletes it, would need a new line in the Privacy Policy, which is his. A line that would cover it, if he wants it: "If something you posted has been reported, we keep a copy of it as it was reported, unseen, until a moderator has looked at it, even if you change or delete it, and for no more than thirty days." Without it, the open report's freeze on editing is what keeps a moderator's evidence.
+
+Tests: `lib/community/__tests__/ownWords.test.ts` (29, every one failing on the code before). The touched screens on the export: `node scripts/mock-own-words.mjs` (checkMock with pixels at 390, 800 and 1032, on the five palettes and the seventeen looks, in English and in Arabic) and `WALK=1 node scripts/mock-own-words.mjs` (the touched controls, real touch, motion on).
+
 ## Note 11 (a reader's report, sent by him): the ambient sounds "do not currently work"
 
 He sent, 2026-11-13 07:40 UTC, a screenshot of a reader's Discussion post from 15 days ago (six likes; the reader is not named here). The reader is new, an inquirer into the Faith: "when I went to play the ambient selections, it said that they do not currently work. Has this always been the case? Is this feature that new, or could it just be a temporal bug?"
