@@ -369,7 +369,8 @@ body {
 /* ── Figure ────────────────────────────────────────────────────────── */
 .k-figure { margin: var(--k-space-5) 0; }
 
-.k-figure img {
+/* A picture from the app, or a short film of it (a clip of a gesture, muted and looping). */
+.k-figure :is(img, video) {
   display: block;
   width: 100%;
   height: auto;
