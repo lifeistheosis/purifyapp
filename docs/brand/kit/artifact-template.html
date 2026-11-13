@@ -18,14 +18,15 @@
  *
  * The five palettes are the app's own (scripts/mock-check.mjs PALETTES):
  *   Dark         no attribute          app/globals.css 81-82, 90, 106-107, and the ink of :root
- *   Light        data-reading-mode="parchment"   app/globals.css 5164-5180
+ *   Light        data-theme="light" (and the app's parchment attribute): white, the app's ink, never parchment
  *   Black        data-reading-mode="black"       app/globals.css 5147-5154
  *   Candlelight  data-reading-mode="candlelight" app/globals.css 5029-5037, 5217
  *   Monastery    data-reading-mode="monastery"   app/globals.css 5107-5112, 5220
  *
- * A page that is not inside the app (an artifact, a report) follows the
- * reader's system: Dark by default, Light when the system is light, and
- * data-theme="light" or "dark" on <html> when someone chooses.
+ * A design (an artifact, a report) opens on Dark, the app's own ground.
+ * data-theme="light" gives the clean neutral light; data-reading-mode wears
+ * the app's other palettes. Parchment is never a design ground (his word,
+ * 2026-11-13); its values are listed below for app mockups only.
  *
  * Names: the app calls the ground "night" and the ink "paper" because they
  * flip on Light. The kit names them by their job (ground, ink) so nobody
@@ -97,33 +98,37 @@
   color-scheme: dark;
 }
 
-/* ── Light (Parchment) ─────────────────────────────────────────────── */
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]):not([data-reading-mode]) {
-    --k-ground: #f1e8d4;      /* globals.css 5164 */
-    --k-card: #e7dcc1;        /* 5165 */
-    --k-well: #e6dcc4;        /* 5178 */
-    --k-ink-base: #2b2317;    /* 5166 */
-    --k-accent: #45454b;      /* 5170: ink greys, never brown or yellow */
-    --k-accent-soft: #55555b; /* 5171 */
-    --k-ink-2-share: 85%;     /* text-paper/85 */
-    --k-ink-3-share: 70%;     /* Light's faint share, globals.css 5543 */
-    --k-money-shop: #2a78d6;  /* admin-theme.css 824 */
-    color-scheme: light;
-  }
-}
+/* ── Light: a clean neutral, never parchment ─────────────────────────
+   His word, 2026-11-13: "stop using parchment for designs". A design's
+   light is white carrying the app's ink: the ground is --color-paper
+   (globals.css 71), the ink is --color-ink and --color-ink-soft (68-69, the
+   app's ink on its white surfaces), the card and well are the admin panel's
+   neutral grey (admin-theme.css 768, --adm-panel-2). A design opens on Dark
+   and is light only when asked (data-theme="light"). The app's Light palette
+   (data-reading-mode="parchment") draws this same neutral here, so no design
+   ever stands on parchment. */
 :root[data-theme="light"],
 :root[data-reading-mode="parchment"] {
-  --k-ground: #f1e8d4;
-  --k-card: #e7dcc1;
-  --k-well: #e6dcc4;
-  --k-ink-base: #2b2317;
-  --k-accent: #45454b;
-  --k-accent-soft: #55555b;
-  --k-ink-2-share: 85%;
-  --k-ink-3-share: 70%;
-  --k-money-shop: #2a78d6;
+  --k-ground: #ffffff;      /* --color-paper, globals.css 71 */
+  --k-card: #f3f3f3;        /* --adm-panel-2, admin-theme.css 768 */
+  --k-well: #f3f3f3;
+  --k-ink-base: #49424e;    /* --color-ink, globals.css 68 */
+  --k-accent: #49424e;      /* the ink is the accent on white, as --color-on-paper (globals.css 140) */
+  --k-accent-soft: #6b6470; /* --color-ink-soft, globals.css 69 */
+  --k-ink-2-share: 90%;
+  --k-ink-3-share: 80%;     /* about --color-ink-soft: 5.0:1 on the card */
+  --k-money-shop: #2a78d6;  /* admin-theme.css 824 */
   color-scheme: light;
+}
+
+/* ── Parchment: app only, never a design ground ───────────────────────
+   The app's Light palette (globals.css 5164-5180), listed so a mockup of
+   the app can name it. No piece reads these, and check.mjs fails a design
+   whose ground is parchment, cream or sepia. */
+:root {
+  --k-app-parchment-ground: #f1e8d4;  /* app only, never a design ground */
+  --k-app-parchment-card: #e7dcc1;    /* app only */
+  --k-app-parchment-ink: #2b2317;     /* app only */
 }
 
 /* ── Black (True black, globals.css 5147-5154; faint share 5500) ──── */

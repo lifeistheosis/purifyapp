@@ -14,14 +14,23 @@ His word, 2026-11-13: "the design must be optimized for mobile." Everything is d
 - An email is one column, 100% wide up to 600px, body text 16px or more, every tap target 44px or more.
 - The check renders every template at 360, 390, 412 and 1032, and fails on a sideways scroll. Look at a still at 390 yourself before sending.
 
+## Rule two: never parchment
+
+His word, 2026-11-13: "and also stop using parchment for designs. (important because you always do this)". No design stands on the parchment ground (`#f1e8d4`, the app's Light palette) or on any aged-paper, cream or sepia look.
+
+- A design opens on the app's dark ground.
+- Its light, when one is needed (the email's light mode, `data-theme="light"`), is a clean neutral: white (`--color-paper`) carrying the app's ink (`--color-ink`, `#49424e`), with the admin panel's neutral grey for a card.
+- `tokens.css` still lists Parchment, marked "app only, never a design ground", for mockups of the app's own Light palette. No piece reads it, and in the kit the app's Light attribute draws the clean neutral.
+- `check.mjs` fails a design with a parchment, cream or sepia ground, however it is worn (as it opens, light, a light system, each palette), and proves that measure with its own self-test first.
+
 ## What is in `docs/brand/kit/`
 
 | File | What it is |
 |---|---|
-| `tokens.css` | The tokens: the five palettes (Dark, Light, Black, Candlelight, Monastery), the ink's shares, type, space, radius, motion, the Church's red and money's three hues. Each names its line in `app/globals.css` or `app/admin/admin-theme.css`. |
+| `tokens.css` | The tokens: the five palettes (Dark, the clean neutral Light, Black, Candlelight, Monastery; Parchment listed for app mockups only), the ink's shares, type, space, radius, motion, the Church's red and money's three hues. Each names its line in `app/globals.css` or `app/admin/admin-theme.css`. |
 | `pieces.css` | The pieces: title, section, figures, table, chart, figure, note, card, button, footer. Built only from the tokens. |
 | `artifact-template.html` | One self-contained HTML page holding the tokens and pieces, with every piece shown once. Start an artifact or a report from a copy of it. |
-| `email-template.html` | The email: tables, inline styles, no scripts, no SVG. Light in the app's Light palette, dark in its Dark palette. Start every email from a copy of it. |
+| `email-template.html` | The email: tables, inline styles, no scripts, no SVG. Light in the clean neutral (white, the app's ink), dark in the app's Dark palette. Start every email from a copy of it. |
 | `check.mjs` | Renders both templates at 360, 390, 412 and 1032 and holds them to checkMock on the five palettes at each width, and to no sideways scroll. `--write` refreshes the artifact template from the two CSS files. |
 
 ## On claude.ai
@@ -41,7 +50,7 @@ The kit is also a claude.ai design system, so decks and designs start from Purif
 2. Write the words in the house voice (`docs/brand/voice.md`): sentence-case headings, no em dashes, plain sample words, figures that say "not read" when they were not read.
 3. Use the pieces as they are. A new need is a new piece in `pieces.css`, built from tokens, added here and passed by the check, not a one-off style in your page.
 4. Check it: at 360, 390, 412 and 1032 on all five palettes with checkMock (the way `check.mjs` does), and look at a still at 390. Then send it.
-5. For an artifact on claude.ai, publish the copied page. It follows the viewer's system (Dark unless the system is light), and `data-theme` or `data-reading-mode` on `<html>` choose a palette.
+5. For an artifact on claude.ai, publish the copied page. It opens on Dark; `data-theme="light"` gives the clean neutral light, and `data-reading-mode` on `<html>` wears the app's other palettes.
 
 ## The pieces, in one line each
 
@@ -75,10 +84,10 @@ node docs/brand/kit/check.mjs --write        # after a change to tokens.css or p
 node docs/brand/kit/check.mjs --shots <dir>  # and a still of each palette at 390
 ```
 
-It needs Playwright (`npm ci`, or the session's own). It fails when either template fails a checkMock rule, and when the artifact template no longer holds the two CSS files as written. The money key's two hues are allowed by name: they are the same on both themes in the app's admin too.
+It needs Playwright (`npm ci`, or the session's own). It fails when either template fails a checkMock rule, scrolls sideways, or stands on parchment, and when the artifact template no longer holds the two CSS files as written. The money key's two hues are allowed by name: they are the same on both themes in the app's admin too.
 
 When the app changes a token (a palette, the type, the curve), change `tokens.css` to match, naming the line, run `--write` and the check, and say so in your report.
 
 ## Emails, in particular
 
-Email clients run no scripts and many draw no SVG, so the email template does layout with tables and colour with inline styles, Light first. Its `<style>` block carries the Dark palette under `prefers-color-scheme: dark` (and Outlook's own dark marks); the rules under `html[data-reading-mode]` exist only so the check and an in-app preview can wear the other palettes. Before a send, see it in Gmail, Apple Mail and Outlook, light and dark (`docs/plans/owner-desk.md`, section 3).
+Email clients run no scripts and many draw no SVG, so the email template does layout with tables and colour with inline styles, Light first. Its light is the clean neutral, never parchment. Its `<style>` block carries the Dark palette under `prefers-color-scheme: dark` (and Outlook's own dark marks); the rules under `html[data-reading-mode]` exist only so the check and an in-app preview can wear the other palettes. Before a send, see it in Gmail, Apple Mail and Outlook, light and dark (`docs/plans/owner-desk.md`, section 3).

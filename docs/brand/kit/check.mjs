@@ -10,7 +10,9 @@
 // Phone first (the owner, 2026-11-13: "the design must be optimized for
 // mobile"). Each template is opened at 360, 390 and 412 wide (touch) and at
 // 1032 (a laptop), and at each width held to checkMock (scripts/mock-check.mjs)
-// on the app's five palettes, and to no sideways scroll: contrast,
+// on the app's five palettes, to no sideways scroll, and (rule two, his word of
+// 2026-11-13: "stop using parchment for designs") to no parchment, cream or sepia
+// ground however it is worn, the measure proved by its own self-test first: contrast,
 // 44px targets, glyph icons, palette tokens, no gold, no side stripes,
 // Arabic mirroring, no em dashes, no rays, no sparkle, no empty picture, no
 // dashed box, no keyboard hint, no name cut short. It exits 1 on any fail,
@@ -21,6 +23,70 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { checkMock, printMockCheck, PALETTES } from "../../../scripts/mock-check.mjs";
+import { oklchOf } from "../../../lib/ui/goldTone.ts";
+
+/**
+ * Parchment, cream or sepia, measured (his word, 2026-11-13: "stop using
+ * parchment for designs"). In OKLCH: a light warm ground (lightness 0.75 or
+ * more, hue 40 to 120, chroma 0.005 or more: the app's parchment #f1e8d4 is
+ * 0.028, its old warm paper #faf7f3 is 0.006, white and the admin's greys
+ * are 0) or a darker brown (chroma 0.04 or more, hue 40 to 90).
+ */
+export function isParchment(rgb) {
+  const { L, C, h } = oklchOf(rgb);
+  if (h < 40 || h > 120) return false;
+  return L >= 0.75 ? C >= 0.005 : C >= 0.04 && h <= 90;
+}
+
+/** Every ground drawn in the page now: the body and each element with a fill of its own. */
+const groundsOnPage = (page) =>
+  page.evaluate(() => {
+    const seen = new Map();
+    for (const e of [document.body, ...document.body.querySelectorAll("*")]) {
+      const m = getComputedStyle(e).backgroundColor.match(/rgba?\(([^)]+)\)/);
+      if (!m) continue;
+      const [r, g, b, a = 1] = m[1].split(/[ ,/]+/).filter(Boolean).map(Number);
+      if (a < 0.25) continue;
+      const key = [r, g, b].join(",");
+      if (!seen.has(key)) seen.set(key, e === document.body ? "body" : e.tagName.toLowerCase() + (e.className && typeof e.className === "string" ? "." + e.className.split(" ")[0] : ""));
+    }
+    return [...seen].map(([k, where]) => ({ rgb: k.split(",").map(Number), where }));
+  });
+
+/** The design's every way of being worn: as it opens, light when asked, each of the app's palettes. */
+const WAYS = [
+  ["as it opens", async (p) => p.evaluate(() => ["data-theme", "data-reading-mode"].forEach((a) => document.documentElement.removeAttribute(a)))],
+  ["light, asked", async (p) => p.evaluate(() => { document.documentElement.removeAttribute("data-reading-mode"); document.documentElement.setAttribute("data-theme", "light"); })],
+  ["a light system", async (p) => { await p.evaluate(() => ["data-theme", "data-reading-mode"].forEach((a) => document.documentElement.removeAttribute(a))); await p.emulateMedia({ colorScheme: "light" }); }],
+  ...PALETTES.map(([name, mode]) => [name, async (p) => { await p.emulateMedia({ colorScheme: "dark" }); await p.evaluate((m) => { const h = document.documentElement; h.removeAttribute("data-theme"); if (m) h.setAttribute("data-reading-mode", m); else h.removeAttribute("data-reading-mode"); }, mode); }]),
+];
+
+async function parchmentOn(page) {
+  const found = [];
+  for (const [way, wear] of WAYS) {
+    await wear(page);
+    await page.waitForTimeout(450); // the pieces ease their colours in 200ms; read them settled
+    for (const g of await groundsOnPage(page)) if (isParchment(g.rgb)) found.push(`${way}: ${g.where} stands on rgb(${g.rgb.join(", ")})`);
+  }
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.evaluate(() => ["data-theme", "data-reading-mode"].forEach((a) => document.documentElement.removeAttribute(a)));
+  return found;
+}
+
+/** The measure's own proof: parchment, warm paper and sepia caught; white, the greys and the app's dark passed. */
+async function parchmentSelfTest(browser) {
+  const page = await browser.newPage();
+  const box = (bg) => `<div style="background-color:${bg};height:10px"></div>`;
+  await page.setContent(`<body style="background-color:#f1e8d4">${box("#faf7f3")}${box("#704214")}${box("#e7dcc1")}</body>`);
+  const bad = await parchmentOn(page);
+  await page.setContent(`<body style="background-color:#ffffff">${box("#f3f3f3")}${box("#edeced")}${box("#101013")}${box("#49424e")}${box("#1d1d20")}${box("#c1272d")}</body>`);
+  const good = await parchmentOn(page);
+  await page.close();
+  const caught = ["241, 232, 212", "250, 247, 243", "112, 66, 20", "231, 220, 193"].every((c) => bad.some((f) => f.includes(c)));
+  const ok = caught && good.length === 0;
+  console.log(ok ? "ok   parchment self-test: parchment, warm paper and sepia caught; white, the greys and the dark passed" : `NO   parchment self-test: ${caught ? "" : "a parchment ground was not caught "}${good.length ? "a clean ground was failed: " + good[0] : ""}`);
+  return ok;
+}
 
 const KIT = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(KIT, "../../..");
@@ -69,6 +135,7 @@ async function main() {
   const own = "/opt/pw-browsers/chromium";
   const browser = await chromium.launch(fs.existsSync(own) ? { executablePath: own } : {});
   try {
+    ok = (await parchmentSelfTest(browser)) && ok;
     for (const [name, file] of [["the artifact template", ARTIFACT], ["the email template", EMAIL]]) for (const width of WIDTHS) {
       const phone = width < 600;
       const ctx = await browser.newContext({ viewport: { width, height: phone ? 844 : 900 }, colorScheme: "dark", isMobile: phone, hasTouch: phone });
@@ -82,6 +149,13 @@ async function main() {
       ok = printMockCheck(result, `${name} at ${width}`) && ok;
       // Nothing wider than the screen: the page never scrolls sideways.
       const wide = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      // No parchment, cream or sepia ground, worn any way (once a template, at 390).
+      if (width === 390) {
+        const parchment = await parchmentOn(page);
+        for (const f of parchment) console.log(`  NO   parchment   ${name}: ${f}`);
+        if (parchment.length) ok = false;
+        else console.log(`  ok   parchment   ${name}: no parchment, cream or sepia ground, as it opens, light, a light system, or on any palette`);
+      }
       if (wide > 0) {
         console.log(`  NO   width       ${name} at ${width}: the page is ${wide}px wider than the screen`);
         ok = false;

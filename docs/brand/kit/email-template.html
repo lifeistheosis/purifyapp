@@ -12,9 +12,10 @@
 
   For email clients: tables for layout, every style inline, no scripts, no
   SVG, no web fonts relied on (Lora and DM Sans where the reader has them,
-  Georgia and the system's sans otherwise). Light by default, in the app's
-  Light palette (Parchment); Dark where the client follows the system's dark
-  mode, in the app's Dark palette. Every colour is a kit token
+  Georgia and the system's sans otherwise). Light by default: a clean
+  neutral, white with the app's ink (globals.css 68-71), never parchment (his
+  word, 2026-11-13); Dark where the client follows the system's dark mode, in
+  the app's Dark palette. Every colour is a kit token
   (docs/brand/kit/tokens.css), as a solid hex because email clients do not
   mix colours: the ink's shares are mixed over the ground already.
 
@@ -55,17 +56,18 @@
   [data-ogsb] .k-bg { background-color: #101013 !important; }
   [data-ogsb] .k-card { background-color: #1d1d20 !important; }
 
-  /* The app's palettes, for the check and a preview (see the note above). */
-  html[data-reading-mode="parchment"] .k-bg { background-color: #f1e8d4 !important; }
-  html[data-reading-mode="parchment"] .k-card { background-color: #e7dcc1 !important; border-color: #d4cab0 !important; }
-  html[data-reading-mode="parchment"] .k-ink { color: #2b2317 !important; }
-  html[data-reading-mode="parchment"] .k-ink2 { color: #494133 !important; }
-  html[data-reading-mode="parchment"] .k-ink3 { color: #665e50 !important; }
-  html[data-reading-mode="parchment"] .k-line { border-color: #ddd4c1 !important; }
-  html[data-reading-mode="parchment"] .k-line-strong { border-color: #c9c1ae !important; }
-  html[data-reading-mode="parchment"] .k-bar { background-color: #2b2317 !important; }
-  html[data-reading-mode="parchment"] .k-btn { background-color: #2b2317 !important; }
-  html[data-reading-mode="parchment"] .k-btn-text { color: #f1e8d4 !important; }
+  /* The app's palettes, for the check and a preview (see the note above).
+     The app's Light (parchment) attribute draws the clean neutral: no design stands on parchment. */
+  html[data-reading-mode="parchment"] .k-bg { background-color: #ffffff !important; }
+  html[data-reading-mode="parchment"] .k-card { background-color: #f3f3f3 !important; border-color: #e3e3e3 !important; }
+  html[data-reading-mode="parchment"] .k-ink { color: #49424e !important; }
+  html[data-reading-mode="parchment"] .k-ink2 { color: #5b5560 !important; }
+  html[data-reading-mode="parchment"] .k-ink3 { color: #6d6871 !important; }
+  html[data-reading-mode="parchment"] .k-line { border-color: #edeced !important; }
+  html[data-reading-mode="parchment"] .k-line-strong { border-color: #dbd9dc !important; }
+  html[data-reading-mode="parchment"] .k-bar { background-color: #49424e !important; }
+  html[data-reading-mode="parchment"] .k-btn { background-color: #49424e !important; }
+  html[data-reading-mode="parchment"] .k-btn-text { color: #ffffff !important; }
 
   html[data-reading-mode="black"] .k-bg { background-color: #000000 !important; }
   html[data-reading-mode="black"] .k-card { background-color: #161616 !important; border-color: #2d2d2d !important; }
@@ -101,11 +103,11 @@
   html[data-reading-mode="monastery"] .k-btn-text { color: #0d1119 !important; }
 </style>
 </head>
-<body class="k-bg" style="margin:0;padding:0;background-color:#f1e8d4;">
+<body class="k-bg" style="margin:0;padding:0;background-color:#ffffff;">
 <!-- The preview line in the inbox, then nothing. -->
 <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">Readers up 9% on the week before, and two things that need you.</div>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="k-bg" bgcolor="#f1e8d4" style="background-color:#f1e8d4;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="k-bg" bgcolor="#ffffff" style="background-color:#ffffff;">
 <tr><td align="center" style="padding:32px 0 48px;">
 
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" class="k-wrap" style="width:600px;max-width:600px;">
@@ -113,9 +115,9 @@
   <!-- Title -->
   <tr><td class="k-pad" style="padding:0 32px 32px;">
     <img src="https://purifyapp.net/purify-logo.jpg" width="40" height="40" alt="Purify" style="display:block;width:40px;height:40px;border-radius:10px;margin:0 0 24px;">
-    <p class="k-ink3" style="margin:0 0 8px;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#665e50;">Purify, the weekly brief</p>
-    <h1 class="k-ink" style="margin:0 0 12px;font-family:Lora,Georgia,'Times New Roman',serif;font-size:28px;line-height:1.2;font-weight:700;color:#2b2317;">The week of 9&nbsp;November</h1>
-    <p class="k-ink2" style="margin:0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;line-height:1.55;color:#494133;">What readers did, what came in, and what needs you. Sample figures, for the layout only.</p>
+    <p class="k-ink3" style="margin:0 0 8px;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#6d6871;">Purify, the weekly brief</p>
+    <h1 class="k-ink" style="margin:0 0 12px;font-family:Lora,Georgia,'Times New Roman',serif;font-size:28px;line-height:1.2;font-weight:700;color:#49424e;">The week of 9&nbsp;November</h1>
+    <p class="k-ink2" style="margin:0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:17px;line-height:1.55;color:#5b5560;">What readers did, what came in, and what needs you. Sample figures, for the layout only.</p>
   </td></tr>
 
   <!-- Figures -->
@@ -124,23 +126,23 @@
       <tr>
         <td width="33%" valign="top" style="padding:6px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;"><tr>
-            <td class="k-card" bgcolor="#e7dcc1" style="background-color:#e7dcc1;border:1px solid #d4cab0;border-radius:20px;padding:12px 14px;">
-              <p class="k-ink k-fig" style="margin:0;font-family:Lora,Georgia,serif;font-size:28px;line-height:1.1;font-weight:700;color:#2b2317;">3,272</p>
-              <p class="k-ink3" style="margin:4px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;line-height:1.35;color:#665e50;">Readers, up&nbsp;9%</p>
+            <td class="k-card" bgcolor="#f3f3f3" style="background-color:#f3f3f3;border:1px solid #e3e3e3;border-radius:20px;padding:12px 14px;">
+              <p class="k-ink k-fig" style="margin:0;font-family:Lora,Georgia,serif;font-size:28px;line-height:1.1;font-weight:700;color:#49424e;">3,272</p>
+              <p class="k-ink3" style="margin:4px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;line-height:1.35;color:#6d6871;">Readers, up&nbsp;9%</p>
             </td></tr></table>
         </td>
         <td width="33%" valign="top" style="padding:6px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;"><tr>
-            <td class="k-card" bgcolor="#e7dcc1" style="background-color:#e7dcc1;border:1px solid #d4cab0;border-radius:20px;padding:12px 14px;">
-              <p class="k-ink k-fig" style="margin:0;font-family:Lora,Georgia,serif;font-size:28px;line-height:1.1;font-weight:700;color:#2b2317;">41</p>
-              <p class="k-ink3" style="margin:4px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;line-height:1.35;color:#665e50;">New accounts</p>
+            <td class="k-card" bgcolor="#f3f3f3" style="background-color:#f3f3f3;border:1px solid #e3e3e3;border-radius:20px;padding:12px 14px;">
+              <p class="k-ink k-fig" style="margin:0;font-family:Lora,Georgia,serif;font-size:28px;line-height:1.1;font-weight:700;color:#49424e;">41</p>
+              <p class="k-ink3" style="margin:4px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;line-height:1.35;color:#6d6871;">New accounts</p>
             </td></tr></table>
         </td>
         <td width="33%" valign="top" style="padding:6px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;"><tr>
-            <td class="k-card" bgcolor="#e7dcc1" style="background-color:#e7dcc1;border:1px solid #d4cab0;border-radius:20px;padding:12px 14px;">
-              <p class="k-ink k-fig" style="margin:0;font-family:Lora,Georgia,serif;font-size:28px;line-height:1.1;font-weight:700;color:#2b2317;">$475</p>
-              <p class="k-ink3" style="margin:4px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;line-height:1.35;color:#665e50;">Money in this&nbsp;week</p>
+            <td class="k-card" bgcolor="#f3f3f3" style="background-color:#f3f3f3;border:1px solid #e3e3e3;border-radius:20px;padding:12px 14px;">
+              <p class="k-ink k-fig" style="margin:0;font-family:Lora,Georgia,serif;font-size:28px;line-height:1.1;font-weight:700;color:#49424e;">$475</p>
+              <p class="k-ink3" style="margin:4px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;line-height:1.35;color:#6d6871;">Money in this&nbsp;week</p>
             </td></tr></table>
         </td>
       </tr>
@@ -149,28 +151,28 @@
 
   <!-- Section with a chart: columns drawn as table cells, since email clients draw no SVG. One series, so no legend: the heading names it. -->
   <tr><td class="k-pad" style="padding:16px 32px 8px;">
-    <h2 class="k-ink" style="margin:0 0 16px;font-family:Lora,Georgia,'Times New Roman',serif;font-size:22px;line-height:1.25;font-weight:700;color:#2b2317;">Readers a day</h2>
+    <h2 class="k-ink" style="margin:0 0 16px;font-family:Lora,Georgia,'Times New Roman',serif;font-size:22px;line-height:1.25;font-weight:700;color:#49424e;">Readers a day</h2>
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed;">
       <tr>
-        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #ddd4c1;"><table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="82" bgcolor="#2b2317" style="height:82px;background-color:#2b2317;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Monday: 412">&nbsp;</td></tr></table></td>
-        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #ddd4c1;"><table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="80" bgcolor="#2b2317" style="height:80px;background-color:#2b2317;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Tuesday: 398">&nbsp;</td></tr></table></td>
-        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #ddd4c1;"><table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="91" bgcolor="#2b2317" style="height:91px;background-color:#2b2317;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Wednesday: 455">&nbsp;</td></tr></table></td>
-        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #ddd4c1;"><table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="86" bgcolor="#2b2317" style="height:86px;background-color:#2b2317;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Thursday: 430">&nbsp;</td></tr></table></td>
-        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #ddd4c1;"><table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="94" bgcolor="#2b2317" style="height:94px;background-color:#2b2317;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Friday: 471">&nbsp;</td></tr></table></td>
-        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #ddd4c1;"><table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="104" bgcolor="#2b2317" style="height:104px;background-color:#2b2317;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Saturday: 520">&nbsp;</td></tr></table></td>
-        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #ddd4c1;">
-          <p class="k-ink" style="margin:0 0 4px;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;font-weight:600;color:#2b2317;">586</p>
-          <table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="117" bgcolor="#2b2317" style="height:117px;background-color:#2b2317;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Sunday: 586">&nbsp;</td></tr></table>
+        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #edeced;"><table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="82" bgcolor="#49424e" style="height:82px;background-color:#49424e;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Monday: 412">&nbsp;</td></tr></table></td>
+        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #edeced;"><table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="80" bgcolor="#49424e" style="height:80px;background-color:#49424e;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Tuesday: 398">&nbsp;</td></tr></table></td>
+        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #edeced;"><table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="91" bgcolor="#49424e" style="height:91px;background-color:#49424e;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Wednesday: 455">&nbsp;</td></tr></table></td>
+        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #edeced;"><table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="86" bgcolor="#49424e" style="height:86px;background-color:#49424e;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Thursday: 430">&nbsp;</td></tr></table></td>
+        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #edeced;"><table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="94" bgcolor="#49424e" style="height:94px;background-color:#49424e;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Friday: 471">&nbsp;</td></tr></table></td>
+        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #edeced;"><table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="104" bgcolor="#49424e" style="height:104px;background-color:#49424e;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Saturday: 520">&nbsp;</td></tr></table></td>
+        <td align="center" valign="bottom" class="k-line" width="14%" style="padding:0 4px;border-bottom:1px solid #edeced;">
+          <p class="k-ink" style="margin:0 0 4px;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;font-weight:600;color:#49424e;">586</p>
+          <table role="presentation" width="28" cellpadding="0" cellspacing="0" border="0"><tr><td class="k-bar" height="117" bgcolor="#49424e" style="height:117px;background-color:#49424e;border-radius:4px 4px 0 0;font-size:0;line-height:0;" title="Sunday: 586">&nbsp;</td></tr></table>
         </td>
       </tr>
       <tr>
-        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#665e50;">Mon</td>
-        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#665e50;">Tue</td>
-        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#665e50;">Wed</td>
-        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#665e50;">Thu</td>
-        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#665e50;">Fri</td>
-        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#665e50;">Sat</td>
-        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#665e50;">Sun</td>
+        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#6d6871;">Mon</td>
+        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#6d6871;">Tue</td>
+        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#6d6871;">Wed</td>
+        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#6d6871;">Thu</td>
+        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#6d6871;">Fri</td>
+        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#6d6871;">Sat</td>
+        <td align="center" class="k-ink3" style="padding:8px 0 0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#6d6871;">Sun</td>
       </tr>
     </table>
   </td></tr>
@@ -179,51 +181,51 @@
   <tr><td class="k-pad" style="padding:24px 32px 8px;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:16px;">
       <tr>
-        <td class="k-ink3 k-line-strong" style="padding:8px 0;border-bottom:1px solid #c9c1ae;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#665e50;">Opened most</td>
-        <td class="k-ink3 k-line-strong" style="padding:8px 0;border-bottom:1px solid #c9c1ae;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#665e50;text-align:end;">Readers</td>
+        <td class="k-ink3 k-line-strong" style="padding:8px 0;border-bottom:1px solid #dbd9dc;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#6d6871;">Opened most</td>
+        <td class="k-ink3 k-line-strong" style="padding:8px 0;border-bottom:1px solid #dbd9dc;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#6d6871;text-align:end;">Readers</td>
       </tr>
       <tr>
-        <td class="k-ink k-line" style="padding:12px 0;border-bottom:1px solid #ddd4c1;color:#2b2317;">The morning prayers</td>
-        <td class="k-ink k-line" style="padding:12px 0;border-bottom:1px solid #ddd4c1;color:#2b2317;text-align:end;">1,204</td>
+        <td class="k-ink k-line" style="padding:12px 0;border-bottom:1px solid #edeced;color:#49424e;">The morning prayers</td>
+        <td class="k-ink k-line" style="padding:12px 0;border-bottom:1px solid #edeced;color:#49424e;text-align:end;">1,204</td>
       </tr>
       <tr>
-        <td class="k-ink k-line" style="padding:12px 0;border-bottom:1px solid #ddd4c1;color:#2b2317;">The saint of the day</td>
-        <td class="k-ink k-line" style="padding:12px 0;border-bottom:1px solid #ddd4c1;color:#2b2317;text-align:end;">866</td>
+        <td class="k-ink k-line" style="padding:12px 0;border-bottom:1px solid #edeced;color:#49424e;">The saint of the day</td>
+        <td class="k-ink k-line" style="padding:12px 0;border-bottom:1px solid #edeced;color:#49424e;text-align:end;">866</td>
       </tr>
       <tr>
-        <td class="k-ink k-line" style="padding:12px 0;border-bottom:1px solid #ddd4c1;color:#2b2317;">John 1</td>
-        <td class="k-ink k-line" style="padding:12px 0;border-bottom:1px solid #ddd4c1;color:#2b2317;text-align:end;">430</td>
+        <td class="k-ink k-line" style="padding:12px 0;border-bottom:1px solid #edeced;color:#49424e;">John 1</td>
+        <td class="k-ink k-line" style="padding:12px 0;border-bottom:1px solid #edeced;color:#49424e;text-align:end;">430</td>
       </tr>
     </table>
   </td></tr>
 
   <!-- Note: stands on its own type, set in from the line. No rule beside it, no box. -->
   <tr><td class="k-pad" style="padding:32px 56px 8px;">
-    <p class="k-ink3" style="margin:0 0 8px;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#665e50;">Note</p>
-    <p class="k-ink2" style="margin:0;font-family:Lora,Georgia,'Times New Roman',serif;font-style:italic;font-size:19px;line-height:1.5;color:#494133;">Two permission letters came back this week. Both pictures can go into the app once you say so.</p>
+    <p class="k-ink3" style="margin:0 0 8px;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#6d6871;">Note</p>
+    <p class="k-ink2" style="margin:0;font-family:Lora,Georgia,'Times New Roman',serif;font-style:italic;font-size:19px;line-height:1.5;color:#5b5560;">Two permission letters came back this week. Both pictures can go into the app once you say so.</p>
   </td></tr>
 
   <!-- Card -->
   <tr><td class="k-pad" style="padding:24px 32px 8px;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;"><tr>
-      <td class="k-card" bgcolor="#e7dcc1" style="background-color:#e7dcc1;border:1px solid #d4cab0;border-radius:20px;padding:24px;">
-        <h3 class="k-ink" style="margin:0 0 8px;font-family:Lora,Georgia,'Times New Roman',serif;font-size:22px;line-height:1.25;font-weight:700;color:#2b2317;">The Sunday email</h3>
-        <p class="k-ink2" style="margin:0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:16px;line-height:1.55;color:#494133;">Built from the week's feast and ready for your word.</p>
+      <td class="k-card" bgcolor="#f3f3f3" style="background-color:#f3f3f3;border:1px solid #e3e3e3;border-radius:20px;padding:24px;">
+        <h3 class="k-ink" style="margin:0 0 8px;font-family:Lora,Georgia,'Times New Roman',serif;font-size:22px;line-height:1.25;font-weight:700;color:#49424e;">The Sunday email</h3>
+        <p class="k-ink2" style="margin:0;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:16px;line-height:1.55;color:#5b5560;">Built from the week's feast and ready for your word.</p>
       </td></tr></table>
   </td></tr>
 
   <!-- Button: a pill only for a button. 14 + 16 + 14 = 44px tall. -->
   <tr><td class="k-pad" style="padding:24px 32px 8px;">
     <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-      <td class="k-btn" bgcolor="#2b2317" style="background-color:#2b2317;border-radius:999px;">
-        <a class="k-btn-text" href="https://purifyapp.net/admin" style="display:inline-block;padding:14px 32px;min-height:16px;line-height:16px;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;font-weight:600;color:#f1e8d4;text-decoration:none;border-radius:999px;">Open the admin</a>
+      <td class="k-btn" bgcolor="#49424e" style="background-color:#49424e;border-radius:999px;">
+        <a class="k-btn-text" href="https://purifyapp.net/admin" style="display:inline-block;padding:14px 32px;min-height:16px;line-height:16px;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:999px;">Open the admin</a>
       </td></tr></table>
   </td></tr>
 
   <!-- Footer -->
   <tr><td class="k-pad" style="padding:48px 32px 0;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-      <td class="k-ink3 k-line" style="padding:24px 0 0;border-top:1px solid #ddd4c1;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;line-height:1.55;color:#665e50;">Edgar, the Purify Team. purifyapp.net</td>
+      <td class="k-ink3 k-line" style="padding:24px 0 0;border-top:1px solid #edeced;font-family:'DM Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:14px;line-height:1.55;color:#6d6871;">Edgar, the Purify Team. purifyapp.net</td>
     </tr></table>
   </td></tr>
 
