@@ -114,6 +114,11 @@ A secret the gate has not named refuses the export. `lib/build/__tests__/gateSwi
 6. **In-page changes:** whether a question opening, a tab, a filter or a pager's Next must move too, or only page switches and sheets (as the brief says).
 7. **Discover's doors:** whether a door whose picture its page does not show must still carry it in (a head on the page it opens).
 
+### The arbiter's calls on Updates 20's two questions (Arbiter 2, 2026-11-13, recorded by Updates 21)
+
+- **Community's switch from a cold start with nothing kept is not a fault.** The walks see the posts drawn 81px low and rise ("misplaced", both readers, from / and from Discover's Chat) only because they talk to the main web, whose `/api/campaigns/open` says no until the merge. The release order puts campaigns open for every reader before the store builds go out (CLAUDE.md, the test web paragraph), so on a reader's first launch the server says yes and the held place is right. Left as Updates 20 left it (`cb1f2333`).
+- **A line a tap shows or takes away is moving content when it moves what is below it**: it eases in and out on the house's motion, or takes room that moves nothing, never a cut. So both of the sorted list's unsure entries are faults: "Please agree to the Terms and shipping & refund policy first" under a shop item's Buy now (the foot bar 27px up), and "Agree to the Terms and Privacy Policy first" on /signup/ (the lines below 27px up). The sort is `docs/handoffs/updates-20-inpage-sorted.md`.
+
 ## How to run it
 
 ```
