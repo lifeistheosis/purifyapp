@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state; the log is the release's HANDOFF.md. How the chats run: `docs/OPERATIONS.md`.
 
-Updated 2026-11-13 16:47 UTC, by Arbiter 2.
+Updated 2026-11-13 16:48 UTC, by Arbiter 2.
 
 ## 1.9: in flight
 
@@ -77,6 +77,7 @@ Each held change is a patch in the repo, so its chat could be archived. On his y
 | Arbiter 2 | session_01VuYTwbacb8geNS4VjyJwQh | his words, NOW.md, routing (the old arbiter archived 15:41 UTC) |
 | Updates 20 | session_01VuYTwaCypD3wX38ZRkTSy2 | from 15:53 UTC, from Updates 18's baton (docs/handoffs/updates-18.md): first the proof walk of cb1f2333 and checkMock on the touched screens; then Councils and Cappadocian into checkMock with a self-test, ChapterDiscussions' 4.24:1 on Light and the walks' gap for parts fed only by the main web; cause 3's rest (the gift, the shop, a category's chips, the profile card, the work pill); the in-page faults under his ruling (Today's Dismiss, saints' 2 more, a plan's Mark day as read, Alaska's verse), then run-tip's in-page list sorted and counted; causes 7, 8 and 9 (the council's plate as stills for his yes only); rotates at 200,000 tokens |
 | Fable 5.2: Orthodox America by the numbers | session_01VuYTwcDNgtc2nD71eLvVFB | from 16:17 UTC, at his word (not 1.9): a black and white documentary insert, 16:9, silent, made in code from the data, every figure checked against its written source, one render, on one page for his yes (docs/promo/orthodox-america/BRIEF.md); rotates at 200,000 tokens |
+| Fable 5.2: the emails, round 3 | session_01VuYTwaZ1a8DbrXRnQEaCLZ | from 16:45 UTC, at his word: every email on the app's Dark palette, the fasting companion's calendar revamped, the page carrying its own pictures; stills for his yes, the change held as a patch under docs/1.9-build/drafts/emails-round-3/; rotates at 200,000 tokens |
 | Updates 19 | session_01VuYTwaQ5oxRr2ERLvFyCnt | the voices, from Updates 17's baton (docs/handoffs/updates-17.md): push the first patch after the checklist (a call pauses the voice; no English Listen over a downloaded or licensed Bible; the voices' library); apply the second, export, stills with a stand-in voice list, checkMock, and one page for his yes with three points (prompts on Android, licensed translations, Heart's name); rotates at 200,000 tokens. The first patch pushed (03e4aa8a, 9b7714ba, 4e4047d4, 91d8fcd6; walk scripts/gate/voices.mjs): a call, Siri or another app pauses the voice at its word; no English Listen over a downloaded Bible or a licensed translation; the voices' library, no screen. On Android a chime plays over the voice without lowering it (the voice is spoken in another process), never a stop; his phone walk confirms. Now the second patch (one line meets cb1f2333 on the chapter pill), its export, stills with a stand-in voice list and the page for his yes |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
 
