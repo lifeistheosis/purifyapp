@@ -95,3 +95,18 @@ Done is: a return shows the page exactly as it was left, with nothing moving aft
 Leads to read, not conclusions: the handlers that run on every return (`components/native/statusBar.ts`, lookSoon; `components/theme/AppThemeController.tsx`, apply; `components/native/NativeBridge.tsx`, refreshNativeIfMoved), the keyboard frame in `lib/ui/viewport.ts`, and how the Android activity takes another app's keyboard (no `windowSoftInputMode` in the manifest, no Keyboard settings in `capacitor.config.ts`). The walks run Chromium, so the test stands in for the return (the page hidden while its window shrinks, then shown at full size) and the report names what only a phone can prove.
 
 With Updates 7.
+
+## Note 15 (asked): share every work
+
+His word, 2026-11-13 about 07:50 UTC, with two screenshots of The Paschal Homily's sheets: the cover's sheet (About this book alone) and the reading sheet (Reader settings, Bookmark this section, About this book, Search Purify): "allow every single work to be sharable by adding a share button here and here"
+
+Done is:
+- A Share row in both sheets, on every work in the library, and in every reader that opens on the same cover and sheet.
+- It opens the phone's share sheet (and copies the link where there is none) with the work's title and a clean link to the work on purifyapp.net: never `https://localhost` (`shareCurrentLink` in `lib/site.ts`, as `components/ui/ShareButton.tsx` does), and nothing about the reader in it. From the reading sheet the link opens at the section being read, if the website can.
+- The link's preview shows the work's title and picture (the page's metadata).
+- A work new in 1.9 has no page on the main web until the merge, so its link, shared from the test build, opens to nothing until then. Named to him before he walks.
+- Drawn with the sheet's own row and the `Share` icon from `components/ui/icons`, existing i18n keys first, in every locale, mirrored in Arabic.
+- His first screenshot shows a rule under About this book with nothing after it: if it is a divider before an empty group, it goes.
+- Stills of both sheets, with one line of reason per choice, to him for his yes before it ships.
+
+With Updates 8.
