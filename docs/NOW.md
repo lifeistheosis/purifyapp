@@ -53,7 +53,7 @@ Updated 2026-11-13 01:24 UTC.
 | Admin 2 | session_01VuYTweFNHsJxnX7YJmTvEN | the gate: first the lifted-saints ruling into the tap walk, then the targeted re-check on the arbiter's word (baton `docs/handoffs/admin.md`); the admin panel when the owner's desk resumes |
 | Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fixer: fails 4 (WordPopover's Close in Arabic) and 5 (the webs' place and date cut), from `docs/handoffs/updates-2.md`; then the admin link in `lib/billing/applyLifecycle.ts` |
 | Admin panel 3 | session_01VuYTwdp6mhe99XWbxc6bLH | the owner's desk, sections 2 and 3 (the sends on, with a Hold, by his word; the owner's brief at 7:30 his time, Monday's weekly); web only |
-| Design kit | session_01VuYTwe37MHhGgSEsQ13Lut | the Purify design kit from the app's own look: tokens, pieces, an artifact and an email template, `docs/brand/design-kit.md`; docs only |
+| Design kit | session_01VuYTwe37MHhGgSEsQ13Lut | the kit landed (4a047c105: `docs/brand/kit/` tokens, pieces, an artifact and an email template, `check.mjs`; `docs/brand/design-kit.md`; a line in every role card; see https://claude.ai/artifact/RErhbgPLD29CXemE9pi4Ht). Last step: the kit as a claude.ai design system |
 | Fable 5.2: email designs | session_01VuYTwd6RkVo5JByCRXYJFG | one email look on the design kit (the reader email and the owner's brief), then its Nativity Fast season; `docs/brand/kit/email/` |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | design and adverts, by his word: now the 1.9 social cards, one set, in the store pictures' look (docs/plans/v1.9/cards/) |
