@@ -95,7 +95,11 @@ export function LookingFor({
                 />
                 {/* The page's own ground, so on Parchment it is a wash of paper with the ink on it. */}
                 <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-transparent from-30% to-night/90" />
-                <span className="absolute inset-x-3 bottom-2.5 font-sans text-ui font-semibold leading-[1.2] text-paper">
+                {/* A name of two lines climbs above the fade's dark foot, where the picture
+                    shows through: "The Fathers' writings" read 3.2:1 on Light and 4.2:1 on
+                    Candlelight by the pixels (round 2's before export, 2026-11-13). So it
+                    stands in the house's halo of the page's own ground at its letters. */}
+                <span className="words-halo absolute inset-x-3 bottom-2.5 font-sans text-ui font-semibold leading-[1.2] text-paper">
                   {t(`onboard.intent.${intent}`)}
                 </span>
                 {n > 0 ? (

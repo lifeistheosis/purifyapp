@@ -95,6 +95,10 @@ describe("the words that wear it, at the ink they were measured at", () => {
     // A council's page, over its icon's foot: "First Ecumenical Council" to "Seventh" read 2.46 to 3.57:1 at 80
     // on three to five palettes each (the gate's confirm run, 2026-11-12).
     { file: "app/(app)/councils/[slug]/page.tsx", what: ["the council's kicker"], at: [100] },
+    // The first launch's last question, an answer's name over its picture: "The Fathers' writings" read 3.2:1
+    // on Light and 4.2:1 on Candlelight, "What the Orthodox believe" 4.0:1 on Light, a name of two lines
+    // climbing above the fade's dark foot (round 2's before export, 2026-11-13).
+    { file: "components/onboarding/LookingFor.tsx", what: ["an answer's name"], at: [100] },
   ];
 
   for (const { file, what, at } of WORN) {
