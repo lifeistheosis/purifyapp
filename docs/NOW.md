@@ -20,7 +20,6 @@ Updated 2026-11-13 19:01 UTC by Arbiter 3, rewritten to one page. What it held b
 | Updates 22 | session_01VuYTwcwrZdGSAQKSDTMEwD | from 18:21, from docs/handoffs/updates-21.md: the in-page faults by lib/ui/inPageMove.ts (Community 9, plans/acts 5, Today 3, prayers 4, pagers and tabs, the aria-expanded disclosures, /premium/ anchors, the two Terms lines, the council's Next); the calendar's wide grid on Cappadocian (4.40 and 3.78:1 at 800 and 1032); the profile card's 240px; causes 7, 8 and 9 |
 | Updates 23 | session_01VuYTwZhTJ9z4k23jxRtLQC | from 19:00, the apply chat: the voices (note 25's patch) with Now Playing's two faults (bg-black/55 on Light; the docked player not mirrored in Arabic); note 23 with his two calls; the retention opt-in line in the welcome email. One page of stills for his look. Takes later design yeses while under 200,000 tokens |
 | Fable: the 1.9 film's sample | session_01VuYTwbd5RZmjWw31fdhsiS | from 19:00: five seconds, 9:16, Today built by the app's own cards and buttons settling in, then one transition; on a page for his yes; writes in docs/plans/v1.9/video/sample/ |
-| Fable: Orthodox America in 3D, second scene | session_01VuYTwbX9EgiUvadznNeBP1 | from 18:26, not 1.9: a new face for the numbers, no cut at 10 seconds, scene two; rendering at 18:55; past 200,000 tokens, so archived once its page is in |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository); waits on his two facts |
 
 Every chat rotates at 200,000 tokens (OPERATIONS section 2).
@@ -40,7 +39,7 @@ Every chat rotates at 200,000 tokens (OPERATIONS section 2).
    - the emails, round 3 (the colours as drawn; the fast's calendar): https://claude.ai/artifact/PsWzPU7ycgdmGzFjzLYdz5
    - the 1.9 social cards: https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs (his yes clears the drop's `cards` piece)
 2. **The voices' page was taken as a yes** in "all recs" (18:53 UTC): https://claude.ai/artifact/LTjMHqyrEvL3eyLJgX7qTL. Said to him in Arbiter 3's first message, so he can say otherwise.
-3. **The two Fable samples:** the 1.9 film's five seconds, and the documentary's second pass (not 1.9; its full film on his yes, about 2 hours of machine time and no money).
+3. **The documentary's second pass** (not 1.9; the Fable chat finished; archived by Arbiter 3 about 19:03 UTC, about $10): https://claude.ai/artifact/4ZBf45qLCDQGojHHG57i9a. 20 seconds, square, silent, one version: a new face for every figure (Archivo Narrow, lining and tabular), no cut at 10 seconds, scene two the gap (the points of the rolls gathering to 675,765, then falling away to the 183,020 who attend). Named on the page: the census prints both counts but not the 27% they make, so that one figure is Purify's own division. On his yes, the full film in a fresh Fable chat from docs/handoffs/fable-film.md (about 1.2 to 1.4 hours of machine time, no money). The 1.9 film's five second sample comes from its own chat.
 4. **The company:** C0 (the D-U-N-S record's address), C0b (the papers), the company's exact name as the EIN letter has it; for the Company guide, how many owners and how it is taxed; Florida sales tax for EIKON (C3b); the EIKON trade name before Stripe shows it. Steps in OWNER-STEPS.md.
 5. **Also:** the 22 permission letters; the Android notifications test; the owner's desk question 3 (a shop and sourcing chat after 1.9).
 
