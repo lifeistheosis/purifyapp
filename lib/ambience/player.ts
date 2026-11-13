@@ -5,6 +5,7 @@ import { useSyncExternalStore } from "react";
 import { getAmbienceTrack, type AmbienceId, type AmbienceTrack } from "@/lib/ambience/ambience";
 import { DEFAULT_BALANCE, DEFAULT_VOLUME, clamp01, mixGain, readLevel } from "@/lib/ambience/mix";
 import { streamedUrl } from "@/lib/media/streamed";
+import { isNativeClient } from "@/lib/platform/native";
 import { getAudioSnapshot, subscribeAudio } from "@/lib/prayers/persistentAudioStore";
 
 /**
@@ -58,6 +59,9 @@ const buffers = new Map<string, Promise<AudioBuffer>>();
 
 let loading: AmbienceId | null = null;
 let failed: AmbienceId | null = null;
+/** Why `failed` could not be played (build 95, note 11). */
+export type AmbienceFailure = "connection" | "error";
+let failedFor: AmbienceFailure | null = null;
 let volume = DEFAULT_VOLUME;
 let balance = DEFAULT_BALANCE;
 /** The last sound the reader chose and heard, kept when it stops: the one to offer again. */
@@ -76,6 +80,13 @@ type Snap = {
   loading: AmbienceId | null;
   /** The sound that could not be played, until another is chosen. */
   failed: AmbienceId | null;
+  /**
+   * Why: "connection", its file is the website's and the website could not
+   * be reached (on the website every sound is; in the apps only a "web"
+   * one); "error", anything else (the file, its decoding, the phone). A
+   * failure is not kept, so a tap tries again. Null while nothing failed.
+   */
+  failedFor: AmbienceFailure | null;
   volume: number;
   balance: number;
   /** The last sound the reader chose and heard, playing or not; null before the first. */
@@ -85,11 +96,11 @@ type Snap = {
   /** Each sound's own volume, where the reader has set one. */
   levels: Partial<Record<AmbienceId, number>>;
 };
-let snap: Snap = { playing: null, loading: null, failed: null, volume, balance, last, layers: [], levels };
+let snap: Snap = { playing: null, loading: null, failed: null, failedFor: null, volume, balance, last, layers: [], levels };
 
 function emit() {
   const ids = layers.map((l) => l.id);
-  snap = { playing: ids[0] ?? null, loading, failed, volume, balance, last, layers: ids, levels };
+  snap = { playing: ids[0] ?? null, loading, failed, failedFor, volume, balance, last, layers: ids, levels };
   for (const l of listeners) l();
 }
 
@@ -144,21 +155,105 @@ function srcOf(track: AmbienceTrack): string {
   return track.where === "web" ? streamedUrl(track.src) : track.src;
 }
 
-function bufferFor(src: string): Promise<AudioBuffer> {
+/** Whether a sound's file comes over the network: every one on the website, a "web" one in the apps. */
+function fromWebsite(track: AmbienceTrack): boolean {
+  return track.where === "web" || !isNativeClient();
+}
+
+/** The request never reached the file: no signal, or the website did not answer. */
+class Unreached extends Error {}
+
+/**
+ * Whether an answer carries the file (build 95, note 11). Inside the iPhone
+ * app a file of the bundle is answered by the app's shell, and for a sound
+ * asked for whole (fetch asks so) the shell sends no HTTP status at all:
+ * Capacitor's WebViewAssetHandler.swift answers a media file with a plain
+ * URLResponse, WebKit gives that the status 0 (ResourceResponseCocoa.mm),
+ * and `ok` is false for any status outside 200 to 299, though every byte
+ * has come. Taken as a failure, that put "Could not play" on every sound in
+ * the iPhone app. So a status of 0 counts when the answer is the page's own
+ * (not an opaque one) and has bytes; the decoding then proves it a sound.
+ */
+function carriesFile(r: Response): boolean {
+  return r.ok || (r.status === 0 && r.type !== "opaque" && r.type !== "opaqueredirect" && r.type !== "error");
+}
+
+function bufferFor(ac: AudioContext, src: string): Promise<AudioBuffer> {
   let p = buffers.get(src);
   if (!p) {
-    const ac = context();
     p = fetch(src, { credentials: "omit" })
+      .catch((e: unknown) => {
+        throw new Unreached(String(e));
+      })
       .then((r) => {
-        if (!r.ok) throw new Error(`ambience ${r.status}`);
+        if (!carriesFile(r)) throw new Error(`ambience ${r.status}`);
         return r.arrayBuffer();
       })
-      .then((data) => ac.decodeAudioData(data));
+      .then((data) => {
+        if (!data.byteLength) throw new Error("ambience: an empty answer");
+        return ac.decodeAudioData(data);
+      });
     // A failure is not kept: a reader who comes back online can try again.
     p.catch(() => buffers.delete(src));
     buffers.set(src, p);
   }
   return p;
+}
+
+/**
+ * The page's audio session: WebKit's, on iPhones and iPads from iOS 17, in
+ * Safari and in the app; no other browser has one yet. By default a page's
+ * Web Audio is an "ambient" sound, which the ring/silent switch mutes (WebKit
+ * bug 237322; the reading voice, an <audio> element, plays as media and is
+ * heard). So while a sound the reader chose plays, the session is
+ * "playback", as for the voice; once the last has faded, it is given back,
+ * so the gift's chime (lib/gifts/chime.ts), which a reader in church keeps
+ * on silent, still obeys the switch.
+ */
+type AudioSessionLike = { type: string };
+let sessionBefore: string | null = null;
+let sessionTimer: ReturnType<typeof setTimeout> | null = null;
+/** When the session is due back (Date.now()), so a later fade is never cut short by an earlier stop. */
+let sessionDue = 0;
+
+function audioSession(): AudioSessionLike | null {
+  if (typeof navigator === "undefined") return null;
+  const s = (navigator as Navigator & { audioSession?: AudioSessionLike }).audioSession;
+  return s && typeof s.type === "string" ? s : null;
+}
+
+/** A sound is starting: play as media. Call from the tap, before the context starts. */
+function holdSession() {
+  if (sessionTimer !== null) clearTimeout(sessionTimer);
+  sessionTimer = null;
+  const s = audioSession();
+  if (!s || s.type === "playback") return;
+  try {
+    sessionBefore = s.type;
+    s.type = "playback";
+  } catch {
+    sessionBefore = null;
+  }
+}
+
+/** Once no sound plays or loads, give the session back, after the last fade of `seconds`. */
+function releaseSession(seconds: number) {
+  if (layers.length || loading || sessionBefore === null) return;
+  const due = Date.now() + Math.max(0, seconds) * 1000 + 100;
+  if (sessionTimer !== null && due <= sessionDue) return;
+  if (sessionTimer !== null) clearTimeout(sessionTimer);
+  sessionDue = due;
+  sessionTimer = setTimeout(() => {
+    sessionTimer = null;
+    const s = audioSession();
+    if (layers.length || loading || sessionBefore === null || !s) return;
+    try {
+      s.type = sessionBefore;
+    } catch {
+      /* the session is the page's again at the next load */
+    }
+    sessionBefore = null;
+  }, due - Date.now());
 }
 
 /** Move the master gain to the reader's level, gently. */
@@ -216,11 +311,16 @@ function releaseAll(seconds: number) {
 async function start(track: AmbienceTrack, opts: { remember?: boolean }): Promise<void> {
   loading = track.id;
   failed = null;
+  failedFor = null;
   emit();
-  const ac = context();
-  if (ac.state === "suspended") await ac.resume().catch(() => {});
   try {
-    const buffer = await bufferFor(srcOf(track));
+    holdSession();
+    // Inside the try: a phone that cannot make an AudioContext is told the
+    // sound could not play, and is not left on "Loading".
+    const ac = context();
+    // Suspended, or "interrupted" (WebKit, after a call or Siri): the tap wakes it.
+    if (ac.state !== "running") await ac.resume().catch(() => {});
+    const buffer = await bufferFor(ac, srcOf(track));
     // Another sound was chosen, or the sound stopped, while this one loaded.
     if (loading !== track.id) return;
     const node = ac.createBufferSource();
@@ -239,10 +339,14 @@ async function start(track: AmbienceTrack, opts: { remember?: boolean }): Promis
     layers.push({ id: track.id, node, fade, level });
     if (opts.remember) remember(track.id);
     watchVoice();
-  } catch {
-    if (loading === track.id) failed = track.id;
+  } catch (e) {
+    if (loading === track.id) {
+      failed = track.id;
+      failedFor = e instanceof Unreached && fromWebsite(track) ? "connection" : "error";
+    }
   } finally {
     if (loading === track.id) loading = null;
+    releaseSession(0);
     emit();
   }
 }
@@ -259,10 +363,12 @@ export async function playAmbience(id: AmbienceId | null, opts: { remember?: boo
   if (id !== null && layers.length === 1 && layers[0].id === id) return;
   releaseAll(FADE_OUT);
   failed = null;
+  failedFor = null;
   const track = getAmbienceTrack(id);
   if (!track) {
     loading = null;
     stopWatchingVoice();
+    releaseSession(FADE_OUT);
     emit();
     return;
   }
@@ -283,6 +389,7 @@ export async function layerAmbience(id: AmbienceId, opts: { remember?: boolean }
     if (playing) release(playing, FADE_OUT);
     if (loading === id) loading = null;
     if (!layers.length) stopWatchingVoice();
+    releaseSession(FADE_OUT);
     emit();
     return;
   }
@@ -336,6 +443,7 @@ export function fadeOutAmbience(seconds: number): void {
   loading = null;
   releaseAll(seconds);
   stopWatchingVoice();
+  releaseSession(seconds);
   emit();
 }
 
@@ -365,7 +473,7 @@ export function setAmbienceBalance(b: number): void {
   emit();
 }
 
-const SERVER: Snap = { playing: null, loading: null, failed: null, volume: DEFAULT_VOLUME, balance: DEFAULT_BALANCE, last: null, layers: [], levels: {} };
+const SERVER: Snap = { playing: null, loading: null, failed: null, failedFor: null, volume: DEFAULT_VOLUME, balance: DEFAULT_BALANCE, last: null, layers: [], levels: {} };
 
 function subscribe(l: () => void) {
   prime();

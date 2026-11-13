@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { AMBIENCE_TRACKS } from "@/lib/ambience/ambience";
+import { isStreamedMedia } from "@/lib/media/streamed";
 
 // docs/licensing/audio-provenance.md: "a track ships only if its source and
 // license are documented here". Nothing held that line until 1.7 restored
@@ -34,5 +35,17 @@ describe("the audio the apps carry", () => {
 
   it("gives every ambience sound a file that is there", () => {
     for (const t of AMBIENCE_TRACKS) expect(fs.existsSync(path.join("public", t.src)), t.id).toBe(true);
+  });
+
+  // Build 95, note 11: where each sound is asked for. A bundled one must be
+  // in the export (out/audio/ambience), so its folder is never set aside by
+  // the native build; one kept on the website alone must be a streamed path,
+  // or the apps would ask their own bundle for a file it does not hold
+  // (lib/media/streamed.ts: streamedUrl reaches the website only for those).
+  it("carries every bundled sound in the apps, and asks the website for any kept there alone", () => {
+    const build = fs.readFileSync("scripts/native-build.mjs", "utf8");
+    expect(build).not.toMatch(/\[\s*"public",\s*"audio",\s*"ambience"\s*\]/);
+    expect(build).not.toMatch(/\[\s*"public",\s*"audio"\s*\]/);
+    for (const t of AMBIENCE_TRACKS) expect(isStreamedMedia(t.src), t.id).toBe(t.where === "web");
   });
 });

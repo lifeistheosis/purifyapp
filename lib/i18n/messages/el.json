@@ -5007,7 +5007,7 @@
   "ambience.playing": "Παίζει",
   "ambience.loading": "Φόρτωση",
   "ambience.needsConnection": "Χρειάζεται σύνδεση",
-  "ambience.failed": "Δεν ήταν δυνατή η αναπαραγωγή",
+  "ambience.failed": "Δοκιμάστε ξανά",
   "ambience.stop": "Διακοπή ήχου",
   "ambience.playingAria": "Ατμόσφαιρα, παίζει: {sound}",
   "ambience.last": "Τελευταία φορά",

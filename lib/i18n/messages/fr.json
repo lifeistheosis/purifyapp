@@ -5035,7 +5035,7 @@
   "ambience.playing": "En cours",
   "ambience.loading": "Chargement",
   "ambience.needsConnection": "Nécessite une connexion",
-  "ambience.failed": "Lecture impossible",
+  "ambience.failed": "Réessayer",
   "ambience.stop": "Arrêter le son",
   "ambience.playingAria": "Ambiance, {sound} en cours",
   "ambience.last": "La dernière fois",

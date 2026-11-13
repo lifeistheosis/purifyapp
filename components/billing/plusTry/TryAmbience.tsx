@@ -59,7 +59,7 @@ export default function TryAmbience({ row, owned = false }: TryProps) {
             : loading
               ? t("ambience.loading")
               : failed
-                ? t(track.where === "web" ? "ambience.needsConnection" : "ambience.failed")
+                ? t(ambience.failedFor === "connection" ? "ambience.needsConnection" : "ambience.failed")
                 : null;
           return (
             <TryTile

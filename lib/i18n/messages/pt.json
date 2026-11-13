@@ -5012,7 +5012,7 @@
   "ambience.playing": "Tocando",
   "ambience.loading": "Carregando",
   "ambience.needsConnection": "Precisa de conexão",
-  "ambience.failed": "Não foi possível tocar",
+  "ambience.failed": "Tentar de novo",
   "ambience.stop": "Parar o som",
   "ambience.playingAria": "Ambiente, tocando {sound}",
   "ambience.last": "Da última vez",

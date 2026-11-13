@@ -120,14 +120,17 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
         {AMBIENCE_TRACKS.map((track) => {
           const lit = ambience.layers.includes(track.id);
           const loading = ambience.loading === track.id;
-          const failed = ambience.failed === track.id;
+          // A reader without Plus meets the lock, never a failure line in its
+          // place: a preview's sound that failed is not theirs to retry here
+          // (build 95, note 11).
+          const failed = !locked && ambience.failed === track.id;
           const last = quiet && !locked && !failed && ambience.last === track.id;
           const state = lit
             ? t("ambience.playing")
             : loading
               ? t("ambience.loading")
               : failed
-                ? t(track.where === "web" ? "ambience.needsConnection" : "ambience.failed")
+                ? t(ambience.failedFor === "connection" ? "ambience.needsConnection" : "ambience.failed")
                 : last
                   ? t("ambience.last")
                   : null;

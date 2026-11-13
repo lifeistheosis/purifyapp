@@ -5017,7 +5017,7 @@
   "ambience.playing": "Sonando",
   "ambience.loading": "Cargando",
   "ambience.needsConnection": "Necesita conexión",
-  "ambience.failed": "No se pudo reproducir",
+  "ambience.failed": "Intentar de nuevo",
   "ambience.stop": "Detener el sonido",
   "ambience.playingAria": "Ambiente, suena: {sound}",
   "ambience.last": "La última vez",

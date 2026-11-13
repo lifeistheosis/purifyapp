@@ -5007,7 +5007,7 @@
   "ambience.playing": "ჟღერს",
   "ambience.loading": "იტვირთება",
   "ambience.needsConnection": "საჭიროა ინტერნეტთან კავშირი",
-  "ambience.failed": "ვერ დაიკრა",
+  "ambience.failed": "ხელახლა ცდა",
   "ambience.stop": "ხმის გაჩერება",
   "ambience.playingAria": "ფონური ხმა, ჟღერს: {sound}",
   "ambience.last": "ბოლოს ჟღერდა",

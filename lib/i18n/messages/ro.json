@@ -5096,7 +5096,7 @@
   "ambience.playing": "Se aude",
   "ambience.loading": "Se încarcă",
   "ambience.needsConnection": "Are nevoie de conexiune",
-  "ambience.failed": "Nu s-a putut reda",
+  "ambience.failed": "Încearcă din nou",
   "ambience.stop": "Oprește sunetul",
   "ambience.playingAria": "Ambianță, se aude {sound}",
   "ambience.last": "Ultima dată",

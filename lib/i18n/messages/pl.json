@@ -5165,7 +5165,7 @@
   "ambience.playing": "Gra",
   "ambience.loading": "Wczytywanie",
   "ambience.needsConnection": "Wymaga połączenia z siecią",
-  "ambience.failed": "Nie udało się odtworzyć",
+  "ambience.failed": "Spróbuj ponownie",
   "ambience.stop": "Zatrzymaj dźwięk",
   "ambience.playingAria": "Tło dźwiękowe, gra: {sound}",
   "ambience.last": "Ostatnio słuchane",

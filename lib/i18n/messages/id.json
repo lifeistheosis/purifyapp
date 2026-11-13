@@ -5004,7 +5004,7 @@
   "ambience.playing": "Diputar",
   "ambience.loading": "Memuat",
   "ambience.needsConnection": "Perlu koneksi",
-  "ambience.failed": "Tidak dapat diputar",
+  "ambience.failed": "Coba lagi",
   "ambience.stop": "Hentikan suara",
   "ambience.playingAria": "Suasana, {sound} diputar",
   "ambience.last": "Terakhir diputar",

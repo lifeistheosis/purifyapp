@@ -5007,7 +5007,7 @@
   "ambience.playing": "چل رہی ہے",
   "ambience.loading": "لوڈ ہو رہی ہے",
   "ambience.needsConnection": "انٹرنیٹ کنکشن درکار ہے",
-  "ambience.failed": "چلائی نہ جا سکی",
+  "ambience.failed": "دوبارہ کوشش کریں",
   "ambience.stop": "آواز روکیں",
   "ambience.playingAria": "پس منظر کی آواز، {sound} چل رہی ہے",
   "ambience.last": "پچھلی بار",

@@ -5088,7 +5088,7 @@
   "ambience.playing": "Свира",
   "ambience.loading": "Учитава се",
   "ambience.needsConnection": "Потребна је интернет веза",
-  "ambience.failed": "Није могло да се пусти",
+  "ambience.failed": "Покушај поново",
   "ambience.stop": "Заустави звук",
   "ambience.playingAria": "Звучна позадина, свира: {sound}",
   "ambience.last": "Прошли пут",

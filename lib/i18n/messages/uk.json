@@ -5162,7 +5162,7 @@
   "ambience.playing": "Звучить",
   "ambience.loading": "Завантаження",
   "ambience.needsConnection": "Потрібне з'єднання",
-  "ambience.failed": "Не вдалося відтворити",
+  "ambience.failed": "Спробувати знову",
   "ambience.stop": "Зупинити звук",
   "ambience.playingAria": "Фоновий звук, грає: {sound}",
   "ambience.last": "Минулого разу",

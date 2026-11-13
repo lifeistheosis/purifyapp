@@ -5007,7 +5007,7 @@
   "ambience.playing": "Tumutugtog",
   "ambience.loading": "Naglo-load",
   "ambience.needsConnection": "Kailangan ng koneksyon",
-  "ambience.failed": "Hindi ma-play",
+  "ambience.failed": "Subukan muli",
   "ambience.stop": "Ihinto ang tunog",
   "ambience.playingAria": "Paligid na tunog, tumutugtog ang {sound}",
   "ambience.last": "Huling pinatugtog",

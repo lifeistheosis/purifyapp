@@ -22,7 +22,10 @@ export type AmbienceTrack = {
    * Where the file is. "bundle": inside the apps, so it plays with no
    * signal. "web": on the website alone, asked for through
    * lib/media/streamed.ts, so a reader with no signal is told it needs a
-   * connection. The three sounds below are in the bundle.
+   * connection. All six sounds below are in the bundle (on the website every
+   * sound is the website's, so there too no signal means a connection is
+   * needed). A "web" one must sit under a streamed root, or the apps would
+   * ask their own bundle for it: lib/ambience/__tests__/provenance.test.ts.
    */
   where: "bundle" | "web";
   /** Its drawing on the sheet's tile (components/ui/icons). */

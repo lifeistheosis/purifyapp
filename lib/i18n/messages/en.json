@@ -5042,7 +5042,7 @@
   "ambience.playing": "Playing",
   "ambience.loading": "Loading",
   "ambience.needsConnection": "Needs a connection",
-  "ambience.failed": "Could not play",
+  "ambience.failed": "Try again",
   "ambience.stop": "Stop the sound",
   "ambience.playingAria": "Ambience, {sound} playing",
   "ambience.last": "Last played",

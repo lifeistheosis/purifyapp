@@ -5163,7 +5163,7 @@
   "ambience.playing": "Звучит",
   "ambience.loading": "Загрузка",
   "ambience.needsConnection": "Нужно подключение к сети",
-  "ambience.failed": "Не удалось воспроизвести",
+  "ambience.failed": "Попробовать снова",
   "ambience.stop": "Остановить звук",
   "ambience.playingAria": "Фоновый звук, играет: {sound}",
   "ambience.last": "В прошлый раз",

@@ -5296,7 +5296,7 @@
   "ambience.playing": "قيد التشغيل",
   "ambience.loading": "جارٍ التحميل",
   "ambience.needsConnection": "يحتاج إلى اتصال بالإنترنت",
-  "ambience.failed": "تعذّر التشغيل",
+  "ambience.failed": "حاول مجددًا",
   "ambience.stop": "إيقاف الصوت",
   "ambience.playingAria": "أجواء، {sound} قيد التشغيل",
   "ambience.last": "شُغِّل آخر مرة",

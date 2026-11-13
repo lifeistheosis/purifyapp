@@ -5012,7 +5012,7 @@
   "ambience.playing": "In riproduzione",
   "ambience.loading": "Caricamento",
   "ambience.needsConnection": "Serve una connessione",
-  "ambience.failed": "Impossibile riprodurre",
+  "ambience.failed": "Riprova",
   "ambience.stop": "Ferma il suono",
   "ambience.playingAria": "Atmosfera, {sound} in riproduzione",
   "ambience.last": "L'ultima volta",
