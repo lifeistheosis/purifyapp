@@ -1,6 +1,9 @@
 -- Readers' things on Psalms 113 to 115, moved with the renumbering (1.9).
 -- His yes, 2026-11-09: "And yes to all your 3 questions", the third being to
 -- move readers' notes to the new Psalm numbers on release day.
+-- SIGNED: the owner's word to the arbiter, 2026-11-13 about 04:49 UTC,
+-- "yes to the 19", given on the table of all nineteen 1.9 migrations in
+-- docs/1.9-build/MERGE-DAY.md (step 3).
 --
 -- Psalms 113 to 115 are divided as the Septuagint divides them since 1.9
 -- (84a7bb9). No word changed, only where each verse stands:
