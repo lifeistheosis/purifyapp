@@ -71,7 +71,7 @@ function Night({
         </div>
         <div className="tour-horizon">
           <div className="tour-horizon-level">
-            <HorizonDrawing id={`tour-${kind}`} className="absolute left-1/2 top-0 h-[168vw] w-[168vw] -translate-x-1/2 overflow-visible" />
+            <HorizonDrawing id={`tour-${kind}`} className="absolute start-1/2 top-0 h-[168vw] w-[168vw] -translate-x-1/2 overflow-visible rtl:translate-x-1/2" />
           </div>
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element -- the intro's own cross, as it is in the document */}

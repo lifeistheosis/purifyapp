@@ -261,9 +261,11 @@ export function RememberCardView({
       {/* The Verse of the Day's light, behind the words. */}
       <span aria-hidden className="verse-light pointer-events-none absolute left-1/2 top-[-120px] h-[300px] w-[380px] -translate-x-1/2" />
       <div className="relative">
-        <p id={titleId} className="font-sans text-[12.5px] font-semibold text-paper/60">
+        {/* Over the verse's light the light looks drop it under 4.5:1 (4.31 on
+            Mosaic, the round 1 export, 1.9): their ink rises there alone. */}
+        <p id={titleId} className="font-sans text-[12.5px] font-semibold text-paper/60 [html[data-reading-mode=parchment][data-look]_&]:text-paper/80">
           {title ?? t("remember.title")}
-          <span className="text-paper/45"> · {t("plus.badge")}</span>
+          <span className="text-paper/45 [html[data-reading-mode=parchment][data-look]_&]:text-paper/80"> · {t("plus.badge")}</span>
           {badge}
         </p>
 

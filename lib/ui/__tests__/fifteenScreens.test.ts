@@ -149,6 +149,20 @@ describe("The small line: sentence case, never capitals spaced out", () => {
   });
 });
 
+describe("Found by checkMock on the round 1 export (Updates 29)", () => {
+  it("lifts the verse to learn's small line on the light looks, over the verse's light", () => {
+    const card = read("components/today/RememberCard.tsx");
+    expect(card).toContain('text-paper/60 [html[data-reading-mode=parchment][data-look]_&]:text-paper/80">');
+    expect(card).toContain('"text-paper/45 [html[data-reading-mode=parchment][data-look]_&]:text-paper/80"');
+  });
+
+  it("centres the tour's drawing from the reading side's start, so Arabic mirrors it", () => {
+    const tour = read("components/whats-new/tour/TourLook.tsx");
+    expect(tour).toContain("absolute start-1/2 top-0 h-[168vw] w-[168vw] -translate-x-1/2 overflow-visible rtl:translate-x-1/2");
+    expect(tour).not.toMatch(/HorizonDrawing[^>]*\bleft-1\/2/);
+  });
+});
+
 describe("A row: a name, one line, the chevron; no icon tile", () => {
   /** The house's row in a list: the tray's row, and the Florilegium's. */
   const ROW = /className=\{?[^>]*?(theology-row|FLOR_ROW)/;
