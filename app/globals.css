@@ -5873,7 +5873,12 @@ html[data-reading-mode="councils"] {
 }
 
 /* Cappadocian: a warm dusk ground, cream ink, the white and silver accent,
-   and the rubric red of an icon for the calendar's feast names and numbers. */
+   and the rubric red of an icon for the calendar's feast names and numbers.
+   The red was 214 78 62 until 2026-11-13: on a feast day's cell of the wide
+   calendar (the paper at 4.5% over the deep ground) its numbers read 4.38:1
+   and its names, at 90%, 3.77:1. Lifted a hair in lightness, its hue and
+   chroma kept, and the names take the full red on this palette
+   (CalendarCell.tsx), both hold 4.6:1 there. */
 html[data-reading-mode="cappadocian"] {
  --color-night: #160f12;
  --color-night-soft: #221820;
@@ -5882,7 +5887,7 @@ html[data-reading-mode="cappadocian"] {
  --color-gold: #eaeaec;
  --color-gold-soft: #cfcfd3;
  --color-gold-pale: #f4f4f5;
- --ink-rubric: 214 78 62;
+ --ink-rubric: 219 83 66;
 }
 
 /* The Bible reader's footnote block (.lic-notes) predates the token

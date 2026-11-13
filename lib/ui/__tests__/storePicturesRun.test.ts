@@ -161,7 +161,7 @@ describe("c. the wide calendar", () => {
     const badge = read("components/calendar/FastBadge.tsx");
     expect(badge.match(/text-paper\/70 leading-\[1\.5\] \[html\[data-reading-mode=parchment\]\[data-look\]_&\]:text-paper\/80/g)).toHaveLength(2);
     expect(read("components/calendar/DayScroll.tsx")).toContain('className="font-sans text-caption font-semibold text-gold/70 [html[data-reading-mode=parchment][data-look]_&]:text-gold"');
-    expect(read("components/calendar/CalendarCell.tsx")).toContain('cell.hasFeast ? "rubric opacity-90 [html[data-reading-mode=parchment][data-look]_&]:opacity-100" : "text-paper/60"');
+    expect(read("components/calendar/CalendarCell.tsx")).toContain('cell.hasFeast ? "rubric opacity-90 [html[data-reading-mode=parchment][data-look]_&]:opacity-100');
     // The drop capital's letter for a screen reader, placed from the start so it mirrors.
     expect(read("components/calendar/DropCap.tsx")).toContain('className="sr-only start-0"');
   });

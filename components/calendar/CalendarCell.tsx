@@ -156,7 +156,7 @@ function CalendarCellImpl({
  className={cn(
  "mt-auto font-serif text-eyebrow leading-[1.2] hidden md:line-clamp-2",
  "[overflow-wrap:anywhere] hyphens-auto",
- cell.hasFeast ? "rubric opacity-90 [html[data-reading-mode=parchment][data-look]_&]:opacity-100" : "text-paper/60",
+ cell.hasFeast ? "rubric opacity-90 [html[data-reading-mode=parchment][data-look]_&]:opacity-100 [html[data-reading-mode=cappadocian]_&]:opacity-100" : "text-paper/60",
  )}
  >
  {label}
