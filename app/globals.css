@@ -2641,15 +2641,17 @@ html[data-reading-mode="parchment"] .book-lit .book-plate {
  transition: none;
 }
 
-/* The shop's floating cart button (56px, right-6 bottom-6) shares the
-   bottom-right corner with the app-level back-to-top button (44px, right-7
-   bottom-7), so on shop pages they rendered on top of each other. CartFab sets
-   .has-cart-fab on <html> while it's mounted; back-to-top then stacks above it
-   with a 12px gap, nudged right so both circles share a center axis
-   (cart center = 24 + 28 = 52px; 30 + 22 = 52px). */
+/* The shop's floating cart button (56px, end-6 bottom-6) shares the
+   bottom corner on the end side with the app-level back-to-top button (44px,
+   end-7 bottom-7), so on shop pages they rendered on top of each other.
+   CartFab sets .has-cart-fab on <html> while it's mounted; back-to-top then
+   stacks above it with a 12px gap, nudged toward the end so both circles share
+   a center axis (cart center = 24 + 28 = 52px; 30 + 22 = 52px). Both are
+   placed by the end, never the right, so in Arabic they mirror together
+   (checkMock's mirror rule on /shop/request/ at 800 and 1032, 2026-11-13). */
 html.has-cart-fab .back-to-top {
  bottom: 5.75rem; /* 24px cart offset + 56px cart + 12px gap */
- right: 30px;
+ inset-inline-end: 30px;
 }
 
 /* iOS Safari and the Android WebView auto-zoom the page when a focused form

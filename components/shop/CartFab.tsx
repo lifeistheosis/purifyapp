@@ -14,7 +14,8 @@ export function CartFab() {
   const { t, tn } = useTranslate();
   const count = cartCount(useCart());
 
-  // The app-level back-to-top button owns the same bottom-right corner, so the
+  // The app-level back-to-top button owns the same bottom corner (the end
+  // side, mirrored in Arabic as this button is), so the
   // two stacked on top of each other on every shop page. Flag the FAB's
   // presence on <html> while it's mounted; globals.css lifts back-to-top above
   // it (see .back-to-top).
@@ -29,13 +30,13 @@ export function CartFab() {
       type="button"
       onClick={openCartDrawer}
       aria-label={count > 0 ? tn("shop.openCartCount", count) : t("shop.openCart")}
-      className="tap-press fixed bottom-6 right-6 z-40 hidden h-14 w-14 items-center justify-center rounded-full border border-paper/15 bg-night-soft shadow-xl transition-colors hover:border-paper/50 hover:bg-night md:flex"
+      className="tap-press fixed bottom-6 end-6 z-40 hidden h-14 w-14 items-center justify-center rounded-full border border-paper/15 bg-night-soft shadow-xl transition-colors hover:border-paper/50 hover:bg-night md:flex"
     >
       <Cart size={24} className="text-paper" />
       {count > 0 ? (
         <span
           key={count}
-          className="badge-bump absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-paper px-1 font-sans text-[11px] font-bold text-night"
+          className="badge-bump absolute -end-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-paper px-1 font-sans text-[11px] font-bold text-night"
         >
           {count}
         </span>
