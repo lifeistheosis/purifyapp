@@ -1646,6 +1646,17 @@ Send back: "R2c UPDATE" and the number, and the same three weeks later.
      - `20261110204814_removal_notices.sql` (the notice that says why
        something was removed, signed 2026-11-10)
      - `20261111023026_care_note.sql` (the care note, signed 2026-11-11)
+     - `20261111024250_annotation_marks.sql` (highlights on some words,
+       signed 2026-11-11)
+     - `20261111133008_profiles_keep_no_depth.sql` (the faith answer stays
+       on the phone, signed 2026-11-11)
+     - `20261111133009_prayer_requests_cleared.sql` (the old prayer
+       requests cleared, signed 2026-11-11)
+     - `20261111172547_order_gifts.sql` (a month of Plus with an EIKON
+       order, signed 2026-11-11)
+
+     All 19, with what each does and its sign line, are in
+     `docs/1.9-build/MERGE-DAY.md`, step 3.
 
 The order on the day (your word, 2026-11-10): the website first (R2), then
 both store builds to internal testing (R4, R5), then your walk on a phone
