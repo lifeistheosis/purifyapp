@@ -135,7 +135,10 @@ describe("the saints' webs (fail 4, the 118 webs)", () => {
     expect(web).not.toContain("w-[180px]");
     expect(web.match(/w-\[46\.15%\]/g)?.length).toBe(3);
     expect(Math.round(MIDDLE_SHARE * 10000) / 100).toBe(46.15);
-    expect(web).toContain("webLayout(nodes.length, { names: nodes.map((n) => nameLines(n.kind === \"saint\" ? n.person.short : n.name)), middle: middleLines(center.short) })");
+    // The lines under the names are counted too since the final check (lib/saints/__tests__/webTags.test.ts).
+    expect(web).toMatch(
+      /webLayout\(nodes\.length, \{\s*names: nodes\.map\(\(n\) => nameLines\(n\.kind === "saint" \? n\.person\.short : n\.name\)\),\s*tags: nodes\.map\(\(n\) => tagLines\(tagOf\(n, t\)\)\),\s*middle: middleLines\(center\.short\),\s*\}\)/,
+    );
   });
 
   it("break a word too wide for a saint's label on the narrowest phone at its syllable, and keep it whole wherever it fits", () => {
@@ -183,7 +186,8 @@ describe("the saints' webs (fail 4, the 118 webs)", () => {
     // hold of 2026-11-12); at 85 on paper it passes on all. The tags and the names of saints on a plate share it.
     const web = fs.readFileSync(path.join(ROOT, "components/saints/web/WebConstellation.tsx"), "utf8");
     expect(web).toContain('const FAINT = "text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85";');
-    expect(web).toContain('const TAG_CLASS = "mt-0.5 max-w-full truncate font-sans text-[10.5px] text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85";');
+    // Read whole since the final check (fail 5): no truncate, its own line height (lib/saints/__tests__/webTags.test.ts).
+    expect(web).toContain('const TAG_CLASS = "mt-0.5 max-w-full font-sans text-[10.5px] leading-[1.5] text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85";');
     expect(web).not.toMatch(/"text-paper\/75" : "text-paper\/95"/);
     expect(web.match(/\? FAINT : "text-paper\/95"/g)?.length).toBe(2);
   });

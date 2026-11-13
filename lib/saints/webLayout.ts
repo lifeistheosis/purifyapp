@@ -287,6 +287,61 @@ export function nameLines(name: string): number {
   return linesOf(nameRuns(name).map((r) => r.text).join(""), NARROWEST * LABEL_SHARE, 11.5, "sans");
 }
 
+/*
+ * The line under a name is read whole too (the gate's final check,
+ * 2026-11-13, fail 5): it names a fact ("Constantinople, 381", "Great
+ * Persecution", "Disciple"), and held to one line it ended in an ellipsis on
+ * 44 webs at 320 and 17 at 390. It wraps as running text, a word too wide for
+ * the label breaking at its syllable (nameRuns' breaks, as a soft hyphen in
+ * the line: the line's wide word is its first, so it breaks only where it
+ * cannot stand whole on a line of its own), and a box holds one line of it;
+ * a longer line makes the box as much taller, as a long name does.
+ */
+
+/** A line of the line under a saint's name (10.5px at 1.5, WebConstellation's TAG_CLASS). */
+export const TAG_LINE = 10.5 * 1.5;
+/** The lines of it a box holds as drawn above (BOX). */
+export const TAG_BOX_LINES = 1;
+
+/** The line under a saint's name as the web draws it: each word too wide for the label with its break. */
+export function tagText(tag: string): string {
+  return nameRuns(tag).map((r) => r.text).join("");
+}
+
+/**
+ * How many lines the line under a saint's name takes on the narrowest phone,
+ * broken as the browser breaks running text: at a space, after a hyphen, or
+ * at a word's soft hyphen, where a hyphen is drawn. The measure's medium face
+ * is wider than the regular the line is set in, and the room for a hyphen is
+ * counted wherever one may be drawn, so a count is never short.
+ */
+export function tagLines(tag: string): number {
+  const text = tagText(tag);
+  if (!text.trim()) return 0;
+  const measure = (NARROWEST * LABEL_SHARE) / 10.5;
+  const space = emWidth(" ", "sans");
+  const hyphen = emWidth("-", "sans");
+  let lines = 1;
+  let run = 0;
+  for (const token of text.split(/\s+/).filter(Boolean)) {
+    const pieces = token.split(SOFT);
+    const parts = pieces.flatMap((piece, i) =>
+      piece.split(/(?<=-)/).map((part, j, all) => ({ part, soft: i < pieces.length - 1 && j === all.length - 1 })),
+    );
+    for (const [k, { part, soft }] of parts.entries()) {
+      const w = emWidth(part, "sans") + (soft ? hyphen : 0);
+      const gap = k === 0 ? space : 0;
+      if (run > 0 && run + gap + w > measure) {
+        lines += 1;
+        run = w;
+      } else {
+        run = run > 0 ? run + gap + w : w;
+      }
+    }
+  }
+  return lines;
+}
+
 /** The lines the middle saint's name takes under his circle. */
 export function middleLines(name: string): number {
   return linesOf(name, NARROWEST * MIDDLE_SHARE, 16, "serif");
@@ -334,14 +389,14 @@ export type WebLayout = {
   center: { x: number; y: number };
   /** Each node's centre, in the canvas, in the order given. */
   places: { x: number; y: number }[];
-  /** How far each node's box reaches below its centre: BOX.down, and more for a name of more than two lines. */
+  /** How far each node's box reaches below its centre: BOX.down, and more for a name of more than two lines or a line under it of more than one. */
   down: number[];
   /** How far the middle saint's name reaches below his centre: CENTER_BOX[1].bottom, and more for a long name. */
   middleDown: number;
 };
 
-/** What the names take: each node's lines of name, in the order given, and the middle saint's. */
-export type WebNames = { names?: readonly number[]; middle?: number };
+/** What the names take: each node's lines of name and of the line under it (tagLines), in the order given, and the middle saint's. */
+export type WebNames = { names?: readonly number[]; tags?: readonly number[]; middle?: number };
 
 /** The room the places leave between a box and the circle under it, row to row: what a longer name keeps from the next. */
 const ROW_GAP = 13;
@@ -351,7 +406,14 @@ export function webLayout(count: number, lines: WebNames = {}): WebLayout {
   const n = Math.max(0, count);
   const raw = Array.from({ length: n }, (_, i) => webPlace(i));
   // In whole pixels, rounded up, so the places stay whole as the places above are.
-  const down = raw.map((_, i) => BOX.down + Math.ceil(Math.max(0, (lines.names?.[i] ?? BOX_LINES) - BOX_LINES) * NAME_LINE));
+  const down = raw.map(
+    (_, i) =>
+      BOX.down +
+      Math.ceil(
+        Math.max(0, (lines.names?.[i] ?? BOX_LINES) - BOX_LINES) * NAME_LINE +
+          Math.max(0, (lines.tags?.[i] ?? TAG_BOX_LINES) - TAG_BOX_LINES) * TAG_LINE,
+      ),
+  );
   const middleDown = CENTER_BOX[1].bottom + Math.ceil(Math.max(0, (lines.middle ?? BOX_LINES) - BOX_LINES) * MIDDLE_LINE);
 
   // From the middle out, each saint where his place puts him, moved further out, up or down, only

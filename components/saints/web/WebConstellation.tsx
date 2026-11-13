@@ -39,6 +39,8 @@ import {
   NODE_SIZE,
   primaryTie,
   type SaintWebData,
+  tagLines,
+  tagText,
   WEB_WIDTH,
   type WebFilter,
   webFilters,
@@ -112,8 +114,13 @@ const NAME_CLASS = "mt-1.5 font-sans text-[11.5px] font-semibold leading-[1.22]"
  * (FAINT): the light looks draw their foot over the screen's last lines,
  * and a tag going quiet into it read 4.33:1 to 4.46:1 at 75 on seven of
  * them (St John's web, the hold of 2026-11-12); at 85 it passes on all.
+ *
+ * It is read whole (the gate's final check, 2026-11-13, fail 5: "Constantinople,
+ * 381" lost its year to an ellipsis): it wraps, a wide word breaking at its
+ * syllable (tagText), at the line height the layout counts it by (TAG_LINE,
+ * lib/saints/webLayout.ts, tagLines), the one it took from the page before.
  */
-const TAG_CLASS = "mt-0.5 max-w-full truncate font-sans text-[10.5px] text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85";
+const TAG_CLASS = "mt-0.5 max-w-full font-sans text-[10.5px] leading-[1.5] text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85";
 /** The name of a saint shown on a plate, a step fainter than the others, and inked as the line under it is. */
 const FAINT = "text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85";
 const MIDDLE_RING_CLASS =
@@ -367,10 +374,16 @@ export function WebConstellation({
   const { t } = useTranslate();
   const { center, nodes } = data;
   // Every name whole (the gate's confirm run, 2026-11-12): a name of more than two lines makes its box
-  // taller, and the saints past it stand further out (lib/saints/webLayout.ts, nameLines).
+  // taller, and the saints past it stand further out (lib/saints/webLayout.ts, nameLines). The line
+  // under it the same, past one line (the final check, 2026-11-13, tagLines).
   const layout = useMemo(
-    () => webLayout(nodes.length, { names: nodes.map((n) => nameLines(n.kind === "saint" ? n.person.short : n.name)), middle: middleLines(center.short) }),
-    [nodes, center.short],
+    () =>
+      webLayout(nodes.length, {
+        names: nodes.map((n) => nameLines(n.kind === "saint" ? n.person.short : n.name)),
+        tags: nodes.map((n) => tagLines(tagOf(n, t))),
+        middle: middleLines(center.short),
+      }),
+    [nodes, center.short, t],
   );
   const box = useMemo(() => webBox(layout), [layout]);
   const filters = useMemo(() => webFilters(nodes), [nodes]);
@@ -1464,7 +1477,7 @@ export function WebConstellation({
                       aria-hidden
                       className={cn(TAG_CLASS, LABEL_SHADOW)}
                     >
-                      {tag}
+                      {tagText(tag)}
                     </span>
                   ) : null}
                 </button>
@@ -1573,7 +1586,7 @@ function GlideGhosts({
             <span lang="en" dir="ltr" className={cn(NAME_CLASS, tone(node), LABEL_SHADOW)}>
               <WebName name={nameOf(node)} />
             </span>
-            {tag ? <span className={cn(TAG_CLASS, LABEL_SHADOW)}>{tag}</span> : null}
+            {tag ? <span className={cn(TAG_CLASS, LABEL_SHADOW)}>{tagText(tag)}</span> : null}
           </div>
         );
       })}
@@ -1593,7 +1606,7 @@ function GlideGhosts({
           <span lang="en" dir="ltr" className={cn(NAME_CLASS, tone(chosen), LABEL_SHADOW)}>
             <WebName name={nameOf(chosen)} />
           </span>
-          {tagOf(chosen, t) ? <span className={cn(TAG_CLASS, LABEL_SHADOW)}>{tagOf(chosen, t)}</span> : null}
+          {tagOf(chosen, t) ? <span className={cn(TAG_CLASS, LABEL_SHADOW)}>{tagText(tagOf(chosen, t))}</span> : null}
         </div>
       ) : null}
       {oldMiddleStays ? (
