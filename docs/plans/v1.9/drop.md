@@ -40,6 +40,14 @@ Also:
 - "phone voice": nothing of the on-phone voice is in the 1.9 apps (his word "rec voices", 2026-11-11 about 14:24 UTC; parked for 2.0, cdaabd4c4): 1.9 listens in the recorded voice, as 1.8 did
 - "phone's voice": the same: no on-phone voice in 1.9
 - "campaign": prayer campaigns are at testers from the merge, his account alone (lib/campaigns/flags.ts), and open for every reader only at R5c (OWNER-STEPS); until the step below brings their line into the 1.9 note, no piece names them (the arbiter, 2026-11-11 and 2026-11-12)
+- "Galilee": the sea look Galilee comes out of the app at his word of 2026-11-13 ("remove the sea theme", then "Both")
+- "Patmos": the sea look Patmos comes out with Galilee, his word of 2026-11-13
+- "nineteen reading modes": the number of looks changes with Galilee and Patmos out; the new count comes from Updates 9's report (the arbiter, 2026-11-13)
+- "19 reading modes": the same count, in figures
+- "Holy Mountain": the land looks (Holy Mountain, Forest, Desert and Jordan) are being reworked for his yes (build 95, note 16); no piece names or shows them until then
+- "Forest look": the same: a land look being reworked
+- "Desert look": the same: a land look being reworked
+- "Jordan look": the same: a land look being reworked
 
 ## The notes
 
@@ -255,7 +263,7 @@ The Purify account's profile status still announces 1.8, and it is the first lin
 Waits on: R5c: your word "open campaigns", after your walk (OWNER-STEPS)
 
 ~~~text
-Campaigns are at testers from the merge, your account alone. Only at R5c, in the push that opens them for every reader, and not before: add this line to the 1.9 note, in data/changelog/entries.json and docs/plans/v1.9/patch-note-1.9.json, under the library: "Prayer campaigns: ask others to pray with you for someone, living or reposed, for the days you choose, up to forty. Those who join carry the name in their prayers, with a psalm if the campaign names one. Every campaign is read before it is public." It names no pictures while those are off in the store builds. Then Admin, Releases, Patch notes: Put them in the queue, and Accept. Then take "campaign" off this drop's never list; from then the board, the letter and the cards may name them.
+Campaigns are at testers from the merge, your account alone. Only at R5c, in the push that opens them for every reader, and not before: add this line to the 1.9 note, in data/changelog/entries.json and docs/plans/v1.9/patch-note-1.9.json, under the library: "Prayer campaigns: ask others to pray with you for someone, living or reposed, for the days you choose, up to forty. Those who join carry the name in their prayers, with a psalm if the campaign names one. Every campaign is read before it is public." It names no pictures while those are off in the store builds. Then Admin, Releases, Patch notes: Put them in the queue, and Accept. Then take "campaign" off this drop's never list; from then the board, the letter, the cards and the video's captions may name them, and the 1.9 video may go out.
 ~~~
 
 ## The day a store has it
@@ -349,6 +357,16 @@ purifyapp.net
 `cards` · The cards · Instagram and TikTok, from the files · Waits
 
 Waits on: the release cards, which a Fable chat makes by his word of 2026-11-12
+
+> No card shows Galilee or Patmos, which come out, or a land look (Holy Mountain, Forest, Desert and Jordan) before his yes on its reworked picture (build 95, note 16).
+
+### The 1.9 video: the app's own screens and taps, prayer campaigns among them
+
+`video` · The video · TikTok, Reels or Shorts, from the file · Waits
+
+Waits on: prayer campaigns open to every reader (release day's step 3, R5c, your word), and the video itself, which a Fable chat makes by his word of 2026-11-13
+
+> It shows prayer campaigns (his word, 2026-11-13 about 07:21 UTC: "add the prayer campaigns to the video"), so it goes out only once they are open to every reader, never while they are at testers. No frame shows Galilee or Patmos, which come out, or a land look (Holy Mountain, Forest, Desert and Jordan) before his yes on its reworked picture. Its captions are written when campaigns may be named, with the step that takes "campaign" off the never list.
 
 ### The caption for the cards, on Instagram
 

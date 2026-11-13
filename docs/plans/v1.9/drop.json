@@ -61,6 +61,38 @@
     {
       "word": "campaign",
       "why": "prayer campaigns are at testers from the merge, his account alone (lib/campaigns/flags.ts), and open for every reader only at R5c (OWNER-STEPS); until the step below brings their line into the 1.9 note, no piece names them (the arbiter, 2026-11-11 and 2026-11-12)"
+    },
+    {
+      "word": "Galilee",
+      "why": "the sea look Galilee comes out of the app at his word of 2026-11-13 (\"remove the sea theme\", then \"Both\")"
+    },
+    {
+      "word": "Patmos",
+      "why": "the sea look Patmos comes out with Galilee, his word of 2026-11-13"
+    },
+    {
+      "word": "nineteen reading modes",
+      "why": "the number of looks changes with Galilee and Patmos out; the new count comes from Updates 9's report (the arbiter, 2026-11-13)"
+    },
+    {
+      "word": "19 reading modes",
+      "why": "the same count, in figures"
+    },
+    {
+      "word": "Holy Mountain",
+      "why": "the land looks (Holy Mountain, Forest, Desert and Jordan) are being reworked for his yes (build 95, note 16); no piece names or shows them until then"
+    },
+    {
+      "word": "Forest look",
+      "why": "the same: a land look being reworked"
+    },
+    {
+      "word": "Desert look",
+      "why": "the same: a land look being reworked"
+    },
+    {
+      "word": "Jordan look",
+      "why": "the same: a land look being reworked"
     }
   ],
   "figures": [
@@ -413,7 +445,7 @@
       "moment": "web",
       "title": "Prayer campaigns join the note only when they open for every reader",
       "who": "us",
-      "text": "Campaigns are at testers from the merge, your account alone. Only at R5c, in the push that opens them for every reader, and not before: add this line to the 1.9 note, in data/changelog/entries.json and docs/plans/v1.9/patch-note-1.9.json, under the library: \"Prayer campaigns: ask others to pray with you for someone, living or reposed, for the days you choose, up to forty. Those who join carry the name in their prayers, with a psalm if the campaign names one. Every campaign is read before it is public.\" It names no pictures while those are off in the store builds. Then Admin, Releases, Patch notes: Put them in the queue, and Accept. Then take \"campaign\" off this drop's never list; from then the board, the letter and the cards may name them.",
+      "text": "Campaigns are at testers from the merge, your account alone. Only at R5c, in the push that opens them for every reader, and not before: add this line to the 1.9 note, in data/changelog/entries.json and docs/plans/v1.9/patch-note-1.9.json, under the library: \"Prayer campaigns: ask others to pray with you for someone, living or reposed, for the days you choose, up to forty. Those who join carry the name in their prayers, with a psalm if the campaign names one. Every campaign is read before it is public.\" It names no pictures while those are off in the store builds. Then Admin, Releases, Patch notes: Put them in the queue, and Accept. Then take \"campaign\" off this drop's never list; from then the board, the letter, the cards and the video's captions may name them, and the 1.9 video may go out.",
       "waits": "R5c: your word \"open campaigns\", after your walk (OWNER-STEPS)"
     },
     {
@@ -464,7 +496,16 @@
       "channel": "cards",
       "moment": "stores",
       "title": "The release cards",
-      "waits": "the release cards, which a Fable chat makes by his word of 2026-11-12"
+      "waits": "the release cards, which a Fable chat makes by his word of 2026-11-12",
+      "note": "No card shows Galilee or Patmos, which come out, or a land look (Holy Mountain, Forest, Desert and Jordan) before his yes on its reworked picture (build 95, note 16)."
+    },
+    {
+      "id": "video",
+      "channel": "video",
+      "moment": "stores",
+      "title": "The 1.9 video: the app's own screens and taps, prayer campaigns among them",
+      "waits": "prayer campaigns open to every reader (release day's step 3, R5c, your word), and the video itself, which a Fable chat makes by his word of 2026-11-13",
+      "note": "It shows prayer campaigns (his word, 2026-11-13 about 07:21 UTC: \"add the prayer campaigns to the video\"), so it goes out only once they are open to every reader, never while they are at testers. No frame shows Galilee or Patmos, which come out, or a land look (Holy Mountain, Forest, Desert and Jordan) before his yes on its reworked picture. Its captions are written when campaigns may be named, with the step that takes \"campaign\" off the never list."
     },
     {
       "id": "instagram-caption",
