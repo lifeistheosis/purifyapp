@@ -24,7 +24,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return {
     title,
     description,
-    openGraph: { title, description, type: "profile" },
+    // Its own address as og:url ("./" is read against this page's path): an
+    // openGraph set here replaces the root's whole, its url with it.
+    openGraph: { title, description, type: "profile", url: "./" },
     twitter: { card: "summary_large_image", title, description },
     // A person's page, not a document of the site.
     robots: { index: false, follow: false },
