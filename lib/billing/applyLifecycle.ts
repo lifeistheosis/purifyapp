@@ -75,7 +75,7 @@ export async function sendLifecycleEmail(
       kind: "billing-issue",
       title: "A renewal did not go through",
       body: "A member's payment failed. They have been emailed how to fix it.",
-      url: "/admin?tab=subscriptions",
+      url: "/admin#tab=subscriptions",
     }).catch(() => undefined);
   }
 }
