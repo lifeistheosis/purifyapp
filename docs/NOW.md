@@ -20,6 +20,10 @@ Updated 2026-11-13 19:01 UTC by Arbiter 3, rewritten to one page. What it held b
 | Updates 25 | session_01VuYTwcpya65jZTpLk48Nwt | from 20:40, from docs/handoffs/updates-24.md (Updates 24 archived 20:40 UTC after ea902a0e, de7a9737, 63960bc8 and 992cd3cb, the cart button and back-to-top mirrored together in Arabic; about 200,000 tokens), with the arbiter's three calls of 20:16 carried in its brief, since the baton was written before them: checkMock closing the browser on /community/ found out first; "0 replies" mended in the cut measure (a glide passes through in-between places; a one-frame landing is a cut), self-tested both ways; the thin line at a Community card's start edge checked for a side stripe at rest and mid-move. Then the tab bar drawn over the open cart drawer at 1032 in the native shell (new); the council's Next; the profile card's 240px; causes 7, 8 and 9 |
 | Updates 23 | session_01VuYTwZhTJ9z4k23jxRtLQC | from 19:00, the apply chat: the voices (note 25's patch) with Now Playing's two faults (bg-black/55 on Light; the docked player not mirrored in Arabic); note 23 with his two calls; the retention opt-in line in the welcome email. One page of stills for his look. Takes later design yeses while under 200,000 tokens |
 | Fable: Orthodox America, the full film | session_01VuYTwaxbA7b5yzKRKC1Jce | from 20:34, at his "now" (20:33; not 1.9): the full documentary from docs/promo/orthodox-america/BRIEF.md "Round 4": the three scenes, the rest of the scenes, the sources as named title cards (no third-party logos), Purify's animated logo last. Sends its scenes, a strip, the frame count, the render time and how the file reaches him past the store's 20 MB before its one render |
+| Updates 26 | session_01VuYTwcGPGBEcLdgjj8PqfC | from 20:51, applying his yes: note 16 (the land looks, Desert out), notes 18 and 19 (Settings), note 27 (earning a look; both native builds), note 15 (the Share row), in that order, since they meet in the same files |
+| Updates 27 | session_01VuYTwcV3kvATHuNi3aqeyK | from 20:51, applying his yes: the fifteen screens' round 1 (Today and the house rules, to the baton's build spec; pushed first, for round 2), note 9 (Discover's hold), note 17 (the patron chooser), note 29 (Chrysostom's book on his profile, the line word for word, the publisher's link, no affiliate link) |
+| Updates 28 | session_01VuYTwbwvWQrSikD9GnpZ3c | from 20:52, applying his yes: notes 3, 4 and 6 (the Fast and the Journal), note 22 (the ambience photographs, Simonopetra for the sea), the emails' round 3 with Dark for everyone and the account and order shell to Dark (before and after stills on a page for his look) |
+| Fable: the fifteen screens, round 2 | session_01VuYTwdwzHBSFrdVEkrdW2i | from 20:51: the first launch's questions, Prayers and Discover, on round 1's rules (rows in one tray drawn here), from docs/handoffs/fable-fifteen-screens.md; one page for his yes. Rounds 3 to 5 follow in fresh chats; then note 28, the desktop revamp |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository); waits on his two facts |
 
 Every chat rotates at 200,000 tokens (OPERATIONS section 2).
@@ -39,16 +43,16 @@ Every patch below is his yes. The apply chats take them by area so that patches 
 
 | Note | The patch |
 |---|---|
-| 9, Discover's hold | docs/1.9-build/drafts/build-95-note-9.patch |
-| 15, the Share row | docs/1.9-build/drafts/build-95-note-15.patch |
-| 16, the land looks | docs/1.9-build/drafts/land-looks/held.patch (its README names Desert's part to drop; Desert's drawing kept once in kept/desert-look/) |
-| 17, the patron chooser | docs/1.9-build/drafts/build-95-note-17.patch |
-| 18 and 19, Settings | docs/1.9-build/drafts/build-95-notes-18-19.patch |
-| 22, the ambience photographs | docs/1.9-build/notes/build-95/22-held.patch (decided with it at 14:29: the sea's photograph becomes Simonopetra; the Plus preview takes the photographs) |
-| 25, the fifteen screens, round 1 | docs/1.9-build/redesign/round-1/held.patch. Then round 2 in a fresh Fable chat from docs/handoffs/fable-fifteen-screens.md, and note 28, the desktop revamp (his yes, 18:53), the computer's frame first |
-| 27, earning a look | docs/1.9-build/notes/build-95/earned-looks/prototype.patch (on apply: the 13 earn.* lines in the other 20 catalogs, the whole suite, both native builds) |
-| 3, 4 and 6, the Fast and the Journal | docs/1.9-build/held/fast-journal/fast-journal-look.patch (its README is the handoff; applies on df48a34cd) |
-| The emails, round 3 | docs/1.9-build/drafts/emails-round-3/held.patch (applies on 774248d5). Decided with it at 18:53: Dark for everyone (the light scheme out of all nine), and the account and order emails' shell (lib/email/theme.ts EMAIL_THEMES.night) to Dark, with before and after stills. Also: the retention look wired; a look in real Gmail, Apple Mail and Outlook with the first send, which goes to him alone |
+| 9, Discover's hold (Updates 27) | docs/1.9-build/drafts/build-95-note-9.patch |
+| 15, the Share row (Updates 26) | docs/1.9-build/drafts/build-95-note-15.patch |
+| 16, the land looks (Updates 26) | docs/1.9-build/drafts/land-looks/held.patch (its README names Desert's part to drop; Desert's drawing kept once in kept/desert-look/) |
+| 17, the patron chooser (Updates 27) | docs/1.9-build/drafts/build-95-note-17.patch |
+| 18 and 19, Settings (Updates 26) | docs/1.9-build/drafts/build-95-notes-18-19.patch |
+| 22, the ambience photographs (Updates 28) | docs/1.9-build/notes/build-95/22-held.patch (decided with it at 14:29: the sea's photograph becomes Simonopetra; the Plus preview takes the photographs) |
+| 25, the fifteen screens, round 1 (Updates 27) | docs/1.9-build/redesign/round-1/held.patch. Then round 2 in a fresh Fable chat from docs/handoffs/fable-fifteen-screens.md, and note 28, the desktop revamp (his yes, 18:53), the computer's frame first |
+| 27, earning a look (Updates 26) | docs/1.9-build/notes/build-95/earned-looks/prototype.patch (on apply: the 13 earn.* lines in the other 20 catalogs, the whole suite, both native builds) |
+| 3, 4 and 6, the Fast and the Journal (Updates 28) | docs/1.9-build/held/fast-journal/fast-journal-look.patch (its README is the handoff; applies on df48a34cd) |
+| The emails, round 3 (Updates 28) | docs/1.9-build/drafts/emails-round-3/held.patch (applies on 774248d5). Decided with it at 18:53: Dark for everyone (the light scheme out of all nine), and the account and order emails' shell (lib/email/theme.ts EMAIL_THEMES.night) to Dark, with before and after stills. Also: the retention look wired; a look in real Gmail, Apple Mail and Outlook with the first send, which goes to him alone |
 
 ## Next, in order
 
