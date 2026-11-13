@@ -41,7 +41,7 @@ Updated 2026-11-13 15:54 UTC, by Arbiter 2.
 
 ## After 1.9 ships
 
-- **Before the merge (web only, a 1.9 fault):** `lib/billing/applyLifecycle.ts` links the admin to `/admin?tab=subscriptions`, but the panel reads only `#tab=`, so it opens Home. Goes to the next free fixer after the final check; billing is audited, so `docs/audit/findings.yaml` is read first.
+- **The billing link is mended:** `lib/billing/applyLifecycle.ts` links the admin to `/admin#tab=subscriptions`, the form the panel reads (Updates 3; checked by the arbiter 2026-11-13 15:56 UTC).
 - **The owner's desk, sections 2 and 3** (the sends and the owner's brief): a fresh admin chat from the baton, once he answers the four questions.
 - Money: subscription days fill the charts from the merge on (`plus_events` is 1.9's table). History from before needs a RevenueCat key with the charts permission, which he would make: offer it with the owner's brief.
 - **Overdrive is off** (his word, 2026-11-13 about 08:04 UTC, after the reset): no chat is stopped mid-work; each finishes, pushes, reports and is archived; new asks go to the open chat in their lane; no new chat while an open one can take the work (OPERATIONS section 6).
