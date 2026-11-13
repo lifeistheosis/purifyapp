@@ -22,9 +22,11 @@ import { PictureCreditNote } from "./PictureCredit";
 // itself blurry-to-sharp, band by band, is the "piece by piece" the owner
 // keeps sending back.
 
-type Size = "sm" | "md" | "lg";
+type Size = "xs" | "sm" | "md" | "lg";
 
 const dims: Record<Size, { w: number; h: number; plate: CrossPlateSize }> = {
+ // A row of a list of saints: the patron saint's chooser (build 95 note 17).
+ xs: { w: 48, h: 64, plate: "thumb" },
  sm: { w: 72, h: 96, plate: "thumb" },
  md: { w: 96, h: 128, plate: "card" },
  lg: { w: 160, h: 216, plate: "card" },

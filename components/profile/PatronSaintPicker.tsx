@@ -4,28 +4,29 @@
 // Beside the email lists, because the note rides the library list: without it
 // switched on, choosing a patron sends nothing.
 //
-// The list is 158 saints long, so it is a searchable picker, not a bare
-// <select>: the native list could not be searched, and on a phone it opened
-// the operating system's wheel in the operating system's colours. "egypt"
-// finds St. Mary of Egypt; see components/ui/SearchSelect.tsx.
+// The list is 270 saints long. It was a searchable dropdown of bare names
+// (components/ui/SearchSelect.tsx) until build 95 note 17; it is the patron
+// saint's chooser now, each saint with his icon and feast in the house's
+// sheet, found by any part of his name ("egypt" finds St. Mary of Egypt) and
+// lettered by his own (components/profile/PatronChooser.tsx).
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { SearchSelect, type SearchSelectOption } from "@/components/ui/SearchSelect";
+import { PatronChooser } from "@/components/profile/PatronChooser";
 import { apiFetch } from "@/lib/api/client";
 import { PATRON_ANCHOR, announcePatron } from "@/lib/profile/patronEvent";
+import { patronList, type Patron, type ServerPatron } from "@/lib/profile/patrons";
 import { prefersReducedMotion } from "@/lib/ui/motion";
-
-type Patron = { slug: string; name: string };
-
-/** The "none" row. Not a slug any saint can have. */
-const NONE = "__none__";
 
 export type PatronChoice = {
   state: "loading" | "ready" | "signed-out" | "unavailable";
-  options: SearchSelectOption[];
+  /** The saints the website will save, as the chooser draws them. */
+  patrons: Patron[];
+  /** The chosen saint's slug, or "" for none. */
   value: string;
+  /** The chosen saint's name as the website gave it, for one this build does not carry. */
+  named: string | null;
   choose: (next: string) => void;
   saved: boolean;
   error: boolean;
@@ -38,8 +39,7 @@ export type PatronChoice = {
  * tells the widget at once when a saint is saved.
  */
 export function usePatronChoice(): PatronChoice {
-  const { t } = useTranslate();
-  const [patrons, setPatrons] = useState<Patron[] | null>(null);
+  const [server, setServer] = useState<ServerPatron[] | null>(null);
   const [slug, setSlug] = useState<string>("");
   const [state, setState] = useState<PatronChoice["state"]>("loading");
   const [saved, setSaved] = useState(false);
@@ -52,9 +52,9 @@ export function usePatronChoice(): PatronChoice {
         if (!alive) return;
         if (mine.status === 401) return setState("signed-out");
         if (!list.ok || !mine.ok) return setState("unavailable");
-        const { patrons: all } = (await list.json()) as { patrons: Patron[] };
+        const { patrons: all } = (await list.json()) as { patrons: ServerPatron[] };
         const { slug: current } = (await mine.json()) as { slug: string | null };
-        setPatrons(all);
+        setServer(all);
         setSlug(current ?? "");
         setState("ready");
       })
@@ -64,10 +64,7 @@ export function usePatronChoice(): PatronChoice {
     };
   }, []);
 
-  const options = useMemo<SearchSelectOption[]>(
-    () => [{ value: NONE, label: t("patron.none") }, ...(patrons ?? []).map((p) => ({ value: p.slug, label: p.name }))],
-    [patrons, t],
-  );
+  const patrons = useMemo(() => patronList(server ?? []), [server]);
 
   async function save(next: string) {
     const previous = slug;
@@ -90,23 +87,17 @@ export function usePatronChoice(): PatronChoice {
     }
   }
 
-  return { state, options, value: slug || NONE, choose: (v) => void save(v === NONE ? "" : v), saved, error };
+  const named = server?.find((p) => p.slug === slug)?.name ?? null;
+
+  return { state, patrons, value: slug, named, choose: (v) => void save(v), saved, error };
 }
 
-/** The searchable picker and the line that says it saved. */
+/** The chooser and the line that says it saved. */
 export function PatronSelect({ choice }: { choice: PatronChoice }) {
   const { t } = useTranslate();
   return (
     <>
-      <SearchSelect
-        value={choice.value}
-        onChange={choice.choose}
-        options={choice.options}
-        placeholder={t("patron.none")}
-        ariaLabel={t("patron.title")}
-        searchPlaceholder={t("patron.search")}
-        emptyLabel={t("patron.noMatch")}
-      />
+      <PatronChooser patrons={choice.patrons} value={choice.value} named={choice.named} onChoose={choice.choose} label={t("patron.title")} />
       <p aria-live="polite" className="font-sans text-caption">
         {choice.saved ? <span className="mt-2 block text-paper/55">{t("patron.saved")}</span> : null}
         {choice.error ? <span className="mt-2 block text-red-300">{t("email.prefs.error")}</span> : null}

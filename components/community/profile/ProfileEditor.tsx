@@ -11,6 +11,7 @@ import { ProfileEffect } from "@/components/community/profile/ProfileEffect";
 import { ClergyRequestCard } from "@/components/community/profile/ClergyRequestCard";
 import { SocialLinkIcon } from "@/components/community/profile/SocialLinkIcon";
 import { ImageCropSheet, type CropShape } from "@/components/profile/ImageCropSheet";
+import { PatronChooser } from "@/components/profile/PatronChooser";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
 import { SearchSelect, type SearchSelectOption } from "@/components/ui/SearchSelect";
@@ -30,6 +31,7 @@ import {
 } from "@/lib/profile/client";
 import { announcePicture } from "@/lib/profile/myPicture";
 import { announcePatron } from "@/lib/profile/patronEvent";
+import { patronList } from "@/lib/profile/patrons";
 import {
   BANNER_COLORS,
   BANNER_MOTIONS,
@@ -245,16 +247,8 @@ export function ProfileEditor() {
     };
   }, []);
 
-  const patronOptions = useMemo<SearchSelectOption[]>(
-    () => [
-      { value: "__none__", label: t("patron.none") },
-      ...(profile?.patronSaint && !patrons.some((p) => p.slug === profile.patronSaint?.slug)
-        ? [{ value: profile.patronSaint.slug, label: profile.patronSaint.name }]
-        : []),
-      ...patrons.map((p) => ({ value: p.slug, label: p.name })),
-    ],
-    [patrons, profile, t],
-  );
+  // The patron saint's chooser, as Settings and You draw it (build 95 note 17).
+  const patronRows = useMemo(() => patronList(patrons), [patrons]);
   const bookOptions = useMemo<SearchSelectOption[]>(
     () => [{ value: "__none__", label: t("profile.verseNone") }, ...BOOKS.map((b) => ({ value: b.slug, label: b.name }))],
     [t],
@@ -613,14 +607,12 @@ export function ProfileEditor() {
 
           <Section title={t("profile.sectionKeep")}>
             <Field label={t("profile.patronSaint")}>
-              <SearchSelect
-                value={draft.patronSaint || "__none__"}
-                onChange={(v) => set({ patronSaint: v === "__none__" ? "" : v })}
-                options={patronOptions}
-                placeholder={t("patron.none")}
-                ariaLabel={t("profile.patronSaint")}
-                searchPlaceholder={t("patron.search")}
-                emptyLabel={t("patron.noMatch")}
+              <PatronChooser
+                patrons={patronRows}
+                value={draft.patronSaint}
+                named={profile.patronSaint?.slug === draft.patronSaint ? profile.patronSaint.name : null}
+                onChoose={(slug) => set({ patronSaint: slug })}
+                label={t("profile.patronSaint")}
               />
               {profile.nextNameDay && draft.patronSaint === saved.patronSaint ? (
                 <p className="mt-1.5 font-sans text-caption text-paper/55">
