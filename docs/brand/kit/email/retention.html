@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Purify retention emails</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* One column for words, and each email at a phone's width beside its other scheme. */
+:root{--ground:#101013;--raised:#1d1d20;--ink:#ffffff;--body:#c3c3c4;--quiet:#939395;--line:#28282b;--rule:#404042;color-scheme:dark;--serif:Lora,Georgia,'Times New Roman',serif;--sans:'DM Sans',Arial,Helvetica,sans-serif}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--ground:#ffffff;--raised:#f3f3f3;--ink:#49424e;--body:#5b5560;--quiet:#6d6871;--line:#edeced;--rule:#dbd9dc;color-scheme:light}}
+:root[data-theme="light"]{--ground:#ffffff;--raised:#f3f3f3;--ink:#49424e;--body:#5b5560;--quiet:#6d6871;--line:#edeced;--rule:#dbd9dc;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--body);font-family:var(--serif);font-size:17px;line-height:1.65}
+main{max-width:1240px;margin:0 auto;padding-block:48px 72px;padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px))}
+header{text-align:center;padding-bottom:20px}
+h1{margin:6px 0 0;color:var(--ink);font-weight:400;font-size:clamp(32px,5vw,44px);line-height:1.15;text-wrap:balance}
+h2{margin:0;color:var(--ink);font-weight:600;font-size:24px;line-height:1.25}
+p{margin:12px 0 0;max-width:68ch}
+h3{margin:26px 0 0;color:var(--ink);font-weight:600;font-size:19px;line-height:1.3}
+h3+p{margin-top:6px}
+.for{color:var(--quiet);font-family:var(--sans);font-size:15px;line-height:22px}
+.for .small{display:block;margin:0}
+.small,figcaption,th{font-family:var(--sans);font-size:12px;line-height:18px;font-weight:600;color:var(--quiet)}
+.small{margin:0 auto}
+.lede{margin:14px auto 0;font-style:italic;color:var(--quiet);font-size:19px;line-height:1.5;max-width:52ch}
+.rule{display:block;width:28px;height:1px;margin:26px auto 0;background:var(--rule)}
+section{margin-top:56px}
+.row{display:flex;flex-wrap:wrap;gap:28px 24px;margin-top:24px;align-items:flex-start}
+figure{margin:0;flex:0 1 390px;min-width:0}
+figure img{display:block;width:100%;max-width:100%;height:auto;border:1px solid var(--line);border-radius:20px}
+figcaption{margin-top:10px}
+.scroll{overflow-x:auto;margin-top:18px}
+table{border-collapse:collapse;width:100%;max-width:900px;font-size:16px;line-height:1.5}
+th{text-align:start;padding:0 16px 8px 0;border-bottom:1px solid var(--rule)}
+td{padding:11px 16px 11px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{color:var(--ink);width:44%}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;color:var(--ink)}
+ul{margin:16px 0 0;padding-inline-start:20px;max-width:68ch}
+li{margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <p class="small">docs/brand/kit/email &middot; 13 November 2026</p>
+  <h1>Three emails that bring a reader back</h1>
+  <p class="lede">The first week, where you left off, and the fasting companion. Each is one thing with one button, on the same look. Yes or no to each is yours.</p>
+  <span class="rule"></span>
+</header>
+
+<section>
+  <h2>The first week</h2>
+  <p>Three emails for a new reader, on days 1, 3 and 7. Each names one thing to do and gives the one button that does it, on the app's own card in the app's own words. Under it, the three steps as a short leaf, with today's set heavier. Then they stop, and the foot says so.</p>
+  <div class="row">
+    <figure><img src="shots/first-week-1.dark.png" width="390" loading="lazy" alt="The first email of the first week: the title Pray your first morning prayers, a card with Morning prayers, 8 min and the button Begin, and the three steps."><figcaption>Day 1, dark</figcaption></figure>
+    <figure><img src="shots/first-week-1.light.png" width="390" loading="lazy" alt="The same email on a light screen, clean white in the app's ink."><figcaption>Day 1, light</figcaption></figure>
+    <figure><img src="shots/first-week-3.dark.png" width="390" loading="lazy" alt="The second email: Choose your calendar, with the card New or Old and its button."><figcaption>Day 3</figcaption></figure>
+    <figure><img src="shots/first-week-7.dark.png" width="390" loading="lazy" alt="The third email: Save your first verse, with the Verse of the Day on its card and the button Save."><figcaption>Day 7</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <h2>Pick up where you left off</h2>
+  <p>One personal line, as the title: the reader's own last place, or a saint they saved whose feast is near. One card, one button back to it. It says nothing else about the reader, and it is the shortest email Purify sends.</p>
+  <div class="row">
+    <figure><img src="shots/pick-up.dark.png" width="390" loading="lazy" alt="The email Pick up where you left off: the title You were reading Romans 8, and a card with Romans 8, chapter 8 of 16, and the button Continue reading."><figcaption>Dark</figcaption></figure>
+    <figure><img src="shots/pick-up.light.png" width="390" loading="lazy" alt="The same email on a light screen."><figcaption>Light</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <h2>The fasting companion</h2>
+  <p>For the Nativity Fast first. It opens on the fast's first day and comes once a week while the fast lasts. It wears the season: the night of the app's Nativity card, with the star higher each week. The week's fast is set day by day in the calendar's own words. It gives no counsel: how a reader keeps the fast is for their priest to say.</p>
+  <div class="row">
+    <figure><img src="shots/fast-opening.dark.png" width="390" loading="lazy" alt="The fasting companion's opening email: a night sky with the star just above the horizon, the title The fast begins, and each day of the week with its fast."><figcaption>The opening, dark</figcaption></figure>
+    <figure><img src="shots/fast-opening.light.png" width="390" loading="lazy" alt="The same email on a light screen: the night stays dark at the head of a clean white page."><figcaption>The opening, light</figcaption></figure>
+    <figure><img src="shots/fast-week.dark.png" width="390" loading="lazy" alt="The weekly email: the star a little higher, the title The second week, and the week's fast day by day."><figcaption>A week in</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <h2>Why they look this way</h2>
+  <p>Each choice, its reason, and what it does for the reader and for the goal, which is that a reader comes back.</p>
+  <h3>One thing, one button, in each email</h3>
+  <p>An email that asks for three things gets none. The card and the button are Today's own in the app.</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>The reader knows the one step, and it is one tap away.</p>
+  <h3>The step is the title, in the reader's serif</h3>
+  <p>The title is what is read in the inbox and at the top of the page.</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>The email is understood before it is opened.</p>
+  <h3>The first week shows all three steps, today's set heavier</h3>
+  <p>A new reader should see that it is three small things and not a course.</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>The week has an end in sight, so the second and third emails are expected, not a surprise.</p>
+  <h3>The card uses the app's own words: "Pray now", "Morning prayers", "8 min", "Begin"</h3>
+  <p>The email and the screen it opens say the same thing.</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>What is tapped in the email is recognised at once in the app.</p>
+  <h3>Pick up: the reader's own place is the title, and nothing else is said about them</h3>
+  <p>One true, useful line is personal. More would feel watched.</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>The reader is handed back exactly what they were doing.</p>
+  <h3>Pick up is the shortest email Purify sends</h3>
+  <p>Someone who has been away two weeks owes no reading.</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>It takes five seconds, which is what it has.</p>
+  <h3>The fasting companion wears the season: the night, the star higher each week</h3>
+  <p>It is the app's own picture for the fast, and the reader email's. One fast, one look.</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>Each week's email shows the fast has moved, without a word of urging.</p>
+  <h3>The week's fast day by day, in the calendar's words, with its colour and its words</h3>
+  <p>"What may I eat on Wednesday" is why this email is opened again in the week. Never colour alone.</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>It is useful every day of the week, so it is kept and returned to.</p>
+  <h3>No counsel in the fasting companion</h3>
+  <p>How a fast is kept is a priest's to say.</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>The reader trusts it to say only what the calendar says.</p>
+  <h3>Each foot says why it came and when it stops</h3>
+  <p>A reader who knows the end does not reach for Unsubscribe.</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>Three emails, or two, or one a week for forty days: said plainly.</p>
+  <h3>Phone first, dark first, a clean white where the screen is light</h3>
+  <p>His words.</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>It reads like the app, in the hand.</p>
+  <h3>In the email</h3>
+  <p>Token</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>From</p>
+  <h3>The page</h3>
+  <p>`--k-ground`</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the kit</p>
+  <h3>A raised card</h3>
+  <p>`--k-card`</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the kit</p>
+  <h3>Headings</h3>
+  <p>`--k-ink`</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the kit</p>
+  <h3>Running text</h3>
+  <p>`--k-ink-2` (the ink at `--k-ink-2-share`)</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the kit</p>
+  <h3>Labels and quiet lines</h3>
+  <p>`--k-ink-3` (the ink at `--k-ink-3-share`), lifted where a palette needs it to hold 4.5:1 on a card as well as the page</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the kit</p>
+  <h3>Hairlines</h3>
+  <p>`--k-line`</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the kit</p>
+  <h3>A control's edge, the short rule</h3>
+  <p>`--k-line-strong`</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the kit</p>
+  <h3>A chart's quiet marks</h3>
+  <p>the ink at the share that holds 3:1</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the kit's ink</p>
+  <h3>The button, and its words</h3>
+  <p>the ink, the ground</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the kit</p>
+  <h3>Money in, by source</h3>
+  <p>`--k-money-shop`, `--k-money-plus`, `--k-money-box`</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the kit</p>
+  <h3>The night's ground</h3>
+  <p>`--k-well` of Dark</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the kit</p>
+  <h3>A feast's mark</h3>
+  <p>`--ink-rubric`</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the app</p>
+  <h3>Each fast</h3>
+  <p>`--fast-strict`, `--fast-fish`, `--fast-wine-oil`, `--fast-free`</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the app</p>
+  <h3>Night sky's page, card and ink</h3>
+  <p>`html[data-look="nightsky"]`, at Dark's shares</p>
+  <p class="for"><span class="small">For the reader, and for coming back</span>the app</p>
+</section>
+
+<section>
+  <h2>What waits on your yes</h2>
+  <ul>
+    <li><strong>The designs</strong>, each of the three.</li>
+    <li><strong>The new words.</strong> The titles, the line under each, and each foot's sentence of why the email came are written for these emails. Everything on a card is the app's own words.</li>
+    <li><strong>Saving a verse.</strong> Day 7 says a saved verse is kept for the reader. That holds only if saving is free for every reader; the sending's chat confirms it before the switch goes on.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>The check</h2>
+  <p>Run with <code>node docs/brand/kit/check.mjs</code> on 13 November 2026. It passed: all six emails at 360, 390, 412 and 1032 wide, on the four dark palettes and the clean light, in Arabic's direction, the fast's two on Night sky as well. Each is under 20KB of HTML. No script, no parchment, nothing on the heritage list. Not yet seen in real Gmail, Apple Mail or Outlook.</p>
+</section>
+</main>
+</body>
+</html>

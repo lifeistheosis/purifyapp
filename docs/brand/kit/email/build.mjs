@@ -372,10 +372,15 @@ function days(p, lines, { fasts = false } = {}) {
     const last = i === lines.length - 1;
     const edge = last ? "" : "border-bottom-width:1px;border-bottom-style:solid;";
     const feast = l.kind === "feast";
+    const heavy = feast || l.heavy;
+    const mark = l.mark ?? (feast ? "Feast" : null);
     const fast = fasts && l.fast ? FAST[l.fast] : null;
+    // A row that is about the fast itself wears the fast's dot before its name.
+    const dot = l.dot ? `<span${c({ fg: FAST[l.dot].slot })}>&#9679;</span>&nbsp;` : "";
     const under = [
-      feast ? `<span${c({ fg: "rubric" }, "font-weight:600;")}>Feast</span>` : "",
+      mark ? `<span${c({ fg: "rubric" }, "font-weight:600;")}>${esc(mark)}</span>` : "",
       fast ? `<span${c({ fg: fast.slot })}>&#9679;</span>&nbsp;${esc(fast.words)}` : "",
+      l.under ? esc(l.under) : "",
     ]
       .filter(Boolean)
       .join(" &nbsp;&middot;&nbsp; ");
@@ -386,7 +391,7 @@ function days(p, lines, { fasts = false } = {}) {
     </td>
     <td width="14"${c({ bd: "line" }, `width:14px;font-size:0;line-height:0;${edge}`)}>&nbsp;</td>
     <td valign="middle"${c({ bd: "line" }, `padding:15px 0;${edge}`)}>
-      <p${c({ fg: "ink" }, `margin:0;font-family:${SERIF};font-size:18px;line-height:25px;${feast ? "font-weight:600;" : ""}`)}>${esc(l.name)}</p>
+      <p${c({ fg: "ink" }, `margin:0;font-family:${SERIF};font-size:18px;line-height:25px;${heavy ? "font-weight:600;" : ""}`)}>${dot}${esc(l.name)}</p>
       ${under ? `<p${c({ fg: "quiet" }, `margin:3px 0 0;font-family:${SANS};font-size:14px;line-height:20px;`)}>${under}</p>` : ""}
     </td>
   </tr>`;
@@ -425,7 +430,8 @@ const signOff = (p) =>
   `<tr><td${p.c({ fg: "quiet" }, `padding:28px 0 0;font-family:${SERIF};font-style:italic;font-size:16px;line-height:24px;`)}>Edgar, the Purify Team</td></tr>`;
 
 /** What a list email ends on (lib/email/consent.ts marketingFooter, lib/email/layout.ts): why it came, who sent it, and the button that stops it. */
-const readerFoot = (p, extra) => `<p style="margin:0">${extra ? `${esc(extra)} ` : ""}You are getting this because you turned on &ldquo;What is new in the library&rdquo; in your Purify settings.</p>
+const LIBRARY_WHY = "You are getting this because you turned on \u201cWhat is new in the library\u201d in your Purify settings.";
+const readerFoot = (p, extra, why = LIBRARY_WHY) => `<p style="margin:0">${extra ? `${esc(extra)} ` : ""}${esc(why)}</p>
   <p style="margin:6px 0 0">The company's name and its postal address stand here.</p>
   <p style="margin:18px 0 0">${quietButton(p, { href: "https://purifyapp.net/unsubscribe", text: "Unsubscribe" })}</p>
   <p style="margin:8px 0 0">${link(p, "https://purifyapp.net", "purifyapp.net")}</p>`;
@@ -686,10 +692,157 @@ export function brief(how) {
   });
 }
 
+
+// ── The retention emails ────────────────────────────────────────────────
+// Three kinds, each on the same look and each one thing with one button (his
+// word, 2026-11-13: "perfect let's build and I say yes or no to the design").
+// The sending is another chat's, behind a switch that stays off until his
+// yes. Every new line of words below waits for that yes too; the app's own
+// words are named where they are used. No urging, no countdown, no streak:
+// the calendar is the only urgency Purify uses (docs/brand/voice.md).
+
+/** A card with no picture: a small line, a name, a line, and the one button. Today's card in the app. */
+function stepCard(p, { small, name, line, href, action }) {
+  const { c, bgcolor } = p;
+  return `<tr><td style="padding:30px 0 0">
+  <table ${TABLE} width="100%"${bgcolor("raised")}${c({ bg: "raised", bd: "line" }, "border-collapse:separate;border-width:1px;border-style:solid;border-radius:20px;")}>
+  <tr><td style="padding:16px">
+    <p${c({ fg: "quiet" }, `margin:0;font-family:${SANS};font-size:12px;line-height:18px;font-weight:600;`)}>${esc(small)}</p>
+    <p${c({ fg: "ink" }, `margin:4px 0 0;font-family:${SERIF};font-size:21px;line-height:27px;font-weight:600;`)}>${esc(name)}</p>
+    ${line ? `<p${c({ fg: "quiet" }, `margin:4px 0 0;font-family:${SANS};font-size:14px;line-height:20px;`)}>${esc(line)}</p>` : ""}
+    <table ${TABLE} width="100%"><tr><td height="16" style="height:16px;font-size:0;line-height:0">&nbsp;</td></tr></table>
+    ${button(p, { href, text: action })}
+  </td></tr>
+  </table>
+</td></tr>`;
+}
+
+// The first week: three emails, on days 1, 3 and 7 of a new account. Each
+// names one thing to do and shows where it stands among the three.
+const FIRST_WEEK = [
+  {
+    day: 1,
+    title: "Pray your first morning prayers",
+    sub: "About eight minutes, whenever your day begins.",
+    // today.prayNow.eyebrow, .morningFallback and .begin, and the card's own "8 min".
+    card: { small: "Pray now", name: "Morning prayers", line: "8 min", href: "https://purifyapp.net/prayers", action: "Begin" },
+  },
+  {
+    day: 3,
+    title: "Choose your calendar",
+    sub: "Every feast and fast in Purify follows the one you choose.",
+    // calendar.reckoning.new and .old.
+    card: { small: "The calendar", name: "New or Old", line: "New (Revised Julian) or Old (Julian), as your parish keeps it.", href: "https://purifyapp.net/calendar", action: "Choose your calendar" },
+  },
+  {
+    day: 7,
+    title: "Save your first verse",
+    sub: "A verse you save is kept for you to find again.",
+    // today.verseOfDay and common.save. The verse is the day's own from the app, word for word (here Luke 9:48, King James).
+    card: { small: "Verse of the Day", name: "Luke 9:48", line: "he that is least among you all, the same shall be great.", href: "https://purifyapp.net/", action: "Save" },
+  },
+];
+const FIRST_WEEK_WHY = "You are getting this because you opened a Purify account this week. There are three of these, on days 1, 3 and 7, and then they stop.";
+
+export function firstWeek(how, day = 1) {
+  const p = pen(how, PALETTES.Dark.wears);
+  const step = FIRST_WEEK.find((s) => s.day === day);
+  return shell(p, {
+    title: `Your first week: ${step.title.charAt(0).toLowerCase()}${step.title.slice(1)}`,
+    preheader: step.sub,
+    kind: `Day ${day} of 7`,
+    rows: [
+      opening(p, { eyebrow: "Your first week", title: step.title, sub: step.sub }),
+      stepCard(p, step.card),
+      label(p, "The three steps", 34),
+      days(p, FIRST_WEEK.map((s) => ({ weekday: "Day", date: String(s.day), name: s.title, heavy: s.day === day, mark: s.day === day ? "Today" : null }))).replace("padding:22px 0 0", "padding:2px 0 0"),
+      signOff(p),
+    ],
+    foot: readerFoot(p, "", FIRST_WEEK_WHY),
+  });
+}
+
+// Pick up where you left off: one personal line, and the way back to it. The
+// line is the reader's own last place ("You were reading Romans 8") or a
+// saint they saved whose feast is near ("St. Nicholas, whom you saved, is
+// kept on December 6"). Nothing else about the reader is said.
+const PICK_UP = {
+  title: "You were reading Romans 8",
+  sub: "It is where you left it.",
+  card: { small: "The Bible", name: "Romans 8", line: "Chapter 8 of 16", href: "https://purifyapp.net/bible/romans/8", action: "Continue reading" },
+};
+const PICK_UP_WHY = "You are getting this because you have not opened Purify in two weeks. It comes once now and once more after a month, and then stops.";
+
+export function pickUp(how) {
+  const p = pen(how, PALETTES.Dark.wears);
+  return shell(p, {
+    title: PICK_UP.title,
+    preheader: PICK_UP.sub,
+    kind: "Friday, November 13",
+    rows: [opening(p, { eyebrow: "Where you left off", title: PICK_UP.title, sub: PICK_UP.sub }), stepCard(p, PICK_UP.card), signOff(p)],
+    foot: readerFoot(p, "", PICK_UP_WHY),
+  });
+}
+
+// The fasting companion, the Nativity Fast first: an opening email on the
+// fast's first day and a check-in each week. The week's fast, day by day, in
+// the calendar's own words (lib/calendar/orthodox.ts fastingStatus, read on
+// 2026-11-13 for 15 to 28 November 2026). No counsel is given: what a reader
+// eats and how they keep the fast is their priest's to say, not an email's.
+const FISH = "Fish, wine, and oil allowed."; // calendar.fast.nativityWeekend.rule, for Saturday and Sunday
+const STRICT = "No meat, dairy, fish, wine, or oil."; // calendar.fast.nativityWedFri.rule
+const fastWeek = (first) =>
+  ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((weekday, i) => {
+    const strict = weekday === "Wed" || weekday === "Fri";
+    const weekend = weekday === "Sat" || weekday === "Sun";
+    // A weekday's rule in the calendar says fish and no more, so its name says it all.
+    return { weekday, date: String(first + i), name: strict ? "Strict fast" : "Fish allowed", dot: strict ? "strict" : "fish", under: strict ? STRICT : weekend ? FISH : "" };
+  });
+const FAST_WHY = "You are getting this because you asked for the fasting companion. It comes on a fast's first day and once a week while the fast lasts.";
+const FASTS = {
+  opening: { day: 1, first: 15, title: "The fast begins", sub: "Forty days to the Nativity of Christ, from 15 November to 24 December.", week: "This week's fast" },
+  week: { day: 8, first: 22, title: "The second week", sub: "Seven days in. Thirty-three to the feast.", week: "This week's fast" },
+};
+
+export function fastingCompanion(how, which = "opening") {
+  const p = pen(how, NIGHT_SKY);
+  const f = FASTS[which];
+  const n = String(f.day).padStart(2, "0");
+  const night = `<tr><td style="padding:24px 0 0">
+  <table ${TABLE} width="100%" class="dark-island" bgcolor="${NIGHT.ground}" style="border-collapse:separate;background-color:${NIGHT.ground};border:1px solid ${NIGHT.line};border-radius:22px"><tr><td height="110" align="center" valign="middle" style="height:110px;text-align:center;font-size:0;line-height:0">
+    <img src="img/nativity-night-${n}.png" width="558" alt="A night sky over a dark hill. The star stands above the horizon: day ${f.day} of 40." style="display:block;width:100%;height:auto;border:0;outline:none;border-radius:21px;font-family:${SANS};font-size:13px;line-height:20px;color:${NIGHT.words}">
+  </td></tr></table>
+</td></tr>`;
+  return shell(p, {
+    season: true,
+    title: `The Nativity Fast: ${f.title.charAt(0).toLowerCase()}${f.title.slice(1)}`,
+    preheader: f.sub,
+    kind: `Sunday, November ${f.first}`,
+    rows: [
+      night,
+      opening(p, { eyebrow: `Nativity Fast · day ${f.day} of 40`, title: f.title, sub: f.sub, top: 30 }),
+      label(p, f.week, 30),
+      days(p, fastWeek(f.first)).replace("padding:22px 0 0", "padding:2px 0 0"),
+      para(p, "A path for the fast: the Fathers, a day at a time.", 26),
+      linkRow(p, "https://purifyapp.net/reading/paths/nativity", "Open the path"),
+      stepCard(p, { small: "The calendar", name: "Every day of the fast", line: "Each day's fast, its feast and its saints.", href: "https://purifyapp.net/calendar", action: "Open the calendar" }),
+      signOff(p),
+    ],
+    foot: readerFoot(p, "Dates and fasting follow the new calendar.", FAST_WHY),
+  });
+}
+
 export const EMAILS = [
   { file: "reader.html", name: "The reader email", make: reader, season: false },
   { file: "reader-nativity-fast.html", name: "The reader email in the Nativity Fast", make: readerNativityFast, season: true },
   { file: "brief.html", name: "The owner's brief", make: brief, season: false },
+  // The retention emails. `light: false`: no light still is kept for it (its light is checked all the same).
+  { file: "first-week-1.html", name: "The first week, day 1", make: (how) => firstWeek(how, 1), season: false },
+  { file: "first-week-3.html", name: "The first week, day 3", make: (how) => firstWeek(how, 3), season: false, light: false },
+  { file: "first-week-7.html", name: "The first week, day 7", make: (how) => firstWeek(how, 7), season: false, light: false },
+  { file: "pick-up.html", name: "Pick up where you left off", make: pickUp, season: false },
+  { file: "fast-opening.html", name: "The fasting companion, its opening", make: (how) => fastingCompanion(how, "opening"), season: true },
+  { file: "fast-week.html", name: "The fasting companion, a week in", make: (how) => fastingCompanion(how, "week"), season: true, light: false },
 ];
 
 // ── The pictures ────────────────────────────────────────────────────────
@@ -749,7 +902,8 @@ async function pictures(b) {
   fs.copyFileSync(path.join(ROOT, "public/purify-cross-mark.png"), path.join(img, "cross.png"));
   fs.copyFileSync(path.join(ROOT, "public/saints/icons/paisius-velichkovsky.v3.jpg"), path.join(img, "paisius-velichkovsky.jpg"));
   await crossInInk(b, path.join(img, "cross-ink.png"));
-  await nightPicture(b, FAST_DAY, path.join(img, `nativity-night-${String(FAST_DAY).padStart(2, "0")}.png`));
+  // The night on the days an email here shows: the fast's first day, and a week in.
+  for (const day of [FAST_DAY, FASTS.week.day]) await nightPicture(b, day, path.join(img, `nativity-night-${String(day).padStart(2, "0")}.png`));
 }
 
 /** Each email as a mail client that honours the reader's scheme draws it, at a phone's width. */
@@ -768,7 +922,7 @@ async function shots(b) {
   for (const e of EMAILS) {
     const stem = e.file.replace(".html", "");
     await take(e.file, "dark", `${stem}.dark.png`);
-    await take(e.file, "light", `${stem}.light.png`);
+    if (e.light !== false) await take(e.file, "light", `${stem}.light.png`);
   }
   await take("reader-nativity-fast.html", "dark", "reader-nativity-fast.no-pictures.png", { blocked: true });
 }
@@ -797,5 +951,13 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   // The page alone, as an Artifact takes it, when a place for it is named.
   const to = process.argv.find((a) => a.startsWith("--artifact="));
   if (to) fs.writeFileSync(to.slice("--artifact=".length), page({ standalone: false, palettes: PALETTES, why }));
+  // The retention emails' own page, with their own reasons.
+  const { retentionPage } = await import("./page.mjs");
+  const kept = readme.slice(readme.indexOf("### Why the retention emails look as they do"));
+  const whyKept = kept.split("\n").filter((l) => l.startsWith("| ") && !l.startsWith("| The choice") && !l.startsWith("|---")).map((l) => l.slice(1, -1).split("|").map((c) => c.trim()));
+  fs.writeFileSync(path.join(HERE, "retention.html"), retentionPage({ standalone: true, palettes: PALETTES, why: whyKept }));
+  const toKept = process.argv.find((a) => a.startsWith("--artifact-retention="));
+  if (toKept) fs.writeFileSync(toKept.slice("--artifact-retention=".length), retentionPage({ standalone: false, palettes: PALETTES, why: whyKept }));
+  console.log("wrote retention.html");
   console.log("wrote index.html");
 }

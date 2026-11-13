@@ -17,7 +17,8 @@ Open `index.html` to see it. One version of each, no variants.
 | `brief.html` | The owner's brief, with three small charts drawn in the email itself. |
 | `img/` | The pictures the emails show. |
 | `shots/` | Each email as a mail client draws it, dark and light, for the page. |
-| `index.html` | The page that shows them. |
+| `first-week-*.html`, `pick-up.html`, `fast-*.html` | The retention emails: see "The retention emails" below. |
+| `index.html`, `retention.html` | The pages that show them. |
 | `build.mjs` | Writes all of the above. `page.mjs` is the page's own words. |
 | `check.mjs` | Holds all of it to the guardrails. |
 
@@ -85,6 +86,38 @@ The season is the same email with four things changed, each from the app.
 The star is the Octogram's eight points, never the four-point sparkle. The light around it is a soft pool, never rays.
 
 Later seasons take the same place: a picture from the app above the opening, one of the app's looks in the dark, the season's own words.
+
+## The retention emails
+
+Three kinds, six files, each one thing with one button, on the same look (his word, 2026-11-13: "perfect let's build and I say yes or no to the design. you must justify your designs"). See them in `retention.html`. The sending is the Retention emails chat's, behind a switch that stays off until his yes.
+
+| File | What it is | What the sender fills |
+|---|---|---|
+| `first-week-1.html`, `-3`, `-7` | The first week: "Pray your first morning prayers", "Choose your calendar", "Save your first verse". `firstWeek(how, day)` | Day 7's verse: the app's verse of that day, word for word. |
+| `pick-up.html` | Pick up where you left off. `pickUp(how)` | The one personal line as the title, and its card: the reader's last place, or a saint they saved whose feast is near. Nothing else about the reader. |
+| `fast-opening.html`, `fast-week.html` | The fasting companion, the Nativity Fast first: its opening and a week in. `fastingCompanion(how, which)` | The day of the fast, that day's night picture, the week's fast from `fastingStatus`, the count of days to the feast. |
+
+- **No urging.** No countdown, no streak, no "you are missing out". The calendar is the only urgency Purify uses (`docs/brand/voice.md`).
+- **No counsel.** The fasting companion says what the calendar says and nothing about how to keep the fast.
+- **Each foot says why the email came and when it stops**, and carries its own Unsubscribe.
+- **New words wait for his yes:** each title, the line under it, and each foot's sentence. Everything on a card is the app's own words (`today.prayNow.*`, `calendar.reckoning.*`, `today.verseOfDay`, `common.save`, `calendar.fast.*`).
+- **To confirm before the switch goes on:** that saving a verse is free for every reader (day 7 says a saved verse is kept), and the address each button opens.
+
+### Why the retention emails look as they do
+
+| The choice | Why | What it does for the reader, and for coming back |
+|---|---|---|
+| One thing, one button, in each email | An email that asks for three things gets none. The card and the button are Today's own in the app. | The reader knows the one step, and it is one tap away. |
+| The step is the title, in the reader's serif | The title is what is read in the inbox and at the top of the page. | The email is understood before it is opened. |
+| The first week shows all three steps, today's set heavier | A new reader should see that it is three small things and not a course. | The week has an end in sight, so the second and third emails are expected, not a surprise. |
+| The card uses the app's own words: "Pray now", "Morning prayers", "8 min", "Begin" | The email and the screen it opens say the same thing. | What is tapped in the email is recognised at once in the app. |
+| Pick up: the reader's own place is the title, and nothing else is said about them | One true, useful line is personal. More would feel watched. | The reader is handed back exactly what they were doing. |
+| Pick up is the shortest email Purify sends | Someone who has been away two weeks owes no reading. | It takes five seconds, which is what it has. |
+| The fasting companion wears the season: the night, the star higher each week | It is the app's own picture for the fast, and the reader email's. One fast, one look. | Each week's email shows the fast has moved, without a word of urging. |
+| The week's fast day by day, in the calendar's words, with its colour and its words | "What may I eat on Wednesday" is why this email is opened again in the week. Never colour alone. | It is useful every day of the week, so it is kept and returned to. |
+| No counsel in the fasting companion | How a fast is kept is a priest's to say. | The reader trusts it to say only what the calendar says. |
+| Each foot says why it came and when it stops | A reader who knows the end does not reach for Unsubscribe. | Three emails, or two, or one a week for forty days: said plainly. |
+| Phone first, dark first, a clean white where the screen is light | His words. | It reads like the app, in the hand. |
 
 ## Where every colour comes from
 

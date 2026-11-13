@@ -136,6 +136,67 @@ li{margin-top:8px}
 `;
 
 /** `standalone`: a whole document, for the repository. Otherwise the page alone, as an Artifact takes it. */
+const RETENTION = `
+<main>
+<header>
+  <p class="small">docs/brand/kit/email &middot; 13 November 2026</p>
+  <h1>Three emails that bring a reader back</h1>
+  <p class="lede">The first week, where you left off, and the fasting companion. Each is one thing with one button, on the same look. Yes or no to each is yours.</p>
+  <span class="rule"></span>
+</header>
+
+<section>
+  <h2>The first week</h2>
+  <p>Three emails for a new reader, on days 1, 3 and 7. Each names one thing to do and gives the one button that does it, on the app's own card in the app's own words. Under it, the three steps as a short leaf, with today's set heavier. Then they stop, and the foot says so.</p>
+  <div class="row">
+    ${shot("first-week-1.dark.png", "Day 1, dark", "The first email of the first week: the title Pray your first morning prayers, a card with Morning prayers, 8 min and the button Begin, and the three steps.")}
+    ${shot("first-week-1.light.png", "Day 1, light", "The same email on a light screen, clean white in the app's ink.")}
+    ${shot("first-week-3.dark.png", "Day 3", "The second email: Choose your calendar, with the card New or Old and its button.")}
+    ${shot("first-week-7.dark.png", "Day 7", "The third email: Save your first verse, with the Verse of the Day on its card and the button Save.")}
+  </div>
+</section>
+
+<section>
+  <h2>Pick up where you left off</h2>
+  <p>One personal line, as the title: the reader's own last place, or a saint they saved whose feast is near. One card, one button back to it. It says nothing else about the reader, and it is the shortest email Purify sends.</p>
+  <div class="row">
+    ${shot("pick-up.dark.png", "Dark", "The email Pick up where you left off: the title You were reading Romans 8, and a card with Romans 8, chapter 8 of 16, and the button Continue reading.")}
+    ${shot("pick-up.light.png", "Light", "The same email on a light screen.")}
+  </div>
+</section>
+
+<section>
+  <h2>The fasting companion</h2>
+  <p>For the Nativity Fast first. It opens on the fast's first day and comes once a week while the fast lasts. It wears the season: the night of the app's Nativity card, with the star higher each week. The week's fast is set day by day in the calendar's own words. It gives no counsel: how a reader keeps the fast is for their priest to say.</p>
+  <div class="row">
+    ${shot("fast-opening.dark.png", "The opening, dark", "The fasting companion's opening email: a night sky with the star just above the horizon, the title The fast begins, and each day of the week with its fast.")}
+    ${shot("fast-opening.light.png", "The opening, light", "The same email on a light screen: the night stays dark at the head of a clean white page.")}
+    ${shot("fast-week.dark.png", "A week in", "The weekly email: the star a little higher, the title The second week, and the week's fast day by day.")}
+  </div>
+</section>
+
+<section>
+  <h2>Why they look this way</h2>
+  <p>Each choice, its reason, and what it does for the reader and for the goal, which is that a reader comes back.</p>
+  __WHY__
+</section>
+
+<section>
+  <h2>What waits on your yes</h2>
+  <ul>
+    <li><strong>The designs</strong>, each of the three.</li>
+    <li><strong>The new words.</strong> The titles, the line under each, and each foot's sentence of why the email came are written for these emails. Everything on a card is the app's own words.</li>
+    <li><strong>Saving a verse.</strong> Day 7 says a saved verse is kept for the reader. That holds only if saving is free for every reader; the sending's chat confirms it before the switch goes on.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>The check</h2>
+  <p>Run with <code>node docs/brand/kit/check.mjs</code> on 13 November 2026. It passed: all six emails at 360, 390, 412 and 1032 wide, on the four dark palettes and the clean light, in Arabic's direction, the fast's two on Night sky as well. Each is under 20KB of HTML. No script, no parchment, nothing on the heritage list. Not yet seen in real Gmail, Apple Mail or Outlook.</p>
+</section>
+</main>
+`;
+
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 /** `why`: the rows of the README's own table of reasons, so the page and the README say one thing. */
@@ -143,6 +204,15 @@ export function page({ standalone, palettes, why = [] }) {
   const reasons = why.map(([choice, reason, reader]) => `<h3>${esc(choice)}</h3>\n  <p>${esc(reason)}</p>\n  <p class="for"><span class="small">For the reader</span>${esc(reader)}</p>`).join("\n  ");
   const head = `<title>Purify email look</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<style>${style(palettes.Dark.wears, palettes.Light.wears)}</style>`;
   const content = CONTENT.replace("__WHY__", reasons);
+  if (!standalone) return `${head}\n${content}`;
+  return `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n${head}\n</head>\n<body>${content}</body>\n</html>\n`;
+}
+
+/** The retention emails' page: the same style, their own stills and reasons. */
+export function retentionPage({ standalone, palettes, why = [] }) {
+  const reasons = why.map(([choice, reason, reader]) => `<h3>${esc(choice)}</h3>\n  <p>${esc(reason)}</p>\n  <p class="for"><span class="small">For the reader, and for coming back</span>${esc(reader)}</p>`).join("\n  ");
+  const head = `<title>Purify retention emails</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<style>${style(palettes.Dark.wears, palettes.Light.wears)}</style>`;
+  const content = RETENTION.replace("__WHY__", reasons);
   if (!standalone) return `${head}\n${content}`;
   return `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n${head}\n</head>\n<body>${content}</body>\n</html>\n`;
 }

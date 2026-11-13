@@ -107,7 +107,7 @@ try {
 
   // No parchment: no file here holds the app's Light palette's paper (CLAUDE.md, "No parchment in designs").
   const { PARCHMENT } = await import("./build.mjs");
-  const papers = ["index.html", ...EMAILS.map((e) => e.file)].filter((f) => PARCHMENT.some((hex) => fs.readFileSync(path.join(HERE, f), "utf8").toLowerCase().includes(hex)));
+  const papers = ["index.html", "retention.html", ...EMAILS.map((e) => e.file)].filter((f) => PARCHMENT.some((hex) => fs.readFileSync(path.join(HERE, f), "utf8").toLowerCase().includes(hex)));
   console.log(`  ${papers.length ? "FAIL" : "ok  "}  no parchment (${PARCHMENT.join(", ")}): ${papers.length ? papers.join(", ") : "in none of the emails, nor on the page"}`);
   ok = papers.length === 0 && ok;
 
