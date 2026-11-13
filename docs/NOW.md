@@ -26,6 +26,7 @@ Updated 2026-11-13 01:24 UTC.
 
 ## Waiting on him
 
+- A look at the 1.9 social cards (https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs); his yes clears the drop's `cards` piece (`node scripts/drop.mjs waits cards --clear`).
 - The public key for the re-check: given (2026-11-13 03:32 UTC, "yes read the key").
 - On the owner's desk plan: question 3 (a shop and sourcing chat after 1.9). Questions 1 (the sends, with a Hold) and 2 (the brief) are his yes (2026-11-13).
 - Walk the test build once it is cut. Then: accept the 1.9 note in Admin, set the drop day, and submit both builds after the phone walks. On release day: the Purify profile's status, and opening campaigns.
@@ -53,10 +54,10 @@ Updated 2026-11-13 01:24 UTC.
 | Admin 2 | session_01VuYTweFNHsJxnX7YJmTvEN | the gate: first the lifted-saints ruling into the tap walk, then the targeted re-check on the arbiter's word (baton `docs/handoffs/admin.md`); the admin panel when the owner's desk resumes |
 | Updates 3 | session_01VuYTwcy3Fbt9LcW3Qic77o | fixer: fails 4 (WordPopover's Close in Arabic) and 5 (the webs' place and date cut), from `docs/handoffs/updates-2.md`; then the admin link in `lib/billing/applyLifecycle.ts` |
 | Admin panel 3 | session_01VuYTwdp6mhe99XWbxc6bLH | the owner's desk, sections 2 and 3 (the sends on, with a Hold, by his word; the owner's brief at 7:30 his time, Monday's weekly); web only |
-| Design kit | session_01VuYTwe37MHhGgSEsQ13Lut | the kit landed (4a047c105: `docs/brand/kit/` tokens, pieces, an artifact and an email template, `check.mjs`; `docs/brand/design-kit.md`; a line in every role card; see https://claude.ai/artifact/RErhbgPLD29CXemE9pi4Ht). Last step: the kit as a claude.ai design system |
+| Design kit | session_01VuYTwe37MHhGgSEsQ13Lut | the kit landed (4a047c105, `docs/brand/kit/`, `docs/brand/design-kit.md`) and its claude.ai design system (https://claude.ai/artifact/PJnQQWqgVybxZKzy2H3tt5); now revising both for his two rules, phone first and no parchment |
 | Fable 5.2: email designs | session_01VuYTwd6RkVo5JByCRXYJFG | one email look on the design kit (the reader email and the owner's brief), then its Nativity Fast season; `docs/brand/kit/email/` |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
-| Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | design and adverts, by his word: now the 1.9 social cards, one set, in the store pictures' look (docs/plans/v1.9/cards/) |
+| Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | the 1.9 social cards are done (a736b9af: six cards, 1080 by 1920, stills in `docs/plans/v1.9/store/cards/stills/`, see https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs); waits on his look before the drop's `cards` piece is cleared |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
 
  Archived on 2026-11-13, their jobs done: Release prep (`docs/1.9-build/MERGE-DAY.md`, 631d04e67), the Saints chat (St. Xenia's profile), Updates (fails 1 and 6), Admin (the final check, recorded in `docs/1.9-build/notes/gate-run-1.md`; baton `docs/handoffs/admin.md`; probes in `scripts/gate/`), Updates 2 (pushed e0319e71c, d70a01deb, cb114387b and e88068504; baton `docs/handoffs/updates-2.md`), Tooling, Admin panel 2 (baton `docs/handoffs/admin-panel.md`) and Product images. His PC's clone was left on `main` with one unpushed commit (2026-11-11): nothing is pushed from it.
