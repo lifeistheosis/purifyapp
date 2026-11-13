@@ -1,5 +1,10 @@
 /* The Purify design kit: pieces for documents.
  *
+ * Phone first (the owner, 2026-11-13: "the design must be optimized for
+ * mobile"). Every piece is drawn at 360 to 412 wide first, in the app's own
+ * phone sizes, and widened from 640px up. No piece leaves an orphan or an
+ * empty half-row at any width.
+ *
  * Built only from tokens.css, the way the app builds its own screens. The
  * guardrails of CLAUDE.md hold: no light rays, no side stripes (a note
  * stands on its own type), no sparkle star, pills only for buttons, every
@@ -27,7 +32,9 @@ body {
 .k-page {
   max-width: 760px;
   margin-inline: auto;
-  padding: var(--k-space-7) var(--k-space-4) var(--k-space-8);
+  padding-block: var(--k-space-6) var(--k-space-8);
+  padding-left: max(var(--k-space-4), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--k-space-4), env(safe-area-inset-right, 0px));
 }
 
 .k-page p { margin-block: 0 var(--k-space-4); max-width: var(--k-measure); }
@@ -40,7 +47,7 @@ body {
 }
 
 /* ── Title ─────────────────────────────────────────────────────────── */
-.k-title { margin-block-end: var(--k-space-7); }
+.k-title { margin-block-end: var(--k-space-6); }
 
 .k-mark { display: block; color: var(--k-accent); margin-block-end: var(--k-space-5); }
 
@@ -59,8 +66,9 @@ body {
   margin: 0 0 var(--k-space-3);
   font-family: var(--k-font-serif);
   font-weight: 700;
-  font-size: clamp(var(--k-text-heading), 6vw, var(--k-text-display));
-  line-height: 1.12;
+  /* The app's phone title is text-title (28px), md:text-display on wide screens. */
+  font-size: clamp(var(--k-text-title), 5vw + 10px, var(--k-text-display));
+  line-height: 1.15;
   letter-spacing: -0.01em;
   color: var(--k-ink);
   text-wrap: balance;
@@ -68,7 +76,7 @@ body {
 
 .k-lede {
   margin: 0;
-  font-size: var(--k-text-lede);
+  font-size: clamp(var(--k-text-body), 0.5vw + 15px, var(--k-text-lede));
   line-height: 1.5;
   color: var(--k-ink-2);
   max-width: var(--k-measure);
@@ -77,13 +85,14 @@ body {
 .k-meta { margin-block-start: var(--k-space-4); font-size: var(--k-text-detail); color: var(--k-ink-3); }
 
 /* ── Section ───────────────────────────────────────────────────────── */
-.k-section { margin-block: var(--k-space-7); }
+.k-section { margin-block: clamp(var(--k-space-6), 4vw + 16px, var(--k-space-7)); }
 
 .k-section > h2 {
   margin: 0 0 var(--k-space-4);
   font-family: var(--k-font-serif);
   font-weight: 700;
-  font-size: var(--k-text-title);
+  /* The app's phone section is text-title-sm (22px), text-title on wide screens. */
+  font-size: clamp(var(--k-text-title-sm), 1.5vw + 16px, var(--k-text-title));
   line-height: 1.2;
   color: var(--k-ink);
 }
@@ -92,7 +101,7 @@ body {
   margin: var(--k-space-6) 0 var(--k-space-3);
   font-family: var(--k-font-serif);
   font-weight: 700;
-  font-size: var(--k-text-title-sm);
+  font-size: clamp(var(--k-text-lede), 0.75vw + 16px, var(--k-text-title-sm));
   line-height: 1.25;
   color: var(--k-ink);
 }
@@ -101,33 +110,63 @@ body {
 .k-rule { height: 0; margin-block: var(--k-space-7); border: 0; border-block-start: 1px solid var(--k-line); }
 
 /* ── Figures (a headline number, not a chart) ──────────────────────── */
+/* On a phone, one card of rows: the label and its change at the start, the
+   number at the end. From 640px, one row of tiles, as many columns as there
+   are figures (three at most), so no figure is ever left alone on a row. */
 .k-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: var(--k-space-3);
   margin-block: var(--k-space-5);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-radius-lg);
+  background-color: var(--k-card);
 }
 
 .k-stat {
-  padding: var(--k-space-4);
-  border-radius: var(--k-radius-lg);
-  background-color: var(--k-card);
-  border: 1px solid var(--k-line);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--k-space-3);
+  align-items: center;
+  padding: var(--k-space-3) var(--k-space-4);
 }
 
+.k-stat + .k-stat { border-block-start: 1px solid var(--k-line); }
+
+.k-stat-label { grid-column: 1; grid-row: 1; font-size: var(--k-text-ui); font-weight: 600; color: var(--k-ink); }
+
+.k-stat-change { grid-column: 1; grid-row: 2; margin-block-start: 2px; font-size: var(--k-text-detail); color: var(--k-ink-3); }
+
 .k-stat-value {
-  display: block;
+  grid-column: 2;
+  grid-row: 1 / span 2;
   font-family: var(--k-font-serif);
   font-weight: 700;
-  font-size: var(--k-text-title);
+  font-size: var(--k-text-title-sm);
   line-height: 1.1;
   color: var(--k-ink);
   font-variant-numeric: tabular-nums;
 }
 
-.k-stat-label { display: block; margin-block-start: var(--k-space-1); font-size: var(--k-text-detail); color: var(--k-ink-3); }
-
-.k-stat-change { display: block; margin-block-start: var(--k-space-2); font-size: var(--k-text-caption); color: var(--k-ink-2); }
+@media (min-width: 640px) {
+  .k-stats {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: var(--k-space-3);
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+  }
+  .k-stat {
+    display: flex;
+    flex-direction: column;
+    padding: var(--k-space-4);
+    border: 1px solid var(--k-line);
+    border-radius: var(--k-radius-lg);
+    background-color: var(--k-card);
+  }
+  .k-stat-value { order: -1; margin-block-end: var(--k-space-1); font-size: var(--k-text-title); }
+  .k-stat-label { font-weight: 400; font-size: var(--k-text-detail); color: var(--k-ink-3); }
+  .k-stat-change { margin-block-start: var(--k-space-2); font-size: var(--k-text-caption); color: var(--k-ink-2); }
+}
 
 /* ── Table ─────────────────────────────────────────────────────────── */
 .k-table-wrap { overflow-x: auto; margin-block: var(--k-space-5); }
@@ -175,7 +214,7 @@ body {
    more, a table of the figures beside it. Hues only for money's sources. */
 .k-chart { margin: var(--k-space-5) 0; }
 
-.k-chart svg { display: block; width: 100%; max-width: 560px; height: auto; overflow: visible; color: var(--k-ink); }
+.k-chart svg { display: block; width: 100%; max-width: 480px; height: auto; overflow: visible; color: var(--k-ink); }
 
 .k-chart .k-grid { stroke: var(--k-grid); stroke-width: 1; }
 
@@ -228,13 +267,13 @@ body {
 /* ── Note ──────────────────────────────────────────────────────────── */
 /* It stands on its own type: a label and the serif, set in from the
    reading line. No rule beside it, no stripe, no box (CLAUDE.md). */
-.k-note { margin: var(--k-space-6) 0; padding-inline: var(--k-space-5); max-width: var(--k-measure); }
+.k-note { margin: var(--k-space-6) 0; padding-inline: var(--k-space-4); max-width: var(--k-measure); }
 
 .k-note p {
   margin: 0;
   font-family: var(--k-font-serif);
   font-style: italic;
-  font-size: var(--k-text-lede);
+  font-size: clamp(var(--k-text-body), 0.5vw + 15px, var(--k-text-lede));
   line-height: 1.5;
   color: var(--k-ink-2);
 }
@@ -243,18 +282,20 @@ body {
 
 /* ── Card ──────────────────────────────────────────────────────────── */
 /* The app's card: rounded-lg, border-paper/10, bg-night-soft. */
-.k-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--k-space-3); margin-block: var(--k-space-5); }
+/* Stacked on a phone; from 640px one row, three cards at most (more go in a second .k-cards). */
+.k-cards { display: grid; gap: var(--k-space-3); margin-block: var(--k-space-5); }
+@media (min-width: 640px) { .k-cards { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); } }
 
 .k-card {
-  padding: var(--k-space-5);
+  padding: var(--k-space-4) var(--k-space-5);
   border-radius: var(--k-radius-lg);
   background-color: var(--k-card);
   border: 1px solid var(--k-line);
 }
 
-.k-card h3 { margin: 0 0 var(--k-space-2); font-family: var(--k-font-serif); font-weight: 700; font-size: var(--k-text-title-sm); line-height: 1.25; color: var(--k-ink); }
+.k-card h3 { margin: 0 0 var(--k-space-1); font-family: var(--k-font-serif); font-weight: 700; font-size: clamp(var(--k-text-lede), 0.75vw + 16px, var(--k-text-title-sm)); line-height: 1.25; color: var(--k-ink); }
 
-.k-card p { margin: 0; font-size: var(--k-text-ui); line-height: 1.55; color: var(--k-ink-2); }
+.k-card p { margin: 0; font-size: var(--k-text-ui); max-width: none; line-height: 1.55; color: var(--k-ink-2); }
 
 /* ── Button ────────────────────────────────────────────────────────── */
 /* The app's primary: rounded-pill bg-paper text-night text-ui font-semibold

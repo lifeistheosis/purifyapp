@@ -4,6 +4,16 @@ His word, 2026-11-12 (`docs/1.9-build/BRAINSTORM.md`): "I want it to be the stan
 
 So everything a chat makes for people to look at starts from this kit, never from a generic template: artifacts, reports, briefs, drop kits, plans shown as pages, and emails. The kit is the app's own look, taken from its source. Nothing in it is new.
 
+## Rule one: phone first
+
+His word, 2026-11-13: "the design must be optimized for mobile." Everything is designed at phone width first (360 to 412), then widened. Most of what we make is opened on a phone, his first of all.
+
+- Headings take the app's phone sizes: a title at 28px (`text-title`) and a section at 22px (`text-title-sm`), rising with clamp() to 48px and 28px on wide screens.
+- No orphan and no empty half-row at any width. Figures are one card of rows on a phone and one row of tiles from 640px; cards stack on a phone and stand in one row from 640px, three at most.
+- A chart fits 360 wide with every label and value whole, and room above its highest mark.
+- An email is one column, 100% wide up to 600px, body text 16px or more, every tap target 44px or more.
+- The check renders every template at 360, 390, 412 and 1032, and fails on a sideways scroll. Look at a still at 390 yourself before sending.
+
 ## What is in `docs/brand/kit/`
 
 | File | What it is |
@@ -12,7 +22,7 @@ So everything a chat makes for people to look at starts from this kit, never fro
 | `pieces.css` | The pieces: title, section, figures, table, chart, figure, note, card, button, footer. Built only from the tokens. |
 | `artifact-template.html` | One self-contained HTML page holding the tokens and pieces, with every piece shown once. Start an artifact or a report from a copy of it. |
 | `email-template.html` | The email: tables, inline styles, no scripts, no SVG. Light in the app's Light palette, dark in its Dark palette. Start every email from a copy of it. |
-| `check.mjs` | Renders both templates at phone size and holds them to checkMock on the five palettes. `--write` refreshes the artifact template from the two CSS files. |
+| `check.mjs` | Renders both templates at 360, 390, 412 and 1032 and holds them to checkMock on the five palettes at each width, and to no sideways scroll. `--write` refreshes the artifact template from the two CSS files. |
 
 ## On claude.ai
 
@@ -30,19 +40,19 @@ The kit is also a claude.ai design system, so decks and designs start from Purif
 1. Copy the template you need into your own folder. Keep its `<style>` block whole; delete the pieces you do not use from the body, never from the style.
 2. Write the words in the house voice (`docs/brand/voice.md`): sentence-case headings, no em dashes, plain sample words, figures that say "not read" when they were not read.
 3. Use the pieces as they are. A new need is a new piece in `pieces.css`, built from tokens, added here and passed by the check, not a one-off style in your page.
-4. Check it: open it at phone width on all five palettes with checkMock (the way `check.mjs` does), and look at it. Then send it.
+4. Check it: at 360, 390, 412 and 1032 on all five palettes with checkMock (the way `check.mjs` does), and look at a still at 390. Then send it.
 5. For an artifact on claude.ai, publish the copied page. It follows the viewer's system (Dark unless the system is light), and `data-theme` or `data-reading-mode` on `<html>` choose a palette.
 
 ## The pieces, in one line each
 
-- **Title:** the cross mark in the accent, an eyebrow, the serif title (Lora 700), one lede, the date.
-- **Section:** a serif heading, body in DM Sans at 17px, a 68-character line. A hairline between sections, never down an edge.
-- **Figures:** a headline number on a card, with its label and its change in words. One number needs no chart.
+- **Title:** the cross mark in the accent, an eyebrow, the serif title (Lora 700, 28px on a phone to 48px wide), one lede, the date.
+- **Section:** a serif heading (22px on a phone to 28px wide), body in DM Sans at 17px, a 68-character line. A hairline between sections, never down an edge.
+- **Figures:** on a phone, one card of rows (the label and its change at the start, the number at the end); from 640px, one row of tiles, three at most. One number needs no chart. In email, three compact tiles in one row at every width.
 - **Table:** eyebrow headings, hairlines between rows, numbers to the end and in tabular figures, a caption.
 - **Chart:** the app's own method (`components/admin/charts.tsx`): one ink, a recessive grid, the period before as a dashed line, a legend for two series or more, the figures in a table beside it, a title in every bar for hover. Hues only on money's chart: the shop, Purify Plus and the EIKON Box, as `admin-theme.css` sets them, checked with the dataviz validator. In email, columns are table cells: one series, its heading as its name.
 - **Figure:** a picture from the app on the well, rounded, with a caption that names where it comes from.
 - **Note:** a label and the serif in italic, set in from the line. It stands on its own type: no rule beside it, no box.
-- **Card:** the app's card (`rounded-lg border-paper/10 bg-night-soft`): a serif title and one line.
+- **Card:** the app's card (`rounded-lg border-paper/10 bg-night-soft`): a serif title and one line. Stacked on a phone, one row of three at most from 640px.
 - **Button:** the app's primary (a pill in the ink, the ground's colour for its words) and a quiet one in a hairline. At least 44px. One primary at most.
 
 ## The rules it keeps
@@ -60,9 +70,9 @@ The accent the app calls "gold" (`--color-gold`) is a glowing white on the dark 
 ## Checking
 
 ```
-node docs/brand/kit/check.mjs                # both templates, five palettes
+node docs/brand/kit/check.mjs                # both templates, five palettes, 360 390 412 1032
 node docs/brand/kit/check.mjs --write        # after a change to tokens.css or pieces.css
-node docs/brand/kit/check.mjs --shots <dir>  # and a still of each palette
+node docs/brand/kit/check.mjs --shots <dir>  # and a still of each palette at 390
 ```
 
 It needs Playwright (`npm ci`, or the session's own). It fails when either template fails a checkMock rule, and when the artifact template no longer holds the two CSS files as written. The money key's two hues are allowed by name: they are the same on both themes in the app's admin too.

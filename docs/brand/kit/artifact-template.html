@@ -181,6 +181,11 @@
 
 /* The Purify design kit: pieces for documents.
  *
+ * Phone first (the owner, 2026-11-13: "the design must be optimized for
+ * mobile"). Every piece is drawn at 360 to 412 wide first, in the app's own
+ * phone sizes, and widened from 640px up. No piece leaves an orphan or an
+ * empty half-row at any width.
+ *
  * Built only from tokens.css, the way the app builds its own screens. The
  * guardrails of CLAUDE.md hold: no light rays, no side stripes (a note
  * stands on its own type), no sparkle star, pills only for buttons, every
@@ -208,7 +213,9 @@ body {
 .k-page {
   max-width: 760px;
   margin-inline: auto;
-  padding: var(--k-space-7) var(--k-space-4) var(--k-space-8);
+  padding-block: var(--k-space-6) var(--k-space-8);
+  padding-left: max(var(--k-space-4), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--k-space-4), env(safe-area-inset-right, 0px));
 }
 
 .k-page p { margin-block: 0 var(--k-space-4); max-width: var(--k-measure); }
@@ -221,7 +228,7 @@ body {
 }
 
 /* ── Title ─────────────────────────────────────────────────────────── */
-.k-title { margin-block-end: var(--k-space-7); }
+.k-title { margin-block-end: var(--k-space-6); }
 
 .k-mark { display: block; color: var(--k-accent); margin-block-end: var(--k-space-5); }
 
@@ -240,8 +247,9 @@ body {
   margin: 0 0 var(--k-space-3);
   font-family: var(--k-font-serif);
   font-weight: 700;
-  font-size: clamp(var(--k-text-heading), 6vw, var(--k-text-display));
-  line-height: 1.12;
+  /* The app's phone title is text-title (28px), md:text-display on wide screens. */
+  font-size: clamp(var(--k-text-title), 5vw + 10px, var(--k-text-display));
+  line-height: 1.15;
   letter-spacing: -0.01em;
   color: var(--k-ink);
   text-wrap: balance;
@@ -249,7 +257,7 @@ body {
 
 .k-lede {
   margin: 0;
-  font-size: var(--k-text-lede);
+  font-size: clamp(var(--k-text-body), 0.5vw + 15px, var(--k-text-lede));
   line-height: 1.5;
   color: var(--k-ink-2);
   max-width: var(--k-measure);
@@ -258,13 +266,14 @@ body {
 .k-meta { margin-block-start: var(--k-space-4); font-size: var(--k-text-detail); color: var(--k-ink-3); }
 
 /* ── Section ───────────────────────────────────────────────────────── */
-.k-section { margin-block: var(--k-space-7); }
+.k-section { margin-block: clamp(var(--k-space-6), 4vw + 16px, var(--k-space-7)); }
 
 .k-section > h2 {
   margin: 0 0 var(--k-space-4);
   font-family: var(--k-font-serif);
   font-weight: 700;
-  font-size: var(--k-text-title);
+  /* The app's phone section is text-title-sm (22px), text-title on wide screens. */
+  font-size: clamp(var(--k-text-title-sm), 1.5vw + 16px, var(--k-text-title));
   line-height: 1.2;
   color: var(--k-ink);
 }
@@ -273,7 +282,7 @@ body {
   margin: var(--k-space-6) 0 var(--k-space-3);
   font-family: var(--k-font-serif);
   font-weight: 700;
-  font-size: var(--k-text-title-sm);
+  font-size: clamp(var(--k-text-lede), 0.75vw + 16px, var(--k-text-title-sm));
   line-height: 1.25;
   color: var(--k-ink);
 }
@@ -282,33 +291,63 @@ body {
 .k-rule { height: 0; margin-block: var(--k-space-7); border: 0; border-block-start: 1px solid var(--k-line); }
 
 /* ── Figures (a headline number, not a chart) ──────────────────────── */
+/* On a phone, one card of rows: the label and its change at the start, the
+   number at the end. From 640px, one row of tiles, as many columns as there
+   are figures (three at most), so no figure is ever left alone on a row. */
 .k-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: var(--k-space-3);
   margin-block: var(--k-space-5);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-radius-lg);
+  background-color: var(--k-card);
 }
 
 .k-stat {
-  padding: var(--k-space-4);
-  border-radius: var(--k-radius-lg);
-  background-color: var(--k-card);
-  border: 1px solid var(--k-line);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--k-space-3);
+  align-items: center;
+  padding: var(--k-space-3) var(--k-space-4);
 }
 
+.k-stat + .k-stat { border-block-start: 1px solid var(--k-line); }
+
+.k-stat-label { grid-column: 1; grid-row: 1; font-size: var(--k-text-ui); font-weight: 600; color: var(--k-ink); }
+
+.k-stat-change { grid-column: 1; grid-row: 2; margin-block-start: 2px; font-size: var(--k-text-detail); color: var(--k-ink-3); }
+
 .k-stat-value {
-  display: block;
+  grid-column: 2;
+  grid-row: 1 / span 2;
   font-family: var(--k-font-serif);
   font-weight: 700;
-  font-size: var(--k-text-title);
+  font-size: var(--k-text-title-sm);
   line-height: 1.1;
   color: var(--k-ink);
   font-variant-numeric: tabular-nums;
 }
 
-.k-stat-label { display: block; margin-block-start: var(--k-space-1); font-size: var(--k-text-detail); color: var(--k-ink-3); }
-
-.k-stat-change { display: block; margin-block-start: var(--k-space-2); font-size: var(--k-text-caption); color: var(--k-ink-2); }
+@media (min-width: 640px) {
+  .k-stats {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: var(--k-space-3);
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+  }
+  .k-stat {
+    display: flex;
+    flex-direction: column;
+    padding: var(--k-space-4);
+    border: 1px solid var(--k-line);
+    border-radius: var(--k-radius-lg);
+    background-color: var(--k-card);
+  }
+  .k-stat-value { order: -1; margin-block-end: var(--k-space-1); font-size: var(--k-text-title); }
+  .k-stat-label { font-weight: 400; font-size: var(--k-text-detail); color: var(--k-ink-3); }
+  .k-stat-change { margin-block-start: var(--k-space-2); font-size: var(--k-text-caption); color: var(--k-ink-2); }
+}
 
 /* ── Table ─────────────────────────────────────────────────────────── */
 .k-table-wrap { overflow-x: auto; margin-block: var(--k-space-5); }
@@ -356,7 +395,7 @@ body {
    more, a table of the figures beside it. Hues only for money's sources. */
 .k-chart { margin: var(--k-space-5) 0; }
 
-.k-chart svg { display: block; width: 100%; max-width: 560px; height: auto; overflow: visible; color: var(--k-ink); }
+.k-chart svg { display: block; width: 100%; max-width: 480px; height: auto; overflow: visible; color: var(--k-ink); }
 
 .k-chart .k-grid { stroke: var(--k-grid); stroke-width: 1; }
 
@@ -409,13 +448,13 @@ body {
 /* ── Note ──────────────────────────────────────────────────────────── */
 /* It stands on its own type: a label and the serif, set in from the
    reading line. No rule beside it, no stripe, no box (CLAUDE.md). */
-.k-note { margin: var(--k-space-6) 0; padding-inline: var(--k-space-5); max-width: var(--k-measure); }
+.k-note { margin: var(--k-space-6) 0; padding-inline: var(--k-space-4); max-width: var(--k-measure); }
 
 .k-note p {
   margin: 0;
   font-family: var(--k-font-serif);
   font-style: italic;
-  font-size: var(--k-text-lede);
+  font-size: clamp(var(--k-text-body), 0.5vw + 15px, var(--k-text-lede));
   line-height: 1.5;
   color: var(--k-ink-2);
 }
@@ -424,18 +463,20 @@ body {
 
 /* ── Card ──────────────────────────────────────────────────────────── */
 /* The app's card: rounded-lg, border-paper/10, bg-night-soft. */
-.k-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--k-space-3); margin-block: var(--k-space-5); }
+/* Stacked on a phone; from 640px one row, three cards at most (more go in a second .k-cards). */
+.k-cards { display: grid; gap: var(--k-space-3); margin-block: var(--k-space-5); }
+@media (min-width: 640px) { .k-cards { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); } }
 
 .k-card {
-  padding: var(--k-space-5);
+  padding: var(--k-space-4) var(--k-space-5);
   border-radius: var(--k-radius-lg);
   background-color: var(--k-card);
   border: 1px solid var(--k-line);
 }
 
-.k-card h3 { margin: 0 0 var(--k-space-2); font-family: var(--k-font-serif); font-weight: 700; font-size: var(--k-text-title-sm); line-height: 1.25; color: var(--k-ink); }
+.k-card h3 { margin: 0 0 var(--k-space-1); font-family: var(--k-font-serif); font-weight: 700; font-size: clamp(var(--k-text-lede), 0.75vw + 16px, var(--k-text-title-sm)); line-height: 1.25; color: var(--k-ink); }
 
-.k-card p { margin: 0; font-size: var(--k-text-ui); line-height: 1.55; color: var(--k-ink-2); }
+.k-card p { margin: 0; font-size: var(--k-text-ui); max-width: none; line-height: 1.55; color: var(--k-ink-2); }
 
 /* ── Button ────────────────────────────────────────────────────────── */
 /* The app's primary: rounded-pill bg-paper text-night text-ui font-semibold
@@ -517,28 +558,28 @@ body {
         <li><span class="k-key" aria-hidden="true"></span>This week</li>
         <li><span class="k-key k-key-line" aria-hidden="true"></span>The week before</li>
       </ul>
-      <svg viewBox="0 0 480 226" role="img" aria-labelledby="c1t">
+      <svg viewBox="0 0 400 244" role="img" aria-labelledby="c1t">
       <title id="c1t">Readers a day: this week as columns, the week before as a dashed line</title>
-      <line class="k-grid" x1="46" x2="476" y1="196" y2="196"/><text class="k-axis" x="38" y="200" text-anchor="end">0</text>
-      <line class="k-grid" x1="46" x2="476" y1="136" y2="136"/><text class="k-axis" x="38" y="140" text-anchor="end">200</text>
-      <line class="k-grid" x1="46" x2="476" y1="76" y2="76"/><text class="k-axis" x="38" y="80" text-anchor="end">400</text>
-      <line class="k-grid" x1="46" x2="476" y1="16" y2="16"/><text class="k-axis" x="38" y="20" text-anchor="end">600</text>
-      <path class="k-bar" d="M61.7 196V76.4a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Mon: 412 readers, 380 the week before</title></path>
-      <text class="k-axis" x="76.7" y="218" text-anchor="middle">Mon</text>
-      <path class="k-bar" d="M123.1 196V80.6a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Tue: 398 readers, 371 the week before</title></path>
-      <text class="k-axis" x="138.1" y="218" text-anchor="middle">Tue</text>
-      <path class="k-bar" d="M184.6 196V63.5a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Wed: 455 readers, 402 the week before</title></path>
-      <text class="k-axis" x="199.6" y="218" text-anchor="middle">Wed</text>
-      <path class="k-bar" d="M246 196V71.0a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Thu: 430 readers, 415 the week before</title></path>
-      <text class="k-axis" x="261.0" y="218" text-anchor="middle">Thu</text>
-      <path class="k-bar" d="M307.4 196V58.7a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Fri: 471 readers, 433 the week before</title></path>
-      <text class="k-axis" x="322.4" y="218" text-anchor="middle">Fri</text>
-      <path class="k-bar" d="M368.9 196V44.0a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Sat: 520 readers, 470 the week before</title></path>
-      <text class="k-axis" x="383.9" y="218" text-anchor="middle">Sat</text>
-      <path class="k-bar" d="M430.3 196V24.2a4 4 0 0 1 4 -4h22a4 4 0 0 1 4 4V196Z"><title>Sun: 586 readers, 512 the week before</title></path>
-      <text class="k-axis" x="445.3" y="218" text-anchor="middle">Sun</text>
-      <polyline class="k-before" points="76.7,82 138.1,84.7 199.6,75.4 261.0,71.5 322.4,66.1 383.9,55 445.3,42.4"/>
-      <text class="k-label" x="445.3" y="10.2" text-anchor="middle">586</text>
+      <line class="k-grid" x1="46" x2="396" y1="208" y2="208"/><text class="k-axis" x="38" y="212" text-anchor="end">0</text>
+      <line class="k-grid" x1="46" x2="396" y1="150.7" y2="150.7"/><text class="k-axis" x="38" y="154.7" text-anchor="end">200</text>
+      <line class="k-grid" x1="46" x2="396" y1="93.3" y2="93.3"/><text class="k-axis" x="38" y="97.3" text-anchor="end">400</text>
+      <line class="k-grid" x1="46" x2="396" y1="36" y2="36"/><text class="k-axis" x="38" y="40" text-anchor="end">600</text>
+      <path class="k-bar" d="M57 208V93.9a4 4 0 0 1 4 -4h20a4 4 0 0 1 4 4V208Z"><title>Mon: 412 readers, 380 the week before</title></path>
+      <text class="k-axis" x="71.0" y="232" text-anchor="middle">Mon</text>
+      <path class="k-bar" d="M107 208V97.9a4 4 0 0 1 4 -4h20a4 4 0 0 1 4 4V208Z"><title>Tue: 398 readers, 371 the week before</title></path>
+      <text class="k-axis" x="121.0" y="232" text-anchor="middle">Tue</text>
+      <path class="k-bar" d="M157 208V81.6a4 4 0 0 1 4 -4h20a4 4 0 0 1 4 4V208Z"><title>Wed: 455 readers, 402 the week before</title></path>
+      <text class="k-axis" x="171.0" y="232" text-anchor="middle">Wed</text>
+      <path class="k-bar" d="M207 208V88.7a4 4 0 0 1 4 -4h20a4 4 0 0 1 4 4V208Z"><title>Thu: 430 readers, 415 the week before</title></path>
+      <text class="k-axis" x="221.0" y="232" text-anchor="middle">Thu</text>
+      <path class="k-bar" d="M257 208V77.0a4 4 0 0 1 4 -4h20a4 4 0 0 1 4 4V208Z"><title>Fri: 471 readers, 433 the week before</title></path>
+      <text class="k-axis" x="271.0" y="232" text-anchor="middle">Fri</text>
+      <path class="k-bar" d="M307 208V62.9a4 4 0 0 1 4 -4h20a4 4 0 0 1 4 4V208Z"><title>Sat: 520 readers, 470 the week before</title></path>
+      <text class="k-axis" x="321.0" y="232" text-anchor="middle">Sat</text>
+      <path class="k-bar" d="M357 208V44.0a4 4 0 0 1 4 -4h20a4 4 0 0 1 4 4V208Z"><title>Sun: 586 readers, 512 the week before</title></path>
+      <text class="k-axis" x="371.0" y="232" text-anchor="middle">Sun</text>
+      <polyline class="k-before" points="71.0,99.1 121.0,101.6 171.0,92.8 221.0,89 271.0,83.9 321.0,73.3 371.0,61.2"/>
+      <text class="k-label" x="371.0" y="30.0" text-anchor="middle">586</text>
       </svg>
     </figure>
     <div class="k-table-wrap">
@@ -567,26 +608,26 @@ body {
         <li><span class="k-key k-key-plus" aria-hidden="true" data-mock-allow="palette" data-mock-why="the hue of one of money&#39;s sources, the same on both themes as app/admin/admin-theme.css sets it (227-228, 825-826)"></span>Purify Plus, $605</li>
         <li><span class="k-key k-key-box" aria-hidden="true" data-mock-allow="palette" data-mock-why="the hue of one of money&#39;s sources, the same on both themes as app/admin/admin-theme.css sets it (227-228, 825-826)"></span>The EIKON Box, $130</li>
       </ul>
-      <svg viewBox="0 0 480 226" role="img" aria-labelledby="c2t">
+      <svg viewBox="0 0 400 244" role="img" aria-labelledby="c2t">
       <title id="c2t">Money in a week by source: the shop, Purify Plus and the EIKON Box</title>
-      <line class="k-grid" x1="46" x2="476" y1="196" y2="196"/><text class="k-axis" x="38" y="200" text-anchor="end">$0</text>
-      <line class="k-grid" x1="46" x2="476" y1="136" y2="136"/><text class="k-axis" x="38" y="140" text-anchor="end">$200</text>
-      <line class="k-grid" x1="46" x2="476" y1="76" y2="76"/><text class="k-axis" x="38" y="80" text-anchor="end">$400</text>
-      <line class="k-grid" x1="46" x2="476" y1="16" y2="16"/><text class="k-axis" x="38" y="20" text-anchor="end">$600</text>
-      <path class="k-shop" d="M71.8 196V130h56V196Z"><title>Oct 19, the shop: $220</title></path>
-      <path class="k-plus" d="M71.8 128V92.0a4 4 0 0 1 4 -4h48a4 4 0 0 1 4 4V128Z"><title>Oct 19, Purify Plus: $140</title></path>
-      <text class="k-axis" x="99.8" y="218" text-anchor="middle">Oct 19</text>
-      <path class="k-shop" d="M179.3 196V142h56V196Z"><title>Oct 26, the shop: $180</title></path>
-      <path class="k-plus" d="M179.3 140V97h56V140Z"><title>Oct 26, Purify Plus: $150</title></path>
-      <path class="k-box" d="M179.3 95V74.0a4 4 0 0 1 4 -4h48a4 4 0 0 1 4 4V95Z"><title>Oct 26, the EIKON Box: $90</title></path>
-      <text class="k-axis" x="207.3" y="218" text-anchor="middle">Oct 26</text>
-      <path class="k-shop" d="M286.8 196V118h56V196Z"><title>Nov 2, the shop: $260</title></path>
-      <path class="k-plus" d="M286.8 116V73h56V116Z"><title>Nov 2, Purify Plus: $150</title></path>
-      <path class="k-box" d="M286.8 71V65.0a4 4 0 0 1 4 -4h48a4 4 0 0 1 4 4V71Z"><title>Nov 2, the EIKON Box: $40</title></path>
-      <text class="k-axis" x="314.8" y="218" text-anchor="middle">Nov 2</text>
-      <path class="k-shop" d="M394.3 196V103h56V196Z"><title>Nov 9, the shop: $310</title></path>
-      <path class="k-plus" d="M394.3 101V57.5a4 4 0 0 1 4 -4h48a4 4 0 0 1 4 4V101Z"><title>Nov 9, Purify Plus: $165</title></path>
-      <text class="k-axis" x="422.3" y="218" text-anchor="middle">Nov 9</text>
+      <line class="k-grid" x1="46" x2="396" y1="208" y2="208"/><text class="k-axis" x="38" y="212" text-anchor="end">$0</text>
+      <line class="k-grid" x1="46" x2="396" y1="150.7" y2="150.7"/><text class="k-axis" x="38" y="154.7" text-anchor="end">$200</text>
+      <line class="k-grid" x1="46" x2="396" y1="93.3" y2="93.3"/><text class="k-axis" x="38" y="97.3" text-anchor="end">$400</text>
+      <line class="k-grid" x1="46" x2="396" y1="36" y2="36"/><text class="k-axis" x="38" y="40" text-anchor="end">$600</text>
+      <path class="k-shop" d="M65.8 208V144.9h48V208Z"><title>Oct 19, the shop: $220</title></path>
+      <path class="k-plus" d="M65.8 142.9V108.8a4 4 0 0 1 4 -4h40a4 4 0 0 1 4 4V142.9Z"><title>Oct 19, Purify Plus: $140</title></path>
+      <text class="k-axis" x="89.8" y="232" text-anchor="middle">Oct 19</text>
+      <path class="k-shop" d="M153.3 208V156.4h48V208Z"><title>Oct 26, the shop: $180</title></path>
+      <path class="k-plus" d="M153.3 154.4V113.4h48V154.4Z"><title>Oct 26, Purify Plus: $150</title></path>
+      <path class="k-box" d="M153.3 111.4V91.6a4 4 0 0 1 4 -4h40a4 4 0 0 1 4 4V111.4Z"><title>Oct 26, the EIKON Box: $90</title></path>
+      <text class="k-axis" x="177.3" y="232" text-anchor="middle">Oct 26</text>
+      <path class="k-shop" d="M240.8 208V133.5h48V208Z"><title>Nov 2, the shop: $260</title></path>
+      <path class="k-plus" d="M240.8 131.5V90.5h48V131.5Z"><title>Nov 2, Purify Plus: $150</title></path>
+      <path class="k-box" d="M240.8 88.5V83.0a4 4 0 0 1 4 -4h40a4 4 0 0 1 4 4V88.5Z"><title>Nov 2, the EIKON Box: $40</title></path>
+      <text class="k-axis" x="264.8" y="232" text-anchor="middle">Nov 2</text>
+      <path class="k-shop" d="M328.3 208V119.1h48V208Z"><title>Nov 9, the shop: $310</title></path>
+      <path class="k-plus" d="M328.3 117.1V75.8a4 4 0 0 1 4 -4h40a4 4 0 0 1 4 4V117.1Z"><title>Nov 9, Purify Plus: $165</title></path>
+      <text class="k-axis" x="352.3" y="232" text-anchor="middle">Nov 9</text>
       </svg>
     </figure>
   </section>

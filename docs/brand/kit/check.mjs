@@ -5,10 +5,12 @@
 //                                            (and the mark's picture) into the
 //                                            artifact template, then check
 //   node docs/brand/kit/check.mjs --shots <dir>   also save a still of each
-//                                            template on each palette there
+//                                            template on each palette there, at 390
 //
-// Each template is opened at phone size (390 by 844, touch) and held to
-// checkMock (scripts/mock-check.mjs) on the app's five palettes: contrast,
+// Phone first (the owner, 2026-11-13: "the design must be optimized for
+// mobile"). Each template is opened at 360, 390 and 412 wide (touch) and at
+// 1032 (a laptop), and at each width held to checkMock (scripts/mock-check.mjs)
+// on the app's five palettes, and to no sideways scroll: contrast,
 // 44px targets, glyph icons, palette tokens, no gold, no side stripes,
 // Arabic mirroring, no em dashes, no rays, no sparkle, no empty picture, no
 // dashed box, no keyboard hint, no name cut short. It exits 1 on any fail,
@@ -25,6 +27,7 @@ const ROOT = path.resolve(KIT, "../../..");
 const args = process.argv.slice(2);
 const shotsAt = args.includes("--shots") ? path.resolve(args[args.indexOf("--shots") + 1]) : null;
 
+const WIDTHS = [360, 390, 412, 1032];
 const ARTIFACT = path.join(KIT, "artifact-template.html");
 const EMAIL = path.join(KIT, "email-template.html");
 const LOGO = path.join(ROOT, "public/purify-logo.jpg");
@@ -66,8 +69,9 @@ async function main() {
   const own = "/opt/pw-browsers/chromium";
   const browser = await chromium.launch(fs.existsSync(own) ? { executablePath: own } : {});
   try {
-    for (const [name, file] of [["the artifact template", ARTIFACT], ["the email template", EMAIL]]) {
-      const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: "dark", isMobile: true, hasTouch: true });
+    for (const [name, file] of [["the artifact template", ARTIFACT], ["the email template", EMAIL]]) for (const width of WIDTHS) {
+      const phone = width < 600;
+      const ctx = await browser.newContext({ viewport: { width, height: phone ? 844 : 900 }, colorScheme: "dark", isMobile: phone, hasTouch: phone });
       // The email's picture is the one purifyapp.net serves; read it from the repository so the check needs no network.
       await ctx.route("https://purifyapp.net/purify-logo.jpg", (r) => r.fulfill({ path: LOGO, contentType: "image/jpeg" }));
       const page = await ctx.newPage();
@@ -75,8 +79,14 @@ async function main() {
       await page.evaluate(() => document.fonts.ready);
       await page.waitForTimeout(400);
       const result = await checkMock(page, "body", { palettes: PALETTES });
-      ok = printMockCheck(result, name) && ok;
-      if (shotsAt) {
+      ok = printMockCheck(result, `${name} at ${width}`) && ok;
+      // Nothing wider than the screen: the page never scrolls sideways.
+      const wide = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      if (wide > 0) {
+        console.log(`  NO   width       ${name} at ${width}: the page is ${wide}px wider than the screen`);
+        ok = false;
+      }
+      if (shotsAt && width === 390) {
         fs.mkdirSync(shotsAt, { recursive: true });
         for (const [palette, mode] of PALETTES) {
           await page.evaluate((m) => (m ? document.documentElement.setAttribute("data-reading-mode", m) : document.documentElement.removeAttribute("data-reading-mode")), mode);
@@ -92,7 +102,7 @@ async function main() {
   } finally {
     await browser.close();
   }
-  console.log(ok ? "\nkit check: both templates pass on the five palettes" : "\nkit check: FAILED");
+  console.log(ok ? "\nkit check: both templates pass on the five palettes at 360, 390, 412 and 1032" : "\nkit check: FAILED");
   return ok;
 }
 
