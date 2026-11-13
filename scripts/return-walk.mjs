@@ -196,6 +196,14 @@ const RECORDER = `(() => {
   R.place = () => [Math.round(document.scrollingElement.scrollTop), ...all().filter((e) => e.scrollTop > 0).slice(0, 12).map((e) => Math.round(e.scrollTop))].join(",");
   R.quiet = (frames) => new Promise((done) => {
     const base = new Map(all().map((e) => [e, box(e)]));
+    // What moves for ever by design (a profile's drifting light, a breath): every element under an
+    // endless animation, whether or not it happened to move in the frames watched.
+    for (const a of document.getAnimations()) {
+      const t = a.effect && a.effect.target;
+      if (!t || a.playState !== "running" || a.effect.getComputedTiming().iterations !== Infinity) continue;
+      R.control.add(t);
+      for (const d of t.querySelectorAll("*")) R.control.add(d);
+    }
     let n = 0;
     const tick = () => {
       for (const [el, b] of base) if (el.isConnected && off(box(el), b)) R.control.add(el);
