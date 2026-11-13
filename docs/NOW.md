@@ -51,6 +51,8 @@ Updated 2026-11-13 01:24 UTC.
 | Fable 5.2: the 1.9 video | session_01VuYTwcxQo8U5fGDgVTBt6D | his 1.9 video: one vertical cut from real taps on the export, new screens, saints and books, and prayer campaigns as 1.9 builds them (his word); silent master; reasons per scene. It may be posted only once campaigns are open to every reader |
 | Fable 5.2: the Fast and the Journal | session_01VuYTwdj2AXx6xhs4145quw | build 95 notes 3 and 4: the journal's faults found and fixed (pushed as each passes), then both screens redesigned in the approved look, stills with reasons for his yes; held locally until then |
 | Updates 4 | session_01VuYTwa5LRq6yCzbKMSL7t4 | fixer for his build 95 walk notes: first note 5 (Discover's search opens with a glitch, not smoothly), walked with motion on |
+| Gate 2.0 | session_01VuYTwcBsPfuad62m3fX53p | new checks that would have caught notes 5 and 7 (motion on, floating layers meeting, the page edge, transitions frame by frame); proved on the old code; a run over the 128 screens; findings only |
+| Fable 5.2: fresh eyes | session_01VuYTwbsb3zRWGHWuECdRip | every screen judged against the approved look, ranked, with stills, for his decision; no changes |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | the 1.9 social cards are done (a736b9af: six cards, 1080 by 1920, stills in `docs/plans/v1.9/store/cards/stills/`, see https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs); waits on his look before the drop's `cards` piece is cleared |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |

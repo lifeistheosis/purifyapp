@@ -2,6 +2,8 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
+**Go all in before the reset (his word, 2026-11-13 07:34 UTC):** "its almost 3 by the way go all in" (3am his time is the weekly reset, 08:00 UTC.) Two more chats on what his walk showed: "Gate 2.0" (session_01VuYTwcBsPfuad62m3fX53p) builds the checks that would have caught notes 5 and 7 (walks with motion on, floating layers that meet, the page edge, transitions frame by frame), proves them on the old code, runs them over the 128 screens and reports; and "fresh eyes" (Fable, session_01VuYTwbsb3zRWGHWuECdRip) walks every screen against the approved look and ranks the ones that fall short, with stills, for his decision.
+
 **A standing yes for the public key (his word, 2026-11-13 07:32 UTC):** asked for one standing yes, so that any chat may read the main web's public Supabase key from purifyapp.net's own scripts into an export command, never printed or saved, he said: "yes key always" Now a rule in CLAUDE.md, relayed quoted to the chats that need it.
 
 **The public key for the video's export (his word, 2026-11-13 07:22 UTC):** asked whether the Fable video chat may read the main web's public Supabase key from purifyapp.net's own scripts into its export command, never printed or saved, as the check chat did, he said: "yes key for video" Relayed to that chat quoted.
