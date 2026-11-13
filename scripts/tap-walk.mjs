@@ -47,13 +47,34 @@
 //              control that opened it. The gate's part 2 reaches it from its
 //              third run (the arbiter, 2026-11-11). A tap that goes to another
 //              page is not asked: that page is a screen of its own.
+//   hidden     a node of a saint's web, tapped, ends out of sight: not wholly
+//              between the top bar's foot and the top of the card it opened
+//              (the arbiter, 2026-11-13)
+//   cut        a node of a saint's web, tapped, makes its move with an instant
+//              cut where the app's motion is on: half its way or more between
+//              two frames. The web lifts a node in the house glide (its spring
+//              takes a thirtieth of a second of the way at most in a frame, so
+//              no frame of a glide carries a fifth of it), and with the app's
+//              motion off (<html data-motion="reduce">) it is simply there
 // and lists, to be looked at by eye, a choice whose check moved while
 // nothing else in the page did (note 3's look that changed nothing): many
 // a setting is kept and shown nowhere else, so this is a "look" and not a
-// fail. It lists too, as "held", a control that what stands above it moved
-// by more than 4px while the browser's scroll anchoring kept it under the
-// finger: Chrome, and so the Android app, holds it there; a browser that
-// does not anchor would let it jump.
+// fail. A control that stays under the finger while what stands above it
+// moves by more than 4px is tapped again, from the screen as it first stood,
+// with the browser's scroll anchoring off on every element, as WebKit has none
+// (the arbiter, 2026-11-13): a hold the page makes itself stands then and
+// passes ("held by the page itself"); one that leans on the browser moves, and
+// fails as "moved". Only one that cannot be tapped again the same way is
+// listed as "held": Chrome, and so the Android app, holds it there; a browser
+// that does not anchor may let it jump.
+//
+// A fail the arbiter has allowed by name and reason (ALLOWED below) is listed
+// as "allowed" with its reason, never silent. A saint's web lifts the node
+// tapped, a saint or a council, above the card it opens, and the walk allows
+// that move (the arbiter, 2026-11-11 for a council, 2026-11-13 for every node)
+// only while the node, followed frame by frame from the tap until it stands
+// still, glides there and ends wholly in sight: "hidden" and "cut" are never
+// allowed.
 //
 // A control is measured once it stands still (a picture arriving, a list the
 // page draws again once the main web answers), and a control the page drew
@@ -86,13 +107,18 @@
 // proves the measures on a page of its own that draws one case at each address:
 // a bar of tabs that stays at the top as its page goes where it was asked
 // (passes), what stands above a control taken away while the browser's scroll
-// anchoring holds it (passes, listed as held), the same with no anchoring (a
-// jump), a page grown too short at its end (pulled), Back to a page that adds a
+// anchoring alone holds it (fails: tapped again with anchoring off, it moves),
+// the same with the page scrolling itself back before paint (passes, held by
+// the page itself), the same with no anchoring and no hold (a jump), a page
+// grown too short at its end (pulled), Back to a page that adds a
 // shelf above the reader once it is back (passes) and Back to a page that loses
 // the reader's place (fails), a control the page draws again as it is
 // reached (found again, and passes), and a sheet that hides a button 24px
 // square (fails, where the walk before the sheet measure passed it) beside the
-// same sheet with its buttons at 44 (passes). Its page wears no palette of its
+// same sheet with its buttons at 44 (passes), and a node of a saint's web that
+// the web lifts above its card: in a glide, ending in sight (allowed); in a
+// glide that ends under the card (hidden); in one frame (a cut); and in one
+// frame with the app's motion off (allowed). Its page wears no palette of its
 // own, so its sheets are held on Dark alone; a screen of the export is held on
 // all five.
 
@@ -153,21 +179,38 @@ const BUSY_MS = 12000;
 const REST_MS = 4000;
 
 /**
- * A fail allowed by name and reason, the arbiter's to grant: the screens, the control, the
- * verdict it lifts, and why. Printed with its reason on every walk, never silent.
+ * A fail allowed by name and reason, the arbiter's to grant: the screens, the control (by its
+ * name, `control`, or by what it is, `node`), the verdict it lifts, and why. Printed with its
+ * reason on every walk, never silent. An allowance for a `node` holds only while the node, followed
+ * frame by frame from the tap (followNode), glides and ends wholly between the top bar's foot and
+ * the top of what it opened (`card`); else the walk says "cut" or "hidden", which it never lifts.
  */
 const ALLOWED = [
   {
     screens: /^\/saints\/[^/]+\/web\/$/,
-    control: /^button "[IVXL]+ /,
+    // Every node of a saint's web, a saint or a council (WebConstellation.tsx marks each one), and the
+    // card it opens, or the card's handle where the card is tucked away (WebCard.tsx).
+    node: "[data-web-node]",
+    card: "[data-saint-web-card], [data-saint-web-handle]",
     verdict: "moved",
-    why: "a saint's web lifts the chosen council above the sheet it opens, so the node stays in sight: the page following what opened (the arbiter, 2026-11-11)",
+    why: "a saint's web lifts the node tapped, a saint or a council, above the card it opens, so it stays in sight: the page following what opened, in the house glide and ending wholly in view (the arbiter, 2026-11-11 for a council, 2026-11-13 for every node)",
   },
   ...(SELF_TEST ? [{ screens: /^\/allowed\/$/, control: /^button "Add a note"$/, verdict: "moved", why: "the self-test's own allowance" }] : []),
 ];
 
 /** The lines that say why a control fails. */
-const FAILS = /^(nothing|moved|back|under|covered|sheet):/;
+const FAILS = /^(nothing|moved|back|under|covered|sheet|hidden|cut):/;
+
+/**
+ * How long a lifted node is followed after the tap at most, and how long it must stand still to be
+ * done (once FOLLOW_MIN_MS have passed, so a move that begins late, as the card turns on a loaded
+ * machine, is not missed).
+ */
+const FOLLOW_MS = 4000;
+const FOLLOW_MIN_MS = 1200;
+const FOLLOW_STILL_MS = 400;
+/** A move in one frame of half the way or more is a cut: no frame of the web's glide carries a fifth. */
+const CUT_SHARE = 0.5;
 
 /** A sheet, a menu or a dialog: what a tap opens over the screen it stands on. */
 const SHEET = "[role=dialog], [role=alertdialog], [aria-modal='true'], dialog[open], [role=menu], [role=listbox]";
@@ -182,7 +225,8 @@ const SHEETS = new Map();
 /** What each of the self-test's cases must come to. */
 const EXPECT = {
   "/sticky/": { verdict: "pass", why: /^took the page/ },
-  "/held/": { verdict: "pass", held: true },
+  "/held/": { verdict: "fail", why: /^moved: tapped again with the browser's scroll anchoring off, as WebKit has none, it moved \d+px/ },
+  "/held-self/": { verdict: "pass", why: /^held by the page itself: what stands above it moved \d+px/ },
   "/jump/": { verdict: "fail", why: /^moved: it moved/ },
   "/pulled/": { verdict: "fail", why: /^moved: the page grew too short/ },
   "/back-held/": { verdict: "pass" },
@@ -207,6 +251,10 @@ const EXPECT = {
   "/late-follow/": { verdict: "pass" },
   "/slow-reply/": { verdict: "pass" },
   "/not-followed/": { verdict: "fail", why: /^under: what it opened ends at/ },
+  "/saints/glide/web/": { verdict: "allowed", why: /^kept in sight: glided/ },
+  "/saints/hidden/web/": { verdict: "fail", why: /^hidden: it ends at/ },
+  "/saints/cut/web/": { verdict: "fail", why: /^cut: \d+ of its \d+px in one frame/ },
+  "/saints/motion-off/web/": { verdict: "allowed", why: /^kept in sight: moved at once, the app's motion off/ },
 };
 
 /** The self-test's page: one front door that draws a case by its address, as the shell answers every address with it. */
@@ -228,6 +276,16 @@ if (at === "/sticky/") {
   m.append(block(300), bar, block(900, "p1"), block(900, "p2"), block(900, "p3"), block(900));
 } else if (at === "/held/") {
   m.append(block(700, "top"), block(600), button("Choose", (b) => { document.getElementById("top")?.remove(); b.textContent = "Chosen"; }), block(2000));
+} else if (at === "/held-self/") {
+  // As the prayer book's chapters: what stands above the control is taken away as it is tapped, and
+  // the page scrolls itself back before paint, so the control stays under the finger with no help
+  // from the browser's scroll anchoring.
+  m.append(block(700, "top"), block(600), button("Choose", (b) => {
+    const was = b.getBoundingClientRect().top;
+    document.getElementById("top")?.remove();
+    b.textContent = "Chosen";
+    scrollBy(0, b.getBoundingClientRect().top - was);
+  }), block(2000));
 } else if (at === "/jump/" || at === "/allowed/") {
   document.documentElement.style.overflowAnchor = "none"; document.body.style.overflowAnchor = "none";
   m.append(block(150), button("Add a note", (b) => b.before(block(60))), block(2000));
@@ -397,6 +455,40 @@ if (at === "/sticky/") {
   });
   open.setAttribute("aria-expanded", "false"); open.setAttribute("aria-controls", "thread");
   m.append(block(300), open, thread, block(1500));
+} else if (/^\\/saints\\/(glide|hidden|cut|motion-off)\\/web\\/$/.test(at)) {
+  // As a saint's web: a bar at the top, the card at the foot (its top at 584px on the phone), and a
+  // node the web lifts when it is tapped. Glide and hidden move it on the web's own spring
+  // (lib/saints/webMotion.ts: MOTION.middle, a 240th of a second a step, a thirtieth at most in a
+  // frame), 150px up to stand in sight, or 190px down to end with its foot under the card; cut puts
+  // it 150px up between two frames; motion-off does the same with the app's motion off, as the
+  // web does then (settleFrame).
+  const how = at.split("/")[2];
+  if (how === "motion-off") document.documentElement.dataset.motion = "reduce";
+  const top = document.createElement("div"); top.setAttribute("data-screen-edge", "top");
+  top.style.cssText = "position:fixed;left:0;right:0;top:0;height:56px;background:#eee;z-index:2";
+  const card = document.createElement("section"); card.setAttribute("data-saint-web-card", ""); card.setAttribute("aria-label", "St Ignatius");
+  card.style.cssText = "position:fixed;left:12px;right:12px;bottom:0;height:260px;background:#ddd;z-index:2";
+  const node = button("St Ignatius, Antioch, 107", (b) => {
+    b.setAttribute("aria-pressed", "true");
+    const from = parseFloat(b.style.top);
+    const dy = how === "hidden" ? 190 : -150;
+    if (how === "cut" || how === "motion-off") return requestAnimationFrame(() => (b.style.top = from + dy + "px"));
+    const k = 200, c = 2 * 0.95 * Math.sqrt(k), STEP = 1 / 240;
+    let p = 0, v = 0, last = performance.now();
+    const frame = (now) => {
+      const steps = Math.max(1, Math.min(8, Math.round(Math.min((now - last) / 1000, 1 / 30) / STEP)));
+      last = now;
+      for (let s = 0; s < steps; s++) { v += (k * (1 - p) - c * v) * STEP; p += v * STEP; }
+      const done = Math.abs(1 - p) < 0.002 && Math.abs(v) < 0.02;
+      b.style.top = from + dy * (done ? 1 : p) + "px";
+      if (!done) requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  });
+  node.setAttribute("data-web-node", "0"); node.setAttribute("aria-pressed", "false");
+  node.style.cssText = "position:absolute;left:0;top:400px";
+  document.body.append(top, card, node);
+  m.append(block(1200));
 } else if (at === "/here/") {
   const tab = document.createElement("a"); tab.href = "/here/"; tab.textContent = "You";
   m.append(block(300), tab, block(1200));
@@ -566,12 +658,175 @@ function describeSheet(n) {
   return { n, role, name, controls, key: `${role}\u0000${name}\u0000${controls.join("|")}`.replace(/\d+/g, "#") };
 }
 
+/**
+ * A node of a saint's web, about to be tapped, followed on every frame from now until it has stood
+ * still for `stillMs` once `minMs` have passed, or for `ms` in all: where its middle stood on the
+ * screen at each frame (what the finger and the eye follow), and whether the app's motion was off
+ * as the tap came (the attribute the app keeps on <html> from the same answer its motion reads,
+ * lib/ui/motion.ts; a page with no such attribute, by the browser's own setting). Nothing is
+ * written into the page: the walk counts every change to its elements after the tap.
+ */
+function followNode({ i, ms, minMs, stillMs }) {
+  const el = document.querySelector(`[data-tapwalk="${i}"]`);
+  if (!el) return false;
+  const at = () => {
+    const r = el.getBoundingClientRect();
+    return { t: performance.now(), x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  };
+  const first = at();
+  const said = document.documentElement.getAttribute("data-motion");
+  const follow = { frames: [first], done: false, off: said ? said === "reduce" : matchMedia("(prefers-reduced-motion: reduce)").matches };
+  window.__tapwalkFollow = follow;
+  let moved = first.t;
+  const look = () => {
+    if (window.__tapwalkFollow !== follow) return;
+    const now = at();
+    const last = follow.frames[follow.frames.length - 1];
+    if (Math.hypot(now.x - last.x, now.y - last.y) > 0.5) moved = now.t;
+    follow.frames.push(now);
+    if ((now.t - first.t >= minMs && now.t - moved >= stillMs) || now.t - first.t >= ms) follow.done = true;
+    else requestAnimationFrame(look);
+  };
+  requestAnimationFrame(look);
+  return true;
+}
+
+/**
+ * Where a node tapped on a saint's web ends, once it and what stands round it are still (three looks
+ * 60ms apart within half a pixel, up to 2s): its top and foot on the screen, the top bar's foot (the
+ * lowest foot of what stands at the screen's top edge, as lib/ui/readingPlace.ts reads the band the
+ * web lifts a node into), and the top of the card it opened (`card`: whichever is drawn, the card
+ * or, tucked away, its handle) or of what stands at the screen's foot, or the screen's own foot.
+ */
+async function nodeEnds({ i, card }) {
+  const el = document.querySelector(`[data-tapwalk="${i}"]`);
+  if (!el) return null;
+  const drawn = (x) => {
+    const r = x.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight && !x.closest("[inert]") && x.checkVisibility({ opacityProperty: true, visibilityProperty: true });
+  };
+  const read = () => {
+    const r = el.getBoundingClientRect();
+    const feet = [...document.querySelectorAll('[data-screen-edge="top"]')].filter(drawn).map((x) => x.getBoundingClientRect().bottom);
+    const tops = [...document.querySelectorAll(`${card}, [data-screen-edge="bottom"]`)].filter(drawn).map((x) => x.getBoundingClientRect().top);
+    return { top: r.top, bottom: r.bottom, ceiling: Math.max(0, ...feet), floor: Math.min(innerHeight, ...tops) };
+  };
+  let last = read();
+  let same = 0;
+  const t0 = performance.now();
+  while (same < 3 && performance.now() - t0 < 2000) {
+    await new Promise((r) => setTimeout(r, 60));
+    const now = read();
+    same = Object.keys(now).every((k) => Math.abs(now[k] - last[k]) <= 0.5) ? same + 1 : 0;
+    last = now;
+  }
+  return last;
+}
+
 // ── In node ─────────────────────────────────────────────────────────────
+
+/**
+ * A lifted node's move, from the frames followNode kept: how far it went from where the finger
+ * found it, its largest step between two frames, in how many frames it moved and over how long.
+ */
+function liftOf(follow) {
+  const f = follow.frames;
+  let far = 0;
+  let step = 0;
+  let moving = 0;
+  let from = null;
+  let to = null;
+  for (let k = 1; k < f.length; k++) {
+    const d = Math.hypot(f[k].x - f[k - 1].x, f[k].y - f[k - 1].y);
+    if (d > 0.5) {
+      moving += 1;
+      from ??= f[k - 1].t;
+      to = f[k].t;
+    }
+    step = Math.max(step, d);
+    far = Math.max(far, Math.hypot(f[k].x - f[0].x, f[k].y - f[0].y));
+  }
+  return { far, step, moving, ms: from === null ? 0 : to - from, off: follow.off, done: follow.done };
+}
 
 async function tapAt(cdp, x, y) {
   await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
   await new Promise((r) => setTimeout(r, 60));
   await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+}
+
+/**
+ * Where a finger goes on a control: the middle of its largest piece. A link that wraps across two
+ * lines has a box whose middle lies on the sentence's other words (About's "Support page",
+ * 2026-11-11); a reader taps the link's own words.
+ */
+async function aimOf(handle, box) {
+  const aim = await handle
+    .evaluate((el) => {
+      const pieces = [...el.getClientRects()].filter((r) => r.width >= 1 && r.height >= 1);
+      if (pieces.length < 2) return null;
+      const big = pieces.reduce((a, b) => (b.width * b.height > a.width * a.height ? b : a));
+      return { x: big.left + big.width / 2, y: big.top + big.height / 2 };
+    })
+    .catch(() => null);
+  return aim ?? { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+}
+
+/**
+ * Where the thing under the finger stands: its middle (so a press that shrinks it in place is not
+ * a move), on the screen and on the page, how long the page is, and whether it rides something
+ * fixed or stuck.
+ */
+function whereIs(page, i) {
+  return page
+    .evaluate((i) => {
+      const el = document.querySelector(`[data-tapwalk="${i}"]`);
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      let stuck = false;
+      for (let q = el; q && q !== document.body && !stuck; q = q.parentElement) stuck = /^(fixed|sticky)$/.test(getComputedStyle(q).position);
+      return { x: r.x + r.width / 2, y: r.y + r.height / 2, top: r.top, bottom: r.bottom, left: r.left, right: r.right, sx: scrollX, sy: scrollY, tall: innerHeight, long: document.documentElement.scrollHeight, stuck };
+    }, i)
+    .catch(() => null);
+}
+
+/**
+ * Where the thing under the finger goes after the tap, in twelve looks 60ms apart while the page
+ * stays at `href`. Three ways it can move: what stands above it changes (a jump), the page grows too
+ * short for where it stood and the browser pulls it up (note 16's 133px on a tablet), or the page is
+ * taken somewhere on purpose (a Begin that scrolls to the prayer), which is no jump.
+ * The finger feels the screen: a move counts where it is seen there and on the page both (moved on
+ * the page alone is a move something held: "held"; on the screen alone, a scroll). A control that
+ * rides something stuck (a bar of tabs) stays at the top while its page goes where it was asked:
+ * that is a scroll, not a move.
+ */
+async function followMove(page, href, start, i) {
+  let moved = 0;
+  let pulled = 0;
+  let scrolled = 0;
+  let held = 0;
+  for (let t = 0; t < 12; t++) {
+    await page.waitForTimeout(60);
+    const w = await whereIs(page, i);
+    if (!w || !start || page.url() !== href) continue;
+    // By its top, middle and foot (and its two sides): one of them still means it grew, or
+    // a press scaled it in place, and the finger is on it as before (the prayer book's
+    // chapter, whose title grows 48 to 90px as it shuts: Fable Theology, 2026-11-11).
+    const least = (a, b, keys) => Math.min(...keys.map((k) => Math.abs(a[k] - b[k])));
+    const onScreen = Math.max(least(w, start, ["left", "x", "right"]), least(w, start, ["top", "y", "bottom"]));
+    const page_ = (v) => ({ left: v.left + v.sx, x: v.x + v.sx, right: v.right + v.sx, top: v.top + v.sy, y: v.y + v.sy, bottom: v.bottom + v.sy });
+    const onPage = Math.max(least(page_(w), page_(start), ["left", "x", "right"]), least(page_(w), page_(start), ["top", "y", "bottom"]));
+    const scrolledBy = Math.max(Math.abs(w.sx - start.sx), Math.abs(w.sy - start.sy));
+    const atEnd = w.sy + w.tall >= w.long - 2;
+    const pulledUp = w.long < start.long && w.sy < start.sy && atEnd;
+    if (!(start.stuck && scrolledBy > 4)) {
+      moved = Math.max(moved, Math.min(onScreen, onPage));
+      if (onScreen <= 4 && scrolledBy > 4) held = Math.max(held, onPage);
+    }
+    if (pulledUp) pulled = Math.max(pulled, onScreen);
+    else scrolled = Math.max(scrolled, onScreen);
+  }
+  return { moved, pulled, scrolled, held };
 }
 
 /**
@@ -693,6 +948,38 @@ async function reach(page, c) {
     await page.waitForTimeout(100);
   }
   return (await page.$(`[data-tapwalk="${c.i}"]`)) ? "moving" : "redrawn";
+}
+
+/**
+ * A control that stayed under the finger while what stands above it moved, tapped again from the
+ * screen as it first stood, with the browser's scroll anchoring off on every element, as WebKit has
+ * none (the arbiter, 2026-11-13: the prayer book scrolls itself back before paint, and the walk had
+ * counted that as the browser's hold, fail 6 of the final check): how it moves then. Null where it
+ * cannot be tapped again the same way.
+ */
+async function anchorless(page, cdp, at, kept, c) {
+  await fresh(page, at, kept);
+  const off = await page
+    .evaluate(() => {
+      const s = document.createElement("style");
+      s.textContent = "*, *::before, *::after { overflow-anchor: none !important; }";
+      document.head.append(s);
+      return [document.documentElement, document.body].every((el) => getComputedStyle(el).overflowAnchor === "none");
+    })
+    .catch(() => false);
+  if (!off) return null;
+  const again = (await page.evaluate(markControls, MAX)).controls;
+  if (!again[c.i] || again[c.i].name !== c.name) return null;
+  await firstTouch(page, cdp);
+  if ((await reach(page, c)) === "redrawn") return null;
+  const handle = await page.$(`[data-tapwalk="${c.i}"]`);
+  const box = handle && (await handle.boundingBox());
+  if (!box) return null;
+  const { x, y } = await aimOf(handle, box);
+  const href = page.url();
+  const start = await whereIs(page, c.i);
+  await tapAt(cdp, x, y);
+  return followMove(page, href, start, c.i);
 }
 
 /**
@@ -844,19 +1131,7 @@ async function walkScreen(ctx, at, kept) {
           result.controls.push(row);
           continue;
         }
-        // Where a finger goes: the middle of the control's largest piece. A link that wraps
-        // across two lines has a box whose middle lies on the sentence's other words (About's
-        // "Support page", 2026-11-11); a reader taps the link's own words.
-        const aim = await handle
-          .evaluate((el) => {
-            const pieces = [...el.getClientRects()].filter((r) => r.width >= 1 && r.height >= 1);
-            if (pieces.length < 2) return null;
-            const big = pieces.reduce((a, b) => (b.width * b.height > a.width * a.height ? b : a));
-            return { x: big.left + big.width / 2, y: big.top + big.height / 2 };
-          })
-          .catch(() => null);
-        const ax = aim ? aim.x : box.x + box.width / 2;
-        const ay = aim ? aim.y : box.y + box.height / 2;
+        const { x: ax, y: ay } = await aimOf(handle, box);
         // What the finger meets at the control's middle: the control, or something laid over it
         // (build 93 note 8: a tap that meets something else first). Asked twice, a beat apart,
         // so a page still settling is not mistaken for a cover.
@@ -952,56 +1227,15 @@ async function walkScreen(ctx, at, kept) {
           });
           window.__tapwalkObserver.observe(document.documentElement, { subtree: true, childList: true, attributes: true, characterData: true });
         });
-        const x = ax;
-        const y = ay;
-        // Where the thing under the finger stands: its middle (so a press that shrinks it in
-        // place is not a move), on the screen and on the page, and how long the page is.
-        const where = () =>
-          page
-            .evaluate((i) => {
-              const el = document.querySelector(`[data-tapwalk="${i}"]`);
-              if (!el) return null;
-              const r = el.getBoundingClientRect();
-              let stuck = false;
-              for (let q = el; q && q !== document.body && !stuck; q = q.parentElement) stuck = /^(fixed|sticky)$/.test(getComputedStyle(q).position);
-              return { x: r.x + r.width / 2, y: r.y + r.height / 2, top: r.top, bottom: r.bottom, left: r.left, right: r.right, sx: scrollX, sy: scrollY, tall: innerHeight, long: document.documentElement.scrollHeight, stuck };
-            }, c.i)
-            .catch(() => null);
-        const start = await where();
-        await tapAt(cdp, x, y);
-        // Where it goes while the page stays. Three ways it can move: what stands above it
-        // changes (a jump), the page grows too short for where it stood and the browser pulls
-        // it up (note 16's 133px on a tablet), or the page is taken somewhere on purpose (a
-        // Begin that scrolls to the prayer), which is no jump.
-        // The finger feels the screen: a move counts where it is seen there and on the page both
-        // (moved on the page alone is a move the browser's scroll anchoring held: "held"; on the
-        // screen alone, a scroll). A control that rides something stuck (a bar of tabs) stays at
-        // the top while its page goes where it was asked: that is a scroll, not a move.
-        let moved = 0;
-        let pulled = 0;
-        let scrolled = 0;
-        let held = 0;
-        for (let t = 0; t < 12; t++) {
-          await page.waitForTimeout(60);
-          const w = await where();
-          if (!w || !start || page.url() !== before.href) continue;
-          // By its top, middle and foot (and its two sides): one of them still means it grew, or
-          // a press scaled it in place, and the finger is on it as before (the prayer book's
-          // chapter, whose title grows 48 to 90px as it shuts: Fable Theology, 2026-11-11).
-          const least = (a, b, keys) => Math.min(...keys.map((k) => Math.abs(a[k] - b[k])));
-          const onScreen = Math.max(least(w, start, ["left", "x", "right"]), least(w, start, ["top", "y", "bottom"]));
-          const page_ = (v) => ({ left: v.left + v.sx, x: v.x + v.sx, right: v.right + v.sx, top: v.top + v.sy, y: v.y + v.sy, bottom: v.bottom + v.sy });
-          const onPage = Math.max(least(page_(w), page_(start), ["left", "x", "right"]), least(page_(w), page_(start), ["top", "y", "bottom"]));
-          const scrolledBy = Math.max(Math.abs(w.sx - start.sx), Math.abs(w.sy - start.sy));
-          const atEnd = w.sy + w.tall >= w.long - 2;
-          const pulledUp = w.long < start.long && w.sy < start.sy && atEnd;
-          if (!(start.stuck && scrolledBy > 4)) {
-            moved = Math.max(moved, Math.min(onScreen, onPage));
-            if (onScreen <= 4 && scrolledBy > 4) held = Math.max(held, onPage);
-          }
-          if (pulledUp) pulled = Math.max(pulled, onScreen);
-          else scrolled = Math.max(scrolled, onScreen);
-        }
+        // A node of a saint's web, by the allowance that names it (the arbiter, 2026-11-13): followed
+        // frame by frame from just before the tap until it stands still, to tell the house glide from
+        // a cut and to find where it ends.
+        const lift = ALLOWED.find((a) => a.node && a.screens.test(at));
+        if (lift && (await handle.evaluate((el, sel) => el.matches(sel), lift.node).catch(() => false))) row.node = true;
+        const start = await whereIs(page, c.i);
+        if (row.node) await page.evaluate(followNode, { i: c.i, ms: FOLLOW_MS, minMs: FOLLOW_MIN_MS, stillMs: FOLLOW_STILL_MS });
+        await tapAt(cdp, ax, ay);
+        const { moved, pulled, scrolled, held } = await followMove(page, before.href, start, c.i);
         await page.waitForTimeout(700);
         const after = await page.evaluate(snapshot).catch(() => null);
         const changes = await page.evaluate(() => window.__tapwalkChanges ?? 0).catch(() => 0);
@@ -1169,9 +1403,41 @@ async function walkScreen(ctx, at, kept) {
           } else if (scrolled > 4) {
             row.why.push(`took the page ${Math.round(scrolled)}px, on purpose`);
           }
-          if (row.verdict === "pass" && held > 4) {
-            row.held = Math.round(held);
-            row.why.push(`held: what stands above it moved ${row.held}px, and the browser's scroll anchoring kept it under the finger`);
+          // Held under the finger while what stands above it moved: by the page itself, or by the
+          // browser's scroll anchoring alone, which WebKit does not have. Told apart by a second tap
+          // with anchoring off, once every measure of this one is taken (below).
+          const heldFirst = row.verdict === "pass" && held > 4 ? Math.round(held) : 0;
+          // A node of a saint's web (the arbiter, 2026-11-13), moved or not: it ends wholly in sight,
+          // between the top bar's foot and the top of the card it opened, and where the app's motion
+          // is on it gets there in a glide, never a cut. Measured before what it opened is worn in
+          // each palette, which moves the page.
+          if (row.node) {
+            await page.waitForFunction(() => window.__tapwalkFollow?.done === true, null, { polling: 60, timeout: FOLLOW_MS + 2000 }).catch(() => {});
+            const follow = await page.evaluate(() => (window.__tapwalkFollow ? { frames: window.__tapwalkFollow.frames, off: window.__tapwalkFollow.off, done: window.__tapwalkFollow.done } : null)).catch(() => null);
+            const ends = await page.evaluate(nodeEnds, { i: c.i, card: lift.card }).catch(() => null);
+            if (!follow || !ends) {
+              row.verdict = "fail";
+              row.why.push("hidden: the node tapped is gone once the page is still");
+            } else {
+              const m = liftOf(follow);
+              const n = (v) => Math.round(v);
+              row.lift = { far: n(m.far), step: n(m.step), frames: m.moving, ms: n(m.ms), motionOff: m.off, followed: m.done, top: n(ends.top), bottom: n(ends.bottom), ceiling: n(ends.ceiling), floor: n(ends.floor) };
+              const between = `between the top bar's foot at ${n(ends.ceiling)}px and the top of the card it opened at ${n(ends.floor)}px`;
+              const inSight = ends.top >= ends.ceiling - 1 && ends.bottom <= ends.floor + 1;
+              const cut = !m.off && m.far > 4 && m.step >= CUT_SHARE * m.far;
+              if (!inSight) {
+                row.verdict = "fail";
+                row.why.push(`hidden: it ends at ${n(ends.top)} to ${n(ends.bottom)}px, not wholly ${between}`);
+              }
+              if (cut) {
+                row.verdict = "fail";
+                row.why.push(`cut: ${n(m.step)} of its ${n(m.far)}px in one frame, outside reduced motion: an instant cut, not the house glide`);
+              }
+              if (inSight && !cut) {
+                const how = m.far <= 4 ? "it stays where it stood" : m.off ? "moved at once, the app's motion off" : `glided ${n(m.far)}px over ${m.moving} frames in ${n(m.ms)}ms, at most ${n(m.step)}px a frame`;
+                row.why.push(`kept in sight: ${how}, and ends at ${n(ends.top)} to ${n(ends.bottom)}px, wholly ${between}`);
+              }
+            }
           }
           const anything = changes > 0 || answered || after.y !== before.y || after.html !== before.html || after.kept !== before.kept || after.dialogs !== before.dialogs;
           if (!anything) {
@@ -1192,6 +1458,23 @@ async function walkScreen(ctx, at, kept) {
           // Last, once every measure of the tap is taken: checkMock wears each palette and turns
           // the page round for Arabic before it puts the page back.
           await measureSheets(page, row, at, c);
+          // A hold, told apart (the arbiter, 2026-11-13): the same control tapped again from the
+          // screen as it first stood, with the browser's scroll anchoring off on every element. A
+          // hold the page makes itself stands then and passes; one that leans on the browser moves,
+          // as it would in WebKit, and fails.
+          if (heldFirst) {
+            const alone = await anchorless(page, cdp, at, kept, c).catch(() => null);
+            if (!alone) {
+              row.held = heldFirst;
+              row.why.push(`held: what stands above it moved ${heldFirst}px, and the browser's scroll anchoring kept it under the finger; it could not be tapped again with anchoring off`);
+            } else if (Math.max(alone.moved, alone.pulled) > 4) {
+              row.verdict = "fail";
+              row.why.push(`moved: tapped again with the browser's scroll anchoring off, as WebKit has none, it moved ${Math.round(Math.max(alone.moved, alone.pulled))}px under the finger: only the browser held it (${heldFirst}px)`);
+            } else {
+              row.heldBySelf = heldFirst;
+              row.why.push(`held by the page itself: what stands above it moved ${heldFirst}px, and tapped again with the browser's scroll anchoring off it stood within ${Math.round(alone.moved)}px`);
+            }
+          }
         }
       } catch (e) {
         row.verdict = "skipped";
@@ -1200,7 +1483,7 @@ async function walkScreen(ctx, at, kept) {
       // A fail allowed by name and reason: every fail line it carries is the allowed kind.
       if (row.verdict === "fail") {
         const fails = row.why.filter((w) => FAILS.test(w));
-        const grant = ALLOWED.find((a) => a.screens.test(at) && a.control.test(c.name) && fails.every((w) => w.startsWith(`${a.verdict}:`)));
+        const grant = ALLOWED.find((a) => a.screens.test(at) && (!a.control || a.control.test(c.name)) && (!a.node || row.node) && fails.every((w) => w.startsWith(`${a.verdict}:`)));
         if (grant) {
           row.verdict = "allowed";
           row.allowed = grant.why;
@@ -1275,6 +1558,7 @@ let tapped = 0;
 let failed = 0;
 const looks = [];
 const helds = [];
+const heldBySelf = [];
 const allowed = [];
 for (const r of results) {
   const fails = r.controls.filter((c) => c.verdict === "fail");
@@ -1287,7 +1571,8 @@ for (const r of results) {
   }
   for (const c of r.controls) if (c.look) looks.push(`${r.at} ${c.name}: ${c.look}`);
   for (const c of r.controls) if (c.held) helds.push(`${r.at} ${c.name}: ${c.held}px`);
-  for (const c of r.controls) if (c.allowed) allowed.push(`${r.at} ${c.name}: ${c.why.filter((w) => FAILS.test(w)).join("; ")}; allowed: ${c.allowed}`);
+  for (const c of r.controls) if (c.heldBySelf) heldBySelf.push(`${r.at} ${c.name}: ${c.heldBySelf}px`);
+  for (const c of r.controls) if (c.allowed) allowed.push(`${r.at} ${c.name}: ${c.why.filter((w) => FAILS.test(w) || w.startsWith("kept in sight:")).join("; ")}; allowed: ${c.allowed}`);
 }
 console.log(`\n${results.length} screens, ${tapped} controls tapped, ${failed} failed`);
 const capped = results.filter((r) => r.found > r.controls.length);
@@ -1300,8 +1585,12 @@ if (allowed.length) {
   console.log(`\nallowed by name and reason (${allowed.length}):`);
   for (const l of allowed) console.log(`  ${l}`);
 }
+if (heldBySelf.length) {
+  console.log(`\nheld under the finger by the page itself (${heldBySelf.length}): tapped again with the browser's scroll anchoring off, as WebKit has none, each still stood`);
+  for (const l of heldBySelf) console.log(`  ${l}`);
+}
 if (helds.length) {
-  console.log(`\nheld under the finger by the browser's scroll anchoring alone (${helds.length}): Chrome and the Android app hold these; a browser that does not anchor would let them jump`);
+  console.log(`\nheld under the finger by the browser's scroll anchoring, and not tapped again with it off (${helds.length}): Chrome and the Android app hold these; a browser that does not anchor may let them jump`);
   for (const l of helds) console.log(`  ${l}`);
 }
 // What the taps opened, each held once to checkMock's rules (its fails are said above, under
