@@ -77,3 +77,9 @@ A reader's report during the release's making, so it goes into 1.9. Checked at o
 His word, 2026-11-13 07:43 UTC, on build 96, with two screenshots of a profile sheet's Badges (Verified chosen, then Bug Hunter): "badge UI moving"
 
 What the two show: the chosen badge's card at the foot changes height, two lines for Verified and three for Bug Hunter ("Found a real bug and told us. Since October 2026"), so what stands below it moves. Under Bug Hunter's card a light grey pill also appears with no words readable on it: a button whose label cannot be seen, or a placeholder. Choosing a badge must not move the sheet. The card keeps one height, or changes it in the house's motion with nothing jumping, and every control shows its words at 4.5:1. To reproduce at 390 with touch and motion on, mend it, and give it a test that fails on the old code.
+
+## Note 13: the profile, even smoother
+
+His word, 2026-11-13 07:44 UTC, on build 96, with a screenshot of a reader's profile sheet (About, Badges and Posts as three boxed tabs; About me; Member since): "make the profile system even smoother"
+
+With note 12, in the same sheet. Switching tabs moves in the house's motion, the old content handing to the new with no jump. The sheet's height follows its content smoothly, never snapping. Dragging the sheet down follows the finger and lets go cleanly. Pictures and words arrive without a flash. Reduced motion stays still. Any change to how the sheet looks (the tabs' form, for one) comes to him as stills with reasons, for his yes, before it ships.
