@@ -1,0 +1,836 @@
+diff --git a/app/(app)/heresies/page.tsx b/app/(app)/heresies/page.tsx
+index ba92b1d67..2dbdfbaba 100644
+--- a/app/(app)/heresies/page.tsx
++++ b/app/(app)/heresies/page.tsx
+@@ -5,7 +5,6 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
+ import { WayPage } from "@/components/theology/WayPage";
+ import { WAY_FACT, WAY_H2, WAY_TITLE, WAY_TRAY } from "@/components/theology/wayStyle";
+ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+-import { Scroll } from "@/components/ui/icons/Scroll";
+ import { HERESIES } from "@/lib/heresies/heresies";
+ import { wayCounts } from "@/lib/theology/wayCounts";
+ 
+@@ -78,19 +77,16 @@ export default async function HeresiesIndexPage() {
+             <ul className={`${WAY_TRAY} mt-2.5`}>
+               {errors.map((h) => (
+                 <li key={h.slug} className="theology-rule">
+-                  <Link href={`/heresies/${h.slug}`} className="theology-row flex min-h-[56px] items-start gap-3 rounded-[14px] px-2 py-2.5">
+-                    <span aria-hidden data-carry={`heresy:${h.slug}`} className="theology-plate mt-px grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
+-                      <Scroll size={17} />
+-                    </span>
++                  <Link href={`/heresies/${h.slug}`} className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5">
+                     <span className="min-w-0 flex-1">
+-                      <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92 rtl:text-right">
++                      <span lang="en" dir="ltr" className="block font-serif text-[17px] font-semibold leading-[1.3] text-paper rtl:text-right">
+                         {h.name}
+                       </span>
+-                      <span lang="en" dir="ltr" className="mt-[3px] block font-sans text-detail leading-[1.45] text-paper/60 rtl:text-right">
+-                        {h.shortBio}
++                      <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-detail leading-[1.45] text-paper/65 rtl:text-right">
++                        {h.heresiarch}
+                       </span>
+                     </span>
+-                    <ChevronRight size={14} className="mt-[9px] shrink-0 text-paper/45 rtl:-scale-x-100" />
++                    <ChevronRight size={16} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
+                   </Link>
+                 </li>
+               ))}
+diff --git a/app/globals.css b/app/globals.css
+index 9df2a0060..d43e20d03 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -6384,7 +6384,7 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
+   inset 0 0 0 1px rgb(0 0 0 / 0.5),
+   0 1px 0 color-mix(in srgb, var(--color-paper) 7%, transparent);
+ }
+-.set-track > button {
++.set-track > :is(button, a) {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+@@ -6400,7 +6400,7 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
+  color: color-mix(in srgb, var(--color-paper) 62%, transparent);
+  -webkit-tap-highlight-color: transparent;
+ }
+-.set-track > button::before {
++.set-track > :is(button, a)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+@@ -6415,15 +6415,15 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
+  opacity: 0;
+  scale: 0.94;
+ }
+-.set-track > button[aria-checked="true"] {
++.set-track > :is(button, a):is([aria-checked="true"], [aria-pressed="true"]) {
+  color: var(--color-night);
+ }
+-.set-track > button[aria-checked="true"]::before {
++.set-track > :is(button, a):is([aria-checked="true"], [aria-pressed="true"])::before {
+  opacity: 1;
+  scale: 1;
+ }
+ @media (hover: hover) {
+- .set-track > button[aria-checked="false"]:hover {
++ .set-track > :is(button, a)[aria-checked="false"]:hover {
+   color: var(--color-paper);
+  }
+ }
+@@ -7059,7 +7059,7 @@ html[data-reading-mode="parchment"] .set-track,
+ html[data-reading-mode="parchment"] .set-switch {
+  box-shadow: inset 0 2px 4px rgb(70 52 20 / 0.22), inset 0 0 0 1px rgb(43 35 23 / 0.08);
+ }
+-html[data-reading-mode="parchment"] .set-track > button::before {
++html[data-reading-mode="parchment"] .set-track > :is(button, a)::before {
+  box-shadow: 0 2px 5px rgb(70 52 20 / 0.3);
+ }
+ /* Settings' quiet words, legible on every palette (found by checkMock on
+@@ -7440,6 +7440,33 @@ html[data-reading-mode="parchment"] .plus-try-tile-lit:not(.dark-island *) {
+ 
+    A raised surface: a subject's tray of rows, the search's kinds, a
+    doctrine's Scripture and Related rows. */
++/* The day's lead on Today (1.9, the fifteen screens): the Night sky look's
++   own layers (html[data-look="nightsky"], --room), on a card that is a night
++   on every palette (dark-island), as the Nativity card is. */
++.day-lead {
++ --color-night: #05070d;
++ --color-night-deep: #020308;
++ --color-paper: #edf0f6;
++ color: var(--color-paper);
++ background:
++  var(--sky-stars) center top / cover no-repeat,
++  radial-gradient(140% 52% at 50% 112%, rgb(72 100 168 / 0.2), rgb(72 100 168 / 0) 66%),
++  linear-gradient(180deg, #03050a 0%, #05070d 40%, #070b14 100%);
++}
++/* With the Nativity star in it, the lead's own sky gives way to the star's:
++   the star's card loses its frame and the day stands on the earth under it. */
++.day-lead:has(.day-lead-star) {
++ background: var(--color-night-deep);
++}
++.day-lead .day-lead-star {
++ border-width: 0 0 1px;
++ border-radius: 0;
++}
++/* A track's unlit choices on Light, where a choice is a link or a pressed
++   button (the doors, 1.9): the ink at the share that holds 4.5:1 on the track. */
++html[data-reading-mode="parchment"] .set-track > :is(button, a):not(:is([aria-checked="true"], [aria-pressed="true"])) {
++ color: color-mix(in srgb, var(--color-paper) 76%, transparent);
++}
+ .theology-tray {
+  background: linear-gradient(180deg, rgb(28 28 31) 0%, rgb(21 21 24) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 5%, var(--color-night)) 0%, color-mix(in srgb, var(--color-paper) 2%, var(--color-night)) 100%);
+diff --git a/components/plans/PlansClient.tsx b/components/plans/PlansClient.tsx
+index 3076d0f13..bea8aa0a9 100644
+--- a/components/plans/PlansClient.tsx
++++ b/components/plans/PlansClient.tsx
+@@ -108,7 +108,7 @@ export function PlansClient({ minutes }: { minutes: Record<string, number> }) {
+       {tiles.length > 0 ? (
+         <section aria-labelledby={current || seasonPlan ? "plans-more" : undefined} aria-label={current || seasonPlan ? undefined : t("plans.title")} className={cn((current || seasonPlan) && "mt-8")}>
+           {current || seasonPlan ? (
+-            <h2 id="plans-more" className="font-sans text-eyebrow font-semibold uppercase tracking-[0.08em] text-paper/55">
++            <h2 id="plans-more" className="font-sans text-caption font-semibold text-paper/55">
+               {t("plans.more")}
+             </h2>
+           ) : null}
+@@ -244,7 +244,7 @@ function SeasonCard({
+         />
+         <div className="p-5">
+           {date ? (
+-            <p className="font-sans text-caption font-semibold uppercase tracking-[0.06em] text-paper/55">{t("plans.season.begins", { date })}</p>
++            <p className="font-sans text-caption font-semibold text-paper/55">{t("plans.season.begins", { date })}</p>
+           ) : null}
+           <h2 id="plans-season" className={cn("font-serif text-title-sm font-semibold leading-snug text-paper", date && "mt-1")}>
+             {t(`plans.${plan.id}.name`)}
+diff --git a/components/saints/SaintDoors.tsx b/components/saints/SaintDoors.tsx
+index 19a634cf4..f07f8f9c3 100644
+--- a/components/saints/SaintDoors.tsx
++++ b/components/saints/SaintDoors.tsx
+@@ -172,7 +172,7 @@ export function SaintDoors({
+         ref={doorsRef}
+         role="group"
+         aria-label={t("saints.sectionSwitcher")}
+-        className={cn("saint-head-in mx-auto grid max-w-[420px] gap-2 md:mx-0", DOOR_COLS[shown.length])}
++        className={cn("saint-head-in mx-auto max-w-[420px] md:mx-0", DOOR_COLS[shown.length])}
+         style={{ "--i": 3 } as CSSProperties}
+       >
+         {shown.map((door) =>
+@@ -186,7 +186,6 @@ export function SaintDoors({
+               data-tour="saint-web"
+               className={cn(DOOR, DOOR_OFF)}
+             >
+-              <DoorIcon door={door} size={20} />
+               <span className="line-clamp-2 max-w-full text-center leading-[1.15] [overflow-wrap:anywhere]">{t(LABEL[door])}</span>
+             </Link>
+           ) : (
+@@ -199,7 +198,6 @@ export function SaintDoors({
+               onClick={() => select(door, false)}
+               className={cn(DOOR, door === current ? DOOR_ON : DOOR_OFF)}
+             >
+-              <DoorIcon door={door} size={20} />
+               <span className="line-clamp-2 max-w-full text-center leading-[1.15] [overflow-wrap:anywhere]">{t(LABEL[door])}</span>
+             </button>
+           ),
+diff --git a/components/streak/StreakAtRisk.tsx b/components/streak/StreakAtRisk.tsx
+index b07861c7a..bec68143e 100644
+--- a/components/streak/StreakAtRisk.tsx
++++ b/components/streak/StreakAtRisk.tsx
+@@ -32,7 +32,7 @@ export function StreakAtRisk({ className, waitsForDayOne = false }: { className?
+   return (
+     <section
+       aria-labelledby="streak-at-risk"
+-      className={cn("rounded-[17px] border border-paper/12 bg-paper/[0.035] px-3.5 pb-3.5 pt-3", className)}
++      className={cn("px-1 pb-1 pt-2", className)}
+     >
+       <h2 id="streak-at-risk" className="sr-only">
+         {tn("streak.atRiskTitle", view.current)}
+@@ -41,13 +41,13 @@ export function StreakAtRisk({ className, waitsForDayOne = false }: { className?
+         <span aria-hidden className="shrink-0 font-sans text-[20px] font-bold leading-none tabular-nums text-paper/85">
+           {tn("streak.days", view.current)}
+         </span>
+-        <p className="min-w-0 flex-1 font-sans text-detail leading-snug text-paper/60">{t("streak.atRiskBody")}</p>
++        <p className="min-w-0 flex-1 font-sans text-detail leading-snug text-paper/70">{t("streak.atRiskBody")}</p>
+       </div>
+       <PrayerRope week={week} pulse className="mt-[9px]" />
+       <div className="mt-3.5 grid grid-cols-2 gap-2">
+         <Link
+           href={links.pray}
+-          className="inline-flex min-h-11 items-center justify-center rounded-pill bg-paper px-4 font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90"
++          className="inline-flex min-h-11 items-center justify-center rounded-pill border border-paper/25 px-4 font-sans text-detail font-semibold text-paper hover:border-paper/45"
+         >
+           {t("streak.pray")}
+         </Link>
+diff --git a/components/theology/TheologyHub.tsx b/components/theology/TheologyHub.tsx
+index 5c5e44399..2aa1d51a5 100644
+--- a/components/theology/TheologyHub.tsx
++++ b/components/theology/TheologyHub.tsx
+@@ -97,7 +97,7 @@ export function TheologyHub({
+         </section>
+         {slots.more}
+         <div data-tour="theology-path">
+-          <FoldedPath steps={steps} states={states} label={of} />
++          <FoldedPath steps={steps} states={states} label={walked > 0 ? of : ""} />
+         </div>
+       </div>
+     );
+@@ -120,7 +120,7 @@ export function TheologyHub({
+           <h2 id="theology-path" className="font-serif text-[17px] font-bold leading-tight text-paper">
+             {t("study.theology.byFaith")}
+           </h2>
+-          <span className="shrink-0 font-sans text-[12.5px] tabular-nums text-paper/50">{of}</span>
++          {walked > 0 ? <span className="shrink-0 font-sans text-[12.5px] tabular-nums text-paper/55">{of}</span> : null}
+         </div>
+         <p className="sr-only">{t("study.theology.byFaithLead")}</p>
+         <PathPlates steps={steps} states={states} className="mt-3" />
+@@ -128,7 +128,7 @@ export function TheologyHub({
+ 
+       {/* The path's end, then Go deeper: the whole library after the ninth. */}
+       <section id="go-deeper" aria-labelledby="go-deeper-title" className="mt-10 scroll-mt-20">
+-        <p className="font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">{t("discover.eyebrow")}</p>
++        <p className="font-sans text-caption font-semibold text-paper/55">{t("discover.eyebrow")}</p>
+         <h2 id="go-deeper-title" className="mt-1.5 font-serif text-[23px] font-bold leading-tight text-paper">
+           {t("study.apologetics.goDeeper")}
+         </h2>
+@@ -161,7 +161,7 @@ function FirstStep({ steps, progress }: { steps: PathStep[]; progress: PathProgr
+   const { step, done } = stepInHand(steps, progress);
+   return (
+     <section aria-labelledby="theology-head" data-path-head="first">
+-      <p className="font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">
++      <p className="font-sans text-caption font-semibold text-paper/55">
+         {fresh ? t("study.theology.byFaith") : t("prayers.today.whereYouLeftOff")}
+       </p>
+       {fresh ? (
+diff --git a/components/theology/TheologyLibrary.tsx b/components/theology/TheologyLibrary.tsx
+index 1ae5e43ab..cbb61ed46 100644
+--- a/components/theology/TheologyLibrary.tsx
++++ b/components/theology/TheologyLibrary.tsx
+@@ -45,19 +45,16 @@ export function WaysRows({ counts }: { counts: WayCounts }) {
+     <ul data-theology-ways="rows" className="theology-tray overflow-hidden rounded-[20px] px-1.5 py-1">
+       {WAYS.map((w) => (
+         <li key={w.key} className="theology-rule">
+-          <Link href={w.href} className="theology-row flex min-h-[54px] items-center gap-3 rounded-[14px] px-2 py-2">
+-            <span data-carry={`way:${w.key}`} className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
+-              <w.Icon size={17} />
+-            </span>
++          <Link href={w.href} className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5">
+             <span className="min-w-0 flex-1">
+-              <span className="block truncate font-serif text-[15.5px] font-semibold leading-tight text-paper/92">
++              <span className="block truncate font-serif text-[17px] font-semibold leading-[1.3] text-paper">
+                 <T k={w.label} />
+               </span>
+-              <span className="mt-0.5 block truncate font-sans text-caption text-paper/55">
++              <span className="mt-0.5 block truncate font-sans text-detail text-paper/65">
+                 <T k={w.kicker} /> · <span className="tabular-nums">{counts[w.key]}</span>
+               </span>
+             </span>
+-            <ChevronRight size={14} className="shrink-0 text-paper/32 rtl:-scale-x-100" />
++            <ChevronRight size={16} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
+           </Link>
+         </li>
+       ))}
+diff --git a/components/today/ChurchTodayRail.tsx b/components/today/ChurchTodayRail.tsx
+index f9dff9b9f..4f7bbaa76 100644
+--- a/components/today/ChurchTodayRail.tsx
++++ b/components/today/ChurchTodayRail.tsx
+@@ -159,22 +159,23 @@ export function ChurchTodayRail() {
+   // ---- The fast, unless the reader chose to hide fasting.
+   const view = fasting === "hidden" ? null : fastView(fast.kind, fasting);
+   const plain = view?.mode === "plain";
+-  const marks = view && !plain ? fastMarks(fast.kind) : null;
++  // The fast in words, never in pills (1.9, the fifteen screens): the day's rule line and what is kept from.
++  const marks: FastMark[] | null = null;
+   const notKey = plain ? null : fastNotAllowedKey(fast.kind);
+   const fastBody = view ? (
+     <>
+       <span className="block font-sans text-caption font-semibold text-paper/55">{t("today.fastEyebrow")}</span>
+-      <span className="mt-0.5 block font-heading text-lede font-bold leading-tight text-paper">
++      <span className="mt-0.5 block font-serif text-lede font-semibold leading-[25px] text-paper">
+         {plain ? t("today.fastPlain.label") : t(`calendar.fast.${fast.ruleId}.label`)}
+       </span>
+       {marks ? (
+         <Marks marks={marks} />
+       ) : (
+         <>
+-          <span className="mt-1 block font-sans text-caption leading-snug text-paper/55">
++          <span className="mt-1 block font-sans text-ui leading-5 text-paper/70">
+             {plain ? t("today.fastPlain.rule") : t(`calendar.fast.${fast.ruleId}.rule`)}
+           </span>
+-          {notKey ? <span className="mt-0.5 block font-sans text-caption leading-snug text-paper/55">{t(notKey)}</span> : null}
++          {notKey ? <span className="mt-0.5 block font-sans text-ui leading-5 text-paper/70">{t(notKey)}</span> : null}
+         </>
+       )}
+     </>
+@@ -228,16 +229,18 @@ export function ChurchTodayRail() {
+         {history ? <HistoryDayBand event={history} /> : null}
+ 
+         {view && !path ? (
+-          <Link href="/fasting" data-today-band="fast" className="press-card block rounded-[18px] border border-paper/8 bg-night-deep px-4 py-3.5">
+-            {fastBody}
++          <Link href="/fasting" data-today-band="fast" className="theology-tray tap-press flex items-center gap-3 rounded-[20px] px-4 py-3.5">
++            <span className="min-w-0 flex-1">{fastBody}</span>
++            <ChevronRight size={18} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
+           </Link>
+         ) : path ? (
+           // Two ways on from one band, each its own link: the fast, and the
+           // path at its foot under a hairline.
+-          <div data-today-band="fast" className="overflow-hidden rounded-[18px] border border-paper/8 bg-night-deep">
++          <div data-today-band="fast" className="theology-tray overflow-hidden rounded-[20px]">
+             {view ? (
+-              <Link href="/fasting" className="block px-4 pb-3 pt-3.5 transition-colors active:bg-paper/[0.04] motion-reduce:transition-none">
+-                {fastBody}
++              <Link href="/fasting" className="flex items-center gap-3 px-4 pb-3 pt-3.5 transition-colors active:bg-paper/[0.04] motion-reduce:transition-none">
++                <span className="min-w-0 flex-1">{fastBody}</span>
++                <ChevronRight size={18} className="shrink-0 text-paper/55 rtl:-scale-x-100" />
+               </Link>
+             ) : null}
+             <Link href={path.href} data-nativity-path="" className="block px-4 transition-colors active:bg-paper/[0.04] motion-reduce:transition-none">
+@@ -299,7 +302,7 @@ export function ChurchTodayRail() {
+                     href={hrefOf(walk[0])}
+                     onClick={walk.length > 1 ? () => startReadingsFlow(walk) : undefined}
+                     data-read-all=""
+-                    className="tap-press inline-flex min-h-11 items-center gap-2 rounded-pill bg-paper px-[18px] font-sans text-ui font-semibold text-night"
++                    className="tap-press inline-flex min-h-11 items-center gap-2 rounded-pill border border-paper/22 bg-paper/[0.03] px-[18px] font-sans text-ui font-semibold text-paper"
+                   >
+                     <Play size={13} className="shrink-0 rtl:-scale-x-100" />
+                     {walk.length > 1 ? tn("today.readings.readAll", walk.length) : t("reading.featured.read")}
+diff --git a/components/today/GreetingHeader.tsx b/components/today/GreetingHeader.tsx
+index 0e2d5b9f4..b502a4806 100644
+--- a/components/today/GreetingHeader.tsx
++++ b/components/today/GreetingHeader.tsx
+@@ -1,11 +1,12 @@
+ "use client";
+ 
+ import Link from "next/link";
++import type { ReactNode } from "react";
+ 
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { ArrivingImage } from "@/components/ui/ArrivingImage";
+ import { Book } from "@/components/ui/icons/Book";
+-import { Play } from "@/components/ui/icons/Play";
++import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+ import { shiftForStyle } from "@/lib/calendar/orthodox";
+ import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
+ import { useChurchDay } from "@/lib/calendar/useChurchDay";
+@@ -50,7 +51,7 @@ import { PictureCreditNote } from "@/components/saints/PictureCredit";
+  * Pascha". It was a row of The Church today, a seventh thing to read on a
+  * saint's day (lib/today/greeting.ts, paschaCount).
+  */
+-export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
++export function GreetingHeader({ verses, star }: { verses: HourVerses | null; star?: ReactNode }) {
+   const { locale, t, tn } = useTranslate();
+   const mounted = useMounted();
+   const day = useChurchDay();
+@@ -92,114 +93,97 @@ export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
+   // a feast, and a learning reader's line is held blank.
+   const waiting = day === null && type !== "new";
+ 
+-  if (waiting && type === "orthodox") {
+-    return (
+-      <header aria-hidden className="mb-5">
+-        <p className="font-sans text-detail text-paper/60">{" "}</p>
+-        <p className="mt-2.5 font-serif text-title-sm font-bold leading-[1.22]">{" "}</p>
+-      </header>
+-    );
+-  }
++  // The day leads once, on the night (1.9, the fifteen screens): the date, the
++  // saint or the greeting, and the hour's prayer with the screen's one Begin.
++  const ruleId = ruleIdForHour(h);
++  const prayer = hourPrayer(ruleId, todayRuleCard(mine, ruleId));
++  const marks = kind === "lead" && lead && day ? dayMarks(lead, day.fast, fasting) : null;
++  // The small line is the date (and a feast's rank); the fast and the count
++  // to Pascha stand under the saint's name, so no word is left alone on a line.
++  const line = [date, marks?.feast === "great" ? t("today.greet.greatFeast") : marks?.feast === "feast" ? t("calendar.feastAria") : null, marks ? null : pascha]
++    .filter(Boolean)
++    .join(" · ");
++  const under = marks
++    ? [marks.fast ? (marks.fast.kind === "plain" ? t("today.fastPlain.label") : t(`calendar.fast.${marks.fast.ruleId}.label`)) : null, pascha].filter(Boolean).join(" · ")
++    : "";
++  const now = prayer.minutes ? `${t("prayers.timeline.now")} · ${t("today.minRead", { count: prayer.minutes })}` : t("prayers.timeline.now");
+ 
+-  if (kind === "lead" && lead && day) {
+-    const marks = dayMarks(lead, day.fast, fasting);
+-    const line = [
+-      date,
+-      marks.feast === "great" ? t("today.greet.greatFeast") : marks.feast === "feast" ? t("calendar.feastAria") : null,
+-      marks.fast === null
+-        ? null
+-        : marks.fast.kind === "plain"
+-          ? t("today.fastPlain.label")
+-          : t(`calendar.fast.${marks.fast.ruleId}.label`),
+-      pascha,
+-    ]
+-      .filter(Boolean)
+-      .join(" · ");
+-    const ruleId = ruleIdForHour(h);
+-    const prayer = hourPrayer(ruleId, todayRuleCard(mine, ruleId));
+-    const pill = prayer.minutes
+-      ? `${t(prayer.titleKey)} · ${t("today.minRead", { count: prayer.minutes })}`
+-      : t(prayer.titleKey);
+-    return (
+-      <header className="mb-5">
+-        <p className="font-sans text-detail text-paper/60">{line}</p>
+-        <div className="mt-2.5 flex items-start gap-3.5">
+-          {lead.iconUrl ? (
+-            // The app's own icon, in a frame of its size that stands at once;
+-            // the icon comes into it whole (build 85, note 52).
+-            <span aria-hidden className="relative h-[78px] w-[62px] shrink-0 overflow-hidden rounded-[12px] bg-paper/[0.05] ring-1 ring-paper/14">
+-              <ArrivingImage
+-                src={lead.iconUrl}
+-                decoding="async"
+-                className="absolute inset-0 h-full w-full object-cover object-[50%_18%]"
+-              />
+-            </span>
+-          ) : null}
+-          <PictureCreditNote src={lead.iconUrl} />
+-          {/* h2, not h1: the bar above names the screen ("Today") and owns
+-              its one h1 (1.7). The calendar's names are English. */}
+-          <h2 lang="en" dir="ltr" className="title-in min-w-0 font-serif text-title-sm font-bold leading-[1.22] text-paper">
+-            {lead.name}
+-          </h2>
+-        </div>
+-        <div className="mt-3.5 flex flex-wrap items-center gap-2">
+-          {lead.hymnsHref ? (
+-            <Link
+-              href={lead.hymnsHref}
+-              className="tap-press hit-44 inline-flex min-h-[38px] items-center gap-[7px] rounded-pill border border-paper/22 px-[13px] font-sans text-detail font-semibold text-paper transition-colors hover:border-paper/40"
+-            >
+-              <Book size={15} />
+-              {t("today.greet.hymns")}
+-            </Link>
+-          ) : null}
++  return (
++    <header data-day-lead="" className="day-lead dark-island relative mb-5 overflow-hidden rounded-[22px] border border-paper/12">
++      {/* During the Nativity Fast its star rises here, in the lead's own sky: one night on the screen. */}
++      {star}
++      <div className="relative px-[18px] pb-[18px] pt-4">
++        <p className="font-sans text-caption font-semibold leading-[18px] text-paper/65">{waiting ? " " : line}</p>
++
++        {kind === "lead" && lead ? (
++          <div className="mt-3 flex items-center gap-3.5">
++            {lead.iconUrl ? (
++              <span aria-hidden className="relative h-[78px] w-[62px] shrink-0 overflow-hidden rounded-[12px] bg-paper/[0.05] ring-1 ring-paper/14">
++                <ArrivingImage src={lead.iconUrl} decoding="async" className="absolute inset-0 h-full w-full object-cover object-[50%_18%]" />
++              </span>
++            ) : null}
++            <PictureCreditNote src={lead.iconUrl} />
++            {/* h2, not h1: the bar above names the screen ("Today") and owns
++                its one h1 (1.7). The calendar's names are English. */}
++            <div className="min-w-0">
++              <h2 lang="en" dir="ltr" className="title-in font-serif text-title-sm font-bold leading-[1.22] text-paper">
++                {lead.name}
++              </h2>
++              {under ? <p className="mt-1 text-balance font-sans text-detail leading-[19px] text-paper/75">{under}</p> : null}
++            </div>
++          </div>
++        ) : (
++          <>
++            <h2 className="title-in mt-2 font-serif text-heading leading-[1.1] text-paper">{waiting ? " " : greet}</h2>
++            {kind === "line" && lead ? (
++              <p className="mt-1.5 font-sans text-ui leading-normal text-paper/75">{t(learningLineKey(lead), { name: lead.name })}</p>
++            ) : kind === "verse" && verse ? (
++              <>
++                {/* The app's Psalter is English (Brenton), as the verse of the day is. */}
++                <p lang="en" dir="ltr" className="mt-1.5 font-serif text-[15px] italic leading-[1.5] text-paper/75">
++                  &ldquo;{verse.text}&rdquo;
++                </p>
++                <p className="mt-1 font-sans text-caption font-semibold text-paper/65">{t("today.greet.psalm", { ref: verse.ref })}</p>
++              </>
++            ) : waiting ? null : (
++              <p className="mt-1 font-sans text-detail text-paper/65">{t("today.abide")}</p>
++            )}
++          </>
++        )}
++
++        {/* The hour's prayer: the screen's first action, and its only white button. */}
++        <div className="mt-4 border-t border-paper/12 pt-3.5">
++          <p className="font-sans text-caption font-semibold leading-[18px] text-paper/65">{now}</p>
++          <p className="mt-0.5 font-serif text-[21px] font-bold leading-[27px] text-paper">{t(prayer.titleKey)}</p>
+           <Link
+             href={prayer.href}
+-            className="tap-press hit-44 inline-flex min-h-[38px] items-center gap-[7px] rounded-pill bg-paper px-[13px] font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90"
++            data-pray-hour=""
++            className="tap-press mt-3.5 flex min-h-12 w-full items-center justify-center gap-2 rounded-pill bg-paper px-6 font-sans text-[15px] font-semibold text-night"
+           >
+-            <Play size={13} className="rtl:-scale-x-100" />
+-            {pill}
++            {t("today.prayNow.begin")}
++            <ArrowRight />
+           </Link>
++          {kind === "lead" && lead?.hymnsHref ? (
++            <Link href={lead.hymnsHref} className="tap-press mt-1 flex min-h-11 w-full items-center justify-center gap-2 font-sans text-ui font-semibold text-paper">
++              <Book size={15} />
++              {t("today.greet.hymns")}
++            </Link>
++          ) : kind === "line" && lead ? (
++            <Link href="/calendar" className="tap-press mt-1 flex min-h-11 w-full items-center justify-center gap-1.5 font-sans text-ui font-semibold text-paper">
++              {t("today.greet.seeDay")}
++              <ChevronRight size={15} className="rtl:-scale-x-100" />
++            </Link>
++          ) : null}
+         </div>
+-      </header>
+-    );
+-  }
++      </div>
++    </header>
++  );
++}
+ 
++function ArrowRight() {
+   return (
+-    <header className="mb-5">
+-      <p className="font-sans text-detail text-paper/60">{pascha ? `${date} · ${pascha}` : date}</p>
+-      {/* h2, not h1: the tab bar above names the screen ("Today") and owns
+-          its one h1 (1.7). The size is the classes', so nothing moves. */}
+-      <h2 className="title-in mt-1.5 font-serif text-heading leading-[1.1] text-paper">{greet}</h2>
+-      {kind === "line" && lead ? (
+-        <>
+-          <p className="mt-1.5 font-sans text-ui leading-normal text-paper/75">{t(learningLineKey(lead), { name: lead.name })}</p>
+-          <Link
+-            href="/calendar"
+-            className="hit-44 mt-2 inline-flex items-center gap-1 font-sans text-detail font-semibold text-paper underline-offset-4 hover:underline"
+-          >
+-            {t("today.greet.seeDay")}
+-            <span aria-hidden className="inline-block rtl:-scale-x-100">
+-              {"→"}
+-            </span>
+-          </Link>
+-        </>
+-      ) : kind === "verse" && verse ? (
+-        <>
+-          {/* The app's Psalter is English (Brenton), as the verse of the day is. */}
+-          <p lang="en" dir="ltr" className="mt-1.5 font-serif text-[15px] italic leading-[1.5] text-paper/70">
+-            &ldquo;{verse.text}&rdquo;
+-          </p>
+-          <p className="mt-[5px] font-sans text-[11.5px] font-semibold uppercase tracking-[0.12em] text-paper/45">
+-            {t("today.greet.psalm", { ref: verse.ref })}
+-          </p>
+-        </>
+-      ) : waiting ? (
+-        <p aria-hidden className="mt-1.5 font-sans text-ui leading-normal">
+-          {" "}
+-        </p>
+-      ) : (
+-        <p className="mt-1 font-sans text-detail text-paper/55">{t("today.abide")}</p>
+-      )}
+-    </header>
++    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden className="rtl:-scale-x-100">
++      <path d="M5 12h14M13 6l6 6-6 6" />
++    </svg>
+   );
+ }
+diff --git a/components/today/PrayNowCard.tsx b/components/today/PrayNowCard.tsx
+index a0bc04d78..0e7cf0980 100644
+--- a/components/today/PrayNowCard.tsx
++++ b/components/today/PrayNowCard.tsx
+@@ -6,7 +6,6 @@ import { todayRuleCard } from "@/lib/prayers/myRule";
+ import { ruleIdForHour, type HourRuleId } from "@/lib/prayers/ruleForHour";
+ import { PRAYER_EVENT } from "@/lib/prayers/storage";
+ import { useMyRule } from "@/lib/prayers/useMyRule";
+-import { sectionMedia } from "@/lib/media/sections";
+ import { isKept } from "@/lib/rhythm/marks";
+ import { todayKey } from "@/lib/rhythm/dayKey";
+ import { prayRail, type PrayCard } from "@/lib/today/prayRail";
+@@ -50,9 +49,7 @@ function useKeptToday(): (id: string) => boolean {
+ }
+ 
+ /** The Pantocrator of Prayers (lib/media/sections.ts), the light at the hour card's side. */
+-const LIGHT = sectionMedia("prayers");
+ /** The light fades out from its middle, so it has no edge on the card. */
+-const LIGHT_FADE = "radial-gradient(closest-side, #000 40%, transparent)";
+ 
+ export function PrayRail({ className }: { className?: string }) {
+   const { t } = useTranslate();
+@@ -71,10 +68,8 @@ export function PrayRail({ className }: { className?: string }) {
+   const now: HourRuleId = ruleId ?? "morning";
+   // The marks are the device's too: none until the hour is known, so the
+   // first drawing is the server's.
+-  const { hour, tiles } = prayRail(now, ruleId ? todayRuleCard(mine, ruleId) : null, ruleId ? kept : () => false);
+-  const known = ruleId ? "" : "invisible";
++  const { tiles } = prayRail(now, ruleId ? todayRuleCard(mine, ruleId) : null, ruleId ? kept : () => false);
+   // An odd tile out takes the whole row, so the grid never ends on a gap.
+-  const wide = (i: number) => tiles.length % 2 === 1 && i === tiles.length - 1;
+ 
+   return (
+     <section aria-labelledby="today-pray" className={className}>
+@@ -92,50 +87,9 @@ export function PrayRail({ className }: { className?: string }) {
+         </Link>
+       </div>
+ 
+-      <ul className="grid grid-cols-2 gap-x-2 gap-y-2.5">
+-        <li className="col-span-2">
+-          {/* The hour's prayer, large: the screen's first action. */}
+-          <Link
+-            href={hour.href}
+-            data-pray-hour=""
+-            className="press-card relative block overflow-hidden rounded-[24px] border border-paper/12 bg-night-deep px-5 pb-[18px] pt-5"
+-          >
+-            {LIGHT ? (
+-              // eslint-disable-next-line @next/next/no-img-element -- the app's own section picture, a soft light (as PrayersHero draws it)
+-              <img
+-                src={LIGHT.src}
+-                alt=""
+-                aria-hidden
+-                decoding="async"
+-                className="pointer-events-none absolute -end-[30px] -top-5 h-[200px] w-[190px] object-cover opacity-[0.32]"
+-                style={{ maskImage: LIGHT_FADE, WebkitMaskImage: LIGHT_FADE }}
+-              />
+-            ) : null}
+-            <div className={cn("relative", known)}>
+-              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-caption font-semibold text-paper/60">
+-                <span>
+-                  {hour.minutes ? `${t("prayers.timeline.now")} · ${t("today.minRead", { count: hour.minutes })}` : t("prayers.timeline.now")}
+-                </span>
+-                {hour.done ? <Prayed /> : null}
+-              </p>
+-              <h3 className="mt-1 font-heading text-title font-bold leading-[1.1] text-paper">{t(hour.titleKey)}</h3>
+-              {/* On paper the picture at the card's side lies under this line's
+-                  end: its ink is stronger there (the gate's words over pictures,
+-                  2026-11-11: 3.96:1 on Light, 4.20 to 4.47 on six light looks),
+-                  and stronger again on the light looks, whose paper is tinted
+-                  (the morning line read 4.28 to 4.50 on seven at 80%, the gate's
+-                  final run of 2026-11-12). */}
+-              <p className="mt-1.5 max-w-[12.5rem] font-sans text-detail leading-snug text-paper/60 [html[data-reading-mode=parchment]_&]:text-paper/80 [html[data-reading-mode=parchment][data-look]_&]:text-paper/90">{t(hour.lineKey)}</p>
+-              <span className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-pill bg-paper px-[18px] font-sans text-ui font-semibold text-night">
+-                {t("today.prayNow.begin")}
+-                <ArrowRight />
+-              </span>
+-            </div>
+-          </Link>
+-        </li>
+-
++      <ul className="theology-tray overflow-hidden rounded-[20px]">
+         {tiles.map((tile, i) => (
+-          <li key={tile.key} className={cn("flex", wide(i) && "col-span-2")}>
++          <li key={tile.key} className={cn(i > 0 && "border-t border-paper/10")}>
+             <Tile tile={tile} hidden={tile.key !== "anthem" && !ruleId} />
+           </li>
+         ))}
+@@ -148,23 +102,21 @@ export function PrayRail({ className }: { className?: string }) {
+ function Tile({ tile, hidden }: { tile: PrayCard; hidden: boolean }) {
+   const { t } = useTranslate();
+   return (
+-    <Link
+-      href={tile.href}
+-      className={cn(
+-        "press-card flex w-full flex-col justify-center rounded-[14px] border border-paper/10 px-3 py-2.5 hover:bg-paper/[0.04]",
+-        hidden && "invisible",
+-      )}
+-    >
+-      <span className="font-heading text-ui font-semibold leading-tight text-paper">{t(tile.titleKey)}</span>
+-      <span className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-sans text-caption text-paper/50">
+-        {tile.subKey ? <span>{t(tile.subKey)}</span> : tile.minutes != null ? <span>{t("today.minRead", { count: tile.minutes })}</span> : null}
+-        {tile.done ? <Prayed /> : null}
++    <Link href={tile.href} className={cn("tap-press flex min-h-[64px] w-full items-center gap-3 px-4 py-3 active:bg-paper/[0.04]", hidden && "invisible")}>
++      <span className="min-w-0 flex-1">
++        <span className="block font-serif text-lede font-semibold leading-[25px] text-paper">{t(tile.titleKey)}</span>
++        <span className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-sans text-ui leading-5 text-paper/70">
++          {tile.subKey ? <span>{t(tile.subKey)}</span> : tile.minutes != null ? <span>{t("today.minRead", { count: tile.minutes })}</span> : null}
++          {tile.done ? <Prayed /> : null}
++        </span>
++      </span>
++      <span className="shrink-0 text-paper/55">
++        <ChevronRight size={18} />
+       </span>
+     </Link>
+   );
+ }
+ 
+-/** The quiet done mark once the prayer is said today. */
+ function Prayed() {
+   const { t } = useTranslate();
+   return (
+@@ -179,14 +131,6 @@ function Prayed() {
+   );
+ }
+ 
+-function ArrowRight() {
+-  return (
+-    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden className="rtl:-scale-x-100">
+-      <path d="M5 12h14M13 6l6 6-6 6" />
+-    </svg>
+-  );
+-}
+-
+ function ChevronRight({ size }: { size: number }) {
+   return (
+     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden className="rtl:-scale-x-100">
+diff --git a/components/today/SpeakerBand.tsx b/components/today/SpeakerBand.tsx
+index a85d60b1e..3115fa599 100644
+--- a/components/today/SpeakerBand.tsx
++++ b/components/today/SpeakerBand.tsx
+@@ -112,7 +112,7 @@ export function SpeakerBand({ eyebrow, name, words, who, cite, face, onShare, sh
+           </span>
+         )}
+         {name ? (
+-          <Link href={name.href} lang="en" dir="ltr" className="today-band-link mt-0.5 block font-heading text-lede font-bold leading-tight text-paper">
++          <Link href={name.href} lang="en" dir="ltr" className="today-band-link -mb-[11px] -mt-[9px] block pb-[11px] pt-[11px] font-heading text-lede font-bold leading-tight text-paper">
+             {name.text}
+           </Link>
+         ) : null}
+diff --git a/components/today/StreakRow.tsx b/components/today/StreakRow.tsx
+index 83f4a787a..5dd1b0155 100644
+--- a/components/today/StreakRow.tsx
++++ b/components/today/StreakRow.tsx
+@@ -32,6 +32,9 @@ export function StreakRow({ className }: { className?: string }) {
+   const dayOne = useStreakWaits();
+   const place = ropeRow(view, dayOne);
+   if (place === "none") return null;
++  // No zero as a first sight (1.9, the fifteen screens): the rope is drawn
++  // from the first day kept. Until then Today's lead is the invitation.
++  if (view.ready && view.best === 0 && !view.keptToday) return null;
+   // The rope's height, held before the streak is read, so the cards under it
+   // do not jump when it lands.
+   if (place === "hold") return <div aria-hidden className={cn("h-[92px]", className)} />;
+@@ -48,6 +51,7 @@ export function StreakRow({ className }: { className?: string }) {
+ export function StreakRope({ className }: { className?: string }) {
+   const view = useStreak();
+   if (!view.ready) return <div aria-hidden className={cn("h-[92px]", className)} />;
++  if (view.best === 0 && !view.keptToday) return null;
+   return <Rope view={view} className={className} />;
+ }
+ 
+@@ -65,13 +69,14 @@ function Rope({ view, className }: { view: StreakView; className?: string }) {
+         aria-label={`${tn("streak.count", view.current)}. ${line}`}
+         aria-haspopup="dialog"
+         className={cn(
+-          "tap-press flex w-full flex-col gap-[9px] rounded-[17px] border border-paper/12 bg-paper/[0.035] px-3.5 pb-2.5 pt-3 text-start transition-colors hover:bg-paper/[0.06]",
++          "tap-press flex w-full flex-col gap-[9px] px-1 pb-1 pt-2 text-start",
+           className,
+         )}
+       >
+         <span className="flex w-full items-center gap-2.5">
+           <span
+             aria-hidden
++            hidden={view.current === 0}
+             className={cn(
+               "shrink-0 font-sans text-[20px] font-bold leading-none tabular-nums",
+               view.keptToday ? "rope-count-lit text-paper" : view.current > 0 ? "text-paper/85" : "text-paper/50",
+@@ -79,7 +84,7 @@ function Rope({ view, className }: { view: StreakView; className?: string }) {
+           >
+             {tn("streak.days", view.current)}
+           </span>
+-          <span aria-hidden className="min-w-0 flex-1 font-sans text-detail leading-snug text-paper/60">
++          <span aria-hidden className="min-w-0 flex-1 font-sans text-detail leading-snug text-paper/70">
+             {line}
+           </span>
+           <svg
+@@ -92,7 +97,7 @@ function Rope({ view, className }: { view: StreakView; className?: string }) {
+             strokeWidth={2.2}
+             strokeLinecap="round"
+             strokeLinejoin="round"
+-            className="shrink-0 text-paper/40 rtl:-scale-x-100"
++            className="shrink-0 text-paper/55 rtl:-scale-x-100"
+           >
+             <path d="m9 6 6 6-6 6" />
+           </svg>
+diff --git a/components/today/TodayGreeting.tsx b/components/today/TodayGreeting.tsx
+index aa811dc0a..8857fd075 100644
+--- a/components/today/TodayGreeting.tsx
++++ b/components/today/TodayGreeting.tsx
+@@ -1,3 +1,4 @@
++import { NativityFastCard } from "./NativityFastCard";
+ import { loadHourVerses } from "@/lib/today/hourVerse.server";
+ import { GreetingHeader } from "./GreetingHeader";
+ 
+@@ -10,5 +11,5 @@ import { GreetingHeader } from "./GreetingHeader";
+  */
+ export async function TodayGreeting() {
+   const verses = await loadHourVerses();
+-  return <GreetingHeader verses={verses} />;
++  return <GreetingHeader verses={verses} star={<NativityFastCard className="day-lead-star" />} />;
+ }
+diff --git a/components/today/TodayMobileV3.tsx b/components/today/TodayMobileV3.tsx
+index 435c62240..743f2a8a5 100644
+--- a/components/today/TodayMobileV3.tsx
++++ b/components/today/TodayMobileV3.tsx
+@@ -7,7 +7,6 @@ import { RememberCard } from "./RememberCard";
+ import { FlorilegiumLineCard } from "./FlorilegiumLineCard";
+ import { TodayGreeting } from "./TodayGreeting";
+ import { StreakRow } from "./StreakRow";
+-import { NativityFastCard } from "./NativityFastCard";
+ import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
+ import { KeepCard, PlusIntroCard, SecondChanceCard } from "@/components/onboarding/RoadCards";
+ import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
+@@ -86,7 +85,7 @@ export function TodayMobileV3() {
+ 
+           {/* The Nativity Fast's day (1.8, his pick C of round 9): during the
+               fast only, under the streak, its star a little higher each day. */}
+-          <NativityFastCard className="mt-4" />
++          {/* The Nativity Fast's star stands in the lead now (1.9, the fifteen screens): one night on the screen. */}
+ 
+           {/* Your name day (1.8): the patron's icon, name and words, on that
+               day only, above the day's word because it is the reader's. */}
+diff --git a/components/today/VerseOfDayView.tsx b/components/today/VerseOfDayView.tsx
+index 9717d0b5a..4a959075c 100644
+--- a/components/today/VerseOfDayView.tsx
++++ b/components/today/VerseOfDayView.tsx
+@@ -82,7 +82,7 @@ export function VerseOfDayView({
+   const verseLang = translated ? translated.language : vod?.text ? "en" : undefined;
+ 
+   return (
+-    <article className="lm-card relative overflow-hidden rounded-[24px] border border-paper/10 bg-night-deep px-[22px] pb-5 pt-6 text-center">
++    <article className="relative px-1 pb-2 pt-4 text-center">
+       {/* The icon's light, behind the words. */}
+       <span aria-hidden className="verse-light pointer-events-none absolute left-1/2 top-[-120px] h-[300px] w-[380px] -translate-x-1/2" />
+       <div className="relative">
+diff --git a/components/ui/doors.ts b/components/ui/doors.ts
+index 2d10fd31f..89bf1a03e 100644
+--- a/components/ui/doors.ts
++++ b/components/ui/doors.ts
+@@ -11,12 +11,12 @@
+ 
+ /** A door: its icon over its name. */
+ export const DOOR =
+-  "tap-press flex h-[74px] min-w-0 flex-col items-center justify-center gap-[7px] rounded-[16px] border px-1 font-sans text-detail font-semibold leading-none motion-safe:transition-colors";
+-export const DOOR_OFF = "border-paper/[0.09] bg-paper/[0.06] text-paper hover:bg-paper/[0.1]";
+-export const DOOR_ON = "border-paper bg-paper text-night";
++  "hit-44 min-w-0 font-sans";
++export const DOOR_OFF = "";
++export const DOOR_ON = "";
+ 
+ /** The grid for so many doors. */
+-export const DOOR_COLS: Record<number, string> = { 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4" };
++export const DOOR_COLS: Record<number, string> = { 2: "set-track [--set-cols:2]", 3: "set-track [--set-cols:3]", 4: "set-track [--set-cols:4]" };
+ 
+ /** The slim row: its track, and each door in it. */
+ export const SLIM_TRACK = "grid grid-flow-col auto-cols-fr gap-1 rounded-pill border border-paper/10 bg-paper/[0.03] p-1";
