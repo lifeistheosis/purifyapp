@@ -1273,6 +1273,8 @@ const sheetFromGathering = async (page) => {
   await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/journal", null, { timeout: 15000 });
   await page.waitForSelector("[data-journal-title]", { state: "attached", timeout: 15000 });
   await wait(1500);
+  // And a finger put down where they write: the sheet gives no cursor by itself (build 95 note 6).
+  await tapToWrite(page);
 };
 const FLOR = { at: "/florilegium", ready: "main h1, [data-route-content] h1", reader: "plus" };
 
