@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state; the log is the release's HANDOFF.md. How the chats run: `docs/OPERATIONS.md`.
 
-Updated 2026-11-13 18:28 UTC, by Arbiter 2.
+Updated 2026-11-13 18:52 UTC, by Arbiter 2.
 
 ## 1.9: in flight
 
@@ -64,6 +64,7 @@ Each held change is a patch in the repo, so its chat could be archived. On his y
 | 27, earning a look by reading | https://claude.ai/artifact/JvH8j4Pzs5doo957UuS46j | docs/1.9-build/notes/build-95/earned-looks/prototype.patch (on apply, still to do: the 13 earn.* lines in the other 20 catalogs, the whole suite, both native builds; the chooser row's spec in docs/handoffs/fable-looks.md, open item 3) |
 | 3, 4 and 6, the Fast and the Journal redrawn (three answers: the Fast; the Journal; quoting and pictures) | https://claude.ai/artifact/CQvAy39zXXmA62dVXjj785 | docs/1.9-build/held/fast-journal/fast-journal-look.patch (its README is the handoff: git am --3way, then the fix checklist; applies on df48a34cd). To name with it: a new reader's Fast keeps one line of room above "Recent fasting days" so nothing moves at the first mark; part 3 brings raised cards back for Scripture and the Fathers' words (not his own quotes), which he may read as a step back from build 93; the website's shared page follows a yes to part 3 |
 | The emails, round 3 (two answers: the default colours in every email; the fasting companion's calendar drawn as the app's phone calendar) | https://claude.ai/artifact/PsWzPU7ycgdmGzFjzLYdz5 | docs/1.9-build/drafts/emails-round-3/held.patch (README beside it; applies on 774248d5). To name with it: the light scheme taken out of all nine emails, Dark for everyone (recommended); the account and order emails' shell (lib/email/theme.ts EMAIL_THEMES.night, a purple grey for quiet words) was not on the list (recommended: brought to Dark too, with before and after stills in the apply round); the retention look and its pictures still to wire on apply; a look in real Gmail, Apple Mail and Outlook with the first send, which goes to him alone |
+| 25, the choice of voices (three points, each recommended yes: a notification's chime plays over the voice and does not stop it, calls and other apps pause it; never over a licensed translation; Heart named "Heart", with "Purify's reading voice") | https://claude.ai/artifact/LTjMHqyrEvL3eyLJgX7qTL | docs/1.9-build/drafts/build-95-note-25-voices.patch (applies on 08bfdf8e; one line meets cb1f2333's pill; note 22's patch meets it in the player's ••• sheet, Voice above Ambience; baton docs/handoffs/updates-19.md) |
 | 17, the patron saint chooser | https://claude.ai/artifact/GFtBS2BJ29P7ZfeYCJqhmH | docs/1.9-build/drafts/build-95-note-17.patch |
 | 18 and 19, Settings' row of modes and words | https://claude.ai/artifact/8FLKFQDUhaVExnP59vzjL3 | docs/1.9-build/drafts/build-95-notes-18-19.patch |
 | 22, the ambience with photographs | stills in docs/1.9-build/notes/build-95/22-*.png | docs/1.9-build/notes/build-95/22-held.patch |
