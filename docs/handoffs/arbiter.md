@@ -17,7 +17,7 @@ Read first: `docs/roles/arbiter.md`, `docs/NOW.md` (the roster, "Waiting on him"
 3. Note 28, the desktop revamp (asked 15:33): recommended, folded into the fifteen screens with the computer's frame first, Fable designing, in 1.9 by his rule. Under "optimize" it waits until the fifteen screens' designs land.
 4. Decided and still to build: readers join the retention emails by one asking line in the welcome email (opt-in), before those emails are switched on. Give it to a chat when one is free.
 
-## The chats (each was told to report to the new arbiter)
+## The chats (each was told at 15:40 UTC to report to Arbiter 2, session_01VuYTwbacb8geNS4VjyJwQh)
 
 - Updates 9 (session_01VuYTwdd6y5sv2PFuJxKCx9): compacted once; writing its baton and stopping. Archive it on that message. Its baton holds Desert for the apply chat.
 - Updates 16 (session_01VuYTwd89gnbyWMLrBxXNzb): the World English Bible, British edition. When it is pushed, tell the SSM board: "Six more Bibles" becomes seven. Then archive it unless his answers have come.

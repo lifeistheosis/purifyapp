@@ -67,6 +67,8 @@ Each held change is a patch in the repo, so its chat could be archived. On his y
 
 ## The roster
 
+**The arbiter:** Arbiter 2, session_01VuYTwbacb8geNS4VjyJwQh, from 2026-11-13 15:39 UTC (the arbiter of 2026-11-09 to 2026-11-13, session_01VuYTwdsjYL2mmq2C2JSt2A, handed over at 647,000 tokens at his "yes optimize"; its baton is docs/handoffs/arbiter.md). Every running chat was told to report to Arbiter 2.
+
 | Chat | Session | Holds |
 |---|---|---|
 | Arbiter | session_01VuYTwdsjYL2mmq2C2JSt2A | his words, NOW.md, routing |
