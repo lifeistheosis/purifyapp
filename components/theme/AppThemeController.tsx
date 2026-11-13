@@ -29,11 +29,28 @@ import {
   themeAttributes,
   themeWorn,
 } from "@/lib/reader/readingModes";
+import { HALF_IN_MS, SWITCH_ATTR } from "@/lib/reader/themeSwitch";
 import { clearPass, keepWindow, nightHolds, nightNow, passHolds, readWindow, vespersOn, vespersTheme } from "@/lib/reader/vespers";
 import { canMove } from "@/lib/ui/routeMotion";
 
 /** The longest the controller sleeps before it looks at the night again. */
 const LOOK_AGAIN_MS = 6 * 3_600_000;
+
+/**
+ * After the next frame is painted, or after a moment if no frame comes (a
+ * page in the background paints none): a palette landed at once is drawn
+ * whole with no part fading, and then each part may move again.
+ */
+function afterPaint(then: () => void): void {
+  let done = false;
+  const once = () => {
+    if (done) return;
+    done = true;
+    then();
+  };
+  requestAnimationFrame(() => requestAnimationFrame(once));
+  window.setTimeout(once, 400);
+}
 
 /** Same event ReaderPrefs broadcasts on write, so a change lands instantly. */
 const PREFS_EVENT = "purify:reader-prefs";
@@ -62,6 +79,8 @@ export function AppThemeController() {
   // What this controller last put on the page, so a change can be told from
   // the first apply after a load.
   const worn = useRef<{ mode: string | null; look: string | null } | null>(null);
+  // The latest palette change, so only it may say the change is over.
+  const switchTurn = useRef(0);
 
   /**
    * `chosen` is true when a reader has just changed a setting on this screen
@@ -129,15 +148,45 @@ export function AppThemeController() {
     const before = worn.current;
     worn.current = { mode, look };
     const changed = before !== null && (before.mode !== mode || before.look !== look);
+    // A palette lands whole (build 95 note 26, lib/reader/themeSwitch.ts):
+    // while it changes the root says so, and no part of the page runs a
+    // colour transition of its own (app/globals.css, "A palette lands
+    // whole"), pictured or not. What the page wears now is what it differs
+    // from, whoever put it there (the pre-paint script, or this). Each change
+    // takes its own turn, so the end of one does not undo a newer one; an
+    // apply that changes nothing (the phone waking, the gate's same answer)
+    // takes none, so it cannot leave a change unended.
+    const differs = el.getAttribute("data-reading-mode") !== mode || el.getAttribute("data-look") !== look;
+    const begin = (how: "pictured" | "instant") => {
+      const mine = ++switchTurn.current;
+      el.setAttribute(SWITCH_ATTR, how);
+      return { mine, landed: () => (switchTurn.current === mine ? el.removeAttribute(SWITCH_ATTR) : undefined) };
+    };
+    const atOnce = () => {
+      const { landed } = begin("instant");
+      wear();
+      afterPaint(landed);
+    };
     if (chosen && changed && canMove()) {
       try {
-        const moving = document as Document & { startViewTransition: (update: () => void) => { ready: Promise<unknown> } };
-        // A skipped transition still runs the update; only its promise is refused.
-        moving.startViewTransition(wear).ready.catch(() => {});
+        const moving = document as Document & { startViewTransition: (update: () => void) => { ready: Promise<unknown>; finished: Promise<unknown> } };
+        const { mine, landed } = begin("pictured");
+        // A skipped transition still runs the update; only its promises are refused.
+        const fade = moving.startViewTransition(wear);
+        // Half in, the status bar's strip changes with the page (components/native/statusBar.ts).
+        fade.ready
+          .then(() => {
+            window.setTimeout(() => {
+              if (switchTurn.current === mine) el.setAttribute(SWITCH_ATTR, "landing");
+            }, HALF_IN_MS);
+          })
+          .catch(() => {});
+        fade.finished.then(landed, landed);
       } catch {
-        wear();
+        atOnce();
       }
-    } else wear();
+    } else if (differs) atOnce();
+    else wear();
     // At sunset or sunrise, look again.
     if (held) {
       const wait = (held.now ? held.end : held.start) - now;

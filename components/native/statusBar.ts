@@ -24,6 +24,7 @@
 // any phone whose strip is the app's own.
 
 import { BAR_NIGHT, barPlace, behindTheBar, groundOf, statusBarColor, statusBarMarks, type BarLayer, type BarMarks, type BarPlace } from "@/lib/reader/statusBarColor";
+import { SWITCH_ATTR, barStep } from "@/lib/reader/themeSwitch";
 
 /** The three things the status bar plugin is asked for. */
 export type BarPhone = {
@@ -173,8 +174,15 @@ export function followStatusBar(phone: BarPhone): () => void {
 
   void paint();
   // A palette picked, Candlelight put on at sunset, a look put down by the gate: each lands on these two attributes.
-  const worn = new MutationObserver(() => void paint());
-  worn.observe(root, { attributes: true, attributeFilter: ["data-reading-mode", "data-look"] });
+  // One the page is cross-fading into is painted when the new picture is half in, with the page and not
+  // before it (build 95 note 26): AppThemeController says so on the third (lib/reader/themeSwitch.ts).
+  let pending = false;
+  const worn = new MutationObserver((changes) => {
+    const step = barStep(pending, { palette: changes.some((c) => c.attributeName !== SWITCH_ATTR), switching: root.getAttribute(SWITCH_ATTR) });
+    pending = step.pending;
+    if (step.paint) void paint();
+  });
+  worn.observe(root, { attributes: true, attributeFilter: ["data-reading-mode", "data-look", SWITCH_ATTR] });
   // The room under the bar arrives a moment after the page on some phones, and changes when a tablet turns.
   const roomWatch =
     typeof ResizeObserver === "undefined"

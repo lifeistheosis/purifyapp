@@ -130,7 +130,9 @@ describe("the reader's Reading mode section", () => {
     expect(CODE).toMatch(/const watch = new ResizeObserver\(\(\) => \{\s*if \(!align\(\)\) return;\s*opened\.current = true;\s*watch\.disconnect\(\);\s*\}\);/);
     // Where nothing sweeps (the computer's popover) nothing is moved.
     expect(CODE).toContain("if (!row || !touch) return;");
-    expect(CODE).toMatch(/\}, \[worn, theme, touch\]\);/);
+    // By the page that is on, never the choice as stored: a tap stores it a moment before the page wears
+    // it, and following the stored choice glided the shelf back to the old page (build 95 note 26).
+    expect(CODE).toMatch(/\}, \[worn, touch\]\);/);
   });
 
   it("checks the palette the app is in, and taps as every picker does", () => {

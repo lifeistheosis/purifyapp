@@ -77,6 +77,13 @@ export function ReadingModeChips({
   // sheet itself is never moved from here. And to a place the shelf rests
   // at, a page's own start: the shelf snaps to those, and a move to anywhere
   // else is pulled back by the snap, which left the page cut off again.
+  //
+  // It follows the page that is on (worn), never the choice as stored
+  // (build 95 note 26). A tap stores the choice a moment before the page
+  // wears it, and the check still stood on the old page then: this looked
+  // for it, found it past the edge where the reader had swept from it, and
+  // glided the shelf back to it under the finger. Recorded on the export, a
+  // shelf swept 154px along went back to its start as the palette changed.
   const shelf = useRef<HTMLDivElement>(null);
   const opened = useRef(false);
   useEffect(() => {
@@ -112,7 +119,7 @@ export function ReadingModeChips({
     });
     watch.observe(row);
     return () => watch.disconnect();
-  }, [worn, theme, touch]);
+  }, [worn, touch]);
 
   const book = t("bible.books.john");
   const chapter = t("bible.chapterN", { n: PREVIEW_CHAPTER });

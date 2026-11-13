@@ -271,7 +271,7 @@ describe("the bridge and the follower", () => {
 
   it("the follower reads the palette from the page, and paints again when the root's palette changes", () => {
     expect(follower).toContain('const want = statusBarColor(getComputedStyle(root).getPropertyValue("--color-night"));');
-    expect(follower).toContain('worn.observe(root, { attributes: true, attributeFilter: ["data-reading-mode", "data-look"] });');
+    expect(follower).toContain('worn.observe(root, { attributes: true, attributeFilter: ["data-reading-mode", "data-look", SWITCH_ATTR] });');
     expect(follower).toContain("place = barPlace({ platform: phone.platform, asked, strip, inset: inset() });");
     // An answer that comes back after a newer asking is dropped.
     expect(follower.match(/if \(stopped \|\| mine !== turn\) return;/g)).toHaveLength(2);

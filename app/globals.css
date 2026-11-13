@@ -5040,6 +5040,33 @@ html.reader-focus [data-reader-exit] {
  animation: none !important;
 }
 
+/* A palette lands whole (build 95 note 26, the owner: "make the theme
+   switching smoother its buggy"; lib/reader/themeSwitch.ts). While a palette
+   changes, AppThemeController says so on the root (data-theme-switch), and
+   no part of the page runs a transition of its own: recorded frame by frame,
+   some forty did (the page's ground, which had a 350ms fade of its own from
+   before the cross-fade, the switches, the slider's stops, the buttons, the
+   small pages' light), so they arrived late, in their old colours, inside
+   the new picture; and with motion off, where nothing is pictured, the
+   ground still faded. Now each part is in its new colours in the first
+   frame, and the cross-fade is the only motion. With motion off the change
+   is instant. */
+:root[data-theme-switch],
+:root[data-theme-switch] *,
+:root[data-theme-switch] *::before,
+:root[data-theme-switch] *::after {
+ transition: none !important;
+}
+/* And every part pictured apart from the page (the tab bar, the website's
+   header) changes with it, on its curve and in its time: they were left on
+   the browser's own 250ms and its own curve, and the bar was there first. */
+:root[data-theme-switch]::view-transition-group(*),
+:root[data-theme-switch]::view-transition-old(*),
+:root[data-theme-switch]::view-transition-new(*) {
+ animation-duration: 420ms;
+ animation-timing-function: var(--ease-house);
+}
+
 /* ── Premium Reading Modes (Purify Pro) ──────────────────────────────
    AppThemeController (components/theme/AppThemeController.tsx), mounted in
    the root layout, reflects the persisted theme as `data-reading-mode` on
@@ -5056,10 +5083,6 @@ html.reader-focus [data-reader-exit] {
    pair holds ≥ 7:1 (AAA) for body copy. Parchment inverts the pair
    (light page, dark ink) and switches `color-scheme` so form controls
    and scrollbars follow. */
-
-html[data-reading-mode] body {
- transition: background-color 0.35s ease-out, color 0.35s ease-out;
-}
 
 /* Candlelight: black and light grey, late-hour reading. Warm amber until
    2026-09-25, changed at the owner's direction. It stays the dimmest of the

@@ -35,7 +35,8 @@ const CSS = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
 describe("a tapped palette cross-fades", () => {
   it("pictures the change only when a reader chose it here, something changed, and the app may move", () => {
     expect(code).toContain('import { canMove } from "@/lib/ui/routeMotion";');
-    expect(code).toMatch(/if \(chosen && changed && canMove\(\)\) \{\s*try \{[\s\S]*?startViewTransition\(wear\)\.ready\.catch\(\(\) => \{\}\);\s*\} catch \{\s*wear\(\);\s*\}\s*\} else wear\(\);/);
+    // Pictured, or at once; either way it lands whole (build 95 note 26, themeSwitch.test.ts).
+    expect(code).toMatch(/if \(chosen && changed && canMove\(\)\) \{\s*try \{[\s\S]*?const \{ mine, landed \} = begin\("pictured"\);[\s\S]*?const fade = moving\.startViewTransition\(wear\);[\s\S]*?fade\.finished\.then\(landed, landed\);\s*\} catch \{\s*atOnce\(\);\s*\}\s*\} else if \(differs\) atOnce\(\);\s*else wear\(\);/);
     // One place starts it, and the attributes are set in one place.
     expect(code.match(/startViewTransition\(/g)).toHaveLength(1);
     expect(code.match(/setAttribute\("data-look"/g)).toHaveLength(1);
