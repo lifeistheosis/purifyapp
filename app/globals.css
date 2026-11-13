@@ -8003,9 +8003,21 @@ html[data-reading-mode="parchment"] .set-track > :is(button, a):not(:is([aria-ch
    Light's own 70 percent read 4.26:1 there, measured on the export where
    the letters are (scripts/words-on-pictures.mjs; 1.9, the Themes chat's
    sweep). At 75 it is 4.83:1. Light alone: a light look draws its faint
-   text at a share of its own, most of them higher than this. */
-html[data-reading-mode="parchment"]:not([data-look]) .theology-tray .text-paper\/50 {
+   text at a share of its own, most of them higher than this. The count is
+   the small line of the fifteen screens' round 1, at 55 (1.9): it holds
+   that share too, or the round's raise from 50 left it at Light's 70 and
+   4.26:1 again (Updates 33, the round's export). */
+html[data-reading-mode="parchment"]:not([data-look]) .theology-tray :is(.text-paper\/50, .text-paper\/55) {
  color: color-mix(in oklab, var(--color-paper) 75%, transparent);
+}
+/* And the two palettes earned by reading, at a tablet's widths (Updates 33,
+   checkMock with pixels on round 1's export): the count read 4.42:1 on
+   Councils and 4.39 on Cappadocian at 800 and 1032, on both the hub's
+   cards (under the step's picture as it fades, and over its blurred
+   light), at their faint share of 55. On a tray their small line draws at
+   66, with the shares they fold into it. */
+:where(html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) .theology-tray :is(.text-paper\/50, .text-paper\/52, .text-paper\/55) {
+ color: color-mix(in oklab, var(--color-paper) 66%, transparent);
 }
 /* The subject's own icon behind a card's head (the path's cards on the hub,
    components/theology/TheologyHub.tsx), blurred and grey: its light, not a

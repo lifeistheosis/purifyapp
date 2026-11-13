@@ -165,6 +165,23 @@ describe("Found by checkMock on the round 1 export (Updates 29)", () => {
     );
   });
 
+  // The step's count on Theology's cards ("1 of 9"): on Light a tray drew
+  // /50 at 75 for it (4.83:1), so the round's raise to /55 left it at Light's
+  // 70 (4.26:1 on the resume card); on Councils and Cappadocian /50 and /55
+  // both draw at 55 (4.42 and 4.39:1 at 800 and 1032). Updates 33.
+  it("keeps the step's count on a tray above 4.5:1 on Light and on the two palettes earned by reading", () => {
+    const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+    expect(css).toContain(
+      'html[data-reading-mode="parchment"]:not([data-look]) .theology-tray :is(.text-paper\\/50, .text-paper\\/55) {\n color: color-mix(in oklab, var(--color-paper) 75%, transparent);',
+    );
+    expect(css).toContain(
+      ':where(html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) .theology-tray :is(.text-paper\\/50, .text-paper\\/52, .text-paper\\/55) {\n color: color-mix(in oklab, var(--color-paper) 66%, transparent);',
+    );
+    // Both counts are the small line, on a tray.
+    const hub = read("components/theology/TheologyHub.tsx");
+    expect(hub.match(/text-caption font-semibold text-paper\/55">\s*\{t\("readingsFlow\.of"/g) ?? []).toHaveLength(2);
+  });
+
   it("tells the checker why the tour's bloom stays where it is measured, in every language", () => {
     const tour = read("components/whats-new/tour/TourLook.tsx");
     expect(tour).toMatch(/className="tour-bloom"\s+data-mock-allow="mirror"\s+data-mock-why="[^"]*measured on the screen[^"]*"/);
