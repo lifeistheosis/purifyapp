@@ -789,9 +789,13 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     console.log("wrote img/ and shots/");
   }
   const { page } = await import("./page.mjs");
-  fs.writeFileSync(path.join(HERE, "index.html"), page({ standalone: true, palettes: PALETTES }));
+  // The reasons for each choice, from the README's own table.
+  const readme = fs.readFileSync(path.join(HERE, "README.md"), "utf8");
+  const reasons = readme.slice(readme.indexOf("## Why the emails look as they do"), readme.indexOf("## The Nativity Fast"));
+  const why = reasons.split("\n").filter((l) => l.startsWith("| ") && !l.startsWith("| The choice") && !l.startsWith("|---")).map((l) => l.slice(1, -1).split("|").map((c) => c.trim()));
+  fs.writeFileSync(path.join(HERE, "index.html"), page({ standalone: true, palettes: PALETTES, why }));
   // The page alone, as an Artifact takes it, when a place for it is named.
   const to = process.argv.find((a) => a.startsWith("--artifact="));
-  if (to) fs.writeFileSync(to.slice("--artifact=".length), page({ standalone: false, palettes: PALETTES }));
+  if (to) fs.writeFileSync(to.slice("--artifact=".length), page({ standalone: false, palettes: PALETTES, why }));
   console.log("wrote index.html");
 }

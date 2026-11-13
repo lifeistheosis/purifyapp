@@ -45,6 +45,12 @@ const CONTENT = `
 </section>
 
 <section>
+  <h2>Why it looks this way</h2>
+  <p>Each choice, its reason, and what it does for the reader. Yes or no is yours.</p>
+  __WHY__
+</section>
+
+<section>
   <h2>What is the app's own</h2>
   <div class="scroll"><table>
     <thead><tr><th>In the email</th><th>Where the app has it</th></tr></thead>
@@ -106,6 +112,10 @@ header{text-align:center;padding-bottom:20px}
 h1{margin:6px 0 0;color:var(--ink);font-weight:400;font-size:clamp(32px,5vw,44px);line-height:1.15;text-wrap:balance}
 h2{margin:0;color:var(--ink);font-weight:600;font-size:24px;line-height:1.25}
 p{margin:12px 0 0;max-width:68ch}
+h3{margin:26px 0 0;color:var(--ink);font-weight:600;font-size:19px;line-height:1.3}
+h3+p{margin-top:6px}
+.for{color:var(--quiet);font-family:var(--sans);font-size:15px;line-height:22px}
+.for .small{display:block;margin:0}
 .small,figcaption,th{font-family:var(--sans);font-size:12px;line-height:18px;font-weight:600;color:var(--quiet)}
 .small{margin:0 auto}
 .lede{margin:14px auto 0;font-style:italic;color:var(--quiet);font-size:19px;line-height:1.5;max-width:52ch}
@@ -126,8 +136,13 @@ li{margin-top:8px}
 `;
 
 /** `standalone`: a whole document, for the repository. Otherwise the page alone, as an Artifact takes it. */
-export function page({ standalone, palettes }) {
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/** `why`: the rows of the README's own table of reasons, so the page and the README say one thing. */
+export function page({ standalone, palettes, why = [] }) {
+  const reasons = why.map(([choice, reason, reader]) => `<h3>${esc(choice)}</h3>\n  <p>${esc(reason)}</p>\n  <p class="for"><span class="small">For the reader</span>${esc(reader)}</p>`).join("\n  ");
   const head = `<title>Purify email look</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<style>${style(palettes.Dark.wears, palettes.Light.wears)}</style>`;
-  if (!standalone) return `${head}\n${CONTENT}`;
-  return `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n${head}\n</head>\n<body>${CONTENT}</body>\n</html>\n`;
+  const content = CONTENT.replace("__WHY__", reasons);
+  if (!standalone) return `${head}\n${content}`;
+  return `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n${head}\n</head>\n<body>${content}</body>\n</html>\n`;
 }
