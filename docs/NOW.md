@@ -44,9 +44,6 @@ Updated 2026-11-13 01:24 UTC.
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | design and adverts, by his word |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
-| Product images (his PC) | session_01VuYTwaLq6ij9iFi8D4Kt8a | the EIKON gift, done for 1.9 |
-| Tooling: the pre-push guard | session_01VuYTwZxEJPq6tx6VUBChCT | the guard on every push (no app or package files during the freeze) |
-| Admin panel 2 | session_01VuYTwdGHpocsLjegCEAape | done and stopped (baton: `docs/handoffs/admin-panel.md`). Pushed: all the money on Money's chart (3721c0b1d), the quiet board (41bf07c60), "Ready to send" (2377317c6), Revenue's chart matched (4e9e2b252). |
 | Saints: St. Xenia's profile | session_01VuYTwe6Fs6RKfBi7z1GMcb | his word of 2026-11-13: her full life, sourced, for the ad's "Read her life in Purify"; held locally, to land with the final check's fixes |
 
-Admin and Updates were past 700,000 tokens at the last look, so both rotate first after 1.9.
+Admin and Updates were past 700,000 tokens at the last look, so both rotate first after 1.9. Archived on 2026-11-13, their jobs done: Tooling, Admin panel 2 (baton `docs/handoffs/admin-panel.md`) and Product images. His PC's clone was left on `main` with one unpushed commit (2026-11-11): nothing is pushed from it.

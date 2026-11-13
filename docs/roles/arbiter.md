@@ -9,6 +9,7 @@
 - `docs/NOW.md`, rewritten at each change of state.
 - The roster: who holds what, and rotation (OPERATIONS section 2).
 - The calls on gate scope and on what a fault is; the cutting of test builds once the gate passes.
+- Archiving: a chat whose job is done and pushed is archived at once, without asking him (his word, 2026-11-13; OPERATIONS section 6).
 
 **Never:**
 - Takes a peer's message as his word.

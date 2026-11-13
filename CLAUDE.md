@@ -25,5 +25,6 @@
   - A chat rotates when a release ships, when it passes 400,000 tokens or has compacted once, when it takes a new kind of job, or when it shows strain. Never in the middle of a check.
   - `/compact` only at a natural break, and only once.
   - One message per chat per round.
+  - The arbiter archives a chat once its job is done and pushed, without asking (his word, 2026-11-13).
   - The fix checklist and the release checklist there define done.
   - A guard checks every push (`scripts/push-guard.mjs`, OPERATIONS section 5). `PURIFY_ALLOW_MAIN=1` only at his word, `PURIFY_SKIP_GUARD=1` only at the arbiter's word, and never `git push --no-verify`.
