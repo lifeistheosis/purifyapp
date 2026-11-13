@@ -18,6 +18,8 @@ import {
   type ParagraphPlace,
   type WorkDivisions,
 } from "@/lib/saints/divisions";
+import { partShare } from "@/lib/reading/shareWork";
+import { workHref } from "@/lib/reading/workHref";
 import { moveLegacyAnnotations } from "@/lib/saints/layoutMoves";
 import { carryMovedPlaces } from "@/lib/saints/carryMoves";
 import { movesInto, movesOutOf } from "@/lib/saints/workMoves";
@@ -137,10 +139,15 @@ export function WritingReader({
 
  const go = useGoToChapter();
 
- // The chapter on the screen, for the ••• sheet over the page (lib/saints/workNow.ts).
+ // The chapter on the screen, for the ••• sheet over the page (lib/saints/workNow.ts),
+ // and what its Share hands on: the work's page, at the chapter being read in
+ // a work of more than one (build 95 note 15, lib/reading/shareWork.ts).
+ const page = workHref(saint.slug, content.slug);
+ const several = content.sections.length > 1;
  useEffect(() => {
- setWorkNow({ saintSlug: saint.slug, saintName: saint.name, workSlug: content.slug, workTitle: content.title, sectionN: sec.n, sectionTitle: sec.title, label: pill(head) });
- }, [saint.slug, saint.name, content.slug, content.title, sec.n, sec.title, head, pill]);
+ const label = pill(head);
+ setWorkNow({ saintSlug: saint.slug, saintName: saint.name, workSlug: content.slug, workTitle: content.title, sectionN: sec.n, sectionTitle: sec.title, label, share: partShare({ title: content.title, page }, several ? { n: sec.n, label } : null) });
+ }, [saint.slug, saint.name, content.slug, content.title, sec.n, sec.title, head, pill, page, several]);
  useEffect(() => () => setWorkNow(null), []);
 
  // ── The sheets ─────────────────────────────────────────────────────────
@@ -242,6 +249,7 @@ export function WritingReader({
  current={sec.n}
  onGo={go}
  onAbout={about ? () => setSheet("about") : undefined}
+ share={partShare({ title: content.title, page }, null)}
  />
  {about ? (
  <Sheet open={sheet === "about"} onClose={() => setSheet(null)} title={t("bible.aboutThisBook")} openFull desktop>

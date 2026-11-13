@@ -13,7 +13,9 @@ import { StillInEnglish } from "@/components/i18n/StillInEnglish";
 import { OpeningCover } from "@/components/reading/OpeningCover";
 import { RecordRead } from "@/components/reading/RecordRead";
 import { KeepDay } from "@/components/streak/KeepDay";
-import { bookPage } from "@/lib/reading/cards";
+import { bookPage, workPreviewPicture } from "@/lib/reading/cards";
+import { workHref } from "@/lib/reading/workHref";
+import { linkPreview } from "@/lib/seo/preview";
 import { MovedPlace } from "@/components/saints/MovedPlace";
 import { movesOutOf } from "@/lib/saints/workMoves";
 
@@ -41,9 +43,17 @@ export async function generateMetadata({ params }: { params: Params }) {
   const { slug, work } = await params;
   const found = getWork(slug, work);
   if (!found) return { title: "Writing" };
+  const title = `${found.work.title}, ${found.saint.name}`;
+  const description = found.work.blurb;
   return {
-    title: `${found.work.title}, ${found.saint.name}`,
-    description: found.work.blurb,
+    title,
+    description,
+    // How the work shows where its link is pasted, as its sheets' Share hands
+    // it on (build 95 note 15): its title, its page, its cover's picture. The
+    // website's alone; an app's page carries its title (app/layout.tsx).
+    ...(IS_STATIC_EXPORT
+      ? {}
+      : linkPreview({ title, description, path: workHref(found.saint.slug, found.work.slug), picture: workPreviewPicture(found.saint.slug, found.work.slug) })),
   };
 }
 

@@ -65,7 +65,9 @@ export function CouncilBookHeader({
   const { t } = useTranslate();
   const Heading = heading;
   return (
-    <header data-book-header="" data-council-book="" className="border-b border-paper/8 pb-8 pt-6 md:pb-12 md:pt-14">
+    // The rule under it parts it from what follows, and goes when nothing does (build 95 note 15):
+    // in About this book a council's document has nothing under it.
+    <header data-book-header="" data-council-book="" className="border-b border-paper/8 pb-8 pt-6 last:border-b-0 md:pb-12 md:pt-14">
       <nav aria-label={t("study.councils.theCouncils")} className="mb-10 hidden items-center gap-1.5 font-sans text-detail text-paper/55 md:flex native-md-hidden">
         <Link href="/councils" className="hover:text-paper">
           {t("study.councils.theCouncils")}

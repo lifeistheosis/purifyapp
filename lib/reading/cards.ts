@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { ReadingCoverPack } from "@/lib/packs/types";
+import type { PreviewPicture } from "@/lib/seo/preview";
 
 import stats from "@/data/reading/stats.json";
 import { SAINTS, type Saint } from "@/lib/saints/saints";
@@ -83,6 +84,20 @@ function firstSections(themes: readonly ThemeTag[]): Card["at"] {
 export function workArt(key: WorkKey, entry: ReadingEntry): CoverArt | null {
   const subject = coverSubject(entry);
   return WORK_ART[key] ?? coverArtFor(subject) ?? (entry.by && entry.by !== subject ? coverArtFor(entry.by) : null);
+}
+
+/**
+ * A work's picture where its link is pasted (1.9, build 95 note 15;
+ * lib/seo/preview.ts): its cover's picture, whole, at its address on the
+ * website, with its size and what it shows where the row says. None for a
+ * work on the plate alone.
+ */
+export function workPreviewPicture(saintSlug: string, workSlug: string): PreviewPicture | null {
+  const key = `${saintSlug}/${workSlug}` as WorkKey;
+  const entry = ENTRIES[key];
+  const art = entry ? workArt(key, entry) : null;
+  if (!art) return null;
+  return art.kind === "streamed" ? { url: art.file, width: art.width, height: art.height, alt: art.alt } : { url: art.file };
 }
 
 export function cardFor(saint: Saint, workSlug: string, native: boolean): Card | null {

@@ -12,6 +12,7 @@ import { WorkHead } from "@/components/saints/WorkHead";
 import { usePartWords } from "@/components/saints/partWords";
 import { chapterOf, useChapterTarget, useGoToChapter, useKeepPlace, useLanding } from "@/components/saints/useWorkPlace";
 import { Sheet } from "@/components/ui/Sheet";
+import { partShare } from "@/lib/reading/shareWork";
 import { neighbours, partsOf } from "@/lib/saints/parts";
 import { WORK_ABOUT_EVENT, WORK_CONTENTS_EVENT, answerWorkAbout, hearWaitingWorkAbout, setWorkNow } from "@/lib/saints/workNow";
 import { useScrollAway } from "@/lib/ui/scrollAway";
@@ -38,6 +39,7 @@ import { useScrollAway } from "@/lib/ui/scrollAway";
 export function CouncilReader({
   positionKey,
   docSlug,
+  page,
   title,
   sections,
   about,
@@ -46,6 +48,8 @@ export function CouncilReader({
   /** Where its place is kept: "councils/<council>", beside the Fathers' "<saint>". */
   positionKey: string;
   docSlug: string;
+  /** Its own page, "/councils/<council>/<document>": what Share hands on (build 95 note 15). */
+  page: string;
   /** The document's title. */
   title: string;
   sections: { n: number; title: string }[];
@@ -82,10 +86,22 @@ export function CouncilReader({
     setWords(Array.from(out, (w) => w ?? 0));
   }, [head.n]);
 
+  // Share hands on the section being read, in a document of more than one (lib/reading/shareWork.ts).
+  const several = sections.length > 1;
   useEffect(() => {
+    const label = pill(head);
     // No bookmark here: a council's document is not a saint's work (lib/bookmarks.ts).
-    setWorkNow({ saintSlug: "", saintName: "", workSlug: docSlug, workTitle: title, sectionN: head.n, sectionTitle: head.n ? sections.find((s) => s.n === head.n)?.title ?? "" : "", label: pill(head) });
-  }, [docSlug, title, head, sections, pill]);
+    setWorkNow({
+      saintSlug: "",
+      saintName: "",
+      workSlug: docSlug,
+      workTitle: title,
+      sectionN: head.n,
+      sectionTitle: head.n ? sections.find((s) => s.n === head.n)?.title ?? "" : "",
+      label,
+      share: partShare({ title, page }, several ? { n: head.n, label } : null),
+    });
+  }, [docSlug, title, head, sections, pill, page, several]);
   useEffect(() => () => setWorkNow(null), []);
 
   const [sheet, setSheet] = useState<"contents" | "about" | null>(null);
@@ -134,6 +150,7 @@ export function CouncilReader({
         current={head.n}
         onGo={go}
         onAbout={() => setSheet("about")}
+        share={partShare({ title, page }, null)}
       />
       <Sheet open={sheet === "about"} onClose={() => setSheet(null)} title={t("bible.aboutThisBook")} openFull desktop>
         <div data-about-sheet="">

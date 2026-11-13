@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { ReaderSettingsSheet, ToggleRow } from "@/components/bible/ReaderSettingsMenu";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ShareWorkRow } from "@/components/reading/ShareWorkRow";
 import { Book } from "@/components/ui/icons/Book";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { More } from "@/components/ui/icons/More";
@@ -22,8 +23,9 @@ import { TOP_ICON, TOP_PLATE } from "@/components/nav/topPlate";
  * draws it on its round plate. Its sheet holds what the Bible's holds for a
  * chapter: the reader's settings (the same sheet, the same preferences),
  * Bookmark this chapter, by the work's own name for it ("Bookmark Conference
- * 10 · 10"), About this book, and the search of the whole app. The chapter
- * being read is the reader's (lib/saints/workNow.ts).
+ * 10 · 10"), Share (1.9, build 95 note 15: the chapter's page on the
+ * website, to the phone's share sheet), About this book, and the search of
+ * the whole app. The chapter being read is the reader's (lib/saints/workNow.ts).
  *
  * Until 1.8 this slot held one gear for the settings, in a bar of its own.
  */
@@ -81,6 +83,10 @@ export function MobileWorkActions() {
               paragraph's menu uses for the same bookmark (a writing-section); with the section's name
               in it, a long title was cut short (the gate's third run, 2026-11-11). */}
           {locator && now ? <ToggleRow on={saved} touch label={t("saints.bookmarkThisSection")} onClick={toggleSaved} /> : null}
+          {/* Share (build 95 note 15), beside the bookmark: both act on the chapter the sheet names,
+              before the two rows that open other sheets. The chapter's own address on the website,
+              the work's page alone for a work of one (lib/reading/shareWork.ts). */}
+          {now ? <ShareWorkRow share={now.share} className={row} onShared={close} /> : null}
           <button
             type="button"
             aria-haspopup="dialog"

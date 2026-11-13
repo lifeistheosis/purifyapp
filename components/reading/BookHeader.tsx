@@ -76,7 +76,8 @@ export function BookHeader({
   ].filter(Boolean);
 
   return (
-    <header data-book-header="" className="border-b border-paper/8 pb-8 pt-6 md:pb-12 md:pt-14">
+    // The rule under it parts it from More like this, and goes when nothing follows (build 95 note 15).
+    <header data-book-header="" className="border-b border-paper/8 pb-8 pt-6 last:border-b-0 md:pb-12 md:pt-14">
       <nav aria-label={t("nav.saints")} className="mb-10 hidden items-center gap-1.5 font-sans text-detail text-paper/55 md:flex">
         <Link href="/saints" className="hover:text-paper">
           {t("nav.saints")}

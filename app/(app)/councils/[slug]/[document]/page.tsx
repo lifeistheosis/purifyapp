@@ -16,6 +16,7 @@ import { documentMinutes } from "@/lib/councils/books";
 import { editionOf } from "@/lib/councils/edition";
 import { authorLine, councilPicture, cropOf, eraOfYear } from "@/lib/councils/page";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
+import { linkPreview } from "@/lib/seo/preview";
 
 export function generateStaticParams() {
  return COUNCILS.flatMap((c) =>
@@ -34,9 +35,17 @@ export async function generateMetadata({
  const c = getCouncil(slug);
  const doc = c?.documents.find((d) => d.slug === document && !d.href);
  if (!c || !doc) return { title: "Document not found" };
+ const title = `${doc.title}, ${c.byname}`;
+ const description = doc.blurb;
+ // How the document shows where its link is pasted (build 95 note 15): its
+ // title, its page, the council's icon whole. The website's alone.
+ const picture = IS_STATIC_EXPORT ? null : councilPicture(c.slug, false);
  return {
- title: `${doc.title}, ${c.byname}`,
- description: doc.blurb,
+ title,
+ description,
+ ...(IS_STATIC_EXPORT
+  ? {}
+  : linkPreview({ title, description, path: `/councils/${c.slug}/${doc.slug}`, picture: picture ? { url: picture.src, width: picture.width, height: picture.height, alt: picture.alt } : null })),
  };
 }
 
@@ -123,7 +132,7 @@ export default async function CouncilDocumentPage({
      Continue) is About this book, a sheet over the section (r3-29 A). Over
      the reader, for a reader in another language, the line that says the
      text is English (components/i18n/StillInEnglish.tsx). */}
- <CouncilReaderHere docKey={`${c.slug}/${docRef.slug}`} positionKey={positionKey} docSlug={docRef.slug} title={content.title} sections={sections} about={about}>
+ <CouncilReaderHere docKey={`${c.slug}/${docRef.slug}`} positionKey={positionKey} docSlug={docRef.slug} page={`/councils/${c.slug}/${docRef.slug}`} title={content.title} sections={sections} about={about}>
  <CouncilSections content={content} council={{ slug: c.slug, name: c.byname }} />
  </CouncilReaderHere>
 

@@ -182,7 +182,8 @@ describe("a council's books in the reading room", () => {
     expect(page).toMatch(/<MobileTopBar plates back backFallback=\{`\/reading\/councils\/\$\{c\.slug\}`\} trailing=\{<MobileWorkActions \/>\} \/>/);
     expect(page).toContain("<MobileWorkProgressBar />");
     // The reader, in the reader's language (1.9): the page writes the English sections into it.
-    expect(page).toContain("<CouncilReaderHere docKey={`${c.slug}/${docRef.slug}`} positionKey={positionKey} docSlug={docRef.slug} title={content.title} sections={sections} about={about}>");
+    // Its own page, for Share in its sheets (build 95 note 15, lib/reading/shareWork.ts).
+    expect(page).toContain("<CouncilReaderHere docKey={`${c.slug}/${docRef.slug}`} positionKey={positionKey} docSlug={docRef.slug} page={`/councils/${c.slug}/${docRef.slug}`} title={content.title} sections={sections} about={about}>");
     expect(page).toContain("<CouncilSections content={content} council={{ slug: c.slug, name: c.byname }} />");
     expect(code("components/councils/CouncilTextHere.tsx")).toContain("<CouncilReader {...reader}>{children}</CouncilReader>");
     // Each section at its own address, which a quotation elsewhere opens, and its paragraphs places a return lands on.

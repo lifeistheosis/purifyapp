@@ -2,6 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 
+import type { WorkShare } from "@/lib/reading/shareWork";
+
 /**
  * The chapter of a work on the screen, for what stands outside the reader
  * (1.8, the owner's pick A of r3-29): the ••• button over the page is the
@@ -24,6 +26,11 @@ export type WorkNow = {
   sectionTitle: string;
   /** The chapter's name as the reader says it: "Conference 10 · 10", "Homily 15". */
   label: string;
+  /**
+   * What ••• shares (1.9, build 95 note 15): the work's title, and its page
+   * on the website at the part being read (lib/reading/shareWork.ts).
+   */
+  share: WorkShare;
 };
 
 let now: WorkNow | null = null;
