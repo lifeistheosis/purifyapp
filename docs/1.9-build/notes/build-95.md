@@ -110,3 +110,9 @@ Done is:
 - Stills of both sheets, with one line of reason per choice, to him for his yes before it ships.
 
 With Updates 8.
+
+## Note 16 (asked): the sea theme goes, and the Holy Mountain is reworked or goes
+
+His word, 2026-11-13 about 07:52 UTC: "remove the sea theme from the app and the mountain either needs a rework or it gets removed"
+
+The themes are the reading modes of `lib/reader/readingModes.ts`, a Plus feature ("Nineteen reading modes, from Candlelight to the Holy Mountain"). The mountain is Holy Mountain (`athos`, "The peak of Athos over the sea at dusk"). Two of the Land and sea family show the sea, Galilee ("The sea by night, and the light lying on the water") and Patmos ("A white wall, and the sea beyond it"), so the arbiter asked him which he means, and whether Fable reworks the mountain (a Fable run is checked with him first, CLAUDE.md).
