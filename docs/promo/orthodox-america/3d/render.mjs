@@ -158,8 +158,16 @@ const file = path.join(OUT, draft ? "draft.mp4" : "orthodox-america-3d-sample.mp
 // Fine grain, the same on every render (a fixed seed), over the whole picture
 // as film has it; grey only; then H.264 for any editor or phone.
 const look = draft ? "format=gray,format=yuv420p" : "format=gray,noise=c0s=6:c0f=t:all_seed=1113,format=yuv420p";
-execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-framerate", String(FPS), "-i", path.join(frames, "f%05d.png"), "-vf", look,
-  "-c:v", "libx264", "-profile:v", "high", "-preset", "slow", "-crf", draft ? "24" : "15", "-pix_fmt", "yuv420p", "-an", "-movflags", "+faststart", file], { stdio: "inherit" });
+const enc = (extra) => execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-framerate", String(FPS), "-i", path.join(frames, "f%05d.png"), "-vf", look,
+  "-c:v", "libx264", "-profile:v", "high", "-preset", "slow", "-pix_fmt", "yuv420p", "-an", ...extra], { cwd: OUT, stdio: "inherit" });
+if (draft) enc(["-crf", "24", "-movflags", "+faststart", file]);
+else {
+  // Grain is costly to keep, so the size is set, not the quality: two passes to about 12 MB for ten seconds,
+  // which the page's own store holds and a phone plays at once.
+  const kbps = Math.floor((12 * 8192) / SECONDS);
+  enc(["-b:v", `${kbps}k`, "-pass", "1", "-f", "null", "/dev/null"]);
+  enc(["-b:v", `${kbps}k`, "-pass", "2", "-movflags", "+faststart", file]);
+}
 if (!draft) fs.copyFileSync(path.join(frames, `f${String(Math.round(7.5 * FPS)).padStart(5, "0")}.png`), path.join(OUT, "poster.png"));
 console.log(path.relative(ROOT, file), fs.statSync(file).size, "bytes");
 process.exit(0);
