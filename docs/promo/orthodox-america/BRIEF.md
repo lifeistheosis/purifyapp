@@ -53,3 +53,16 @@ Write every figure, its source, its check and any change from `SOURCE.md` into t
 ## Spend
 
 One version. No variants and no extra cuts (no vertical cut unless he asks). A draft render at low resolution for its own eye is fine; the full render once. Rotate at 200,000 tokens with a baton at `docs/handoffs/fable-film.md`.
+
+## Round 2: real 3D, edit style, square (his word, 2026-11-13 about 16:49 and 16:50 UTC)
+
+Shown the first film (https://claude.ai/artifact/R2MqhHYnXc7uiM8vzGCN4W): "this is good for like a slideshow explanation but I'm referring to high quality animated visuals (I.e a globe that spins with edit style animations) 3d visuals etc)", then "and do 1:1 ratio".
+
+So the first film stays on its page and goes into the Vault as an explainer (nothing made is deleted), and round 2 is made as follows. Where it differs from the brief above, round 2 wins.
+
+- **What it is now:** high-end animated 3D motion graphics in an edit style, not a sequence of slides. A globe that turns in space; the camera pushing down through it onto North America and the United States; the states rising as 3D forms whose height is the figure; numbers and words that move with the camera and land on the beat of the cut; quick cuts, zoom and whip transitions, parallax, depth of field and motion blur. Each figure still stays readable long enough to be read.
+- **Format:** 1:1, 1080 by 1080, 30 fps, H.264 (yuv420p, faststart), silent, black and white only.
+- **The facts stand as checked.** Use the figures in `facts.mjs` and `RECORD.md` as the first film settled them, each with its source on screen and the sources at the end. No new figure without a written source.
+- **Made in code, free:** three.js (or plain WebGL) in headless Chromium, stepped frame by frame and encoded with ffmpeg. WebGL2 works in this container through SwiftShader, in software on 4 cores (tested 16:49 UTC: "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero)))"), so plan for slow frames and a render that resumes (the background job stops at 30 minutes; the first film's render.mjs shows how). The world from Natural Earth through `world-atlas` (public domain), the states from `us-atlas` (already in `map.json`). No paid generation, no GPU rental and no stock footage without his word.
+- **Light:** a soft glow at the globe's rim or under a rising form is a soft pool of light and allowed; no rays, no lens-flare streaks, no sparkle (CLAUDE.md).
+- **Sample first.** Before the film, one 10 second sample of the signature shot: the globe turning, the camera pushing down onto the United States, the states rising in 3D as the first figure lands. It goes on one page for his yes with a reason for each choice. The full film follows his yes, rendered once.
