@@ -1,35 +1,36 @@
-# Baton: Admin (the gate; after 1.9's re-check)
+# Baton: Admin (the gate; Gate 2.0, after build 95's walk)
 
-Written 2026-11-13, about 06:20 UTC, by session_01VuYTweFNHsJxnX7YJmTvEN (Admin 2), at the arbiter's word (05:53 UTC): the re-check passed and the gate is closed for 1.9's test build. The admin panel's own baton is `docs/handoffs/admin-panel.md`.
+Written 2026-11-13, about 09:20 UTC, by session_01VuYTwcBsPfuad62m3fX53p (Gate 2.0), at the arbiter's word: after his walk of build 95 found two faults the passed gate had not (Discover's search opening with a glitch, note 5; the "Highlighted" toast over the reader's pill, note 7), build checks that catch their kinds, prove them on the old code, and run them over every screen; findings only. The record is `docs/1.9-build/notes/gate-2.md`. The admin panel's own baton is `docs/handoffs/admin-panel.md`.
 
 ## Role and scope
 
 Card: `docs/roles/admin.md`. Branch `ccr-07896cf2-bo0afd`. This baton is the gate's side: the walks, checkMock, the sweep and the release's checks.
 
-- 1.9's gate is closed for the test build: Android run 43374905223 and iOS run 43374909047, cut from `6193982d5`.
-- The next job is the nightly gate's runner, after 1.9 ships and not before (the arbiter, 05:53 UTC).
+- 1.9's gate closed for the test build (run 43374905223, iOS 43374909047, cut from `6193982d5`); build 95's walk notes are with the fixers.
+- The next job is the nightly gate's runner, after 1.9 ships and not before (the arbiter, 05:53 UTC). It runs the motion walk too.
 - If a fixer pushes into the export before the release, a second export is cut only on the arbiter's word, and only what changed is walked.
 
-## Done since the last baton
+## Done (Gate 2.0)
 
-- `5f56967b`: the arbiter's ruling of 02:14 UTC in the tap walk. Every node of a saint's web may be lifted, kept in sight above the card it opened and moved in a glide; otherwise the walk says "hidden" or "cut". Also the arbiter's addition of 02:30: a "held" control is tapped again with scroll anchoring off.
-- The targeted re-check: cut from `3b17a0aca` at 04:36 UTC, a pass (the arbiter, 05:53 UTC). Record: `docs/1.9-build/notes/gate-run-1.md`, "Re-check" (`452f0ffe`).
-- `54e4554b`: the walk's own fault, found in the re-check, mended.
-  - Holds are found frame by frame (`followFrames`, `holdOf`).
-  - The second tap asks only whether what stands above the control moved it on the screen.
-  - The card growth is allowed by the arbiter's ruling of 05:19 UTC.
-  - Self-test: 35 cases.
-- `68d7693b`: `scripts/gate/card-growth.mjs`, a web card grown by a tap and by the keyboard.
-- The arbiter's question on sideways spill (05:59 UTC): no gate tool judges spill or a cut against `innerWidth`, and none measures page-level spill at all.
+- **Where the walks turned motion off**, found and said (`scripts/gate/motion.mjs`, the record): checkMock's still while it measures (kept: a colour is read where it ends), the pixel passes' stills (kept), eight feature walks that ask the browser for reduced motion (named, not changed), export-walk's ten deliberate still walks, and no walk pinning the app's own motion (the app goes still on a phone it judges slow).
+- **Motion pinned and asserted** in every gate walk (`scripts/lib/motion.mjs`): the tap walk, the guardrail walk, the stripe walk, the eight probes, the motion walk. Self-test, on an export: 5 cases.
+- **The four checks** (`scripts/gate/`): `layers.mjs` (14 cases), `page-edge.mjs` (16), `frames.mjs` (12), `motion.mjs` (5); their in-page measures are `inpage.mjs`.
+- **The motion walk**, `scripts/motion-walk.mjs`: the page switch into each screen, layers and edge at rest at three heights, a double tap and a hold on a verse or a paragraph on the screen, every control (up to 30) tapped and recorded frame by frame, layers twice on the way and at rest, the edge at rest; a card that opens its own page must carry its picture (CLAUDE.md). `--reduced` for the still path, `--self-test` for the four.
+- **Shared:** `scripts/lib/tap.mjs` (moved out of the tap walk unchanged; its 35 cases pass), `scripts/lib/main-web.mjs`.
+- **The proof on the old code** (`6193982d5`): note 5 fails (a cut, 71% of the change in one frame, then blank frames); note 7 fails (the toast drawn over the reader's pill, 364 by 59px). Stills in `docs/1.9-build/notes/gate-2/`.
+- **The arbiter's item (08:11 UTC): the gate's export was not the store's.** Proved: cut the gate's recorded way, every page of the shop is a 404 and Discover has no Shop door; the store workflows write the shop and Community on. Now `node scripts/gate/export.mjs` cuts with the workflow's own switches, read at run time (`scripts/lib/store-switches.mjs`), each secret's stand-in named; `lib/build/__tests__/gateSwitches.test.ts` fails when they disagree; the walks refuse an export whose shop is a 404. The workflow's comment ("the /shop route tree itself stays web-only") is the stale part; neither is changed.
+- **The run over the 128 screens at 390, both readers:** in progress at this writing (started 09:11 UTC, on the export cut with the store's switches); the record takes its findings when it ends, and this baton its summary.
 
 ## Open
 
 | What | Owner | Next step |
 |---|---|---|
-| The nightly gate's runner | Admin | After 1.9 ships (the arbiter, 05:53 UTC); it is scheduled in `docs/NOW.md`. |
-| Counting a control by its drawn reach (hit-44) | Admin | 2.0's nightly gate (the arbiter, 02:14 UTC). For 1.9, Genesis 1's hand walk is the sample. |
-| A page spilling sideways: no gate tool measures it | Admin | Named to the arbiter in the re-check's report. If it is wanted for the nightly gate: measure content past the width asked for, never `innerWidth`. On phones and in the apps the page clips sideways overflow (`overflow-x: clip`, app/globals.css), so there a spill is cut, not scrolled. |
-| A second export, only if a fixer pushes into the export before the release | Admin | On the arbiter's word; walk only what changed. |
+| The run's findings | the arbiter | Routed by the arbiter; the record lists each with its file and still. |
+| Rulings asked | the arbiter | Meetings in passing (listed, not failed); dips at the foot of a fade a fifth of a second or less (listed, not failed); slow answers (listed); the EIKON Box's secret value (its member screens are walked dark). |
+| Eight feature walks ask the browser for reduced motion | their owners, by the arbiter | Named in `scripts/gate/motion.mjs`; each would pin motion with `scripts/lib/motion.mjs` and run its own self-test again. |
+| The nightly gate's runner | Admin | After 1.9 ships (the arbiter, 05:53 UTC). Add the motion walk to it. |
+| Counting a control by its drawn reach (hit-44) | Admin | 2.0's nightly gate (the arbiter, 02:14 UTC). |
+| A second export, only if a fixer pushes into the export before the release | Admin | On the arbiter's word, cut with `scripts/gate/export.mjs`; walk only what changed. |
 
 ## How the re-check ran, for the next check
 
@@ -39,6 +40,7 @@ Card: `docs/roles/admin.md`. Branch `ccr-07896cf2-bo0afd`. This baton is the gat
    - The key: his word of 2026-11-13 03:32 UTC, "yes read the key" (`docs/1.9-build/BRAINSTORM.md`). It was read from purifyapp.net's own scripts into the export command's environment only, checked to be the anon role of the main web's project, and never written to a file or printed.
    - This container's safety check refused that read until his word was relayed. His word covered the re-check's export; for another check, ask the arbiter whether it stands. If the read is refused, stop and ask; never work round it.
    - Before cutting, refuse a key that is not the anon role, a tree that is not clean, or a head that is not the named one, and record the five switches (`lib/campaigns/flags.ts`, `noticesOn.ts`, `julyRows.ts`, `careOn.ts`).
+   - **From Gate 2.0, cut with `node scripts/gate/export.mjs`** (it does all of the above, reads the key under his standing word "yes key always", and takes the store workflow's own switches). To cut a named head without leaving the branch: `git worktree add --detach /home/user/cut <head>`, `cp -al node_modules /home/user/cut/node_modules`, then `node scripts/gate/export.mjs --cwd /home/user/cut`; the export is `/home/user/cut/out`.
 3. **The walks.**
    - Two lanes at once: the new reader (`SELLS_PLUS=1`) and the open reader, each walk in turn, `--online`.
    - First, the three tools' own self-tests on the export (each needs it); stop if one fails.
@@ -53,6 +55,14 @@ Timings in this container (4 cores), about 75 minutes from the cut to the last c
 - the web build: 3.5 minutes.
 
 ## Gotchas
+
+New in Gate 2.0:
+- **The screencast sends a frame only when the screen changes.** A gap between two frames is a dropped frame only if the screen was changing; the transitions check asks the page's own per-frame record for that. Two workers a reader, both readers at once, kept the frames dense on these 4 cores; a typecheck or a build alongside does not.
+- **A reader's scroll puts the reader's bars away.** After the first touch, a walk's own scroll counts as the reader's: the pill and the tab bar go. Note 7 needs a verse already on the screen, double tapped where it stands.
+- **The house's draggable sheet moves itself by inline transforms** each frame (no animation list shows it), and opens to a half rest with its foot below the screen when its content is long: the sampler counts two restyles running as motion, and the edge check carries a sheet resting low.
+- **Thresholded ink lies in a fade:** words fade past any threshold all together. The blank rule fits each frame as a share of the screen before plus a share of the screen after, over the region that changes.
+- **The tab bar's own cross-fade dips through the ground** for a frame or two (listed as a dip). Back dims the screen to a fifth of itself in one frame on some screens: that is failed as blank, emptied at once.
+- **innerWidth widens only where html and body do not clip**; the apps clip both, so there a spill is cut.
 
 New in the re-check:
 - **A hold can last a frame or two.**
@@ -81,13 +91,15 @@ Still standing:
 - 2026-11-11: "No, not 1.9.1. Again, all of it is going into version 1.9." (no point release for a fault)
 - 2026-11-10: "when I try the latest build, I want to try everything as if it was public release." (the export in release positions)
 - 2026-11-09: spend only what was asked. One export per fix round.
-- 2026-11-13 03:32 UTC: "yes read the key" (the main web's public key, for the re-check's export: read into the export command only, written nowhere).
+- 2026-11-13 03:32 UTC: "yes read the key" (the main web's public key, for the re-check's export: read into the export command only, written nowhere). From 07:32 UTC a standing word: "yes key always" (CLAUDE.md).
+- 2026-11-13, after build 95's walk: "after all of these checks and all this time" (Gate 2.0's reason).
 - Always: no em dashes, side stripes, sparkle or light rays; name no reader in the repo (it is public); numbers go to him only.
 
 ## Where things are
 
 - The record: `docs/1.9-build/notes/gate-run-1.md` (final run 1, the confirm run, the final check, the re-check). State: `docs/NOW.md`. Rules: `docs/OPERATIONS.md`.
-- The walks: `scripts/tap-walk.mjs`, `scripts/guardrail-walk.mjs`, `scripts/mock-check.mjs`. Each has a `--self-test`; the tap walk's has 35 cases.
+- The walks: `scripts/tap-walk.mjs`, `scripts/guardrail-walk.mjs`, `scripts/mock-check.mjs`, and from Gate 2.0 `scripts/motion-walk.mjs`. Each has a `--self-test`; the tap walk's has 35 cases, the motion walk's runs the four checks' own.
+- The gate's export: `scripts/gate/export.mjs` with `scripts/lib/store-switches.mjs`. The motion pin: `scripts/lib/motion.mjs`. The record of Gate 2.0: `docs/1.9-build/notes/gate-2.md`.
 - The probes, `scripts/gate/` (run from the repository's root; each reads `out/`):
   - `web-cuts.mjs [WxH]`: words cut on every saint's web.
   - `tall-card.mjs <shots>`: the four tall-card webs.
@@ -97,4 +109,5 @@ Still standing:
   - `offline-pictures.mjs <pages...>`: pictures with no signal.
   - `gift-states.mjs <shots>`: /gift/ in its thirteen states.
   - `history-row.mjs`: /history/'s row brought to the middle.
-  - `gate-tests.txt`: the gate's test files.
+  - `layers.mjs`, `page-edge.mjs`, `frames.mjs`, `motion.mjs`: the four checks of Gate 2.0, each with `--self-test`; `inpage.mjs`: their measures in the page; `export.mjs`: the gate's export.
+  - `gate-tests.txt`: the gate's test files (with `lib/build/__tests__/gateSwitches.test.ts`).
