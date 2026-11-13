@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { AUTHOR_MARK_COLS, deriveAuthorMark } from "@/lib/community/authorMark";
-import { authorStatuses, statusOf } from "@/lib/community/authorStatus";
+import { NO_AUTHORS, authorsNow, nameOf, statusOf, type AuthorsNow } from "@/lib/community/authorStatus";
 import { avatarSrc } from "@/lib/community/avatarSrc";
 import { isDecoration, isNameColor } from "@/lib/profile/cosmetics";
 import { isClergyMark } from "@/lib/profile/clergy";
@@ -61,14 +61,15 @@ const count = (v: unknown) => (typeof v === "number" && v > 0 ? v : 0);
 function publicReply(
   row: Record<string, unknown>,
   now: number = Date.now(),
-  statuses: ReadonlyMap<string, string> = new Map(),
+  authors: AuthorsNow = NO_AUTHORS,
 ): Record<string, unknown> {
   const mark = deriveAuthorMark(row, now);
   return {
     id: row.id,
     post_id: row.post_id,
     body: row.body,
-    author_name: row.author_name,
+    // The name its writer goes by now, as in publicPost() (lib/community/authorStatus.ts).
+    author_name: nameOf(row, authors),
     // Through our own domain, as in publicPost() (lib/community/avatarSrc.ts).
     author_avatar: avatarSrc(row.author_avatar as string | null),
     // The tier, never the dates. See publicPost() in ../../route.ts.
@@ -79,7 +80,7 @@ function publicReply(
     author_name_color: mark && isNameColor(row.author_name_color) ? row.author_name_color : null,
     author_clergy: isClergyMark(row.author_clergy) ? row.author_clergy : null,
     // The writer's status line, for the card a name opens (lib/community/authorStatus.ts).
-    author_status: statusOf(row, statuses),
+    author_status: statusOf(row, authors),
     like_count: typeof row.like_count === "number" ? row.like_count : 0,
     dislike_count: typeof row.dislike_count === "number" ? row.dislike_count : 0,
     amen_count: count(row.amen_count),
@@ -187,9 +188,9 @@ export async function GET(
       .limit(200);
     mutedIds = new Set(((mutedRows ?? []) as { id: string }[]).map((r) => r.id));
   }
-  const statuses = await authorStatuses(admin, rows.filter((r) => !isWithdrawn(r)));
+  const authors = await authorsNow(admin, rows.filter((r) => !isWithdrawn(r)));
   const replies = rows.map((r) =>
-    isWithdrawn(r) ? withdrawnReply(r) : { ...publicReply(r, now, statuses), author_muted: mutedIds.has(String(r.id)) },
+    isWithdrawn(r) ? withdrawnReply(r) : { ...publicReply(r, now, authors), author_muted: mutedIds.has(String(r.id)) },
   );
   // Private whenever the answer depends on who asked: a thread filtered by
   // this reader's blocks, or a parish thread only members may read. A
