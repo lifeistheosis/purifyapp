@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { LEGAL_HREF, type LegalDoc } from "@/lib/legal/docs";
 
-import { LegalSheet } from "./LegalSheet";
+import { LegalSheet, preloadLegal } from "./LegalSheet";
 
 /**
  * A link to the Terms, the Privacy Policy or EIKON's shipping and returns,
@@ -23,6 +23,13 @@ export function LegalLink({ doc, className, children }: { doc: LegalDoc; classNa
   const [open, setOpen] = useState(false);
   // Each opening is a new sheet, on this link's own document.
   const [opening, setOpening] = useState(0);
+  // Its text, fetched once the page has settled, so the sheet rises with its
+  // words (LegalSheet.tsx, preloadLegal); and at the first touch, for a tap
+  // that comes sooner.
+  useEffect(() => {
+    const timer = setTimeout(() => preloadLegal(doc), 700);
+    return () => clearTimeout(timer);
+  }, [doc]);
   return (
     <>
       <Link
@@ -30,6 +37,7 @@ export function LegalLink({ doc, className, children }: { doc: LegalDoc; classNa
         prefetch={false}
         data-legal-link={doc}
         className={className}
+        onPointerDown={() => preloadLegal(doc)}
         onClick={(e) => {
           if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
           e.preventDefault();

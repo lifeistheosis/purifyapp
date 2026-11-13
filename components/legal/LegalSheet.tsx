@@ -39,12 +39,30 @@ import { websiteHref } from "@/lib/nav/websiteHref";
 
 type Text = ComponentType<{ lang: "en" | "de" }>;
 
-/** Each text, fetched when the sheet first shows it. */
+/** Each text, fetched when it is first wanted. */
 const LOAD: Readonly<Record<LegalDoc, () => Promise<Text>>> = {
   terms: () => import("./TermsText").then((m) => m.TermsText as Text),
   privacy: () => import("./PrivacyText").then((m) => m.PrivacyText as Text),
   "shop-policies": () => import("./ShopPoliciesText").then((m) => m.ShopPoliciesText as Text),
 };
+
+/** Each text once it is here: a sheet that opens after that rises with its words. */
+const LOADED: Partial<Record<LegalDoc, Text>> = {};
+function load(doc: LegalDoc): Promise<Text> {
+  return LOAD[doc]().then((Text) => (LOADED[doc] = Text));
+}
+
+/**
+ * Fetch a text ahead of its sheet (components/legal/LegalLink.tsx: once the
+ * link has been on the page a moment, and again at the first touch). The
+ * sheet fetched its text only once it was open, so the Terms rose on
+ * "Loading..." for a quarter of a second before their words (Gate 2.0's run,
+ * 2026-11-13); fetched ahead, the sheet is drawn with its words from the
+ * first frame it rises in.
+ */
+export function preloadLegal(doc: LegalDoc): void {
+  if (!LOADED[doc]) void load(doc).catch(() => {});
+}
 
 /**
  * The sheet. It opens on `doc`, the document its link names; a link inside
@@ -56,21 +74,23 @@ export function LegalSheet({ doc, open, onClose }: { doc: LegalDoc; open: boolea
   const [shown, setShown] = useState<LegalDoc>(doc);
   const [place, setPlace] = useState("");
   const [text, setText] = useState<{ doc: LegalDoc; Text: Text } | { doc: LegalDoc; failed: true } | null>(null);
+  // A text already here is drawn at once; one still on its way is fetched as the sheet opens.
+  const here = LOADED[shown];
   const words = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || here) return;
     let alive = true;
-    LOAD[shown]()
+    load(shown)
       .then((Text) => alive && setText({ doc: shown, Text }))
       .catch(() => alive && setText({ doc: shown, failed: true }));
     return () => {
       alive = false;
     };
-  }, [open, shown]);
+  }, [open, shown, here]);
 
   // The text, once it is here for the document shown.
-  const Body = text !== null && text.doc === shown && "Text" in text ? text.Text : null;
+  const Body = here ?? (text !== null && text.doc === shown && "Text" in text ? text.Text : null);
   const ready = Body !== null;
 
   // A new document, or a place in one: its top, or the place, in the sheet's own scroll.
