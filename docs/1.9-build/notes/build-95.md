@@ -71,3 +71,9 @@ A reader's report during the release's making, so it goes into 1.9 (CLAUDE.md, "
 He sent, 2026-11-13 07:40 UTC, a screenshot of a reader's Discussion post from 15 days ago (six likes; the reader is not named here). The reader is new, an inquirer into the Faith: "when I went to play the ambient selections, it said that they do not currently work. Has this always been the case? Is this feature that new, or could it just be a temporal bug?"
 
 A reader's report during the release's making, so it goes into 1.9. Checked at once: all six sound files answer 200 on the main web (/audio/ambience/*.mp3), so the files are there. The sheet's own failure line (ambience.failed, components/player/AmbienceSheet.tsx) is what he met. To find why a sound fails to start on a reader's phone (the app and the website, Android and iPhone), mend it, and give it a test that fails on the old code.
+
+## Note 12: the badges move when one is chosen
+
+His word, 2026-11-13 07:43 UTC, on build 96, with two screenshots of a profile sheet's Badges (Verified chosen, then Bug Hunter): "badge UI moving"
+
+What the two show: the chosen badge's card at the foot changes height, two lines for Verified and three for Bug Hunter ("Found a real bug and told us. Since October 2026"), so what stands below it moves. Under Bug Hunter's card a light grey pill also appears with no words readable on it: a button whose label cannot be seen, or a placeholder. Choosing a badge must not move the sheet. The card keeps one height, or changes it in the house's motion with nothing jumping, and every control shows its words at 4.5:1. To reproduce at 390 with touch and motion on, mend it, and give it a test that fails on the old code.
