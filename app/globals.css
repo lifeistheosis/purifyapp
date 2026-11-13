@@ -11579,6 +11579,20 @@ html[data-reading-mode="parchment"] .verse-cross-lit {
 html[data-reading-mode="parchment"] .remember-lit {
  text-shadow: none;
 }
+/* The verse to learn's head ("Remember the verse · Purify Plus") stands in
+   that light. Four dark looks draw their faint ink at 62 percent (Mosaic at
+   66) on a card a step lighter than the night, and there the head read 4.31
+   to 4.47:1 (checkMock with pixels on the round 1 export, 1.9; Mosaic the
+   least, Incense, Holy Mountain and Forest with it). On those four it draws
+   at 80. It outweighs the looks' own shares (a :where() and one class) by
+   the html's look and a class more; the light looks keep theirs, as the
+   light does not show on their paper. */
+@layer utilities {
+ html:is([data-look="incense"], [data-look="athos"], [data-look="forest"], [data-look="mosaic"]) .remember-head,
+ html:is([data-look="incense"], [data-look="athos"], [data-look="forest"], [data-look="mosaic"]) .remember-head .text-paper\/45 {
+  color: color-mix(in oklab, var(--color-paper) 80%, transparent);
+ }
+}
 
 /* The verse picture's text size (components/share/PictureSheet.tsx, his
    "mix of A and B" of round 11): a thin track, white up to the size chosen

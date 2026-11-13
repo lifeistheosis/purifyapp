@@ -157,7 +157,11 @@ export function TourHush({ shown }: { shown: boolean }) {
   return (
     <div aria-hidden className="tour-hush" data-shown={shown ? "" : undefined}>
       <div className="tour-hush-veil" />
-      <div className="tour-bloom" />
+      <div
+        className="tour-bloom"
+        data-mock-allow="mirror"
+        data-mock-why="drawn round the thing the tour lights, at the place measured on the screen (TourLayer's box), so it follows that thing in every language; with nothing lit it is unseen"
+      />
     </div>
   );
 }

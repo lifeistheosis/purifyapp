@@ -150,10 +150,24 @@ describe("The small line: sentence case, never capitals spaced out", () => {
 });
 
 describe("Found by checkMock on the round 1 export (Updates 29)", () => {
-  it("lifts the verse to learn's small line on the light looks, over the verse's light", () => {
+  // The four looks are dark ones (no reading mode under them), so a rule for
+  // the light looks never reached them: the export of the round read the
+  // same 4.31 to 4.47:1 again (Updates 33).
+  it("lifts the verse to learn's head on the four dark looks where it read under 4.5:1, over the verse's light", () => {
     const card = read("components/today/RememberCard.tsx");
-    expect(card).toContain('text-paper/60 [html[data-reading-mode=parchment][data-look]_&]:text-paper/80">');
-    expect(card).toContain('"text-paper/45 [html[data-reading-mode=parchment][data-look]_&]:text-paper/80"');
+    expect(card).toContain('className="remember-head font-sans text-[12.5px] font-semibold text-paper/60"');
+    expect(card).toContain('<span className="text-paper/45"> · {t("plus.badge")}</span>');
+    expect(card).not.toContain("[html[data-reading-mode=parchment][data-look]_&]:text-paper/80");
+    const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+    const looks = 'html:is([data-look="incense"], [data-look="athos"], [data-look="forest"], [data-look="mosaic"])';
+    expect(css).toContain(
+      `${looks} .remember-head,\n ${looks} .remember-head .text-paper\\/45 {\n  color: color-mix(in oklab, var(--color-paper) 80%, transparent);`,
+    );
+  });
+
+  it("tells the checker why the tour's bloom stays where it is measured, in every language", () => {
+    const tour = read("components/whats-new/tour/TourLook.tsx");
+    expect(tour).toMatch(/className="tour-bloom"\s+data-mock-allow="mirror"\s+data-mock-why="[^"]*measured on the screen[^"]*"/);
   });
 
   it("centres the tour's drawing from the reading side's start, so Arabic mirrors it", () => {
