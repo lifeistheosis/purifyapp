@@ -60,13 +60,16 @@
 // nothing else in the page did (note 3's look that changed nothing): many
 // a setting is kept and shown nowhere else, so this is a "look" and not a
 // fail. A control that stays under the finger while what stands above it
-// moves by more than 4px is tapped again, from the screen as it first stood,
-// with the browser's scroll anchoring off on every element, as WebKit has none
-// (the arbiter, 2026-11-13): a hold the page makes itself stands then and
-// passes ("held by the page itself"); one that leans on the browser moves, and
-// fails as "moved". Only one that cannot be tapped again the same way is
-// listed as "held": Chrome, and so the Android app, holds it there; a browser
-// that does not anchor may let it jump.
+// moves by more than 4px (found frame by frame, holdOf: a hold can last a
+// frame or two before the page follows what opened) is tapped again, from the
+// screen as it first stood, with the browser's scroll anchoring off on every
+// element, as WebKit has none (the arbiter, 2026-11-13): a hold the page makes
+// itself stands then and passes ("held by the page itself"); one that leans on
+// the browser moves in the frame what stands above it changes, and fails as
+// "moved". The second tap asks only that: what the page then does on purpose
+// (a part opened and followed) is the first tap's to judge, as it was. Only
+// one the second tap cannot tell is listed as "held": Chrome, and so the
+// Android app, holds it there; a browser that does not anchor may let it jump.
 //
 // A fail the arbiter has allowed by name and reason (ALLOWED below) is listed
 // as "allowed" with its reason, never silent. A saint's web lifts the node
@@ -74,7 +77,9 @@
 // that move (the arbiter, 2026-11-11 for a council, 2026-11-13 for every node)
 // only while the node, followed frame by frame from the tap until it stands
 // still, glides there and ends wholly in sight: "hidden" and "cut" are never
-// allowed.
+// allowed. The card's short face on a saint's web grows it into the tall card
+// and never turns aria-expanded true (the tall face carries it): an opening,
+// not a jump (the arbiter, 2026-11-13), while the card ends fully in view.
 //
 // A control is measured once it stands still (a picture arriving, a list the
 // page draws again once the main web answers), and a control the page drew
@@ -109,7 +114,9 @@
 // (passes), what stands above a control taken away while the browser's scroll
 // anchoring alone holds it (fails: tapped again with anchoring off, it moves),
 // the same with the page scrolling itself back before paint (passes, held by
-// the page itself), the same with no anchoring and no hold (a jump), a page
+// the page itself), the prayer book's chapter, held a frame or two and then
+// followed as its page opens, by the page itself (passes) or by the browser
+// alone (fails), the same with no anchoring and no hold (a jump), a page
 // grown too short at its end (pulled), Back to a page that adds a
 // shelf above the reader once it is back (passes) and Back to a page that loses
 // the reader's place (fails), a control the page draws again as it is
@@ -118,7 +125,8 @@
 // same sheet with its buttons at 44 (passes), and a node of a saint's web that
 // the web lifts above its card: in a glide, ending in sight (allowed); in a
 // glide that ends under the card (hidden); in one frame (a cut); and in one
-// frame with the app's motion off (allowed). Its page wears no palette of its
+// frame with the app's motion off (allowed), and a web card's short face that
+// grows into the tall card, in view (allowed) or past the top bar (hidden). Its page wears no palette of its
 // own, so its sheets are held on Dark alone; a screen of the export is held on
 // all five.
 
@@ -180,10 +188,11 @@ const REST_MS = 4000;
 
 /**
  * A fail allowed by name and reason, the arbiter's to grant: the screens, the control (by its
- * name, `control`, or by what it is, `node`), the verdict it lifts, and why. Printed with its
+ * name, `control`, or by what it is, `node` or `grows`), the verdict it lifts, and why. Printed with its
  * reason on every walk, never silent. An allowance for a `node` holds only while the node, followed
- * frame by frame from the tap (followNode), glides and ends wholly between the top bar's foot and
- * the top of what it opened (`card`); else the walk says "cut" or "hidden", which it never lifts.
+ * frame by frame from the tap (followFrames), glides and ends wholly between the top bar's foot and
+ * the top of what it opened (`card`), and one for a card that `grows` only while the card ends fully
+ * in view; else the walk says "cut" or "hidden", which it never lifts.
  */
 const ALLOWED = [
   {
@@ -195,6 +204,15 @@ const ALLOWED = [
     verdict: "moved",
     why: "a saint's web lifts the node tapped, a saint or a council, above the card it opens, so it stays in sight: the page following what opened, in the house glide and ending wholly in view (the arbiter, 2026-11-11 for a council, 2026-11-13 for every node)",
   },
+  {
+    screens: /^\/saints\/[^/]+\/web\/$/,
+    // The card's short face, its own button that grows it into the tall card (WebCard.tsx): it never
+    // turns aria-expanded true, since the tall face carries that, so the walk read the growth as a jump.
+    grows: "[data-saint-web-card] > button[aria-controls][aria-expanded='false']",
+    card: "[data-saint-web-card]",
+    verdict: "moved",
+    why: "the short face grows into the tall card: an opening, not a jump (the arbiter, 2026-11-13), and the card ends fully in view",
+  },
   ...(SELF_TEST ? [{ screens: /^\/allowed\/$/, control: /^button "Add a note"$/, verdict: "moved", why: "the self-test's own allowance" }] : []),
 ];
 
@@ -202,9 +220,9 @@ const ALLOWED = [
 const FAILS = /^(nothing|moved|back|under|covered|sheet|hidden|cut):/;
 
 /**
- * How long a lifted node is followed after the tap at most, and how long it must stand still to be
- * done (once FOLLOW_MIN_MS have passed, so a move that begins late, as the card turns on a loaded
- * machine, is not missed).
+ * How long a tapped control is followed after the tap at most (followFrames), and how long it must
+ * stand still to be done (once FOLLOW_MIN_MS have passed, so a move that begins late, as the card
+ * turns on a loaded machine, is not missed).
  */
 const FOLLOW_MS = 4000;
 const FOLLOW_MIN_MS = 1200;
@@ -227,6 +245,8 @@ const EXPECT = {
   "/sticky/": { verdict: "pass", why: /^took the page/ },
   "/held/": { verdict: "fail", why: /^moved: tapped again with the browser's scroll anchoring off, as WebKit has none, it moved \d+px/ },
   "/held-self/": { verdict: "pass", why: /^held by the page itself: what stands above it moved \d+px/ },
+  "/held-follow/": { verdict: "pass", why: /^held by the page itself: what stands above it moved \d+px/ },
+  "/held-follow-browser/": { verdict: "fail", why: /^moved: tapped again with the browser's scroll anchoring off, as WebKit has none, it moved \d+px/ },
   "/jump/": { verdict: "fail", why: /^moved: it moved/ },
   "/pulled/": { verdict: "fail", why: /^moved: the page grew too short/ },
   "/back-held/": { verdict: "pass" },
@@ -255,6 +275,8 @@ const EXPECT = {
   "/saints/hidden/web/": { verdict: "fail", why: /^hidden: it ends at/ },
   "/saints/cut/web/": { verdict: "fail", why: /^cut: \d+ of its \d+px in one frame/ },
   "/saints/motion-off/web/": { verdict: "allowed", why: /^kept in sight: moved at once, the app's motion off/ },
+  "/saints/grows/web/": { verdict: "allowed", why: /^kept in view: the card it grew into ends at/ },
+  "/saints/grows-over/web/": { verdict: "fail", why: /^hidden: the card it grew into ends at/ },
 };
 
 /** The self-test's page: one front door that draws a case by its address, as the shell answers every address with it. */
@@ -286,6 +308,49 @@ if (at === "/sticky/") {
     b.textContent = "Chosen";
     scrollBy(0, b.getBoundingClientRect().top - was);
   }), block(2000));
+} else if (at === "/held-follow/" || at === "/held-follow-browser/") {
+  // As the prayer book's chapters (the re-check of 2026-11-13): tapped, a chapter's page opens under it
+  // as the page above shuts at once; the book puts the chapter back under the finger in that same frame
+  // (held-follow), or that is left to the browser's scroll anchoring (held-follow-browser), and two
+  // frames on the page glides down until the opened page is in sight, as lib/ui/showOpened.ts follows
+  // what opens. Twelve looks 60ms apart missed the hold, and the second tap took the glide for a move.
+  const self = at === "/held-follow/";
+  const part = document.createElement("div"); part.id = "page-2"; part.hidden = true; part.style.height = "500px"; part.textContent = "The chapter's page.";
+  const chapter = button("II A chapter", (b) => {
+    const was = b.getBoundingClientRect().top;
+    document.getElementById("above")?.remove();
+    b.setAttribute("aria-expanded", "true");
+    part.hidden = false;
+    if (self) scrollBy(0, b.getBoundingClientRect().top - was);
+    requestAnimationFrame(() => requestAnimationFrame(function glide() {
+      const owed = part.getBoundingClientRect().bottom - (innerHeight - 12);
+      if (owed <= 0.5) return;
+      scrollBy(0, Math.min(owed, 25));
+      requestAnimationFrame(glide);
+    }));
+  });
+  chapter.setAttribute("aria-expanded", "false"); chapter.setAttribute("aria-controls", "page-2");
+  m.append(block(700, "above"), block(600), chapter, part, block(400));
+} else if (at === "/saints/grows/web/" || at === "/saints/grows-over/web/") {
+  // As a saint's web card (WebCard.tsx): a card at the foot whose short face, its own button, grows it
+  // into the tall card and never turns aria-expanded true (the tall face carries it). It grows to stand
+  // wholly in view (grows), or past the top bar's foot (grows-over).
+  const bar = document.createElement("div"); bar.setAttribute("data-screen-edge", "top");
+  bar.style.cssText = "position:fixed;left:0;right:0;top:0;height:56px;background:#eee;z-index:2";
+  const card = document.createElement("section"); card.id = "card"; card.setAttribute("data-saint-web-card", ""); card.setAttribute("aria-label", "St Ignatius");
+  card.style.cssText = "position:fixed;left:12px;right:12px;bottom:0;height:78px;background:#ddd;z-index:3;overflow:hidden";
+  const tall = at === "/saints/grows/web/" ? 400 : 820;
+  const face = document.createElement("button"); face.type = "button"; face.textContent = "St Ignatius 107, Martyrs";
+  face.setAttribute("aria-expanded", "false"); face.setAttribute("aria-controls", "card");
+  face.style.cssText = "position:absolute;left:0;right:0;top:0;width:auto;margin:0;height:78px";
+  face.onclick = () => {
+    const t0 = performance.now();
+    const step = (now) => { const k = Math.min(1, (now - t0) / 300); card.style.height = 78 + (tall - 78) * (1 - Math.pow(1 - k, 3)) + "px"; if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  };
+  card.append(face);
+  document.body.append(bar, card);
+  m.append(block(1200));
 } else if (at === "/jump/" || at === "/allowed/") {
   document.documentElement.style.overflowAnchor = "none"; document.body.style.overflowAnchor = "none";
   m.append(block(150), button("Add a note", (b) => b.before(block(60))), block(2000));
@@ -659,19 +724,23 @@ function describeSheet(n) {
 }
 
 /**
- * A node of a saint's web, about to be tapped, followed on every frame from now until it has stood
- * still for `stillMs` once `minMs` have passed, or for `ms` in all: where its middle stood on the
- * screen at each frame (what the finger and the eye follow), and whether the app's motion was off
- * as the tap came (the attribute the app keeps on <html> from the same answer its motion reads,
- * lib/ui/motion.ts; a page with no such attribute, by the browser's own setting). Nothing is
- * written into the page: the walk counts every change to its elements after the tap.
+ * The control about to be tapped, followed on every frame from now until it has stood still for
+ * `stillMs` once `minMs` have passed, or for `ms` in all: where it stood on the screen at each frame
+ * (its edges and its middle, what the finger and the eye follow), how far the page was scrolled, and
+ * whether the app's motion was off as the tap came (the attribute the app keeps on <html> from the
+ * same answer its motion reads, lib/ui/motion.ts; a page with no such attribute, by the browser's own
+ * setting). From these the walk tells a hold from a jump (holdOf) and, for a node of a saint's web,
+ * the house glide from a cut (liftOf). A frame where it is not drawn (taken out of the page, or
+ * drawn nowhere) is marked, and read past. Nothing is written into the page: the walk counts every
+ * change to its elements after the tap.
  */
-function followNode({ i, ms, minMs, stillMs }) {
+function followFrames({ i, ms, minMs, stillMs }) {
   const el = document.querySelector(`[data-tapwalk="${i}"]`);
   if (!el) return false;
   const at = () => {
     const r = el.getBoundingClientRect();
-    return { t: performance.now(), x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    const shown = el.isConnected && (r.width > 0 || r.height > 0);
+    return { t: performance.now(), top: r.top, bottom: r.bottom, left: r.left, right: r.right, x: r.left + r.width / 2, y: r.top + r.height / 2, sx: scrollX, sy: scrollY, shown };
   };
   const first = at();
   const said = document.documentElement.getAttribute("data-motion");
@@ -682,7 +751,7 @@ function followNode({ i, ms, minMs, stillMs }) {
     if (window.__tapwalkFollow !== follow) return;
     const now = at();
     const last = follow.frames[follow.frames.length - 1];
-    if (Math.hypot(now.x - last.x, now.y - last.y) > 0.5) moved = now.t;
+    if (Math.hypot(now.x - last.x, now.y - last.y) > 0.5 || Math.abs(now.sx - last.sx) > 0.5 || Math.abs(now.sy - last.sy) > 0.5) moved = now.t;
     follow.frames.push(now);
     if ((now.t - first.t >= minMs && now.t - moved >= stillMs) || now.t - first.t >= ms) follow.done = true;
     else requestAnimationFrame(look);
@@ -723,14 +792,44 @@ async function nodeEnds({ i, card }) {
   return last;
 }
 
+/**
+ * Where the card a short face grew into ends, once it is still (three looks 60ms apart within half a
+ * pixel, up to 2s): its top and foot, the top bar's foot, and the top of what stands at the screen's
+ * foot (the tab bar), or the screen's own foot.
+ */
+async function cardEnds({ card }) {
+  const el = document.querySelector(card);
+  if (!el) return null;
+  const drawn = (x) => {
+    const r = x.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight && !x.closest("[inert]") && x.checkVisibility({ opacityProperty: true, visibilityProperty: true });
+  };
+  const read = () => {
+    const r = el.getBoundingClientRect();
+    const feet = [...document.querySelectorAll('[data-screen-edge="top"]')].filter(drawn).map((x) => x.getBoundingClientRect().bottom);
+    const tops = [...document.querySelectorAll('[data-screen-edge="bottom"]')].filter((x) => drawn(x) && !el.contains(x)).map((x) => x.getBoundingClientRect().top);
+    return { top: r.top, bottom: r.bottom, ceiling: Math.max(0, ...feet), floor: Math.min(innerHeight, ...tops) };
+  };
+  let last = read();
+  let same = 0;
+  const t0 = performance.now();
+  while (same < 3 && performance.now() - t0 < 2000) {
+    await new Promise((r) => setTimeout(r, 60));
+    const now = read();
+    same = Object.keys(now).every((k) => Math.abs(now[k] - last[k]) <= 0.5) ? same + 1 : 0;
+    last = now;
+  }
+  return last;
+}
+
 // ── In node ─────────────────────────────────────────────────────────────
 
 /**
- * A lifted node's move, from the frames followNode kept: how far it went from where the finger
+ * A lifted node's move, from the frames followFrames kept: how far it went from where the finger
  * found it, its largest step between two frames, in how many frames it moved and over how long.
  */
 function liftOf(follow) {
-  const f = follow.frames;
+  const f = follow.frames.filter((x) => x.shown !== false);
   let far = 0;
   let step = 0;
   let moving = 0;
@@ -747,6 +846,36 @@ function liftOf(follow) {
     far = Math.max(far, Math.hypot(f[k].x - f[0].x, f[k].y - f[0].y));
   }
   return { far, step, moving, ms: from === null ? 0 : to - from, off: follow.off, done: follow.done };
+}
+
+/**
+ * What stands above a control changing as it is tapped, frame by frame from followFrames (the arbiter,
+ * 2026-11-13). Between two frames the control moved in the page by more than 4px (what stands above it
+ * grew or shrank), and on the screen it either stayed within 4px (held: the page was scrolled with it
+ * in that same frame) or moved with it (a jump). A page that scrolls on purpose (a part opened and
+ * followed) moves the control on the screen and not in the page, so it is neither. Each pair of frames
+ * is read by the edge that moved least on the screen (top, middle or foot; and across), so a control
+ * that grows or shrinks as it is pressed or opened is not taken for one that moved.
+ */
+function holdOf(frames) {
+  let held = 0;
+  let within = 0;
+  let jump = 0;
+  for (let k = 1; k < frames.length; k++) {
+    const a = frames[k - 1];
+    const b = frames[k];
+    if (a.shown === false || b.shown === false) continue;
+    const least = (keys, s) => keys.map((key) => ({ screen: b[key] - a[key], page: b[key] + b[s] - (a[key] + a[s]) })).reduce((m, v) => (Math.abs(v.screen) < Math.abs(m.screen) ? v : m));
+    const y = least(["top", "y", "bottom"], "sy");
+    const x = least(["left", "x", "right"], "sx");
+    const d = Math.abs(y.page) >= Math.abs(x.page) ? y : x;
+    if (Math.abs(d.page) <= 4) continue;
+    if (Math.abs(d.screen) <= 4) {
+      held = Math.max(held, Math.abs(d.page));
+      within = Math.max(within, Math.abs(d.screen));
+    } else jump = Math.max(jump, Math.abs(d.screen));
+  }
+  return { held, within, jump };
 }
 
 async function tapAt(cdp, x, y) {
@@ -954,8 +1083,11 @@ async function reach(page, c) {
  * A control that stayed under the finger while what stands above it moved, tapped again from the
  * screen as it first stood, with the browser's scroll anchoring off on every element, as WebKit has
  * none (the arbiter, 2026-11-13: the prayer book scrolls itself back before paint, and the walk had
- * counted that as the browser's hold, fail 6 of the final check): how it moves then. Null where it
- * cannot be tapped again the same way.
+ * counted that as the browser's hold, fail 6 of the final check), and followed frame by frame: in
+ * the frames what stands above it changes, does it stay under the finger (holdOf)? Only that is
+ * asked: the page's moves on purpose after it (a part opened and followed) were the first tap's to
+ * judge, and the re-check found the second tap taking the prayer book's glide for a move. Null
+ * where it cannot be tapped again the same way.
  */
 async function anchorless(page, cdp, at, kept, c) {
   await fresh(page, at, kept);
@@ -976,10 +1108,11 @@ async function anchorless(page, cdp, at, kept, c) {
   const box = handle && (await handle.boundingBox());
   if (!box) return null;
   const { x, y } = await aimOf(handle, box);
-  const href = page.url();
-  const start = await whereIs(page, c.i);
+  if (!(await page.evaluate(followFrames, { i: c.i, ms: FOLLOW_MS, minMs: FOLLOW_MIN_MS, stillMs: FOLLOW_STILL_MS }).catch(() => false))) return null;
   await tapAt(cdp, x, y);
-  return followMove(page, href, start, c.i);
+  await page.waitForFunction(() => window.__tapwalkFollow?.done === true, null, { polling: 60, timeout: FOLLOW_MS + 2000 }).catch(() => {});
+  const frames = await page.evaluate(() => window.__tapwalkFollow?.frames ?? null).catch(() => null);
+  return frames ? holdOf(frames) : null;
 }
 
 /**
@@ -1227,13 +1360,16 @@ async function walkScreen(ctx, at, kept) {
           });
           window.__tapwalkObserver.observe(document.documentElement, { subtree: true, childList: true, attributes: true, characterData: true });
         });
-        // A node of a saint's web, by the allowance that names it (the arbiter, 2026-11-13): followed
-        // frame by frame from just before the tap until it stands still, to tell the house glide from
-        // a cut and to find where it ends.
+        // A node of a saint's web, and a web card's short face, by the allowances that name them (the
+        // arbiter, 2026-11-13). Every control is followed frame by frame from just before the tap, to
+        // find a hold that lasts a frame or two, and these until they stand still, to tell the house
+        // glide from a cut and to find where the node or the card ends.
         const lift = ALLOWED.find((a) => a.node && a.screens.test(at));
         if (lift && (await handle.evaluate((el, sel) => el.matches(sel), lift.node).catch(() => false))) row.node = true;
+        const growsBy = ALLOWED.find((a) => a.grows && a.screens.test(at));
+        if (growsBy && (await handle.evaluate((el, sel) => el.matches(sel), growsBy.grows).catch(() => false))) row.grows = true;
         const start = await whereIs(page, c.i);
-        if (row.node) await page.evaluate(followNode, { i: c.i, ms: FOLLOW_MS, minMs: FOLLOW_MIN_MS, stillMs: FOLLOW_STILL_MS });
+        await page.evaluate(followFrames, { i: c.i, ms: FOLLOW_MS, minMs: FOLLOW_MIN_MS, stillMs: FOLLOW_STILL_MS }).catch(() => false);
         await tapAt(cdp, ax, ay);
         const { moved, pulled, scrolled, held } = await followMove(page, before.href, start, c.i);
         await page.waitForTimeout(700);
@@ -1403,17 +1539,31 @@ async function walkScreen(ctx, at, kept) {
           } else if (scrolled > 4) {
             row.why.push(`took the page ${Math.round(scrolled)}px, on purpose`);
           }
+          // The frames the tap was followed by: a node and a card that grows are followed until they
+          // stand still; anything else is read as it is now (a hold comes in the tap's first frames),
+          // and its follower let go.
+          if (row.node || row.grows) await page.waitForFunction(() => window.__tapwalkFollow?.done === true, null, { polling: 60, timeout: FOLLOW_MS + 2000 }).catch(() => {});
+          const follow = await page
+            .evaluate(() => {
+              const f = window.__tapwalkFollow;
+              if (!f) return null;
+              window.__tapwalkFollow = null;
+              return { frames: f.frames, off: f.off, done: f.done };
+            })
+            .catch(() => null);
           // Held under the finger while what stands above it moved: by the page itself, or by the
-          // browser's scroll anchoring alone, which WebKit does not have. Told apart by a second tap
-          // with anchoring off, once every measure of this one is taken (below).
-          const heldFirst = row.verdict === "pass" && held > 4 ? Math.round(held) : 0;
+          // browser's scroll anchoring alone, which WebKit does not have. Found frame by frame (holdOf)
+          // as well as by the looks: twelve looks 60ms apart catch a hold that lasts a frame or two
+          // before the page follows what opened only when one lands in it (the prayer book's chapters,
+          // the re-check of 2026-11-13). Told apart by a second tap with anchoring off, once every
+          // measure of this one is taken (below).
+          const framed = follow && start && !start.stuck ? holdOf(follow.frames) : { held: 0 };
+          const heldFirst = row.verdict === "pass" && Math.max(held, framed.held) > 4 ? Math.round(Math.max(held, framed.held)) : 0;
           // A node of a saint's web (the arbiter, 2026-11-13), moved or not: it ends wholly in sight,
           // between the top bar's foot and the top of the card it opened, and where the app's motion
           // is on it gets there in a glide, never a cut. Measured before what it opened is worn in
           // each palette, which moves the page.
           if (row.node) {
-            await page.waitForFunction(() => window.__tapwalkFollow?.done === true, null, { polling: 60, timeout: FOLLOW_MS + 2000 }).catch(() => {});
-            const follow = await page.evaluate(() => (window.__tapwalkFollow ? { frames: window.__tapwalkFollow.frames, off: window.__tapwalkFollow.off, done: window.__tapwalkFollow.done } : null)).catch(() => null);
             const ends = await page.evaluate(nodeEnds, { i: c.i, card: lift.card }).catch(() => null);
             if (!follow || !ends) {
               row.verdict = "fail";
@@ -1439,6 +1589,25 @@ async function walkScreen(ctx, at, kept) {
               }
             }
           }
+          // A web card's short face, grown into the tall card (the arbiter, 2026-11-13): an opening, not
+          // a jump, while the card it grew into ends fully in view, between the top bar's foot and the
+          // top of what stands at the screen's foot. Measured before what it opened is worn in each palette.
+          if (row.grows) {
+            const ends = await page.evaluate(cardEnds, { card: growsBy.card }).catch(() => null);
+            const n = (v) => Math.round(v);
+            if (!ends) {
+              row.verdict = "fail";
+              row.why.push("hidden: the card it grew into is gone once the page is still");
+            } else {
+              row.card = { top: n(ends.top), bottom: n(ends.bottom), ceiling: n(ends.ceiling), floor: n(ends.floor) };
+              const between = `between the top bar's foot at ${n(ends.ceiling)}px and the top of what stands at the screen's foot at ${n(ends.floor)}px`;
+              if (ends.top >= ends.ceiling - 1 && ends.bottom <= ends.floor + 1) row.why.push(`kept in view: the card it grew into ends at ${n(ends.top)} to ${n(ends.bottom)}px, wholly ${between}`);
+              else {
+                row.verdict = "fail";
+                row.why.push(`hidden: the card it grew into ends at ${n(ends.top)} to ${n(ends.bottom)}px, not wholly ${between}`);
+              }
+            }
+          }
           const anything = changes > 0 || answered || after.y !== before.y || after.html !== before.html || after.kept !== before.kept || after.dialogs !== before.dialogs;
           if (!anything) {
             if (namesHere) row.why.push("names the page it stands on, or a choice already made: nothing to do");
@@ -1459,20 +1628,21 @@ async function walkScreen(ctx, at, kept) {
           // the page round for Arabic before it puts the page back.
           await measureSheets(page, row, at, c);
           // A hold, told apart (the arbiter, 2026-11-13): the same control tapped again from the
-          // screen as it first stood, with the browser's scroll anchoring off on every element. A
-          // hold the page makes itself stands then and passes; one that leans on the browser moves,
-          // as it would in WebKit, and fails.
+          // screen as it first stood, with the browser's scroll anchoring off on every element, and
+          // followed frame by frame. A hold the page makes itself stands then and passes; one that
+          // leans on the browser moves in the frame what stands above it changes, as it would in
+          // WebKit, and fails. The page's moves on purpose after it are not asked again.
           if (heldFirst) {
             const alone = await anchorless(page, cdp, at, kept, c).catch(() => null);
-            if (!alone) {
-              row.held = heldFirst;
-              row.why.push(`held: what stands above it moved ${heldFirst}px, and the browser's scroll anchoring kept it under the finger; it could not be tapped again with anchoring off`);
-            } else if (Math.max(alone.moved, alone.pulled) > 4) {
+            if (alone && alone.jump > 4) {
               row.verdict = "fail";
-              row.why.push(`moved: tapped again with the browser's scroll anchoring off, as WebKit has none, it moved ${Math.round(Math.max(alone.moved, alone.pulled))}px under the finger: only the browser held it (${heldFirst}px)`);
-            } else {
+              row.why.push(`moved: tapped again with the browser's scroll anchoring off, as WebKit has none, it moved ${Math.round(alone.jump)}px under the finger as what stands above it changed: only the browser held it (${heldFirst}px)`);
+            } else if (alone && alone.held > 4) {
               row.heldBySelf = heldFirst;
-              row.why.push(`held by the page itself: what stands above it moved ${heldFirst}px, and tapped again with the browser's scroll anchoring off it stood within ${Math.round(alone.moved)}px`);
+              row.why.push(`held by the page itself: what stands above it moved ${heldFirst}px, and tapped again with the browser's scroll anchoring off it stood within ${Math.round(alone.within)}px`);
+            } else {
+              row.held = heldFirst;
+              row.why.push(`held: what stands above it moved ${heldFirst}px, and the browser's scroll anchoring kept it under the finger; ${alone ? "tapped again with anchoring off, nothing above it changed" : "it could not be tapped again with anchoring off"}`);
             }
           }
         }
@@ -1483,7 +1653,7 @@ async function walkScreen(ctx, at, kept) {
       // A fail allowed by name and reason: every fail line it carries is the allowed kind.
       if (row.verdict === "fail") {
         const fails = row.why.filter((w) => FAILS.test(w));
-        const grant = ALLOWED.find((a) => a.screens.test(at) && (!a.control || a.control.test(c.name)) && (!a.node || row.node) && fails.every((w) => w.startsWith(`${a.verdict}:`)));
+        const grant = ALLOWED.find((a) => a.screens.test(at) && (!a.control || a.control.test(c.name)) && (!a.node || row.node) && (!a.grows || row.grows) && fails.every((w) => w.startsWith(`${a.verdict}:`)));
         if (grant) {
           row.verdict = "allowed";
           row.allowed = grant.why;
@@ -1572,7 +1742,7 @@ for (const r of results) {
   for (const c of r.controls) if (c.look) looks.push(`${r.at} ${c.name}: ${c.look}`);
   for (const c of r.controls) if (c.held) helds.push(`${r.at} ${c.name}: ${c.held}px`);
   for (const c of r.controls) if (c.heldBySelf) heldBySelf.push(`${r.at} ${c.name}: ${c.heldBySelf}px`);
-  for (const c of r.controls) if (c.allowed) allowed.push(`${r.at} ${c.name}: ${c.why.filter((w) => FAILS.test(w) || w.startsWith("kept in sight:")).join("; ")}; allowed: ${c.allowed}`);
+  for (const c of r.controls) if (c.allowed) allowed.push(`${r.at} ${c.name}: ${c.why.filter((w) => FAILS.test(w) || /^kept in (sight|view):/.test(w)).join("; ")}; allowed: ${c.allowed}`);
 }
 console.log(`\n${results.length} screens, ${tapped} controls tapped, ${failed} failed`);
 const capped = results.filter((r) => r.found > r.controls.length);
