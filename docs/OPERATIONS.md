@@ -113,6 +113,7 @@ During a final check, no app code lands. Any code change after it means a new ex
 ## 6. Cadence
 
 - **Archive what is done** (his word, 2026-11-13: "remember to automatically archive chats we really don't need"). The arbiter archives a chat, without asking him, once its job is pushed and its report or baton is read. It keeps a chat that still holds work, or that is the next job's natural owner soon. An archived chat can be unarchived if needed, so when in doubt and the job is done, archive.
+- **Overdrive, and its end** (his word, 2026-11-13: "time to turn down on overdrive and start using our optimized system again (but clean off the charts smart and slowly as in let them finish their work submit and archive)"). Overdrive is his to call, for a reset about to waste unused allowance: chats run in parallel, one per job. When he ends it, no chat is stopped mid-work. Each finishes, pushes, reports and is archived, and a chat waiting only on his yes is archived once his answer is carried out. A new ask goes to an open chat in its lane, and a new chat starts only when no open chat can take it.
 - **Each fix round:** one message out to each chat, one report back from each.
 - **Each change of state:** the arbiter rewrites `docs/NOW.md`.
 - **Each release, once it has shipped:**
