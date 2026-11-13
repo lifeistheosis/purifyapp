@@ -177,7 +177,8 @@ describe("Gate 2.0's in-page faults under his ruling, each moved (Updates 22)", 
   it("Community: the replies open and arrive, and Read more unfolds, as the card grows", () => {
     const c = read("components/community/CommunityClient.tsx");
     expect(c).toMatch(/movePage\(\s*\(\) => \{\s*setOpen\(next\);\s*if \(fetching\) setRepliesState\("loading"\);\s*\},\s*\{ grows: \[cardRef\.current\] \},\s*\);/);
-    expect(c).toContain("if (cardRef.current?.isConnected) movePage(land, { grows: [cardRef.current] });");
+    expect(c).toMatch(/if \(!cardRef\.current\?\.isConnected\) return land\(\);\s*await afterMoves\(\);\s*movePage\(land, \{ grows: \[cardRef\.current\] \}\);/);
+    expect(read("lib/ui/inPageMove.ts")).toMatch(/ending = transition\.finished\.then\(undress, undress\);/);
     expect(c).toContain("onClick={() => movePage(() => setUnfolded((v) => !v), { grows: [cardRef.current] })}");
   });
 

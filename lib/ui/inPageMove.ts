@@ -70,6 +70,18 @@ export type MoveParts = {
 
 let moving = false;
 let worn: HTMLElement[] = [];
+/** When the move running now has ended (settled at once when none runs). */
+let ending: Promise<void> = Promise.resolve();
+
+/**
+ * Wait for the move running now, if any, to end. A change that arrives while
+ * one is moving (replies that came back quickly) would otherwise be made at
+ * once inside its picture, a cut (the motion walk on 968347b3: Community's
+ * "0 replies", 55% of the change in one frame at 180ms).
+ */
+export function afterMoves(): Promise<void> {
+  return moving ? ending : Promise.resolve();
+}
 
 /** True while a change inside the page is being moved. */
 export function isMovingInPage(): boolean {
@@ -143,7 +155,7 @@ function picture(update: () => unknown, parts: MoveParts, fallback: () => void):
     return;
   }
   transition.ready.then(undefined, () => {});
-  transition.finished.then(undress, undress);
+  ending = transition.finished.then(undress, undress);
 }
 
 /** Make a change inside the page now, moved as a page switch is where motion is on. */

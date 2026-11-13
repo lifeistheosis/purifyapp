@@ -89,7 +89,7 @@ import { prefetchProfile } from "@/lib/profile/cache";
 import { fetchMyProfile, syncCalendar } from "@/lib/profile/client";
 import { announcePicture } from "@/lib/profile/myPicture";
 import type { MyProfile, ProfileSeed } from "@/lib/profile/publicProfile";
-import { movePage } from "@/lib/ui/inPageMove";
+import { afterMoves, movePage } from "@/lib/ui/inPageMove";
 import { haptic, scrollBehavior } from "@/lib/ui/motion";
 import { Close } from "@/components/ui/icons/Close";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
@@ -1415,9 +1415,11 @@ function PostCardInner({
         setRepliesState("error");
       }
     };
-    // A card no longer on the screen (the reader has gone on) has nothing to move.
-    if (cardRef.current?.isConnected) movePage(land, { grows: [cardRef.current] });
-    else land();
+    // A card no longer on the screen (the reader has gone on) has nothing to
+    // move. One whose opening is still moving moves its rows in after it.
+    if (!cardRef.current?.isConnected) return land();
+    await afterMoves();
+    movePage(land, { grows: [cardRef.current] });
   }, [post.id]);
 
   async function toggleReplies() {
