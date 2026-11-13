@@ -1,6 +1,7 @@
 import { nextChapter, prevChapter } from "@/lib/bible/books";
 import { sameRecording } from "@/lib/chants/media";
 import { idOfSavedSrc } from "@/lib/listen/shelf";
+import { spokenOf } from "@/lib/listen/speech/spoken";
 import { listenHref, parseListenId } from "@/lib/listen/texts";
 import { readingOfSrc } from "@/lib/readAloud/chapters";
 
@@ -73,6 +74,13 @@ export function playingOf(src: string | null, chants: readonly ChantRowLike[] | 
   if (!src) return null;
   const reading = readingOfSrc(src);
   if (reading) return { kind: "chapter", ...reading };
+  // Read by the phone's voice (1.9, lib/listen/speech/spoken.ts): a chapter, in
+  // the English or a downloaded Bible, is a chapter as a recording's is (Speed,
+  // Read at the verse, Share); a life, a council's section and the rest, a text.
+  const spoken = spokenOf(src);
+  if (spoken?.kind === "bible") return { kind: "chapter", book: spoken.book, chapter: spoken.chapter };
+  const spokenRef = spoken?.kind === "text" ? parseListenId(spoken.id) : null;
+  if (spoken?.kind === "text" && spokenRef) return { kind: "text", id: spoken.id, href: listenHref(spokenRef) };
   // Another text: the bucket's recording, or its copy saved on the phone.
   const text = TEXT_RECORDING.exec(src)?.[1] ?? idOfSavedSrc(src);
   const ref = text ? parseListenId(text) : null;

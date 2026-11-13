@@ -1,9 +1,14 @@
 "use client";
 
+import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
+import { chapterKey, rememberAnchors, whenPageVerses } from "@/lib/listen/speech/pageText";
+import { openVoiceSheet } from "@/lib/listen/speech/sheet";
+import { speakText, voiceFor } from "@/lib/listen/speech/speak";
+import { spokenBibleSrc, voiceLang } from "@/lib/listen/speech/spoken";
 import { play, seek, setLoopMode, setTrack } from "@/lib/prayers/persistentAudioStore";
 import { readSpeed } from "@/lib/player/speed";
 
-import { readAloudManifest, readAloudSrc, verseCaptions } from "./chapters";
+import { hasReadAloud, readAloudManifest, readAloudSrc, verseCaptions } from "./chapters";
 import { coverName, readAloudCover } from "./covers";
 import { startOf, watchPlaces } from "./resume";
 
@@ -48,4 +53,56 @@ export async function startReading(book: string, chapter: number, title: string,
   if (at > 0) seek(at);
   setLoopMode("off");
   play();
+}
+
+/**
+ * Listen on a chapter (1.9, build 95 note 25, his "all recs" of 2026-11-13:
+ * the phone's voices read the whole Bible, free for every reader). The voice
+ * the reader chose for the chapter's language reads it: Heart, its recording,
+ * where the English has one and no other voice is chosen; else the phone's
+ * voice, reading the very words on the page, in the English or the Bible the
+ * reader downloaded, the Old Testament too. Where the phone has no voice for
+ * the language and there is no recording, the Voice sheet says so and where
+ * one is added. What it did: "heart", "phone", "none", or "failed" (the page's
+ * words were not at hand, or the device cannot speak after all).
+ */
+export async function listenToChapter(o: {
+  book: string;
+  chapter: number;
+  title: string;
+  t: (key: string) => string;
+  /** The downloaded Bible the page shows the chapter in, or null for the English. */
+  bible: DownloadableBible | null;
+}): Promise<"heart" | "phone" | "none" | "failed"> {
+  const recorded = !o.bible && hasReadAloud(o.book, o.chapter);
+  const lang = o.bible ? voiceLang(o.bible.textLang) : "en";
+  const use = await voiceFor(lang, recorded);
+  if (use.kind === "heart") {
+    await startReading(o.book, o.chapter, o.title, o.t);
+    return "heart";
+  }
+  if (use.kind === "none") {
+    openVoiceSheet({ none: { lang } });
+    return "none";
+  }
+  // The page's own words: a page opening as a reading rolls on into it hands them over a moment later.
+  const verses = await whenPageVerses(chapterKey(o.book, o.chapter, o.bible?.id ?? null), 8000);
+  if (!verses?.length) return "failed";
+  const cover = readAloudCover(o.book);
+  const src = spokenBibleSrc(o.book, o.chapter, o.bible?.id ?? null);
+  const ok = await speakText({
+    src,
+    pieces: verses.map((v) => ({ text: v.text, ...(typeof v.n === "number" ? { n: v.n } : {}) })),
+    lang,
+    voice: use.voice,
+    title: o.title,
+    artist: coverName(cover, o.t) ?? o.t("readAloud.by"),
+    art: cover.src,
+    artFallback: cover.fallback,
+    artSize: cover.size ?? undefined,
+    rtl: o.bible?.dir === "rtl",
+  });
+  if (!ok) return "failed";
+  rememberAnchors(src, verses.map((v) => v.anchor));
+  return "phone";
 }

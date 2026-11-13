@@ -233,6 +233,18 @@ function fromBrowser(): SpeechEngine | null {
   };
 }
 
+/**
+ * Whether this device can speak at all, known at once (for drawing Listen
+ * before any voice is asked for): in the apps, the shell has the plugin (a
+ * shell built before 1.9 has none); in a browser, it has speech.
+ */
+export function canSpeak(): boolean {
+  if (typeof window === "undefined") return false;
+  const cap = (window as { Capacitor?: { isNativePlatform?: () => boolean; isPluginAvailable?: (name: string) => boolean } }).Capacitor;
+  if (cap?.isNativePlatform?.()) return Boolean(cap.isPluginAvailable?.("PurifySpeech"));
+  return "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined";
+}
+
 let browser: SpeechEngine | null | undefined;
 
 /**
