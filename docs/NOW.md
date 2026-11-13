@@ -36,7 +36,7 @@ Updated 2026-11-13 01:24 UTC.
 - **Before the merge (web only, a 1.9 fault):** `lib/billing/applyLifecycle.ts` links the admin to `/admin?tab=subscriptions`, but the panel reads only `#tab=`, so it opens Home. Goes to the next free fixer after the final check; billing is audited, so `docs/audit/findings.yaml` is read first.
 - **The owner's desk, sections 2 and 3** (the sends and the owner's brief): a fresh admin chat from the baton, once he answers the four questions.
 - Money: subscription days fill the charts from the merge on (`plus_events` is 1.9's table). History from before needs a RevenueCat key with the charts permission, which he would make: offer it with the owner's brief.
-- SSM board, in its next message: put in the Vault the first light-first email template (`docs/brand/kit/email-template.html`, removed by Fable, in history at ef1bec40), and the AD 1 TikTok edit's source (branch `claude/magical-carson-qissmz`; pull request #24 closed at his word on 2026-11-12, not merged).
+- SSM board, in its next message: the drop kit carries the 1.9 video's condition (posted only once campaigns are open to every reader, release day's step 3); and put in the Vault the first light-first email template (`docs/brand/kit/email-template.html`, removed by Fable, in history at ef1bec40), and the AD 1 TikTok edit's source (branch `claude/magical-carson-qissmz`; pull request #24 closed at his word on 2026-11-12, not merged).
 - The owner's desk and the Purify look (`docs/plans/owner-desk.md`): the quiet board is done; next the design kit, the owner's brief, the recurring sends and the reader emails' second edition.
 - Every chat rotates (OPERATIONS section 2), the arbiter included.
 - The store accounts move to the LLC: Apple and Google (OWNER-STEPS C1 and C2), then C3 to C5.
@@ -48,7 +48,7 @@ Updated 2026-11-13 01:24 UTC.
 |---|---|---|
 | Arbiter | session_01VuYTwdsjYL2mmq2C2JSt2A | his words, NOW.md, routing |
 | Fable 5.2: retention emails, round 2 | session_01VuYTwavDnAtuKdXD2L7rti | round 2 done (e80b0004c) and the claude.ai design system brought into line (version 6, 750214c04: the approved type, all fifteen pieces with live previews, checkMock 45 of 45); waits on his yes or no to round 2 and to carrying it into the reader email and brief |
-| Fable 5.2: the 1.9 video | session_01VuYTwcxQo8U5fGDgVTBt6D | his 1.9 video: one vertical cut from real taps on the export, new screens, saints and books, no campaigns, silent master; reasons per scene |
+| Fable 5.2: the 1.9 video | session_01VuYTwcxQo8U5fGDgVTBt6D | his 1.9 video: one vertical cut from real taps on the export, new screens, saints and books, and prayer campaigns as 1.9 builds them (his word); silent master; reasons per scene. It may be posted only once campaigns are open to every reader |
 | SSM board | session_01VuYTwcSQmKLThRirvSeWa5 | the drop's words, the Vault |
 | Fable 5.2: 1.9 store pictures | session_01VuYTwbUEsUgbUwM7K7xYG1 | the 1.9 social cards are done (a736b9af: six cards, 1080 by 1920, stills in `docs/plans/v1.9/store/cards/stills/`, see https://claude.ai/artifact/2H7zX18mPgJh9LMZnkw6bs); waits on his look before the drop's `cards` piece is cleared |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository) |
