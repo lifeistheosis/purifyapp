@@ -227,6 +227,11 @@ async function shot(page, name) {
   if (SHOTS) await page.screenshot({ path: path.join(SHOTS, `${name}.png`) });
 }
 
+/** A still of the opt-in page's own words and button: the email's link opens it on the website, in the website's frame, not the app's. */
+async function shotPage(page, name) {
+  if (SHOTS) await page.locator('div[lang="en"][dir="ltr"]').filter({ visible: true }).first().screenshot({ path: path.join(SHOTS, `${name}.png`) });
+}
+
 async function guard(page, selector, lang, size, label) {
   const result = await checkMock(page, selector, { palettes: ALL, pixels: true });
   const n = result.failures.length;
@@ -237,20 +242,27 @@ async function guard(page, selector, lang, size, label) {
   if (result.allowed?.length) for (const a of result.allowed) console.log(`      allowed: ${a}`);
 }
 
-/** A download in each state, as lib/downloads/log.ts keeps them, for the bell's sheet. */
+/**
+ * A download in each state, as lib/downloads/log.ts keeps them, for the bell's sheet. As the stores
+ * can make them (lib/downloads/watch.ts): a Bible downloading, a book's saving waiting for Wi-Fi (only a
+ * book's saving waits), a Bible done and one failed.
+ */
 function fourStates() {
   const now = Date.now();
   const iso = (ms) => new Date(now - ms).toISOString();
   return [
-    { key: "book:luke", kind: "book", name: "Luke", state: "running", share: 0.42, done: 10, total: 24, at: iso(60_000) },
-    { key: "chant:cherubic-hymn/byzantine", kind: "chant", name: "Cherubic Hymn (Byzantine)", state: "waiting", share: 0.3, done: 0, total: 0, waiting: "wifi", at: iso(120_000) },
+    { key: "bible:en-web", kind: "bible", name: "World English Bible", state: "running", share: 0.42, done: 0, total: 0, at: iso(60_000) },
+    { key: "book:luke", kind: "book", name: "Luke", state: "waiting", share: 10 / 24, done: 10, total: 24, waiting: "wifi", at: iso(120_000) },
     { key: "bible:ru-synodal", kind: "bible", name: RUSSIAN, state: "done", share: 1, done: 0, total: 0, at: iso(600_000), ended: iso(540_000), seen: false },
-    { key: "bible:el-patriarchal", kind: "bible", name: "Πατριαρχικό Κείμενο (1904)", state: "failed", share: 0.6, done: 0, total: 0, failure: { key: "bible.downloads.failedOffline" }, at: iso(3_600_000), ended: iso(3_500_000), seen: false },
+    { key: "bible:grc-lxx-patriarchal", kind: "bible", name: "Οι Εβδομήκοντα και το Πατριαρχικό κείμενο (1904)", state: "failed", share: 0.6, done: 0, total: 0, failure: { key: "bible.downloads.failedOffline" }, at: iso(3_600_000), ended: iso(3_500_000), seen: false },
   ];
 }
 
 /** The bell, tapped: its sheet, with the Downloads part in it. */
 async function openBell(page, lang) {
+  // A cold start opens on the launch stage, which covers the screen for its first seconds.
+  await page.waitForFunction(() => !document.querySelector("[data-launch-stage]"), null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(600);
   const bell = page.locator(`button[aria-label="${t(lang, "nav.notificationsNew")}"], button[aria-label="${t(lang, "settings.notifications")}"]`).filter({ visible: true }).first();
   await tapAt(page, bell);
   const part = page.locator("[data-downloads]").filter({ visible: true }).first();
@@ -389,14 +401,14 @@ if (MODE === "walk") {
     else fail("the page does not ask");
     if (!ctx.__optIn) ok("nothing was turned on by the visit");
     else fail("the visit turned the guide on");
-    await shot(page, "optin-ask");
+    await shotPage(page, "optin-ask");
     await tapAt(page, send);
     await page.waitForTimeout(1500);
     if (ctx.__optIn === 1) ok("the button sent one request");
     else fail(`the button sent ${ctx.__optIn ?? 0} requests`);
     if (await page.getByRole("heading", { name: "It is on its way" }).count()) ok("the page says it is on");
     else fail("the page does not say it is on");
-    await shot(page, "optin-done");
+    await shotPage(page, "optin-done");
     await ctx.close();
   }
 }
