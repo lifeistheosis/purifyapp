@@ -6,6 +6,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { NotificationsSheet } from "@/components/nav/NotificationsSheet";
 import { Bell } from "@/components/ui/icons/Bell";
 import { getInbox, markInboxRead, refreshInbox, useInbox } from "@/lib/community/inbox";
+import { hasUnseenEnd, isEnded, markDownloadsSeen, readDownloads, useDownloads } from "@/lib/downloads/log";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { haptic } from "@/lib/ui/motion";
 import { getSeenSnapshot, markWhatsNewSeen, subscribeSeen } from "@/lib/whatsNew/seenStore";
@@ -40,12 +41,15 @@ export function NotificationsButton() {
   const [signedIn, setSignedIn] = useState(false);
   const [fresh, setFresh] = useState<ReadonlySet<string>>(() => new Set());
   const [whatsNewFresh, setWhatsNewFresh] = useState(false);
+  const [freshDownloads, setFreshDownloads] = useState<ReadonlySet<string>>(() => new Set());
+  const downloads = useDownloads();
 
   useEffect(() => {
     if (!getInbox().loaded && readLocalSessionUser()) void refreshInbox();
   }, []);
 
-  const lit = inbox.unread > 0 || whatsNewUnseen(seen);
+  // A download's end the reader has not seen lights it too (1.9, build 95 note 23).
+  const lit = inbox.unread > 0 || whatsNewUnseen(seen) || hasUnseenEnd(downloads);
 
   function openSheet() {
     haptic("light");
@@ -57,6 +61,8 @@ export function NotificationsButton() {
     setWhatsNewFresh(whatsNewUnseen(getSeenSnapshot()));
     markWhatsNewSeen(CURRENT_VERSION);
     setFresh(new Set(getInbox().notifications.filter((n) => !n.read_at).map((n) => n.id)));
+    setFreshDownloads(new Set(readDownloads().filter((d) => isEnded(d) && !d.seen).map((d) => d.key)));
+    markDownloadsSeen();
     setOpen(true);
     if (!account) return;
     void refreshInbox().then(() => {
@@ -83,10 +89,15 @@ export function NotificationsButton() {
       </button>
       <NotificationsSheet
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          // An end that came while the sheet was up was seen there.
+          markDownloadsSeen();
+          setOpen(false);
+        }}
         signedIn={signedIn}
         fresh={fresh}
         whatsNewFresh={whatsNewFresh}
+        freshDownloads={freshDownloads}
       />
     </>
   );

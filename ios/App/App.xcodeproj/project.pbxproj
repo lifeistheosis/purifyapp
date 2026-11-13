@@ -28,6 +28,7 @@
 		9395A169D0544FDE07D5DEDE /* LockViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22CEFE3DCA55C977ED895B50 /* LockViews.swift */; };
 		A57EE3E7FD17AF10F154B6CA /* WidgetBridgePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBA8FB95B917400388262509 /* WidgetBridgePlugin.swift */; };
 		45ECB7FEB5AEB5A2957C9BE7 /* PurifySpeechPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = D987421B37C0F8EE5C34C588 /* PurifySpeechPlugin.swift */; };
+		D274041EB6981C50098C8911 /* DownloadNoticePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC93D1F6FD1AC01162B8F870 /* DownloadNoticePlugin.swift */; };
 		AAEF5995AE7BDDDF099C96C7 /* HomeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4953A540A170D7AB13C089B6 /* HomeViews.swift */; };
 		DB57C1DBFF2C31F5619BEC7D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 411E3BB58268421220F81FD4 /* Assets.xcassets */; };
 		F6FC3B1026625CB0CBF1BB76 /* PurifyWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C67FF447D5157EDDE57A43 /* PurifyWidgets.swift */; };
@@ -86,6 +87,7 @@
 		F58E9020BDE6B1392C945217 /* LookIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LookIntents.swift; sourceTree = "<group>"; };
 		FBA8FB95B917400388262509 /* WidgetBridgePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetBridgePlugin.swift; sourceTree = "<group>"; };
 		D987421B37C0F8EE5C34C588 /* PurifySpeechPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurifySpeechPlugin.swift; sourceTree = "<group>"; };
+		DC93D1F6FD1AC01162B8F870 /* DownloadNoticePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadNoticePlugin.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +149,7 @@
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				FBA8FB95B917400388262509 /* WidgetBridgePlugin.swift */,
 				D987421B37C0F8EE5C34C588 /* PurifySpeechPlugin.swift */,
+				DC93D1F6FD1AC01162B8F870 /* DownloadNoticePlugin.swift */,
 				96E950FABE25F99C56F30571 /* PurifyBridgeViewController.swift */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
@@ -315,6 +318,7 @@
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				A57EE3E7FD17AF10F154B6CA /* WidgetBridgePlugin.swift in Sources */,
 				45ECB7FEB5AEB5A2957C9BE7 /* PurifySpeechPlugin.swift in Sources */,
+				D274041EB6981C50098C8911 /* DownloadNoticePlugin.swift in Sources */,
 				369B4227C3E74744302CF2E7 /* PurifyBridgeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

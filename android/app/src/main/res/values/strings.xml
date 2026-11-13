@@ -6,6 +6,10 @@
     <string name="custom_url_scheme">net.purifyapp.purify</string>
     <string name="push_channel_name">Reminders and news</string>
     <string name="push_channel_description">Prayer reminders you set, and news from Purify.</string>
+    <!-- The downloads' channel (1.9, build 95 note 23): quiet, a download's
+         progress while it runs and its end (downloads/DownloadNoticePlugin). -->
+    <string name="download_channel_name">Downloads</string>
+    <string name="download_channel_description">What you download, while it downloads and when it is done.</string>
     <!-- The app icon's shortcuts (res/xml/shortcuts.xml), which can only take
          their labels from here. A launcher shows the long label where there
          is room and the short one where there is not; the same words serve

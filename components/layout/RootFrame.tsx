@@ -31,6 +31,7 @@ import { AppNudge } from "@/components/marketing/AppNudge";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { PackBridge } from "@/components/native/PackBridge";
 import { PressToCopy } from "@/components/native/PressToCopy";
+import { DownloadsBridge } from "@/components/native/DownloadsBridge";
 import { SavingBridge } from "@/components/native/SavingBridge";
 import { ShortcutListener } from "@/components/native/ShortcutListener";
 import { WidgetBridgeSync } from "@/components/native/WidgetBridgeSync";
@@ -204,6 +205,7 @@ export function RootFrame({
           (lib/readAloud/saving.ts). Renders nothing, and does nothing in a
           browser. */}
       <SavingBridge />
+      <DownloadsBridge />
     </>
   );
 }

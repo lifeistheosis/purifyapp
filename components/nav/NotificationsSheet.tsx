@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { InboxHeading as Heading, NoticeAppeal, NoticeLine } from "@/components/community/NotificationsInbox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { DownloadsSection } from "@/components/nav/DownloadsSection";
 import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { Sheet } from "@/components/ui/Sheet";
@@ -16,6 +17,8 @@ import { relativeTime } from "@/lib/community/relativeTime";
 
 /** Rows shown here; the whole inbox is in Chat. */
 const SHOWN = 20;
+
+const NO_KEYS: ReadonlySet<string> = new Set();
 
 const ROW = "flex items-center gap-3 px-4 py-3";
 
@@ -100,6 +103,10 @@ function NoticeRow({
  * dot, and no count: the sheet is already the place the reader chose to look.
  * The inbox itself is lib/community/inbox.ts, the one store the Chat list and
  * the tab bar read too.
+ *
+ * Above both, while there is one, every download on this phone with its state
+ * and its end (1.9, build 95 note 23; DownloadsSection): the app's own
+ * notifications of what the reader asked for, which need no account.
  */
 export function NotificationsSheet({
   open,
@@ -107,6 +114,7 @@ export function NotificationsSheet({
   signedIn,
   fresh,
   whatsNewFresh,
+  freshDownloads = NO_KEYS,
 }: {
   open: boolean;
   onClose: () => void;
@@ -116,6 +124,8 @@ export function NotificationsSheet({
   fresh: ReadonlySet<string>;
   /** Whether this release's notes were new to the device as the sheet opened. */
   whatsNewFresh: boolean;
+  /** The downloads whose end was new as the sheet opened. */
+  freshDownloads?: ReadonlySet<string>;
 }) {
   const { t, locale } = useTranslate();
   const pathname = usePathname() ?? "/";
@@ -127,6 +137,7 @@ export function NotificationsSheet({
 
   return (
     <Sheet open={open} onClose={onClose} title={t("settings.notifications")} bodyClassName="pt-1">
+      <DownloadsSection fresh={freshDownloads} />
       <section>
         <Heading>{t("community.notifications")}</Heading>
         {!signedIn ? (

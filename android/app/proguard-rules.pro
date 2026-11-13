@@ -16,7 +16,10 @@
 #   - Capacitor keeps every plugin class and its @PluginMethod methods
 #     (node_modules/@capacitor/android/capacitor/proguard-rules.pro). The
 #     bridge reads plugin class names out of capacitor.plugins.json and calls
-#     their methods by the name JavaScript sends.
+#     their methods by the name JavaScript sends. The app's own plugins,
+#     registered in MainActivity (the widgets' bridge, and from 1.9 the
+#     downloads' notice, downloads/DownloadNoticePlugin), are kept the same
+#     way: each is a Plugin with @CapacitorPlugin and @PluginMethod.
 #   - @capgo/capacitor-social-login keeps its own classes, and with them all
 #     of com.getcapacitor, okhttp3, Google sign-in, Credential Manager and
 #     com.auth0.android.jwt.
