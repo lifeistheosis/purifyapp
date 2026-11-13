@@ -44,11 +44,11 @@ public class MainActivity extends BridgeActivity {
         // The app's own plugin for the home screen widgets: registered before
         // the bridge starts, as Capacitor asks of a plugin that lives in the app.
         registerPlugin(WidgetBridgePlugin.class);
+        // The one that shows a download in the notification bar (1.9, build
+        // 95 note 23; lib/downloads/notice.ts).
+        registerPlugin(DownloadNoticePlugin.class);
         // The phone's own voices for the player (1.9, build 95 note 25).
         registerPlugin(PurifySpeechPlugin.class);
-        // And the one that shows a download in the notification bar (1.9,
-        // build 95 note 23; lib/downloads/notice.ts).
-        registerPlugin(DownloadNoticePlugin.class);
         super.onCreate(savedInstanceState);
         // The on-device content store of 1.5 (lib/content): about 33 MB that
         // every phone which installed 1.5 still held, for a layer switched off

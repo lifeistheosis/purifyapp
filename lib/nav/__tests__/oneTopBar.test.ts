@@ -232,7 +232,8 @@ describe("search and the bell", () => {
 
   it("says something is new one way only: the bell drawn filled, no dot, no count", () => {
     const bell = code(BELL);
-    expect(bell).toContain("const lit = inbox.unread > 0 || whatsNewUnseen(seen);");
+    // A download's end the reader has not seen is one more reason to light it, the same one way (1.9, build 95 note 23).
+    expect(bell).toContain("const lit = inbox.unread > 0 || whatsNewUnseen(seen) || hasUnseenEnd(downloads);");
     expect(bell).not.toMatch(/\{inbox\.unread\}|crimson/);
     // No second poller: the tab bar's badge keeps the one store fresh.
     expect(bell.includes("setInterval")).toBe(false);
