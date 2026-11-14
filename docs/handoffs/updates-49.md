@@ -1,0 +1,38 @@
+# Baton: Updates 49 (a fixer: the export side of build 97 notes 1, 7, 8 and 9, and batch 1's faces)
+
+Written 2026-11-14 about 17:56 UTC by Updates 49 (session_01VuYTwbJ4hA33RG4xFkfPEf), reporting to Arbiter 8 (session_01VuYTwbzbjqscbFvEseu6uP). Card: `docs/roles/fixer.md`. Branch `ccr-07896cf2-bo0afd`. Stopped at the line: get_session read 219,858 at the turn after the suite, past the brief's 200,000. Nothing mended; this baton and its runners are the only push.
+
+## What happened to the one export
+
+The first web build and export were cut at 5f18e34a4, as the first brief asked. Arbiter 8's addition (17:44: Updates 47's notes 8 and 9 on the same single export) came after both, so I pulled (head 5f2204166), ran the web build and the whole suite again, and stopped before the second export. **`out/` in this container is the old export (5f18e34a4, without 47's commits); it is superseded.** The next export is cut at 5f2204166 or later.
+
+## Done, each with its output
+
+1. **The web build.** At 5f18e34a4: exit 0 after 169s, 6526 pages. At 5f2204166: exit 0 after 140s (compiled in 54s, TypeScript 32.6s, 6526 of 6526 static pages). The only warnings are the old ones: Turbopack's file patterns over `data/bible`, and `[invest] live numbers unavailable` (no Supabase address in the container).
+2. **The whole unit suite at 5f2204166** (47 had not run it): `npm run test:unit` exit 1 after 205s. Files: 1 failed, 1189 passed, 1 skipped. Tests: 1 failed, 15108 passed, 9 skipped (15118).
+   - The failure: `lib/share/__tests__/pictureSheet.test.ts`, "the picture sheet > opens a quote on its own looks: his portrait, on Night, as a post". It reads `components/share/PictureSheet.tsx` and expects `/tab === "look" && quote \? \(\s*<QuoteLooks/`. 51e8a8168 (47's note 9) moved that branch into the shared cell: `<TabLayer on={tab === "look"}>{quote ? (<QuoteLooks` (line 312 at head). So the test is stale, not the sheet, as far as read; nothing was run to prove the quote's looks still open. The push guard's `vitest related` cannot see a test that reads a file by its path, which is why 47's push passed.
+   - Not mended: past the line, and the sheets were 47's files. The mend: the regex to the new shape with the same claim (on Look, a quote opens QuoteLooks), run with the old line to see it fail first.
+3. **One export at 5f18e34a4** (`node scripts/gate/export.mjs`): exit 0 after 163s. 205.2 MB on disk in 7,372 files, 75.1 MB packed (ceiling 240 MB and 85 MB). The key checked to be the anon role, not printed, not saved. The gate's export already sells Plus (`NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1`, `NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk`, as its `--dry` says), so the arbiter's (b) needs nothing more.
+4. **Section 55 on that old export, part way** (I stopped it when the addition came, since a new export wipes `out/`): at 360x740, snaps nothing ok; a drag held still rests where let go ok; **"a gentle flick runs on only as the phone's own momentum does (53, 28, 30, 0, 28px)" NO**; a fling down never pulled back ok; no page errors ok. Updates 48's new block (Begin over the middle, each click on a new prayer's first line) was not reached. The NO is build 93 note 2's check, not 48's new one, but it guards the file 65441843 changed (`useLitLine.ts`), and nothing else was running on the machine at the time. Run it again first on the new export; if it repeats, it is note 1's to answer.
+
+## Open, in the arbiter's order (owner: the next export chat, on the arbiter's word)
+
+1. **One export of the head** (5f2204166 or later): `node scripts/gate/export.mjs`.
+2. **Updates 48's walk:** `PW_CHROMIUM=/opt/pw-browsers/chromium node scripts/export-walk.mjs out --sections 55`. Without `PW_CHROMIUM` it dies at launch in a cloud container (it looks for `chromium_headless_shell-1223`).
+3. **Updates 47's two walks:** `node scripts/sheet-scroll-walk.mjs` and `node scripts/picture-tabs-walk.mjs`, no address (they serve `out/` and find `/opt/pw-browsers/chromium` themselves; the picture walk does all 21 languages). They also tap 47's controls: each tab of the picture sheet, and each preview page's Next (`[data-plus-try-next]`).
+4. **The plans tapped:** `node docs/handoffs/updates-49-runners/plans49.mjs out <json> [en|ar] [on|reduce]`, written, not yet run. The plan is `/plans/gospels/` (the walk's id), not four-gospels. **The plans are Plus on the gate's export:** both stores enforce it and the walk's phone is the shell before Capacitor names its platform, so for a reader with no Plus, Begin opens the upgrade sheet (section 40 says so and skips). The runner stands in a subscriber in the browser only (`stand49.mjs`): a session for a made-up user in `purify.supabase.auth`, and every Supabase address but the public pictures answered in the browser (the user, an entitlement row with `plus_until` 2099, empty lists, an empty success for any write). Nothing reaches production, and it lists the writes the page asked for. Steps: never begun, Begin (Matthew 1 opens), back (no count, no bar), the list's Continue card with no bar, Mark day 1 read ("1 of 89 days read", the bar at 1%), the card's bar, untick (nothing again, on both).
+5. **checkMock `{ pixels: true }`:** `node docs/handoffs/updates-49-runners/mockrun49.mjs out <jsonl> <conc> <state@width@lang@group>...`, written, not yet run. States: `prayer` (Morning prayers, Begin tapped, a line lit, motion on), `plan0` and `plan1` (the plan begun, none read and day 1 read, seeded in `purify:plans` with the stand-in subscriber), `list` (`/plans/`, day 1 read), `picture` and `words` (the verse picture's sheet from Today's verse card, on its first tab and on Words; checkMock on the dialog). Groups 0, 1, 2 are the five and the two earned, looks 1 to 7, looks 8 to 14; widths 390, 800, 1032; `en` and `ar`. The Plus preview's ambience page: `SELLS_PLUS=1 node scripts/gate/ambience-sheet.mjs <shots dir>`, whose preview block runs checkMock with pixels on `[data-plus-try="ambience"]` at the three widths on all 21, English and Arabic, after its lock block.
+6. **The faces:** `node docs/handoffs/updates-49-runners/faces49.mjs out <shots dir> <json>`, written, not yet run. The seven places (St Juvenal on ephesus and chalcedon, St Celestine on ephesus, St Anatolius on chalcedon, St Eutychius on second-constantinople, St Sophronius on third-constantinople, St Irene on second-nicaea): each round's picture loaded, named, covering the round, fully shown; then the round tapped with real touch and the card's portrait the same; a screenshot of the Fathers' part each at 2x, to be looked at. St Irene's letters' cover on the work's page and on her page. Updates 50 now works on the councils' missing pictures (NOW at 5f2204166), so this may wait on its round or join it.
+7. **The failing unit test** in Done 2 (owner: whoever the arbiter names for the sheets).
+8. **His phone only:** note 1's click with the glow (Android's 10ms pulse, iOS's selection click); note 8's thumb on the Plus preview's Bible window on a real phone.
+
+## Gotchas
+
+- get_session moved within my turns this time (102,052 mid-session, 219,858 after the suite): read it before every new run, not only between turns.
+- A new export wipes `out/`; stop any walk reading it first.
+- The plans runner seeds the session only if `purify.supabase.auth` is empty, so a fresh context each time.
+
+## His words that still apply
+
+- Note 1 (about 15:56): "it should glow the quite in the middle of the users screen. and also the haptic feedback should move you and glow to the next section (rather than haptic feedback on a arbitrary feeling line with no visual hook)".
+- 16:28: "fix those things. try and take into account usage also". 13:57: check only what you touch.
