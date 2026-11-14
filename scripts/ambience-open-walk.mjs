@@ -117,7 +117,7 @@ function sampler({ windowMs, sheetSel }) {
           script: Math.round((e.scripts ?? []).reduce((s, x) => s + x.duration, 0)),
           render: e.renderStart ? Math.round((e.styleAndLayoutStart || e.startTime + e.duration) - e.renderStart) : 0,
           layout: e.styleAndLayoutStart ? Math.round(e.startTime + e.duration - e.styleAndLayoutStart) : 0,
-          by: (e.scripts ?? []).sort((a, b) => b.duration - a.duration).slice(0, 2).map((x) => `${x.invokerType}:${(x.invoker || "").slice(0, 40)} ${Math.round(x.duration)}ms`),
+          by: [...(e.scripts ?? [])].sort((a, b) => b.duration - a.duration).slice(0, 2).map((x) => `${x.invokerType}:${(x.invoker || "").slice(0, 40)} ${Math.round(x.duration)}ms`),
         });
     }).observe({ type: "long-animation-frame", buffered: false });
   } catch {}
