@@ -25,6 +25,7 @@ export function BandPicture({
   focus,
   tall,
   priority,
+  carry,
 }: {
   picture: string;
   avif?: string;
@@ -33,6 +34,8 @@ export function BandPicture({
   focus: string;
   tall: boolean;
   priority: boolean;
+  /** Travels into the page its band opens, as that page's head (lib/ui/routeMotion.ts, data-carry). */
+  carry?: string;
 }) {
   const ref = useRef<HTMLImageElement>(null);
   const [failed, setFailed] = useState(false);
@@ -53,7 +56,7 @@ export function BandPicture({
 
   if (failed) return null;
   return (
-    <span aria-hidden data-band-picture="" className={cn("absolute inset-0 bg-night-soft", tall ? "band-picture-tall" : "band-picture")}>
+    <span aria-hidden data-band-picture="" data-carry={carry} className={cn("absolute inset-0 bg-night-soft", tall ? "band-picture-tall" : "band-picture")}>
       {preview ? <span className="absolute inset-0 scale-110 bg-cover bg-center blur-md" style={{ backgroundImage: `url(${preview})` }} /> : null}
       <picture className="contents">
         {avif && !jpegOnly ? <source type="image/avif" srcSet={avif} /> : null}

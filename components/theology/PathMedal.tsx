@@ -13,12 +13,15 @@ export function PathMedal({
   size,
   inner,
   states,
+  carry,
 }: {
   src: string;
   focus?: string;
   size: number;
   inner: number;
   states: readonly StepState[];
+  /** Its picture travels into the page its link opens (lib/ui/routeMotion.ts, data-carry). */
+  carry?: string;
 }) {
   const stroke = 3;
   const r = size / 2 - stroke;
@@ -45,7 +48,7 @@ export function PathMedal({
           />
         ))}
       </svg>
-      <span className="absolute overflow-hidden rounded-full bg-paper/[0.05] ring-1 ring-paper/15" style={{ left: at, top: at, width: inner, height: inner }}>
+      <span data-carry={carry} className="absolute overflow-hidden rounded-full bg-paper/[0.05] ring-1 ring-paper/15" style={{ left: at, top: at, width: inner, height: inner }}>
         {/* Whole or not yet at all, in a frame that stands at once (build 85, note 52). */}
         <ArrivingImage src={src} decoding="async" className="h-full w-full object-cover" style={{ objectPosition: focus }} />
       </span>

@@ -155,14 +155,18 @@ export function CouncilFilm({ councils }: { councils: FilmCouncil[] }) {
               href={`/councils/${c.slug}`}
               className="council-film press-card relative block h-[150px] w-[108px] overflow-hidden rounded-[14px] border border-paper/12 bg-night-soft"
             >
-              {c.picture?.preview ? (
-                <span aria-hidden className="absolute inset-0 scale-110 bg-cover bg-center blur-md" style={{ backgroundImage: `url(${c.picture.preview})` }} />
-              ) : null}
               {c.picture ? (
-                // The council's picture, whole over its preview (build 85, note 52): the app's own file first (./CouncilPicture.tsx).
-                <CouncilPicture src={c.picture.src} avif={c.picture.avif} credit={c.picture.credit} focus={c.picture.focus} className="absolute inset-0 h-full w-full object-cover" />
+                // The picture in a frame of its own, cut to the card: what travels into the council's head
+                // (lib/ui/routeMotion.ts). It fills the card, so the card is drawn as it was.
+                <span data-carry={c.picture.src} className="absolute inset-0 overflow-hidden rounded-[inherit]">
+                  {c.picture.preview ? (
+                    <span aria-hidden className="absolute inset-0 scale-110 bg-cover bg-center blur-md" style={{ backgroundImage: `url(${c.picture.preview})` }} />
+                  ) : null}
+                  {/* The council's picture, whole over its preview (build 85, note 52): the app's own file first (./CouncilPicture.tsx). */}
+                  <CouncilPicture src={c.picture.src} avif={c.picture.avif} credit={c.picture.credit} focus={c.picture.focus} className="absolute inset-0 h-full w-full object-cover" />
+                </span>
               ) : null}
-              <span className="absolute inset-x-[9px] bottom-2 z-[1]">
+              <span data-carry-over="" className="absolute inset-x-[9px] bottom-2 z-[1]">
                 <span className="block font-serif text-[14.5px] font-bold leading-tight text-paper">
                   {NUMERALS[c.ordinal] ?? ""} · <span className="tabular-nums">{c.year}</span>
                 </span>

@@ -45,6 +45,7 @@ export function CouncilHero({ picture, focus }: { picture: EventPicture; focus: 
   return (
     <div
       data-council-hero=""
+      data-carry-into=""
       className={cn(
         "saint-icon-in under-topbar relative -mx-5 aspect-[39/25] overflow-hidden bg-night",
         "md:mx-0 md:aspect-[16/7] md:rounded-[14px] md:ring-1 md:ring-inset md:ring-paper/10",

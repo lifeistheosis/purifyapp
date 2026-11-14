@@ -66,6 +66,7 @@ export function GalleryBand({
   size = "short",
   heading = "h2",
   priority = false,
+  carry,
   ...target
 }: {
   /** The picture, a path under public/. Drawn for the eye: the name says what it is. */
@@ -90,6 +91,8 @@ export function GalleryBand({
   heading?: "h2" | "h3";
   /** On the first screen: the picture is asked for at once, not when scrolled to. */
   priority?: boolean;
+  /** The band's picture travels into the page it opens, where that page's head takes it (lib/ui/routeMotion.ts). */
+  carry?: string;
 } & ({ href: string; summary?: never } | { summary: true; href?: never })) {
   const tall = size === "tall";
   const Heading = heading;
@@ -102,8 +105,9 @@ export function GalleryBand({
           picture comes), the preview and the picture, faded along the start
           by the shade's own figures as a mask; gone whole if the picture
           does not come (./BandPicture.tsx). */}
-      <BandPicture picture={picture} avif={avif} preview={preview} credit={credit} focus={focus} tall={tall} priority={priority} />
+      <BandPicture picture={picture} avif={avif} preview={preview} credit={credit} focus={focus} tall={tall} priority={priority} carry={carry} />
       <span
+        data-carry-over={carry ? "" : undefined}
         className={cn(
           "relative flex h-full flex-col",
           tall ? "w-[62%] justify-end pt-4 pb-3.5" : "w-[66%] justify-center py-3",

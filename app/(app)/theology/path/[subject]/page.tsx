@@ -46,7 +46,7 @@ export default async function TheologyStepPage({ params }: { params: Promise<{ s
       <article className="relative bg-night px-5 pb-12 md:px-8 md:py-14">
         <div className="mx-auto w-full max-w-[640px]">
           {/* B's room: the icon whole, in its light, behind the page. */}
-          <div aria-hidden data-step-room="" className="step-room saint-icon-in">
+          <div aria-hidden data-step-room="" data-carry-into={step.picture.src} className="step-room saint-icon-in">
             <WholeIcon src={step.picture.src} eager className="h-full w-full" />
           </div>
           <div aria-hidden className="step-room-gap" />

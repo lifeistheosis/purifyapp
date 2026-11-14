@@ -36,7 +36,7 @@ export function PathPlates({
               aria-current={state === "current" ? "step" : undefined}
               className="press-card block min-h-11 rounded-[8px]"
             >
-              <span data-state={state} className="path-plate">
+              <span data-state={state} data-carry={s.picture.src} className="path-plate">
                 <WholeIcon src={s.picture.src} eager={i < 6} className="aspect-[4/5] w-full rounded-[3px]" />
                 {state === "walked" ? (
                   <span aria-hidden className="path-plate-check absolute end-[7px] top-[7px] grid size-5 place-items-center rounded-full bg-paper text-night">

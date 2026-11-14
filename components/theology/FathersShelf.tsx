@@ -36,7 +36,7 @@ export function FathersShelf({ fathers }: { fathers: { slug: string; name: strin
                 {/* Cut about his face, as FatherFace cuts it (1.9); a picture is not mirrored.
                     Over the house's plate, so a Father with no cleared picture, or whose
                     picture cannot come, is the plate, never a letter (build 93 note 1). */}
-                <span dir="ltr" className="theology-face relative size-[52px] overflow-hidden rounded-full bg-night-soft">
+                <span dir="ltr" data-carry={picture ? f.iconUrl || undefined : undefined} className="theology-face relative size-[52px] overflow-hidden rounded-full bg-night-soft">
                   <FacePlate size="disc" />
                   {picture ? (
                     <SaintFace key={picture.src} picture={picture} zoom={1.4} across={COVER_FACES[f.slug]?.[0]} className="relative" />

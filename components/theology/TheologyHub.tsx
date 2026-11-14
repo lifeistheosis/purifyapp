@@ -212,7 +212,7 @@ function WhereYouLeftOff({ steps, states, progress }: { steps: PathStep[]; state
         {/* The step's own icon, blurred and grey: the card's light. */}
         <span aria-hidden className="faith-tray-glow" style={{ backgroundImage: `url(${step.picture.src})` }} />
         <Link href={`/theology/path/${step.id}`} className="relative flex items-center gap-[15px]">
-          <PathMedal src={step.picture.src} focus={step.picture.focus} size={82} inner={66} states={states} />
+          <PathMedal src={step.picture.src} focus={step.picture.focus} size={82} inner={66} states={states} carry={step.picture.src} />
           <span className="min-w-0">
             <span className="block font-sans text-caption font-semibold text-paper/55">
               {t("readingsFlow.of", { n: step.n, total: steps.length })}
