@@ -397,6 +397,14 @@ async function walkScreen(ctx, at, kept) {
             })
             .filter(Boolean);
         }, c.i);
+        // Gate 3 (2026-11-14, Updates 73's open 1): the picture the app itself marks to carry
+        // (data-carry, found as lib/ui/routeMotion.ts's pictureOf finds it), whatever its file's name.
+        const carryKey = await page.evaluate((i) => {
+          const el = document.querySelector(`[data-tapwalk="${i}"]`);
+          if (!el) return null;
+          const pic = el.matches("[data-carry]") ? el : (el.querySelector("[data-carry]") ?? (el.children.length === 0 ? el.parentElement?.querySelector("[data-carry]") : null));
+          return pic ? (pic.getAttribute("data-carry") ?? "") : null;
+        }, c.i);
         const r = await recordAct(page, cdp, () => tapAt(cdp, aim.x, aim.y), at, `c${c.i}`, async () => {
           const again = await ready();
           if (again) throw new Error(again);
@@ -411,6 +419,21 @@ async function walkScreen(ctx, at, kept) {
         const shown = row.went && pictures.length && MODE === "on" ? await page.evaluate(pictureOnPage, pictures).catch(() => null) : null;
         if (shown && !r.v.vtNames.some((n) => /\(carried/.test(n))) {
           row.fails = [...row.fails, { kind: "carried", detail: `the card's picture (${shown}) is on ${row.went} and was not carried into it (no View Transition carried it; ${r.v.vtNames.length ? `it ran ${[...new Set(r.v.vtNames.map((n) => n.replace(/^::view-transition-\w+/, "")))].join(", ")}` : "none ran"})`, still: null, times: [] }];
+        }
+        // A link whose picture wears data-carry, opening a page whose picture takes it (data-carry-into,
+        // with its key or with none), must carry it, where the same-file check above cannot see it.
+        if (row.went && carryKey !== null && MODE === "on") {
+          const taker = await page
+            .evaluate((key) => {
+              const all = [...document.querySelectorAll("[data-carry-into]")];
+              const t = (key ? all.find((e) => e.getAttribute("data-carry-into") === key) : undefined) ?? all.find((e) => e.getAttribute("data-carry-into") === "");
+              return t ? t.getAttribute("data-carry-into") || "(any)" : null;
+            }, carryKey)
+            .catch(() => null);
+          const carried = r.v.vtNames.some((n) => /\(carried/.test(n));
+          row.carry = { key: carryKey, taker, carried };
+          if (taker && !carried && !row.fails.some((f) => f.kind === "carried"))
+            row.fails = [...row.fails, { kind: "carried", detail: `the card's picture wears data-carry="${carryKey}" and ${row.went} takes it (data-carry-into="${taker}"), and no View Transition carried it` }];
         }
         row.unsure = r.v.unsure;
         row.dips = r.v.dips;
