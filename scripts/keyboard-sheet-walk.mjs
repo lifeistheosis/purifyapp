@@ -16,9 +16,14 @@
 //
 // A dev server needs NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 NEXT_PUBLIC_SUPABASE_ANON_KEY=walk-anon.
 // Modes: step (one resize, as Android pads the window), anim (eight), vv (the website's: the visual viewport only).
+// On the export: give a folder in place of the address (`out`, after npm run build:android); it is served as the
+// phones' shells serve it and each screen is opened the way the app opens it (scripts/lib/shell-server.mjs).
+import path from "node:path";
 import { chromium } from "playwright";
+import { go, serveLikeTheShell } from "./lib/shell-server.mjs";
 
 const BASE = process.argv[2] ?? "http://localhost:3000";
+const SHELL = /^https?:/.test(BASE) ? null : path.resolve(BASE);
 const WHICH = process.argv[3] ?? "journal";
 const MODE = process.argv[4] ?? "step";
 const KB = Number(process.argv[5] ?? 300);
@@ -47,13 +52,15 @@ await ctx.addInitScript((mode) => {
     window.__kb = (px) => { up = px; target.dispatchEvent(new Event("resize")); };
   }
 }, MODE);
+if (SHELL) await serveLikeTheShell(ctx, SHELL, {});
 const page = await ctx.newPage();
+const open = (to) => (SHELL ? go(page, to, { timeout: 60000 }) : page.goto(`${BASE}${to}`, { waitUntil: "load", timeout: 300000 }));
 const errors = [];
 page.on("pageerror", (e) => errors.push(String(e)));
 
 let fieldSel;
 if (WHICH === "journal") {
-  await page.goto(`${BASE}/journal/`, { waitUntil: "load", timeout: 300000 });
+  await open("/journal/");
   const write = page.locator("[data-journal-write]:visible").first();
   await write.waitFor({ timeout: 120000 });
   await page.waitForTimeout(1500);
@@ -74,7 +81,7 @@ if (WHICH === "journal") {
     console.log("cover:", await page.locator("[data-page-cover]").count());
   }
 } else {
-  await page.goto(`${BASE}/prayers/personal/`, { waitUntil: "load", timeout: 300000 });
+  await open("/prayers/personal/");
   await page.waitForTimeout(2500);
   fieldSel = process.env.FIELD ?? '[role="dialog"] input:not([type=checkbox]):not([type=radio]), [role="dialog"] textarea';
 }
