@@ -207,6 +207,8 @@ Built, and held for his yes (Updates 8, 2026-11-13). The stills with a reason fo
 
 **Applied, walked and held (Updates 26, 2026-11-13).** `git am` clean; the Share rows hand purifyapp.net links and `#s102` opens Conference 5, Chapter 10. Held as `docs/1.9-build/drafts/updates-26-held/0003` because its contents sheet's chapter grid is 41.5px wide at 390 (older than this note, but on its sheet). `docs/handoffs/updates-26.md`, open item 2.
 
+**Pushed (Updates 32, 2026-11-14).** The patch unchanged (a9188f116), with `621ec42e6`: the contents sheet's chapter grid takes as many columns as fit at 44px or more (`repeat(auto-fill, minmax(44px, 1fr))`, `components/saints/WorkContents.tsx`), in place of seven fixed columns 41.5px wide at 390. `lib/reading/__tests__/shareWork.test.ts` fails on the old grid. On the export, by `scripts/gate/apply-26.mjs` (which now taps a chapter as a finger does): 23 chapters, the smallest side 46.8px at 390, 800 and 1032, English and Arabic; checkMock with pixels passes on both sheets on 21 grounds (the five palettes, Councils and Cappadocian, the fourteen looks); a tapped chapter closes the sheet and opens it (`#s2`). The council document's contents is a list with no grid (six SKIP, as it should). Log: `build-95/updates-32/walk.log`.
+
 ## Note 16 (asked): the sea theme goes, and the Holy Mountain is reworked or goes
 
 His word, 2026-11-13 about 07:52 UTC: "remove the sea theme from the app and the mountain either needs a rework or it gets removed"
@@ -244,6 +246,8 @@ Note 18, done is: one clean row of the modes that scrolls sideways and settles o
 Note 19, done is: every title and line in Settings says plainly what the control is, a line only where the title cannot say it alone, one short sentence, nothing untrue about Plus, Pro or what is free. A table of every title and line, before and after, for his yes; then every locale carries the new words. With Updates 11.
 
 **Applied, walked and held (Updates 26, 2026-11-13).** With his call of 14:29 (the Reading mode page and the Bible's own sheet click as the row does) and the 20 other catalogs in the new words. Held as `docs/1.9-build/drafts/updates-26-held/0001` for one fault the walk found: Back from the earn sheet's door gives Settings back its scroll but not the row's sweep (390, en and ar). `docs/handoffs/updates-26.md`, open item 1.
+
+**Pushed (Updates 32, 2026-11-14)**, 2ff41d770, one push with note 27 (7b3e631c9), and `c77723ea9`: Back finds the row where the reader left it. `lib/ui/sweepKept.ts` keeps a row's sweep by the page's address and the row's name in the session's storage, gives it back only after a step through history (`cameBack`) and lets it go on a visit that went forward, as the council Fathers row keeps its Father; the row gives it back at once in place of its in-sight move and holds it until the reader's hand is on the row. `lib/ui/__tests__/sweepKept.test.ts` fails on the row as 0001 and 0002 left it. On the export at 390: swept to Councils, its goal, a door, Back: the row comes back at 339px (was 339) in English and -338 (was -338) in Arabic, the page at 632 and 610 as left; 800 and 1032 pass with nothing swept (`build-95/updates-32/walk-settings.log`, 54 PASS). Found on the way, in the walk and not the app: it measured the row before checkMock wore all 21 grounds on the open sheet, and the row keeps the palette on `<html>` in sight (`useThemeWorn`), so behind the sheet it ended on Dark at 0. The walk now closes the sheet by its own control, sweeps again and measures there.
 
 ## Note 20: the shop's feast card does not follow the reader's look
 
@@ -371,6 +375,8 @@ Done is, one version, for his yes before it ships: the locked card shows the loo
 **Designed (Fable, 2026-11-13), held locally for his yes.** The card shows the look lit, with nineteen marks that fill and three faces that light; a tap opens what is left to read, each a door; the moment at the foot of the last page read is the gift's soft light, one tick and one tap to wear it. Stills, a clip and reasons: https://claude.ai/artifact/JvH8j4Pzs5doo957UuS46j. The whole of it is `themes-fable.md`, section 66.
 
 **Applied, walked and held (Updates 26, 2026-11-13).** The 13 `earn.*` lines are in all 21 catalogs. Held as `docs/1.9-build/drafts/updates-26-held/0002` with notes 18 and 19 (they meet in `settings.paletteEarn*`), for the Back fault above. `npm run build:ios` not yet run.
+
+**Pushed (Updates 32, 2026-11-14)** with notes 18 and 19 (above). The whole walk on one Android export (`node scripts/gate/export.mjs`, 6,474 pages): 240 checks, 232 PASS, the two Back FAILs of the walk's own measure (above, then 54 of 54 on its rerun) and the six SKIPs of the council's list; checkMock now holds every screen to Councils and Cappadocian as well. `node scripts/gate/export.mjs --platform ios` (the iOS export with the key, after the Android one): exit 0, 6,474 pages.
 
 ## Found with notes 15 and 24 (Updates 8, 2026-11-13 about 08:51 UTC)
 
