@@ -8105,8 +8105,11 @@ html[data-reading-mode="parchment"]:not([data-look]) .theology-tray :is(.text-pa
    Councils and 4.39 on Cappadocian at 800 and 1032, on both the hub's
    cards (under the step's picture as it fades, and over its blurred
    light), at their faint share of 55. On a tray their small line draws at
-   66, with the shares they fold into it. */
-:where(html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) .theology-tray :is(.text-paper\/50, .text-paper\/52, .text-paper\/55) {
+   66, with the shares they fold into it. Monastery too (Updates 38, checkMock
+   with pixels on round 3's screens): the first step's "1 of 9" read 4.37:1
+   in Arabic at 800 and 1032, standing at the card's right edge over the
+   step's picture as it fades. */
+:where(html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"], html[data-reading-mode="monastery"]) .theology-tray :is(.text-paper\/50, .text-paper\/52, .text-paper\/55) {
  color: color-mix(in oklab, var(--color-paper) 66%, transparent);
 }
 /* The subject's own icon behind a card's head (the path's cards on the hub,
