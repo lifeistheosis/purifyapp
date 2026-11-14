@@ -1,4 +1,5 @@
 // checkMock with pixels on Updates 44's touched screens (from Updates 43's mockrun43.mjs).
+// OLD=1 puts the foot bars' old room and layer back in the page, to show the old fault.
 // Adds the state cart: /shop/cart/ with CART_SLUGS (comma-separated) in the cart, so its fixed bar shows.
 //   node mockrun43.mjs <out dir> <jsonl> <conc> <state@width@lang@group>...  (BARE=1: the lead's halo taken off in the page, to show the old ink)
 // state: today (/), signout (/signout/, Today too), shop (/shop/), buy (the wall cross, Buy now tapped
@@ -81,6 +82,8 @@ async function run(spec) {
   try {
     await go(page, ROUTE[state], { timeout: 60000 });
     await page.waitForTimeout(3500);
+    // OLD=1: the foot bars' old room and layer put back in the page (the look's room under the bar, under the foot).
+    if (process.env.OLD) await page.addStyleTag({ content: '@media (max-width: 767.98px) { html.is-native[data-look]:not([data-look="nightsky"], [data-look="linen"]) .safe-pb[data-foot-bar] { padding-bottom: max(calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h)), calc(var(--inset-bottom) + var(--foot-clear))) !important; z-index: 30 !important; } }' });
     await act(page, state);
     const r = await checkMock(page, "body", { pixels: true, palettes: GROUPS[Number(g)] });
     fs.appendFileSync(jsonl, JSON.stringify({ spec, ms: Date.now() - t0, failures: r.failures, unmeasured: r.unmeasured?.length ?? 0, allowed: r.allowed?.length ?? 0, errors }) + "\n");
