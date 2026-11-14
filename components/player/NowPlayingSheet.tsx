@@ -10,7 +10,7 @@ import { CrossPlate } from "@/components/ui/CrossPlate";
 import { Book } from "@/components/ui/icons/Book";
 import { More } from "@/components/ui/icons/More";
 import { Timer } from "@/components/ui/icons/Timer";
-import { useAmbienceSheet } from "@/lib/ambience/sheet";
+import { useAmbienceLeaving, useAmbienceSheet } from "@/lib/ambience/sheet";
 import { openVoiceSheet, useVoiceSheet } from "@/lib/listen/speech/sheet";
 import { playerOpenForGone, useVoiceShown } from "@/lib/listen/speech/speak";
 import { cn } from "@/lib/cn";
@@ -100,6 +100,9 @@ export function NowPlayingSheet() {
   const voiceSheet = useVoiceSheet();
   // A sheet stands over the player: Escape is that sheet's.
   const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer) || (voiceSheet.open && voiceSheet.overPlayer);
+  // The ambience closed over the player is still on the screen while its close
+  // runs: the words wait for it to go (build 97 note 10, Updates 67).
+  const ambienceLeaving = useAmbienceLeaving() && ambienceSheet.overPlayer;
   // The voice reading, for the ••• sheet's Voice row (1.9, build 95 note 25).
   const voiceName = useVoiceRowValue(audio.src, open);
   // A voice the reader chose had gone and another reads: said here once, the
@@ -354,8 +357,10 @@ export function NowPlayingSheet() {
                   // lit words rest: each frame's glow restyled the line behind the
                   // sheet and held its rise to 36 frames in 1.5s on a phone's CPU
                   // (build 97 note 10, scripts/ambience-open-walk.mjs). Uncovered,
-                  // they ease to the line being read, as on coming back from Cover.
-                  active={words && !covered}
+                  // they ease to the line being read, as on coming back from Cover;
+                  // the ambience uncovers them once its close has run, not as it
+                  // starts, or the glow held its fall to 26 frames (Updates 67).
+                  active={words && !covered && !ambienceLeaving}
                   look="player"
                   rtl={audio.rtl}
                   onSeek={seek}

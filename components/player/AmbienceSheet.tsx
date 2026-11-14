@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 
 import { PlusLock, PlusMark } from "@/components/billing/PlusMark";
 import { UpgradeModalProvider, useUpgradeModal } from "@/components/billing/UpgradeModal";
@@ -10,7 +10,7 @@ import { Sheet } from "@/components/ui/Sheet";
 import { Slider } from "@/components/ui/Slider";
 import { AMBIENCE_TRACKS, getAmbienceTrack, type AmbienceId, type AmbienceTrack } from "@/lib/ambience/ambience";
 import { DEFAULT_LEVEL, layerAmbience, setAmbienceBalance, setAmbienceLevel, setAmbienceVolume, useAmbience } from "@/lib/ambience/player";
-import { closeAmbience, useAmbienceSheet } from "@/lib/ambience/sheet";
+import { closeAmbience, markAmbienceDrawn, useAmbienceSheet } from "@/lib/ambience/sheet";
 import { warmAmbiencePhotosWhenIdle } from "@/lib/ambience/warmPhotos";
 import { cn } from "@/lib/cn";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
@@ -100,6 +100,13 @@ function useHasTrack(): boolean {
 
 function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
   const { t, locale } = useTranslate();
+
+  // Drawn while the house sheet keeps it, its close included: Now Playing's
+  // words rest under it until it has gone (lib/ambience/sheet.ts, build 97 note 10).
+  useLayoutEffect(() => {
+    markAmbienceDrawn(true);
+    return () => markAmbienceDrawn(false);
+  }, []);
   const ambience = useAmbience();
   const plus = usePlusFeatures();
   const upgrade = useUpgradeModal();
