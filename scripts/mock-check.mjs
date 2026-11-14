@@ -1270,11 +1270,24 @@ function boxes(selector) {
   };
   const out = [];
   const index = new Map();
-  // The nearest measured parent, so a child carried along by a misplaced
+  // Each box's own mark, the one the palettes pair by (pairOf in look): the same element in the three
+  // measures, whatever was drawn or taken away between them. They were paired by their place in this list,
+  // behind a check that the lists were as long, so a part that drew one piece more in Arabic was not compared
+  // at all, and one that drew one and lost another compared every piece after the change with its neighbour
+  // (named by Updates 36, 2026-11-14).
+  const pairOf = (e) => {
+    let k = e.getAttribute("data-mock-pair");
+    if (k === null) {
+      k = String((window.__mockPairNext = (window.__mockPairNext ?? 0) + 1));
+      e.setAttribute("data-mock-pair", k);
+    }
+    return k;
+  };
+  // The nearest measured parent, by its mark, so a child carried along by a misplaced
   // parent is not reported again.
   const parentOf = (n) => {
     for (let p = n.parentElement; p && p !== root; p = p.parentElement) if (index.has(p)) return index.get(p);
-    return -1;
+    return null;
   };
   const els = [...root.querySelectorAll("*")].filter((e) => !(e.closest("svg") && e.tagName.toLowerCase() !== "svg"));
   // What is seen of a box, across: cut to every frame inside the part that
@@ -1309,12 +1322,14 @@ function boxes(selector) {
     const r = seen(e, whole);
     if (r.width < 1 || whole.height < 1 || pinned(e) || flowed(e)) continue;
     const words = (e.getAttribute("aria-label") || e.innerText || "").replace(/\s+/g, " ").trim();
-    index.set(e, out.length);
+    const pair = pairOf(e);
+    index.set(e, pair);
     // Text set left or right, not start or end, stays put in Arabic.
     const hasText = [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
     const align = getComputedStyle(e).textAlign;
     out.push({
       name: `${e.tagName.toLowerCase()}${words ? ` "${words.slice(0, 32)}"` : ""}`,
+      pair,
       x: across(r),
       parent: parentOf(e),
       allow: allowed(e),
@@ -1584,29 +1599,41 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
     await settle(page);
     const rtl = await page.evaluate(boxes, selector);
     const again = await leftToRight();
-    if (ltr && rtl && ltr.out.length === rtl.out.length) {
-      const twice = Boolean(again) && again.out.length === ltr.out.length;
+    if (ltr && rtl) {
+      // Each box with itself, by its mark: a piece drawn in one direction only is said, and the rest are
+      // compared as ever.
+      const inArabic = new Map(rtl.out.map((b) => [b.pair, b]));
+      const inAgain = new Map((again?.out ?? []).map((c) => [c.pair, c]));
+      const firstWay = new Set(ltr.out.map((a) => a.pair));
       const mirrors = (a, b) => Math.abs(b.x[0] - (rtl.width - a.x[1])) <= 1.5 && Math.abs(b.x[1] - (rtl.width - a.x[0])) <= 1.5;
       // Where a parent is placed wrong, its children go with it: only the
       // parent is said.
       const wrong = new Set();
-      ltr.out.forEach((a, i) => {
-        const b = rtl.out[i];
-        const c = twice ? again.out[i] : a;
+      let leftOnly = 0;
+      ltr.out.forEach((a) => {
         if (a.physicalAlign) {
           if (a.allow) allow("mirror", a.name, a.allow);
           else fail("mirror", null, a.name, `its text is set ${a.physicalAlign}, not start or end, so it stays ${a.physicalAlign} in Arabic`);
         }
+        const b = inArabic.get(a.pair);
+        if (!b) {
+          leftOnly++;
+          return;
+        }
+        const c = inAgain.get(a.pair) ?? a;
         if (mirrors(a, b) || mirrors(c, b)) return;
-        wrong.add(i);
-        if (wrong.has(a.parent)) return;
+        wrong.add(a.pair);
+        if (a.parent !== null && wrong.has(a.parent)) return;
         if (a.allow) allow("mirror", a.name, a.allow);
         else if (Math.abs(a.x[0] - c.x[0]) > 1.5 || Math.abs(a.x[1] - c.x[1]) > 1.5)
           unmeasured.push(`Arabic: ${a.name} moved while it was measured (at ${a.x[0]} to ${a.x[1]}px, then ${c.x[0]} to ${c.x[1]}px, the same way round), so its place was not compared`);
         else fail("mirror", null, a.name, `at ${a.x[0]} to ${a.x[1]}px, and in Arabic at ${b.x[0]} to ${b.x[1]}px of ${rtl.width}: placed with left or right, not start or end`);
       });
+      const arabicOnly = rtl.out.filter((b) => !firstWay.has(b.pair)).length;
+      if (leftOnly || arabicOnly)
+        unmeasured.push(`Arabic: ${leftOnly + arabicOnly} piece${leftOnly + arabicOnly === 1 ? "" : "s"} drawn in one direction only (${leftOnly} left to right, ${arabicOnly} in Arabic), not compared; every other piece was compared with itself`);
     } else {
-      unmeasured.push("Arabic: the part of the page changed between the two directions, so it was not compared");
+      unmeasured.push("Arabic: the part of the page was not found in both directions, so it was not compared");
     }
   } finally {
     await wear(page, before.mode, before.look);
@@ -1839,6 +1866,26 @@ const PAIR = `<div data-mock-fixture="pair" class="bg-night px-4 pb-4" style="po
   <p class="font-sans text-ui" style="color:#ffffff">Words typed in white</p>
 </div>`;
 
+// The Arabic pass pairs each box with itself (Updates 39, 2026-11-14). Two parts that change with the
+// direction: one draws a piece more in Arabic (a list of one more), the other draws one and loses another, so
+// both lists are as long. Each holds one box placed with left, which stays put in Arabic. Paired by place, the
+// first was not compared at all and its box passed; the second compared every piece after the change with its
+// neighbour and failed pieces that mirror. Paired by mark, each fails its box alone and says what one
+// direction drew alone. Their rows are blocks, so a piece drawn or lost moves the others down, not across.
+const DIRPARTS = `<div data-mock-fixture="dirmore" class="bg-night px-4 pb-4" style="position:fixed;left:0;right:0;top:0;z-index:402">
+  <p class="font-sans text-ui text-paper">One, at the start</p>
+  <p class="font-sans text-ui text-paper" style="width:9rem;margin-inline-start:auto">Two, at the end</p>
+  <div class="relative h-8"><span class="absolute top-0 font-sans text-ui text-paper" style="left:16px">Placed with left</span></div>
+  <p class="font-sans text-ui text-paper" data-dir-only="rtl">Drawn in Arabic alone</p>
+</div>
+<div data-mock-fixture="dirswap" class="bg-night px-4 pb-4" style="position:fixed;left:0;right:0;top:220px;z-index:402">
+  <p class="font-sans text-ui text-paper">One, at the start</p>
+  <p class="font-sans text-ui text-paper" data-dir-only="ltr">Drawn left to right alone</p>
+  <p class="font-sans text-ui text-paper" style="width:9rem;margin-inline-start:auto">Three, at the end</p>
+  <div class="relative h-8"><span class="absolute top-0 font-sans text-ui text-paper" style="left:16px">Placed with left</span></div>
+  <p class="font-sans text-ui text-paper" data-dir-only="rtl">Drawn in Arabic alone</p>
+</div>`;
+
 // A feed's icons (Updates 25, 2026-11-13): the same two outlines drawn twenty-four times each, as fifty posts
 // draw theirs, and a four-point sparkle drawn three times among them. Each outline is read once on the page, and
 // every sparkle drawn is still caught.
@@ -2005,6 +2052,33 @@ async function selfTest() {
       !typedIn("A line drawn while it is measured") &&
       pair.failures.some((f) => f.check === "contrast" && f.palette === "Light" && f.what === '"Words typed in white"');
     await page.evaluate(() => document.querySelector("[data-mock-fixture=pair]")?.remove());
+    // Two parts that change with the direction, each with one box placed with left (DIRPARTS).
+    await page.evaluate((html) => {
+      for (const f of document.querySelectorAll("[data-mock-fixture]")) f.style.display = "none";
+      document.body.insertAdjacentHTML("beforeend", html);
+      const follow = () => {
+        const rtl = document.documentElement.getAttribute("dir") === "rtl";
+        for (const e of document.querySelectorAll("[data-dir-only]")) e.style.display = (e.getAttribute("data-dir-only") === "rtl") === rtl ? "" : "none";
+      };
+      follow();
+      new MutationObserver(follow).observe(document.documentElement, { attributes: true, attributeFilter: ["dir"] });
+    }, DIRPARTS);
+    await settle(page);
+    const dirMore = await checkMock(page, "[data-mock-fixture=dirmore]", { palettes: [["Dark", null]] });
+    printMockCheck(dirMore, "a part that draws a piece more in Arabic");
+    await page.evaluate(() => {
+      document.querySelector("[data-mock-fixture=dirmore]").style.display = "none";
+      document.querySelector("[data-mock-fixture=dirswap]").style.display = "";
+    });
+    await settle(page);
+    const dirSwap = await checkMock(page, "[data-mock-fixture=dirswap]", { palettes: [["Dark", null]] });
+    printMockCheck(dirSwap, "a part that draws one piece and loses another in Arabic");
+    await page.evaluate(() => document.querySelectorAll("[data-mock-fixture=dirmore], [data-mock-fixture=dirswap]").forEach((f) => f.remove()));
+    const leftAlone = (r, n) => {
+      const mirror = r.failures.filter((f) => f.check === "mirror");
+      return mirror.length === 1 && mirror[0].what === 'span "Placed with left"' && r.unmeasured.some((u) => u.startsWith(`Arabic: ${n} piece${n === 1 ? "" : "s"} drawn in one direction only`));
+    };
+    const dirRight = leftAlone(dirMore, 1) && leftAlone(dirSwap, 2);
     const clockRight =
       clocks.failures.length === 0 && clocks.unmeasured.length === 1 && clocks.unmeasured[0].startsWith("Arabic: span moved while it was measured");
     const redRight =
@@ -2056,11 +2130,11 @@ async function selfTest() {
       said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
       said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
       good.unmeasured.length === 3;
-    const ok = listsWhole && missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead && shapesOnce && pairRight;
+    const ok = listsWhole && missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead && shapesOnce && pairRight && dirRight;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${listsWhole ? "" : "a palette of the registry is left out of the lists, or the old lists were not caught; "}${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}${shapesOnce ? "" : " an outline drawn many times was read more than once, or a sparkle drawn among them was not caught"}${pairRight ? "" : " a part that drew more while it was measured had its paints compared with their neighbours' on Light"}`,
+        : `\nself-test FAILED: ${listsWhole ? "" : "a palette of the registry is left out of the lists, or the old lists were not caught; "}${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}${shapesOnce ? "" : " an outline drawn many times was read more than once, or a sparkle drawn among them was not caught"}${pairRight ? "" : " a part that drew more while it was measured had its paints compared with their neighbours' on Light"}${dirRight ? "" : " a part that changed with the direction had its boxes compared by place, not each with itself"}`,
     );
     return ok;
   } finally {
