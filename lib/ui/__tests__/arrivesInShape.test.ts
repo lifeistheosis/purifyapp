@@ -119,7 +119,10 @@ describe("the shop's piece, before the device has read its address", () => {
   it("is the piece's own outline, not nothing", async () => {
     const page = code("app/(app)/shop/icons/detail/page.tsx");
     expect(page).not.toMatch(/<Suspense fallback=\{null\}>/);
-    expect(page).toMatch(/<Suspense fallback=\{<ShopDetailSkeleton \/>\}>/);
+    // The outline, with the piece's picture when a card opened it (Updates 46, Gate 2's fault 7): plain where no
+    // address is known, on the server and a cold start's first draw.
+    expect(page).toMatch(/<Suspense fallback=\{<ProductDetailFallback \/>\}>/);
+    expect(code("components/shop/ProductDetailFromQuery.tsx")).toMatch(/export function ProductDetailFallback\(\) \{[\s\S]*?return <ShopDetailSkeleton picture=\{slug \? peekPiecePicture\(slug\) : null\} carry=\{slug \? pieceCarry\(slug\) : undefined\} \/>;/);
     // The same outline the piece shows while it is fetched (components/shop/ProductDetailClient.tsx),
     // there with the picture a list already read, which the card's picture is carried into (Updates 38).
     expect(code("components/shop/ProductDetailClient.tsx")).toMatch(/if \(loading\) \{\s*return <ShopDetailSkeleton picture=\{peekPiecePicture\(slug\)\} carry=\{pieceCarry\(slug\)\} \/>;/);

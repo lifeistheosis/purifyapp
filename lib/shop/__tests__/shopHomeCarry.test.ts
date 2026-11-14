@@ -121,6 +121,14 @@ describe("every card on /shop/ that opens a piece carries its picture into the p
     expect(query).toContain('const DETAIL = "/shop/icons/detail";');
   });
 
+  it("the row of pieces looked at before reads each title whole, never cut by an ellipsis", () => {
+    // checkMock on the export at 390 (Updates 46): "Orthodox Cross Beanie" ended by an ellipsis in the row.
+    const home = read(HOME);
+    const thumb = home.slice(home.indexOf("function Thumb("));
+    expect(thumb).toContain('<p className="mt-2 font-sans text-caption text-paper/70">{product.title}</p>');
+    expect(thumb.slice(0, thumb.indexOf("</Link>"))).not.toMatch(/\btruncate\b|line-clamp/);
+  });
+
   it("the piece's page takes a picture by the piece's name, while it is read and once it is", () => {
     expect(read("components/shop/ProductDetailClient.tsx")).toContain("<ShopDetailSkeleton picture={peekPiecePicture(slug)} carry={pieceCarry(slug)} />");
     expect(read("components/shop/ProductDetailClient.tsx")).toContain("carry={pieceCarry(product.slug)}");

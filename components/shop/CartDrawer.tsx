@@ -285,8 +285,9 @@ export function CartDrawer() {
             {/* The drawer's own bar at the screen's foot (data-foot-bar): it
                 keeps the frame's room under its buttons, not a look's foot's
                 (app/globals.css, "The page ends above its foot"). The drawer
-                stands over the foot, so that room was only empty ground,
-                240px under Check out on a look at a phone's width. */}
+                stands over the foot, so that room was only empty ground:
+                measured on the export at 390 on Jordan, 240px under "View
+                cart & check out", 86px as on Dark now. */}
             <div data-foot-bar className="border-t border-paper/8 px-5 py-4 safe-pb">
               <div className="flex items-center justify-between">
                 <p className="font-sans text-ui text-paper/70">{t("shop.subtotalX")}</p>

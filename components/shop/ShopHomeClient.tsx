@@ -407,7 +407,10 @@ function Thumb({ product }: { product: ShopProductFull }) {
           </div>
         ) : null}
       </div>
-      <p className="mt-2 truncate font-sans text-caption text-paper/70">{product.title}</p>
+      {/* Whole, on as many lines as it takes: cut by an ellipsis at a phone's
+          width, "Orthodox Cross Beanie" was a link's name not read whole
+          (checkMock, Updates 46). */}
+      <p className="mt-2 font-sans text-caption text-paper/70">{product.title}</p>
       <p className="font-sans text-caption font-semibold tabular-nums text-paper">
         {formatPrice(product.price_cents, product.currency)}
       </p>
