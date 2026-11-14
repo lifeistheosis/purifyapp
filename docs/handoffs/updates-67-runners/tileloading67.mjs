@@ -6,6 +6,14 @@
 // its block.
 //
 //   node docs/handoffs/updates-67-runners/tileloading67.mjs [export] [shots dir]
+//
+// Updates 70 (2026-11-14): MOTION=on (the default) or MOTION=off pins the app's
+// own motion switch (purify.motion), so a run says which it measured and the
+// reduced state can be run at all; PULSE=faint holds every animation on the
+// tile's state line at its faintest frame before the measure, so the worst
+// frame is measured rather than wherever the measure lands; each line names the
+// motion switch as the page wore it and the state line's opacity and
+// animations; and every failure is printed, not the first twelve.
 import fs from "node:fs";
 import path from "node:path";
 
@@ -29,6 +37,10 @@ const SIZES = [
   [1032, 1366],
 ];
 const sheetSel = (lang) => `[role="dialog"][aria-label="${t(lang, "ambience.title")}"]`;
+const MOTION = process.env.MOTION ?? "on";
+const FAINT = process.env.PULSE === "faint";
+if (!["on", "off"].includes(MOTION)) throw new Error(`MOTION=${MOTION}: on or off`);
+console.log(`motion ${MOTION}${FAINT ? ", the state line held at its faintest frame" : ""}`);
 let failures = 0;
 
 const browser = await chromium.launch({ ...(fs.existsSync(OWN) ? { executablePath: OWN } : {}), args: ["--autoplay-policy=user-gesture-required"] });
@@ -59,13 +71,17 @@ for (const lang of ["en", "ar"]) {
       ...(lang !== "en" ? { locale: lang } : {}),
     });
     if (lang !== "en") await ctx.addCookies([{ name: "purify_locale", value: lang, url: "https://localhost" }]);
-    await ctx.addInitScript((l) => {
-      try {
-        localStorage.setItem("purify:onboarded", "99");
-        localStorage.setItem("purify:whatsNewSeen", "99");
-        localStorage.setItem("CapacitorStorage.purify_locale", l);
-      } catch {}
-    }, lang);
+    await ctx.addInitScript(
+      ([l, motion]) => {
+        try {
+          localStorage.setItem("purify:onboarded", "99");
+          localStorage.setItem("purify:whatsNewSeen", "99");
+          localStorage.setItem("CapacitorStorage.purify_locale", l);
+          localStorage.setItem("purify.motion", motion);
+        } catch {}
+      },
+      [lang, MOTION],
+    );
     await serveLikeTheShell(ctx, OUT, {});
     // Rain's file asked and never answered: its tile stays "Loading".
     await ctx.route("**/audio/ambience/rain.mp3", () => {});
@@ -84,7 +100,27 @@ for (const lang of ["en", "ar"]) {
     const said = await textOf(rain, (x) => x.includes(t(lang, "ambience.loading")));
     await page.waitForTimeout(800);
     const still = (await rain.innerText()).replace(/\s+/g, " ");
-    const label = `a tile mid-loading at ${width} in ${lang}`;
+    // The state line: its opacity now, its animations, and (PULSE=faint) each held at its faintest frame.
+    const line = await rain.evaluate((tile, faint) => {
+      const el = tile.lastElementChild;
+      const out = { motion: document.documentElement.getAttribute("data-motion"), opacity: null, animations: [] };
+      if (!el) return out;
+      for (const a of el.getAnimations()) {
+        const frames = a.effect?.getKeyframes?.() ?? [];
+        const timing = a.effect?.getComputedTiming?.() ?? {};
+        const own = Number(getComputedStyle(el).opacity);
+        let least = { offset: null, opacity: Infinity };
+        for (const f of frames) if (f.opacity !== undefined && Number(f.opacity) < least.opacity) least = { offset: f.computedOffset ?? f.offset, opacity: Number(f.opacity) };
+        if (faint && least.offset !== null) {
+          a.pause();
+          a.currentTime = least.offset * Number(timing.duration);
+        }
+        out.animations.push(`${a.animationName ?? "?"} (${a.playState}, least ${least.opacity === Infinity ? "none" : least.opacity}, was ${own})`);
+      }
+      out.opacity = Number(getComputedStyle(el).opacity);
+      return out;
+    }, FAINT);
+    const label = `a tile mid-loading at ${width} in ${lang}, motion ${line.motion}, the line at ${line.opacity}${line.animations.length ? ` with ${line.animations.join(", ")}` : " with no animation"}`;
     if (!said.includes(t(lang, "ambience.loading")) || !still.includes(t(lang, "ambience.loading"))) {
       failures++;
       console.log(`  ✗ ${label}: the tile said "${still}", not "${t(lang, "ambience.loading")}"`);
@@ -99,7 +135,7 @@ for (const lang of ["en", "ar"]) {
       if (result.failures.length) {
         failures++;
         console.log(`  ✗ checkMock ${label}: ${result.failures.length} failure(s)`);
-        for (const f of result.failures.slice(0, 12)) console.log(`      ${f.check} on ${f.palette}: ${f.what} ${f.detail ?? ""}`);
+        for (const f of result.failures) console.log(`      ${f.check} on ${f.palette}: ${f.what} ${f.detail ?? ""}`);
       } else console.log(`  ✓ checkMock ${label}: passes on ${EVERY.length} palettes and looks`);
       for (const a of result.allowed ?? []) console.log(`      allowed: ${a}`);
     }
