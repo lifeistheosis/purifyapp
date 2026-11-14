@@ -2,6 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 
+import { warmAmbiencePhotos } from "./warmPhotos";
+
 /**
  * Whether the ambience sheet is open (1.7), and whether it stands over Now
  * Playing. A module store, like lib/player/sheet.ts, so the sound button by
@@ -21,6 +23,8 @@ function set(next: State) {
 
 /** `overPlayer`: opened from inside Now Playing, so it stands over it. */
 export function openAmbience(opts: { overPlayer?: boolean } = {}): void {
+  // Opened before the app was idle: the photographs start decoding now (a no-op once warm).
+  void warmAmbiencePhotos();
   set({ open: true, overPlayer: Boolean(opts.overPlayer) });
 }
 

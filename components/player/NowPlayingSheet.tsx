@@ -350,7 +350,12 @@ export function NowPlayingSheet() {
                   timed={sung.timed}
                   current={sung.current}
                   live
-                  active={words}
+                  // Under a sheet over the player (the ambience, its ••• sheet) the
+                  // lit words rest: each frame's glow restyled the line behind the
+                  // sheet and held its rise to 36 frames in 1.5s on a phone's CPU
+                  // (build 97 note 10, scripts/ambience-open-walk.mjs). Uncovered,
+                  // they ease to the line being read, as on coming back from Cover.
+                  active={words && !covered}
                   look="player"
                   rtl={audio.rtl}
                   onSeek={seek}

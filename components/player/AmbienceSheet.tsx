@@ -11,6 +11,7 @@ import { Slider } from "@/components/ui/Slider";
 import { AMBIENCE_TRACKS, getAmbienceTrack, type AmbienceId, type AmbienceTrack } from "@/lib/ambience/ambience";
 import { DEFAULT_LEVEL, layerAmbience, setAmbienceBalance, setAmbienceLevel, setAmbienceVolume, useAmbience } from "@/lib/ambience/player";
 import { closeAmbience, useAmbienceSheet } from "@/lib/ambience/sheet";
+import { warmAmbiencePhotosWhenIdle } from "@/lib/ambience/warmPhotos";
 import { cn } from "@/lib/cn";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { isChosen, minutesLeft, setSleepTimer, useSleepTimer, type SleepChoice } from "@/lib/player/sleep";
@@ -58,6 +59,10 @@ export function AmbienceSheet() {
 function AmbienceSheetHost() {
   const { t } = useTranslate();
   const { open, overPlayer } = useAmbienceSheet();
+
+  // The six photographs, decoded once the app is idle, so the sheet's first
+  // rise has every one whole (lib/ambience/warmPhotos.ts, build 97 note 10).
+  useEffect(() => warmAmbiencePhotosWhenIdle(), []);
 
   // A link out of the sheet (the upgrade sheet's plans) leaves it behind.
   const pathname = usePathname();
