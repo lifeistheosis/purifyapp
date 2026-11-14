@@ -80,3 +80,13 @@ Build 97 (run 43608911353, from 231e1ce0, code 59d1fd98), cut ungated at his wor
 **The plan.** The panel keeps one height for all three tabs, the tallest tab's, measured in every language and at the largest text size (a longer word can wrap a switch onto a second row), so the sheet, its title and the picture stand still when the tab changes. A test that fails on the old code: the sheet opened on each tab at phone size, its top edge the same to the pixel. Other sheets with tabs are searched for the same fault.
 
 **Owner:** a fixer, with notes 2 and 8 (the sheets).
+
+## Note 10: the ambience, opened while something plays, and the whole system made smooth
+
+**His words** (about 16:20 UTC), with a screenshot of the Ambience sheet opened over the player's Words view while The Definition of Faith (Third Council of Constantinople) is read: "the ambience window opening up while playing someone is playing is a little buggy overrall the ambience system needs optimizing".
+
+**Found** (read, not measured): the sheet is the house's sheet (`components/player/AmbienceSheet.tsx:72`, through `lib/ui/useDraggableSheet.ts`), whose scrim blurs what lies behind it. Over the player that is the Words view, which moves while a reading plays, and the six photographs (`components/player/AmbiencePhoto.tsx`) decode as the sheet rises. Either could cost frames on a phone; neither is measured yet. What he saw as buggy (a stutter, a jump, the sound) is asked of him.
+
+**The plan.** Measure first, on the export at phone size with a phone's CPU, while a reading plays: the sheet opened over the player's Words and Cover views, over the reader and over Prayers; a frame trace of each opening and closing, and what each frame waits on. Then the whole ambience system, each part measured before and after: the sheet opens and closes without a dropped frame; a sound starts within a set time of the tap, its tile saying loading and then playing; one sound gives way to another without a gap or a click; stop and the sleep timer answer at once; the level under the voice holds; the photographs are ready before the sheet rises. A test for each fault found, failing on the old code; the times before and after in the report.
+
+**Owner:** a fixer of its own, measuring first (`lib/ambience/`, `components/player/Ambience*`).
