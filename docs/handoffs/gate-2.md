@@ -11,17 +11,14 @@ Card: `docs/roles/admin.md`. Branch `ccr-07896cf2-bo0afd`. The pre-build gate (C
 - The export: `node scripts/gate/export.mjs` of `a8a35dde7` (code `4c6a0484`), store switches, key read and written nowhere; the three self-tests passed.
 - Part 1, every control on all 129 screens, both readers; no signal on the ten council and history pages; part 2 at 390, 800 and 1032, both readers; the stripe walk; parts 3 to 5 (262 files, 3,309 tests); part 5 against build 95's own code, 26 of 26 notes proved; the offline lines, the toast, the patron sheet whole, /reading/ in English at three widths, Search's strip and the saints' grid reduced, the shop's motion walk.
 - Records: `a11986c5`, then the final one with this baton.
-- Six faults named (the record's 1 to 4, 6 and 7; 5 withdrawn): the Translation sheet on the earned palettes, a sold-out card's Save under its link, Buy now moving 27px, /plans/acts/ held only by the browser, Today's date line at 1032, and the Virgin of Vladimir card's picture not carried.
+- Seven faults named (the record's 1 to 4 and 6 to 8; 5 withdrawn). After the first report: /reading/ in Arabic (fault 8, Candlelight at 800 and 1032), /settings/reading-mode/ clean, fault 4 repeated alone for the open reader, the web build passes. The first six: the Translation sheet on the earned palettes, a sold-out card's Save under its link, Buy now moving 27px, /plans/acts/ held only by the browser, Today's date line at 1032, and the Virgin of Vladimir card's picture not carried.
 
 ## Open
 
 | What | Owner | Next step |
 |---|---|---|
-| The six faults | the arbiter | Route to a fixer; each has its screen, file and numbers in the record. A second export, on the arbiter's word, walks only what changed. |
+| The seven faults | the arbiter | Route to a fixer; each has its screen, file and numbers in the record. A second export, on the arbiter's word, walks only what changed. |
 | The motion walk over all its routes | the next Admin chat | Cut the export the same way from the head the arbiter names, then two lanes, each in its own command: `[SELLS_PLUS=1] NODE_USE_ENV_PROXY=1 node scripts/motion-walk.mjs out --online --json <file> --shots <dir>`, then `--reduced`. About 75 minutes, then the still pass. |
-| /reading/ in Arabic (390, 800, 1032, the 21) and /settings/reading-mode/ (1032, the five and the two earned) | the next Admin chat | Running in this container at the hand-over; results stay here. To run again: the probe is checkMock `{ pixels: true, palettes: [...PALETTES, ...EARNED, ...LOOKS] }` on `body`, opened as the guardrail walk opens a screen, with `locale: "ar"`, the `purify_locale` cookie and `CapacitorStorage.purify_locale`. One run takes 75 to 81 minutes here: run the six side by side. |
-| Fault 4 for the open reader, walked again alone | the next Admin chat | `NODE_USE_ENV_PROXY=1 node scripts/tap-walk.mjs out --only /plans/acts/ --workers 1 --max 1000 --online`. |
-| The web build | the next Admin chat | `npm run build`, last. |
 
 ## Gotchas
 
