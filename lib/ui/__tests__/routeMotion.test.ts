@@ -495,6 +495,23 @@ describe("a picture that leads to its own page", () => {
     expect(wears(picture)).toBe(true);
   });
 
+  it("is lifted from the card a link with nothing inside it is stretched over (the shop's piece)", () => {
+    // components/shop/ProductCard.tsx: the heart and the cart are buttons, so
+    // the link is an empty layer over the card, beside the picture, not round it.
+    const picture = fake("div", { "data-carry": "piece:virgin-of-vladimir" });
+    const link = fake("a", { href: "/shop/icons/detail?slug=virgin-of-vladimir" });
+    stage([fake("div", {}, [fake("div", {}, [picture]), link])]);
+    liftFrom(link as unknown as EventTarget);
+    expect(wears(picture)).toBe(true);
+
+    // A link with words of its own and no picture does not take its neighbour's.
+    const beside = fake("div", { "data-carry": "x" });
+    const words = fake("span");
+    stage([fake("div", {}, [beside, fake("a", { href: "/saints/" }, [words])])]);
+    liftFrom(words as unknown as EventTarget);
+    expect(wears(beside)).toBe(false);
+  });
+
   it("is not lifted from a link with no picture, from another site's, or where nothing moves", () => {
     const plain = fake("a", { href: "/saints/" }, [fake("span")]);
     const away = fake("a", { href: "https://example.org/" }, [fake("span", { "data-carry": "x" })]);

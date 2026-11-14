@@ -22,7 +22,8 @@ import { Lock } from "@/components/ui/icons/Lock";
 import { Truck } from "@/components/ui/icons/Truck";
 import { isEikonProduct } from "@/lib/shop/eikon";
 import { hasActiveProClient } from "@/lib/entitlements/client";
-import { fetchShopConfig, fetchShopProduct, fetchShopProducts } from "@/lib/shop/catalogClient";
+import { fetchShopConfig, fetchShopProduct, fetchShopProducts, peekPiecePicture } from "@/lib/shop/catalogClient";
+import { pieceCarry } from "@/lib/shop/productHref";
 import {
   formatPrice,
   productRating,
@@ -163,7 +164,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
   }, [slug]);
 
   if (loading) {
-    return <ShopDetailSkeleton />;
+    return <ShopDetailSkeleton picture={peekPiecePicture(slug)} carry={pieceCarry(slug)} />;
   }
   if (error) {
     return <ShopError message={error} onRetry={reload} />;
@@ -244,6 +245,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
       <div className={`${story ? "mt-12" : "mt-4"} gap-10 md:grid md:grid-cols-[minmax(0,1fr)_360px]`}>
         <div>
           <ProductGallery
+            carry={pieceCarry(product.slug)}
             media={product.media}
             representative={product.image_is_representative}
             isIcon={ICON_CLASSIFICATIONS.has(product.classification)}

@@ -515,6 +515,19 @@ function linksTo(href: string): Element[] {
   return [...document.querySelectorAll("a[href]")].filter((a) => a.getAttribute("href") === href);
 }
 
+/**
+ * The picture a link carries: the one inside it, or, for a link with nothing
+ * inside it that is stretched over its card (the shop's piece,
+ * components/shop/ProductCard.tsx, whose heart and cart are buttons and
+ * cannot stand inside a link), the card's own.
+ */
+function pictureOf(link: Element | null | undefined): HTMLElement | null {
+  if (!link) return null;
+  const inside = link.querySelector<HTMLElement>("[data-carry]");
+  if (inside) return inside;
+  return link.children.length === 0 ? (link.parentElement?.querySelector<HTMLElement>("[data-carry]") ?? null) : null;
+}
+
 function takerOf(key: string): HTMLElement | null {
   const all = [...document.querySelectorAll<HTMLElement>("[data-carry-into]")];
   return (key ? all.find((el) => el.dataset.carryInto === key) : undefined) ?? all.find((el) => el.dataset.carryInto === "") ?? null;
@@ -554,7 +567,7 @@ export function liftFrom(target: EventTarget | null): void {
   lifted = null;
   if (!canMove()) return;
   const link = (target as Element | null)?.closest?.("a[href]") ?? null;
-  const picture = link?.querySelector<HTMLElement>("[data-carry]") ?? null;
+  const picture = pictureOf(link);
   const href = link?.getAttribute("href") ?? "";
   if (!link || !picture || !href.startsWith("/")) return;
   lifted = { href, key: picture.dataset.carry ?? "", nth: Math.max(0, linksTo(href).indexOf(link)), to: pageKey(href) };
@@ -621,7 +634,7 @@ function liftBack(from: string): Way | null {
 
 /** The page behind has committed: the card the picture came out of takes the name. */
 function carryBack(way: Way): void {
-  const picture = linksTo(way.href)[way.nth]?.querySelector<HTMLElement>("[data-carry]") ?? null;
+  const picture = pictureOf(linksTo(way.href)[way.nth]);
   if (!picture) return;
   drawn(picture);
   wear(picture, way.key, true);

@@ -11,9 +11,8 @@
 // page"); what stands on a travelling picture is pictured apart from it
 // (data-carry-over), as a tile's words are.
 //
-// The shop's piece is not here: its page reads the piece after it opens, so
-// no head stands on it at the switch to take the picture (named in the
-// report, docs/handoffs/updates-37.md).
+// The shop's piece, the twenty-seventh, is carried since Updates 38: its
+// outline takes the card's picture (lib/shop/__tests__/pieceCarried.test.ts).
 
 import fs from "node:fs";
 import path from "node:path";

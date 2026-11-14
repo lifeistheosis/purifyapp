@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -100,8 +101,14 @@ export function ShopHomeSkeleton() {
  * dissolving over the piece as React takes it out (lib/ui/outlineLeave.ts):
  * the piece in place of its outline in one frame was a cut (the gate's walk
  * with motion on, 885ms after the tap).
+ *
+ * Where the shop already read the piece in a list (its card was tapped), the
+ * outline shows the piece's picture where the gallery's first will stand, as
+ * the gallery draws it, and takes the card's picture as the page opens
+ * (`carry`, lib/ui/routeMotion.ts): a card that opens its own page carries its
+ * picture into it (CLAUDE.md; the motion walk, Updates 37's Open 4).
  */
-export function ShopDetailSkeleton() {
+export function ShopDetailSkeleton({ picture = null, carry }: { picture?: { url: string; alt: string } | null; carry?: string } = {}) {
   const outline = useRef<HTMLDivElement>(null);
   useIsoLayoutEffect(() => {
     const el = outline.current;
@@ -114,7 +121,22 @@ export function ShopDetailSkeleton() {
       <Bone className="h-4 w-40" />
       <div className="mt-4 gap-10 md:grid md:grid-cols-[minmax(0,1fr)_360px]">
         <div>
-          <Bone className="aspect-square w-full rounded-xl" />
+          {picture ? (
+            <div className="shop-vitrine relative aspect-square w-full overflow-hidden rounded-2xl ring-1 ring-inset ring-paper/[0.07]">
+              <div data-carry-into={carry} className="absolute inset-0">
+                <Image
+                  src={picture.url}
+                  alt=""
+                  fill
+                  priority
+                  sizes="(min-width: 768px) 560px, 100vw"
+                  className="object-contain p-5 drop-shadow-[0_26px_30px_rgba(0,0,0,0.5)] md:p-10"
+                />
+              </div>
+            </div>
+          ) : (
+            <Bone className="aspect-square w-full rounded-xl" />
+          )}
           <Bone className="mt-6 h-8 w-2/3" />
           <Bone className="mt-3 h-4 w-1/2" />
           <Bone className="mt-6 h-24 w-full" />

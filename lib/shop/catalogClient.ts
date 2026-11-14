@@ -116,6 +116,43 @@ export function peekShopProducts(
   return peekJson<{ products: ShopProductFull[] }>(productsPath(params))?.products ?? null;
 }
 
+/**
+ * The first picture of a piece that a list read this visit already holds (the
+ * shop's home, a category, a rail), without asking. A piece's page stands in
+ * its outline while it reads the piece, and the outline shows this picture
+ * where the piece's own will stand, so the card's picture is carried into it
+ * as the page opens (components/shop/ShopStates.tsx, ShopDetailSkeleton).
+ */
+export function peekPiecePicture(slug: string): { url: string; alt: string } | null {
+  if (!slug) return null;
+  for (const { data } of readCache.values()) {
+    const found = pieceIn(data, slug, 0);
+    if (found) return found;
+  }
+  return null;
+}
+
+function pieceIn(value: unknown, slug: string, depth: number): { url: string; alt: string } | null {
+  if (depth > 5 || !value || typeof value !== "object") return null;
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const found = pieceIn(item, slug, depth + 1);
+      if (found) return found;
+    }
+    return null;
+  }
+  const piece = value as { slug?: unknown; media?: { media_url?: unknown; alt_text?: unknown }[] };
+  if (piece.slug === slug && Array.isArray(piece.media)) {
+    const first = piece.media[0];
+    return typeof first?.media_url === "string" ? { url: first.media_url, alt: typeof first.alt_text === "string" ? first.alt_text : "" } : null;
+  }
+  for (const inner of Object.values(value)) {
+    const found = pieceIn(inner, slug, depth + 1);
+    if (found) return found;
+  }
+  return null;
+}
+
 export function fetchShopProduct(slug: string): Promise<ShopProductDetail> {
   return getJson<ShopProductDetail>(
     `/api/shop/catalog/product/${encodeURIComponent(slug)}`,

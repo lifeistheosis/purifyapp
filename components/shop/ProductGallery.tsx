@@ -17,8 +17,11 @@ export function ProductGallery({
   media,
   representative,
   isIcon = true,
+  carry,
 }: {
   media: ShopProductMedia[];
+  /** The name the first picture takes the card's by, and goes back into it by (lib/ui/routeMotion.ts). */
+  carry?: string;
   representative: boolean;
   /**
    * Whether the product is an icon. The representative-image note speaks of
@@ -66,6 +69,7 @@ export function ProductGallery({
         {media.map((m, i) => (
           <div
             key={m.id}
+            data-carry-into={i === 0 ? carry : undefined}
             className="relative aspect-square w-full shrink-0 snap-center overflow-hidden"
           >
             <Image

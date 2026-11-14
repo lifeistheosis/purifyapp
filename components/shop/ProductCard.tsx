@@ -14,7 +14,7 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { useIsNative } from "@/lib/platform/native";
 import { addToCart } from "@/lib/shop/cart";
 import { formatPrice, productRating, unitsSoldLabel } from "@/lib/shop/format";
-import { productHref } from "@/lib/shop/productHref";
+import { pieceCarry, productHref } from "@/lib/shop/productHref";
 import { stockUrgency } from "@/lib/shop/stock";
 import type { ShopInventoryStatus, ShopProductFull } from "@/lib/shop/types";
 import { cn } from "@/lib/cn";
@@ -106,13 +106,17 @@ export function ProductCard({
         )}
       >
         {image ? (
-          <VitrineImage
-            src={image.media_url}
-            alt={image.alt_text}
-            fill
-            sizes={sizes}
-            className="object-contain p-3.5 drop-shadow-[0_18px_22px_rgba(0,0,0,0.45)] transition-transform motion-reduce:transition-none duration-700 ease-house group-hover:scale-[1.04] md:p-5"
-          />
+          // The picture travels into the piece's page (pieceCarry; the
+          // stretched link below carries its card's picture, lib/ui/routeMotion.ts).
+          <div data-carry={pieceCarry(product.slug)} className="absolute inset-0">
+            <VitrineImage
+              src={image.media_url}
+              alt={image.alt_text}
+              fill
+              sizes={sizes}
+              className="object-contain p-3.5 drop-shadow-[0_18px_22px_rgba(0,0,0,0.45)] transition-transform motion-reduce:transition-none duration-700 ease-house group-hover:scale-[1.04] md:p-5"
+            />
+          </div>
         ) : (
           <div aria-hidden className="flex h-full items-center justify-center text-paper/15">
             <Cross size={56} />

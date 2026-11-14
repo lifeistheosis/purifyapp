@@ -29,3 +29,12 @@ export function productHref(
   if (!native) return `/shop/icons/${slug}${hash}`;
   return `/shop/icons/detail?slug=${encodeURIComponent(slug)}${hash}`;
 }
+
+/**
+ * The name a piece's picture travels by from its card into its page
+ * (lib/ui/routeMotion.ts, data-carry and data-carry-into): the card's picture,
+ * the outline's while the piece is read, and the gallery's first.
+ */
+export function pieceCarry(slug: string): string {
+  return `piece:${slug}`;
+}

@@ -107,7 +107,7 @@ describe("both outlines, as the page arrives and as they leave", () => {
   ] as const) {
     it(`${name} dissolves over what replaces it, from its own layout effect's cleanup`, () => {
       const src = code(rel);
-      const body = src.slice(src.indexOf(`export function ${name}()`));
+      const body = src.slice(src.indexOf(`export function ${name}(`));
       expect(src).toContain('import { outlineLeft } from "@/lib/ui/outlineLeave";');
       expect(body).toMatch(/useIsoLayoutEffect\(\(\) => \{\s*const el = outline\.current;\s*return \(\) => \{\s*if \(el\) outlineLeft\(el\);/);
       expect(body).toMatch(/<div ref=\{outline\}/);
@@ -120,8 +120,9 @@ describe("the shop's piece, before the device has read its address", () => {
     const page = code("app/(app)/shop/icons/detail/page.tsx");
     expect(page).not.toMatch(/<Suspense fallback=\{null\}>/);
     expect(page).toMatch(/<Suspense fallback=\{<ShopDetailSkeleton \/>\}>/);
-    // The same outline the piece shows while it is fetched (components/shop/ProductDetailClient.tsx).
-    expect(code("components/shop/ProductDetailClient.tsx")).toMatch(/if \(loading\) \{\s*return <ShopDetailSkeleton \/>;/);
+    // The same outline the piece shows while it is fetched (components/shop/ProductDetailClient.tsx),
+    // there with the picture a list already read, which the card's picture is carried into (Updates 38).
+    expect(code("components/shop/ProductDetailClient.tsx")).toMatch(/if \(loading\) \{\s*return <ShopDetailSkeleton picture=\{peekPiecePicture\(slug\)\} carry=\{pieceCarry\(slug\)\} \/>;/);
     const { ShopDetailSkeleton } = await import("@/components/shop/ShopStates");
     const html = renderToStaticMarkup(createElement(ShopDetailSkeleton));
     expect((html.match(/class="sk /g) ?? []).length).toBeGreaterThanOrEqual(5);
