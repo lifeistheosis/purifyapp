@@ -230,6 +230,8 @@ export function CommandPalette() {
   const [recent, setRecent] = useState<string[]>([]);
   const [corpus, setCorpus] = useState<SearchItem[] | null>(null);
   const [theology, setTheology] = useState<TheologyEntry[]>([]);
+  // Whether Theology's list has come (an empty one is a list too).
+  const [theologyIn, setTheologyIn] = useState(false);
   const [refs, setRefs] = useState<References | null>(referencesModule);
   const [day, setDay] = useState<DayView | null>(dayModule);
   const [definitions, setDefinitions] = useState<Definition[] | null>(definitionsCache);
@@ -316,7 +318,11 @@ export function CommandPalette() {
     if (!open) return;
     let alive = true;
     void loadCorpus().then((c) => alive && setCorpus(c));
-    void loadTheology().then((list) => alive && setTheology(list));
+    void loadTheology().then((list) => {
+      if (!alive) return;
+      setTheology(list);
+      setTheologyIn(true);
+    });
     if (!refs) void loadReferences().then((m) => alive && m && setRefs(m));
     return () => {
       alive = false;
@@ -412,7 +418,10 @@ export function CommandPalette() {
   // The strip counts what the lists hold, and on the first opening they
   // arrive a moment after the screen: its place is kept until then, so what
   // stands under it never drops by its height under the reader's eyes.
-  const stripComing = corpus === null && (DOOR_KINDS[turn.door]?.length ?? 0) > 0;
+  // Theology's list as well as the library's: Theology's kinds stand ahead of
+  // the dictionary on its strip (lib/search/places.ts), and the dictionary's
+  // words, which come on their own, are last on it.
+  const stripComing = (corpus === null || !theologyIn) && (DOOR_KINDS[turn.door]?.length ?? 0) > 0;
 
   // The doors before anything is typed: every part of the library this build
   // has (the shop only where it is on).
@@ -558,11 +567,12 @@ export function CommandPalette() {
     <Doors small doors={doorsFound(counts, turn.door)} current={turn.door} counts={counts} off={offDoors} onPick={pickDoor} />
   );
 
-  // Drawn once every list has come, never from some of them: the dictionary's
-  // words came before the library's, and their tab was drawn second, then
-  // pushed far along as the library's kinds came in ahead of it (86 to 663px
-  // across in a frame, Search from a Father's page, the gate's reduced walk,
-  // Updates 37). Its place is kept until then (stripComing).
+  // Drawn once the lists its kinds come from have come, never from some of
+  // them: the dictionary's words came before Theology's list, and their tab
+  // was drawn second, then pushed far along as Theology's kinds came in ahead
+  // of it (86 to 663px across in a frame, Search from a Father's page, the
+  // gate's reduced walk, Updates 37). Its place is kept until then
+  // (stripComing).
   const strip = stripKinds.length && !stripComing ? (
     <KindStrip kinds={stripKinds} counts={kindTotals} total={placeRows.length} current={turn.kind} onPick={pickKind} />
   ) : null;

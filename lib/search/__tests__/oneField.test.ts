@@ -257,16 +257,19 @@ describe("the screen holds still as it opens (build 87, the owner's note 83)", (
   });
 
   it("keeps the strip's place while the lists arrive, at the strip's own height", () => {
-    expect(screen).toContain("const stripComing = corpus === null && (DOOR_KINDS[turn.door]?.length ?? 0) > 0;");
+    expect(screen).toContain("const stripComing = (corpus === null || !theologyIn) && (DOOR_KINDS[turn.door]?.length ?? 0) > 0;");
     expect(empty).toContain('stripComing ? <div aria-hidden className="mt-3 h-[44px]" /> : null');
     expect(code("components/search/SearchRows.tsx")).toContain('className="no-scrollbar flex h-[44px] shrink-0');
   });
 
   it("draws the strip only once every list has come, so no tab is drawn and then pushed along (Updates 38)", () => {
     // The dictionary's words came first and their tab stood second, at 86px,
-    // then at 663px as the library's kinds came in ahead of it (the gate's
+    // then at 663px as Theology's kinds came in ahead of it (the gate's
     // reduced walk, Search from a Father's page, Updates 37).
     expect(screen).toMatch(/const strip = stripKinds\.length && !stripComing \? \(\s*<KindStrip /);
+    expect(screen).toMatch(/setTheology\(list\);\s*setTheologyIn\(true\);/);
+    // The dictionary is last on Theology's strip, so its words coming last move no tab.
+    expect(code("lib/search/places.ts")).toMatch(/theology: \[[^\]]*"dictionary"\]/);
   });
 
   it("arrives by fading in where it stands, with no rise", () => {
