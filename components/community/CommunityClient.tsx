@@ -89,7 +89,8 @@ import { prefetchProfile } from "@/lib/profile/cache";
 import { fetchMyProfile, syncCalendar } from "@/lib/profile/client";
 import { announcePicture } from "@/lib/profile/myPicture";
 import type { MyProfile, ProfileSeed } from "@/lib/profile/publicProfile";
-import { afterMoves, movePage } from "@/lib/ui/inPageMove";
+import { afterMoves, isMovingInPage, movePage, partsAfter, partsBefore } from "@/lib/ui/inPageMove";
+import { catchUpOpened, isFollowingOpened } from "@/lib/ui/showOpened";
 import { haptic, scrollBehavior } from "@/lib/ui/motion";
 import { Close } from "@/components/ui/icons/Close";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
@@ -1415,6 +1416,18 @@ function PostCardInner({
   // (lib/ui/inPageMove.ts), the card let down and the posts below gliding,
   // and the notification's answer below scrolls to it.
   const cardRef = useRef<HTMLElement | null>(null);
+  // Replies landing while the page follows the thread the reader opened: the
+  // page goes with them in the same move (the layout effect below), where it
+  // stood still under them until their move was over, their end 567px under
+  // the tab bar (Gate 2, 2026-11-14, "5 replies").
+  const landing = useRef(false);
+  useLayoutEffect(() => {
+    if (!landing.current || repliesState === "loading") return;
+    landing.current = false;
+    const part = document.getElementById(`${partsId}-replies`);
+    // In the move's own change, before it is pictured; made at once instead, the page follows a frame at a time.
+    if (part && isMovingInPage()) catchUpOpened(part);
+  });
 
   const loadReplies = useCallback(async () => {
     setRepliesState("loading");
@@ -1434,8 +1447,12 @@ function PostCardInner({
     // move. One whose opening is still moving moves its rows in after it.
     if (!cardRef.current?.isConnected) return land();
     await afterMoves();
-    movePage(land, { grows: [cardRef.current] });
-  }, [post.id]);
+    const card = cardRef.current;
+    const part = document.getElementById(`${partsId}-replies`);
+    // Followed, the page moves in the move too, so what stands over the card goes up with it.
+    landing.current = part !== null && isFollowingOpened(part);
+    movePage(land, landing.current ? { grows: [card], glides: [...partsBefore(card), ...partsAfter(card)] } : { grows: [card] });
+  }, [post.id, partsId]);
 
   async function toggleReplies() {
     const next = !open;

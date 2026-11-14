@@ -138,6 +138,8 @@ type Where = { kind: "page" } | { kind: "box"; el: HTMLElement } | { kind: "nowh
 
 let lastTap: { control: Element; top: number; at: number } | null = null;
 let stopWatching: (() => void) | null = null;
+/** The opening followed now: what opened, and how to bring the page to it at once. */
+let following: { part: Element; atOnce: () => void } | null = null;
 
 function now(): number {
   return typeof performance !== "undefined" ? performance.now() : Date.now();
@@ -200,6 +202,27 @@ export function isShowingOpened(): boolean {
   return stopWatching !== null;
 }
 
+/** Whether the page is following `part`, which the reader has just opened. */
+export function isFollowingOpened(part: Element): boolean {
+  return following !== null && following.part === part;
+}
+
+/**
+ * Brings the page to `part` at once, when the page is following it and what
+ * makes it grow is itself moved as a change inside the page
+ * (lib/ui/inPageMove.ts). Called in that change, once its new state is in the
+ * page and before it is pictured (a layout effect), so the page goes with what
+ * arrives in the same move. Following it a frame at a time waits for the move
+ * to be over: Community's "5 replies" (Gate 2, 2026-11-14) stood with its end
+ * 567px under the tab bar, the page still, for the third of a second the
+ * replies took to land. Answers whether it was following `part`.
+ */
+export function catchUpOpened(part: Element): boolean {
+  if (!following || following.part !== part) return false;
+  following.atOnce();
+  return true;
+}
+
 /**
  * Moves the page (or the sheet that holds it) with `part` as it opens, until
  * its end is in sight or its top has reached the top of the band.
@@ -237,6 +260,42 @@ export function showOpened(
     if (frame) window.cancelAnimationFrame(frame);
     for (const type of HAND_EVENTS) window.removeEventListener(type, stop);
     if (stopWatching === stop) stopWatching = null;
+    if (following === mine) following = null;
+  }
+
+  /** What scrolls for it and how far it should go now; null when it opened where the reader is not looking. */
+  function due(): { where: Where; by: number } | null {
+    const where = whereOf(part);
+    if (where.kind === "nowhere") return { where, by: 0 };
+    const band = bandOf(where);
+    const box = part.getBoundingClientRect();
+    const lead = head && head.isConnected ? head.getBoundingClientRect() : null;
+    // The top that may not leave the screen: the control's, or where the
+    // reader's thumb was when the control has since been carried down.
+    let top = lead ? lead.top : box.top;
+    if (tapped !== null) top = Math.min(top, tapped - moved);
+    let bottom = Math.max(box.bottom, lead ? lead.bottom : box.bottom);
+    if (whole && whole.isConnected) bottom = Math.max(bottom, whole.getBoundingClientRect().bottom);
+    // Opened where the reader is not looking: it is not gone to.
+    if (first && top > band.bottom) return null;
+    return { where, by: moveFor({ top, bottom, roof: band.top, floor: band.bottom }) };
+  }
+
+  /**
+   * Moves by `step`, and answers how far the page went. Counted by how far
+   * the page went, not by how far it was asked to go. A screen sets a page on
+   * whole pixels, so each step of a glide lands a part of a pixel from where
+   * it was sent; counted as asked, twenty steps on, the place the thumb was is
+   * a few pixels from where this believes it is, and the page stops that far
+   * short (Community's "Read more", the gate's third run: the place came to
+   * rest 66px down for the 63 it was sent to).
+   */
+  function go(where: Where, step: number): number {
+    const from = placeOf(where);
+    moveBy(where, step);
+    const went = placeOf(where) - from;
+    moved += went;
+    return went;
   }
 
   function look() {
@@ -249,7 +308,8 @@ export function showOpened(
     // While the opening is being moved as a change inside the page
     // (lib/ui/inPageMove.ts), the screen shows its picture: a page scrolled
     // under it would leave the picture's two ends at two places. The page
-    // follows once the move is over, and its moment begins then.
+    // follows once the move is over, and its moment begins then (or goes in
+    // the move itself, where the change asks for it: catchUpOpened).
     if (isMovingInPage()) {
       arrived = at;
       last = at;
@@ -259,41 +319,15 @@ export function showOpened(
     const ms = first ? 16 : at - last;
     last = at;
 
-    const where = whereOf(part);
-    let by = 0;
-    if (where.kind !== "nowhere") {
-      const band = bandOf(where);
-      const box = part.getBoundingClientRect();
-      const lead = head && head.isConnected ? head.getBoundingClientRect() : null;
-      // The top that may not leave the screen: the control's, or where the
-      // reader's thumb was when the control has since been carried down.
-      let top = lead ? lead.top : box.top;
-      if (tapped !== null) top = Math.min(top, tapped - moved);
-      let bottom = Math.max(box.bottom, lead ? lead.bottom : box.bottom);
-      if (whole && whole.isConnected) bottom = Math.max(bottom, whole.getBoundingClientRect().bottom);
-      // Opened where the reader is not looking: it is not gone to.
-      if (first && top > band.bottom) {
-        stop();
-        return;
-      }
-      by = moveFor({ top, bottom, roof: band.top, floor: band.bottom });
-      const step = stepFor(by, ms, glide);
-      if (step > 0) {
-        // Counted by how far the page went, not by how far it was asked to
-        // go. A screen sets a page on whole pixels, so each step of a glide
-        // lands a part of a pixel from where it was sent; counted as asked,
-        // twenty steps on, the place the thumb was is a few pixels from
-        // where this believes it is, and the page stops that far short
-        // (Community's "Read more", the gate's third run: the place came to
-        // rest 66px down for the 63 it was sent to).
-        const from = placeOf(where);
-        moveBy(where, step);
-        const went = placeOf(where) - from;
-        moved += went;
-        // It would not go (the foot of the page): asked again and again, it is still.
-        if (Math.abs(went) < 0.5) by = 0;
-      }
+    const owed = due();
+    if (!owed) {
+      stop();
+      return;
     }
+    let by = owed.by;
+    const step = stepFor(by, ms, glide);
+    // It would not go (the foot of the page): asked again and again, it is still.
+    if (step > 0 && Math.abs(go(owed.where, step)) < 0.5) by = 0;
     first = false;
     steady = by < 0.5 ? steady + 1 : 0;
     // Still filling: it has not arrived, and being still is not being done.
@@ -307,8 +341,23 @@ export function showOpened(
     frame = window.requestAnimationFrame(look);
   }
 
+  // The whole way at once, in a change that is being pictured (catchUpOpened).
+  const mine = {
+    part,
+    atOnce: () => {
+      if (done || !part.isConnected) return;
+      const owed = due();
+      if (!owed) {
+        stop();
+        return;
+      }
+      if (owed.by > 0) go(owed.where, owed.by);
+      first = false;
+    },
+  };
   for (const type of HAND_EVENTS) window.addEventListener(type, stop, { passive: true });
   stopWatching = stop;
+  following = mine;
   // Once now, before the page is painted, then frame by frame.
   look();
   return stop;
@@ -375,4 +424,5 @@ export function resetShowOpenedForTests(): void {
   endShowOpened();
   lastTap = null;
   stopWatching = null;
+  following = null;
 }

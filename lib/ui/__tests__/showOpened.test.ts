@@ -37,6 +37,8 @@ import {
   showOpened,
   stepFor,
 } from "../showOpened";
+// The catch-up in a move of its own (Gate 2, 2026-11-14), read off the module so the tests before it stand without it.
+import * as opened from "../showOpened";
 
 /** What the two modules above answer. A phone: the page's bar ends 112px down, the tab bar begins at 806. */
 let motionOff = false;
@@ -774,5 +776,67 @@ describe("the gate's walk judges what opened as the page has followed it", () =>
     expect(walk).toContain(`const BUSY_MS = ${BUSY_WATCH_MS};`);
     expect(walk).toMatch(/\{ i: c\.i, busyMs: BUSY_MS, restMs: REST_MS \}/);
     expect(walk).toMatch(/timeout: BUSY_MS \+ REST_MS \+ \d+/);
+  });
+});
+
+// Replies that land in a move of their own (lib/ui/inPageMove.ts): the page
+// cannot be scrolled a frame at a time under the move's picture, so it waited
+// for the move to be over, and for that third of a second Community's
+// "5 replies" stood with its end 567px under the tab bar and the page still
+// (Gate 2, 2026-11-14, the export of a8a35dde7, new reader). The change that
+// lands them asks the page to go with them in it (catchUpOpened, from a
+// layout effect), before it is pictured.
+describe("replies that land in a move of their own: the page goes with them in it", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    motionOff = false;
+    band = { top: 112, bottom: 806 };
+    resetShowOpenedForTests();
+  });
+  afterEach(() => {
+    resetShowOpenedForTests();
+    vi.useRealTimers();
+  });
+
+  it("the whole way at once, before any frame, and only for the part it follows", () => {
+    const b = stubBrowser();
+    const post = replies(b);
+    follow(post.part, { head: post.control, tapped: 600 });
+    for (let i = 0; i < 30; i += 1) b.frame();
+    expect(b.moved()).toBe(0);
+    expect(opened.isFollowingOpened(post.part as unknown as Element)).toBe(true);
+    // They land, their end 939px down a screen whose tab bar begins at 806.
+    post.arrive(289);
+    const elsewhere = b.el("div", 0, 40);
+    expect(opened.catchUpOpened(elsewhere as unknown as Element)).toBe(false);
+    expect(b.moved()).toBe(0);
+    expect(opened.catchUpOpened(post.part as unknown as Element)).toBe(true);
+    // In that change, no frame drawn: their end stands clear of the tab bar.
+    expect(b.moved()).toBeCloseTo(939 - (806 - CLEAR_PX), 5);
+    expect(post.part.getBoundingClientRect().bottom).toBeCloseTo(806 - CLEAR_PX, 5);
+    // The frames after it find nothing more to do, and let go.
+    b.run();
+    expect(b.moved()).toBeCloseTo(939 - (806 - CLEAR_PX), 5);
+    expect(isShowingOpened()).toBe(false);
+    expect(opened.isFollowingOpened(post.part as unknown as Element)).toBe(false);
+  });
+
+  it("never so far that the control goes under the bar at the top", () => {
+    const b = stubBrowser();
+    const post = replies(b);
+    follow(post.part, { head: post.control, tapped: 600 });
+    post.arrive(2000);
+    expect(opened.catchUpOpened(post.part as unknown as Element)).toBe(true);
+    expect(post.control.getBoundingClientRect().top).toBeCloseTo(112 + CLEAR_PX, 5);
+  });
+
+  it("a reader who has moved on is not caught up with", () => {
+    const b = stubBrowser();
+    const post = replies(b);
+    follow(post.part, { head: post.control, tapped: 600 });
+    b.fire("touchstart");
+    post.arrive(289);
+    expect(opened.catchUpOpened(post.part as unknown as Element)).toBe(false);
+    expect(b.moved()).toBe(0);
   });
 });

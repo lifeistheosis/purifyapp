@@ -119,6 +119,33 @@ export function partsAfter(from: Element | null | undefined, max = GLIDE_MAX): H
   return out;
 }
 
+/**
+ * The parts on the screen before `from`: its earlier siblings, then its
+ * parent's, up to the page, each one drawn on the screen. For a change that
+ * moves the page too (what opened, followed in the same move,
+ * showOpened.catchUpOpened): what stands above goes up with it, instead of
+ * fading out at one place and in at another. Never an ancestor of `from`,
+ * never what stands fixed or stuck (it does not move with the words), never a
+ * part already named.
+ */
+export function partsBefore(from: Element | null | undefined, max = GLIDE_MAX): HTMLElement[] {
+  if (!from || typeof window === "undefined") return [];
+  const out: HTMLElement[] = [];
+  for (let at: Element | null = from; at && at !== document.body && at.tagName !== "MAIN"; at = at.parentElement) {
+    for (let prev = at.previousElementSibling; prev && out.length < max; prev = prev.previousElementSibling) {
+      const el = prev as HTMLElement;
+      const cs = getComputedStyle(el);
+      if (cs.display === "none" || cs.display === "contents" || cs.position === "fixed" || cs.position === "sticky") continue;
+      if (cs.viewTransitionName && cs.viewTransitionName !== "none") continue;
+      const r = el.getBoundingClientRect();
+      if (r.width < 1 || r.height < 1 || r.bottom < 0 || r.top > window.innerHeight) continue;
+      out.push(el);
+    }
+    if (out.length >= max) break;
+  }
+  return out;
+}
+
 function wear(parts: MoveParts): void {
   const grows = (parts.grows ?? []).filter((e): e is HTMLElement => !!e).slice(0, GROWS.length);
   const glides = parts.glides ?? partsAfter(grows[0]);
