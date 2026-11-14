@@ -41,6 +41,7 @@ import {
 } from "@/lib/profile/client";
 import { useProfileCampaigns } from "@/lib/campaigns/useProfileCampaigns";
 import { profileDoors } from "@/lib/profile/doors";
+import { followingNow, followShown } from "@/lib/profile/openedFirst";
 import type { ProfileRelation, ProfileSeed, PublicProfile } from "@/lib/profile/publicProfile";
 import { SITE_URL } from "@/lib/site";
 import { useReducedMotion } from "@/lib/ui/motion";
@@ -158,6 +159,14 @@ export function ProfileViewer({
   const [shown, setShown] = useState<string | null>(handle);
   const [loaded, setLoaded] = useState<Loaded>({ state: "loading" });
   const [relation, setRelation] = useState<ProfileRelation | null>(null);
+  // Follow, as the viewer last tapped it on this card. Follow stands from the
+  // card's first frame and answers a tap before the viewer's standing is read
+  // (build 97 note 6): drawn by the relation when it comes, and by the tap
+  // over it, so a relation read before the tap cannot undo it.
+  const [chosen, setChosen] = useState<boolean | null>(null);
+  // The card was drawn without the status line (the feed did not know it): it
+  // opens when the profile brings it, instead of pushing Follow down a line.
+  const [statusLate, setStatusLate] = useState(false);
   const [version, setVersion] = useState(0);
   const [notice, setNotice] = useState<string | null>(null);
   const [reported, setReported] = useState(false);
@@ -194,9 +203,12 @@ export function ProfileViewer({
       setPicturing(false);
       setReported(false);
       setRelation(null);
+      setChosen(null);
       setEffectReady(false);
       const cached = cachedProfile(handle);
       setLoaded(cached ? { state: "ok", profile: cached } : { state: "loading" });
+      // With no seed the whole profile fades in together, so nothing is pushed.
+      setStatusLate(!cached && Boolean(seed) && !seed?.status);
     }
   }
 
@@ -341,15 +353,17 @@ export function ProfileViewer({
   }
 
   async function toggleFollow() {
-    if (!shown || !relation || busy) return;
-    const next = !relation.following;
+    if (!shown || busy) return;
+    // Before the standing is read, a tap follows: a follow already made is
+    // made again harmlessly (an upsert on the server), so nothing waits on it.
+    const next = !following;
     // On screen at once; put back if the server says no.
-    setRelation({ ...relation, following: next });
+    setChosen(next);
     setBusy("follow");
     const res = await setFollow(shown, next);
     setBusy(null);
     if (!res.ok) {
-      setRelation((r) => (r ? { ...r, following: !next } : r));
+      setChosen(!next);
       setNotice(t("profile.followFailed"));
     }
   }
@@ -393,6 +407,7 @@ export function ProfileViewer({
   const cosmetics = profile?.cosmetics ?? NO_COSMETICS;
   const surface = profileSurface(cosmetics);
   const mine = Boolean(profile && myHandle && profile.handle === myHandle);
+  const following = followingNow(chosen, relation);
 
   const menuItems: ActionMenuItem[] = [{ label: t("profile.copyLink"), onSelect: () => void copyLink() }];
   // Gift Plus: website only, because the app stores require their own billing
@@ -415,9 +430,11 @@ export function ProfileViewer({
       </Link>
     ) : (
       <>
-        {relation && !relation.mine ? (
-          <button type="button" onClick={() => void toggleFollow()} aria-pressed={relation.following} className={followClass(relation.following)}>
-            {relation.following ? t("profile.following") : t("profile.follow")}
+        {/* From the first frame for a signed-in reader, not when the relation
+            comes: drawn late, it pushed the menu 83px aside in one frame. */}
+        {followShown(signedIn, mine, relation) ? (
+          <button type="button" onClick={() => void toggleFollow()} aria-pressed={following} className={followClass(following)}>
+            {following ? t("profile.following") : t("profile.follow")}
           </button>
         ) : null}
         <ActionMenu size="lg" label={t("profile.moreActions")} items={menuItems} />
@@ -577,6 +594,7 @@ export function ProfileViewer({
               <ProfileFace
                 profile={profile}
                 actions={actions}
+                statusArrives={statusLate}
                 celebrating={Boolean(profile.nameDay)}
                 afterHandle={
                   relation?.followsYou ? (

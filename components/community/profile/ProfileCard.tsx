@@ -19,6 +19,7 @@ import { Share } from "@/components/ui/icons/Share";
 import { apiFetch } from "@/lib/api/client";
 import { getBook, localBookNames, referenceIn } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
+import { openRow } from "@/lib/profile/openedFirst";
 import { clergyLabelKey } from "@/lib/profile/clergy";
 import { isBannerMotion, isDecoration, isEffect, normalizeHex, readableThemeAccent, type Cosmetics } from "@/lib/profile/cosmetics";
 import { recordDate } from "@/lib/profile/dates";
@@ -183,6 +184,7 @@ export function ProfileFace({
   celebrating = false,
   nameAs = "h2",
   compact = false,
+  statusArrives = false,
 }: {
   profile: Pick<PublicProfile, "name" | "handle" | "avatar" | "status" | "cosmetics"> & Partial<Pick<PublicProfile, "clergy">>;
   actions?: ReactNode;
@@ -194,6 +196,12 @@ export function ProfileFace({
   nameAs?: "h2" | "p";
   /** The small cards: a smaller picture and name. */
   compact?: boolean;
+  /**
+   * The status comes after the card was drawn without it (the feed did not
+   * know it): it opens on the house curve, so Follow and the doors below it
+   * ease down instead of jumping in one frame (build 97 note 6).
+   */
+  statusArrives?: boolean;
 }) {
   const { t } = useTranslate();
   const Name = nameAs;
@@ -248,10 +256,12 @@ export function ProfileFace({
         </p>
       ) : null}
       {profile.status ? (
+        <ArrivingRow arrives={statusArrives}>
         <p
           className={cn(
             compact ? "text-detail" : "text-[15.5px]",
-            "mt-[9px] max-w-[30rem] break-words px-3.5 font-serif italic leading-[1.35] text-paper/80",
+            statusArrives ? null : "mt-[9px]",
+            "max-w-[30rem] break-words px-3.5 font-serif italic leading-[1.35] text-paper/80",
             halo,
           )}
         >
@@ -262,8 +272,27 @@ export function ProfileFace({
             {close}
           </span>
         </p>
+        </ArrivingRow>
       ) : null}
       {actions ? <div className="mt-4 flex items-center justify-center gap-2.5">{actions}</div> : null}
+    </div>
+  );
+}
+
+/**
+ * A row that arrives under a card already drawn opens from nothing on the
+ * house curve (lib/profile/openedFirst.ts, openRow); its space above is held
+ * inside the clip, so nothing outside it moves. Any other row is itself.
+ */
+const openRowOnMount = (el: HTMLDivElement | null) => {
+  openRow(el);
+};
+
+function ArrivingRow({ arrives, children }: { arrives: boolean; children: ReactNode }) {
+  if (!arrives) return <>{children}</>;
+  return (
+    <div ref={openRowOnMount} data-opening-row className="grid w-full justify-items-center">
+      <div className="min-h-0 overflow-hidden pt-[9px]">{children}</div>
     </div>
   );
 }
