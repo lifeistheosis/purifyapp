@@ -120,6 +120,11 @@ export function ShopHomeClient() {
   // saint and the featured icon's column under a page that had arrived, New in
   // rising 153px after them (Gate 2.0 cause 3, the shop from Discover). When
   // the home cannot be read either, the shop says so and nothing waits.
+  // It says so only once the catalogue has failed too: the home failing first
+  // drew the error under Shop by saint's held row and the card's held icon,
+  // and when they let go it rose 208px in one frame (the walk's tap on
+  // Discover's Shop door offline, Updates 69 and 72). Until then New in's
+  // bones keep the place the error takes.
   const catalogue = pool ?? (poolError && (data || error) ? collection : null);
   const settled = catalogue !== null;
   const featured = useMemo(() => (catalogue ? featuredIcon(catalogue) : null), [catalogue]);
@@ -163,7 +168,7 @@ export function ShopHomeClient() {
   return (
     <div className="mx-auto w-full max-w-[1200px] md:px-8">
       {/* ── One featured icon ──────────────────────────────────────────── */}
-      <FeaturedIcon icon={featured} waiting={!settled} className="mx-5 mt-3 md:mx-0 md:mt-10" />
+      <FeaturedIcon icon={featured} waiting={!settled} unreachable={Boolean(error)} className="mx-5 mt-3 md:mx-0 md:mt-10" />
 
       {/* ── Shop by saint ─────────────────────────────────────────────── */}
       {/* Its place is held while New in's bones below it stand, so the two
@@ -172,8 +177,8 @@ export function ShopHomeClient() {
           153px in one frame (the gate's walk from Today, Updates 37). */}
       <ShopBySaint saints={saints} waiting={!settled || loading} className="mt-5 md:mt-14" />
 
-      {loading || (!settled && !error) ? <NewInBones /> : null}
-      {error ? <ShopError message={error} onRetry={reload} /> : null}
+      {loading || !settled ? <NewInBones /> : null}
+      {error && settled ? <ShopError message={error} onRetry={reload} /> : null}
 
       {/* ── New in ────────────────────────────────────────────────────── */}
       {settled && fresh.length > 0 ? (

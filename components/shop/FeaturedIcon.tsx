@@ -31,17 +31,25 @@ import type { ShopProductFull } from "@/lib/shop/types";
 export function FeaturedIcon({
   icon,
   waiting,
+  unreachable = false,
   className,
 }: {
   icon: ShopProductFull | null;
   /** The catalogue is still on its way: hold the icon's place. */
   waiting: boolean;
+  /**
+   * The shop could not be read: the icon's place stays as it stood while it
+   * was awaited, still, so the card's words and buttons do not move as the
+   * error arrives. Dropping it moved the search button 153px and the line
+   * 26px in one frame at 390 wide (Updates 72).
+   */
+  unreachable?: boolean;
   className?: string;
 }) {
   const { t } = useTranslate();
   const native = useIsNative();
   const image = icon?.media[0];
-  const side = Boolean(image) || waiting;
+  const side = Boolean(image) || waiting || unreachable;
 
   return (
     <section
@@ -108,9 +116,9 @@ export function FeaturedIcon({
               />
             </div>
           </Link>
-        ) : waiting ? (
+        ) : waiting || unreachable ? (
           <div aria-hidden className="py-2.5 pe-2.5 md:p-10">
-            <div className="h-full animate-pulse rounded-xl bg-paper/[0.05] motion-reduce:animate-none" />
+            <div className={cn("h-full rounded-xl bg-paper/[0.05]", waiting && "animate-pulse motion-reduce:animate-none")} />
           </div>
         ) : null}
       </div>
