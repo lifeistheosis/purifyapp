@@ -242,7 +242,6 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
               track={track}
               name={t(track.labelKey)}
               lit={lit || loading}
-              loading={loading}
               last={last}
               locked={locked}
               state={state}
@@ -323,7 +322,6 @@ function SoundTile({
   track,
   name,
   lit,
-  loading,
   last,
   locked,
   state,
@@ -332,7 +330,6 @@ function SoundTile({
   track: AmbienceTrack;
   name: string;
   lit: boolean;
-  loading: boolean;
   last: boolean;
   locked: boolean;
   state: string | null;
@@ -358,8 +355,10 @@ function SoundTile({
         <span className="block font-sans text-detail font-semibold leading-tight">{name}</span>
         {locked ? <PlusLock size={13} className="mt-0.5 shrink-0 opacity-60" /> : null}
       </span>
-      {/* The state's line is always there, so the name never moves when a state comes or goes. */}
-      <span className={cn("relative mt-1 block font-sans text-caption leading-tight opacity-70", loading && "motion-safe:animate-pulse")}>
+      {/* The state's line is always there, so the name never moves when a state comes or goes.
+          It holds still: a pulse took "Loading" under 4.5:1 on 20 of the 21 palettes
+          (lib/ambience/__tests__/loadingRatio.test.ts), so Loading is drawn as Playing is. */}
+      <span className="relative mt-1 block font-sans text-caption leading-tight opacity-70">
         {state ?? " "}
       </span>
     </button>
