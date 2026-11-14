@@ -551,7 +551,8 @@ const CHECKS = [
   },
 ];
 if (CHECK) {
-  for (const c of CHECKS) c(results, failures);
+  // Each check is handed a function (the array itself crashed the walk at the first failure).
+  for (const c of CHECKS) c(results, (what) => failures.push(what));
   if (failures.length) {
     console.log(`FAIL: ${failures.length}`);
     for (const f of failures) console.log(`  - ${f}`);
