@@ -347,10 +347,27 @@ function PrivacyEn() {
  payment, email, push), and only to do that, never for their own
  marketing.
  </li>
+ {/* 1.9, his "rec yes all" (2026-11-14), word for word: the three
+ retention lists, from "Three more" to "joined to it"
+ (docs/plans/retention-emails.md, "A privacy line, for his words", with
+ Updates 23's words on the welcome email). Held by
+ lib/legal/__tests__/retentionLine.test.ts. */}
  <li>
  No marketing email unless you ask for it. There are two optional
  lists, what is new in the library and what is new in the shop, and
- both stay off until you turn them on in your account. A few times a
+ both stay off until you turn them on in your account. Three more,
+ each off until you turn it on: a short guide for your first week
+ (days 1, 3 and 7), which your welcome email offers in one line and
+ which starts only when you press its button; a note when your
+ account has kept nothing for two weeks, and again at a month,
+ naming where you were reading or your patron saint&rsquo;s feast
+ that week; and a companion for each fast, as it begins and then
+ weekly. To write them we read only what your account already
+ keeps: when it was made, the prayers you checked off, the verses
+ you kept, your place in the Bible and in the Fathers, and the
+ calendar and patron saint on your profile. Nothing new is
+ collected, nothing is kept from it, and the visit data is never
+ joined to it. A few times a
  year, when a new version of Purify is released, we email every
  account to say what changed. That one is on unless you turn it off,
  and one tap in the email does it. Every email we send ends with an
@@ -573,7 +590,7 @@ function PrivacyEn() {
  for the licensing detail.
  </li>
  <li>
- <strong>ipwho.is</strong>, free, server-side IP&rarr;city
+ <strong>ipwho.is</strong>, free, server-side IP-to-city
  lookup, used only on the first hit of an anonymous session, then
  cached server-side for six hours so the IP isn&rsquo;t looked up
  again.
@@ -1222,10 +1239,26 @@ function PrivacyDe() {
  brauchen (Hosting, Zahlung, E-Mail, Push), und nur dafür, nie für
  deren eigene Werbung.
  </li>
+ {/* The same three lists in German (2026-11-14), shown to the arbiter
+ before it landed. Held by lib/legal/__tests__/retentionLine.test.ts. */}
  <li>
  Keine Werbe-E-Mails, es sei denn, du bittest darum. Es gibt zwei
  freiwillige Listen, Neues in der Bibliothek und Neues im Laden, und
- beide bleiben aus, bis du sie in deinem Konto einschaltest. Einige
+ beide bleiben aus, bis du sie in deinem Konto einschaltest. Drei
+ weitere, jede ausgeschaltet, bis du sie einschaltest: ein kurzer
+ Leitfaden für deine erste Woche (Tage 1, 3 und 7), den deine
+ Willkommens-E-Mail in einer Zeile anbietet und der erst beginnt,
+ wenn du deren Schaltfläche drückst; eine Nachricht, wenn dein Konto
+ zwei Wochen lang nichts bewahrt hat, und noch einmal nach einem
+ Monat, die nennt, wo du gelesen hast, oder das Fest deines
+ Namenspatrons in jener Woche; und ein Begleiter für jede
+ Fastenzeit, wenn sie beginnt, und danach wöchentlich. Um sie zu
+ schreiben, lesen wir nur, was dein Konto bereits bewahrt: wann es
+ angelegt wurde, die Gebete, die du abgehakt hast, die Verse, die du
+ bewahrt hast, deine Stelle in der Bibel und bei den Vätern sowie
+ den Kalender und den Namenspatron in deinem Profil. Nichts Neues
+ wird erhoben, nichts davon wird aufbewahrt, und die Besuchsdaten
+ werden nie damit verknüpft. Einige
  Male im Jahr, wenn eine neue Version von Purify erscheint, schreiben
  wir jedem Konto, was sich geändert hat. Diese E-Mail kommt, solange
  du sie nicht ausschaltest, und ein Tippen in der E-Mail genügt
@@ -1454,7 +1487,7 @@ function PrivacyDe() {
  </li>
  <li>
  <strong>ipwho.is</strong>, freie serverseitige
- IP&rarr;Stadt-Auflösung, nur beim ersten Treffer einer anonymen
+ IP-zu-Stadt-Auflösung, nur beim ersten Treffer einer anonymen
  Sitzung gebraucht, danach sechs Stunden lang serverseitig
  zwischengespeichert, damit die IP nicht erneut nachgeschlagen
  wird.

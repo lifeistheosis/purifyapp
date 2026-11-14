@@ -76,16 +76,6 @@ const STAYS: { file: string; holds: string; why: string }[] = [
     why: "the computer's shortcut hint names the keyboard's own two arrow keys: keys, not a way to go",
   },
   {
-    file: "components/legal/PrivacyText.tsx",
-    holds: "IP&rarr;city",
-    why: "the privacy policy, whose words change only at the owner's word; English, read from the left",
-  },
-  {
-    file: "components/legal/PrivacyText.tsx",
-    holds: "IP&rarr;Stadt",
-    why: "the privacy policy, whose words change only at the owner's word; German, read from the left",
-  },
-  {
     file: "lib/community/symbols.ts",
     holds: `/[${LEFT}-`,
     why: "the first character of a range in a pattern that finds what a reader typed, to draw it in a face that has it: readers' own text",
