@@ -96,6 +96,10 @@ const EMPTY_SHARE = 0.15;
 const EMPTY_FLOOR = 0.03;
 /** Empty this long, a screen is blank (twelve frames): the house's own dip is 50ms at the most. */
 const BLANK_MS = 200;
+/** A frame whose page stands in the house's outline over this share of the screen is drawn, not blank (inpage.mjs, outlineShare). */
+const OUTLINE_SHARE = 0.03;
+/** How near in time the page's own sample must be to a frame for its word to count. */
+const OUTLINE_NEAR_MS = 50;
 /** A layout shift this far in one frame is a jump. */
 const JUMP_PX = 24;
 
@@ -583,7 +587,22 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
   if (least >= BLANK_FLOOR && fitted) {
     const emptyAt = Math.max(EMPTY_FLOOR, EMPTY_SHARE * Math.min(inkIn(F0), inkIn(FE)));
     const inks = new Map(after.map((i) => [i, inkIn(px[i])]));
-    const blank = after.filter((i) => i !== end && fit(i).before + fit(i).after <= BLANK_SHARE && inks.get(i) <= emptyAt);
+    // A frame whose page stands in the house's outline (its skeleton's bars, which the pixels alone
+    // read as nothing: a tenth of the ink on the ground at most, under INK_LEVEL) is drawn: the page
+    // in its own shape while its words come (cause 7 of the gate). The page says so in its sample.
+    const sampled = rec.inPage ? rec.inPage.frames : [];
+    const outlined = (i) => {
+      let near = null;
+      for (const f of sampled) if (!near || Math.abs(f.t - frames[i].t) < Math.abs(near.t - frames[i].t)) near = f;
+      return Boolean(near) && Math.abs(near.t - frames[i].t) <= OUTLINE_NEAR_MS && (near.outline ?? 0) >= OUTLINE_SHARE;
+    };
+    const empty = after.filter((i) => i !== end && fit(i).before + fit(i).after <= BLANK_SHARE && inks.get(i) <= emptyAt);
+    const inOutline = empty.filter(outlined);
+    const blank = empty.filter((i) => !inOutline.includes(i));
+    if (inOutline.length) {
+      const lasted = frames[Math.min(inOutline[inOutline.length - 1] + 1, end)].t - frames[inOutline[0]].t;
+      dips.push(`${inOutline.length} frame${inOutline.length === 1 ? "" : "s"} where the page stood in its outline (the house's skeleton), over ${Math.round(lasted)}ms, from ${at(inOutline[0])}ms after the tap`);
+    }
     const runs = [];
     for (const i of blank) {
       const run = runs[runs.length - 1];
@@ -822,6 +841,27 @@ function plant(kind) {
       await frame();
       B.style.transition = `opacity 320ms ${curve}`;
       B.style.opacity = "1";
+    } else if (kind === "outline") {
+      // As "blank", but the page stands in its outline for those fifteen frames: the house's skeleton
+      // (bars of a tenth and of six hundredths of the ink, as components/ui/Skeleton.tsx draws them),
+      // too faint for the pixels alone. Drawn, not blank: the outline is listed, not failed.
+      A.style.transition = "opacity 200ms linear";
+      A.style.opacity = "0";
+      await new Promise((r) => setTimeout(r, 230));
+      A.hidden = true;
+      const O = document.createElement("div");
+      O.className = "screen";
+      O.style.background = "#101013";
+      const bar = (h, w, a) => `<div class="sk" style="height:${h}px;width:${w};margin:10px auto;border-radius:4px;background:rgba(255,255,255,${a})"></div>`;
+      O.innerHTML = bar(34, "160px", 0.1) + bar(14, "96px", 0.08) + Array.from({ length: 9 }, () => bar(16, "100%", 0.06)).join("");
+      A.parentElement.append(O);
+      for (let n = 0; n < 15; n++) await frame();
+      O.remove();
+      B.style.opacity = "0";
+      B.hidden = false;
+      await frame();
+      B.style.transition = `opacity 320ms ${curve}`;
+      B.style.opacity = "1";
     } else if (kind === "both") {
       // A cross-fade both ways, the old page out as the new comes in: in its middle both are at half.
       B.style.opacity = "0";
@@ -1045,6 +1085,9 @@ const CASES = [
   ["an instant cut from one screen to another", "cut", "on", ["cut"]],
   ["build 95 note 5's shape: the screen before gone whole in one frame, the words faded in after", "note5", "on", ["cut"]],
   ["blank frames between two screens that fade", "blank", "on", ["blank"]],
+  ["the same frames standing in the page's outline (the house's skeleton, too faint for the pixels alone): drawn, listed, not failed", "outline", "on", [], { dip: true }],
+  ["with motion reduced, the same blank frames", "blank", "reduce", ["blank"]],
+  ["with motion reduced, the same frames in the page's outline", "outline", "reduce", [], { dip: true }],
   ["a box flashed at the corner before it is placed (and moved there at once)", "corner", "on", ["flash", "misplaced", "jump"]],
   ["a jump: something above grows 140px at once (an instant change, so a cut too)", "jump", "on", ["jump", "cut"]],
   ["with motion reduced, a sheet that slides up", "slide", "reduce", ["moves"]],

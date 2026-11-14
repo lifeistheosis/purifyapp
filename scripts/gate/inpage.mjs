@@ -821,11 +821,44 @@ export function gateInPage() {
       for (const el of s.styled) if (s.wasStyled.has(el)) move++;
       s.wasStyled = s.styled;
       s.styled = new Set();
-      s.frames.push({ t: performance.timeOrigin + t, path: location.pathname, motion: document.documentElement.getAttribute("data-motion"), anims: anims.length, vt, move, sx: Math.round(scroller.scrollLeft), sy: Math.round(scroller.scrollTop), moving: moving.slice(0, 6) });
+      s.frames.push({ t: performance.timeOrigin + t, path: location.pathname, motion: document.documentElement.getAttribute("data-motion"), anims: anims.length, vt, move, sx: Math.round(scroller.scrollLeft), sy: Math.round(scroller.scrollTop), moving: moving.slice(0, 6), outline: outlineShare() });
       s.raf = requestAnimationFrame(step);
     };
     s.raf = requestAnimationFrame(step);
     return true;
+  }
+
+  /**
+   * How much of the screen the house's outline covers in this frame: the bars of its skeleton
+   * (`.sk`, components/ui/Skeleton.tsx) that are more than half drawn (their opacity and their
+   * ancestors' together; the outline arrives in a cascade), as a share of the viewport, up to a
+   * tenth. A page standing in its outline while its words come is drawn, though its bars are a
+   * tenth of the ink on the ground at most (24 levels on Dark), under the pixels' ink line: the
+   * frame judge asks the page (scripts/gate/frames.mjs, the blank check).
+   */
+  function outlineShare() {
+    const bars = document.querySelectorAll(".sk");
+    if (!bars.length) return 0;
+    const W = innerWidth;
+    const H = innerHeight;
+    let area = 0;
+    let seen = 0;
+    for (const el of bars) {
+      if (area >= 0.1 * W * H || seen >= 80) break;
+      const r = el.getBoundingClientRect();
+      const w = Math.min(r.right, W) - Math.max(r.left, 0);
+      const h = Math.min(r.bottom, H) - Math.max(r.top, 0);
+      if (w <= 0 || h <= 0) continue;
+      seen++;
+      let o = 1;
+      for (let e = el; e && e !== document.documentElement && o > 0.5; e = e.parentElement) {
+        const cs = getComputedStyle(e);
+        if (cs.visibility === "hidden") o = 0;
+        else o *= parseFloat(cs.opacity);
+      }
+      if (o > 0.5) area += w * h;
+    }
+    return Math.round((Math.min(area, 0.1 * W * H) / (W * H)) * 1000) / 1000;
   }
 
   function stop() {
