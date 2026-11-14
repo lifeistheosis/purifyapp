@@ -132,7 +132,17 @@ describe("the pages and the places that start it", () => {
     const code = source.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "");
     expect(code).not.toMatch(/prefetch/);
     expect(code).not.toMatch(/https?:/);
-    expect(code).toMatch(/IS_STATIC_EXPORT/);
+  });
+
+  it("asks the runtime whether it is in the apps, never the build flag client code reads as the website", () => {
+    // IS_STATIC_EXPORT is server only (lib/platform/buildTarget.ts): in a
+    // client module it is always false, and the first export that carried
+    // the ready-ahead readied nothing because both of these read it.
+    for (const file of ["lib/nav/readyAhead.ts", "components/nav/ReadyAhead.tsx"]) {
+      const code = read(file).replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "");
+      expect(code, file).not.toMatch(/IS_STATIC_EXPORT/);
+      expect(code, file).toMatch(/if \(!isNativeClient\(\)\) return;/);
+    }
   });
 
   it("is started at the onboarding's end and once a cold start's first screen has settled", () => {

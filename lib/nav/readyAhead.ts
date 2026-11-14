@@ -29,8 +29,13 @@
  * which asks for files the export leaves out (scripts/native-build.mjs) and
  * once held the next page back by about 30 s (TourLayer.tsx). A tap or the app
  * going to the background stops it; a later start goes on where it stopped.
+ *
+ * In the apps is asked of the runtime (isNativeClient), never of the build:
+ * IS_STATIC_EXPORT is the server's, and client code reads it as the website
+ * (lib/platform/buildTarget.ts). The first export that carried this read it,
+ * and nothing was readied.
  */
-import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
+import { isNativeClient } from "@/lib/platform/native";
 
 /**
  * The five tabs and the page each opens most, in the order a reader reaches
@@ -177,7 +182,7 @@ function onVisibility(): void {
  * finished is not repeated.
  */
 export function startReadyAhead(): void {
-  if (!IS_STATIC_EXPORT || typeof window === "undefined") return;
+  if (!isNativeClient()) return;
   if (running || ready.size === READY_AHEAD_PAGES.length) return;
   if (document.visibilityState === "hidden") return;
   running = true;

@@ -11,15 +11,15 @@
 import { useEffect } from "react";
 
 import { isOnboarded } from "@/lib/onboarding/state";
-import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { startReadyAhead } from "@/lib/nav/readyAhead";
+import { isNativeClient } from "@/lib/platform/native";
 
 /** After the load, how long the first screen is left to settle. */
 export const SETTLE_MS = 1500;
 
 export function ReadyAhead() {
   useEffect(() => {
-    if (!IS_STATIC_EXPORT) return;
+    if (!isNativeClient()) return;
     let timer = 0;
     const dropped = () => window.clearTimeout(timer);
     const settle = () => {
