@@ -1,0 +1,11 @@
+# Build 97: his notes
+
+Build 97 (run 43608911353, from 231e1ce0, code 59d1fd98), cut ungated at his word (2026-11-14 about 15:11 UTC: "make the android build and send it to me (without chants)"), on the android-release page from 15:20 UTC. Named to him as not passing the gate: faults 6, 7 and 8 and the buy bar's room open, the privacy line not in, the re-check not run. Each note keeps his words, what was found, the plan and its owner; every note gets a test that fails on the old code (the pre-build gate, rule 5). His notes go to one fixer together, before the re-check.
+
+## Note 1: the lit line in the middle of the screen, and the click with the glow
+
+**His words** (about 15:56 UTC), with a screenshot of Morning prayers at the Trisagion, the lit line ("Holy God, Holy Mighty, Holy Immortal, have mercy on us. (3x)") standing about two fifths down the screen: "it should glow the quite in the middle of the users screen. and also the haptic feedback should move you and glow to the next section (rather than haptic feedback on a arbitrary feeling line with no visual hook)".
+
+**Found.** The prayer pages light the line at the reading place, two fifths down the band (`lib/ui/readingPlace.ts`, `components/prayers/service/useLitLine.ts`), and the click comes when a new prayer arrives at that place (`components/prayers/service/useEasyScroll.ts`, `clicksFor` in `lib/prayers/easyScroll.ts`). His standard from build 81 asked for "the middle of the user's screen"; the band's middle is already where a page reads back the block the reader is at (`KEPT_AT`). Easy Scroll's snap to each prayer was taken out on build 93 note 2, because it fought the finger.
+
+**The plan.** (a) The line lit is the one over the band's middle, on every prayer page. (b) The click comes in the same frame as the glow lands on a new prayer's first line at that middle, so every click has its visual hook, and never at a place the reader cannot see. (c) No move by itself, unless he asks for it back (asked at 15:58; recommended: no, as build 93 note 2 found). A test that fails on the old code for (a) and for (b); the prayer pages walked with the clicks on. **Owner:** the next fixer, with the rest of his build 97 notes.

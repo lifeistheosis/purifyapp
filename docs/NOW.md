@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state. The log is `docs/1.9-build/HANDOFF.md`, his words are `docs/1.9-build/BRAINSTORM.md`, and how the chats run is `docs/OPERATIONS.md`.
 
-Updated 2026-11-14 15:42 UTC by Arbiter 7, at Updates 43's report (15:25 at build 97 sent; 15:14 at its start; 15:12 at Updates 41's report; 15:07 at his usage, 15:04; 15:00 at his chants; 14:50 at his "rec yes all"; before that 14:44, at its start; 14:03, Arbiter 6 at its hand-over; first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
+Updated 2026-11-14 15:58 UTC by Arbiter 7, at build 97 note 1 (15:42 at Updates 43's report; 15:25 at build 97 sent; 15:14 at its start; 15:12 at Updates 41's report; 15:07 at his usage, 15:04; 15:00 at his chants; 14:50 at his "rec yes all"; before that 14:44, at its start; 14:03, Arbiter 6 at its hand-over; first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
 
 ## 1.9 now
 
@@ -36,6 +36,9 @@ Every chat rotates at 200,000 tokens (OPERATIONS section 2). The fixers of 2026-
 8. **The company:** C0 (the D-U-N-S record's address), C0b (the papers), the company's exact name as the EIN letter has it; for the Company guide, how many owners and how it is taxed; Florida sales tax for EIKON (C3b); the EIKON trade name before Stripe shows it. Steps in OWNER-STEPS.md.
 9. **Also:** the 22 permission letters; the Android notifications test; the owner's desk question 3 (a shop and sourcing chat after 1.9).
 
+10. **The voices** (his word, 15:50: "all the voices sound very robotic ... (id rather have quality over quantity)"): Heart only, the phone's voices dropped; Heart recorded for the rest in 1.9 (the lives, councils, theology and history first, then the Old Testament and the Fathers' works); a rented cloud GPU priced first, since his PC records at 0.75 of real time (rec yes to all three; asked 15:55).
+11. **Build 97 note 1's "move you"**: should the page also move by itself to the next prayer? (rec no: build 93 note 2's snap fought the finger; asked 15:58). The glow in the middle and the click with it go ahead as he said (docs/1.9-build/notes/build-97.md).
+
 Settled and kept for the record: his "rec yes all" (14:45 on 2026-11-14): the first launch, Prayers and Discover stay as they are; a test build once the re-check passes; the documentary's opener left out; the privacy line and the arrows in words (being applied, below). The next arbiter started by him in the app (Arbiter 7 at 14:41, lineage depth 0 of 8, a fresh chain). Since 18:53 on 2026-11-13: the design pages all yes (20:47), the voices' page taken as yes (18:53, https://claude.ai/artifact/LTjMHqyrEvL3eyLJgX7qTL), the 1.9 film's sample (https://claude.ai/artifact/2c2fUbeTFjCMYduQQQ7zBs; the whole film once the screens are final, asked of him first), the documentary decided and made at his "now" (20:33).
 
 ## Approved, being applied (his "yes to all", 20:47 UTC)
@@ -60,7 +63,7 @@ Every patch below is his yes. The apply chats take them by area so that patches 
 ## Next, in order
 
 1. **Updates 42's and Updates 44's reports** (Running), then archive each. Updates 43 reported at 15:38 and was archived (226,924 tokens by get_session, $5.12): fault 6 mended by the house's close halo in the lead's own night, stylesheet only (f5f5745d; leadLineHalo.test.ts fails on the old stylesheet; Today and /signout/ checkMock 24 of 24 clean on the export of f91f2e7cf, the old ink 7 of 7 failing; suite 15,067, typecheck 0, the web build); runner 8ccff674, baton c8e1842c. Updates 42 has pushed fault 8 (4f09b301) and the privacy line (7b38f18f); its report is awaited. Updates 41 reported at 15:08 (3c929e68 to 59d1fd98, baton 9e994a48; suite 15,064, typecheck 0, lint 0 errors, the web build) and was archived at 15:09 (461,517 tokens by get_session, $18.29; its own count said 170,000): faults 1 to 4 mended, and fault 5's mend kept (the arbiter's call: a real stall of 380 to 490ms with the replies under the bar, the gate's rule 1, now held by a test, though the walk had withdrawn it). Faults 6 and 7 not started, since the 14:00 and 14:43 messages reached it only at 15:04. Gate 2 is done (d53f8af1), archived 14:49 (345,433 tokens, $14.67): it does not pass, on faults 1 to 4 and 6 to 8.
-2. **Whatever small thing he adds** goes to Updates 42 before the re-check, if it has room; otherwise a fresh fixer.
+2. **His build 97 notes** (docs/1.9-build/notes/build-97.md, note 1 so far) go to one fresh fixer together, before the re-check, once Updates 42 or 44 is done (no more than two apply chats at a time).
 3. **The re-check** on a new export of the head, a fresh Admin chat (Gate 3) briefed from docs/handoffs/gate-2.md, scoped by his 13:57 word: the seven faults' screens, /community/ with a thread open (fault 5's mend), the buy bar on the looks with the ask line shown, and /privacy/, by the gate's rules; the motion walk over all its routes, which Gate 2 never started (the command is in docs/handoffs/gate-2.md); the web build last. Gate 2's container lost nothing.
 4. **On a pass, the test build** (his yes, 14:45): published to the android-release page and to TestFlight; the page's asset dates read and the build number named before he is told (OPERATIONS section 5).
 5. **Round 3 of the fifteen screens** on his answer (Waiting on him 1), a fresh Fable chat; then rounds 4 and 5 and note 28.
