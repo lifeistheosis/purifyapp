@@ -23,8 +23,11 @@
 // part moving is a number.
 //
 //   node scripts/ambience-open-walk.mjs [--out <export>] [--motion on|reduce]
-//     [--no-blur] [--json <file>] [--check]
+//     [--no-blur] [--json <file>] [--check] [--film <dir>]
 //
+// --film <dir> films only the player's words as the sheet leaves (Updates 74): the sheet opened over
+// the Words view and held until the line being read has moved on, then closed; every frame's words
+// read where it is painted (a ResizeObserver made in that frame's rAF), the screencast's frames saved.
 // --no-blur takes the scrim's blur away (a diagnosis: what the blur costs).
 // --check fails (exit 1) on what note 10 forbids, below (CHECKS).
 
@@ -44,6 +47,7 @@ const opt = (name, fallback = null) => {
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const OUT = path.resolve(opt("--out", path.join(ROOT, "out")));
 const MOTION = opt("--motion", "on");
+const FILM = opt("--film");
 const CHECK = argv.includes("--check");
 const NO_BLUR = argv.includes("--no-blur");
 const JSON_FILE = opt("--json");
@@ -443,6 +447,83 @@ await tap(visible(`[data-reader-pill] button, [data-reader-dock] button`).filter
 if (!(await waitFor(() => [...(window.__media ?? [])].some((a) => !a.paused && a.currentTime > 0), null, 20000))) throw new Error("John 1 never began to play");
 await page.waitForTimeout(1500);
 await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
+
+if (FILM) {
+  fs.mkdirSync(FILM, { recursive: true });
+  const lit = () => page.evaluate(() => {
+    const box = document.querySelector('[data-sung-look="player"]');
+    const rows = box ? [...box.querySelectorAll("li[data-sung]")] : [];
+    return { at: rows.findIndex((r) => r.getAttribute("aria-current") === "true"), top: box ? Math.round(box.scrollTop) : null };
+  });
+  await tap(visible("[data-reader-dock] .reader-dock-card button[aria-label], [data-reader-dock] .reader-dock-pill button[aria-label], [data-now-playing-bar] button[aria-label], [data-mini-player] button[aria-label]").first());
+  await page.locator(NOW_PLAYING).first().waitFor({ timeout: 15000 });
+  await page.waitForTimeout(1500);
+  await tap(visible("#player-view-tab-words").first());
+  await page.waitForTimeout(1500);
+  const before = await lit();
+  await tap(visible(`${NOW_PLAYING} button[aria-label="${t("bible.moreActions")}"]`).first());
+  await page.waitForTimeout(1200);
+  await tap(visible(`[role="dialog"] button`).filter({ hasText: t("ambience.title") }).last());
+  await page.locator(SHEET).first().waitFor({ timeout: 15000 });
+  let held = await lit();
+  for (let i = 0; i < 60 && held.at === before.at; i++) {
+    await page.waitForTimeout(500);
+    held = await lit();
+  }
+  await page.waitForTimeout(600);
+  held = await lit();
+  console.log(`  film: the line read when the sheet opened ${before.at} (words at ${before.top}px); while it was open the line came to ${held.at} (words still at ${held.top}px)`);
+  const shots = [];
+  cdp.on("Page.screencastFrame", (f) => {
+    shots.push({ at: f.metadata.timestamp * 1000, data: f.data });
+    cdp.send("Page.screencastFrameAck", { sessionId: f.sessionId }).catch(() => {});
+  });
+  await cdp.send("Page.startScreencast", { format: "jpeg", quality: 70, everyNthFrame: 1 });
+  await page.evaluate(({ sheetSel, ms }) => {
+    window.__film = [];
+    const t0 = performance.timeOrigin + performance.now();
+    window.__film0 = t0;
+    const box = document.querySelector('[data-sung-look="player"]');
+    const end = performance.now() + ms;
+    const frame = () => {
+      // Read where the frame is painted: after its rAF callbacks, style and layout.
+      const ro = new ResizeObserver(() => {
+        ro.disconnect();
+        const rows = [...box.querySelectorAll("li[data-sung]")];
+        const at = rows.findIndex((r) => r.getAttribute("aria-current") === "true");
+        const b = box.getBoundingClientRect();
+        window.__film.push({ t: Math.round(performance.timeOrigin + performance.now() - t0), sheet: !!document.querySelector(sheetSel), scroll: Math.round(box.scrollTop), at, litTop: at >= 0 ? Math.round(rows[at].getBoundingClientRect().top - b.top) : null });
+      });
+      ro.observe(document.documentElement);
+      if (performance.now() < end) requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }, { sheetSel: SHEET, ms: 2000 });
+  await tap(visible(`${SHEET} button[aria-label="${t("common.close")}"]`).last());
+  const tapped = await page.evaluate(() => Math.round(performance.timeOrigin + performance.now() - window.__film0));
+  await page.waitForTimeout(2300);
+  await cdp.send("Page.stopScreencast");
+  const { film, t0 } = await page.evaluate(() => ({ film: window.__film, t0: window.__film0 }));
+  const frames = film.map((f) => ({ ...f, t: f.t - tapped }));
+  const gone = frames.find((f) => f.t > 0 && !f.sheet)?.t ?? null;
+  console.log(`  film: Close tapped; the sheet gone at ${gone}ms; ${frames.length} frames read`);
+  for (const f of frames) if (f.t >= -50) console.log(`    ${f.t}ms sheet ${f.sheet ? "on" : "gone"}, words scrolled ${f.scroll}px, line ${f.at} at ${f.litTop}px`);
+  let big = { d: 0 };
+  for (let i = 1; i < frames.length; i++) {
+    const d = frames[i].scroll - frames[i - 1].scroll;
+    if (Math.abs(d) > Math.abs(big.d)) big = { d, t: frames[i].t, from: frames[i - 1].scroll, to: frames[i].scroll };
+  }
+  const moving = frames.filter((f, i) => i > 0 && f.scroll !== frames[i - 1].scroll).length;
+  console.log(big.d ? `  film: the words' biggest one-frame move ${big.d}px at ${big.t}ms (${big.from} to ${big.to}), in ${moving} frame(s) of movement` : "  film: the words never moved");
+  for (const s of shots) {
+    const ms = Math.round(s.at - t0 - tapped);
+    if (ms >= -100 && ms <= 1500) fs.writeFileSync(path.join(FILM, `frame-${String(ms + 1000).padStart(5, "0")}.jpg`), Buffer.from(s.data, "base64"));
+  }
+  fs.writeFileSync(path.join(FILM, "film.json"), JSON.stringify({ motion: MOTION, before, held, gone, frames, big, moving }, null, 1));
+  console.log(`  film: ${shots.length} screencast frames, those from -100 to 1500ms saved in ${FILM} (named by ms from the tap, plus 1000)`);
+  await browser.close();
+  process.exit(0);
+}
 
 // Over the reader: while a reading plays the pager's sound button gives way to the dock, so the
 // sheet opens from the reader's settings (its ••• sheet, then Reader settings), as a reader opens it.
