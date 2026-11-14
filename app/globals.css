@@ -1343,6 +1343,22 @@ html[data-reading-mode="parchment"] .reader-lit {
 .route-fade[data-carried] :is(.page-open-title, .page-open-sub, .page-open-rule, .page-open-after, .page-open-words) {
  --page-open-start: 0ms;
 }
+/* Nor do its words keep their place behind its head there. The page being
+   left is gone in the transition's first 50ms, and the words waiting their
+   220 and 240ms behind the head left the page empty, its rising name aside,
+   for up to a quarter of a second: John 1 to John 2 from the pill, 14 frames
+   over 229 to 249ms, on the export before the ready-ahead and after it (the
+   motion walk, Updates 69, 2026-11-14). As behind an outline that is going
+   (`.route-fade[data-after-outline]`, below), the words come in as the page
+   arrives, the first eight lines one after another, and the head still rises
+   in its own time. Where the wrapper still fades (a phone with no View
+   Transitions) they keep their place behind the head. */
+.route-fade[data-carried] .page-open-after {
+ animation-delay: 0ms;
+}
+.route-fade[data-carried] .page-open-words > :nth-child(-n + 8) {
+ animation-delay: calc(var(--line, 0) * var(--stagger-step-tight));
+}
 :where([data-motion="reduce"]) .page-open-title,
 :where([data-motion="reduce"]) .page-open-sub,
 :where([data-motion="reduce"]) .page-open-rule,

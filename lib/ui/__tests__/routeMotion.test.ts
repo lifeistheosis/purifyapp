@@ -1208,6 +1208,31 @@ describe("the stylesheet", () => {
       expect(rule(carried), carried).toMatch(new RegExp(`${name}: 0ms;`));
     }
   });
+
+  it("nor do a book's words keep their place behind its head there: they come in as the page arrives (Updates 69)", () => {
+    // The motion walk on the export, before the ready-ahead and after it (2026-11-14): John 1 to
+    // John 2 from the pill stood empty but for the rising name for 229 to 249ms, the page left
+    // gone in the transition's first 50ms and the words still waiting 220 and 240ms behind the
+    // head. When each part begins in a carried page, from the rule that holds there: its own under
+    // `.route-fade[data-carried]` where it has one, else the base rule with the carried start of 0.
+    const delayOf = (selector: string) => /animation-delay:\s*([^;]+);/.exec(rule(selector))?.[1]?.trim() ?? "";
+    const startsCarried = (part: string) => {
+      const own = css.includes(`\n.route-fade[data-carried] ${part} {`) ? delayOf(`.route-fade[data-carried] ${part}`) : null;
+      const expr = (own ?? delayOf(part))
+        .replace(/var\(--page-open-start, \d+ms\)/g, "0ms")
+        .replace(/var\(--line, 0\) \* var\(--[\w-]+\)/g, "0ms")
+        .replace(/^calc\(|\)$/g, "");
+      return expr.split("+").reduce((sum, term) => sum + Number(/^\s*(-?\d+)ms\s*$/.exec(term)?.[1] ?? NaN), 0);
+    };
+    // The note under the head, and the first line, at the page's first frame, as behind an outline.
+    expect(startsCarried(".page-open-after")).toBe(0);
+    expect(startsCarried(".page-open-words > :nth-child(-n + 8)")).toBe(0);
+    // The lines still one after another, and the head still rises in its own time.
+    expect(delayOf(".route-fade[data-carried] .page-open-words > :nth-child(-n + 8)")).toMatch(/var\(--line, 0\) \* var\(--stagger-step-tight\)/);
+    expect(css).not.toContain("\n.route-fade[data-carried] .page-open-title {");
+    // With motion off nothing moves at all, carried or not.
+    for (const p of [".page-open-after", ".page-open-words > :nth-child(-n + 8)"]) expect(css).toContain(`:where([data-motion="reduce"]) ${p}`);
+  });
 });
 
 // Updates 62 (Updates 46's Open 2): on the export a piece's page is one page
