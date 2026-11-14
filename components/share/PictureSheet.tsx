@@ -457,7 +457,7 @@ export function PictureSheet({
                 )}
               >
                 {t(SHAPE_KEYS[s])}
-                <span className={cn("ms-1.5 font-normal tabular-nums", style.shape === s ? "text-night/55" : "text-paper/45")}>{SHAPE_RATIOS[s]}</span>
+                <span className={cn("ms-1.5 font-normal tabular-nums", style.shape === s ? "text-night/62" : "text-paper/45")}>{SHAPE_RATIOS[s]}</span>
               </button>
             ))}
           </div>
