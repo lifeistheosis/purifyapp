@@ -20,6 +20,11 @@
 
 import { go } from "./lib/shell-server.mjs";
 import { openPhone } from "./mock-check.mjs";
+import { reportMotion } from "./lib/motion.mjs";
+
+// Walked with the app's motion on, as a reader's phone has it, pinned and asserted on every
+// screen (cause 9 of the gate; scripts/lib/motion.mjs). --reduced walks the still path.
+const MOTION = process.argv.includes("--reduced") ? "reduce" : "on";
 
 const results = [];
 const say = (ok, what) => {
@@ -28,9 +33,8 @@ const say = (ok, what) => {
 };
 let browser;
 async function phone(set) {
-  const opened = await openPhone({ scale: 1, set, browser });
+  const opened = await openPhone({ motion: MOTION, scale: 1, set, browser });
   browser = opened.browser;
-  await opened.page.emulateMedia({ reducedMotion: "reduce" });
   return opened;
 }
 
@@ -161,4 +165,4 @@ const A_PRIEST = ["^Begin$", "^Orthodox$", "^Practicing", "^I am a priest or dea
 await browser?.close();
 const failed = results.filter((ok) => !ok).length;
 console.log(failed ? `\n${failed} of ${results.length} failed` : `\nall ${results.length} passed`);
-process.exit(failed ? 1 : 0);
+process.exit(reportMotion(MOTION) || failed ? 1 : 0);

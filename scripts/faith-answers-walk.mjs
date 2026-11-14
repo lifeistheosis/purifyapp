@@ -25,6 +25,11 @@
 
 import { go } from "./lib/shell-server.mjs";
 import { openPhone } from "./mock-check.mjs";
+import { reportMotion } from "./lib/motion.mjs";
+
+// Walked with the app's motion on, as a reader's phone has it, pinned and asserted on every
+// screen (cause 9 of the gate; scripts/lib/motion.mjs). --reduced walks the still path.
+const MOTION = process.argv.includes("--reduced") ? "reduce" : "on";
 
 const FAITH = ["level", "returning", "background", "fasting"];
 const SUPABASE = "https://placeholder.supabase.co";
@@ -60,9 +65,8 @@ async function phone(set, space) {
   const s = session(space);
   // The apps keep the session in their own store (lib/supabase/nativeStore.ts), in the shape of a cookie jar.
   const jar = JSON.stringify([{ name: "sb-placeholder-auth-token", value: JSON.stringify(s) }]);
-  const opened = await openPhone({ set: { ...set, "purify.supabase.auth": jar }, browser });
+  const opened = await openPhone({ motion: MOTION, set: { ...set, "purify.supabase.auth": jar }, browser });
   browser = opened.browser;
-  await opened.page.emulateMedia({ reducedMotion: "reduce" });
   const account = { user: s.user, sent: [] };
   const cors = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "*" };
   await opened.ctx.route(`${SUPABASE}/**`, async (route) => {
@@ -210,4 +214,4 @@ const OLD_COPY = { level: "practicing", returning: true, background: "catholic",
 await browser?.close();
 const failed = results.filter((ok) => !ok).length;
 console.log(failed ? `\n${failed} of ${results.length} failed` : `\nall ${results.length} passed`);
-process.exit(failed ? 1 : 0);
+process.exit(reportMotion(MOTION) || failed ? 1 : 0);

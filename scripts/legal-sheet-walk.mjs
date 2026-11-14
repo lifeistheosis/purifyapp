@@ -38,6 +38,11 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { checkMock, openPhone, printMockCheck } from "./mock-check.mjs";
+import { reportMotion } from "./lib/motion.mjs";
+
+// Walked with the app's motion on, as a reader's phone has it, pinned and asserted on every
+// screen (cause 9 of the gate; scripts/lib/motion.mjs). --reduced walks the still path.
+const MOTION = process.argv.includes("--reduced") ? "reduce" : "on";
 import { go } from "./lib/shell-server.mjs";
 
 const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
@@ -56,7 +61,7 @@ let browser;
 
 /** A first opening, the version picked in Testers mode, and no signal. Set once: a later page keeps what the questions wrote. */
 async function firstOpening(version) {
-  const opened = await openPhone({ scale: SHOTS ? 2 : 1, browser });
+  const opened = await openPhone({ motion: MOTION, scale: SHOTS ? 2 : 1, browser });
   browser = opened.browser;
   const { ctx, page } = opened;
   await ctx.addInitScript((v) => {
@@ -71,7 +76,6 @@ async function firstOpening(version) {
     }
   }, version);
   await ctx.route(/^https?:\/\/(?!localhost[:/])/, (route) => route.abort());
-  await page.emulateMedia({ reducedMotion: "reduce" });
   return { ctx, page };
 }
 
@@ -255,4 +259,4 @@ async function legalSheet(page, { place, scope, here, still }) {
 
 await browser?.close();
 console.log(failures.length ? `\n${failures.length} failing.` : "\nAll clean.");
-process.exit(failures.length ? 1 : 0);
+process.exit(reportMotion(MOTION) || failures.length ? 1 : 0);

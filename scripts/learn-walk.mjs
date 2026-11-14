@@ -33,6 +33,11 @@ import path from "node:path";
 
 import { go } from "./lib/shell-server.mjs";
 import { checkMock, openPhone, printMockCheck } from "./mock-check.mjs";
+import { reportMotion } from "./lib/motion.mjs";
+
+// Walked with the app's motion on, as a reader's phone has it, pinned and asserted on every
+// screen (cause 9 of the gate; scripts/lib/motion.mjs). --reduced walks the still path.
+const MOTION = process.argv.includes("--reduced") ? "reduce" : "on";
 
 const argv = process.argv.slice(2);
 const stillsAt = argv.indexOf("--stills");
@@ -56,9 +61,8 @@ let browser;
 const web = { find: "found", online: true };
 
 async function phone(set = {}, { android = false } = {}) {
-  const opened = await openPhone({ scale: STILLS ? 2 : 1, set: { "purify:fasting-rule": "hidden", ...set }, browser });
+  const opened = await openPhone({ motion: MOTION, scale: STILLS ? 2 : 1, set: { "purify:fasting-rule": "hidden", ...set }, browser });
   browser = opened.browser;
-  await opened.page.emulateMedia({ reducedMotion: "reduce" });
   if (android) {
     // The Android app, where Plus is locked and sold.
     await opened.ctx.addInitScript(() => {
@@ -362,4 +366,4 @@ async function openChooser(page, kind) {
 await browser?.close();
 const failed = results.filter((r) => !r).length;
 console.log(failed ? `\n${failed} of ${results.length} FAILED` : `\nall ${results.length} passed`);
-process.exit(failed ? 1 : 0);
+process.exit(reportMotion(MOTION) || failed ? 1 : 0);

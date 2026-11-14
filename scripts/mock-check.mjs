@@ -1640,20 +1640,27 @@ export function printMockCheck(result, label = result.selector) {
  * script). `scale` 2 for a picture a person will see (1 to check); `set`
  * seeds localStorage before the app starts; `browser` reuses one already open.
  */
-export async function openPhone({ scale = 1, set = {}, browser: given } = {}) {
+export async function openPhone({ scale = 1, set = {}, browser: given, motion } = {}) {
   const { chromium } = await import("playwright");
   const { NATIVE_UA, serveLikeTheShell } = await import("./lib/shell-server.mjs");
+  // A walk that names its motion ("on", or "reduce" for the still path) has it pinned before the
+  // first page opens and asserted on every screen it reaches (scripts/lib/motion.mjs, watchMotion;
+  // cause 9 of the gate). Without it the phone opens as it always did.
+  const m = motion ? await import("./lib/motion.mjs") : null;
   const OUT = path.resolve("out");
   if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error("no native export in out/: run npm run build:android first");
   // The cloud sessions carry their own Chromium (CLAUDE.md's environment); elsewhere Playwright's.
   const own = "/opt/pw-browsers/chromium";
   const browser = given ?? (await chromium.launch(fs.existsSync(own) ? { executablePath: own } : {}));
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: scale, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: scale, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...(m ? m.motionOptions(motion) : {}) });
+  if (m) await m.pinMotion(ctx, motion);
   await ctx.addInitScript((values) => {
     for (const [k, v] of Object.entries(values)) localStorage.setItem(k, v);
   }, { "purify:onboarded": "99", "purify:whatsNewSeen": "99", ...set });
   await serveLikeTheShell(ctx, OUT, {});
-  return { browser, ctx, page: await ctx.newPage() };
+  const page = await ctx.newPage();
+  if (m) m.watchMotion(page, motion);
+  return { browser, ctx, page };
 }
 
 // The first drawings' mistakes, each as it was drawn, and the same parts made

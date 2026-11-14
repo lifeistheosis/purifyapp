@@ -96,3 +96,66 @@ export async function assertMotion(page, mode = "on") {
   for (const l of seen.left) wrong.push(`left behind by a measure: ${l}`);
   return wrong.length ? `motion: ${wrong.join("; ")}` : null;
 }
+
+/** What every watched page's motion was found to be, wrong, across a walk (watchMotion). */
+const FAULTS = [];
+
+/**
+ * Assert the page's motion on every screen a walk reaches (cause 9 of the gate: the eight feature
+ * walks asked for reduced motion and never said which motion they walked): after each navigation of
+ * the page's own frame, once it has loaded, the app's own steps between addresses included. The
+ * checks are settled before the page's context closes, with one more on the screen it closes on,
+ * so the last screen is asserted too. What is wrong is kept for motionFaults().
+ */
+export function watchMotion(page, mode = "on") {
+  checkMode(mode);
+  const pending = new Set();
+  const check = (where) => {
+    const p = page
+      .waitForLoadState("load")
+      .catch(() => {})
+      .then(() => (page.isClosed() ? null : assertMotion(page, mode)))
+      .then((wrong) => {
+        if (wrong && !page.isClosed()) FAULTS.push(`${where}: ${wrong}`);
+      })
+      .finally(() => pending.delete(p));
+    pending.add(p);
+  };
+  const pathOf = (url) => {
+    try {
+      return new URL(url).pathname;
+    } catch {
+      return url;
+    }
+  };
+  page.on("framenavigated", (frame) => {
+    if (frame === page.mainFrame()) check(pathOf(frame.url()));
+  });
+  const ctx = page.context();
+  if (!ctx.__motionClose) {
+    const close = ctx.close.bind(ctx);
+    ctx.__motionClose = true;
+    ctx.close = async (...args) => {
+      for (const open of ctx.pages()) if (!open.isClosed() && open.__motionCheck) open.__motionCheck(`${pathOf(open.url())}, as it closed`);
+      await Promise.all(ctx.pages().flatMap((open) => (open.__motionPending ? [...open.__motionPending] : [])));
+      return close(...args);
+    };
+  }
+  page.__motionCheck = check;
+  page.__motionPending = pending;
+}
+
+/** Every motion fault the walk's watched pages showed, said once each; the walk fails on any. */
+export function motionFaults() {
+  return [...new Set(FAULTS)];
+}
+
+/** Print the walk's motion faults under its result, and say how many (0 is a pass). */
+export function reportMotion(mode = "on") {
+  const wrong = motionFaults();
+  if (wrong.length) {
+    console.log(`\nMotion: ${wrong.length} screen${wrong.length === 1 ? "" : "s"} not walked ${motionWords(mode)}:`);
+    for (const w of wrong) console.log(`  FAIL ${w}`);
+  } else console.log(`\nMotion: every screen walked ${motionWords(mode)} (pinned, asserted on each).`);
+  return wrong.length;
+}
