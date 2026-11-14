@@ -617,3 +617,5 @@ dash.
 - 2026-11-14 16:22 UTC, Arbiter 7: his answer on note 10, "not the sound but the ui": the ambience chat's scope is the interface (the sheet's opening over a playing reading, the photographs, the tiles' states, the controls); the sound is not reworked. Recorded in BRAINSTORM, the notes file and NOW.
 
 - 2026-11-14 16:23 UTC, Arbiter 7: started Updates 46 (session_01VuYTwbibKoaSkUCZR41amx) at 16:23 on fault 7 and the two foot rooms, from docs/handoffs/updates-44.md Open 1 and 2, measuring the rooms first. Updates 42 waits idle on its pixel runs (about 17:10), so two chats are at work (Updates 45 and 46): the arbiter's call, the two-at-a-time rule counts chats at work. Next when a slot frees: the sheets (build 97 notes 2, 8 and 9), then note 1, notes 3 and 6, note 10.
+
+- 2026-11-14 16:28 UTC, Arbiter 7: his go, "fix those things. try and take into account usage also". The queue in NOW set in order with the pace: two chats at work (Updates 45, 46); then the sheets (notes 2, 8, 9); note 1 with note 7's zero; notes 3 and 6; note 10. Not taken as a yes to the Fable round (CLAUDE.md: a Fable run is checked with him first); it waits until the fixes are in.

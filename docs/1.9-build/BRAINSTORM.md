@@ -1149,3 +1149,5 @@ Claude's proposal, for his word:
 **Build 97 note 10, the ambience (his word, 2026-11-14, about 16:20 UTC),** with a screenshot of the Ambience sheet opened over the player's Words view while The Definition of Faith (Third Council of Constantinople) is read (the six sounds as tiles: Rain, Morning birds, Bell and stillness, Cathedral bells, the sea, Wind): "the ambience window opening up while playing someone is playing is a little buggy overrall the ambience system needs optimizing".
 
 **Build 97 note 10, what looked buggy (his word, 2026-11-14, about 16:22 UTC),** asked whether it was a stutter, a jump or the sound: "not the sound but the ui".
+
+**His go on the fixes (his word, 2026-11-14, about 16:28 UTC),** after notes 7 to 10 and Updates 46's start: "fix those things. try and take into account usage also".
