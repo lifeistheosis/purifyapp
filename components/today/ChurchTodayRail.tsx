@@ -107,6 +107,9 @@ export function ChurchTodayRail() {
   // Nativity card stands on Today the line gives way to it.
   const nativity = useNativityRow(day?.today ?? null, calendarStyle);
   const [saintsOpen, setSaintsOpen] = useState(false);
+  // Each Listen that found nothing to play (no connection, and the books not
+  // saved), counted so the line under the buttons comes again at each tap.
+  const [unheard, setUnheard] = useState(0);
 
   // One frame before hydration: the bands' own shape, so the front door does
   // not jump when the real day lands.
@@ -309,7 +312,9 @@ export function ChurchTodayRail() {
                 {parts.length ? (
                   <button
                     type="button"
-                    onClick={() => startListening(parts)}
+                    onClick={() => {
+                      void startListening(parts).then((came) => setUnheard((n) => (came === "unheard" ? n + 1 : came === "playing" ? 0 : n)));
+                    }}
                     data-listen=""
                     className="tap-press inline-flex min-h-11 items-center gap-2 rounded-pill border border-paper/22 bg-paper/[0.03] px-[18px] font-sans text-ui font-semibold text-paper"
                   >
@@ -318,6 +323,15 @@ export function ChurchTodayRail() {
                   </button>
                 ) : null}
               </div>
+            ) : null}
+            {/* Listen with no connection, and the books not saved: nothing can
+                play, and the card says so under its buttons, so nothing above
+                moves (1.9, the gate's offline walk). Inked at 80: at 70 it read
+                4.50:1 on Stone at 800 by the pixels under it. */}
+            {unheard ? (
+              <p key={unheard} role="status" data-listen-unheard="" className="rise-in mt-2.5 font-sans text-caption text-paper/80">
+                {t("chants.needsConnection")}
+              </p>
             ) : null}
           </div>
         </section>

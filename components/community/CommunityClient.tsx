@@ -464,6 +464,12 @@ function CommunityScreen({
   }, [version, authSettled]);
 
   const reload = useCallback(() => setVersion((v) => v + 1), []);
+  // The feed's Try again, counted: offline, the line under it comes again at each tap.
+  const [tries, setTries] = useState(0);
+  const retryFeed = useCallback(() => {
+    setTries((n) => n + 1);
+    reload();
+  }, [reload]);
   // Posts the reader deleted here, left out at once: the feed's next read
   // can come from a cache a few seconds old and still hold them.
   const [deletedIds, setDeletedIds] = useState<ReadonlySet<string>>(() => new Set());
@@ -942,11 +948,20 @@ function CommunityScreen({
                   </p>
                   <button
                     type="button"
-                    onClick={reload}
+                    onClick={retryFeed}
                     className="mt-4 inline-flex min-h-11 items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
                   >
                     {t("community.tryAgain")}
                   </button>
+                  {/* With no connection, Try again says why nothing came, under the
+                      button so nothing above it moves, and again at each tap; the
+                      feed loads by itself once the connection is back (the poll's
+                      "online"). 1.9, the gate's offline walk. */}
+                  {tries > 0 && result.unreached ? (
+                    <p key={tries} role="status" data-feed-unreached="" className="rise-in mt-3 font-sans text-ui text-paper/70">
+                      {t("auth.noSignal")}
+                    </p>
+                  ) : null}
                 </div>
               ) : result.posts.length === 0 ? (
                 <div className="mt-3 rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">

@@ -73,7 +73,8 @@ describe("a finger's 44px", () => {
   it("Community: Sign in and the feed's Try again are 44px tall", () => {
     const src = code("components/community/CommunityClient.tsx");
     expect(classNear(src, 'href="/signin?next=/community"')).toContain("min-h-11");
-    expect(classNear(src, "onClick={reload}")).toContain("min-h-11");
+    // The feed's Try again counts its taps (1.9, offline: the line under it comes again at each).
+    expect(classNear(src, "onClick={retryFeed}")).toContain("min-h-11");
   });
 
   it("Community: the small ways in a post reach 44px, each by the house's helper", () => {

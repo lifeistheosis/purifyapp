@@ -243,7 +243,13 @@ export function VerseCardActions({
         {heard.available ? (
           <button
             type="button"
-            onClick={heard.toggle}
+            // With no connection, and the book not saved, its timings cannot be
+            // read and nothing plays: the card says so (1.9, the gate's offline walk).
+            onClick={() => {
+              void heard.toggle().then((heardIt) => {
+                if (!heardIt) say("chants.needsConnection");
+              });
+            }}
             aria-label={heard.playing ? t("readAloud.pause") : t("readAloud.listen")}
             className={cn(ROUND, heard.playing ? "reader-lit border-paper/45" : "border-paper/15")}
           >

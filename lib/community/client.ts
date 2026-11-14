@@ -79,7 +79,8 @@ const NETWORK_ERROR = "Network dropped. Please try again.";
 export type PostsResult =
   | { state: "dark" }
   | { state: "ok"; posts: CommunityPost[] }
-  | { state: "error" };
+  // `unreached`: no answer came at all (no connection), so Try again can say so (1.9).
+  | { state: "error"; unreached?: true };
 
 /**
  * The public feed, or one parish group's thread when `groupId` is given.
@@ -102,7 +103,13 @@ export async function fetchCommunityPosts(
           : opts.category
             ? `?category=${opts.category}`
             : "";
-    const res = await apiFetch(`/api/community/posts${qs}`);
+    let res: Response;
+    try {
+      res = await apiFetch(`/api/community/posts${qs}`);
+    } catch {
+      // The request never had an answer: no connection.
+      return { state: "error", unreached: true };
+    }
     // 404 is the flag guard in app/api/community/posts/route.ts, not a failure.
     // For a group it also means "not a member", which is deliberately
     // indistinguishable from "no such group".

@@ -115,13 +115,22 @@ export function isListening(): boolean {
   return run !== null;
 }
 
+/**
+ * What a start came to (1.9, the gate's offline walk: Listen on Today changed
+ * nothing a reader could see): a part was put on the player; none could be,
+ * as none of their timings could be read (no connection, and the book not
+ * saved on the phone), so the control that started it says so; or it was
+ * started over or let go before it could say, which needs no answer.
+ */
+export type ListenStart = "playing" | "unheard" | "replaced";
+
 /** Hear the parts from the first. Starting again starts over. */
-export function startListening(parts: ListenPart[]): void {
+export function startListening(parts: ListenPart[]): Promise<ListenStart> {
   stopListening();
-  if (!parts.length) return;
+  if (!parts.length) return Promise.resolve("unheard");
   run = { parts, at: -1, src: "", start: 0, end: 0, placed: false, loading: false, last: 0 };
   stopWatching = subscribeAudio(watch);
-  void playPart(0);
+  return playPart(0);
 }
 
 /** Let go of the readings; whatever is playing goes on as it is. */
@@ -146,24 +155,23 @@ export function stepListening(by: -1 | 1): void {
   void playPart(to);
 }
 
-async function playPart(i: number): Promise<void> {
+async function playPart(i: number): Promise<ListenStart> {
   const current = run;
-  if (!current) return;
+  if (!current) return "replaced";
   const part = current.parts[i];
   if (!part) {
-    pause();
+    // The readings' end. When none of them was ever put on, what else is
+    // playing was not theirs to pause: it goes on as it is.
+    if (current.at >= 0) pause();
     stopListening();
-    return;
+    return current.at >= 0 ? "playing" : "unheard";
   }
   current.loading = true;
   const manifest = await readAloudManifest(part.book, part.chapter);
   // Stopped, or started over, while the timings were on their way.
-  if (run !== current) return;
+  if (run !== current) return "replaced";
   const times = manifest ? spanTimes(manifest, part.from, part.to) : null;
-  if (!manifest || !times) {
-    await playPart(i + 1);
-    return;
-  }
+  if (!manifest || !times) return playPart(i + 1);
   const src = readAloudSrc(part.book, part.chapter);
   const cover = readAloudCover(part.book);
   Object.assign(current, { at: i, src, start: times.start, end: times.end, last: times.start });
@@ -185,6 +193,7 @@ async function playPart(i: number): Promise<void> {
   current.loading = false;
   if (loaded) seek(times.start);
   play();
+  return "playing";
 }
 
 function watch(): void {

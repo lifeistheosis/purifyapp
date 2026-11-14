@@ -130,10 +130,16 @@ export function readAloudManifest(book: string, chapter: number): Promise<ReadAl
   let p = manifests.get(key);
   if (!p) {
     const saved = isNativeClient() ? savedSrc(book, chapter, "json") : null;
-    p = fetch(saved ?? streamedUrl(`/audio/read/${book}/${chapter}.json`))
+    const asked = fetch(saved ?? streamedUrl(`/audio/read/${book}/${chapter}.json`))
       .then((r) => (r.ok ? (r.json() as Promise<ReadAloudManifest>) : null))
       .catch(() => null);
-    manifests.set(key, p);
+    p = asked;
+    manifests.set(key, asked);
+    // Timings that could not be read (no connection) are asked for again at
+    // the next Listen, not kept as missing until the app starts again (1.9).
+    void asked.then((m) => {
+      if (!m && manifests.get(key) === asked) manifests.delete(key);
+    });
   }
   return p;
 }
