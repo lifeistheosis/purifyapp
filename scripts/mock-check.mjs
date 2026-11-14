@@ -920,10 +920,25 @@ async function look(arg) {
   // a removal, an error), so the palette rule does not read it, or white words on it, as typed.
   const crimson = rgba(getComputedStyle(document.documentElement).getPropertyValue("--color-crimson").trim() || "transparent");
   const isRed = (c) => Boolean(c) && crimson[3] > 0 && c.slice(0, 3).every((v, i) => Math.abs(v - crimson[i]) <= 2);
+  // Each element's own mark, the same on every palette (the first look gives it, the others read it),
+  // so a paint on Light is compared with the paint of the same element on Dark. They were paired by
+  // their place in this list, and a page that draws more while it is measured (the pixels pass loads
+  // every picture and brings each word to the middle of the screen between two palettes) moved every
+  // place after the change: the reading list's screen-reader lines, behind the reading filter in
+  // Arabic, were compared with a cover's own white words on Light (Updates 33's find, 2026-11-14). An
+  // element drawn after the first look has no paint on it to compare, and is not compared.
+  const pairOf = (e) => {
+    let k = e.getAttribute("data-mock-pair");
+    if (k === null) {
+      k = String((window.__mockPairNext = (window.__mockPairNext ?? 0) + 1));
+      e.setAttribute("data-mock-pair", k);
+    }
+    return k;
+  };
   const paints = all.map((e) => {
     if (!shown(e)) return null;
     const cs = getComputedStyle(e);
-    const p = { name: nameOf(e), allowPalette: allowance(e, "palette"), allowGold: allowance(e, "gold") };
+    const p = { name: nameOf(e), pair: pairOf(e), allowPalette: allowance(e, "palette"), allowGold: allowance(e, "gold") };
     const hasText = [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
     // Letters drawn clear (a wash's backdrop, which only lays out the colour
     // behind a field's words) carry no colour to follow a palette with.
@@ -1348,8 +1363,10 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
 
   const before = await page.evaluate(() => {
     const h = document.documentElement;
-    // Marks a pixels pass left on an earlier measure of this page.
+    // Marks a pixels pass left on an earlier measure of this page, and the palettes' pairs.
     for (const e of document.querySelectorAll("[data-mock-look]")) e.removeAttribute("data-mock-look");
+    for (const e of document.querySelectorAll("[data-mock-pair]")) e.removeAttribute("data-mock-pair");
+    window.__mockPairNext = 0;
     // Colours change in steps of their own (body has a 0.35s transition);
     // the measure wants where they end.
     const still = document.createElement("style");
@@ -1478,9 +1495,11 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
         else fail("glyph", null, c.name, `"${c.face}" stands in for an icon; use components/ui/icons`);
       }
     }
-    dark.paints.forEach((p, i) => {
+    // Light's paints by each element's own mark (pairOf, in look): the same element on both palettes.
+    const onLight = new Map((light?.paints ?? []).filter(Boolean).map((q) => [q.pair, q]));
+    dark.paints.forEach((p) => {
       // A colour typed in shows by staying the same on Light; a list with no Light cannot say.
-      const q = light?.paints[i];
+      const q = p ? onLight.get(p.pair) : null;
       if (!p || !q) return;
       for (const part of ["color", "bg", "border"]) {
         if (!same(p[part], q[part])) continue;
@@ -1599,6 +1618,7 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
       else h.removeAttribute("lang");
       document.querySelector("style[data-mock-check]")?.remove();
       document.querySelector("style[data-words-on-pictures]")?.remove();
+      for (const el of document.querySelectorAll("[data-mock-pair]")) el.removeAttribute("data-mock-pair");
       for (const el of document.querySelectorAll("[data-mock-was-animation]")) {
         const was = el.getAttribute("data-mock-was-animation");
         if (was) el.style.setProperty("animation", was);
@@ -1805,6 +1825,20 @@ const CLOCK = `<div data-mock-fixture="clock" style="padding:16px;background:#10
   <div style="margin-top:12px;height:6px"><span data-mock-grows style="display:block;height:6px;width:40px;background:#ffffff"></span></div>
 </div>`;
 
+/**
+ * A part that draws more while it is measured (Updates 33's find, 2026-11-14: the reading list behind the reading
+ * filter, in Arabic). As Light is worn, a line is drawn at the head of the part, before everything Dark measured, in
+ * Dark's own ink typed in. Paired by their place in the list, as the palettes were, every paint after it met its
+ * neighbour's: the words that follow the palette were failed for the new line's colour, and the words typed in
+ * white were passed. Paired element by element, the first pass and the second is caught; the new line, drawn after
+ * Dark was measured, has nothing to be compared with. Faint words a reader can see are still caught (the first
+ * drawings' "Faint on a tray"), and so are these, faint on Light.
+ */
+const PAIR = `<div data-mock-fixture="pair" class="bg-night px-4 pb-4" style="position:fixed;left:0;right:0;top:0;z-index:401">
+  <p class="font-sans text-ui text-paper">Words that follow the palette</p>
+  <p class="font-sans text-ui" style="color:#ffffff">Words typed in white</p>
+</div>`;
+
 // A feed's icons (Updates 25, 2026-11-13): the same two outlines drawn twenty-four times each, as fifty posts
 // draw theirs, and a four-point sparkle drawn three times among them. Each outline is read once on the page, and
 // every sparkle drawn is still caught.
@@ -1948,6 +1982,29 @@ async function selfTest() {
     const shapesOnce = pointsRead <= 3 * 240 && shapeSparkles === 3;
     console.log(`\na feed's icons over two palettes: ${pointsRead} points read along the outlines (at the most 720: each outline once), ${shapeSparkles} of 3 sparkles caught`);
     await page.evaluate(() => document.querySelector("[data-mock-fixture=shapes]")?.remove());
+    // A part that draws more while it is measured: a line at its head as Light is worn, in Dark's own ink typed in.
+    await page.evaluate((html) => {
+      for (const f of document.querySelectorAll("[data-mock-fixture]")) f.style.display = "none";
+      document.body.insertAdjacentHTML("beforeend", html);
+      const part = document.querySelector("[data-mock-fixture=pair]");
+      const ink = getComputedStyle(part.querySelector("p")).color;
+      let drawn = false;
+      new MutationObserver(() => {
+        if (drawn || document.documentElement.getAttribute("data-reading-mode") !== "parchment") return;
+        drawn = true;
+        part.insertAdjacentHTML("afterbegin", `<p class="font-sans text-ui" style="color:${ink}">A line drawn while it is measured</p>`);
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-reading-mode"] });
+    }, PAIR);
+    await settle(page);
+    const pair = await checkMock(page, "[data-mock-fixture=pair]", { palettes: [["Dark", null], ["Light", "parchment"]] });
+    printMockCheck(pair, "a part that draws more while it is measured");
+    const typedIn = (what) => pair.failures.some((f) => f.check === "palette" && f.what === `p "${what}"`);
+    const pairRight =
+      !typedIn("Words that follow the palette") &&
+      typedIn("Words typed in white") &&
+      !typedIn("A line drawn while it is measured") &&
+      pair.failures.some((f) => f.check === "contrast" && f.palette === "Light" && f.what === '"Words typed in white"');
+    await page.evaluate(() => document.querySelector("[data-mock-fixture=pair]")?.remove());
     const clockRight =
       clocks.failures.length === 0 && clocks.unmeasured.length === 1 && clocks.unmeasured[0].startsWith("Arabic: span moved while it was measured");
     const redRight =
@@ -1999,11 +2056,11 @@ async function selfTest() {
       said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
       said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
       good.unmeasured.length === 3;
-    const ok = listsWhole && missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead && shapesOnce;
+    const ok = listsWhole && missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead && shapesOnce && pairRight;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${listsWhole ? "" : "a palette of the registry is left out of the lists, or the old lists were not caught; "}${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}${shapesOnce ? "" : " an outline drawn many times was read more than once, or a sparkle drawn among them was not caught"}`,
+        : `\nself-test FAILED: ${listsWhole ? "" : "a palette of the registry is left out of the lists, or the old lists were not caught; "}${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}${shapesOnce ? "" : " an outline drawn many times was read more than once, or a sparkle drawn among them was not caught"}${pairRight ? "" : " a part that drew more while it was measured had its paints compared with their neighbours' on Light"}`,
     );
     return ok;
   } finally {
