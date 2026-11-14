@@ -8085,6 +8085,17 @@ html[data-reading-mode="parchment"] [data-door-face]::after {
  border-width: 0 0 1px;
  border-radius: 0;
 }
+/* The lead's small lines stand on its sky, and the sky is drawn to the
+   card's width, so a wide screen sets its stars larger under them: at 1032
+   one lay under "Feast" and the date line read 2.67:1 on its pixels (Gate 2,
+   fault 6), where no share of the paper reaches 4.5:1 on a star's core. The
+   house's close halo for words on a picture (.words-halo), in the lead's own
+   night and written plain, since the lead is that night on every palette and
+   look: on the sky it is the sky's own colour, and only a star behind a
+   letter dims. */
+.day-lead :is(.text-paper\/65, .text-paper\/75) {
+ text-shadow: 0 0 1px rgb(5 7 13 / 0.95), 0 0 3px rgb(5 7 13 / 0.9), 0 0 6px rgb(5 7 13 / 0.8);
+}
 /* A track's unlit choices on Light, where a choice is a link or a pressed
    button (the doors, 1.9): the ink at the share that holds 4.5:1 on the track. */
 html[data-reading-mode="parchment"] .set-track > :is(button, a):not(:is([aria-checked="true"], [aria-pressed="true"], [aria-selected="true"])) {
