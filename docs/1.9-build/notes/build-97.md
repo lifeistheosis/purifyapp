@@ -70,3 +70,13 @@ Build 97 (run 43608911353, from 231e1ce0, code 59d1fd98), cut ungated at his wor
 **The plan.** A gesture that begins in a window that scrolls inside a sheet belongs to that window while the window has room to scroll that way; the choice is made once, when the gesture starts, and never handed to the sheet halfway through. The handle and the header drag the sheet as before. Every sheet with such a window is walked, not only this one (the Plus preview's pages, Compare, Word study, the journal). A test that fails on the old code: a touch walk that scrolls the window and crosses its edge, and the sheet stays open.
 
 **Owner:** a fixer, with note 2 (the jump and flash when typing starts in a sheet): both are the sheet's own behaviour and likely meet in `lib/ui/useDraggableSheet.ts`, so one chat holds both.
+
+## Note 9: the verse picture's sheet moves when its tab changes
+
+**His words** (about 16:19 UTC), with two screenshots of the Verse picture sheet, on Words and on Size: "notice how the words section move the UI up fix that".
+
+**Found.** In his two stills the sheet's top edge, its title and the picture stand higher on Words than on Size (the edge at 372 against 385 in the screenshots' pixels), while Save and Share stay put: the sheet grows upward with the tab's content. The tab's panel keeps a floor of 136px (`components/share/PictureSheet.tsx:295`, `min-h-[136px]`), and Words (three type choices, the slider, four switches) is taller than that floor.
+
+**The plan.** The panel keeps one height for all three tabs, the tallest tab's, measured in every language and at the largest text size (a longer word can wrap a switch onto a second row), so the sheet, its title and the picture stand still when the tab changes. A test that fails on the old code: the sheet opened on each tab at phone size, its top edge the same to the pixel. Other sheets with tabs are searched for the same fault.
+
+**Owner:** a fixer, with notes 2 and 8 (the sheets).
