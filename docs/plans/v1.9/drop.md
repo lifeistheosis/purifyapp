@@ -38,20 +38,20 @@ Also:
 
 - "every work has a cover": the covers pack for the reading room is not in yet
 - "Find a parish": the parish directory is not built
-- "phone voice": the phone's own voices come into 1.9 at his word (note 25, 2026-11-13: "I want everything fixed in v1.9 no pushing out to 2") but are not built yet: no piece names them until Updates 5 has built them and he has said yes (the arbiter, 2026-11-13)
-- "phone's voice": the same: the phone's own voices are not built yet
+- "phone voice": the choice of voices, Heart or the phone's own voices, is in 1.9 at his word (note 25, "Both", 2026-11-13) and his yes to its page ("all recs", about 18:53 UTC), pushed 8c1e2bb6, but the 1.9 note has no line for it yet: no piece names it until the note does (a line drafted for the arbiter, 2026-11-14). Kokoro, the voice to download, parked for 2.0 on 2026-11-11, is not in 1.9
+- "phone's voice": the same: the 1.9 note has no line for the phone's own voices yet
 - "campaign": prayer campaigns are at testers from the merge, his account alone (lib/campaigns/flags.ts), and open for every reader only at R5c (OWNER-STEPS); until the step below brings their line into the 1.9 note, no piece names them (the arbiter, 2026-11-11 and 2026-11-12)
 - "Galilee": the sea look Galilee came out of the app at his word of 2026-11-13 ("remove the sea theme", then "Both"; 701ed3dc)
 - "Patmos": the sea look Patmos came out with Galilee (701ed3dc)
-- "nineteen reading modes": the old count: with Galilee and Patmos out (701ed3dc) there are seventeen reading modes, Candlelight, Monastery and fifteen looks, and a piece that counts says seventeen (the arbiter, 2026-11-13)
-- "19 reading modes": the same old count, in figures
-- "Holy Mountain": the land looks (Holy Mountain, Forest, Desert and Jordan) are being reworked for his yes (build 95, note 16); no piece names or shows them until then
-- "Forest look": the same: a land look being reworked
-- "Desert look": the same: a land look being reworked
-- "Jordan look": the same: a land look being reworked
-- "seventeen looks": the old count of looks: with Galilee and Patmos out there are fifteen looks (701ed3dc), and seventeen is now the count of reading modes
-- "17 looks": the same old count of looks, in figures
-- "World English Bible": in 1.9 at his word (note 25, 2026-11-13) and not pushed yet: no piece names it until it is (the arbiter, 2026-11-13)
+- "nineteen reading modes": the first count, before Galilee, Patmos and Desert came out (701ed3dc, 62e5a337): there are sixteen reading modes, Candlelight, Monastery and fourteen looks (lib/reader/readingModes.ts, counted 2026-11-14), as the app's own Plus lines say, and a piece that counts says sixteen
+- "19 reading modes": the same first count, in figures
+- "seventeen reading modes": the count after Galilee and Patmos came out (701ed3dc) and before Desert did (62e5a337): there are sixteen reading modes, Candlelight, Monastery and fourteen looks (lib/reader/readingModes.ts, counted 2026-11-14), as the app's own Plus lines say, and a piece that counts says sixteen
+- "17 reading modes": the same count, in figures
+- "Desert look": Desert came out of the app at his word ("all recs", 2026-11-13 about 14:29 UTC), pushed with the land looks (62e5a337): a stored Desert wears Roses
+- "seventeen looks": the first count of looks, before Galilee, Patmos and Desert came out: there are fourteen looks (62e5a337)
+- "17 looks": the same first count of looks, in figures
+- "fifteen looks": the count of looks after Galilee and Patmos came out and before Desert did: there are fourteen (62e5a337)
+- "15 looks": the same count of looks, in figures
 
 ## The notes
 
@@ -94,14 +94,14 @@ Each build is walked on a real phone before it goes to its store, from [docs/PHO
 
 ### What's new, for Google Play
 
-`play-whats-new` · Google Play, What's new · Play Console, the release, Release notes · Ready · 463 of 500 characters
+`play-whats-new` · Google Play, What's new · Play Console, the release, Release notes · Ready · 465 of 500 characters
 
 ~~~text
 Purify 1.9: Keep a journal by the Church's day, and go deeper into every verse.
 
 • A journal by the Church's day
 • Hold a verse to open it
-• Six more Bibles to download
+• Seven more Bibles to download
 • Plus: study, Compare and Remember the verse
 • Plus: new reading plans
 • The Creed by council
@@ -115,14 +115,14 @@ The Scriptures, the saints, the prayers and the calendar stay free.
 
 ### What's New in This Version, for the App Store
 
-`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 2697 of 4000 characters
+`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 2726 of 4000 characters
 
 > Plus has been sold on iPhone since 1.8 (the App Store lists its four subscriptions; OWNER-STEPS 87, found 2026-11-10), so this text marks what is in Purify Plus, as the Play text does: the study, the plans, the Florilegium and the Thread, Candlelight and ambience, and listening offline.
 
 ~~~text
 Purify 1.9: Keep a journal by the Church's day, and go deeper into every verse.
 
-Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.
+Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings seven more Bibles to download.
 
 YOUR JOURNAL, BY THE CHURCH'S DAY
 Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.
@@ -130,8 +130,8 @@ Today's page shows the feast or saints and readings, each with a pen to begin a 
 EVERY VERSE, OPENED
 Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
 
-SIX MORE BIBLES
-The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
+SEVEN MORE BIBLES
+The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 
 STUDY A VERSE
 Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps. In Purify Plus.
@@ -169,12 +169,12 @@ The Scriptures, the saints, the prayers and the calendar stay free.
 
 ### Promotional text, for the App Store
 
-`appstore-promo` · App Store, promotional text · App Store Connect, the version, Promotional Text · Ready · 147 of 170 characters
+`appstore-promo` · App Store, promotional text · App Store Connect, the version, Promotional Text · Ready · 149 of 170 characters
 
 > This one can be changed at any time without a new review.
 
 ~~~text
-Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.
+Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings seven more Bibles to download.
 ~~~
 
 ### Submit both builds for review
@@ -191,16 +191,16 @@ Android build 0 in Play Console, iOS build 0 in App Store Connect, each once it 
 
 ### The announcement
 
-`discord-announcement` · Discord · Discord, #announcements · Ready · 1952 of 2000 characters
+`discord-announcement` · Discord · Discord, #announcements · Ready · 1981 of 2000 characters
 
 ~~~text
 Purify 1.9 is here 🕯️
 
-Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.
+Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings seven more Bibles to download.
 
 📓 Your journal, by the Church's day. Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.
 📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
-🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
+🌍 Seven more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 🔎 Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
 🗓️ New reading plans, in Purify Plus. John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.
 ☦️ The Creed by council. The Symbol of Faith article by article, with the words the Council of Constantinople added lit.
@@ -218,25 +218,25 @@ The iPhone, iPad and Android apps get 1.9 once the stores approve the new builds
 
 ### The short one
 
-`discord-short` · Discord · Discord, #general or a ping · Ready · 200 of 2000 characters
+`discord-short` · Discord · Discord, #general or a ping · Ready · 202 of 2000 characters
 
 ~~~text
-Purify 1.9 is live on the web: a journal by the Church's day, every verse opened to its Greek, and six more Bibles to download. The apps follow once the stores approve. https://purifyapp.net/whats-new
+Purify 1.9 is live on the web: a journal by the Church's day, every verse opened to its Greek, and seven more Bibles to download. The apps follow once the stores approve. https://purifyapp.net/whats-new
 ~~~
 
 ### Purify's own post in Community
 
-`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2270 of 4000 characters
+`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2299 of 4000 characters
 
 ~~~text
 Purify 1.9 is here
 
-Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.
+Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings seven more Bibles to download.
 
 📓 Your journal, by the Church's day. Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.
 🔗 Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.
 📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
-🌍 Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
+🌍 Seven more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 🔎 Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
 🗓️ New reading plans, in Purify Plus. John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.
 ☦️ The Creed by council. The Symbol of Faith article by article, with the words the Council of Constantinople added lit.
@@ -285,7 +285,7 @@ When a store shows 1.9: its number goes into lib/appUpdate/release.ts (Android 0
 
 ### The board message above the notes
 
-`board` · The weekly board · Admin, Patch notes, the board message · Ready · 461 of 900 characters
+`board` · The weekly board · Admin, Patch notes, the board message · Ready · 472 of 900 characters
 
 > Eyebrow: This week at Purify. The first line is the headline, the rest is the body. It names only what is free, so it reads true on every device. Publish it in Admin the day a store first serves 1.9, and not before: the 1.8 apps show the newest board message, so a reader on 1.8 would otherwise read "1.9 is here" before they can have it (the arbiter, 2026-11-12).
 
@@ -293,14 +293,14 @@ When a store shows 1.9: its number goes into lib/appUpdate/release.ts (Android 0
 1.9 is here
 
 Keep a journal by the Church's day: today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Free for everyone.
-Hold any verse to see its Greek, and download six more Bibles, in Russian, Greek, Serbian, Arabic, Spanish and Portuguese.
+Hold any verse to see its Greek, and download seven more Bibles, in Russian, Greek, Serbian, English, Arabic, Spanish and Portuguese.
 The Creed by council sets the Symbol of Faith out article by article, and on the days an event of Orthodox History fell, it is on Today under the saint of the day.
 The full note is below.
 ~~~
 
 ### In the stores
 
-`discord-stores` · Discord · Discord, #announcements · Ready · 685 of 2000 characters
+`discord-stores` · Discord · Discord, #announcements · Ready · 687 of 2000 characters
 
 > If one store approves first, post for that store alone and name it.
 
@@ -310,7 +310,7 @@ Purify 1.9 is in the App Store and on Google Play 📱
 Update Purify to get it inside the app:
 • A journal by the Church's day
 • Hold a verse to open it
-• Six more Bibles to download
+• Seven more Bibles to download
 • Plus: study, Compare and Remember the verse
 
 📱 Remember the verse on your home screen. A widget keeps your verse on your home screen, the same for every reader.
@@ -340,12 +340,12 @@ Purify 1.9 is out
 
 [Name],
 
-Purify 1.9 is out, on purifyapp.net and in the stores. It keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings six more Bibles to download.
+Purify 1.9 is out, on purifyapp.net and in the stores. It keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings seven more Bibles to download.
 
 What is new, briefly:
 - Your journal, by the Church's day. Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.
 - Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
-- Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
+- Seven more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 - Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
 - Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.
 
@@ -361,9 +361,9 @@ purifyapp.net
 
 `cards` · The cards · Instagram and TikTok, from the files · Waits
 
-Waits on: the release cards, which a Fable chat makes by his word of 2026-11-12
+Waits on: the set made again from this drop's words on the export the gate passes: cards 01 and 04 say six Bibles, where the drop now says seven, and every screen is from 6633b789, before any round of the fifteen screens was applied (node docs/plans/v1.9/store/cards/cards.mjs, no design work, then node scripts/drop.mjs cards docs/plans/v1.9/store/cards/stills)
 
-> No card shows Galilee or Patmos, which come out, or a land look (Holy Mountain, Forest, Desert and Jordan) before his yes on its reworked picture (build 95, note 16).
+> The set he said yes to ("yes to all", 2026-11-13 about 20:47 UTC): six stills, 1080 by 1920, in docs/plans/v1.9/store/cards/stills (01-cover, 02-journal, 03-verse, 04-bibles, 05-study, 06-close), every word read from this drop by cards.mjs, the small copies in docs/plans/v1.9/cards/. No card shows Galilee, Patmos or Desert, which came out (701ed3dc, 62e5a337); Holy Mountain, Forest and Jordan may be shown as reworked, at his yes (build 95, note 16).
 
 ### The 1.9 video: the app's own screens and taps, prayer campaigns among them
 
@@ -371,22 +371,22 @@ Waits on: the release cards, which a Fable chat makes by his word of 2026-11-12
 
 Waits on: prayer campaigns open to every reader (release day's step 3, R5c, your word), and the video itself, which a Fable chat makes by his word of 2026-11-13
 
-> It shows prayer campaigns (his word, 2026-11-13 about 07:21 UTC: "add the prayer campaigns to the video"), so it goes out only once they are open to every reader, never while they are at testers. No frame shows Galilee or Patmos, which come out, or a land look (Holy Mountain, Forest, Desert and Jordan) before his yes on its reworked picture. Its captions are written when campaigns may be named, with the step that takes "campaign" off the never list.
+> It shows prayer campaigns (his word, 2026-11-13 about 07:21 UTC: "add the prayer campaigns to the video"), so it goes out only once they are open to every reader, never while they are at testers. No frame shows Galilee, Patmos or Desert, which came out (701ed3dc, 62e5a337); Holy Mountain, Forest and Jordan may be shown as reworked, at his yes (build 95, note 16). Its captions are written when campaigns may be named, with the step that takes "campaign" off the never list.
 
 ### The caption for the cards, on Instagram
 
-`instagram-caption` · Instagram caption · Instagram, the caption · Ready · 306 of 2200 characters
+`instagram-caption` · Instagram caption · Instagram, the caption · Ready · 308 of 2200 characters
 
 ~~~text
-Purify 1.9 is here. Your journal, by the Church's day. Every verse, opened. Six more Bibles. Study a verse, in Purify Plus. The Scriptures, the saints, the prayers and the calendar stay free. Find Purify: Orthodox Hub on the App Store and on Google Play. #orthodox #orthodoxchristian #bible #saints #prayer
+Purify 1.9 is here. Your journal, by the Church's day. Every verse, opened. Seven more Bibles. Study a verse, in Purify Plus. The Scriptures, the saints, the prayers and the calendar stay free. Find Purify: Orthodox Hub on the App Store and on Google Play. #orthodox #orthodoxchristian #bible #saints #prayer
 ~~~
 
 ### The caption for the cards, on TikTok
 
-`tiktok-caption` · TikTok caption · TikTok, the caption · Ready · 186 of 2200 characters
+`tiktok-caption` · TikTok caption · TikTok, the caption · Ready · 188 of 2200 characters
 
 ~~~text
-Purify 1.9 is here: a journal by the Church's day, hold a verse to open it and six more Bibles to download. Find Purify: Orthodox Hub. #orthodox #orthodoxchristian #bible #saints #prayer
+Purify 1.9 is here: a journal by the Church's day, hold a verse to open it and seven more Bibles to download. Find Purify: Orthodox Hub. #orthodox #orthodoxchristian #bible #saints #prayer
 ~~~
 
 ## A few days later
@@ -395,26 +395,26 @@ Purify 1.9 is here: a journal by the Church's day, hold a verse to open it and s
 
 ### A notification to every reader
 
-`push` · A notification · Admin, Push · Ready · 94 of 300 characters
+`push` · A notification · Admin, Push · Ready · 96 of 300 characters
 
 > Opens /whats-new. A notification may carry no digits, so it cannot name the version. Send yourself one first.
 
 ~~~text
 A journal by the Church's day
 
-Keep a journal by the Church's day, hold any verse to see its Greek, and read six more Bibles.
+Keep a journal by the Church's day, hold any verse to see its Greek, and read seven more Bibles.
 ~~~
 
 ### Try this first
 
-`discord-try` · Discord · Discord, a thread under the announcement · Ready · 618 of 2000 characters
+`discord-try` · Discord · Discord, a thread under the announcement · Ready · 645 of 2000 characters
 
 ~~~text
 Three things to try in 1.9:
 
 1. Your journal, by the Church's day. Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.
 2. Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.
-3. Six more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
+3. Seven more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.
 
 Tell us what you find, and what breaks. We read everything.
 ~~~
