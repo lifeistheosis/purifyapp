@@ -26,7 +26,7 @@ describe("the picture sheet", () => {
 
   it("opens a quote on its own looks: his portrait, on Night, as a post", () => {
     expect(sheet).toContain("quote ? QUOTE_STYLE : lead ?");
-    expect(sheet).toMatch(/tab === "look" && quote \? \(\s*<QuoteLooks/);
+    expect(sheet).toMatch(/<TabLayer on=\{tab === "look"\}>\s*\{quote \? \(\s*<QuoteLooks/);
     expect(sheet).toContain("prepareQuote(words, quote, style)");
     expect(sheet).toContain("quote ? await renderQuoteCard(words, quote, style) : await renderVerseCard(words, style, { photo })");
   });
