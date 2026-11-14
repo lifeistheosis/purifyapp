@@ -209,6 +209,18 @@ describe("Found by checkMock on the round 1 export (Updates 29)", () => {
     expect(doors).toContain("aria-selected={door === open}");
   });
 
+  // Found at a tablet's widths on the study reader the round touched: the part
+  // heading's shares were measured on a phone (Updates 33).
+  it("draws the study's part heading a step stronger from md, where it stands nearer the light", () => {
+    const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+    const at = css.indexOf("@media (min-width: 768px) {\n html:not([data-reading-mode]):not([data-look]) .reader-part-heading {");
+    expect(at).toBeGreaterThan(-1);
+    const block = css.slice(at, css.indexOf("\n}\n", at));
+    expect(block).toContain('html:not([data-reading-mode]):not([data-look]) .reader-part-heading {\n  color: color-mix(in oklab, var(--color-paper) 66%, transparent);');
+    expect(block).toContain('html[data-reading-mode="parchment"]:not([data-look]) .reader-part-heading,\n html[data-reading-mode="candlelight"] .reader-part-heading {\n  color: color-mix(in oklab, var(--color-paper) 76%, transparent);');
+    expect(block).toContain('html[data-reading-mode="cappadocian"] .reader-part-heading {\n  color: color-mix(in oklab, var(--color-paper) 74%, transparent);');
+  });
+
   it("tells the checker why the tour's bloom stays where it is measured, in every language", () => {
     const tour = read("components/whats-new/tour/TourLook.tsx");
     expect(tour).toMatch(/className="tour-bloom"\s+data-mock-allow="mirror"\s+data-mock-why="[^"]*measured on the screen[^"]*"/);

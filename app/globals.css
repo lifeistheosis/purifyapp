@@ -8800,6 +8800,26 @@ html[data-reading-mode="councils"] .reader-part-heading,
 html[data-reading-mode="cappadocian"] .reader-part-heading {
  color: color-mix(in oklab, var(--color-paper) 66%, transparent);
 }
+/* At a tablet's widths the heading stands nearer that light (the page's
+   head is shorter there), and those shares were measured on a phone: at 800
+   and 1032 it read 4.32:1 on Dark, 4.19 on Candlelight, 4.33 on Monastery,
+   4.25 on Councils and Cappadocian (the Theotokos) and 4.44 on Light (three
+   studies), checkMock with pixels on round 1's export (Updates 33). From
+   md each is drawn a step stronger, and all fourteen studies pass at 800. */
+@media (min-width: 768px) {
+ html:not([data-reading-mode]):not([data-look]) .reader-part-heading {
+  color: color-mix(in oklab, var(--color-paper) 66%, transparent);
+ }
+ html[data-reading-mode="parchment"]:not([data-look]) .reader-part-heading,
+ html[data-reading-mode="candlelight"] .reader-part-heading {
+  color: color-mix(in oklab, var(--color-paper) 76%, transparent);
+ }
+ html[data-reading-mode="monastery"] .reader-part-heading,
+ html[data-reading-mode="councils"] .reader-part-heading,
+ html[data-reading-mode="cappadocian"] .reader-part-heading {
+  color: color-mix(in oklab, var(--color-paper) 74%, transparent);
+ }
+}
 .part-segment {
  display: block;
  height: 4px;
