@@ -67,7 +67,7 @@ function sections(drawn: string) {
       heading: /<h2 class="set-h">([^<]*)</.exec(part)?.[1] ?? null,
       hint: /<p class="set-hint">([^<]*)</.exec(part)?.[1] ?? null,
       plus: /<div class="set-fam-head">[\s\S]*?<span class="set-mode-plus">Purify Plus<\/span>[\s\S]*?<\/div>/.test(part),
-      shelf: /<div role="group" aria-label="([^"]*)" class="set-shelf">/.exec(part)?.[1] ?? null,
+      shelf: /<div role="group" aria-label="([^"]*)" data-sweep="[^"]*" class="set-shelf">/.exec(part)?.[1] ?? null,
       tiles: [...part.matchAll(/<button type="button"([^>]*)class="set-mode( set-mode-goal)?">([\s\S]*?)<\/button>/g)].map(([, attrs, goal, inner]) => ({
         palette: /data-palette="([^"]+)"/.exec(inner)?.[1] ?? null,
         pressed: /aria-pressed="true"/.test(attrs),

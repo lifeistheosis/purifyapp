@@ -133,7 +133,7 @@ describe("the reading modes in Settings, one row", () => {
     // Every shelf of the page is a Shelf, which holds its own row and its click.
     expect(gallery).not.toMatch(/<div role="group"[^>]*className="set-shelf"/);
     expect(gallery.match(/<Shelf label=/g)).toHaveLength(3);
-    expect(gallery).toMatch(/function Shelf\([\s\S]*?const row = useRef<HTMLDivElement>\(null\);\s*useScrollTicks\(row\);[\s\S]*?ref=\{row\} role="group" aria-label=\{label\} className="set-shelf"/);
+    expect(gallery).toMatch(/function Shelf\([\s\S]*?const row = useRef<HTMLDivElement>\(null\);\s*useScrollTicks\(row\);[\s\S]*?ref=\{row\} role="group" aria-label=\{label\} data-sweep=\{label\} className="set-shelf"/);
     // The sheet's shelf, on the ref it already scrolls by.
     expect(sheet).toContain("useScrollTicks(shelf);");
     expect(sheet).toMatch(/ref=\{shelf\} role="group" aria-label=\{name\} className="reader-shelf"/);
