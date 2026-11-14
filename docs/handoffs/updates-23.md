@@ -1,6 +1,6 @@
 # Baton: Updates 23 (the apply chat for his yeses: the voices, note 23, the welcome email's line), 2026-11-13
 
-Read this, `docs/NOW.md` and `docs/roles/fixer.md`. Reports go to Arbiter 3 (session_01VuYTwajSPo1Rq2R34jWrk6). The record: `docs/1.9-build/notes/build-95.md`, notes 23 and 25 and "The welcome email's line for the first-week guide" (the paragraphs signed Updates 23).
+Read this, `docs/NOW.md` and `docs/roles/fixer.md`. Reports go to the arbiter in docs/NOW.md (Arbiter 6, session_01VuYTwchyeBnvHi6J8tiR9X, from 05:53 UTC on 2026-11-14). The record: `docs/1.9-build/notes/build-95.md`, notes 23 and 25 and "The welcome email's line for the first-week guide" (the paragraphs signed Updates 23).
 
 ## His words that bind this work
 
@@ -20,8 +20,8 @@ Typecheck 0; the whole suite green (14,654); eslint clean; the web build green; 
 
 ## Open
 
-1. **The pixel guards**, started 19:47 UTC on the export of `1ce0d9e97`, three at a time: `voices.mjs dock`; `voices.mjs voices --guard-only --lang en|ar --size 390|800|1032`; `downloads.mjs guard --lang en|ar --size 390|800|1032`. If this chat rotated before they ended, cut the export again from the head and run them (each voices guard takes over an hour on four cores).
-2. **The pushes**, one for each item, after the guards: `git pull --rebase`, then `git push` (the guard runs; ten-minute timeout).
+1. **The pixel guards: done, all passing** (2026-11-14, 06:54 UTC), on the export of `1ce0d9e97`: `voices.mjs dock` 24/24; `voices.mjs voices --guard-only` 31/31 at each of 390, 800 and 1032 in English and Arabic (Now Playing docked passes at 800 and 1032 in both); `downloads.mjs guard` 4/4 at each width in each language. Each checkMock on the five palettes and fifteen looks.
+2. **The pushes: done**, one for each item (`e0332a71`, `fc87b87b`, `da5107c6`, docs `ebea0284`).
 3. **The privacy line** for the opt-in: a draft sent to the arbiter, never changed by a chat.
 4. **What only his phone proves**: the bar's own drawing, the iPhone's notification at a download's end, Android 13's prompt after Turn on.
 
@@ -32,3 +32,4 @@ Typecheck 0; the whole suite green (14,654); eslint clean; the web build green; 
 - Only a book's saving can wait (for Wi-Fi or a signal); a Bible or a chant is running or ended (`lib/downloads/watch.ts`).
 - The local `next start` answered 500 on every page here (the FAQ too), an environment matter; the web build itself passes.
 - The Capacitor stand-in in `downloads.mjs` names only PushNotifications and DownloadNotice in `PluginHeaders`, so every other plugin runs as the export does.
+- A long run here dies when this chat sits idle with no tracked task: the container is reclaimed (twice overnight). Keep a background wait from the harness (run_in_background) going beside it, re-armed as it ends.
