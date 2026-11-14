@@ -20,8 +20,17 @@
 //   4. an account whose copy holds none of the four: nothing is sent.
 //
 // The session is shaped like Supabase's and nothing reaches a real network.
+// The account's server is the one the export was cut to talk to, read from the
+// export itself: the gate's export (scripts/gate/export.mjs) carries the main
+// web's address, and a session kept under another address is no session to the
+// app (until 2026-11-14 the walk kept it under a placeholder's, so on the gate's
+// export the phone was signed out and 15 of the 21 checks failed with nothing
+// sent). The stand-in answers that address, so nothing reaches it.
 //
-//   npm run build:android, then: node scripts/faith-answers-walk.mjs
+//   node scripts/gate/export.mjs, then: node scripts/faith-answers-walk.mjs [--reduced]
+
+import fs from "node:fs";
+import path from "node:path";
 
 import { go } from "./lib/shell-server.mjs";
 import { openPhone } from "./mock-check.mjs";
@@ -32,7 +41,18 @@ import { reportMotion } from "./lib/motion.mjs";
 const MOTION = process.argv.includes("--reduced") ? "reduce" : "on";
 
 const FAITH = ["level", "returning", "background", "fasting"];
-const SUPABASE = "https://placeholder.supabase.co";
+/** The account's server as the export names it: the one address of a Supabase project its code carries. */
+function exportsServer() {
+  const dir = path.join("out", "_next", "static", "chunks");
+  if (!fs.existsSync(dir)) throw new Error("no native export in out/: run node scripts/gate/export.mjs first");
+  const found = new Set();
+  for (const f of fs.readdirSync(dir)) if (f.endsWith(".js")) for (const m of fs.readFileSync(path.join(dir, f), "utf8").matchAll(/https:\/\/([a-z0-9-]+)\.supabase\.co/g)) found.add(m[0]);
+  if (found.size !== 1) throw new Error(`the export should name one Supabase project, it names ${found.size}: ${[...found].join(", ")}`);
+  return [...found][0];
+}
+const SUPABASE = exportsServer();
+// The name @supabase/ssr keeps a project's session under: sb-<the project's ref>-auth-token.
+const SESSION_KEY = `sb-${new URL(SUPABASE).hostname.split(".")[0]}-auth-token`;
 
 const results = [];
 const say = (ok, what) => {
@@ -64,7 +84,7 @@ let browser;
 async function phone(set, space) {
   const s = session(space);
   // The apps keep the session in their own store (lib/supabase/nativeStore.ts), in the shape of a cookie jar.
-  const jar = JSON.stringify([{ name: "sb-placeholder-auth-token", value: JSON.stringify(s) }]);
+  const jar = JSON.stringify([{ name: SESSION_KEY, value: JSON.stringify(s) }]);
   const opened = await openPhone({ motion: MOTION, set: { ...set, "purify.supabase.auth": jar }, browser });
   browser = opened.browser;
   const account = { user: s.user, sent: [] };
