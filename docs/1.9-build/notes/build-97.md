@@ -47,3 +47,16 @@ Build 97 (run 43608911353, from 231e1ce0, code 59d1fd98), cut ungated at his wor
 **His words** (about 16:06 UTC), with two screenshots of readers' profiles in Community (their names are not written here: they are other people's): "opening a users profile for the first time is laggy and buggy ensure its smooth and if a loading process needs to happen ensure that's smooth too".
 
 **The plan.** Measure the first opening on the export against the main web: what waits (the sheet's motion, the network, the picture, each tab's content arriving) and what moves. The sheet opens at once and stands in its final size; a quiet loading state in the house's way holds each part's place; what arrives fades in without moving anything; Back, Follow and the menu answer while it loads. A test that fails on the old code; the times before and after in the report. **Owner:** a fixer, with note 3 (first openings), measuring first.
+
+## Note 7: the plans, a better design
+
+**His words** (about 16:14 UTC), with a screenshot of The four Gospels' own page: "we need a better plans design".
+
+**Found** (his screenshot and `components/plans/`):
+- "0 of 89 days read" over an empty bar is a zero as a first sight, which round 1's rule forbids: a count shows from one; until then an invitation in words, or nothing (`docs/1.9-build/redesign/README.md`, his yes of 2026-11-13).
+- The plan's own page has no picture, though its tile on the plans list wears one (the saint its books are attributed to, or the season's picture; `components/plans/PlansClient.tsx`). So the tap from tile to page cannot carry the picture in, as his page-switch rule asks (CLAUDE.md, 2026-11-10).
+- The day's card is a block of words with its sources inside it, and the days below are plain numbered circles (`components/plans/PlanPath.tsx`: two days behind, today, four ahead, the rest folded by book). The sources stay in some form: the editorial standards cite every quote.
+
+**The plan.** A design, so it goes to the Fable round for his yes (CLAUDE.md: every design is justified), with the journal page and the Voice sheet, as part of round 3 (the Bible's opening; the plans sit under the Bible tab). One version, stills from the export, `checkMock` with pixels, a reason for each choice. The plan's own page first, which is what he showed, and the plans list only where the two must meet (the picture carried in). What the page does stays: Begin and the plan's bar, Plus shown and never hidden, progress kept on the device, the citations. On his yes a fixer applies it, with a test that fails on the zero. If the round waits, the zero alone goes to a fixer, since it breaks a rule he has already approved.
+
+**Owner:** the Fable round (NOW, Waiting on him 1), then a fixer.
