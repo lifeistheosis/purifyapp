@@ -34,7 +34,7 @@ import {
 } from "@/lib/shop/catalogClient";
 import { featuredIcon, newIn } from "@/lib/shop/featured";
 import { CATEGORY_LABELS, formatPrice } from "@/lib/shop/format";
-import { productHref } from "@/lib/shop/productHref";
+import { pieceCarry, productHref } from "@/lib/shop/productHref";
 import { useRecentlyViewed } from "@/lib/shop/recentlyViewed";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import type { ShopCategory, ShopProductFull } from "@/lib/shop/types";
@@ -401,7 +401,10 @@ function Thumb({ product }: { product: ShopProductFull }) {
     <Link href={productHref(product.slug, native)} className="group block" aria-label={product.title}>
       <div className="shop-vitrine relative aspect-[4/5] overflow-hidden rounded-xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] group-hover:ring-paper/30">
         {image ? (
-          <VitrineImage src={image.media_url} alt="" fill sizes="136px" className="object-contain p-2.5" />
+          // The picture travels into its page (pieceCarry, lib/ui/routeMotion.ts).
+          <div data-carry={pieceCarry(product.slug)} className="absolute inset-0">
+            <VitrineImage src={image.media_url} alt="" fill sizes="136px" className="object-contain p-2.5" />
+          </div>
         ) : null}
       </div>
       <p className="mt-2 truncate font-sans text-caption text-paper/70">{product.title}</p>

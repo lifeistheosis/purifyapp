@@ -7,7 +7,7 @@ import { VitrineImage } from "@/components/shop/VitrineImage";
 import { Search } from "@/components/ui/icons/Search";
 import { cn } from "@/lib/cn";
 import { useIsNative } from "@/lib/platform/native";
-import { productHref } from "@/lib/shop/productHref";
+import { pieceCarry, productHref } from "@/lib/shop/productHref";
 import type { ShopProductFull } from "@/lib/shop/types";
 
 /**
@@ -93,15 +93,20 @@ export function FeaturedIcon({
             aria-label={icon.title}
             className="group relative block min-h-0"
           >
-            <VitrineImage
-              src={image.media_url}
-              alt=""
-              fill
-              loading="eager"
-              fetchPriority="high"
-              sizes="(min-width: 1200px) 540px, (min-width: 768px) 45vw, 160px"
-              className="shop-feature-icon object-contain py-2.5 drop-shadow-[0_18px_24px_rgba(0,0,0,0.45)] transition-transform duration-700 ease-house group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100 md:p-10"
-            />
+            {/* The icon travels into its page (pieceCarry, lib/ui/routeMotion.ts),
+                as a card's picture does: it opened its page with no picture
+                carried (Gate 2's fault 7). */}
+            <div data-carry={pieceCarry(icon.slug)} className="absolute inset-0">
+              <VitrineImage
+                src={image.media_url}
+                alt=""
+                fill
+                loading="eager"
+                fetchPriority="high"
+                sizes="(min-width: 1200px) 540px, (min-width: 768px) 45vw, 160px"
+                className="shop-feature-icon object-contain py-2.5 drop-shadow-[0_18px_24px_rgba(0,0,0,0.45)] transition-transform duration-700 ease-house group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100 md:p-10"
+              />
+            </div>
           </Link>
         ) : waiting ? (
           <div aria-hidden className="py-2.5 pe-2.5 md:p-10">

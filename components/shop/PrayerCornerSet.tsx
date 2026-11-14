@@ -14,7 +14,7 @@ import { useIsNative } from "@/lib/platform/native";
 import { addToCart, openCartDrawer, useCart } from "@/lib/shop/cart";
 import { isEikonProduct } from "@/lib/shop/eikon";
 import { formatPrice } from "@/lib/shop/format";
-import { productHref } from "@/lib/shop/productHref";
+import { pieceCarry, productHref } from "@/lib/shop/productHref";
 import { NO_PROMOTIONS, priceCart, type PromoConfig } from "@/lib/shop/promotions";
 import { prayerCornerSet, roleOf, setShipsFree } from "@/lib/shop/sets";
 import type { ShopProductFull } from "@/lib/shop/types";
@@ -133,7 +133,10 @@ export function PrayerCornerSet({
               <Link href={productHref(p.slug, native)} className="group block">
                 <div className="shop-vitrine relative aspect-[4/5] overflow-hidden rounded-xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] group-hover:ring-paper/30">
                   {image ? (
-                    <Image src={image.media_url} alt={image.alt_text} fill sizes="(min-width: 768px) 20vw, 30vw" className="object-contain p-2.5 md:p-4" />
+                    // The picture travels into its page (pieceCarry, lib/ui/routeMotion.ts).
+                    <div data-carry={pieceCarry(p.slug)} className="absolute inset-0">
+                      <Image src={image.media_url} alt={image.alt_text} fill sizes="(min-width: 768px) 20vw, 30vw" className="object-contain p-2.5 md:p-4" />
+                    </div>
                   ) : null}
                 </div>
                 <p className="mt-2 font-sans text-caption leading-snug text-paper/75 group-hover:text-paper md:text-detail">

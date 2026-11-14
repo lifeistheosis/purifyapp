@@ -8,7 +8,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useIsNative } from "@/lib/platform/native";
 import { bannerFeast } from "@/lib/shop/feasts";
 import { formatPrice } from "@/lib/shop/format";
-import { productHref } from "@/lib/shop/productHref";
+import { pieceCarry, productHref } from "@/lib/shop/productHref";
 import type { ShopProductFull } from "@/lib/shop/types";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 
@@ -64,7 +64,8 @@ export function FeastBand({ products, className }: { products: readonly ShopProd
             return (
               <li key={p.id} className={pieces.length === 1 ? "col-span-2" : undefined}>
                 <Link href={productHref(p.slug, native)} className="shop-vitrine group flex items-center gap-3 rounded-xl p-2.5 ring-1 ring-inset ring-paper/10 transition-[box-shadow] hover:ring-paper/30">
-                  <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg">
+                  {/* The picture travels into its page (pieceCarry, lib/ui/routeMotion.ts). */}
+                  <div data-carry={pieceCarry(p.slug)} className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg">
                     {image ? <Image src={image.media_url} alt={image.alt_text} fill sizes="64px" className="object-contain p-1" /> : null}
                   </div>
                   <div className="min-w-0">
