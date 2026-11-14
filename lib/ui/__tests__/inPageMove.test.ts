@@ -267,8 +267,13 @@ describe("Gate 2.0's in-page faults under his ruling, each moved (Updates 22)", 
     expect(read("components/ui/GlideLink.tsx")).toContain('place.scrollIntoView({ behavior: scrollBehavior(), block: "start" });');
   });
 
-  it("a line a tap shows moves what is below it: Buy now's, the sign-up's", () => {
-    expect(read("components/shop/BuyBar.tsx").match(/\{ grows: \[barRef\.current\] \}/g)).toHaveLength(2);
+  it("a line a tap shows moves what is below it: the sign-up's; Buy now's moves nothing", () => {
+    // The buy bar stands on a phone's foot and grows upward, so picturing it whole carried Buy now up
+    // 27px under the finger (Gate 2, 2026-11-14): its line opens at the bar's head by its own height
+    // (lib/shop/__tests__/buyNowStill.test.ts), with nothing for the page's means to move.
+    const bar = read("components/shop/BuyBar.tsx");
+    expect(bar).not.toContain("movePage(");
+    expect(bar).toContain("max-md:order-first motion-safe:transition-[grid-template-rows]");
     const signUp = read("components/auth/SignUpForm.tsx");
     expect(signUp).toContain("const agree = (now: boolean) => movePage(() => setAgreed(now), { grows: [oauthBox.current] });");
     expect(signUp).toContain("onChange={(e) => agree(e.target.checked)}");

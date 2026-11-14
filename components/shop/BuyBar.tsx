@@ -9,7 +9,6 @@ import { cn } from "@/lib/cn";
 import { addToCart, clearCart, openCartDrawer } from "@/lib/shop/cart";
 import { getCartToken } from "@/lib/shop/cartSync";
 import { closeNativeCheckout, openStripe } from "@/lib/shop/openStripe";
-import { movePage } from "@/lib/ui/inPageMove";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SecureCheckoutNote } from "./SecureCheckoutNote";
 import { LegalLink } from "@/components/legal/LegalLink";
@@ -73,12 +72,18 @@ export function BuyBar({
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The words the line under the buttons shows, kept while it folds away
+  // when the error is cleared (the alert reads the error itself).
+  const [said, setSaid] = useState("");
+  function say(words: string | null) {
+    setError(words);
+    if (words) setSaid(words);
+  }
   const [added, setAdded] = useState(false);
   // Clickwrap: the checkout API refuses the order unless this was ticked,
   // and the acceptance is recorded server-side against the order.
   const [agreed, setAgreed] = useState(false);
   const [nudge, setNudge] = useState(false);
-  const barRef = useRef<HTMLDivElement>(null);
   const agreeRef = useRef<HTMLInputElement | null>(null);
 
   function handleAddToCart() {
@@ -90,22 +95,15 @@ export function BuyBar({
 
   async function startCheckout() {
     if (!agreed) {
-      // The line under the buttons is let down and the bar rises by it, as a
-      // change inside the page (lib/ui/inPageMove.ts), where the bar jumped
-      // 27px (Gate 2.0); ticking the box takes it away the same way.
-      movePage(
-        () => {
-          setError(t("shop.agreeTermsFirst"));
-          setNudge(true);
-        },
-        { grows: [barRef.current] },
-      );
+      // The line is let down where nothing under the finger moves (below).
+      say(t("shop.agreeTermsFirst"));
+      setNudge(true);
       agreeRef.current?.focus();
       window.setTimeout(() => setNudge(false), 1400);
       return;
     }
     setBusy(true);
-    setError(null);
+    say(null);
     try {
       const res = await apiFetch("/api/shop/checkout", {
         method: "POST",
@@ -121,7 +119,7 @@ export function BuyBar({
         await openStripe(data.url, () => {
           void closeNativeCheckout(data.orderId).then((outcome) => {
             if (outcome === "left") {
-              setError(t("shop.checkoutClosedNothingCharged"));
+              say(t("shop.checkoutClosedNothingCharged"));
               return;
             }
             if (outcome === "paid") clearCart();
@@ -130,9 +128,9 @@ export function BuyBar({
         });
         return;
       }
-      setError(data.error ?? t("shop.checkoutUnavailable"));
+      say(data.error ?? t("shop.checkoutUnavailable"));
     } catch {
-      setError(t("shop.checkoutUnavailable"));
+      say(t("shop.checkoutUnavailable"));
     } finally {
       setBusy(false);
     }
@@ -142,7 +140,6 @@ export function BuyBar({
 
   return (
     <div
-      ref={barRef}
       // Steps away while one of the app's fields has the keyboard (app/globals.css).
       data-foot-bar
       className={cn(
@@ -153,7 +150,7 @@ export function BuyBar({
         "md:static md:rounded-2xl md:border md:border-paper/10 md:bg-night-soft/60 md:p-6 md:backdrop-blur-none",
       )}
     >
-      <div className="mx-auto max-w-[560px] md:mx-0">
+      <div className="mx-auto flex max-w-[560px] flex-col md:mx-0">
         {/* The price, and whether it is in hand. One line on a phone. */}
         <div className="flex items-baseline justify-between gap-3 md:block">
           <p className="shrink-0 font-sans text-title-sm font-semibold tabular-nums text-paper md:text-heading">
@@ -211,7 +208,7 @@ export function BuyBar({
                   checked={agreed}
                   onChange={(e) => {
                     setAgreed(e.target.checked);
-                    if (e.target.checked && error) movePage(() => setError(null), { grows: [barRef.current] });
+                    if (e.target.checked && error) say(null);
                   }}
                   data-mock-allow="target"
                   data-mock-why="its reach is the 44 by 44 square round it, inside its label: a tap anywhere there ticks it"
@@ -254,11 +251,28 @@ export function BuyBar({
             {t("shop.requestThisItem")}
           </Link>
         )}
-        {error ? (
-          <p role="alert" className="mt-2 font-sans text-caption text-crimson-soft">
-            {error}
+        {/* The line a tap shows: the agreement first, or why checkout did not
+            open. On a phone the bar stands on the screen's foot, so a line
+            under the box raised the bar, and Buy now with it, 27px under the
+            finger (Gate 2, 2026-11-14). There it stands at the bar's head, let
+            down as the bar rises by it, and nothing under the finger moves,
+            nor when the box is ticked and it folds away; in the sidebar it
+            stays under the box, where nothing above it moves. The alert reads
+            the error once, as it comes; the line keeps its words as it folds. */}
+        <p role="alert" className="sr-only">
+          {error}
+        </p>
+        <div
+          aria-hidden
+          className={cn(
+            "grid max-md:order-first motion-safe:transition-[grid-template-rows] motion-safe:duration-[var(--duration-base)] motion-safe:ease-[var(--ease-house)]",
+            error ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+          )}
+        >
+          <p className="min-h-0 overflow-hidden font-sans text-caption text-crimson-soft">
+            <span className="block pb-2 md:pb-0 md:pt-2">{said}</span>
           </p>
-        ) : null}
+        </div>
       </div>
     </div>
   );
