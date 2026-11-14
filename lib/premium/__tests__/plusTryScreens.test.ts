@@ -7,6 +7,9 @@
 // preview that shows nothing, an example not marked as one, a page in English
 // for a reader in Athens, or the wrong feature after Next.
 
+import fs from "node:fs";
+import path from "node:path";
+
 import { createElement, type ComponentType, type ReactElement } from "react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -166,6 +169,13 @@ describe("the window under the lock's words (Updates 28's walk, 2026-11-13)", ()
     expect(page).toContain('inert=""');
     expect(page).toContain('data-mock-allow="contrast"');
     expect(page).toMatch(/data-mock-why="[^"]+"/);
+  });
+
+  it("sets the lock's own line where it reads over the veil, the verses' letters under it", () => {
+    // On the light looks the line read 4.41 to 4.45:1 at its least in Arabic at 390, at 70% of the ink.
+    const code = fs.readFileSync(path.join(process.cwd(), "components/billing/plusTry/TryAmbience.tsx"), "utf8");
+    const line = /<p className="([^"]*)">\{t\("plus\.ambience\.keep"\)\}<\/p>/.exec(code)?.[1] ?? "";
+    expect(line).toContain("text-paper/80");
   });
 
   it("leaves the page as it is while no lock stands over it", async () => {

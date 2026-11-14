@@ -48,7 +48,9 @@ export default function TryAmbience({ row, owned = false }: TryProps) {
                 <AmbienceIcon icon="rain" size={22} />
               </span>
               <p className="mt-3.5 font-heading text-[22px] font-semibold leading-[1.25] text-paper">{t("plus.ambience.title")}</p>
-              <p className="mt-2.5 font-sans text-ui leading-[1.45] text-paper/70">{t("plus.ambience.keep")}</p>
+              {/* 80, not 70: over the veiled page a verse's letters show through under this line, and on the
+                  light looks it read 4.41 to 4.45:1 at its least in Arabic at 390 (Updates 34, the export's walk). */}
+              <p className="mt-2.5 font-sans text-ui leading-[1.45] text-paper/80">{t("plus.ambience.keep")}</p>
             </div>
           ) : null
         }
