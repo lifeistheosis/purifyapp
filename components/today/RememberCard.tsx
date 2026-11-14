@@ -237,7 +237,8 @@ export function RememberCardView({
     if (!regain.current) return;
     regain.current = false;
     if (back) statusRef.current?.focus();
-    else rowRef.current?.querySelector("button")?.focus();
+    // The first button of the face that is shown: the other keeps its room, inert.
+    else rowRef.current?.querySelector<HTMLButtonElement>("button:not([inert] *)")?.focus();
   }, [back, shown]);
 
   // Only when the buttons the reader is on are about to be replaced.
@@ -318,23 +319,29 @@ export function RememberCardView({
                     {t("remember.show")}
                     <PlusLock size={13} />
                   </button>
-                ) : shown ? (
-                  <>
-                    <button type="button" onClick={() => show(false)} className={cn(PILL, QUIET)}>
-                      {t("remember.hide")}
-                    </button>
-                    <button type="button" onClick={() => reply(false)} className={cn(PILL, QUIET)}>
-                      {t("remember.notYet")}
-                    </button>
-                    <button type="button" onClick={() => reply(true)} className={cn(PILL, SOLID)}>
-                      {t("remember.knew")}
-                    </button>
-                  </>
                 ) : (
                   <>
-                    <button type="button" disabled={!text} onClick={() => show(true)} className={cn(PILL, QUIET)}>
-                      {t("remember.show")}
-                    </button>
+                    {/* Show the words, and the two it turns into, Hide and Not yet,
+                        share one place, as wide as the wider of the two: the row is
+                        not centred again at the tap, so nothing moves under the
+                        finger and I know it stays where it stood (1.9, the gate's tap
+                        walk: Show the words moved 10px and Not yet came under the
+                        finger). The face not shown keeps its room, unseen and inert. */}
+                    <span data-remember-turn="" className="grid">
+                      <span inert={shown} className={cn("col-start-1 row-start-1 flex", shown && "invisible")}>
+                        <button type="button" disabled={!text} onClick={() => show(true)} className={cn(PILL, QUIET, "w-full justify-center")}>
+                          {t("remember.show")}
+                        </button>
+                      </span>
+                      <span inert={!shown} className={cn("col-start-1 row-start-1 flex gap-2", !shown && "invisible")}>
+                        <button type="button" onClick={() => show(false)} className={cn(PILL, QUIET, "flex-auto justify-center")}>
+                          {t("remember.hide")}
+                        </button>
+                        <button type="button" onClick={() => reply(false)} className={cn(PILL, QUIET, "flex-auto justify-center")}>
+                          {t("remember.notYet")}
+                        </button>
+                      </span>
+                    </span>
                     <button type="button" disabled={!text} onClick={() => reply(true)} className={cn(PILL, SOLID)}>
                       {t("remember.knew")}
                     </button>
