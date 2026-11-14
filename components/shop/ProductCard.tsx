@@ -102,7 +102,12 @@ export function ProductCard({
       <div
         className={cn(
           "shop-vitrine relative aspect-[4/5] overflow-hidden rounded-2xl ring-1 ring-inset ring-paper/[0.07] transition-[box-shadow] duration-500 group-hover:ring-paper/30",
-          soldOut && "opacity-70",
+          // Sold out, the vitrine is dimmed, and its opacity makes it a
+          // stacking context of its own, which put the Save heart's z-20 under
+          // the stretched link's z-10 (a tap on Save opened the piece; Gate 2,
+          // 2026-11-14). So a dimmed vitrine stands over the link and lets a
+          // tap through to it, all but the heart's.
+          soldOut && "pointer-events-none z-20 opacity-70",
         )}
       >
         {image ? (
@@ -141,7 +146,7 @@ export function ProductCard({
           // processor slowed four times: 1,270 ms of drawing with the blur,
           // 633 ms without. Over the vitrine's own dark ground the two look
           // the same.
-          className="absolute end-2 top-2 z-20 h-11 w-11 bg-night/70"
+          className="absolute end-2 top-2 z-20 h-11 w-11 bg-night/70 pointer-events-auto"
         />
       </div>
 
