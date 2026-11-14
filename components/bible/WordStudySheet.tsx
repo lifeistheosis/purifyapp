@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import { StrongsDefinition } from "@/components/bible/StrongsDefinition";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -79,6 +79,16 @@ export function preloadWordStudy(strongs: string, tab: "ot" | "nt"): Promise<boo
   );
 }
 
+type Tab = "ot" | "nt";
+/** One testament's verses in a study: those come so far, and whether more are coming. */
+type Shelf = { answer: Answer | null; items: Item[]; loading: boolean; failed: boolean };
+
+/** A testament's shelf as a study opens: whole at once if it is already here. */
+function shelfFor(strongs: string | null, tab: Tab): Shelf {
+  const answer = strongs ? (answered.get(addressOf(strongs, tab)) ?? null) : null;
+  return { answer, items: answer?.items ?? [], loading: answer === null, failed: false };
+}
+
 /** The verse's Greek with the word's own forms marked. */
 function Marked({ text, forms }: { text: string; forms: string[] }) {
   if (forms.length === 0) return <>{text}</>;
@@ -149,55 +159,60 @@ export function WordStudyBody({
   onLeave?: () => void;
 }) {
   const { t, tn } = useTranslate();
+  const id = useId();
   // Mounted afresh for each word (the caller keys it), so it opens in the
   // testament being read with nothing left over from the last word. A study
   // already here opens whole.
-  const [tab, setTab] = useState<"ot" | "nt">(startIn);
-  const [answer, setAnswer] = useState<Answer | null>(() => (strongs ? (answered.get(addressOf(strongs, startIn)) ?? null) : null));
-  const [items, setItems] = useState<Item[]>(() => answer?.items ?? []);
-  const [loading, setLoading] = useState(() => answer === null);
-  const [failed, setFailed] = useState(false);
+  const [tab, setTab] = useState<Tab>(startIn);
+  // Each testament keeps its own verses, both asked for as the study opens,
+  // the open one first: the other is here when its tab is tapped, and the two
+  // lists share one cell below, so the sheet is as tall as the taller and its
+  // edge, title and tabs stand still when the testament changes (build 97
+  // note 9's rule; the old study emptied its list, fell, then rose again).
+  const [shelves, setShelves] = useState<Record<Tab, Shelf>>(() => ({ ot: shelfFor(strongs, "ot"), nt: shelfFor(strongs, "nt") }));
+  const [asks, setAsks] = useState(0);
 
   useEffect(() => {
     if (!strongs) return;
     let alive = true;
-    askFor(strongs, tab)
-      .then((a) => {
-        if (!alive) return;
-        setAnswer(a);
-        setItems(a.items);
-      })
-      .catch(() => {
-        if (alive) setFailed(true);
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
+    for (const key of [startIn, startIn === "ot" ? "nt" : "ot"] as const) {
+      askFor(strongs, key).then(
+        (a) => {
+          if (alive) setShelves((s) => (s[key].answer ? s : { ...s, [key]: { answer: a, items: a.items, loading: false, failed: false } }));
+        },
+        () => {
+          if (alive) setShelves((s) => (s[key].answer ? s : { ...s, [key]: { ...s[key], loading: false, failed: true } }));
+        },
+      );
+    }
     return () => {
       alive = false;
     };
-  }, [strongs, tab]);
+  }, [strongs, startIn, asks]);
 
-  const choose = (key: "ot" | "nt") => {
+  const choose = (key: Tab) => {
     if (key === tab) return;
     setTab(key);
-    setItems([]);
-    setFailed(false);
-    setLoading(true);
+    // A testament that could not be fetched is asked for again as it is chosen.
+    if (shelves[key].failed && !shelves[key].answer) {
+      setShelves((s) => ({ ...s, [key]: { ...s[key], loading: true, failed: false } }));
+      setAsks((n) => n + 1);
+    }
   };
 
   const more = () => {
-    if (!strongs || answer?.next == null) return;
-    setLoading(true);
-    apiFetch(`/api/bible/word?s=${encodeURIComponent(strongs)}&t=${tab}&offset=${answer.next}`)
+    const key = tab;
+    const next = shelves[key].answer?.next;
+    if (!strongs || next == null) return;
+    setShelves((s) => ({ ...s, [key]: { ...s[key], loading: true } }));
+    apiFetch(`/api/bible/word?s=${encodeURIComponent(strongs)}&t=${key}&offset=${next}`)
       .then((r) => (r.ok ? (r.json() as Promise<Answer>) : Promise.reject(new Error(String(r.status)))))
-      .then((a) => {
-        setAnswer(a);
-        setItems((prev) => [...prev, ...a.items]);
-      })
-      .catch(() => setFailed(true))
-      .finally(() => setLoading(false));
+      .then((a) => setShelves((s) => ({ ...s, [key]: { answer: a, items: [...s[key].items, ...a.items], loading: false, failed: false } })))
+      .catch(() => setShelves((s) => ({ ...s, [key]: { ...s[key], loading: false, failed: true } })));
   };
+
+  // The word, its entry and its counts are the same in either testament's answer.
+  const answer = shelves[tab].answer ?? shelves[tab === "ot" ? "nt" : "ot"].answer;
 
   const title = answer?.lemma ?? lemma ?? "";
   return (
@@ -224,6 +239,8 @@ export function WordStudyBody({
           <button
             key={key}
             type="button"
+            id={`${id}-tab-${key}`}
+            aria-controls={`${id}-${key}`}
             role="tab"
             aria-selected={tab === key}
             onClick={() => choose(key)}
@@ -243,43 +260,62 @@ export function WordStudyBody({
         ))}
       </div>
 
-      <ol className="mt-4 divide-y divide-paper/10">
-        {items.map((it) => (
-          <li key={it.ref}>
-            <Link href={it.href} onClick={onLeave} className="group block py-3.5">
-              <p className="font-sans text-detail font-semibold text-premium-ink group-hover:text-premium-bright">
-                {t(`bible.books.${it.book}`)} {it.chapter}:{it.verse}
-              </p>
-              {it.english ? (
-                <p lang="en" dir="ltr" className="mt-1 font-serif text-body leading-[1.6] text-paper/85">
-                  {it.english}
-                </p>
-              ) : null}
-              <p lang="grc" dir="ltr" style={GREEK} className="mt-1 text-ui leading-[1.6] text-paper/65">
-                <Marked text={it.greek} forms={it.forms} />
-              </p>
-              {it.english === null ? (
-                <p className="mt-1 font-sans text-caption text-paper/45">{t("bible.wordStudyGreekNumbering")}</p>
-              ) : null}
-            </Link>
-          </li>
-        ))}
-      </ol>
-
-      {loading ? <p className="mt-4 font-sans text-detail text-paper/55">{t("bible.wordStudyLoading")}</p> : null}
-      {failed ? <p className="mt-4 font-sans text-detail text-crimson-soft">{t("bible.wordStudyFailed")}</p> : null}
-      {!loading && answer && items.length === 0 && !failed ? (
-        <p className="mt-4 font-sans text-detail text-paper/55">{t("bible.wordStudyNone")}</p>
-      ) : null}
-      {answer?.next != null && !loading ? (
-        <button
-          type="button"
-          onClick={more}
-          className="mt-4 inline-flex min-h-11 items-center rounded-pill border border-paper/20 px-5 font-sans text-detail font-semibold text-paper hover:border-paper/45"
-        >
-          {t("bible.wordStudyMore")}
-        </button>
-      ) : null}
+      {/* The two testaments in one cell, the one not shown unseen and out of
+          reach, so the panel keeps the taller one's height. */}
+      <div className="grid">
+        {(["ot", "nt"] as const).map((key) => {
+          const on = key === tab;
+          const s = shelves[key];
+          return (
+            <div
+              key={key}
+              id={`${id}-${key}`}
+              role="tabpanel"
+              aria-labelledby={`${id}-tab-${key}`}
+              className={cn("col-start-1 row-start-1 min-w-0", on ? undefined : "invisible")}
+              aria-hidden={on ? undefined : true}
+              inert={!on}
+            >
+                    <ol className="mt-4 divide-y divide-paper/10">
+                      {s.items.map((it) => (
+                        <li key={it.ref}>
+                          <Link href={it.href} onClick={onLeave} className="group block py-3.5">
+                            <p className="font-sans text-detail font-semibold text-premium-ink group-hover:text-premium-bright">
+                              {t(`bible.books.${it.book}`)} {it.chapter}:{it.verse}
+                            </p>
+                            {it.english ? (
+                              <p lang="en" dir="ltr" className="mt-1 font-serif text-body leading-[1.6] text-paper/85">
+                                {it.english}
+                              </p>
+                            ) : null}
+                            <p lang="grc" dir="ltr" style={GREEK} className="mt-1 text-ui leading-[1.6] text-paper/65">
+                              <Marked text={it.greek} forms={it.forms} />
+                            </p>
+                            {it.english === null ? (
+                              <p className="mt-1 font-sans text-caption text-paper/45">{t("bible.wordStudyGreekNumbering")}</p>
+                            ) : null}
+                          </Link>
+                        </li>
+                      ))}
+                    </ol>
+                    {s.loading ? <p className="mt-4 font-sans text-detail text-paper/55">{t("bible.wordStudyLoading")}</p> : null}
+                    {s.failed ? <p className="mt-4 font-sans text-detail text-crimson-soft">{t("bible.wordStudyFailed")}</p> : null}
+                    {!s.loading && s.answer && s.items.length === 0 && !s.failed ? (
+                      <p className="mt-4 font-sans text-detail text-paper/55">{t("bible.wordStudyNone")}</p>
+                    ) : null}
+                    {s.answer?.next != null && !s.loading ? (
+                      <button
+                        type="button"
+                        onClick={more}
+                        className="mt-4 inline-flex min-h-11 items-center rounded-pill border border-paper/20 px-5 font-sans text-detail font-semibold text-paper hover:border-paper/45"
+                      >
+                        {t("bible.wordStudyMore")}
+                      </button>
+                    ) : null}
+            </div>
+          );
+        })}
+      </div>
       <p className="mt-5 font-sans text-caption text-paper/45">{t("bible.wordStudyCredit")}</p>
     </>
   );
