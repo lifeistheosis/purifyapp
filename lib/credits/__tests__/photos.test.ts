@@ -18,6 +18,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { COUNCIL_PICTURES } from "@/lib/councils/pictures";
 import { CC_LICENCES, creditFor, isCcLicence, photoCredits } from "@/lib/credits/photos";
 import { FIGURES } from "@/lib/readAloud/covers";
 import { COUNCIL_COVERS, FEELING_COVERS } from "@/lib/reading/authorCovers";
@@ -40,6 +41,8 @@ function pictures(): { file: string; license: string; credit?: string; evidenceU
   for (const [file, row] of Object.entries(ICON_RIGHTS)) {
     if (row.status === "verified") out.push({ file: `${ICONS_URL_PREFIX}${file}`, license: row.license, credit: row.credit, evidenceUrl: row.evidenceUrl });
   }
+  // A local council's own picture (build 97 note 4).
+  for (const own of Object.values(COUNCIL_PICTURES)) out.push({ file: own.hero, license: own.license, credit: own.credit, evidenceUrl: own.evidenceUrl });
   return out;
 }
 
@@ -68,10 +71,11 @@ describe("the photo credits", () => {
     const credits = photoCredits();
     expect(new Set(credits.map((c) => c.file)).size).toBe(credits.length);
     for (const c of credits) {
-      expect(c.file, c.file).toMatch(/^\/(covers|saints\/icons)\//);
+      // A local council's own picture is in History's folder, its AVIF beside it (build 97 note 4).
+      expect(c.file, c.file).toMatch(/^\/(covers|saints\/icons|history\/media)\//);
       expect(fs.existsSync(path.join(ROOT, "public", c.file)), c.file).toBe(true);
       // A cover is streamed, with its lighter copy beside it; a saint's picture is carried as it is.
-      if (c.file.startsWith("/covers/")) expect(fs.existsSync(path.join(ROOT, "public", c.file.replace(/\.jpg$/, ".avif"))), c.file).toBe(true);
+      if (/^\/(covers|history)\//.test(c.file)) expect(fs.existsSync(path.join(ROOT, "public", c.file.replace(/\.jpg$/, ".avif"))), c.file).toBe(true);
     }
     // St Victorinus's fresco, the first saint's picture made from a CC photograph, names its photographer.
     expect(creditFor("/saints/icons/victorinus-of-pettau.jpg")).toMatchObject({ photographer: "Urharec", licence: "CC BY-SA 3.0" });

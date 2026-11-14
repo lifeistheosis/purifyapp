@@ -279,6 +279,19 @@ export const AUTHOR_COVERS: Readonly<Record<string, StreamedArt>> = {
     },
     "2026-10-19",
   ),
+  // St Caesarius of Arles, who presided at Orange in 529, has no page in
+  // Purify, so this is his face on the council's page (build 97 note 4;
+  // lib/councils/fathers.ts reads it by his slug there). Callot's etching for
+  // his day, 27 August, lettered "S. CESARIVS EPVS"; the Rijksmuseum's copy of
+  // the plate names him Caesarius of Arles. The Met's scan of its sheet, which
+  // it gives as public domain (Open Access, CC0), cut about him inside the
+  // oval: his face is small on a sheet 6.5 cm tall.
+  "caesarius-of-arles": art("caesarius-of-arles", FULL, 38, "File:St. Caesarius, Bishop Met DP891091.jpg", "CC0", {
+    work: "S. Césaire, évêque (St Caesarius, Bishop), for 27 August, from Les Images De Tous Les Saincts et Saintes de L'Année, etching, the Metropolitan Museum of Art, 17.50.17-371(295)",
+    artist: "Jacques Callot",
+    workDate: "1636",
+    alt: "A bearded bishop in profile under a wide-brimmed hat, his halo drawn as a line behind it, in a long cloak, holding out his hand as he speaks; an etching in black on grey paper, a hatched wall behind him.",
+  }, "2026-11-14"),
   "augustine-of-hippo": art("augustine-of-hippo", FULL, 26, "File:Saint Augustine by Philippe de Champaigne.jpg", "Public domain", {
     work: "Saint Augustine by Philippe de Champaigne, the Los Angeles County Museum of Art",
     artist: "Philippe de Champaigne",

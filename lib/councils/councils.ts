@@ -42,7 +42,9 @@ export type CouncilPendingDocument = {
 };
 
 export type CouncilFather = {
- /** Slug of a saint in the SAINTS registry, when one exists. */
+ /** Slug of a saint in the SAINTS registry, when one exists; for a Father
+ * with no page, the slug of his face among the covers (lib/reading/coverArt.ts,
+ * build 97 note 4), which links nowhere. */
  slug?: string;
  /** Display name as shown on the council page. */
  name: string;
@@ -1411,6 +1413,8 @@ export const COUNCILS: Council[] = [
  ],
  principalFathers: [
  {
+ // No page in Purify; his slug is his face among the covers (lib/reading/authorCovers.ts).
+ slug: "caesarius-of-arles",
  name: "St. Caesarius of Arles",
  role: "Bishop of Arles and the leading hierarch of Gaul; sought the propositions from Rome, presided over the council, and wrote its concluding statement.",
  },

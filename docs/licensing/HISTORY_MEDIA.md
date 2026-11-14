@@ -209,6 +209,33 @@ website alone: the apps ask for them (`lib/media/streamed.ts`).
   Romanus, where Giustiniani fell, but the engraving is of camels and a coffee
   house before it.
 
+## The local councils' own pictures (1.9, build 97 note 4)
+
+No local council has a History event, so a local council's own picture is
+registered in `lib/councils/pictures.ts`, in this folder and History's shape,
+and drawn at the head of its page, on its own books and as its shelf's
+backdrop (`lib/councils/page.ts`, `councilPicture`). Its credit line is
+printed at the foot of its page, and as a CC BY-SA photograph its
+photographer is named on the Credits page (`lib/credits/photos.ts`). The
+apps do not carry these, as they carry the seven's: they ask the website.
+Opened, cut and checked by Updates 50 on 2026-11-14 (edges by
+`scripts/check-picture-edges.mjs`: clean); AVIF and preview by
+`scripts/history-media.mjs`. Purify's crops are shared under the same
+licence, CC BY-SA 4.0.
+
+| File | Council | The work | Artist | Date of the work | Licence (Commons) | Source |
+|---|---|---|---|---|---|---|
+| `council-of-sardica.v1.jpg` (1280 by 735, 334,655 bytes; AVIF 237,393) | Council of Sardica (343) | The panel of the Council of Sardica among the local councils on the north wall of the nave, Church of the Nativity, Bethlehem: "+ΣΑΡΔΙΚΗ" above a domed church, the synod's words beneath (restoring St Athanasius and St Paul of Constantinople to their thrones). Cut from the photograph above the plaster at its foot and below the band of leaves over it | The mosaicists of 1169; photograph by Thaler Tamas, 8 April 2023 | 1169 | CC BY-SA 4.0 (the photograph; the mosaic is public domain by age) | [Church of the Nativity (Bethlehem) FotoThalerTamas8.jpg](https://commons.wikimedia.org/wiki/File:Church_of_the_Nativity_(Bethlehem)_FotoThalerTamas8.jpg) |
+| `council-of-antioch-268.v1.jpg` (838 by 470, 139,385 bytes; AVIF 83,628) | Council of Antioch (268) | The panel of the Council of Antioch, the same wall: "Η ΑΝΤΙΟΧΕΙΑ" above a domed church, beneath it the words of the holy synod in Antioch of Syria of thirty-three bishops, before the first council, against Paul of Samosata, who called Christ a mere man ("ψιλὸν ἄνθρωπον"), which make it the council of 268 and not that of 341. A detail of the photograph of the whole wall, at its own pixels; seen from below, so a little soft and leaning, with a lamp chain across it | The mosaicists of 1169; photograph by Thaler Tamas | 1169 | CC BY-SA 4.0 (the photograph) | [Church of the Nativity (Bethlehem) FotoThalerTamas9.jpg](https://commons.wikimedia.org/wiki/File:Church_of_the_Nativity_(Bethlehem)_FotoThalerTamas9.jpg) |
+
+Not used for a local council (build 97 note 4; the rest of what was searched
+is in `docs/1.9-build/ICON-PERMISSIONS.md`, "The councils"): the Illustrated
+Chronicle's stock council scene for Carthage (419), not that council's own
+picture (his rule of 2026-11-13); a photograph of a page of Ancyra's canons,
+a text and not the council; the fragment of Gangra's panel on the same wall,
+with no name or words; the window in Orange cathedral, until a heritage
+record dates its maker into the public domain.
+
 ## Rejected
 
 - **Nicaea, `File:Nicaea icon.jpg`** (1,024 by 1,388, PD-Art-100-1923): no

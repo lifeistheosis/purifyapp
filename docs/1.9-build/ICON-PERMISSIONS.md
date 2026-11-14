@@ -582,3 +582,127 @@ uncleared picture left showing).
   first to ask whom it commissioned.
 - **Until then:** his page stands on the plate. He has no book in the
   reading room, so no cover waits with him.
+
+## The councils (build 97 note 4)
+
+From 2026-11-14 the councils' places are here too: a council's head, a
+Father on a council's page, a council's own books
+(`lib/councils/__tests__/everyCouncilAPicture.test.ts`). By his rule of
+2026-11-13 a council's head takes its real picture where one is allowed and
+is dropped where not, so each council below has its words alone at its head,
+and its own books wear the room's plate; a Father below stands on the plate
+with its cross, his name beside it. Searched by Updates 45 (Commons in a dozen
+languages, Wikidata) and Updates 50 (the Bethlehem mosaics, Commons'
+categories). Most have no one to write to: the council or the man was never
+pictured, or no picture of him survives. Two local councils have their own
+picture now, Antioch's of 268 and Sardica's (`lib/councils/pictures.ts`), and
+St Caesarius of Arles his face (Callot's etching, the Met's CC0 scan).
+
+## Council of Carthage (256)
+
+- **The picture:** not found. No picture of the council on Commons or Wikidata.
+- **To write to:** no one; there is nothing to ask for until one is found.
+
+## Council of Ancyra (314)
+
+- **The picture:** not found. Commons' one file under the synod
+  ("I 25 codici del Primo Concilio di Ancyra del 314 d-C.jpg", CC BY-SA 4.0)
+  is a photograph of a page of its canons, not a picture of the council.
+- **To write to:** no one.
+
+## Council of Neocaesarea (about 315)
+
+- **The picture:** not found.
+- **To write to:** no one.
+
+## Council of Gangra (about 340)
+
+- **The picture:** not found whole. Its panel among the local councils on the
+  north wall of the Church of the Nativity, Bethlehem (1169) survives only as
+  a fragment west of Sardica's, trees and the corner of a building, with no
+  name and no words, so it cannot show the council.
+- **To write to:** no one.
+
+## Council of Antioch (341)
+
+- **The picture:** not found. The Antioch panel in Bethlehem names the synod
+  against Paul of Samosata, "before the first council": the council of 268,
+  which wears it.
+- **To write to:** no one.
+
+## Council of Laodicea (about 363)
+
+- **The picture:** not found. Its panel in Bethlehem is lost; Commons has a
+  text page (British Library Add MS 17474) and a modern sign.
+- **To write to:** no one.
+
+## Council of Constantinople (394)
+
+- **The picture:** not found, under St Nectarius, Bostra or the standing
+  synod, in five languages; the near miss, the Paris Gregory's folio 355, is
+  the council of 381.
+- **To write to:** no one.
+
+## Council of Carthage (419)
+
+- **The picture:** not found. The Illustrated Chronicle of Ivan the Terrible
+  (book 13, page 454) draws its stock council scene, an emperor enthroned
+  among bishops, beside the canons of "the holy Council of Carthage"; no
+  emperor presided at Carthage, so it is not this council's own picture (his
+  rule of 2026-11-13).
+- **To write to:** no one.
+
+## Council of Orange (529)
+
+- **The picture:** a window in Orange cathedral (Notre-Dame-de-Nazareth), its
+  band reading "...ARAUSIANIS CONCILIUM ANNO D(OMI)NI DXXIX", St Caesarius
+  presiding over the bishops, in a photograph its taker gave to the public
+  domain (Commons, "ND de Nazareth vitrail.JPG", Véronique Pagnier, 2010).
+  The photograph is free; the window may not be. Its maker and date were not
+  found (a search on 2026-11-14; the Palissy base was not read), and a window
+  whose maker died within seventy years is still his heirs'.
+- **To write to:** the cathedral's parish in Orange, or the Diocese of
+  Avignon, for its maker and date. A maker dead more than seventy years needs
+  no letter: the window goes on with its record.
+
+## Synod of Jerusalem (1672)
+
+- **The picture:** not found. Only portraits of Dositheos, its president
+  (below), and scans of its text.
+- **To write to:** no one.
+
+## St Nectarius of Constantinople
+
+- **The picture:** none that names him. His settled page icon is the Paris
+  Gregory's miniature of the council of 381, where he cannot be told apart.
+  A fresco at the Monastery of Dionysiou, Mount Athos (Tzortzis Phouka, 1547;
+  Commons, "Agios Nektarios Konstantinoupoleos Dionysiou.jpg", public domain)
+  shows a white-bearded hierarch whose name has flaked away, but for
+  "ΚΩΝΣΤΑΝΤΙΝΟΥΠΟΛΕΟΣ"; only its uploader names him. Found by Updates 45's
+  search and not used: never another saint's face (his rule of 2026-11-10).
+- **To write to:** the Holy Monastery of Dionysiou, to say whether the fresco
+  is he. Its word, or a second source naming the figure, puts it on.
+
+## Firmilian of Caesarea
+
+- **The picture:** none known. Wikidata has none; Commons has no category,
+  and its Menologion miniature of "Firmilianus" is the governor.
+- **To write to:** no one.
+
+## Malchion
+
+- **The picture:** none known. The pictures met with are of Paul of Samosata
+  alone (Luyken, 1700; de Hooghe, 1701; the Nuremberg Chronicle).
+- **To write to:** no one.
+
+## Dositheos II, Patriarch of Jerusalem
+
+- **The picture:** the engraving of him enthroned in his History of the
+  Patriarchs of Jerusalem (Bucharest, 1715), free by age, but both scans found
+  carry a claim on the scan: the Onassis Library's on SearchCulture.gr
+  (CC BY-NC-ND 4.0) and the Hellenic Institute of Venice's on Pandektis
+  ("Rights: ΙΝΕ/ΕΙΕ"). Purify takes no picture with a non-commercial term or
+  an unclear claim.
+- **To write to:** the Onassis Library, or the Hellenic Institute of Byzantine
+  and Post-Byzantine Studies, Venice, for its scan; or a library's scan of the
+  1715 book with no claim, which needs no letter.

@@ -4,6 +4,7 @@ import type { EraId } from "@/lib/reading/catalog";
 import type { CoverWindow } from "@/lib/reading/coverWindow";
 
 import { COUNCILS, type Council, type CouncilDocumentRef } from "./councils";
+import { COUNCIL_PICTURES } from "./pictures";
 
 /**
  * What the councils' pages draw, worked out from the registry (1.8, the
@@ -88,17 +89,24 @@ export function eraOfYear(year: number): EraId {
 /**
  * The council's own event in History, the one whose picture is the council
  * itself (opened, checked and credited there, docs/licensing/HISTORY_MEDIA.md),
- * not one it merely touches. Only the seven have one; a local council has no
- * picture, and its books get the room's plate.
+ * not one it merely touches. Only the seven have one.
  */
 export function councilEvent(slug: string): HistoryEventMeta | undefined {
   return eventsForCouncil(slug).find((e) => e.media && /council/.test(e.slug));
 }
 
-/** The council's picture, its address decided by the build (`native` is IS_STATIC_EXPORT). */
+/**
+ * The council's picture, its address decided by the build (`native` is
+ * IS_STATIC_EXPORT): its History event's, or a local council's own where one
+ * has been found (lib/councils/pictures.ts; build 97 note 4). A local council
+ * with neither has no picture: its head is its words alone, and its books get
+ * the room's plate.
+ */
 export function councilPicture(slug: string, native: boolean): EventPicture | null {
   const event = councilEvent(slug);
-  return event ? eventPicture(event, native) : null;
+  if (event) return eventPicture(event, native);
+  const own = COUNCIL_PICTURES[slug];
+  return own ? eventPicture({ media: own }, native) : null;
 }
 
 /** The one line under a council's name: its event's own preview, else the registry's summary. */
@@ -120,6 +128,10 @@ const FOCUS: Readonly<Record<string, string>> = {
   "second-constantinople": "50% 28%",
   "third-constantinople": "50% 24%",
   "second-nicaea": "50% 40%",
+  // The two Bethlehem panels (lib/councils/pictures.ts): the council's name
+  // runs along the top, so a wide frame keeps the top.
+  "antioch-268": "50% 5%",
+  sardica: "50% 5%",
 };
 
 export function councilFocus(slug: string): string {
@@ -184,6 +196,14 @@ export const CROPS: Readonly<Record<string, Readonly<Record<string, CoverWindow>
     // The cross and the throne at the centre; the Fathers on the left.
     "the-decree-on-the-holy-icons": w(0.5, 0.32, 1.25),
     "the-twenty-two-canons": w(0.25, 0.36, 1.3),
+  },
+  // A local council's own picture (lib/councils/pictures.ts). Antioch's panel:
+  // its words against Paul of Samosata for the synod's letter, its domed church
+  // with the name for Malchion's disputation. Sardica's one book keeps the
+  // middle (DEFAULT_CROP): the cross in the arch over its words.
+  "antioch-268": {
+    "the-synodal-letter": w(0.58, 0.76, 1.3),
+    "the-disputation-of-malchion": w(0.47, 0.28, 1.4),
   },
 };
 

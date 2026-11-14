@@ -117,6 +117,14 @@ The list, council by council (a picture by its file; MISSING where none):
   - Fathers: Dositheos II, Patriarch of Jerusalem MISSING.
   - Books: The Confession of Dositheus MISSING.
 
+**Updates 50, 2026-11-14** (the arbiter's calls of 17:22; the code, its tests and the records in one commit, named in its report). Found and given, each opened, cut, edge-checked (clean) and credited:
+
+- **Council of Sardica (343), its head and its book:** the panel of the Council of Sardica in the 1169 mosaics of the Church of the Nativity, Bethlehem, "+ΣΑΡΔΙΚΗ" above a domed church and the synod's words beneath, from Thaler Tamas's photograph (CC BY-SA 4.0), `council-of-sardica.v1.jpg`.
+- **Council of Antioch (268), its head and its two books:** the same wall's Antioch panel, whose words name the synod of thirty-three bishops before the first council, against Paul of Samosata, so the council of 268 and not that of 341; a detail of Thaler Tamas's photograph of the whole wall (CC BY-SA 4.0), `council-of-antioch-268.v1.jpg`. Softer than Sardica's (838 pixels across, seen from below, a lamp chain across it).
+- **St Caesarius of Arles (Orange 529):** Callot's etching for his day (1636), the Met's scan (CC0), `/covers/authors/caesarius-of-arles.v1.jpg`.
+
+The way in: a local council's own picture is registered in `lib/councils/pictures.ts` in History's shape and folder, and `councilPicture` draws it where it draws the seven's (the head, the books' windows and the documents' fan on its page, its shelf's backdrop); its credit line prints at the page's foot and its photographer is on the Credits page. The apps ask the website for these, as for History's pictures, so until the 1.9 website is deployed a test build shows the blurred preview at those two heads and the room's plate on their books. A Father with no page wears the face his slug names among the covers. Every other place takes the form the gate accepts, a `permission:` entry with its section in `docs/1.9-build/ICON-PERMISSIONS.md` ("The councils"): the heads of Carthage (256), Ancyra, Neocaesarea, Gangra, Antioch (341), Laodicea, Constantinople (394), Carthage (419), Orange (its window undated) and Jerusalem (1672), each its words alone by his rule, with their own books on the plate; St Nectarius (the Dionysiou fresco's name is lost), Firmilian, Malchion, and Dositheos II (scans with rights claims), each on the plate with its cross. No place waits on a search now.
+
 ## Note 5: the Voice sheet, what plays and what is downloaded
 
 **His words** (about 16:03 UTC), with a screenshot of the sheet (Heart, then the phone's Voice 1 to 6 in American and Australian English, each with "Hear it"): "clicking hear shows no animation and there is no download button (if it's already downloaded it should be a distinct design so signify a voice that is downloaded and isn't downloaded and a distinct play to listen for both)".

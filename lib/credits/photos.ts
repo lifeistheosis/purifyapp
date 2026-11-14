@@ -1,4 +1,5 @@
 import { AMBIENCE_TRACKS } from "@/lib/ambience/ambience";
+import { COUNCIL_PICTURES } from "@/lib/councils/pictures";
 import { FIGURES } from "@/lib/readAloud/covers";
 import { COUNCIL_COVERS, FEELING_COVERS } from "@/lib/reading/authorCovers";
 import { COVER_ART, WORK_ART } from "@/lib/reading/coverArt";
@@ -18,7 +19,9 @@ import { ICON_RIGHTS, ICONS_URL_PREFIX } from "@/lib/saints/iconRights";
  * covers (lib/readAloud/covers.ts), and the saints' own pictures
  * (lib/saints/iconRights.ts, from 2026-11-11, when St Victorinus's fresco
  * came to him through a CC BY-SA photograph), and the ambience sounds'
- * photographs (lib/ambience/ambience.ts, from build 95's note 22). A picture whose licence is CC BY or CC
+ * photographs (lib/ambience/ambience.ts, from build 95's note 22), and a
+ * local council's own picture (lib/councils/pictures.ts, from build 97's note
+ * 4, when Sardica's and Antioch's mosaics came through CC BY-SA photographs). A picture whose licence is CC BY or CC
  * BY-SA carries `credit`, the photographer as its Commons page asks to be
  * credited, beside the licence and the page it was read on; this lists every
  * one. The work photographed must itself be old enough to be free: a
@@ -49,7 +52,7 @@ export type CcLicence = keyof typeof CC_LICENCES;
 export const isCcLicence = (license: string): license is CcLicence => Object.hasOwn(CC_LICENCES, license);
 
 export type PhotoCredit = {
-  /** Purify's file made from the photograph: a cover under /covers/, or a saint's picture under /saints/icons/. */
+  /** Purify's file made from the photograph: a cover under /covers/, a saint's picture under /saints/icons/, or a local council's under /history/media/. */
   file: string;
   /** The work photographed, in the registry's words. */
   work: string;
@@ -76,6 +79,8 @@ function registered(): Registered[] {
   for (const [file, row] of Object.entries(ICON_RIGHTS)) {
     if (row.status === "verified") out.push({ file: `${ICONS_URL_PREFIX}${file}`, work: row.work, license: row.license, credit: row.credit, creditAs: row.creditAs, creditPage: row.creditPage, evidenceUrl: row.evidenceUrl });
   }
+  // A local council's own picture (build 97 note 4), at the head of its page and on its books.
+  for (const own of Object.values(COUNCIL_PICTURES)) out.push({ file: own.hero, work: own.work, license: own.license, credit: own.credit, evidenceUrl: own.evidenceUrl });
   return out;
 }
 

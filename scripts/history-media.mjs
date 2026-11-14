@@ -28,7 +28,9 @@ const ROOT = process.cwd();
 const EVENTS = path.join(ROOT, "lib", "history", "events.ts");
 const OUT = path.join(ROOT, "lib", "history", "mediaPreviews.ts");
 
-const named = fs.readFileSync(EVENTS, "utf8").match(/\/history\/media\/[a-z0-9.-]+\.jpg/g) ?? [];
+// And a local council's own picture, in History's folder (lib/councils/pictures.ts, build 97 note 4).
+const COUNCILS = path.join(ROOT, "lib", "councils", "pictures.ts");
+const named = [EVENTS, COUNCILS].flatMap((file) => fs.readFileSync(file, "utf8").match(/\/history\/media\/[a-z0-9.-]+\.jpg/g) ?? []);
 const pictures = [...new Set(named.map((p) => p.replace(/\.jpg$/, "")))].sort();
 
 const previews = {};

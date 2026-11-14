@@ -35,13 +35,19 @@ const PLATE = "radial-gradient(85% 55% at 50% 40%";
 
 describe("the door to a council's books", () => {
   it("drops a local council's plates, and is its words alone when no book has a picture", async () => {
-    for (const slug of ["laodicea", "gangra", "ancyra-314", "antioch-268", "jerusalem-1672"]) {
+    // Antioch's council of 268 has its own picture now (build 97 note 4); that of 341 has none.
+    for (const slug of ["laodicea", "gangra", "ancyra-314", "antioch-341", "jerusalem-1672"]) {
       const html = await door(slug);
       expect(html, slug).toContain("study.councils.readDocuments");
       expect(covers(html), slug).toBe(0);
       expect(html, slug).not.toContain("h-[58px] w-[78px]");
       expect(html, slug).not.toContain(PLATE);
     }
+  });
+
+  it("draws a local council's own picture on its books where one is found (build 97 note 4)", async () => {
+    expect(covers(await door("antioch-268"))).toBe(2);
+    expect(covers(await door("sardica"))).toBe(1);
   });
 
   it("keeps a book's real picture among plates dropped: Carthage 256's third book, Cyprian's, stands alone in front", async () => {

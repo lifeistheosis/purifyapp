@@ -35,44 +35,52 @@
 
 import fs from "node:fs";
 
+import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 
-import { councilBooks } from "@/lib/councils/books";
+import { councilBooks, shelfCouncil } from "@/lib/councils/books";
 import { COUNCILS } from "@/lib/councils/councils";
 import { fatherFaces } from "@/lib/councils/fathers";
-import { councilPicture } from "@/lib/councils/page";
+import { councilEvent, councilPicture } from "@/lib/councils/page";
+import { COUNCIL_PICTURES } from "@/lib/councils/pictures";
+import { creditFor, isCcLicence } from "@/lib/credits/photos";
+import { CARRIED_HISTORY } from "@/lib/media/carried";
 import { iconRightsFor } from "@/lib/saints/iconRights";
 import { getSaint } from "@/lib/saints/saints";
+import { SITE_URL } from "@/lib/site";
+import { COVER_FACES } from "@/lib/today/saintFaces";
 
 /** Councils whose head has no picture, by slug. */
 const HEADS: Record<string, string> = {
-  // The local councils: none has a picture History shows (lib/councils/page.ts,
-  // councilEvent), so each head is its words alone and its books plates.
-  "carthage-256": "search: Updates 45, build 97 note 4",
-  "antioch-268": "search: Updates 45, build 97 note 4",
-  "ancyra-314": "search: Updates 45, build 97 note 4",
-  "neocaesarea-315": "search: Updates 45, build 97 note 4",
-  "gangra": "search: Updates 45, build 97 note 4",
-  "antioch-341": "search: Updates 45, build 97 note 4",
-  "sardica": "search: Updates 45, build 97 note 4",
-  "laodicea": "search: Updates 45, build 97 note 4",
-  "constantinople-394": "search: Updates 45, build 97 note 4",
-  "carthage-419": "search: Updates 45, build 97 note 4",
-  "orange-529": "search: Updates 45, build 97 note 4",
-  "jerusalem-1672": "search: Updates 45, build 97 note 4",
+  // The local councils with no picture of their own (lib/councils/pictures.ts
+  // has the two found, Antioch's of 268 and Sardica's). His rule (2026-11-13):
+  // a council's plate takes its real picture where one is allowed and is
+  // dropped where not, so each of these heads is its words alone and its own
+  // books the room's plate. Searched by Updates 45 and Updates 50 (build 97
+  // note 4); each is on the list for Admin's letters with what was found.
+  "carthage-256": "permission: no picture of this council is known, so no one to write to",
+  "ancyra-314": "permission: no picture of this council is known, so no one to write to (Commons has a photograph of a page of its canons, not of the council)",
+  "neocaesarea-315": "permission: no picture of this council is known, so no one to write to",
+  "gangra": "permission: no whole picture of this council is known, so no one to write to (its panel in Bethlehem survives as a fragment with no name or words)",
+  "antioch-341": "permission: no picture of this council is known, so no one to write to (the Antioch panel in Bethlehem is the council of 268's)",
+  "laodicea": "permission: no picture of this council is known, so no one to write to (its panel in Bethlehem is lost)",
+  "constantinople-394": "permission: no picture of this council is known, so no one to write to",
+  "carthage-419": "permission: no picture of this council is known, so no one to write to (the Illustrated Chronicle's stock council scene is not its own)",
+  "orange-529": "permission: the window in Orange cathedral that shows it, its maker and date not found in a heritage record; its parish, or the Diocese of Avignon",
+  "jerusalem-1672": "permission: no picture of this synod is known, so no one to write to",
 };
 
 /** Fathers with no face on a council's page, as "<council slug>: <his name as the council names him>". */
 const FATHERS: Record<string, string> = {
-  // St Nectarius's settled icon is a scene of his council (NOT_HIS_FACE).
-  // The other four have no page in Purify, so no picture of them has been
-  // looked for until now.
-  "first-constantinople: St. Nectarius of Constantinople": "search: Updates 45, build 97 note 4",
-  "constantinople-394: St. Nectarius of Constantinople": "search: Updates 45, build 97 note 4",
-  "antioch-268: Firmilian of Caesarea": "search: Updates 45, build 97 note 4",
-  "antioch-268: Malchion": "search: Updates 45, build 97 note 4",
-  "orange-529: St. Caesarius of Arles": "search: Updates 45, build 97 note 4",
-  "jerusalem-1672: Dositheos II, Patriarch of Jerusalem": "search: Updates 45, build 97 note 4",
+  // St Nectarius's settled icon is a scene of his council (NOT_HIS_FACE), and
+  // the one fresco found under his name has lost it. Firmilian, Malchion and
+  // Dositheos have no page in Purify; St Caesarius had none either, and wears
+  // the face his slug names among the covers (build 97 note 4).
+  "first-constantinople: St. Nectarius of Constantinople": "permission: no picture that names him is known; the Holy Monastery of Dionysiou, Mount Athos, could say whether its fresco of 1547, whose name has worn away, is he",
+  "constantinople-394: St. Nectarius of Constantinople": "permission: no picture that names him is known; the Holy Monastery of Dionysiou, Mount Athos, could say whether its fresco of 1547, whose name has worn away, is he",
+  "antioch-268: Firmilian of Caesarea": "permission: no picture of him is known, so no one to write to",
+  "antioch-268: Malchion": "permission: no picture of him is known, so no one to write to",
+  "jerusalem-1672: Dositheos II, Patriarch of Jerusalem": "permission: the engraving of 1715 in scans whose holders claim rights in them (the Onassis Library, CC BY-NC-ND 4.0; the Hellenic Institute of Venice); one of them, or a scan with no claim",
 };
 
 /** A Father whose settled page icon is not his face (a scene where he cannot be told apart), so it is not his face here either. */
@@ -118,6 +126,50 @@ describe("every council", () => {
         }
       }
     }
+  });
+
+  // Build 97 note 4: a local council's own picture, once found, is drawn where
+  // the seven's are (lib/councils/pictures.ts), and its photographer named.
+  it("draws a local council's own picture at its head, on its own books and its shelf, credited", async () => {
+    expect(Object.keys(COUNCIL_PICTURES).sort()).toEqual(["antioch-268", "sardica"]);
+    for (const [slug, own] of Object.entries(COUNCIL_PICTURES)) {
+      const c = COUNCILS.find((x) => x.slug === slug)!;
+      expect(c.kind, slug).toBe("local");
+      expect(councilEvent(slug), `${slug} has a History event: its picture is that one`).toBeUndefined();
+      for (const native of [false, true]) {
+        const picture = councilPicture(slug, native)!;
+        // The website's file, asked of the website in the apps: History's way, not carried as the seven's are.
+        expect(picture.src, slug).toBe(native ? `${SITE_URL}${own.hero}` : own.hero);
+        expect(CARRIED_HISTORY, slug).not.toContain(own.hero.replace(/\.jpg$/, ".avif"));
+        // Its AVIF and its preview, made by scripts/history-media.mjs.
+        expect(picture.avif, slug).toBe((native ? SITE_URL : "") + own.hero.replace(/\.jpg$/, ".avif"));
+        expect(picture.preview, slug).toMatch(/^data:image\/webp;base64,/);
+        // Credited where History's pictures are: the photographer and the licence in the line at its foot.
+        expect(picture.credit, slug).toContain(own.license);
+        if (own.credit) expect(picture.credit, slug).toContain(own.credit);
+        const own_books = councilBooks(c, native).filter((b) => b.key.startsWith(`councils/${slug}/`));
+        expect(own_books.length, slug).toBeGreaterThan(0);
+        for (const b of own_books) expect(b.cover?.src, b.key).toBe(picture.src);
+        expect(shelfCouncil(c, native, "50% 5%").picture, slug).toEqual({ src: picture.src, focus: "50% 5%", credit: picture.credit });
+      }
+      for (const file of [own.hero, own.hero.replace(/\.jpg$/, ".avif")]) expect(fs.existsSync(`public${file}`), file).toBe(true);
+      const meta = await sharp(`public${own.hero}`).metadata();
+      expect([meta.width, meta.height], slug).toEqual([own.width, own.height]);
+      // A CC BY or CC BY-SA photograph's maker is on the Credits page too, as St Victorinus's is.
+      if (isCcLicence(own.license)) expect(creditFor(own.hero)?.photographer, slug).toBe(own.credit);
+      expect(own.evidenceUrl, slug).toMatch(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+    }
+  });
+
+  it("gives a Father with no page the face his slug names among the covers, linking nowhere", () => {
+    const orange = COUNCILS.find((c) => c.slug === "orange-529")!;
+    const [web] = fatherFaces(orange, false);
+    expect(web.name).toBe("St. Caesarius of Arles");
+    expect(getSaint("caesarius-of-arles")).toBeFalsy();
+    expect(web.href).toBeUndefined();
+    expect(web.picture).toMatchObject({ src: "/covers/authors/caesarius-of-arles.v1.jpg", focusY: 38, across: COVER_FACES["caesarius-of-arles"][0] });
+    // In the apps it is the website's, as St Augustine's portrait is at Carthage (419): a local council's faces are not carried.
+    expect(fatherFaces(orange, true)[0].picture?.src).toBe(`${SITE_URL}/covers/authors/caesarius-of-arles.v1.jpg`);
   });
 
   it("names what each waits for, and every permission is on the list for Admin's letters", () => {

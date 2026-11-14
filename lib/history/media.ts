@@ -87,7 +87,7 @@ export function creditLine(m: { work: string; artist: string; license: string })
 }
 
 /** The event's one picture as a plate draws it, or null when it has none. */
-export function eventPicture(meta: HistoryEventMeta, native: boolean): EventPicture | null {
+export function eventPicture(meta: Pick<HistoryEventMeta, "media">, native: boolean): EventPicture | null {
   const m = meta.media;
   if (!m) return null;
   return {

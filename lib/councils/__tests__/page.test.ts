@@ -27,6 +27,7 @@ import {
   principalDocument,
   shortName,
 } from "../page";
+import { COUNCIL_PICTURES } from "../pictures";
 import { COVER_ART } from "@/lib/reading/coverArt";
 import { UNVERIFIED_ICONS, iconRightsFor, isUnverified } from "@/lib/saints/iconRights";
 import { SAINTS } from "@/lib/saints/saints";
@@ -102,8 +103,9 @@ describe("the selection page", () => {
     }
     expect(local).toHaveLength(12);
     expect(local.map((c) => c.year)).toEqual([...local.map((c) => c.year)].sort((a, b) => a - b));
-    // A local council has no picture of its own: its books are the room's plate.
-    for (const c of local) expect(councilPicture(c.slug, false), c.slug).toBeNull();
+    // A local council has no picture but its own, where one has been found
+    // (build 97 note 4, lib/councils/pictures.ts): else its books are the room's plate.
+    for (const c of local) expect(Boolean(councilPicture(c.slug, false)), c.slug).toBe(c.slug in COUNCIL_PICTURES);
   });
 });
 
@@ -147,7 +149,7 @@ describe("a council's books", () => {
 });
 
 describe("the Holy Fathers principally associated", () => {
-  const all = COUNCILS.flatMap((c) => fatherFaces(c, false).map((f) => ({ council: c.slug, ...f })));
+  const all = COUNCILS.flatMap((c) => fatherFaces(c, false).map((f, i) => ({ council: c.slug, slug: c.principalFathers?.[i]?.slug, ...f })));
   const unique = [...new Map(all.map((f) => [f.href ?? f.name, f])).values()];
 
   it("names thirty-seven Fathers, St. Cyprian with his page now (the sheet's one-line fix)", () => {
@@ -174,12 +176,11 @@ describe("the Holy Fathers principally associated", () => {
     // icons replaced by free pictures and carried the same way (the
     // arbiter's word of 2026-11-11, 15:09); and St. Juvenal, St. Celestine,
     // St. Anatolius, St. Eutychius, St. Sophronius and St. Irene, their page
-    // icons settled on 2026-11-11 and carried (build 97 note 4).
-    expect(pictured).toHaveLength(32);
-    for (const f of pictured) {
-      const slug = f.href!.replace("/saints/", "");
-      expect(COVER_ART[slug], slug).toBeDefined();
-    }
+    // icons settled on 2026-11-11 and carried (build 97 note 4); and St.
+    // Caesarius at Orange, who has no page, Callot's etching his face by his
+    // slug among the covers (build 97 note 4, Updates 50).
+    expect(pictured).toHaveLength(33);
+    for (const f of pictured) expect(COVER_ART[f.slug!], f.name).toBeDefined();
     // An icon in the library with no rights record is never a face here.
     const library = SAINTS.filter((s) => s.iconUrl && !COVER_ART[s.slug]).map((s) => `/saints/${s.slug}`);
     for (const f of all) if (f.href && library.includes(f.href)) expect(f.picture, f.name).toBeUndefined();
@@ -193,9 +194,10 @@ describe("the Holy Fathers principally associated", () => {
   it("cuts every face about the face, where his picture records where it is", () => {
     for (const native of [false, true]) {
       for (const c of COUNCILS) {
-        for (const f of fatherFaces(c, native)) {
+        for (const [i, f] of fatherFaces(c, native).entries()) {
           if (!f.picture) continue;
-          const slug = f.href!.replace("/saints/", "");
+          // His saint's slug, or for a Father with no page his face's among the covers (St. Caesarius).
+          const slug = c.principalFathers![i].slug!;
           const art = COVER_ART[slug];
           const want = art.kind === "streamed" ? COVER_FACES[slug]?.[0] : iconAcross(art.file);
           expect(f.picture.across, `${c.slug}: ${f.name}`).toBe(want);

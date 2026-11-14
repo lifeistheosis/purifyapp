@@ -30,16 +30,22 @@ import { councilFocus } from "../page";
 const ROOT = process.cwd();
 const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8").replace(/\r\n/g, "\n");
 
-/** Every council picture the reading room draws in the apps: each book's cover and each shelf's backdrop. */
+/**
+ * Every picture of the seven the reading room draws in the apps: each book's
+ * cover and each shelf's backdrop. A local council's own picture (build 97
+ * note 4, lib/councils/pictures.ts) is the website's, as History's are, and
+ * is held in lib/councils/__tests__/everyCouncilAPicture.test.ts.
+ */
+const SEVEN = COUNCILS.filter((c) => c.kind !== "local");
 function nativePictures(): string[] {
   const out = new Set<string>();
-  for (const c of COUNCILS) {
+  for (const c of SEVEN) {
     for (const b of councilBooks(c, true)) if (b.cover?.src?.includes("/history/")) out.add(b.cover.src);
     const shelf = shelfCouncil(c, true, councilFocus(c.slug));
     if (shelf.picture) out.add(shelf.picture.src);
   }
   // And the room's index, every council's shelf as /reading/councils/ lists them.
-  for (const s of allShelves(true, councilFocus)) {
+  for (const s of allShelves(true, councilFocus).filter((s) => SEVEN.some((c) => c.slug === s.council.slug))) {
     for (const b of s.books) if (b.cover?.src?.includes("/history/")) out.add(b.cover.src);
     if (s.council.picture) out.add(s.council.picture.src);
   }
@@ -81,7 +87,7 @@ describe("the councils' pictures in the reading room, with no signal", () => {
     expect(door).toContain("const avif = avifFor(book.src);");
     expect(door).toMatch(/<picture className="contents">\s*\{avif \? <source type="image\/avif" srcSet=\{avif\} \/> : null\}\s*<ArrivingImage/);
     // And the fan's own books, each council's first three, offer the bundle's AVIF where they are a council's picture.
-    for (const c of COUNCILS) {
+    for (const c of SEVEN) {
       for (const b of councilBooks(c, true).slice(0, 3)) {
         if (!b.cover?.src?.includes("/history/")) continue;
         expect(isCarried(avifFor(b.cover.src) ?? ""), `${c.slug}: ${b.cover.src}`).toBe(true);

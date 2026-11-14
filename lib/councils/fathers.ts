@@ -90,7 +90,8 @@ export function fatherFaces(c: Pick<Council, "principalFathers">, native: boolea
   return fathers.map((f, i) => {
     const shared = firsts.filter((n) => n === firsts[i]).length > 1;
     const saint = f.slug ? getSaint(f.slug) : undefined;
-    const art = saint ? coverArtFor(saint.slug) : null;
+    // A Father with no page wears the face his slug names among the covers (build 97 note 4).
+    const art = coverArtFor(saint?.slug ?? f.slug ?? null);
     // A portrait from the website has a carried icon behind it, where one is settled.
     const fallback = art?.kind === "streamed" ? carriedIcon(saint) : null;
     return {
@@ -99,7 +100,7 @@ export function fatherFaces(c: Pick<Council, "principalFathers">, native: boolea
       ...(saint?.byname ? { byname: saint.byname } : {}),
       role: f.role,
       ...(saint ? { href: `/saints/${saint.slug}` } : {}),
-      ...(art ? { picture: { src: coverSrc(art, native), focusY: art.focusY, ...placeOf(art, saint?.slug), ...(fallback ? { fallback } : {}) } } : {}),
+      ...(art ? { picture: { src: coverSrc(art, native), focusY: art.focusY, ...placeOf(art, saint?.slug ?? f.slug), ...(fallback ? { fallback } : {}) } } : {}),
     };
   });
 }

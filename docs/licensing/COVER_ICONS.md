@@ -275,6 +275,20 @@ and every door's icon also goes to the apps in the covers pack
 (`docs/PACKS.md`), so a cover cut after a store build reaches them with the
 website deploy that carries its file.
 
+## Shipped in 1.9: build 97 note 4, a face for St Caesarius of Arles
+
+St Caesarius presided at the Council of Orange (529) and has no page in
+Purify, so this portrait is his face on the council's page only: his slug on
+the council's Father (`lib/councils/councils.ts`) names this row, and
+`lib/councils/fathers.ts` reads it there. Opened, cut and checked by Updates
+50 on 2026-11-14 (edges: clean); its AVIF by `scripts/covers-avif.mjs`. The
+scan was taken from the Met's own Open Access record (object 419945,
+"isPublicDomain": true), the same image as the Commons file.
+
+| File | The work | Artist | Date | Licence | Source |
+|---|---|---|---|---|---|
+| `caesarius-of-arles.v1.jpg` (600 by 750, 99,398 bytes; AVIF 48,097) | S. Césaire, évêque (St Caesarius, Bishop), for 27 August, from Les Images De Tous Les Saincts et Saintes de L'Année, etching, the Metropolitan Museum of Art, 17.50.17-371(295), lettered "S. CESARIVS EPVS"; the Rijksmuseum's copy (RP-P-OB-20.763) names him Caesarius of Arles. Cut about him inside the sheet's oval: his face is small on a sheet 6.5 cm tall | Jacques Callot | 1636 | CC0 (the Met's Open Access) | [St. Caesarius, Bishop Met DP891091.jpg](https://commons.wikimedia.org/wiki/File:St._Caesarius,_Bishop_Met_DP891091.jpg); [the Met, 419945](https://www.metmuseum.org/art/collection/search/419945) |
+
 ## Also drawn: the Plus paywall's picture
 
 `public/premium/scribe.v1.webp` (1.7.2, the paywall the owner picked on
