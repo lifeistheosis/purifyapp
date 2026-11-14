@@ -1,0 +1,29 @@
+# Baton: Updates 54 (a fixer: the councils' close, the export side)
+
+Written 2026-11-14 about 19:12 UTC by Updates 54 (session_01VuYTwa1wHrzrgxzLLRCWz4), started by Arbiter 10 (session_01VuYTwcuYQvA4yvEArbLWUc). Card: `docs/roles/fixer.md`. Branch `ccr-07896cf2-bo0afd`. Stopped at the line: get_session read 92,471 at the first check and 196,325 about ten minutes later, before any export. So step 1 is done and pushed, and steps 2 and 4 to 8 were not started. The runners for step 5 are written and committed, but have never been run.
+
+## Done
+
+1. **avifFor on the website, ae7a2460** (Updates 50's open 3c). `lib/media/streamed.ts`: on the website (the new `native` argument is false; it defaults to `IS_STATIC_EXPORT || isNativeClient()`), a `/history/media/` JPEG given as the site's own address now offers its AVIF. In the apps the answer is unchanged: the carried seven's AVIF, and nothing for any other picture. A SITE_URL address gets no AVIF either, whatever the device says, so a plain browser on `out/` cannot mismatch the export's HTML. The test is what guarantees "the AVIF is in public/". Every JPEG that `HISTORY_EVENTS`, `COUNCIL_PICTURES` or any `.ts`/`.tsx` under lib, components and app names must have its AVIF in public/. Four JPEGs in public/history/media/ have no AVIF, but no code names them: `council-of-florence-woodcut.jpg` (the registry uses `.v2`), `council-of-jerusalem.v1`, `mission-of-cyril-and-methodius.v1` and `philokalia-published.v1`. Only `scripts/check-picture-edges.mjs` names the last three.
+   - Tests, in `lib/media/__tests__/streamed.test.ts`, "a History picture's lighter copy": the website's answer (fails on the old code: 1 failed, "expected null to be '/history/media/council-of-sardica.v1.avif'"), the apps' answer unchanged, and every named JPEG has its AVIF. In `lib/councils/__tests__/carriedPictures.test.ts`, the not-carried claim is now the apps' (`native` true).
+   - Checklist: typecheck 0 (96s); eslint clean on the 3 changed files; the whole suite exit 0 after 182s (1191 files passed, 1 skipped; 15,119 tests passed, 9 skipped); the web build ran next (its result is in the report and the push note below).
+2. **Runners, 3992b279** (`docs/handoffs/updates-54-runners/`): `mockrun54.mjs` (checkMock with pixels on step 5's 16 routes) and `taps54.mjs` (batch 1's Fathers, St Caesarius at Orange, the eight heads, the documents door tapped, the room's two shelves and the two shelf pages tapped, St Irene's letters' cover, and no History AVIF asked of the website). **Never run:** expect a first-run fix or two.
+
+## Open, each with its owner and next step
+
+1. **Step 4, one export of the head** (next checks chat): `node scripts/gate/export.mjs` from a clean tree. Last figures, at 110349fe1: 205.2 MB on disk in 7,372 files, 75.1 MB packed (ceilings 240 and 85). Then prove the apps name no AVIF they do not carry as their own: `grep -rhoE "(https://[a-z.]+)?/history/media/[a-z0-9.-]+\.avif" out | grep -v "^https://" | sort -u` should list the seven carried AVIFs (`lib/media/carriedCovers.json`, historyAvif) and nothing else. Absolute addresses are not part of this mend and are expected: History's plates and the council heads take their `avif` from `lib/history/media.ts` `lighter()`, which in the apps is the website's address (as it has been since 1.7.2). Sardica's and Antioch's heads therefore name `https://purifyapp.net/history/media/council-of-...avif`, which is safe because CouncilHero falls back to the JPEG on an AVIF error (`jpegOnly`). A *relative* `/history/media/*.avif` that is not one of the seven would be a fault in avifFor.
+2. **Step 5, the councils on that export** (same chat): `node docs/handoffs/updates-54-runners/mockrun54.mjs out <jsonl> 4 <key@width@lang@group>...`, where the keys are those in its ROUTE, widths 390 800 1032, languages en ar, groups 0 1 2 (288 specs). Then `node docs/handoffs/updates-54-runners/taps54.mjs out <shots> <json>`. "Their document pages" was read as Sardica's, Antioch's and Orange's (4 pages); batch 1's 17 are not in the list. Expected, not faults: purifyapp.net answers 404 for `council-of-sardica.v1.jpg`/`.avif`, `council-of-antioch-268.v1.jpg` and `covers/authors/caesarius-of-arles.v1.jpg` (curl, 19:01 UTC). So the two heads keep their blurred preview, the two councils' windows and books hide, and St Caesarius's round shows the plate with its cross, until the merge.
+3. **Step 2, the three pictures carried** (the arbiter, on his yes): +369,118 B, past the 0.9 MB bound in `lib/media/__tests__/carried.test.ts`. No yes had come.
+4. **Steps 6 to 8** (next fixer or checks chat), unchanged from the brief: note 2's export side (Updates 52's open 5); the ambience preview on Councils at 390 in English (Updates 51's open 2: run `SELLS_PLUS=1 node scripts/gate/ambience-sheet.mjs` again, look before any change); the quote's looks tapped (Updates 51's open 3, `quote51.mjs`, with a screenshot of `/` when the wait fails and the saint band scrolled into view).
+
+## Gotchas
+
+- get_session went from 92,471 to 196,325 in about ten minutes of reading and one suite. Read it before every long run, and do not trust the starting figure.
+- `scripts/gate/export.mjs` refuses a dirty tree: commit runners before the export.
+- The walks' `mainWeb` asks the live purifyapp.net (`scripts/lib/main-web.mjs`), so anything new on this branch under a streamed folder answers 404 there until the merge.
+- `MiniCover` (DocumentsDoor) and the shelf hide a picture whose `<source>` fails, with no JPEG fallback. That is why the apps must never be offered an AVIF that the live site may lack.
+
+## His words that still apply
+
+- "please ensure every photo is accounted for and not missed in the councils section (even the local synods and book covers)" (2026-11-14 about 16:02 UTC).
+- "fix those things. try and take into account usage also" (16:28). Never another saint's face (2026-11-10).
