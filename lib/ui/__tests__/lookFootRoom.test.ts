@@ -156,6 +156,16 @@ describe("a bar fixed at the screen's foot, on a look with a foot", () => {
       expect(el, file).toMatch(/fixed inset-x-0 bottom-0 z-30 [^"]*safe-pb/);
     }
   });
+
+  it("the cart drawer's foot is a foot bar too: the drawer stands over the foot, so the look's room was only empty", () => {
+    // Updates 46, measured on the export: the drawer covers the screen at a phone's width (z-50, over the foot's 35,
+    // the tab bar stood down), and its foot took the look's 240px under Check out.
+    const src = readFileSync("components/shop/CartDrawer.tsx", "utf8");
+    expect(src).toContain('"fixed inset-y-0 end-0 z-50 flex w-full max-w-[400px] flex-col');
+    const feet = [...src.matchAll(/<div\b[^>]*className="[^"]*\bsafe-pb\b[^"]*"[^>]*>/g)].map((m) => m[0]);
+    expect(feet.length).toBe(1);
+    expect(feet[0]).toContain("data-foot-bar");
+  });
 });
 
 describe("the walk that measures every screen's last words", () => {
