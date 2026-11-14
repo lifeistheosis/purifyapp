@@ -621,3 +621,5 @@ dash.
 - 2026-11-14 16:28 UTC, Arbiter 7: his go, "fix those things. try and take into account usage also". The queue in NOW set in order with the pace: two chats at work (Updates 45, 46); then the sheets (notes 2, 8, 9); note 1 with note 7's zero; notes 3 and 6; note 10. Not taken as a yes to the Fable round (CLAUDE.md: a Fable run is checked with him first); it waits until the fixes are in.
 
 - 2026-11-14 16:31 UTC, Arbiter 7: his usage at 16:27, 55% (54% at 15:04), Fable 32%, the reset Friday 08:00 UTC; NOW's Spend rewritten with the pace and the estimate (1.9's rest about 10 to 15% of the week). Arbiter 7 at 212,210 tokens by get_session ($15.10 in all), past the 200,000 line after its one compaction, so it rotates at this break: baton docs/handoffs/arbiter.md, Arbiter 8 started, Updates 42, 45 and 46 told to report to Arbiter 8.
+
+- 2026-11-14 16:32 UTC, Arbiter 7: handed over. Arbiter 8 is session_01VuYTwbzbjqscbFvEseu6uP (started 16:32, opus 5.5, max effort, from the baton at 66ad3dd9). Updates 42, 45 and 46 told to send their reports to Arbiter 8 (each delivered). His link to the new chat sent to him. Arbiter 8 archives Arbiter 7.
