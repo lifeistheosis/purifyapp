@@ -36,6 +36,7 @@ import { SavingBridge } from "@/components/native/SavingBridge";
 import { ShortcutListener } from "@/components/native/ShortcutListener";
 import { WidgetBridgeSync } from "@/components/native/WidgetBridgeSync";
 import { OpenedBridge } from "@/components/nav/OpenedBridge";
+import { ReadyAhead } from "@/components/nav/ReadyAhead";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { RouteTransition } from "@/components/nav/RouteTransition";
 import { ScrollResetBridge } from "@/components/nav/ScrollResetBridge";
@@ -87,6 +88,9 @@ export function RootFrame({
             outside the (app) group, so a bridge mounted in (app)/template.tsx
             would never clear the exit fade on a tap into Today. */}
         <RouteExitBridge />
+        {/* The apps ready each tab's first opening ahead once the first
+            screen has settled (lib/nav/readyAhead.ts). Renders nothing. */}
+        <ReadyAhead />
         {/* A page opened by going forward starts at its top and is held there
             while it arrives (lib/ui/scrollReset.ts). Here for the reason
             above. Renders nothing. */}

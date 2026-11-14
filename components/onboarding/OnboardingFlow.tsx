@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { measureRows, playFlip, type FlipSnapshot } from "@/lib/ui/flip";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
+import { startReadyAhead } from "@/lib/nav/readyAhead";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { readCalendarStyleDefault, writeCalendarStyleDefault } from "@/lib/calendar/styleDefault";
 import {
@@ -579,6 +580,8 @@ export function OnboardingFlow({
         countOnboarding({ name: "onboarding_skipped", props: { route, at: isClergyStep(step) ? "role" : step } });
       }
       setExiting(true);
+      // A skip ends the onboarding without the slate: ready ahead here too.
+      startReadyAhead();
       window.setTimeout(() => onDone(reached ? dayOne : null), 420);
     },
     [onDone, dayOne, returning, level, intent, route, step],

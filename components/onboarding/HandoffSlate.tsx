@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PurifyMark } from "@/components/ui/PurifyMark";
+import { startReadyAhead } from "@/lib/nav/readyAhead";
 
 export type SlateLine = { label: string; value: string };
 
@@ -41,6 +42,9 @@ export function HandoffSlate({
   }, [onFinish]);
 
   useEffect(() => {
+    // While the ring fills, the apps ready each tab's first opening in idle
+    // moments (his ask, build 97 note 3; lib/nav/readyAhead.ts).
+    startReadyAhead();
     const readyTimer = window.setTimeout(() => setReady(true), READY_AT_MS);
     const doneTimer = window.setTimeout(() => finishRef.current(), DURATION_MS + 450);
     return () => {
