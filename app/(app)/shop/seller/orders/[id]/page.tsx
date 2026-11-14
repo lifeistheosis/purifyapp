@@ -215,7 +215,7 @@ export default async function SellerOrderPage({
                 {r.amount_cents
                   ? ` · ${formatPrice(r.amount_cents, order.currency)}`
                   : ""}
-                {r.resolution_note ? ` — ${r.resolution_note}` : ""}
+                {r.resolution_note ? ` · ${r.resolution_note}` : ""}
               </li>
             ))}
           </ul>

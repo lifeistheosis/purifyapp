@@ -147,10 +147,14 @@ function table(rows: string[]): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:0 0 18px">${rows.join("")}</table>`;
 }
 
+/**
+ * A section's small line, as the kit sets one (round 1's small-line rule, his
+ * yes of 2026-11-13 20:47; the account and order emails took it at 71473017c):
+ * 12px semibold in sentence case, as written. It was spaced capitals
+ * (uppercase, 0.08em).
+ */
 function heading(text: string): string {
-  return `<p style="margin:22px 0 8px;font-family:${SANS};font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:${T.label}">${escapeHtml(
-    text,
-  )}</p>`;
+  return `<p style="margin:22px 0 8px;font-family:${SANS};font-size:12px;line-height:18px;font-weight:600;color:${T.label}">${escapeHtml(text)}</p>`;
 }
 
 /** The subject line: the week, and the one figure he opens it for. */

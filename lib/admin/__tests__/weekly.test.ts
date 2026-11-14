@@ -74,6 +74,17 @@ describe("the words", () => {
     expect(html).toContain('href="https://purifyapp.net/admin"');
   });
 
+  it("sets each section's small line as the kit does: 12px semibold, in sentence case", () => {
+    const html = letterHtml(lastWeek(new Date("2026-11-09T13:00:00Z")), FULL, "https://purifyapp.net/admin");
+    for (const words of ["Readers", "Money", "What sold Plus", "Waiting on you"]) {
+      const at = html.indexOf(`>${words}</p>`);
+      expect(at, words).toBeGreaterThan(0);
+      const style = /style="([^"]*)"[^>]*$/.exec(html.slice(html.lastIndexOf("<p ", at), at))?.[1] ?? "";
+      expect(style, words).toContain("font-size:12px;line-height:18px;font-weight:600;");
+      expect(style, words).not.toMatch(/text-transform|letter-spacing/);
+    }
+  });
+
   it("says not read for a figure that could not be read, never zero", () => {
     const html = letterHtml(
       lastWeek(new Date("2026-11-09T13:00:00Z")),
