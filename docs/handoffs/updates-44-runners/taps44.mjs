@@ -41,13 +41,14 @@ async function open(route, { width = 390, lang = "en", palette, cart = "" }) {
     else document.addEventListener("DOMContentLoaded", put);
   }, [lang, cart]);
   await serveLikeTheShell(ctx, base, {});
+  for (const at of ["https://purifyapp.net/**", "https://purifyapp.onrender.com/**", "https://*.supabase.co/storage/v1/object/public/**"]) await ctx.route(at, mainWeb);
   const asked = [];
-  // Never a real checkout: the ask is recorded and refused here.
+  // Never a real checkout: the ask is recorded and refused here. Registered last, so it runs first (Playwright runs
+  // the newest matching route first; the main web's route refuses every write too, but would not count it).
   await ctx.route(/\/api\/shop\/checkout/, (r) => {
-    asked.push(r.request().url());
+    asked.push(`${r.request().method()} ${r.request().url()}`);
     return r.abort();
   });
-  for (const at of ["https://purifyapp.net/**", "https://purifyapp.onrender.com/**", "https://*.supabase.co/storage/v1/object/public/**"]) await ctx.route(at, mainWeb);
   const page = await ctx.newPage();
   await go(page, route, { timeout: 60000 });
   await page.waitForTimeout(3500);
