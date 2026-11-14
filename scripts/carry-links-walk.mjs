@@ -123,7 +123,10 @@ const aimAt = (page, i) =>
     const x = Math.round(r.left + r.width / 2);
     const y = Math.round(r.top + r.height / 2);
     const hit = document.elementFromPoint(x, y);
-    return { x, y, onLink: Boolean(hit && hit.closest("a") === a) };
+    // What the finger lands on, said when it is not the link (an open drawer over the page, say).
+    const drawer = hit?.closest("aside");
+    const what = hit ? `${hit.tagName.toLowerCase()}${drawer ? ` in the ${drawer.getAttribute("aria-label") ?? "aside"} drawer` : ""}` : "nothing";
+    return { x, y, onLink: Boolean(hit && hit.closest("a") === a), hit: what };
   }, i);
 
 /** Tap the picture of the first link standing `where`; what the tap did. */
@@ -170,7 +173,7 @@ async function tapPicture(page, cdp, where) {
 function carriedTap(label, seen) {
   if (!seen) return say(null, `${label}: not on this page (nothing to tap)`);
   const ok = Boolean(seen.aim.onLink && seen.opened && seen.root && seen.link.carry && seen.carried && seen.taker);
-  say(ok, `${label} -> ${slugOf(seen.at) ?? seen.at}: ${seen.vt} View Transition(s)${seen.root ? ", the page pictured" : ", NOT pictured"}${seen.link.carry ? (seen.carried && seen.taker ? ", its picture carried" : ", its picture NOT carried") : ", its picture has no name to travel by"}`, seen);
+  say(ok, `${label} -> ${slugOf(seen.at) ?? seen.at}: ${seen.aim.onLink ? "" : `the finger landed on ${seen.aim.hit}, not the link; `}${seen.vt} View Transition(s)${seen.root ? ", the page pictured" : ", NOT pictured"}${seen.link.carry ? (seen.carried && seen.taker ? ", its picture carried" : ", its picture NOT carried") : ", its picture has no name to travel by"}`, seen);
 }
 
 /** A link in the drawer: opened, the drawer closed, nothing carried. */
@@ -199,8 +202,9 @@ async function tapButton(page, cdp, find) {
   }
 }
 
-// 2. The cart: a piece put in it the reader's way (Add to cart on its page), then its row, the set or the bump on the
-// cart page, and the drawer's own links from /shop/.
+// 2. The cart: a piece put in it the reader's way (Add to cart on its page) and the cart reached the same way (the
+// drawer that opens, by its own link), then its row, the set or the bump on the cart page, and the drawer's own links
+// from /shop/.
 {
   const { ctx, page, cdp } = await open("on");
   try {
@@ -217,7 +221,19 @@ async function tapButton(page, cdp, find) {
     });
     if (!added) say(false, `2 the cart: no Add to cart on ${first}`);
     else {
-      await visit(page, "/shop/cart/");
+      // Add to cart opens the drawer (BuyBar, openCartDrawer), which the shop layout keeps open over whatever page
+      // the router brings, so a reader goes on to the cart by the drawer's own link, which closes it. Pushed by the
+      // router instead, the cart page came up under the open drawer and every tap on it landed in the drawer
+      // (round 4: 2a and 2b stayed on /shop/cart/, 2c opened a piece of the drawer's set; Updates 68).
+      const viaDrawer = await tapButton(page, cdp, () => {
+        const a = [...document.querySelectorAll('aside a[href^="/shop/cart"]')].find((e) => !e.closest("aside").hasAttribute("inert") && e.getBoundingClientRect().height > 0);
+        if (!a) return null;
+        a.scrollIntoView({ block: "center", behavior: "instant" });
+        const r = a.getBoundingClientRect();
+        return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) };
+      });
+      if (!viaDrawer) say(false, "2 the cart: Add to cart opened no drawer with its way on to the cart");
+      await visit(page, "/shop/cart/", 2500);
       carriedTap("2a the cart's row", await tapPicture(page, cdp, "row"));
       await visit(page, "/shop/cart/");
       const offers = new Set((await pieceLinks(page)).map((l) => l.where));

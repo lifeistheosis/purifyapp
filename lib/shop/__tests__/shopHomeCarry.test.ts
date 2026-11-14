@@ -202,3 +202,35 @@ describe("the cart drawer closes as a piece opens from it, and its pictures stay
     expect(read(SET)).toContain("data-carry={onOpenPiece ? undefined : pieceCarry(p.slug)}");
   });
 });
+
+// Updates 68 (round 4's carry walk, step 3): with motion reduced, a tap on a
+// piece on /shop/eikon/ opened its page inside a View Transition, where a
+// reader whose motion is reduced must see none (CLAUDE.md). React starts the
+// browser's transition whenever a commit it may picture puts a
+// <ViewTransition> in the page, whatever that boundary asks for (react-dom,
+// trackEnterViewTransitions), and the export's page for a piece puts one in
+// as it arrives from any other page: QueryRoute's mark, mounted only on a
+// page addressed by its query (components/nav/RouteTransition.tsx). Probed on
+// the export of cdb67306: one transition into the piece's page from EIKON and
+// from /shop/, none on any other way; from one piece to another, none (the
+// mark was already there), which is why the piece walk's reduced case passed.
+describe("with motion reduced, the way into a piece's page on the export stays still", () => {
+  const bridge = read("components/nav/RouteTransition.tsx");
+  const query = bridge.slice(bridge.indexOf("function QueryRoute("));
+  const ret = query.slice(query.indexOf("useEffect(() => {\n    endNav();"));
+
+  it("puts the query page's mark in with no <ViewTransition> around it where the screen cannot move", () => {
+    expect(ret).toContain('const mark = <span aria-hidden data-route-mark={page} className="route-mark" />;');
+    const still = ret.indexOf("if (!canMove()) return mark;");
+    expect(still).toBeGreaterThan(-1);
+    expect(still).toBeLessThan(ret.indexOf("<ViewTransition default="));
+  });
+
+  it("and the bridge's own mark is never put in by a page switch: it stands from the first draw, whatever the page", () => {
+    const own = bridge.slice(bridge.indexOf("export function RouteTransition("), bridge.indexOf("function QueryRoute("));
+    const body = own.slice(own.lastIndexOf("  return (\n"));
+    const at = body.indexOf("<ViewTransition default=");
+    expect(at).toBeGreaterThan(-1);
+    expect(body.slice(0, at)).not.toMatch(/\?|&&/);
+  });
+});

@@ -267,9 +267,18 @@ function QueryRoute({ pathname, queryRef }: { pathname: string; queryRef: RefObj
     endNav();
   }, [page]);
 
+  // React starts the browser's transition whenever a commit it may picture
+  // puts a <ViewTransition> in the page, whatever the boundary asks for
+  // (react-dom, trackEnterViewTransitions), and this one is put in as a
+  // piece's page arrives from any other page. With motion reduced that was a
+  // transition on the way in from EIKON (Updates 68; the bridge's own mark
+  // stands from the first draw, so no other way had one). So the boundary is
+  // put in only where the screen can move.
+  const mark = <span aria-hidden data-route-mark={page} className="route-mark" />;
+  if (!canMove()) return mark;
   return (
     <ViewTransition default="none" update={changing && canMove() ? "route-mark" : "none"}>
-      <span aria-hidden data-route-mark={page} className="route-mark" />
+      {mark}
     </ViewTransition>
   );
 }
