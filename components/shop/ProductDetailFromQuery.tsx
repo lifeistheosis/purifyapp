@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
 
+import { searchFor } from "@/lib/nav/addressOpening";
+import { peekPiecePicture } from "@/lib/shop/catalogClient";
+import { pieceCarry } from "@/lib/shop/productHref";
 import { onRouteCommitted } from "@/lib/ui/scrollReset";
 import { ProductDetailClient } from "./ProductDetailClient";
+import { ShopDetailSkeleton } from "./ShopStates";
 
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
@@ -57,4 +61,25 @@ export function ProductDetailFromQuery() {
   }, [slug]);
 
   return <ProductDetailClient slug={slug} />;
+}
+
+const DETAIL = "/shop/icons/detail";
+const still = () => () => {};
+
+/**
+ * The page's outline while its body is on its way (app/(app)/shop/icons/detail/
+ * page.tsx, the Suspense fallback). Opened from a card, the router can commit
+ * this before the body, whose code is still arriving, and it is this the
+ * card's picture has to land in: it was the bare outline, with no picture to
+ * take the card's, so the picture left with the shop and did not arrive
+ * (Gate 2's fault 7, measured on the export: one tap in two, card by card).
+ * So it shows the piece's picture as the body's outline does, read from the
+ * address being opened (lib/nav/addressOpening.ts: the router writes it only
+ * as this commits). Written into the bundle with no piece (no address there),
+ * and on a cold start the first draw keeps to that, so the page hydrates as
+ * it was written.
+ */
+export function ProductDetailFallback() {
+  const slug = useSyncExternalStore(still, () => new URLSearchParams(searchFor(DETAIL)).get("slug") ?? "", () => "");
+  return <ShopDetailSkeleton picture={slug ? peekPiecePicture(slug) : null} carry={slug ? pieceCarry(slug) : undefined} />;
 }

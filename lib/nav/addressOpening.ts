@@ -20,7 +20,7 @@
  * once the address is written, as before).
  */
 
-let tapped: { path: string; hash: string } | null = null;
+let tapped: { path: string; hash: string; search: string } | null = null;
 
 /** One path, whatever the export's trailing slash or the encoding says. */
 function samePath(a: string, b: string): boolean {
@@ -45,7 +45,7 @@ export function noteOpening(href: string): void {
   } catch {
     return;
   }
-  tapped = url.origin === window.location.origin ? { path: url.pathname, hash: url.hash } : null;
+  tapped = url.origin === window.location.origin ? { path: url.pathname, hash: url.hash, search: url.search } : null;
 }
 
 /** The new address is written (the route change has committed): the window says it now. */
@@ -62,4 +62,17 @@ export function hashFor(pathname: string): string {
   if (typeof window === "undefined") return "";
   if (!pathname || samePath(window.location.pathname, pathname)) return window.location.hash;
   return tapped && samePath(tapped.path, pathname) ? tapped.hash : "";
+}
+
+/**
+ * The query of the address of the page at `pathname`, by the same rule as
+ * `hashFor`. A page whose piece rides in its query (the shop's
+ * /shop/icons/detail/?slug=, the export's page for a piece) reads which piece
+ * from it as it first draws: its outline shows that piece's picture, and the
+ * card's picture travels into it (Gate 2's fault 7).
+ */
+export function searchFor(pathname: string): string {
+  if (typeof window === "undefined") return "";
+  if (!pathname || samePath(window.location.pathname, pathname)) return window.location.search;
+  return tapped && samePath(tapped.path, pathname) ? tapped.search : "";
 }

@@ -22,7 +22,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { onOpeningNow, targetNow } from "@/components/saints/useWorkPlace";
-import { hashFor, noteOpening, openingWritten } from "@/lib/nav/addressOpening";
+import { hashFor, noteOpening, openingWritten, searchFor } from "@/lib/nav/addressOpening";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const code = (rel: string) =>
@@ -112,6 +112,22 @@ describe("the address being opened", () => {
     noteOpening(`${CANONS}#s3`);
     openingWritten();
     expect(hashFor(CANONS)).toBe("");
+  });
+});
+
+describe("the query of the address being opened (the shop's piece, Gate 2's fault 7)", () => {
+  const DETAIL = "/shop/icons/detail";
+  it("is the tapped one while it is on its way, the window's once written, and none for a page no tap named", () => {
+    at("/shop/");
+    Object.assign(loc, { search: "" });
+    noteOpening("/shop/icons/detail?slug=virgin-of-vladimir-icon-with-engraved-frame");
+    expect(searchFor(`${DETAIL}/`)).toBe("?slug=virgin-of-vladimir-icon-with-engraved-frame");
+    expect(searchFor("/shop/cart/")).toBe("");
+    openingWritten();
+    expect(searchFor(DETAIL)).toBe("");
+    at("/shop/icons/detail/");
+    Object.assign(loc, { search: "?slug=greek-christ-flag" });
+    expect(searchFor(DETAIL)).toBe("?slug=greek-christ-flag");
   });
 });
 

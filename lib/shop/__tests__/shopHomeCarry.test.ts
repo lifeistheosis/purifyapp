@@ -106,6 +106,21 @@ describe("every card on /shop/ that opens a piece carries its picture into the p
     }
   });
 
+  it("the export's page for a piece takes the picture even when its outline commits before its body", () => {
+    // Measured on the export: one tap in two, card by card, the router committed the route's own fallback (its
+    // body's code still arriving), the bare outline, and the card's picture left with the shop.
+    const page = read("app/(app)/shop/icons/detail/page.tsx");
+    expect(page).toContain("<Suspense fallback={<ProductDetailFallback />}>");
+    expect(page).not.toContain("fallback={<ShopDetailSkeleton />}");
+    const query = read("components/shop/ProductDetailFromQuery.tsx");
+    const fallback = query.slice(query.indexOf("export function ProductDetailFallback"));
+    // The piece being opened, from the address the tap named (the router writes it only as the page commits); none
+    // on the server and on a cold start's first draw, so the page hydrates as it was written.
+    expect(fallback).toContain('useSyncExternalStore(still, () => new URLSearchParams(searchFor(DETAIL)).get("slug") ?? "", () => "")');
+    expect(fallback).toContain("<ShopDetailSkeleton picture={slug ? peekPiecePicture(slug) : null} carry={slug ? pieceCarry(slug) : undefined} />");
+    expect(query).toContain('const DETAIL = "/shop/icons/detail";');
+  });
+
   it("the piece's page takes a picture by the piece's name, while it is read and once it is", () => {
     expect(read("components/shop/ProductDetailClient.tsx")).toContain("<ShopDetailSkeleton picture={peekPiecePicture(slug)} carry={pieceCarry(slug)} />");
     expect(read("components/shop/ProductDetailClient.tsx")).toContain("carry={pieceCarry(product.slug)}");

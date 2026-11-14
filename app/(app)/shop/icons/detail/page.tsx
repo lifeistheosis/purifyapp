@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { ProductDetailFromQuery } from "@/components/shop/ProductDetailFromQuery";
-import { ShopDetailSkeleton } from "@/components/shop/ShopStates";
+import { ProductDetailFallback, ProductDetailFromQuery } from "@/components/shop/ProductDetailFromQuery";
 
 export const metadata: Metadata = {
   title: "Icon | EIKON",
@@ -22,10 +21,11 @@ export const metadata: Metadata = {
 // The slug is read on the device (useSearchParams), so the page written into
 // the bundle is its fallback until then: the piece's own outline, the one it
 // shows while the piece is fetched, so the page arrives in its shape and not
-// blank (cause 7 of the gate; it was null).
+// blank (cause 7 of the gate; it was null). Opened from a card, it shows that
+// piece's picture and takes the card's (Gate 2's fault 7).
 export default function ProductDetailQueryPage() {
   return (
-    <Suspense fallback={<ShopDetailSkeleton />}>
+    <Suspense fallback={<ProductDetailFallback />}>
       <ProductDetailFromQuery />
     </Suspense>
   );
