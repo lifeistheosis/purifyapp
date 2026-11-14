@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state. The log is `docs/1.9-build/HANDOFF.md`, his words are `docs/1.9-build/BRAINSTORM.md`, and how the chats run is `docs/OPERATIONS.md`.
 
-Updated 2026-11-14 16:02 UTC by Arbiter 7, at build 97 note 2 (15:58 at note 1; 15:42 at Updates 43's report; 15:25 at build 97 sent; 15:14 at its start; 15:12 at Updates 41's report; 15:07 at his usage, 15:04; 15:00 at his chants; 14:50 at his "rec yes all"; before that 14:44, at its start; 14:03, Arbiter 6 at its hand-over; first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
+Updated 2026-11-14 15:59 UTC by Arbiter 7, at build 97 note 2 (15:58 at note 1; 15:42 at Updates 43's report; 15:25 at build 97 sent; 15:14 at its start; 15:12 at Updates 41's report; 15:07 at his usage, 15:04; 15:00 at his chants; 14:50 at his "rec yes all"; before that 14:44, at its start; 14:03, Arbiter 6 at its hand-over; first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
 
 ## 1.9 now
 
@@ -26,7 +26,7 @@ Every chat rotates at 200,000 tokens (OPERATIONS section 2). The fixers of 2026-
 
 ## Waiting on him
 
-1. **One Fable round: the journal as its own page (build 97 note 2) with round 3 of the fifteen screens** (the Bible's opening, You, Plus), in round 1's way, which he said yes to, not round 2's rows in one tray: four screens, stills only, for his yes (rec yes; asked 16:02, round 3 first asked 14:51). And what the journal's typing bug does, a screen recording best. Rounds 4 and 5 and note 28 after.
+1. **One Fable round: the journal as its own page (build 97 note 2) with round 3 of the fifteen screens** (the Bible's opening, You, Plus), in round 1's way, which he said yes to, not round 2's rows in one tray: four screens, stills only, for his yes (rec yes; asked 15:59, round 3 first asked 14:51). And what the journal's typing bug does, a screen recording best. Rounds 4 and 5 and note 28 after.
 2. **The documentary itself, yes or no** (his taste): https://claude.ai/artifact/WG2cBhCekzLx5RLrme7SLk (7da346ec; 107 seconds, 1080 square, no sound; scene seven re-cut on Krindatch's report of September 2026, attendance in the median Orthodox parish up 36% from 2019 to 2025, with no claim that the Orthodox share of Americans grew). The 1% and 2.6 million opener stays out (his yes, 14:45). Asked at 14:51 whether his "rec yes all" takes the film in too. Its Fable chat is kept, idle, until he answers, since its container holds the frames for a small change.
 3. **The chants a reader asked for** (his screenshot of the Discord thread, 14:55: "Terrifying Judgement (Arabic and Serbian) and a Nicene Creed chant"), in 1.9 after the test build, by the rule given him at 14:51 (small things before the re-check, bigger ones after the test build). Asked at 15:00: the exact recordings he means, the Creed's language, and his yes to a permission letter to the choir (rec yes), since "The Terrifying Judgement (Arabic)" is a released track by an artist named Byzantine Choir, a known owner his chant rule of 2026-10-16 does not cover. The pages can be built meanwhile; the sound goes into data/chants-live.json only on the choir's yes; the upload runs from his PC (docs/chants/ADDING-A-CHANT.md).
 4. **Note 23 and the welcome line, for his look** (his taste; built and pushed, nothing waits on it): https://claude.ai/artifact/PUsgz1LRYCUuPUPFP3dHQT.
