@@ -11,8 +11,8 @@ Written 2026-11-14 by Updates 67 (session_01VuYTwZng5gLb5UQJXXrdFX), a fixer sta
 - **b5678921** (walk mend): the Prayers scene starts Rain first and finds the bar's button by its name's start (the bar draws it only while a sound plays, labelled "Ambience, Rain playing"); each window says when the words woke and when the sheet left; the Words view is read once with nothing over it.
 - **a4a41ae3** (walk mend): a long frame's `scripts` is a frozen array; sorting it in place threw in the page and lost the entry.
 - **638c7d94** (the mend): the sheet's content says when it is drawn (a layout effect, from its first frame until the house sheet drops it); `useAmbienceLeaving()` is true while it is closed and still drawn; the words take `active={words && !covered && !ambienceLeaving}`. Kept out of the store's `state`, so no other screen redraws; only a change of the answer draws (the sheet's first frame changes nothing).
-- **41463700**: docs/handoffs/updates-67-runners/tileloading67.mjs, a tile mid-loading held to checkMock (below).
-- **1f72725f** (walk mend): the checks were handed the failures array, not a function, so the first failing check crashed the walk with no FAIL line.
+- **fa1e4b00**: docs/handoffs/updates-67-runners/tileloading67.mjs, a tile mid-loading held to checkMock (below).
+- **32bdd085** (walk mend): the checks were handed the failures array, not a function, so the first failing check crashed the walk with no FAIL line.
 
 ## Checks
 
@@ -33,7 +33,7 @@ Written 2026-11-14 by Updates 67 (session_01VuYTwZng5gLb5UQJXXrdFX), a fixer sta
 | Prayers opened / closed | 88 / 4, 88 / 3 | 87 / 4, 90 / 2 | 89 / 3, 91 / 1 | 86 / 5, 91 / 1 |
 | `--check` | PASS | **PASS** | PASS | **FAIL (1)**, Words closed 53 |
 
-Photographs: all six shown at the sheet's first frame in every opening of all four runs. The after reduced run crashed at its check (1f72725f mends that); its verdict above is the rule applied to its numbers. **Round 4's 26 frames did not reproduce here:** the same app code passed at 73. Compare within a run.
+Photographs: all six shown at the sheet's first frame in every opening of all four runs. The after reduced run crashed at its check (32bdd085 mends that); its verdict above is the rule applied to its numbers. **Round 4's 26 frames did not reproduce here:** the same app code passed at 73. Compare within a run.
 
 ## Open, with owners
 
