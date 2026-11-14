@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state. The log is `docs/1.9-build/HANDOFF.md`, his words are `docs/1.9-build/BRAINSTORM.md`, and how the chats run is `docs/OPERATIONS.md`.
 
-Updated 2026-11-14 16:08 UTC by Arbiter 7, at Updates 44's report (16:06 at notes 4 and 5; 16:02 at note 3; 15:59 at note 2; 15:58 at note 1; 15:42 at Updates 43's report; 15:25 at build 97 sent; 15:14 at its start; 15:12 at Updates 41's report; 15:07 at his usage, 15:04; 15:00 at his chants; 14:50 at his "rec yes all"; before that 14:44, at its start; 14:03, Arbiter 6 at its hand-over; first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
+Updated 2026-11-14 16:06 UTC by Arbiter 7, at note 6 (16:05 at Updates 44's report; 16:04 at notes 4 and 5; 16:02 at note 3; 15:59 at note 2; 15:58 at note 1; 15:42 at Updates 43's report; 15:25 at build 97 sent; 15:14 at its start; 15:12 at Updates 41's report; 15:07 at his usage, 15:04; 15:00 at his chants; 14:50 at his "rec yes all"; before that 14:44, at its start; 14:03, Arbiter 6 at its hand-over; first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
 
 ## 1.9 now
 
