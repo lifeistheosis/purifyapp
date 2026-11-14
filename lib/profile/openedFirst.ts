@@ -11,6 +11,23 @@ export function followingNow(chosen: boolean | null, relation: { following: bool
   return chosen ?? relation?.following ?? false;
 }
 
+/**
+ * How a reader's status line stands on a card opened from the feed's seed:
+ *   - "known": the seed carries the line, or the profile is already here
+ *     (cached), or there is no seed and the whole profile fades in together:
+ *     drawn as it is, nothing waits.
+ *   - "held": the seed's server did not say (an older server sends no
+ *     author_status; the main web did not on 2026-11-14): its place is kept
+ *     from the card's first frame, a line that comes fades in there, and none
+ *     leaves the place standing, so nothing under it moves (build 97 note 6).
+ *   - "late": the seed said none: drawn without one, and a line that comes
+ *     anyway (set since the feed was read) opens on the house curve (openRow).
+ */
+export function statusWay(seed: { status?: string | null } | null | undefined, cached: boolean): "known" | "held" | "late" {
+  if (cached || !seed || seed.status) return "known";
+  return seed.status === undefined ? "held" : "late";
+}
+
 /** The house's curve and time (app/globals.css, --ease-house and --duration-base). */
 export const HOUSE_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 export const HOUSE_MS = 320;

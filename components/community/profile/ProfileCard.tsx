@@ -185,6 +185,7 @@ export function ProfileFace({
   nameAs = "h2",
   compact = false,
   statusArrives = false,
+  statusHeld = false,
 }: {
   profile: Pick<PublicProfile, "name" | "handle" | "avatar" | "status" | "cosmetics"> & Partial<Pick<PublicProfile, "clergy">>;
   actions?: ReactNode;
@@ -202,6 +203,13 @@ export function ProfileFace({
    * ease down instead of jumping in one frame (build 97 note 6).
    */
   statusArrives?: boolean;
+  /**
+   * The status line's place is kept from the card's first frame: the feed's
+   * server did not say whether there is one (lib/profile/openedFirst.ts,
+   * statusWay). A line that comes fades in there; none leaves the place
+   * standing, so Follow and the doors under it never move (build 97 note 6).
+   */
+  statusHeld?: boolean;
 }) {
   const { t } = useTranslate();
   const Name = nameAs;
@@ -255,12 +263,14 @@ export function ProfileFace({
           {afterHandle}
         </p>
       ) : null}
-      {profile.status ? (
-        <ArrivingRow arrives={statusArrives}>
+      {profile.status || statusHeld ? (
+        <ArrivingRow arrives={statusArrives || statusHeld} held={statusHeld}>
+        {profile.status ? (
         <p
+          data-profile-status={statusArrives || statusHeld ? undefined : ""}
           className={cn(
             compact ? "text-detail" : "text-[15.5px]",
-            statusArrives ? null : "mt-[9px]",
+            statusArrives || statusHeld ? null : "mt-[9px]",
             "max-w-[30rem] break-words px-3.5 font-serif italic leading-[1.35] text-paper/80",
             halo,
           )}
@@ -272,6 +282,7 @@ export function ProfileFace({
             {close}
           </span>
         </p>
+        ) : null}
         </ArrivingRow>
       ) : null}
       {actions ? <div className="mt-4 flex items-center justify-center gap-2.5">{actions}</div> : null}
@@ -283,15 +294,23 @@ export function ProfileFace({
  * A row that arrives under a card already drawn opens from nothing on the
  * house curve (lib/profile/openedFirst.ts, openRow); its space above is held
  * inside the clip, so nothing outside it moves. Any other row is itself.
+ *
+ * `held`: the row's place stands from the card's first frame, one line of the
+ * status and the space above it (9px and 15.5px at 1.35), whether a line comes
+ * or not. A line that comes opens inside it: its words fade in where they
+ * stay, and only a second line, which the place cannot know, eases down.
+ * `data-profile-status` names the face's own child for the open walk
+ * (scripts/profile-open-walk.mjs).
  */
 const openRowOnMount = (el: HTMLDivElement | null) => {
   openRow(el);
 };
 
-function ArrivingRow({ arrives, children }: { arrives: boolean; children: ReactNode }) {
+function ArrivingRow({ arrives, held = false, children }: { arrives: boolean; held?: boolean; children: ReactNode }) {
+  if (held && !children) return <div data-profile-status aria-hidden className="min-h-[30px] w-full" />;
   if (!arrives) return <>{children}</>;
   return (
-    <div ref={openRowOnMount} data-opening-row className="grid w-full justify-items-center">
+    <div ref={openRowOnMount} data-opening-row data-profile-status className={cn("grid w-full justify-items-center", held && "min-h-[30px]")}>
       <div className="min-h-0 overflow-hidden pt-[9px]">{children}</div>
     </div>
   );

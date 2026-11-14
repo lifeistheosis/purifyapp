@@ -150,11 +150,17 @@ function recorder({ windowMs, menuLabel }) {
         if (r && r.w > 0 && r.h > 0) parts[key] = { ...r, s: strength(el, cardEl) };
       };
       // The face's rows by what they are, not where they stand (a row arriving shifts the others' places).
+      // The status by its mark (ProfileCard.tsx, data-profile-status: the line, its opening row
+      // or its held place), or on the main web, which has no mark, by its italic.
       const menuEl = face?.querySelector(`button[aria-haspopup="menu"][aria-label="${menuLabel}"]`) ?? null;
+      const isStatus = (el) => el.hasAttribute("data-profile-status") || el.classList.contains("italic");
       if (face)
-        [...face.children].forEach((el, i) =>
-          add(i === 0 ? "picture" : el.id === "profile-name" ? "name" : menuEl && el.contains(menuEl) ? "actions" : el.classList.contains("italic") ? "status" : "handle", el),
-        );
+        [...face.children].forEach((el, i) => {
+          const key = i === 0 ? "picture" : el.id === "profile-name" ? "name" : menuEl && el.contains(menuEl) ? "actions" : isStatus(el) ? "status" : "handle";
+          // Two rows never share a name: the second is named by its place (a row
+          // read as the @handle once made it look as if it moved 153px; Updates 66).
+          add(parts[key] ? `${key}#${i}` : key, el);
+        });
       const actionsEl = menuEl?.closest("div") ?? null;
       add("follow", actionsEl?.querySelector("button[aria-pressed], a") ?? null);
       add("menu", menuEl);

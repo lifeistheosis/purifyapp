@@ -1794,7 +1794,9 @@ function PostCardInner({
         decoration: post.author_decoration ?? null,
         clergy: post.author_clergy ?? null,
         nameColor: post.author_name_color ?? null,
-        status: post.author_status ?? null,
+        // Undefined when the server did not say (an older one sends no author_status):
+        // the card keeps the line's place then (lib/profile/openedFirst.ts, statusWay).
+        status: post.author_status,
       }
     : null;
   const menuItems: ActionMenuItem[] = [];
@@ -2573,7 +2575,8 @@ function replySeed(r: CommunityReply): ProfileSeed | null {
         decoration: r.author_decoration ?? null,
         clergy: r.author_clergy ?? null,
         nameColor: r.author_name_color ?? null,
-        status: r.author_status ?? null,
+        // Undefined when the server did not say, as for a post's writer (statusWay).
+        status: r.author_status,
       }
     : null;
 }

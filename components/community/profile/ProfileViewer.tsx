@@ -41,7 +41,7 @@ import {
 } from "@/lib/profile/client";
 import { useProfileCampaigns } from "@/lib/campaigns/useProfileCampaigns";
 import { profileDoors } from "@/lib/profile/doors";
-import { followingNow, followShown } from "@/lib/profile/openedFirst";
+import { followingNow, followShown, statusWay } from "@/lib/profile/openedFirst";
 import type { ProfileRelation, ProfileSeed, PublicProfile } from "@/lib/profile/publicProfile";
 import { SITE_URL } from "@/lib/site";
 import { useReducedMotion } from "@/lib/ui/motion";
@@ -167,6 +167,9 @@ export function ProfileViewer({
   // The card was drawn without the status line (the feed did not know it): it
   // opens when the profile brings it, instead of pushing Follow down a line.
   const [statusLate, setStatusLate] = useState(false);
+  // The feed's server did not say whether there is one: the line's place is
+  // kept from the card's first frame, and what comes fades in there.
+  const [statusHeld, setStatusHeld] = useState(false);
   const [version, setVersion] = useState(0);
   const [notice, setNotice] = useState<string | null>(null);
   const [reported, setReported] = useState(false);
@@ -208,7 +211,12 @@ export function ProfileViewer({
       const cached = cachedProfile(handle);
       setLoaded(cached ? { state: "ok", profile: cached } : { state: "loading" });
       // With no seed the whole profile fades in together, so nothing is pushed.
-      setStatusLate(!cached && Boolean(seed) && !seed?.status);
+      // A seed whose server did not say keeps the status line's place
+      // (statusWay): the main web's feed sent no author_status on 2026-11-14,
+      // so every status came a second after the card and pushed Follow down.
+      const way = statusWay(seed, Boolean(cached));
+      setStatusLate(way === "late");
+      setStatusHeld(way === "held");
     }
   }
 
@@ -548,12 +556,15 @@ export function ProfileViewer({
           profile comes and the card grows, it grows on a transform. Placed by
           its foot, its top moved in layout by the whole growth, a jump the
           browser reports at every step (Updates 25's walk: 240px, then 46,
-          40, 34 and 28px a frame). It rests where it did. */}
+          40, 34 and 28px a frame). It rests where it did. With motion off
+          its height is never eased (useDraggableSheet), so on a phone it
+          stands at its full height from the first frame: the profile came and
+          the card grew 240px in one frame (build 97 note 6). */}
       <div
         ref={panelRef}
         data-profile-card
         className={cn(
-          "relative top-full flex max-h-[92dvh] w-full -translate-y-full flex-col overflow-hidden rounded-t-3xl border-t shadow-2xl will-change-transform md:top-1/2 md:max-h-[86vh] md:max-w-[600px] md:-translate-y-1/2 md:rounded-2xl md:border",
+          "relative top-full flex max-h-[92dvh] w-full -translate-y-full flex-col overflow-hidden rounded-t-3xl border-t shadow-2xl will-change-transform motion-reduce:min-h-[92dvh] md:top-1/2 md:max-h-[86vh] md:max-w-[600px] md:-translate-y-1/2 md:rounded-2xl md:border md:motion-reduce:min-h-0",
           surfaceClass(surface),
           surface.themed ? "border-white/10" : "border-paper/15",
         )}
@@ -595,6 +606,7 @@ export function ProfileViewer({
                 profile={profile}
                 actions={actions}
                 statusArrives={statusLate}
+                statusHeld={statusHeld}
                 celebrating={Boolean(profile.nameDay)}
                 afterHandle={
                   relation?.followsYou ? (
