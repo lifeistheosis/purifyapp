@@ -75,8 +75,10 @@ describe("the councils' pictures in the reading room, with no signal", () => {
     }
   });
 
-  it("offers no AVIF for a history picture the apps do not carry, nor for another site's", () => {
-    expect(avifFor("/history/media/not-carried-anywhere.jpg")).toBeNull();
+  it("offers no AVIF in the apps for a history picture they do not carry, nor for another site's", () => {
+    // On the website such a picture offers the site's own AVIF (lib/media/__tests__/streamed.test.ts).
+    expect(avifFor("/history/media/not-carried-anywhere.jpg", true)).toBeNull();
+    expect(avifFor("https://purifyapp.net/history/media/council-of-sardica.v1.jpg", true)).toBeNull();
     expect(avifFor("https://example.org/history/media/first-council-of-nicaea.v1.jpg")).toBeNull();
   });
 

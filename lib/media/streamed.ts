@@ -1,4 +1,5 @@
 import { isCarried } from "@/lib/media/carried";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { isNativeClient } from "@/lib/platform/native";
 import { SITE_URL } from "@/lib/site";
 
@@ -62,12 +63,24 @@ export function isStreamedMedia(path: string): boolean {
  * is the website's, so a reader with no signal still sees it where it stands
  * as a book's cover (the gate's final run of 2026-11-12: on
  * /reading/councils/ the seven were asked of the website as JPEGs alone).
+ *
+ * And on the website, any History picture given as the site's own address:
+ * scripts/history-media.mjs writes an AVIF beside every JPEG that
+ * lib/history/events.ts or lib/councils/pictures.ts names, and the website
+ * has them all, so a local council's book or shelf (Sardica's, Antioch's)
+ * offers it too, as its head does (lib/history/media.ts, lighter).
+ * lib/media/__tests__/streamed.test.ts holds every such JPEG to its AVIF.
+ * In the apps (`native`: IS_STATIC_EXPORT while the export is built, the
+ * device after) nothing changes: a picture they do not carry is asked of the
+ * live website, which may not have its AVIF yet, and a <picture> whose AVIF
+ * answers 404 shows nothing at all.
  */
-export function avifFor(src: string | null | undefined): string | null {
+export function avifFor(src: string | null | undefined, native: boolean = IS_STATIC_EXPORT || isNativeClient()): string | null {
   if (!src || !src.endsWith(".jpg")) return null;
   const path = src.startsWith(SITE_URL) ? src.slice(SITE_URL.length) : src;
-  const carried = path.replace(/\.jpg$/, ".avif");
-  if (path.startsWith("/history/") && isCarried(carried)) return carried;
+  const avif = path.replace(/\.jpg$/, ".avif");
+  if (path.startsWith("/history/") && isCarried(avif)) return avif;
+  if (!native && src.startsWith("/history/media/")) return avif;
   if (!path.startsWith("/covers/")) return null;
   return src.replace(/\.jpg$/, ".avif");
 }

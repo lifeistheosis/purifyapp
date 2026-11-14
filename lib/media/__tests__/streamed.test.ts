@@ -12,6 +12,8 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { COUNCIL_PICTURES } from "@/lib/councils/pictures";
+import { HISTORY_EVENTS } from "@/lib/history/events";
 import { STREAMED_ROOTS, avifFor, isStreamedMedia, streamedUrl } from "@/lib/media/streamed";
 import { SITE_URL } from "@/lib/site";
 
@@ -56,6 +58,58 @@ describe("a cover's lighter copy", () => {
     expect(covers.length).toBeGreaterThan(80);
     for (const jpg of covers) {
       expect(fs.existsSync(jpg.replace(/\.jpg$/, ".avif")), `${jpg}: no AVIF (run node scripts/covers-avif.mjs)`).toBe(true);
+    }
+  });
+});
+
+// Updates 50's open 3c (the arbiter's call, 2026-11-14): on the website a
+// local council's book and shelf (Sardica's, Antioch's) drew the JPEG alone,
+// though scripts/history-media.mjs writes an AVIF beside it, because avifFor
+// offered a History picture's AVIF only when the apps carry it.
+describe("a History picture's lighter copy", () => {
+  const sardica = "/history/media/council-of-sardica.v1.jpg";
+  const antioch = "/history/media/council-of-antioch-268.v1.jpg";
+  const ephesus = "/history/media/council-of-ephesus.v1.jpg";
+
+  it("is offered on the website beside a picture the apps do not carry", () => {
+    for (const jpg of [sardica, antioch]) {
+      expect(avifFor(jpg, false), jpg).toBe(jpg.replace(/\.jpg$/, ".avif"));
+      expect(avifFor(jpg), `${jpg}, the website by default`).toBe(jpg.replace(/\.jpg$/, ".avif"));
+    }
+  });
+
+  it("is unchanged in the apps: the carried AVIF alone, never one the live website may lack", () => {
+    for (const jpg of [sardica, antioch]) {
+      expect(avifFor(`${SITE_URL}${jpg}`, true), jpg).toBeNull();
+      expect(avifFor(jpg, true), jpg).toBeNull();
+      // The apps' own address, whatever the device says.
+      expect(avifFor(`${SITE_URL}${jpg}`, false), jpg).toBeNull();
+    }
+    expect(avifFor(`${SITE_URL}${ephesus}`, true)).toBe("/history/media/council-of-ephesus.v1.avif");
+    expect(avifFor("https://example.org/history/media/council-of-sardica.v1.jpg", false)).toBeNull();
+    expect(avifFor("/history/council-of-sardica.v1.jpg", false)).toBeNull();
+  });
+
+  it("exists for every History JPEG the code names, so the website never offers one it lacks", () => {
+    const named = new Set<string>([
+      ...HISTORY_EVENTS.flatMap((e) => [e.media?.hero, ...(e.media?.gallery ?? []).map((g) => g.src)]),
+      ...Object.values(COUNCIL_PICTURES).map((p) => p.hero),
+    ].filter((p): p is string => !!p && p.startsWith("/history/media/")));
+    // And any other name in the code, in case a page names one directly.
+    const sources = (dir: string): string[] =>
+      fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+        const p = path.join(dir, e.name);
+        if (e.isDirectory()) return e.name === "__tests__" ? [] : sources(p);
+        return /\.tsx?$/.test(e.name) ? [p] : [];
+      });
+    for (const file of ["lib", "components", "app"].flatMap(sources)) {
+      for (const m of fs.readFileSync(file, "utf8").match(/\/history\/media\/[a-z0-9.-]+\.jpg/g) ?? []) named.add(m);
+    }
+    expect(named.size).toBeGreaterThan(50);
+    expect(named.has(sardica) && named.has(antioch)).toBe(true);
+    for (const jpg of named) {
+      expect(fs.existsSync(path.join("public", jpg)), `${jpg}: no JPEG`).toBe(true);
+      expect(fs.existsSync(path.join("public", jpg.replace(/\.jpg$/, ".avif"))), `${jpg}: no AVIF (run node scripts/history-media.mjs)`).toBe(true);
     }
   });
 });
