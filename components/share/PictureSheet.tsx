@@ -90,6 +90,19 @@ const LAYOUT_TILE = { width: 38, height: 44 };
 const SWATCH = 46;
 
 type Tab = "look" | "words" | "size";
+/**
+ * One tab's controls in the panel's single cell, stacked with the other two
+ * (build 97 note 9). A tab not shown keeps its room and is unseen, unread by
+ * a screen reader and out of reach of a finger or the keyboard.
+ */
+function TabLayer({ on, children }: { on: boolean; children: ReactNode }) {
+  return (
+    <div className={cn("col-start-1 row-start-1 min-w-0", on ? undefined : "invisible")} aria-hidden={on ? undefined : true} inert={!on}>
+      {children}
+    </div>
+  );
+}
+
 const TABS: readonly { id: Tab; key: string }[] = [
   { id: "look", key: "picture.tab.look" },
   { id: "words", key: "picture.tab.words" },
@@ -292,50 +305,56 @@ export function PictureSheet({
         ))}
       </div>
 
-      <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-tab-${tab}`} className="mt-3.5 min-h-[136px]">
-        {tab === "look" && quote ? (
-          <QuoteLooks
-            words={words}
-            quote={quote}
-            style={style}
-            onLayout={(layout) => change({ layout })}
-            onLook={(look) => change({ look })}
-          />
-        ) : tab === "look" ? (
-          <>
-            <div role="group" aria-label={t("picture.tab.look")} className="no-scrollbar -mx-1 flex justify-between gap-1 overflow-x-auto px-1">
-              {lead ? (
+      {/* The three tabs share the panel's one cell, so it stands as tall as the tallest of them in every
+          language and at every text size, and the sheet, its title and the picture stand still when the
+          tab changes (build 97 note 9: Words was taller than the old floor of 136px and the sheet grew up). */}
+      <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-tab-${tab}`} className="mt-3.5 grid min-h-[136px]">
+        <TabLayer on={tab === "look"}>
+          {quote ? (
+            <QuoteLooks
+              words={words}
+              quote={quote}
+              style={style}
+              onLayout={(layout) => change({ layout })}
+              onLook={(look) => change({ look })}
+            />
+          ) : (
+            <>
+              <div role="group" aria-label={t("picture.tab.look")} className="no-scrollbar -mx-1 flex justify-between gap-1 overflow-x-auto px-1">
+                {lead ? (
+                  <LookTile
+                    look={lead}
+                    image={null}
+                    on={style.look === lead.id}
+                    label={leadLabel ?? ""}
+                    onClick={() => change({ look: lead.id })}
+                  />
+                ) : null}
+                {LOOKS.map((look) => (
+                  <LookTile
+                    key={look.id}
+                    look={look}
+                    image={null}
+                    on={style.look === look.id}
+                    label={look.nameKey ? t(look.nameKey) : ""}
+                    onClick={() => change({ look: look.id })}
+                  />
+                ))}
                 <LookTile
-                  look={lead}
-                  image={null}
-                  on={style.look === lead.id}
-                  label={leadLabel ?? ""}
-                  onClick={() => change({ look: lead.id })}
-                />
-              ) : null}
-              {LOOKS.map((look) => (
-                <LookTile
-                  key={look.id}
-                  look={look}
-                  image={null}
-                  on={style.look === look.id}
-                  label={look.nameKey ? t(look.nameKey) : ""}
-                  onClick={() => change({ look: look.id })}
-                />
-              ))}
-              <LookTile
-                look={YOURS}
-                image={photo}
-                on={style.look === YOURS.id}
-                label={t("picture.look.yours")}
-                onClick={chooseYours}
-              >
-                {photo ? null : <Plus size={20} />}
-              </LookTile>
-            </div>
-            {style.look === YOURS.id ? <p className="mt-3 text-center font-sans text-caption text-paper/55">{t("picture.photoNote")}</p> : null}
-          </>
-        ) : tab === "words" ? (
+                  look={YOURS}
+                  image={photo}
+                  on={style.look === YOURS.id}
+                  label={t("picture.look.yours")}
+                  onClick={chooseYours}
+                >
+                  {photo ? null : <Plus size={20} />}
+                </LookTile>
+              </div>
+              {style.look === YOURS.id ? <p className="mt-3 text-center font-sans text-caption text-paper/55">{t("picture.photoNote")}</p> : null}
+            </>
+          )}
+        </TabLayer>
+        <TabLayer on={tab === "words"}>
           <>
             <div role="group" aria-label={t("bible.typeface")} className="flex gap-2.5">
               {FONT_ORDER.map((font) => (
@@ -392,7 +411,8 @@ export function PictureSheet({
               </span>
             </div>
           </>
-        ) : (
+        </TabLayer>
+        <TabLayer on={tab === "size"}>
           <div role="group" aria-label={t("ui.size")} className="flex flex-wrap justify-center gap-2 pt-2">
             {SHAPE_ORDER.map((s) => (
               <button
@@ -410,7 +430,7 @@ export function PictureSheet({
               </button>
             ))}
           </div>
-        )}
+        </TabLayer>
       </div>
 
       <div className="mt-3.5 grid grid-cols-[1fr_1.6fr] gap-2.5">
