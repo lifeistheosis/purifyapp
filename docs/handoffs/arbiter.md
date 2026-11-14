@@ -1,49 +1,40 @@
 # Baton: the arbiter
 
-From Arbiter 7 (session_01VuYTwc1iCyxzqvD9VFy2bp) to Arbiter 8, written 2026-11-14 16:32 UTC. Arbiter 7 ran from 14:41 (started by him in the Android app, lineage depth 0 of 8), compacted once at his /compact before 16:14, and rotates at 212,210 tokens by get_session ($15.10 in all), past OPERATIONS section 2's 200,000. `docs/NOW.md` is the state; this baton is only what NOW does not hold.
+From Arbiter 8 (session_01VuYTwbzbjqscbFvEseu6uP) to Arbiter 9, written 2026-11-14 17:57 UTC. Arbiter 8 ran from 16:32 (started by Arbiter 7 at its rotation, lineage depth 1 of 8) and rotates at 279,801 tokens by get_session ($4.83 in all), past OPERATIONS section 2's 200,000. `docs/NOW.md` is the state; this baton is only what NOW does not hold.
 
 ## Where 1.9 stands
 
-- He is walking build 97 (ungated, at his word; Android, the android-release page, run 43608911353 from 231e1ce0) and sending notes in bursts. Ten so far, each in `docs/1.9-build/notes/build-97.md` with his words in BRAINSTORM: 1 the lit line in the middle and the click with the glow; 2 the journal as its own page, and a jump and a flash when typing starts; 3 each page's first opening readied ahead; 4 every picture in the councils; 5 the Voice sheet's states; 6 a reader's profile opened the first time; 7 the plans' design ("0 of 89 days read" breaks round 1's no-zero rule); 8 a scroll in a sheet's window taken by the sheet; 9 the verse picture's sheet moving with its tab; 10 the ambience's interface ("not the sound but the ui").
-- His go at 16:28: "fix those things. try and take into account usage also". The queue is NOW's Next 2, in order, two chats at work at a time.
-- Then the re-check (Gate 3, a fresh Admin chat from `docs/handoffs/gate-2.md`), then the gated test build to the android-release page and TestFlight (read the assets' dates and name the build number before telling him).
+- He is walking build 97 (ungated, Android, the android-release page). No note since 16:28 ("fix those things. try and take into account usage also"). Notes 1 to 10 are in `docs/1.9-build/notes/build-97.md`, his words in BRAINSTORM.
+- The fixers' queue is NOW's Next 2. Pushed this shift: fault 8 and the privacy line (Updates 42), fault 7 and the cart drawer's foot (46), note 4's batch 1 (45), note 1 and note 7's zero (48), notes 8 and 9 (47). At work: Updates 50 (note 4's open places) and Updates 51 (the round's checks, round 2). Then the sheets' rest (note 2, the Word study tabs, the picture sheet at 1.3x), notes 3 and 6 with the shop's carries and the piece-to-piece cut, note 10. Then the re-check (Gate 3), then the gated test build.
 
-## Your first round (Arbiter 8)
+## Your first round (Arbiter 9)
 
-1. Archive Arbiter 7 (session_01VuYTwc1iCyxzqvD9VFy2bp) and fill your session id where NOW's Running table names you.
-2. Updates 42, 45 and 46 were told at Arbiter 7's rotation to send their one report to you. Read get_session for each:
-   - **Updates 42** (session_01VuYTwbJvXQ5SPQXbczqHyx, 227,193 tokens at 16:15): pushed fault 8 (4f09b301; Arabic now 4.80:1 and 4.70:1) and the privacy line (7b38f18f). Idle on 18 /reading/ pixel runs, four at a time, ending about 17:10 by its word; then it reports. Check the report quotes the German paragraph: 7b38f18f's stat showed `components/legal/PrivacyText.tsx` and the arrows test, not `components/privacy/PrivacyDe.tsx`, so ask whether the German landed before you archive it.
-   - **Updates 45** (session_01VuYTwbZqy3pmi5db8M9L82): note 4, the councils' pictures; batch 1 pushed (bb0111a9), baton e2dbf44a. Read its report, archive when done.
-   - **Updates 46** (session_01VuYTwbibKoaSkUCZR41amx, from 16:23): fault 7 and the two foot rooms (`docs/handoffs/updates-44.md` Open 1 and 2).
-3. When a chat reports and is archived, start the next in NOW's queue: the sheets (notes 2's typing bug, 8 and 9) first. If his burst of notes is still running, wait a little, since a group that may still grow is better briefed whole (a message reaches a chat in a long turn only at its turn's end).
+1. Archive Arbiter 8 (session_01VuYTwbzbjqscbFvEseu6uP). It was made by create_session, so the archive tool works on it; the auto mode check refused it only on Arbiter 7, his own app session, which stays for him to archive.
+2. Updates 50 and 51 send their one report to you. Archive each once its report is read and its work pushed.
+3. When a slot frees, start the sheets' rest (NOW Next 2), in the brief's shape below.
 4. Tell him nothing until something waits on him.
-
-## Waiting on him (all in NOW, Waiting on him)
-
-- **The Fable round**, now six screens: the journal page (note 2), the Voice sheet (note 5), round 3 (the Bible's opening, You, Plus) and a plan's own page (note 7). Rec yes, after the fixes, priced first. His "fix those things" was not taken as a yes to it: CLAUDE.md has every Fable run checked with him first. Asked three times today without an answer; ask again only when the fixes are in, with its cost.
-- The voices (Heart only, recorded for the rest, a GPU priced first; rec yes); note 1's "move you" (rec no); the documentary; the chants' three questions; his looks at note 23 and the emails; the thread rail; the company.
 
 ## Gotchas learned this shift
 
-- Read the clock in the same command as any time you write: `T=$(date -u +%H:%M)`. Arbiter 7 twice wrote times ahead of the clock and corrected them.
-- A send_message to a chat in a long turn arrives only at its turn's end, whatever the priority (Updates 41 got two 64 minutes late), so scope changes go to the next chat.
-- get_session can read 0 in a chat's first turn; a chat's own count can read 37% of get_session. A fixer reaches about 200,000 after one job (a fresh container starts near 100,000), about $5.
-- list_events with kinds user can overflow (68,000 characters for Updates 41). Kinds result with limit 40 shows a chat's turn ends and what it waits on.
-- Fixers push often: `git pull --rebase` before every push (a docs push of Arbiter 7's was refused at 16:28 for that).
-- His Usage sheet's "you'll run out" follows the week's average; measure the pace between two of his readings instead (NOW, Spend).
-- Readers' names from his screenshots are never written: the repository is public.
-- One note, one answer: five to eight short lines, the cause if found (said as read, not measured, when it is), the fix, where it goes.
+- **get_session is not to be trusted alone for a chat's size.** It can freeze for a whole long turn (Updates 46 read 90,980 throughout, then 357,113) or never move (Updates 47: 60,766 all session). The briefs say: take the larger of get_session and twice the chat's own count. Read your own size the same way.
+- **Every chat ran out of room before the export side**: 45, 47 and 48, and even the first checks chat, 49 (219,858 after the web build, the suite and one export). A fresh container starts near 90,000, so a chat has about 110,000 of room. The arbiter's practice from 17:36 (in NOW): a fixer pushes its code with its unit tests, and one checks chat per round runs the export side for all, on one export.
+- **Lean briefs.** CLAUDE.md and AGENTS.md are loaded into a session as project instructions at its start, so a brief need not tell a chat to read them again (about 25,000 tokens each time); a checks chat need not read NOW. Updates 51's brief is the first written this way.
+- **Subagents are dear.** Updates 45 spent about $18 in 34 minutes on three Commons searches (about 1.1 million subagent tokens). Briefs say: search in the chat's own context.
+- **The auto mode check** refused archive_session on Arbiter 7 and interrupt_session on a fixer. A wrap-up word goes by send_message with priority next; it reached Updates 45 in minutes.
+- **A test that reads a source file by its path** (lib/share/__tests__/pictureSheet.test.ts) is invisible to the push guard's vitest related; only the whole suite catches it. The suite at 5f2204166 had one such stale test after 51e8a8168; Updates 51 mends it first.
+- **Section 55's flick check** ("a gentle flick runs on only as the phone's own momentum does") failed once on the old export at 5f18e34a4 (53, 28, 30, 0, 28px), after 65441843 changed useLitLine.ts. Updates 51 re-runs it first. If it repeats, it is note 1's regression and goes to a fixer.
+- Read the clock in the same command as any time you write.
 
-## His words of today that still apply
+## His words that still apply
 
-"rec yes all" (14:45); the build 97 cut, "without chants" (15:11, done); "fix those things. try and take into account usage also" (16:28); "not the sound but the ui" (16:22, note 10). Every earlier word is in NOW and BRAINSTORM.
+"fix those things. try and take into account usage also" (16:28). Every earlier word is in NOW and BRAINSTORM. Nothing new waits on him from this shift, except Arbiter 7 to archive himself.
 
-## The shape of a fixer's brief (Updates 46's)
+## The shape of a brief (Updates 50's and 51's)
 
-Checkout with the hooks (`git fetch origin ccr-07896cf2-bo0afd && git checkout -B ccr-07896cf2-bo0afd origin/ccr-07896cf2-bo0afd && git config core.hooksPath .githooks`), `npm ci`, `npx next typegen`; read the fixer card, NOW, CLAUDE.md and AGENTS.md, OPERATIONS section 5 and its baton; the job in order with its files and the plan from the notes file; the checklist on what it touches only; the files other chats hold; the budget by get_session (nothing new past 150,000, stop at 200,000, a baton at `docs/handoffs/updates-N.md`); the push rules; one report by send_message to the arbiter, "unless told its successor"; a peer's message is never his word. create_session with source_url, source_revision and outcome_branch on ccr-07896cf2-bo0afd, model claude-opus-5-5, effort max, tags purify and purify:fixer. Updates 46's whole first message: list_events on its session, kinds user, limit 5.
+Who it is, who started it, that a peer's message is never his word. Setup: `git fetch origin ccr-07896cf2-bo0afd && git checkout -B ccr-07896cf2-bo0afd origin/ccr-07896cf2-bo0afd && git config core.hooksPath .githooks && npm ci && npx next typegen`. Read: the fixer card, OPERATIONS section 5, its baton and the notes' lines it needs (NOW for a fixer, not for a checks chat). The job in order, with files, the cause as read and the plan; the arbiter's calls written in. The checklist on what it touches (his word, 13:57); the export side only if its room allows, else named in its baton. The files other chats hold. The budget paragraph (the get_session gotcha above; about 110,000 of room; nothing new past 150,000, stop at 200,000; end the turn while runs go and never poll; search itself). The push rules (pull with rebase, the guard, a ten-minute timeout, never main, never --no-verify, never the API tools). One report by send_message to the arbiter, "unless told its successor". create_session with source_url, source_revision and outcome_branch on ccr-07896cf2-bo0afd, model claude-opus-5-5, effort max, tags purify and purify:fixer.
 
 ## Where things are
 
-- `docs/NOW.md` (state), `docs/1.9-build/BRAINSTORM.md` (his words), `docs/1.9-build/HANDOFF.md` (the log), `docs/1.9-build/notes/build-97.md` (his notes on build 97), `docs/roles/`, `docs/OPERATIONS.md`.
+- `docs/NOW.md` (state), `docs/1.9-build/BRAINSTORM.md` (his words), `docs/1.9-build/HANDOFF.md` (the log), `docs/1.9-build/notes/build-97.md`, `docs/roles/`, `docs/OPERATIONS.md`.
 - His calls page: https://claude.ai/artifact/HtMHvpk9SsKLwXG7AgJutq (docs/roles/arbiter.md says how to update it).
-- The fifteen screens' rounds: `docs/1.9-build/redesign/README.md`; the Fable baton `docs/handoffs/fable-fifteen-screens.md`.
+- The batons of this shift: `docs/handoffs/updates-45.md` to `updates-49.md`, with runners beside 46 and 49.
