@@ -115,6 +115,18 @@
   }
 }
 
+/* Candlelight's ink is the dimmest of the dark palettes. Beside the poster
+   the line of facts, at the 60 percent it is written in, read 4.40:1 at 800
+   and 4.39:1 at 1032 in Arabic, at its least on the picture under it (Gate
+   2, fault 8, 2026-11-14): in Arabic the words stand on the poster's other
+   side, on another part of the picture. There, on Candlelight, it is drawn
+   at 65. On a phone and on the other palettes it passes as written. */
+@media (min-width: 768px) {
+  html[data-reading-mode="candlelight"] .heroFacts {
+    color: color-mix(in srgb, var(--color-paper) 65%, transparent);
+  }
+}
+
 /* The poster stands on the stage in a deep shadow. On Light it is the
    house's warm shade, softer: black at nine tenths fell on the line under
    the poster on a phone and held it to 3.66:1 by the pixels (the Themes

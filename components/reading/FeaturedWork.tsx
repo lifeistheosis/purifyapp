@@ -153,7 +153,7 @@ export function FeaturedWork({
                 </Link>
               </h2>
               <p className="hidden font-sans text-ui text-paper/75 md:mt-2 md:block">{author}</p>
-              <p className="font-sans text-caption text-paper/60 md:mt-2">{facts.join(" · ")}</p>
+              <p className={cn(styles.heroFacts, "font-sans text-caption text-paper/60 md:mt-2")}>{facts.join(" · ")}</p>
               {blurb ? (
                 <p lang="en" dir="ltr" className="mt-2 line-clamp-2 max-w-[40ch] font-sans text-detail leading-[1.55] text-paper/75 md:line-clamp-3 md:max-w-[46ch]">
                   {blurb}
