@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state. The log is `docs/1.9-build/HANDOFF.md`, his words are `docs/1.9-build/BRAINSTORM.md`, and how the chats run is `docs/OPERATIONS.md`.
 
-Updated 2026-11-14 15:00 UTC by Arbiter 7, at his chants (14:55; 14:50 at his "rec yes all"; before that 14:44, at its start; 14:03, Arbiter 6 at its hand-over; first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
+Updated 2026-11-14 15:07 UTC by Arbiter 7, at his usage (15:04; 15:00 at his chants; 14:50 at his "rec yes all"; before that 14:44, at its start; 14:03, Arbiter 6 at its hand-over; first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
 
 ## 1.9 now
 
@@ -32,7 +32,7 @@ Every chat rotates at 200,000 tokens (OPERATIONS section 2). The fixers of 2026-
 4. **Note 23 and the welcome line, for his look** (his taste; built and pushed, nothing waits on it): https://claude.ai/artifact/PUsgz1LRYCUuPUPFP3dHQT.
 5. **The account and order emails, before and after, for his look** (his taste): https://claude.ai/artifact/Gcumt9ReKxJ6Yhy2Drh9Um (Updates 28). Its small lines go to sentence case by round 1's rule (the arbiter's call, Updates 31), and the page's after stills are republished then.
 6. **Community's thread rail** (a 1.5px line running down from the writer's picture while a post has replies): the arbiter's call is that it is not a side stripe, so it stays; his word removes it (docs/1.9-build/drafts/community-thread-rail.patch).
-7. **His week's usage in percent** (asked four times, no answer). Every chat reads "allowed_warning" (reset 2026-11-20 08:00 UTC). Until he says, the arbiter paces as if it is high: no more than two apply chats at a time, no new Fable run without his word.
+7. **His Usage screen once a day, if he can** (asked at 15:07), so the pace follows his numbers: get_session shows only "allowed_warning", never the percent.
 8. **The company:** C0 (the D-U-N-S record's address), C0b (the papers), the company's exact name as the EIN letter has it; for the Company guide, how many owners and how it is taxed; Florida sales tax for EIKON (C3b); the EIKON trade name before Stripe shows it. Steps in OWNER-STEPS.md.
 9. **Also:** the 22 permission letters; the Android notifications test; the owner's desk question 3 (a shop and sourcing chat after 1.9).
 
@@ -79,4 +79,4 @@ Every patch below is his yes. The apply chats take them by area so that patches 
 
 ## Spend
 
-His word at 15:38 UTC: "well we are fine but yes optimize of course". At 19:00 UTC every chat's seven-day limit reads "allowed_warning"; it resets 2026-11-20 08:00 UTC. Few chats, faults first, design work only on his yes, and a Fable run only on his word.
+His usage at about 15:04 UTC on 2026-11-14 (his screenshot, BRAINSTORM): the week's limit at 54% for all models and 32% for Fable, resetting 2026-11-20 08:00 UTC (Friday 2:59 AM on his clock); the sheet said "At this pace you'll run out tomorrow afternoon, before Friday's reset." The week began 2026-11-13 08:00 UTC, so 54% went in about 31 hours, about five times the pace that lasts. The pace from 15:07, the arbiter's call (OPERATIONS section 4): about 8% a day, so the allowance lasts to the reset and is not left unused at it. This weekend, the running fixes (Updates 41 and 42), the re-check and the test build; then, as he answers, round 3 of the fifteen screens and the chants. One model-heavy chat at a time after Updates 41 and 42; the arbiter compacts at a natural break and batches its messages. No usage credits (off, balance 0; his money, and the plan fits without them). His word of 2026-11-13 about 15:38 still stands: "well we are fine but yes optimize of course".
