@@ -1445,7 +1445,8 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
           if (!r) continue;
           entry.need = r.need;
           if (r.ratio + 1e-9 >= r.need) continue;
-          if (w.allow) allow("contrast", `"${w.text}"`, w.allow);
+          // The allowance as it stood when the pixels were photographed, as well as when the colours were read.
+          if (w.allow || r.allow) allow("contrast", `"${w.text}"`, w.allow || r.allow);
           else fail("contrast", palette, `"${w.text}"`, `${r.ratio.toFixed(2)}:1 at its least on the pixels under it, needs ${r.need}:1`);
         }
       }

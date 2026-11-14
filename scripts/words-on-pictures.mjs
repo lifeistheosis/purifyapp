@@ -199,7 +199,19 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES, own 
         }
         const size = parseFloat(cs.fontSize);
         const weight = Number(cs.fontWeight) || 400;
+        // The words' contrast allowance as it stands now, beside the photographs: a page can change
+        // between the checker's reading of colours and this pass (the Plus preview's window, veiled once
+        // its sound's minute is up and allowed by name from then; Updates 34, 2026-11-14).
+        let allow = null;
+        for (let n = node; n && n !== document.documentElement; n = n.parentElement) {
+          const list = n.getAttribute("data-mock-allow");
+          if (list && list.split(/[\s,]+/).includes("contrast")) {
+            allow = n.getAttribute("data-mock-why") || "(no reason given)";
+            break;
+          }
+        }
         return {
+          allow,
           text: said.join(" ").replace(/\s+/g, " ").trim().slice(0, 48),
           mark: node.getAttribute("data-said-word") ?? "",
           fg: [d[0], d[1], d[2]],
@@ -302,7 +314,7 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES, own 
       // held still while it was read.
       // A word with no letters on the screen, or on a ground that never held still, has no ratio to give: it
       // is left out, so it stays to be looked at, unless the caller asks for every one (`every`).
-      if (worst && (every || (drawn >= 6 && still))) out.push({ palette, at: i, text: info.text, need: info.large ? 3 : 4.5, ratio: worst.ratio, ground: worst.ground, mark: info.mark, seen: drawn >= 6, still });
+      if (worst && (every || (drawn >= 6 && still))) out.push({ palette, at: i, text: info.text, need: info.large ? 3 : 4.5, ratio: worst.ratio, ground: worst.ground, mark: info.mark, seen: drawn >= 6, still, allow: info.allow });
     }
   }
   return out;
