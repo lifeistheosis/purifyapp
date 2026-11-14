@@ -1,53 +1,55 @@
 # Baton: the arbiter
 
-Written 2026-11-14 at 05:53 UTC by Arbiter 5 (session_01VuYTwbxkc5zCaxq1PZcq3P, arbiter from 01:47 UTC), at about 230,000 tokens by get_session (about $5.50), past the 200,000 line (OPERATIONS section 2). He has said nothing since round 2's "no to all 3" (by 22:05 UTC on 2026-11-13) and is likely asleep, so the arbiter rotates at a natural break instead of waiting for a compact point. Arbiter 4 (session_01VuYTwcgDURTqVoLw8nQD9m) was archived by Arbiter 5 at 01:48.
+Written 2026-11-14 at 14:02 UTC by Arbiter 6 (session_01VuYTwchyeBnvHi6J8tiR9X, arbiter from 05:54), at 266,000 tokens by get_session (about $6.20), past the 200,000 line (OPERATIONS section 2), at a natural break: Updates 41 is mending the gate's faults and Gate 2 has stopped. Arbiter 5 (session_01VuYTwbxkc5zCaxq1PZcq3P) was archived by Arbiter 6 at 05:54.
 
-Read first: `docs/roles/arbiter.md`, `docs/NOW.md` (the roster, "Waiting on him", "Approved, being applied"), `docs/OPERATIONS.md` sections 2, 5 and 6, CLAUDE.md and AGENTS.md, then `docs/1.9-build/BRAINSTORM.md` from "all recs" (18:53 on 2026-11-13) to the end. The log `docs/1.9-build/HANDOFF.md` from 01:49 on 2026-11-14 holds this shift's routing.
+Read first: `docs/roles/arbiter.md`, `docs/NOW.md` (the roster, "Waiting on him", "Next"), `docs/OPERATIONS.md` sections 2, 5 and 6, CLAUDE.md and AGENTS.md, then `docs/1.9-build/BRAINSTORM.md` from "all recs" (18:53 on 2026-11-13) to the end; his newest word is at 13:57 today. The log `docs/1.9-build/HANDOFF.md` from 05:55 today holds this shift.
 
 ## Where 1.9 stands
 
-- **Every approved patch is applied.** Round 1 of the fifteen screens (Updates 33: code 7f19d566..e1dfd24b, record ebe13a23, ten faults its export found, each mended); notes 29, 17 and 9 (Updates 36: 2c4d097b, 5283a61d, 3c8cb3f1, 9d129428, 85548e7a). The earlier applies are in NOW's table.
-- **Faults pushed this shift:** Updates 35's round 2 (fc023e79..e43aed80: the outlines while a work or a piece loads, the council door's real pictures only, the eight feature walks with motion on, Back finding every sideways row, the em dashes on the seller and language editor pages, the weekly letter's small lines); Updates 37's round 3 (2a273a46..f29c6531: entrances beginning with the outline's dissolve, the faith-answers walk mended (the app was right), 26 of 27 pictures carried); Updates 36's three faults (9e1c0958 Show the words still at its tap, 9eba3316 offline answers for Listen and Try again, ffc8ea6a checkMock pairing by element). Records in the HANDOFF entries.
-- **The arbiter's calls this shift:** faith-answers' failing walk was a fault to find (it was the walk); EIKON's scroll story goes still under reduced motion (his 2026-09-27 word named the front page's phones, which stay moving; told to him at 05:00, he can say otherwise); the 1.8 drop kit page goes to the Vault by his standing rule.
+- **Every approved patch is applied, and every fault found overnight is mended and pushed:** Updates 38 (87f93885..fa9e0023), Updates 39 (2328cfde6..74364d468), Updates 40 (bf64b2cb, 4c6a0484, baton c54eb47e). Updates 23's pixel guards all passed (555959fd). The SSM board's drop round is in (42e48d00); its rest waits for the final export (NOW, Next 3).
+- **Gate 2 on the export of a8a35dde7: not a pass** (`docs/1.9-build/notes/gate-run-2.md`, baton `docs/handoffs/gate-2.md`, 4c564a31). Six faults: 1 the Translation note at 4.32:1 on the earned palettes; 2 a sold-out piece's Save heart under the card's link; 3 Buy now moving 27px when the agree line appears; 4 /plans/acts/'s circles moving 41px without scroll anchoring (as on every iPhone); 6 Today's date line at 1032 at 2.67:1 over the head's picture; 7 the Virgin of Vladimir card's picture not carried. Fault 5 withdrawn. **Updates 41 is mending all six.**
+- **His word at 13:57:** "only do a check on the things you worked on". It changed nothing for Gate 2's run (429 files had changed since the last pass, the shared ui among them, so every screen was in the set). It narrows the re-check to what Updates 41 changes, plus what Gate 2 did not finish.
 
-## Your first round (Arbiter 6)
+## Your first round (Arbiter 7)
 
-1. Archive Arbiter 5 once you have read this and NOW. Fill your session id into NOW's roster.
-2. Read your queue with ReadNotifications. Updates 38, the SSM board and Updates 23 were told at the hand-over to report to you.
-3. Send him one short message: you hold the arbiter, what landed overnight in plain words, and what waits on him (NOW's list).
+1. Archive Arbiter 6 once you have read this and NOW. Fill your session id into NOW's roster.
+2. Updates 41 and Gate 2 were told to report to Arbiter 6, and a message to an archived chat unarchives it. Send each one message (priority next): report to you from now on. Gate 2 may wake on its own when its tracked runs end; tell it to record them in gate-run-2.md, report to you and stop.
+3. Read your queue with ReadNotifications.
+4. Send him one short message: you hold the arbiter, and what waits on him.
 
 ## The chats
 
-- **Updates 38** (session_01VuYTwdp6mHuKVGSvGVL1n7, from 05:00): docs/handoffs/updates-37.md Open 1 to 7: checkMock with pixels owed on round 3's screens and the row screens; EIKON still under reduced motion; the gate's judge reading the compositor's outline; Morals on Job's empty frames; the shop piece's picture carried; the jumps and cuts on Search, Saints, Shop and Theology.
-- **SSM board** (session_01VuYTwZbbpkoMs6X9Zd7Z4n, from 05:51): the drop kit (seven Bibles, the Holy Mountain's line and counts after Desert, the voices' line with no phone voice promised, the social cards' wait cleared, the Vault, the drop checked against what landed, note lines drafted, never into the table).
-- **Updates 23** (session_01VuYTwZhTJ9z4k23jxRtLQC): idle on its pixel reruns of the voices and note 23 (its estimate 06:45 UTC), about 590,000 tokens. Archive it once it reports.
-- **Fable film** (session_01VuYTwaxbA7b5yzKRKC1Jce): idle for his answer on the documentary, then archived.
-- **Company guide** (session_01VuYTwcFgb1g1Py4mRbRNrD): idle, no repository.
+- **Updates 41** (session_01VuYTwZx96s4dFZuGoisx1e, from 13:59): faults 1 to 4, 6 and 7, checking only what it touches; budget: nothing new past 150,000, stop at 200,000.
+- **Gate 2** (session_01VuYTwadHYxDDuqX3APffp1): stopped at about 315,000 by get_session. Left running in its container at its stop: /reading/ in Arabic at three widths, /settings/reading-mode/ at 1032, the open reader's walk of fault 4, the web build. Not run at all: the motion walk over all its routes (about 75 minutes, command in its baton). Archive it once it records those, or when the re-check starts.
+- **Fable film** (session_01VuYTwaxbA7b5yzKRKC1Jce): idle for his answer on the documentary (NOW, Waiting on him 6), then archived.
+- **Company guide** (session_01VuYTwcFgb1g1Py4mRbRNrD): idle, no repository, waits on his two facts.
 
 ## Next, in order
 
-1. Updates 38's report; a successor from its baton for anything left. Also for the next fixer: checkMock's Arabic pass still pairs by place behind a length check (Updates 36 named it; Dark and Light now pair by data-mock-pair).
-2. The gate on the head's export, then a test build: NOW holds it until the fifteen screens are in, which waits on his answer to round 2. Worth asking him once Updates 38 lands: a test build of the head now, so he walks overnight's fixes while round 3 waits (the arbiter's rec: yes; a gate run is one chat). The gate must measure the new states named this shift: the verse card's offline toast (1.5s), the offline lines, the patron sheet whole.
-3. The SSM board's report; its drafted note lines go to him through the admin queue only.
+1. Updates 41's report, then archive it.
+2. **The re-check** on a new export of the head, a fresh Admin chat (Gate 3) briefed from `docs/handoffs/gate-2.md`, scoped by his 13:57 word: the six faults' screens by the gate's rules; the motion walk over all its routes; and whatever Gate 2's container lost (/reading/ in Arabic, /settings/reading-mode/ at 1032, fault 4's open reader, the web build).
+3. On a pass and his yes (Waiting on him 10): the test build, published to the android-release page and to TestFlight; read the page's asset dates and name the build number before he is told (OPERATIONS section 5).
+4. Then NOW's Next: the SSM chat on the final export; round 3 of the fifteen screens on his answer to round 2.
 
 ## Waiting on him
 
-NOW's list, unchanged this shift: round 2's keep (rec yes) and what he did not like (no rec); note 23 and the welcome line (his look); the account and order emails (his look); the Privacy Policy's line and its typed arrows (rec yes); Community's thread rail (rec keep); the documentary (his look) and its 1% opener (rec leave out); his usage %; the company items, the 22 permission letters, the Android notifications test. Put to him at 01:50 and repeated in each short message since.
+NOW's list, 1 to 11, put to him at 05:57 and repeated in short at 14:00. His only word since: 13:57 (the scope). Item 11 is his starting the next arbiter himself, for the lineage below; if he started you, mark it done.
 
 ## Gotchas learned this shift
 
-- Run `date -u` in its own call before writing a time; twice a time was written from the brief, not the clock, and mended (01:49, 03:22).
-- MCP servers reconnect often, and each reconnect puts their long instructions back into the context: about 3,000 tokens a time. An arbiter passes 200,000 in about four hours. Keep turns to the fewest calls.
-- A chat's session can read RUNNING after its report with nothing new (Updates 35, context 0, worker restarted). Check its pushes on the branch, then archive.
-- checkMock with pixels on 21 palettes can take over 25 minutes a screen; the chats split runs by palette across calls. Expect pixel checks to be the long pole of every round.
-- The offline tap walk fails anything that needs the main web; `--online` reads it.
+- **The fixers' size.** A chat's own count reads about 55 to 60% of get_session's figure, and get_session read from inside a chat says 0. Updates 38, 39 and the SSM board each passed 390,000 while believing they were at their line. A brief that says "nothing new past 150,000, stop at 200,000, count high" brought Updates 40 to 291,000; keep saying it.
+- **Runs live in their chat's container.** Archiving or rotating a chat kills its runs, and so does a container reclaimed while the chat sits idle (Updates 23, twice overnight). Tell a chat past its line to finish only what is already running, rather than stop and lose it.
+- **The lineage.** get_session gave Arbiter 6 a depth of 6 against a limit of 8. A chat started by a depth-7 chat is depth 8 and could start nothing. If Arbiter 6 started you, your successor must be started by him; if he started you, the chain is fresh.
+- **Gate scope.** Since the last passing gate nearly every file a screen draws had changed, so his 13:57 word saved nothing on Gate 2; it will on the re-check.
+- Run `date -u` in its own call before writing a time. MCP reconnects add about 3,000 tokens each.
 
 ## His words that still apply
 
-Nothing new from him this shift. Still open from 2026-11-13: "yes to all" (about 20:47), "no to all 3" (by 22:05), "now" (about 20:33), "yea add Purify's logo in the end" (about 20:30), "I want everything fixed in v1.9 no pushing out to 2" (about 08:13), "well we are fine but yes optimize of course" (about 15:38), "keep all the emails default Purify colors. and also revamp the calendar design one" (about 16:44). BRAINSTORM has each whole.
+- 2026-11-14 about 13:57: "only do a check on the things you worked on".
+- From 2026-11-13, unchanged: "yes to all" (about 20:47), "no to all 3" (by 22:05), "now" (about 20:33), "yea add Purify's logo in the end" (about 20:30), "I want everything fixed in v1.9 no pushing out to 2" (about 08:13), "well we are fine but yes optimize of course" (about 15:38), "keep all the emails default Purify colors. and also revamp the calendar design one" (about 16:44). BRAINSTORM has each whole.
 
 ## Where things are
 
-- His calls page: https://claude.ai/artifact/HtMHvpk9SsKLwXG7AgJutq (not updated in three shifts; read it with the Artifact tool before publishing).
-- Round 2's page: https://claude.ai/artifact/NhoSL95Kip76jng4gemM6z. The redesign: `docs/1.9-build/redesign/`.
-- Batons: `docs/handoffs/updates-37.md` (Updates 38's), `updates-36.md` does not exist (Updates 36 finished its round), `ssm-board.md`, `fable-fifteen-screens.md` (round 3), `fable-film.md`.
+- His calls page: https://claude.ai/artifact/HtMHvpk9SsKLwXG7AgJutq (not updated in four shifts; read it with the Artifact tool before publishing).
+- The pages for his look: NOW, Waiting on him.
+- Batons: `docs/handoffs/gate-2.md`, `updates-40.md` (and `updates-41.md` when it writes one), `ssm-board.md`, `fable-fifteen-screens.md`, `fable-film.md`. Gate records: `docs/1.9-build/notes/gate-run-1.md`, `gate-run-2.md`.
