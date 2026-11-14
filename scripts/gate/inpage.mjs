@@ -254,6 +254,17 @@ export function gateInPage() {
     return out;
   }
 
+  /**
+   * A piece named on itself as moving with a tap's own change (data-mock-allow="jump", with its
+   * data-mock-why), read off the shifted element alone, never a box round it: the judge honours it
+   * only with the app's motion reduced, where that change comes at once (scripts/gate/frames.mjs).
+   */
+  function jumpAllowance(el) {
+    const list = el && el.getAttribute ? el.getAttribute("data-mock-allow") : null;
+    if (!list || !list.split(/[\s,]+/).includes("jump")) return null;
+    return el.getAttribute("data-mock-why") || "(no reason given)";
+  }
+
   /** The element's classes, as a fingerprint to find it in the code by. */
   function classesOf(el) {
     return typeof el.className === "string" ? el.className.trim().split(/\s+/).slice(0, 8).join(" ") : "";
@@ -695,6 +706,7 @@ export function gateInPage() {
               cls: x.node && x.node.nodeType === 1 ? classesOf(x.node) : "",
               marks: x.node && x.node.nodeType === 1 ? [...x.node.attributes].filter((a) => a.name.startsWith("data-")).map((a) => a.name) : [],
               trail: x.node ? trailOf(x.node.nodeType === 1 ? x.node : x.node.parentElement) : [],
+              allow: jumpAllowance(x.node && x.node.nodeType === 1 ? x.node : x.node ? x.node.parentElement : null),
               from: [Math.round(x.previousRect.x), Math.round(x.previousRect.y), Math.round(x.previousRect.width), Math.round(x.previousRect.height)],
               to: [Math.round(x.currentRect.x), Math.round(x.currentRect.y), Math.round(x.currentRect.width), Math.round(x.currentRect.height)],
             })),

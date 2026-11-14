@@ -39,7 +39,13 @@
 //            box the page carries as it glides stands where it was drawn; one
 //            moved against the glide, or left behind by it, does not.
 //   jump     a layout shift of 24px or more in one frame: something on the
-//            screen moved because something else changed size.
+//            screen moved because something else changed size. With the app's
+//            motion reduced, and only then, a piece named on itself as part of
+//            the tap's own change (data-mock-allow="jump" and its
+//            data-mock-why, on the shifted element alone: the saints' century
+//            bars and their counts, which a filter sets at once) is that cut,
+//            said and not failed; any other shift still fails (the arbiter,
+//            2026-11-14).
 //   moves    with the app's motion reduced, anything that moves (an animation
 //            of position or size, a View Transition that travels). A cut is
 //            then allowed: reduced motion stays still.
@@ -536,6 +542,8 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
   const unsure = [];
   /** Steps that carried half the change in one frame as content glided: listed, not failed. */
   const glides = [];
+  // Shifts named on themselves as part of the tap's own change, with motion reduced (said, not failed).
+  const allowed = new Set();
   const w = Math.round(rec.width / SCALE);
   const h = Math.round(rec.height / SCALE);
   const frames = rec.frames;
@@ -809,7 +817,18 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
       for (const src of s.sources) {
         const far = Math.max(Math.abs(src.to[0] - src.from[0]), Math.abs(src.to[1] - src.from[1]));
         // A box that had no size before came into being: that is not a shift.
-        if (far >= JUMP_PX && src.from[2] >= 8 && src.from[3] >= 8 && src.to[2] >= 8 && src.to[3] >= 8 && (!worst || far > worst.far)) worst = { far, src, t: s.t };
+        if (far < JUMP_PX || src.from[2] < 8 || src.from[3] < 8 || src.to[2] < 8 || src.to[3] < 8) continue;
+        // With the app's motion reduced a tap's change comes at once, the cut that path allows, and a
+        // piece named on itself as part of that change (data-mock-allow="jump" and its why, on the
+        // shifted element alone: the saints' century bars, which a filter sets at once, growing from
+        // their feet) is that cut, said and not failed. Only there: with motion on the same move is
+        // pictured or it is a jump, and any shift with no name on it still fails (the arbiter,
+        // 2026-11-14: allowed by name and reason, never by loosening this rule).
+        if (motion === "reduce" && src.allow) {
+          allowed.add(`${src.node ?? "a box"} moved ${far}px with the change, ${Math.round(s.t - rec.tapped)}ms after the tap: ${src.allow}`);
+          continue;
+        }
+        if (!worst || far > worst.far) worst = { far, src, t: s.t };
       }
     }
     if (worst) fails.push({ kind: "jump", detail: `${worst.src.node ?? "a box"} jumped ${worst.far}px in one frame (from ${worst.src.from.slice(0, 2).join(",")} to ${worst.src.to.slice(0, 2).join(",")}), ${Math.round(worst.t - rec.tapped)}ms after the tap: something above it changed size at once`, frames: nearest(frames, worst.t), node: { marks: worst.src.marks ?? [], trail: worst.src.trail ?? [], cls: worst.src.cls ?? "" } });
@@ -826,6 +845,7 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
     unsure,
     dips,
     glides,
+    allowed: [...allowed],
     change: Math.round(change * 1000) / 1000,
     frames: frames.length,
     ink: [Math.round(inkStart * 1000) / 1000, Math.round(inkEnd * 1000) / 1000],
@@ -1138,6 +1158,17 @@ function plant(kind) {
       A.insertBefore(grow, A.children[1]);
       await frame();
       grow.style.height = "140px";
+    } else if (kind.startsWith("bar")) {
+      // A century's bar set at once by a filter, as the still path sets the saints' timeline: it grows
+      // from its foot 13 to 56px, so its top edge and the count above it move 43px in one frame.
+      document.getElementById("tbar").style.height = "56px";
+      document.getElementById("tcount").textContent = "21";
+      // And something else: a box grows above the cards at once, and they are pushed 40px.
+      if (kind === "barallowedpush") {
+        const grow = document.createElement("div");
+        grow.style.cssText = "height:40px;background:#333";
+        A.insertBefore(grow, A.querySelector(".card"));
+      }
     } else if (kind === "scrolldriven") {
       // The tap's own change, at once, as the still path makes it: the page does not scroll.
       A.querySelector("h1").textContent = "Saints";
@@ -1187,6 +1218,16 @@ function prepare(kind) {
   }
   // A page tall enough to glide.
   if (kind.startsWith("glide")) document.getElementById("spacer").style.height = "3000px";
+  // A century of the saints' timeline (components/saints/CenturyTimeline.tsx): its count over its bar,
+  // in a column that stands on its foot; the allowed kinds name both on themselves, as the app does.
+  if (kind.startsWith("bar")) {
+    const named = kind.startsWith("barallowed");
+    const why = (w) => (named ? ` data-mock-allow="jump" data-mock-why="${w}"` : "");
+    const col = document.createElement("div");
+    col.style.cssText = "display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;height:120px;width:44px";
+    col.innerHTML = `<span id="tcount" style="font:13px sans-serif;line-height:1;min-width:16px;text-align:center"${why("the count rides the top of its bar")}>12</span><span id="tbar" style="display:block;width:22px;height:13px;background:#8a8a90;border-radius:6px 6px 2px 2px"${why("the bar is the count, set at once by the filter")}></span>`;
+    document.getElementById("a").prepend(col);
+  }
   if (kind.startsWith("sticky")) {
     // A sticky map 131px down the page, sticking 60px from the top: it rides the page 71px.
     const track = document.createElement("div");
@@ -1244,6 +1285,10 @@ const CASES = [
   ["a block that appears whole with no travel", "feedappear", "on", ["cut"]],
   ["a block that appears whole where a thread opens, as the posts below glide 160px to make room", "feedappearglide", "on", ["cut"]],
   ["with motion reduced, an instant change", "cut", "reduce", []],
+  ["with motion reduced, a century's bar set at once by a filter, growing 43px from its foot with its count over it, both named on themselves as the change (said, not failed)", "barallowed", "reduce", [], { allowed: true }],
+  ["with motion reduced, the same bar and count with no name on them", "bar", "reduce", ["jump"]],
+  ["the named bar and count set at once with motion on (the allowance holds only where a cut is allowed)", "barallowed", "on", ["jump"]],
+  ["with motion reduced, the named bar set at once, and the cards below pushed 40px by a box grown above them", "barallowedpush", "reduce", ["jump"]],
   ["with motion reduced, a picture moved by the scroll alone (as the front page's phones move, at his word) while the page stands still", "scrolldriven", "reduce", []],
   ["with motion reduced, a picture moved by the scroll alone, and a sheet that slides up", "scrolldrivenslide", "reduce", ["moves"]],
   ["no change at all", "none", "on", []],
@@ -1275,8 +1320,9 @@ async function selfTest() {
         const v = await judgeFrames(rec, { motion });
         await ctx.close();
         const kinds = [...new Set(v.fails.map((f) => f.kind))];
-        right = want.every((k) => kinds.includes(k)) && kinds.every((k) => want.includes(k)) && (want.length || !v.unsure.length) && (!also.dip || v.dips.length > 0) && (!also.glide || v.glides.length > 0);
-        said = `${kinds.length ? v.fails.map((f) => `${f.kind}: ${f.detail}`).join("; ") : "passes"}${v.dips.length ? ` [dip: ${v.dips.join("; ")}]` : ""}${v.glides.length ? ` [glide: ${v.glides.join("; ")}]` : ""}${v.unsure.length ? ` [unsure: ${v.unsure.join("; ")}]` : ""} (${v.frames} frames)`;
+        const allowedSaid = v.allowed ?? [];
+        right = want.every((k) => kinds.includes(k)) && kinds.every((k) => want.includes(k)) && (want.length || !v.unsure.length) && (!also.dip || v.dips.length > 0) && (!also.glide || v.glides.length > 0) && (!also.allowed || allowedSaid.length > 0);
+        said = `${kinds.length ? v.fails.map((f) => `${f.kind}: ${f.detail}`).join("; ") : "passes"}${v.dips.length ? ` [dip: ${v.dips.join("; ")}]` : ""}${v.glides.length ? ` [glide: ${v.glides.join("; ")}]` : ""}${allowedSaid.length ? ` [allowed: ${allowedSaid.join("; ")}]` : ""}${v.unsure.length ? ` [unsure: ${v.unsure.join("; ")}]` : ""} (${v.frames} frames)`;
       }
       ok &&= right;
       console.log(`  ${right ? "ok    " : "MISSED"} ${name}: ${said}`);

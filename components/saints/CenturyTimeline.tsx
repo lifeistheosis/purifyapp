@@ -81,8 +81,15 @@ export function CenturyTimeline({
                   on ? "bg-paper/[0.08]" : "enabled:hover:bg-paper/[0.05]",
                 )}
               >
+                {/* The count and the bar are the century's number: a filter sets them, with
+                    motion reduced at once (the cut that path allows), and the bar grows from
+                    its foot, so its top and the count over it move in that frame. Named so to
+                    the gate's jump rule, which honours it only with motion reduced
+                    (scripts/gate/frames.mjs); with motion on the move pictures them. */}
                 <span
                   aria-hidden
+                  data-mock-allow="jump"
+                  data-mock-why="the count rides the top of its bar, which a filter sets at once with motion reduced"
                   className={cn(
                     "font-sans text-[11px] font-medium leading-none tabular-nums transition-colors",
                     on ? "text-paper" : n === 0 ? "text-transparent" : "text-paper/45 group-hover:text-paper/70",
@@ -92,6 +99,8 @@ export function CenturyTimeline({
                 </span>
                 <span
                   aria-hidden
+                  data-mock-allow="jump"
+                  data-mock-why="the bar is the century's count, set at once by a filter with motion reduced; it grows from its foot"
                   className={cn(
                     "w-full max-w-[22px] rounded-t-[6px] rounded-b-[2px] transition-colors duration-150",
                     on ? "bg-paper" : n === 0 ? "bg-paper/[0.08]" : "bg-paper/25 group-hover:bg-paper/45",
