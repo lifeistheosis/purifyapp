@@ -137,12 +137,12 @@ describe("the covers' pictures", () => {
       // Romanus" is a Benedictine monk of that name, not the martyr.
       "marcian-of-cyrrhus/life-of-marcian": "search: Updates 2, build 93 note 12",
       "zacchaeus-and-alphaeus/martyrdom-of-zacchaeus-and-alphaeus": "search: Updates 2, build 93 note 12",
-      // Updates 2's, from before November: St Irenaeus's and St Irene's
-      // carried icons have no recorded source, and St Symeon's no old icon
-      // passed. St Isaac's book waited here for his settled icon until build
-      // 93 note 12 put it on (2026-11-11).
+      // Updates 2's, from before November: St Irenaeus's carried icon has no
+      // recorded source, and St Symeon's no old icon passed. St Isaac's book
+      // waited here for his settled icon until build 93 note 12 put it on
+      // (2026-11-11), and St Irene's letters for hers, her solidus, until
+      // build 97 note 4 (2026-11-14).
       "irenaeus-of-lyons/against-heresies-on-john": "search: Updates 2, build 93 note 12",
-      "irene-the-empress/letters-for-the-seventh-council": "search: Updates 2, build 93 note 12",
       "symeon-the-new-theologian/discourse-on-faith": "search: Updates 2, build 93 note 12",
     };
     const plate = buildRoom(false)

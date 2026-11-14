@@ -253,6 +253,21 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   // The Prophet Micaiah (the arbiter's "Luyken", 2026-11-11): the scene of his
   // witness before the two kings, set on him and the kings.
   "prophet-micaiah": bundled("prophet-micaiah.jpg", 40),
+  // Build 97 note 4 (his word, 2026-11-14: "please ensure every photo is
+  // accounted for and not missed in the councils section"): six Fathers whose
+  // page icons were settled on 2026-11-11 (lib/saints/iconRights.ts) and
+  // carried, and who still stood on the plate on their councils' pages, since
+  // a Father's face is his covers' picture (lib/councils/fathers.ts). St
+  // Juvenal at Ephesus and Chalcedon, St Celestine at Ephesus, St Anatolius
+  // at Chalcedon, St Eutychius at the Fifth, St Sophronius at the Sixth and
+  // St Irene at the Seventh, each at the focus his face was placed at by eye.
+  // St Irene's solidus is on her letters too, which waited on the plate.
+  "juvenal-of-jerusalem": bundled("juvenal-of-jerusalem.v2.jpg", 26),
+  "celestine-of-rome": bundled("celestine-of-rome.v2.jpg", 23),
+  "anatolius-of-constantinople": bundled("anatolius-of-constantinople.v2.jpg", 38),
+  "eutychius-of-constantinople": bundled("eutychius-of-constantinople.v2.jpg", 20),
+  "sophronius-of-jerusalem": bundled("sophronius-of-jerusalem.v2.jpg", 23),
+  "irene-the-empress": bundled("irene-the-empress.v2.jpg", 47),
   // From Wikimedia Commons for the covers (lib/reading/authorCovers.ts).
   ...AUTHOR_COVERS,
 };

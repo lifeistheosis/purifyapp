@@ -268,6 +268,13 @@ const ICON_FACES: Readonly<Record<string, readonly [number, number, number?]>> =
   // 1.9, the uncleared pictures of 2026-11-11: St Marcian's portrait by Goltzius, in profile
   // to the right, his face right of the middle, by eye.
   "marcian-the-emperor.v2.jpg": [0.62, 0.45],
+  // Build 97 note 4: the councils' six Fathers given their settled page icons.
+  "juvenal-of-jerusalem.v2.jpg": [0.41, 0.26],
+  "celestine-of-rome.v2.jpg": [0.42, 0.23],
+  "anatolius-of-constantinople.v2.jpg": [0.5, 0.38],
+  "eutychius-of-constantinople.v2.jpg": [0.47, 0.2],
+  "sophronius-of-jerusalem.v2.jpg": [0.47, 0.23],
+  "irene-the-empress.v2.jpg": [0.53, 0.47],
 };
 
 /**

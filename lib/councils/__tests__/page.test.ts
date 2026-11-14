@@ -172,8 +172,10 @@ describe("the Holy Fathers principally associated", () => {
     // carried (build 93 notes 1 and 12, 2026-11-11); and St. Marcian and St.
     // Pulcheria at the Fourth and St. Martin at the Sixth, their uncleared
     // icons replaced by free pictures and carried the same way (the
-    // arbiter's word of 2026-11-11, 15:09).
-    expect(pictured).toHaveLength(26);
+    // arbiter's word of 2026-11-11, 15:09); and St. Juvenal, St. Celestine,
+    // St. Anatolius, St. Eutychius, St. Sophronius and St. Irene, their page
+    // icons settled on 2026-11-11 and carried (build 97 note 4).
+    expect(pictured).toHaveLength(32);
     for (const f of pictured) {
       const slug = f.href!.replace("/saints/", "");
       expect(COVER_ART[slug], slug).toBeDefined();

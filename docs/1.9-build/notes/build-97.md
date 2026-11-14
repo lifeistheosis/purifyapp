@@ -34,6 +34,89 @@ Build 97 (run 43608911353, from 231e1ce0, code 59d1fd98), cut ungated at his wor
 
 **The plan.** An audit of every picture in the councils section: each council's head (the seven and every local synod), every Father's face on each page, and every book cover under "Read the Council's documents". Each missing one is found as a public-domain icon of that saint (never another saint's face, never a picture made by AI), credited, its edges checked; or, where none can be had, named on the list of permissions awaited with its reason. A test that fails on the old code holds every council's head and every Father to a picture or the named list, so the gate counts them from now on. **Owner:** a fixer.
 
+**The audit** (Updates 45, 2026-11-14, from the registry as the pages draw it: the head is `councilPicture` in `lib/councils/page.ts`, each Father's card and face `fatherFaces` in `lib/councils/fathers.ts`, each book `councilBooks` in `lib/councils/books.ts`). Nineteen councils: 19 heads, 43 Father places (37 Fathers; six stand on two pages) and 40 books. **Found missing: 12 heads (every local council), 13 Father places, 14 books (every local council's own books, which are windows onto a head that has no picture).**
+
+Six of the thirteen Father places were a fault in the code, not a picture never found: St Juvenal (Ephesus and Chalcedon), St Celestine (Ephesus), St Anatolius (Chalcedon), St Eutychius (the Fifth), St Sophronius (the Sixth, not in his screenshots) and St Irene (the Seventh) had page icons settled on 2026-11-11 and carried in the apps, but a Father's face is his covers' picture (`COVER_ART`), and theirs were never put there. Each now wears his own page icon, framed about his face; St Irene's solidus goes on her letters too, which waited on the plate. No new file, so the apps grow by nothing for them. St Nectarius's settled icon is a scene of the Council of 381 in which he cannot be told apart, so it was never his face and stays off it; the other four Fathers still missing have no page in Purify. The searches for them and for the twelve local councils' pictures are under way (this note is updated with what they find). `lib/councils/__tests__/everyCouncilAPicture.test.ts` now holds every head, every Father and every book to a picture or to its named list, and is in the gate's part 3 (`scripts/gate/gate-tests.txt`).
+
+The list, council by council (a picture by its file; MISSING where none):
+
+- **First Council of Nicaea**.
+  - Head: `first-council-of-nicaea.v1.jpg`.
+  - Fathers: St Athanasius the Great `athanasius-the-great.v1.jpg`; St Alexander of Alexandria `alexander-of-alexandria.jpg`; St Hosius (Ossius) of Cordova `hosius-of-cordova.v1.jpg`; St Eustathius of Antioch `eustathius-of-antioch.v1.jpg`; St Nicholas of Myra `nicholas-the-wonderworker.v1.jpg`; St Spyridon of Trimythous `spyridon-of-trimythous.v1.jpg`.
+  - Books: The Symbol of the Faith `first-council-of-nicaea.v1.jpg`; The Synodal Letter to the Church of Alexandria `first-council-of-nicaea.v1.jpg`; The Twenty Canons `first-council-of-nicaea.v1.jpg`.
+- **First Council of Constantinople**.
+  - Head: `first-council-of-constantinople.v1.jpg`.
+  - Fathers: St Gregory the Theologian `gregory-theologian.v1.jpg`; St Gregory of Nyssa `gregory-of-nyssa.v1.jpg`; St Meletius of Antioch `meletius-of-antioch.v1.jpg`; St Cyril of Jerusalem `cyril-of-jerusalem.v2.jpg`; St Nectarius of Constantinople MISSING.
+  - Books: The Niceno-Constantinopolitan Creed `first-council-of-constantinople.v1.jpg`; The Synodical Letter to the Western Bishops `first-council-of-constantinople.v1.jpg`; The Letter to the Emperor Theodosius `first-council-of-constantinople.v1.jpg`; The Seven Canons `first-council-of-constantinople.v1.jpg`.
+- **The Council of Ephesus**.
+  - Head: `council-of-ephesus.v1.jpg`.
+  - Fathers: St Cyril of Alexandria `cyril-of-alexandria.v1.jpg`; St Memnon of Ephesus `memnon-of-ephesus.v3.jpg`; St Juvenal of Jerusalem MISSING, now `juvenal-of-jerusalem.v2.jpg` (his settled page icon); St Celestine of Rome MISSING, now `celestine-of-rome.v2.jpg` (his settled page icon).
+  - Books: The Second Letter of St. Cyril to Nestorius `council-of-ephesus.v1.jpg`; The Third Letter of St. Cyril to Nestorius, with the Twelve Anathematisms `council-of-ephesus.v1.jpg`; The Sentence against Nestorius `council-of-ephesus.v1.jpg`; The Eight Canons `council-of-ephesus.v1.jpg`; The Formula of Reunion `council-of-ephesus.v1.jpg`.
+- **The Council of Chalcedon**.
+  - Head: `council-of-chalcedon.v1.jpg`.
+  - Fathers: St Leo I (the Great) `leo-the-great.v1.jpg`; St Anatolius of Constantinople MISSING, now `anatolius-of-constantinople.v2.jpg` (his settled page icon); St Juvenal of Jerusalem MISSING, now `juvenal-of-jerusalem.v2.jpg` (his settled page icon); St Marcian the Emperor `marcian-the-emperor.v2.jpg`; St Pulcheria the Empress `pulcheria-the-empress.v2.jpg`.
+  - Books: The Tome of Leo `leo-the-great.v1.jpg` (read among his works); The Definition of Faith `council-of-chalcedon.v1.jpg`; The Thirty Canons `council-of-chalcedon.v1.jpg`.
+- **Second Council of Constantinople**.
+  - Head: `second-council-of-constantinople.v1.jpg`.
+  - Fathers: St Justinian the Great `justinian-the-great.v2.jpg`; St Eutychius of Constantinople MISSING, now `eutychius-of-constantinople.v2.jpg` (his settled page icon); St Cyril of Alexandria `cyril-of-alexandria.v1.jpg`.
+  - Books: The Sentence of the Synod `second-council-of-constantinople.v1.jpg`; The Capitula (The Fourteen Anathemas) `second-council-of-constantinople.v1.jpg`; The Fifteen Anathemas against Origen `second-council-of-constantinople.v1.jpg`.
+- **Third Council of Constantinople**.
+  - Head: `third-council-of-constantinople.v1.jpg`.
+  - Fathers: St Maximus the Confessor `maximus-the-confessor.v1.jpg`; St Agatho of Rome `agatho-of-rome.v1.jpg`; St Sophronius of Jerusalem MISSING, now `sophronius-of-jerusalem.v2.jpg` (his settled page icon); St Martin the Confessor `martin-the-confessor.v3.jpg`.
+  - Books: The Letter of St. Agatho to the Emperor, with the Letter of His Roman Synod `third-council-of-constantinople.v1.jpg`; The Definition of Faith `third-council-of-constantinople.v1.jpg`; The Sentence against the Monothelites `third-council-of-constantinople.v1.jpg`; The Prosphoneticus to the Emperor `third-council-of-constantinople.v1.jpg`; The Canons of the Council in Trullo `third-council-of-constantinople.v1.jpg`.
+- **Second Council of Nicaea**.
+  - Head: `second-council-of-nicaea.v1.jpg`.
+  - Fathers: St John of Damascus `john-of-damascus.v1.jpg`; St Tarasius of Constantinople `tarasius-of-constantinople.v1.jpg`; St Irene the Empress MISSING, now `irene-the-empress.v2.jpg` (his settled page icon); St Adrian I of Rome `adrian-of-rome.v2.jpg`.
+  - Books: The Decree on the Holy Icons `second-council-of-nicaea.v1.jpg`; The Twenty-Two Canons `second-council-of-nicaea.v1.jpg`.
+- **Council of Carthage** (local).
+  - Head: MISSING.
+  - Fathers: St Cyprian of Carthage `cyprian-of-carthage.jpg`.
+  - Books: The Sentences of the Eighty-Seven Bishops MISSING; The Synodal Letter to Januarius and the Bishops of Numidia MISSING; Letters on the Baptism of Heretics `cyprian-of-carthage.jpg` (read among his works).
+- **Council of Antioch** (local).
+  - Head: MISSING.
+  - Fathers: St Gregory the Wonderworker `gregory-the-wonderworker.jpg`; Firmilian of Caesarea MISSING; Malchion MISSING.
+  - Books: The Synodal Letter against Paul of Samosata MISSING; From the Disputation of Malchion with Paul MISSING.
+- **Council of Ancyra** (local).
+  - Head: MISSING.
+  - Fathers: none named.
+  - Books: The Twenty-Five Canons MISSING.
+- **Council of Neocaesarea** (local).
+  - Head: MISSING.
+  - Fathers: none named.
+  - Books: The Fifteen Canons MISSING.
+- **Council of Gangra** (local).
+  - Head: MISSING.
+  - Fathers: none named.
+  - Books: The Synodical Letter and the Twenty Canons MISSING.
+- **Council of Antioch** (local).
+  - Head: MISSING.
+  - Fathers: none named.
+  - Books: The Synodal Letter and the Twenty-Five Canons MISSING.
+- **Council of Sardica** (local).
+  - Head: MISSING.
+  - Fathers: St Hosius (Ossius) of Cordova `hosius-of-cordova.v1.jpg`; St Athanasius the Great `athanasius-the-great.v1.jpg`; St Paul the Confessor `paul-the-confessor.jpg`.
+  - Books: The Twenty Canons MISSING.
+- **Council of Laodicea** (local).
+  - Head: MISSING.
+  - Fathers: none named.
+  - Books: The Sixty Canons MISSING.
+- **Council of Constantinople** (local).
+  - Head: MISSING.
+  - Fathers: St Nectarius of Constantinople MISSING; St Gregory of Nyssa `gregory-of-nyssa.v1.jpg`.
+  - Books: The Acts of the Synod MISSING.
+- **Council of Carthage** (local).
+  - Head: MISSING.
+  - Fathers: St Augustine of Hippo `augustine-of-hippo.v1.jpg`.
+  - Books: The Code of Canons of the African Church MISSING.
+- **Council of Orange** (local).
+  - Head: MISSING.
+  - Fathers: St Caesarius of Arles MISSING.
+  - Books: The Canons of the Council MISSING.
+- **Synod of Jerusalem** (local).
+  - Head: MISSING.
+  - Fathers: Dositheos II, Patriarch of Jerusalem MISSING.
+  - Books: The Confession of Dositheus MISSING.
+
 ## Note 5: the Voice sheet, what plays and what is downloaded
 
 **His words** (about 16:03 UTC), with a screenshot of the sheet (Heart, then the phone's Voice 1 to 6 in American and Australian English, each with "Hear it"): "clicking hear shows no animation and there is no download button (if it's already downloaded it should be a distinct design so signify a voice that is downloaded and isn't downloaded and a distinct play to listen for both)".
