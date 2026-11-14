@@ -370,9 +370,11 @@ describe("switching the word study's word (his note 43 of build 80: \"buggy in a
     expect(bare(`${TRY_DIR}/TryKit.tsx`)).toContain('tall ? "h-[clamp(220px,40dvh,340px)]"');
     // A study already here opens whole, not from "Finding every place".
     const study = bare("components/bible/WordStudySheet.tsx");
-    expect(study).toContain("useState<Answer | null>(() => (strongs ? (answered.get(addressOf(strongs, startIn)) ?? null) : null))");
-    expect(study).toContain("useState(() => answer === null)");
-    expect(study).toMatch(/askFor\(strongs, tab\)\s*\.then/);
+    // Each testament's shelf opens from what is here (Updates 57: both are asked for as a study opens).
+    expect(study).toContain('useState<Record<Tab, Shelf>>(() => ({ ot: shelfFor(strongs, "ot"), nt: shelfFor(strongs, "nt") }))');
+    expect(study).toContain("const answer = strongs ? (answered.get(addressOf(strongs, tab)) ?? null) : null;");
+    expect(study).toContain("loading: answer === null");
+    expect(study).toMatch(/askFor\(strongs, key\)\.then\(/);
     // The going out lasts as long as it is kept.
     expect(code("app/globals.css")).toContain(`animation: plus-try-word-out ${WORD_FADE_MS}ms var(--ease-house) both;`);
   });
