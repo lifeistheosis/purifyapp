@@ -1,7 +1,8 @@
 // The ambience sheet's volume slider tapped and dragged as a reader does (Updates 65, item 2 of round 4).
 // Updates 63's walk tapped it at 30% and saw no change within 1.5s, then read 0.3 by the next tap.
 // This probe reads the slider's value every frame from BEFORE the touch, so a value that changes on the
-// touch itself (Slider.tsx sets it on pointerdown) is seen, then: a tap on the track at 30%, and a drag of
+// touch itself (Slider.tsx sets it on pointerdown) is seen, then, with Rain playing (the volume is drawn only
+// while a sound plays): a tap on the track at 30%, and a drag of
 // the thumb from where it stands to 80% (touchStart, ten touchMoves, touchEnd). 390x844, CPU 4x, real touch.
 //   node docs/handoffs/updates-65-runners/slider65.mjs <out dir> [en|ar]
 import fs from "node:fs";
@@ -41,12 +42,19 @@ await page.touchscreen.tap(b.x + b.width / 2, b.y + b.height / 2);
 const SEL = `[role="dialog"][aria-label="${word("ambience.title")}"] [role="slider"][aria-label="${word("ambience.volume")}"]`;
 await page.locator(SEL).waitFor({ timeout: 10000 });
 await page.waitForTimeout(1500);
+// The volume is drawn only while a sound plays (closed under the tiles otherwise): Rain first, as a reader would.
+const rain = await page.locator(`[role="dialog"] [data-ambience-tile="rain"]`).first().boundingBox();
+await page.touchscreen.tap(rain.x + rain.width / 2, rain.y + rain.height / 2);
+await page.waitForTimeout(3000);
 
 async function record(name, act) {
   await page.evaluate((sel) => {
     window.__f = [];
     window.__touch = null;
     addEventListener("touchstart", (e) => (window.__touch ??= e.timeStamp), { capture: true, once: true });
+    window.__ev = [];
+    const d = (el) => el ? `${el.tagName.toLowerCase()}${el.getAttribute("role") ? `[${el.getAttribute("role")}]` : ""}${el.closest('[role="slider"]') ? " in slider" : ""}` : "none";
+    for (const k of ["pointerdown", "pointerup", "pointercancel", "lostpointercapture", "click"]) addEventListener(k, (e) => window.__ev.length < 12 && window.__ev.push(`${k} ${Math.round(e.timeStamp - (window.__touch ?? e.timeStamp))}ms ${d(e.target)}${e.defaultPrevented ? " prevented" : ""}`), { capture: true });
     const loop = () => {
       const el = document.querySelector(sel);
       window.__f.push([performance.now(), el?.getAttribute("aria-valuenow") ?? null]);
@@ -57,12 +65,12 @@ async function record(name, act) {
   await page.waitForTimeout(150);
   await act();
   await page.waitForTimeout(1500);
-  const { f, touch } = await page.evaluate(() => ({ f: window.__f, touch: window.__touch }));
+  const { f, touch, ev } = await page.evaluate(() => ({ f: window.__f, touch: window.__touch, ev: window.__ev }));
   const before = f.filter(([t]) => t < touch).at(-1)?.[1];
   const changes = [];
   let last = before;
   for (const [t, v] of f) if (t >= touch && v !== last) { changes.push(`${Math.round(t - touch)}ms ${v}`); last = v; }
-  const r = { name, lang: LANG, before, after: f.at(-1)[1], changes: changes.slice(0, 14), framesAfterTouch: f.filter(([t]) => t >= touch).length };
+  const r = { name, lang: LANG, before, after: f.at(-1)[1], changes: changes.slice(0, 14), framesAfterTouch: f.filter(([t]) => t >= touch).length, events: ev };
   console.log(JSON.stringify(r));
   return r;
 }
@@ -71,6 +79,7 @@ const box = await page.locator(SEL).boundingBox();
 const rtl = LANG === "ar";
 const xAt = (value) => box.x + box.width * (rtl ? 1 - value : value);
 const y = box.y + box.height / 2;
+console.log(JSON.stringify({ slider: box, atTap: await page.evaluate(([x, y]) => { const el = document.elementFromPoint(x, y); return el ? `${el.tagName} ${el.getAttribute("role") ?? ""} ${el.className?.toString().slice(0, 60)} in slider: ${Boolean(el.closest('[role="slider"]'))}` : "none"; }, [xAt(0.3), y]) }));
 await record("a tap on the track at 30%", () => page.touchscreen.tap(xAt(0.3), y));
 const now = Number(await page.locator(SEL).getAttribute("aria-valuenow"));
 await record(`a drag of the thumb from ${now} to 0.8`, async () => {
