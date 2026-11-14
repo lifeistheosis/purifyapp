@@ -27,7 +27,7 @@ Found on the way, not routed (for the arbiter):
 
 - `lib/admin/weekly.ts` `heading()`: the owner's weekly letter sets its section labels in spaced capitals (uppercase, 0.08em). Outside the account and order shell; not changed.
 - Typed arrows left by name in the test's STAYS: the privacy policy's "IP→city" and "IP→Stadt" (legal words, the owner's; "IP-to-city lookup" would do), and 13 in old release notes in `data/changelog/entries.json` (the live copy is the `patch_notes` table).
-- Em dashes in reader-facing words: `app/(app)/language-editor/page.tsx` (the ru and uk closing lines) and `app/(app)/shop/seller/orders/[id]/page.tsx` (" — " before a resolution note).
+- Em dashes in reader-facing words: `app/(app)/language-editor/page.tsx` (the ru and uk closing lines) and `app/(app)/shop/seller/orders/[id]/page.tsx` (an em dash before a resolution note).
 - The preview's line now keeps two lines' room at 390, so a little more space stands under Rain's one line at rest: the price of not moving under the finger.
 
 ## Gotchas
