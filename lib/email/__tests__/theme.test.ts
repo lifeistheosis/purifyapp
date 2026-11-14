@@ -134,6 +134,42 @@ describe("the shell", () => {
     expect(html).toContain("Georgia");
   });
 
+  // Round 1's small-line rule (his "yes to all", 2026-11-13 about 20:47 UTC):
+  // sentence case, never capitals spaced out (docs/brand/design-kit.md,
+  // "Labels are sentence case"). The arbiter's call at 22:50 brought it to
+  // this shell: the small line over the heading, the labels over a value and
+  // a day, and the wordmark in the kit's own letters (docs/brand/kit/email/
+  // build.mjs, its masthead). They were 11px capitals spaced 1.6 to 5px.
+  it("sets its small lines in sentence case, never capitals spaced out", () => {
+    const letter = buildEmail({
+      subject: "s",
+      heading: "h",
+      eyebrow: "Your account",
+      paragraphs: ["One."],
+      highlight: { label: "Tracking number", value: "1Z999AA1" },
+      lines: [
+        { day: "Sunday, September 20", name: "Great-martyr Eustathius", kind: "saint" },
+        { day: "Monday, September 21", name: "Leave-taking of the Nativity of the Theotokos", kind: "feast" },
+      ],
+      footer: "f",
+    }).html;
+    expect(letter).not.toMatch(/text-transform:\s*uppercase/i);
+    for (const words of ["Your account", "Tracking number", "Sunday, September 20"]) {
+      const style = new RegExp(`<p style="([^"]*)">${words}`).exec(letter)?.[1];
+      expect(style, words).toBeDefined();
+      expect(style, words).not.toMatch(/letter-spacing/);
+      expect(style, words).toContain("font-size:12px;line-height:18px;font-weight:600;");
+    }
+  });
+
+  it("writes its wordmark in the kit's own letters: Purify in the serif, at 19px, in the ink", () => {
+    const style = /<p style="([^"]*)">Purify<\/p>/.exec(html)?.[1] ?? "";
+    expect(style).toContain("font-family:Lora,Georgia");
+    expect(style).toContain("font-size:19px;line-height:26px;");
+    expect(style).toContain(`color:${T.heading}`);
+    expect(style).not.toMatch(/letter-spacing|uppercase/);
+  });
+
   it("keeps the footer as HTML, so an unsubscribe link survives", () => {
     const withLink = emailLayout({ heading: "x", bodyHtml: "", footer: '<a href="https://x/u">Unsubscribe</a>' });
     expect(withLink).toContain('<a href="https://x/u">Unsubscribe</a>');

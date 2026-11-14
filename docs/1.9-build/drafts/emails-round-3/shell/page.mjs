@@ -29,9 +29,9 @@ const fig = (s, alt, caption) => `<figure class="k-figure"><img src="${s.src}" a
 const pair = (name, what) =>
   `<div class="k-pair">
       ${fig(still(BEFORE, name, `${name}-before`), `${what}, before: the page the darker well, quiet words in a purple grey, a 35px Unsubscribe.`, "Before")}
-      ${fig(still(AFTER, name, `${name}-after`), `${what}, after: Dark's own page, inks and grey, a 44px Unsubscribe.`, "After")}
+      ${fig(still(AFTER, name, `${name}-after`), `${what}, after: Dark's own page, inks and grey, a 44px Unsubscribe, the small lines in sentence case and Purify in the serif.`, "After")}
     </div>`;
-const why = (rows) => `<div class="k-table-wrap"><table class="k-table"><caption>Why it looks this way. Only the colours and one size move; the words, the layout and the cross stay where a reader knows them.</caption>
+const why = (rows) => `<div class="k-table-wrap"><table class="k-table"><caption>Why it looks this way. Only the colours, one size and the small lines' letters move; the words, the layout and the cross stay where a reader knows them.</caption>
 <thead><tr><th scope="col">The choice</th><th scope="col">Why, and what it does for a reader</th></tr></thead>
 <tbody>
 ${rows.map(([a, b]) => `<tr><td>${esc(a)}</td><td>${esc(b)}</td></tr>`).join("\n")}
@@ -46,7 +46,7 @@ const body = `
     <span class="k-eyebrow">The emails, round 3</span>
     <h1>Account and order emails</h1>
     <p class="k-lede">The shell they are built in, brought to Dark as you decided. Before and after, at a phone's width.</p>
-    <p class="k-meta">13 November 2026. Three real emails as the app builds them. Nothing here is sent.</p>
+    <p class="k-meta">13 November 2026, the small lines updated 14 November. Three real emails as the app builds them. Nothing here is sent.</p>
   </header>
 
   <section class="k-section" aria-labelledby="s-words">
@@ -76,6 +76,8 @@ const body = `
       ["Quiet words in Dark's own grey", "The small line, the note, the sign-off and the foot were a purple grey the app does not have. Now they are the grey the app uses for the same words."],
       ["Running text, the heading and the button in Dark's inks", "The body is Dark's body ink and the heading and button its white, as in the reader email you approved. The button is a little brighter, so the one thing to tap stands out."],
       ["Unsubscribe is 44px tall", "It was 35px, under the house's least for a thing to tap. The check found it when the shell was measured. A thumb finds it at once."],
+      ["Small lines in sentence case", "The line over the heading and the label over a number (Purify Shop, Confirmation number) were small capitals spaced out, the mark of a template. Round 1's rule for small lines, your yes of 20:47, sets them as the kit's emails do: plain words, a touch heavier. They read as words."],
+      ["Purify in the serif", "The name under the cross was the same spaced capitals. It is now the kit's own wordmark, Purify in the reading serif in the page's ink, as at the head of every email from the kit. The email says Purify the way the app does."],
       ["Everything else stays", "The words, the order of things, the cross, the card's shape and the first-week line are unchanged. A reader who knows these emails finds everything where it was."],
     ])}
   </section>
@@ -87,7 +89,7 @@ const body = `
 
   <section class="k-section" aria-labelledby="s-yes">
     <h2 id="s-yes">Your look</h2>
-    <p>This is your call of 18:53, drawn. If anything here is not what you meant, say which and it goes back. It reaches readers only with the merge.</p>
+    <p>This is your call of 18:53, drawn, with round 1's rule for small lines brought to the shell. If anything here is not what you meant, say which and it goes back. It reaches readers only with the merge.</p>
   </section>
 
   <footer class="k-foot">

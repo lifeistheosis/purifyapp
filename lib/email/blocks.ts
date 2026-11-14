@@ -77,9 +77,13 @@ export function note(text: string): string {
   return pHtml(escapeHtml(text), `font-size:15px;color:${T.muted};`);
 }
 
-/** The small uppercase line that labels the value under it. */
+/**
+ * The small line that labels the value under it, in sentence case as the
+ * kit's letters set a label (12px, semibold, quiet; round 1's small-line
+ * rule, 2026-11-13). It was 11px capitals spaced out.
+ */
 export function microLabel(text: string): string {
-  return `<p style="margin:8px 0 4px;font-family:${SANS};font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:${T.muted}">${escapeHtml(text)}</p>`;
+  return `<p style="margin:8px 0 4px;font-family:${SANS};font-size:12px;line-height:18px;font-weight:600;color:${T.muted}">${escapeHtml(text)}</p>`;
 }
 
 /** A tracking number, an order number: the thing the reader came to find. */
@@ -124,7 +128,7 @@ export function amountRow(label: string, amount: string, opts: { strong?: boolea
 export function dayRow(line: { day: string; name: string; kind: "feast" | "saint" }): string {
   const feast = line.kind === "feast";
   return `<tr><td style="padding:14px 0;border-bottom:1px solid ${T.line}">
-      <p style="margin:0 0 4px;font-family:${SANS};font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:${feast ? T.mark : T.muted}">${escapeHtml(line.day)}${feast ? " &middot; Feast" : ""}</p>
+      <p style="margin:0 0 4px;font-family:${SANS};font-size:12px;line-height:18px;font-weight:600;color:${feast ? T.mark : T.muted}">${escapeHtml(line.day)}${feast ? " &middot; Feast" : ""}</p>
       <p style="margin:0;font-family:${SERIF};font-size:18px;line-height:1.4;color:${T.heading};${feast ? "font-weight:600;" : ""}">${escapeHtml(line.name)}</p>
     </td></tr>`;
 }

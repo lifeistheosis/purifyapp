@@ -31,6 +31,13 @@ import { UNSUBSCRIBE_SLOT } from "./unsubscribe";
  * sender fills it for the reader it is going to (lib/email/unsubscribe.ts).
  * It is 44px tall, the house's least for a thing to tap (it was 35px until
  * build 95, found by checkMock when the shell was brought to Dark).
+ *
+ * ITS SMALL LINES ARE SENTENCE CASE (round 1's small-line rule, his "yes to
+ * all" of 2026-11-13, brought here by the arbiter's call at 22:50 UTC): the
+ * line over the heading as the kit's letters set it (12px, semibold, quiet),
+ * and the wordmark in the kit's own letters, Purify in the serif at 19px in
+ * the ink (docs/brand/kit/email/build.mjs, its masthead). Both were 11px
+ * capitals spaced out, the mark of a template.
  */
 export function emailLayout(opts: {
   heading: string;
@@ -59,10 +66,10 @@ export function emailLayout(opts: {
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
     <tr><td align="center" style="padding:0 0 22px">
       ${cross}
-      <p style="margin:12px 0 0;font-family:${SANS};font-size:11px;letter-spacing:5px;text-transform:uppercase;color:${T.muted}">Purify</p>
+      <p style="margin:10px 0 0;font-family:${SERIF};font-size:19px;line-height:26px;color:${T.heading}">Purify</p>
     </td></tr>
     <tr><td class="pad" bgcolor="${T.card}" style="background:${T.card};border-radius:${T.cardRadius}px;padding:40px 40px 34px;font-family:${SERIF};font-size:17px;line-height:1.65;color:${T.body};${T.scheme === "light" ? `border:1px solid ${T.line};` : ""}">
-      <p style="margin:0 0 10px;font-family:${SANS};font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:${T.label}">${eyebrow}</p>
+      <p style="margin:0 0 10px;font-family:${SANS};font-size:12px;line-height:18px;font-weight:600;color:${T.label}">${eyebrow}</p>
       <h1 class="h1" style="margin:0 0 ${opts.deck ? 8 : 22}px;font-family:${SERIF};font-size:30px;line-height:1.2;font-weight:400;color:${T.heading}">${escapeHtml(opts.heading)}</h1>
       ${opts.deck ? `<p style="margin:0 0 24px;font-family:${SERIF};font-style:italic;font-size:18px;line-height:1.45;color:${T.muted}">${escapeHtml(opts.deck)}</p>` : ""}
       ${opts.bodyHtml}
