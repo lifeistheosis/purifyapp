@@ -4,6 +4,14 @@ The arbiter's call (Arbiter 6, 08:03 UTC): the pre-build gate (CLAUDE.md, parts 
 
 **The export:** `node scripts/gate/export.mjs` of `a8a35dde7`, the branch head (its code is `4c6a0484`; the two commits after it are docs). Cut 08:05 to 08:07 UTC, 6,474 pages, 204.6 MB on disk. The store workflow's own switches: the shop and Community on, `NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1` with the stand-in RevenueCat key `walk` (the export sells Plus and nothing can be bought), Google sign-in unset (the walks are signed out), the EIKON Box unset (its safe default). The release-day switches: CAMPAIGNS_OPENING "testers", PICTURES_IN_STORE_BUILDS false, CAMPAIGN_NOTICES true, JULY_GROUPS_GO true, CARE_NOTE_SEND true. The main web's public key was read from purifyapp.net's own scripts into the export command alone (his standing word, "yes key always"), checked to be the anon role of the main web's project, and printed and written nowhere. The three tools' own self-tests (checkMock, the guardrail walk, the tap walk) passed on it. Both readers walked: the new reader with no Plus (`SELLS_PLUS=1`) and the open reader.
 
+## What changed since the last passing gate
+
+The arbiter narrowed the scope at 13:57 UTC, at the owner's word ("only do a check on the things you worked on"): what changed since the last passing gate. That gate walked the export of `3b17a0aca` (`gate-run-1.md`, "Re-check ... a pass"); builds 95 and 96 were cut from `6193982d5`, which differs from it in `app/`, `components/` and `lib/` only by admin, email and server files (two others). `git diff --name-only 3b17a0aca a8a35dde7`: 43 files in `app/`, 231 in `components/`, 155 in `lib/`, tests left out.
+
+- Pages whose own files changed: / /about /account /apologetics /councils /councils/[slug] /councils/[slug]/[document] /discover /email/first-week /heresies /language-editor /p/[id] /prayers /premium /saints/[slug]/[work] /settings /shop/icons/detail /shop/seller (web only) /theology /theology/path/[subject] /topics /u/[handle] /whats-new.
+- Components changed, by folder: shop 26, theology 16, saints 15, bible 15, today 12, community 12, ui 11, journal 9, reader 6, player 6, florilegium 6, prayers 5, nav 5, councils 5, billing 5, and 1 to 4 in 38 more.
+- The shared parts every screen draws changed (components/ui, nav, layout, reader), so every screen of the export is in the set. Parts 1 and 2 below walked all 129, which holds the changed screens by construction; part 3's tests hold every saint and work, those added since included.
+
 ## Part 1: the tap walk
 
 Every control on every screen (`--max 1000`), at 390 by 844 with real touch, reading the main web, both readers at once, two workers each, 08:10 to 11:04 UTC.
@@ -19,7 +27,7 @@ Every control on every screen (`--max 1000`), at 390 by 844 with real touch, rea
 ## Part 2: the guardrail walk and the stripe walk
 
 - **The guardrail walk at 390,** checkMock with pixels on the five palettes and the two earned, mirroring measured in Arabic on every screen: 129 of 129 clean for each reader (11:04 to 11:47 UTC). Left for the eye: 91 lines on 4 screens, readers' initials wholly under their own pictures (/community/ and the like).
-- **At 800 by 1280 and 1032 by 1376,** both readers: see "Then" below.
+- **At 800 by 1280,** both readers: 129 of 129 clean. **At 1032 by 1376,** both readers: 127 of 129, the two screens being Today (/ and /signout/), fault 6.
 - **The stripe walk,** every screen at phone and tablet size: no side stripe on any screen. Five dividers allowed by name and reason: the line between "Your journal" row's two halves (/bible/), the lines between the study's three figures (/theology/comma-johanneum/, twice), the month grid's lines (/calendar/), and the line between the shop's two columns on a wide screen (/shop/).
 
 ## Parts 3 to 5
@@ -35,7 +43,12 @@ Every control on every screen (`--max 1000`), at 390 by 844 with real touch, rea
 - **The offline lines,** with no signal, checkMock with pixels on all 21 (the five palettes, the two earned and the fourteen looks), on the line itself, which must also stand whole on the screen and clear of the bar:
   - Today's readings, Listen: "Plays with a connection" under their buttons, at 390, 800 and 1032 in English and at 390 in Arabic: 4 of 4 pass.
   - Community, Try again: "No signal. Check your connection and try again." under the button, the same four: 4 of 4 pass.
-- The rest: see "Then" below.
+- **The verse card's offline toast,** Today, Listen with no signal: "Plays with a connection" on the card's own pill. It lasts 1.5 seconds (1,494 and 1,501ms measured), less than one checkMock run, so a copy made the moment it was drawn (the same element, classes and place) was measured: at 390 in English and in Arabic, on all 21, clean, whole on the screen (162 by 27 at 114, 393) and clear of the bar. 2 of 2 pass.
+- **The patron sheet whole:** Settings' patron row needs a signed-in reader, so the one GET that needs a session (`/api/profile/patron-saint`) was stood in for with "no patron yet"; the saints' list came from the main web, nothing was sent and no row was tapped. At 390 the phone was made as tall as the list, so the sheet showed all 163 rows at once (14,649px), then one checkMock with pixels on the five and the two earned: clean in English and in Arabic. At 1032 the sheet is a dialog of fixed height and does not grow with the screen, so only its rows in view and checkMock's own pass were measured: clean.
+- **/reading/,** checkMock with pixels on all 21, reading the main web: at 390, 800 and 1032 in English, clean (about 75 to 81 minutes a run). In Arabic at the three widths, and /settings/reading-mode/ at 1032 in English on the five and the two earned: still running at the hand-over (see the baton).
+- **Search's strip with motion reduced** (`button[aria-label*="search" i]` on /fathers-on/anger/, recorded and judged by `scripts/gate/frames.mjs` on a fresh phone each time, the runner `docs/handoffs/updates-40-runners/rec.mjs`): 5 of 5 pass with no signal, 4 of 4 reading the main web.
+- **The saints' grid with a filter chosen** (the second filter on /saints/): motion reduced 4 of 4 pass, motion on 2 of 2 pass.
+- **The motion walk on /shop/** (`scripts/motion-walk.mjs out --only /shop/ --online`, open reader): 30 controls, 2 fail, one card (fault 7).
 
 ## The faults
 
@@ -45,8 +58,13 @@ Every control on every screen (`--max 1000`), at 390 by 844 with real touch, rea
 4. **/plans/acts/, Mark day 1 to 5 as read,** open reader (the new reader's walk passed the page): tapped again with the browser's scroll anchoring off, each circle moved 41px as the streak line came above the days; only the browser held it (42px). WebKit (the iPhone and the iPad) has no scroll anchoring (the arbiter's ruling of 2026-11-11), and the page means to hold the circle itself. `components/plans/PlanClient.tsx` (`hold`, `keepHead`, with `lib/ui/inPageMove.ts`).
 5. **/community/, "5 replies",** new reader, once: what it opened ends at 1328px, under the bar at 761px, and the page did not move with it. `components/community/CommunityClient.tsx`. The open reader's walk passed it; the feed is live.
 
-Faults 4 and 5 are walked again alone on a quiet machine, both readers, with faults 2 and 3: see "Then".
+6. **Today's date line at 1032,** both readers (/ and /signout/): "Saturday, November 14 · Feast" reads 2.67:1 at its least on the pixels under it, needs 4.5:1, on all seven (the five and the two earned). Measured again alone: the same, 7 of 7. At 390 and 800 it passes. `components/today/GreetingHeader.tsx:123` (`text-paper/65` over the head's picture, which a wide screen sets differently under the line).
+7. **A shop card's picture is not carried into its page,** the motion walk on /shop/, open reader: the Virgin of Vladimir Icon's card opens /shop/icons/detail/, which shows the card's picture, and no View Transition carried it (it ran only (root) and (tab-bar)). Every other card the walk tapped passed. `components/shop/ProductCard.tsx` (`data-carry={pieceCarry(...)}`) with the detail page's picture (`components/shop/ProductDetailClient.tsx`, the export's one page for a piece not baked in) and `lib/ui/routeMotion.ts`. Updates 38's `d280980e` proved the carry by unit test and did not record it.
 
-## Then
+**Walked again alone** on a quiet machine (`--workers 1`), the five fault screens, new reader: faults 2 and 3 again, the same numbers; /community/ and /plans/acts/ pass. **Fault 5 is withdrawn:** walked alone, "5 replies" ends where the page follows it; the first walk ran four workers beside a live feed. The open reader's walk of the same five screens, which holds fault 4, was still running at the hand-over.
 
-The rest was still running when this record was first pushed (12:20 UTC): the guardrail walk at 800 and 1032 for both readers; checkMock with pixels on /reading/ (390, 800 and 1032, the 21, English and Arabic) and on /settings/reading-mode/ (1032, English, the five and the two earned); the verse card's offline toast; the patron sheet whole; then, on a quiet machine, the motion walk on /shop/, Search's strip and the saints' grid recorded with motion reduced, the five fault screens walked again alone, and the web build. Their results follow here as they land.
+## Not run, and left
+
+- **The motion walk over all its routes,** asked at 13:57 UTC with the narrower scope (the page switches changed: routeMotion, the carried pictures, the cross-fades). Not started: it came past this chat's line of 150,000 tokens for a new part, and its report needs reading screen by screen. For the next Admin chat, on an export cut the same way from the same head: two lanes, each in its own command, `[SELLS_PLUS=1] NODE_USE_ENV_PROXY=1 node scripts/motion-walk.mjs out --online --json <file> --shots <dir>`, then the same with `--reduced`. Gate 2.0 took 73 minutes for 128 screens at 390, both readers, then the still pass, on these four cores.
+- **Still running at the hand-over,** in this container: /reading/ in Arabic at 390, 800 and 1032 on all 21; /settings/reading-mode/ at 1032; the open reader's walk of the five fault screens (fault 4); then the web build. Their results are in this container only; the baton says how to run each again.
+- Part 4 is held by its test for every reader-facing line, the changed ones included. The seven light looks over every screen are the final check's, not run here.
