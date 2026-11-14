@@ -44,7 +44,8 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 
 import { sheetLeaves, sheetRises } from "@/lib/ui/overlay";
 import { NO_ROOM, roomUnder, sheetTakes, type Room } from "@/lib/ui/sheetGesture";
-import { holdFieldOnKeyboard } from "@/lib/ui/sheetKeyboard";
+import { takesTyping } from "@/lib/ui/keyboardFlag";
+import { heldHeight, holdFieldOnKeyboard, wordsHeightOf } from "@/lib/ui/sheetKeyboard";
 
 type Snap = "full" | "half";
 
@@ -115,6 +116,7 @@ export function useDraggableSheet({
   half = 0.6,
   locked = false,
   smoothHeight = false,
+  keyboardFoot = null,
 }: {
   open: boolean;
   onClose: () => void;
@@ -132,6 +134,9 @@ export function useDraggableSheet({
    *  a profile arriving under its loading lines lifted the card 432px in one
    *  frame. With motion off it changes at once, as before. */
   smoothHeight?: boolean;
+  /** For a sheet that stands on the keyboard (Sheet `keyboard`): the foot of
+   *  what the keyboard leaves, in px from the top of the window. */
+  keyboardFoot?: number | null;
 }): DraggableSheet {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const scrimRef = useRef<HTMLButtonElement | null>(null);
@@ -141,6 +146,8 @@ export function useDraggableSheet({
 
   // Geometry and position, all in px of translateY from the fully open place.
   const height = useRef(0);
+  /** The same, to the fraction of a pixel (offsetHeight rounds it). */
+  const exactHeight = useRef(0);
   /** Gap between the panel's resting bottom and the screen's: a sheet lifted
    *  off the edge (a desktop card) has that much further to travel to leave. */
   const below = useRef(0);
@@ -180,6 +187,7 @@ export function useDraggableSheet({
     if (!panel) return;
     height.current = panel.offsetHeight;
     const rect = panel.getBoundingClientRect();
+    exactHeight.current = rect.height;
     below.current = Math.max(0, window.innerHeight - (rect.bottom - offset.current));
     fullBleed.current = rect.width >= window.innerWidth - 2 && below.current < 2;
     const visibleHalf = Math.round(window.innerHeight * half);
@@ -459,6 +467,47 @@ export function useDraggableSheet({
     if (!mounted || !body) return;
     return holdFieldOnKeyboard(body);
   }, [mounted]);
+
+  // A sheet that stands on the keyboard and is taller than what it leaves:
+  // as the keyboard comes, its edge stays where it stood while the field
+  // being written in still shows under it (the panel ends at the keyboard and
+  // its body scrolls), and it rises to its cap only when the field would be
+  // covered (lib/ui/sheetKeyboard.ts, heldHeight). Before the frame is drawn,
+  // and before the ResizeObserver above measures what it holds. From the
+  // first step of the rise: a keyboard that comes in steps (a phone's
+  // browser) moved the edge with each one.
+  const footWas = useRef<number | null>(null);
+  const holdFrom = useRef<{ foot: number; height: number } | null>(null);
+  useLayoutEffect(() => {
+    const panel = panelRef.current;
+    const was = footWas.current;
+    footWas.current = keyboardFoot;
+    if (!panel) return;
+    const letGo = () => {
+      holdFrom.current = null;
+      panel.style.maxHeight = "";
+    };
+    if (!mounted || keyboardFoot === null || was === null) return letGo();
+    const from = holdFrom.current ?? (was - keyboardFoot > 0.5 ? { foot: was, height: exactHeight.current } : null);
+    if (!from) return;
+    const rise = from.foot - keyboardFoot;
+    const el = document.activeElement;
+    if (rise <= 0.5 || !(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) || !takesTyping(el) || !panel.contains(el)) return letGo();
+    const p = panel.getBoundingClientRect();
+    const f = el.getBoundingClientRect();
+    const b = bodyRef.current?.getBoundingClientRect() ?? p;
+    const held = heldHeight({
+      height: from.height,
+      rise,
+      fieldTop: f.top - p.top,
+      fieldBottom: f.bottom - p.top,
+      wordsHeight: el instanceof HTMLTextAreaElement ? wordsHeightOf(el, el.selectionEnd) : f.height,
+      under: p.bottom - b.bottom,
+    });
+    if (held === null) return letGo();
+    holdFrom.current = from;
+    panel.style.maxHeight = `${held}px`;
+  }, [keyboardFoot, mounted]);
 
   // ── The gesture ───────────────────────────────────────────────────────────
   const begin = useCallback(

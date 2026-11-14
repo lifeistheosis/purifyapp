@@ -57,7 +57,9 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  *  - `keyboard` (1.7.1, the highlight colours' names): a short sheet with a
  *    field in it. It keeps its own height, as any sheet does, and stands on
  *    the on-screen keyboard while one is up, in the same box `fill` uses, so
- *    the field and the button under it are never under the keys.
+ *    the field and the button under it are never under the keys. One taller
+ *    than what the keyboard leaves keeps its edge while its field still shows
+ *    (build 97), and its body scrolls.
  */
 export function Sheet({
   open,
@@ -123,16 +125,19 @@ export function Sheet({
 }) {
   const { t } = useTranslate();
   const reduced = useReducedMotion();
+  // The part of the screen the keyboard has not covered (fill and keyboard).
+  const framed = fill || keyboard;
+  const frame = useVisibleFrame();
   // half: 1 means a long sheet has no lower rest: it opens at its own height.
+  // keyboardFoot: a `keyboard` sheet keeps its edge as the keyboard comes
+  // while its field still shows (lib/ui/sheetKeyboard.ts, heldHeight).
   const { mounted, panelRef, scrimRef, bodyRef, grab } = useDraggableSheet({
     open,
     onClose,
     reduced,
     half: openFull || fill || keyboard ? 1 : undefined,
+    keyboardFoot: keyboard && frame ? frame.top + frame.height : null,
   });
-  // The part of the screen the keyboard has not covered (fill and keyboard).
-  const framed = fill || keyboard;
-  const frame = useVisibleFrame();
   const keyboardUp =
     framed && frame !== null && typeof window !== "undefined" && window.innerHeight - (frame.top + frame.height) > 80;
 

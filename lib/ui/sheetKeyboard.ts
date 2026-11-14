@@ -64,6 +64,25 @@ export function wordsHeightOf(el: HTMLTextAreaElement, upTo: number = el.value.l
   return height;
 }
 
+/**
+ * How tall a sheet that stands on the keyboard (Sheet `keyboard`) is held as
+ * the keyboard comes, or null to let it rise to its cap as before. For the
+ * living's sheet is 733px, taller than the 544 a 300px keyboard leaves at 390
+ * by 844, so its edge rose from 110.6 to 12.8 in one frame and the name field
+ * from 266 to 168.5 (build 97, the sheets' rest). Now its edge stays where it
+ * stood while the line being written still shows under it, by the same rule
+ * the body keeps (scrollForWritingLine): the panel ends at the keyboard and its
+ * body scrolls. It rides up only when the field would be covered.
+ *
+ * `height` is the panel at rest before the keyboard, `rise` how far the
+ * keyboard moved the foot up; the field is measured from the panel's top edge,
+ * `under` is what stands under the body (a foot row, the panel's padding).
+ */
+export function heldHeight({ height, rise, fieldTop, fieldBottom, wordsHeight, under }: { height: number; rise: number; fieldTop: number; fieldBottom: number; wordsHeight: number; under: number }): number | null {
+  const held = height - rise;
+  return scrollForWritingLine({ fieldTop, fieldBottom, wordsHeight, scrollerBottom: held - under }) === 0 ? held : null;
+}
+
 /** Keep a sheet's body still while the keyboard comes. Returns the way to stop. */
 export function holdFieldOnKeyboard(body: HTMLElement): () => void {
   const vv = window.visualViewport;

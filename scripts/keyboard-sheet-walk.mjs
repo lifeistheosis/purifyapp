@@ -10,7 +10,9 @@
 //   NATIVE=1 COVER=1 node scripts/keyboard-sheet-walk.mjs http://localhost:3000 journal step 300
 //   NATIVE=1 node scripts/keyboard-sheet-walk.mjs http://localhost:3000 journal step 300   (no cover)
 //   NATIVE=1 node scripts/keyboard-sheet-walk.mjs http://localhost:3000 living step 300    (For the living:
-//     a `keyboard` sheet taller than what the keyboard leaves, its edge rises to the cap; open, see the baton)
+//     a `keyboard` sheet taller than what the keyboard leaves: its edge stays while the field shows; until
+//     build 97 it rose from 110.6 to the cap at 12.8 in one frame. KB_AFTER=900 brings the keyboard after
+//     the sheet has risen; the default brings it while it still rises, as autoFocus does)
 //
 // A dev server needs NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 NEXT_PUBLIC_SUPABASE_ANON_KEY=walk-anon.
 // Modes: step (one resize, as Android pads the window), anim (eight), vv (the website's: the visual viewport only).
@@ -92,12 +94,14 @@ await page.evaluate((sel) => {
     const sc = f?.closest(".overflow-y-auto");
     const scrim = panel?.closest('[role="dialog"]')?.querySelector("button[tabindex='-1']");
     const foot = panel?.lastElementChild?.getBoundingClientRect();
+    // The panel's own place, with the opening's slide taken out: where its edge rests.
+    const ty = panel ? new DOMMatrixReadOnly(getComputedStyle(panel).transform).m42 : 0;
     frames.push({
       t: Math.round(performance.now() - t0),
       ih: innerHeight, vvh: Math.round(visualViewport.height),
-      edge: p ? r(p.top) : null, bottom: p ? r(p.bottom) : null, ph: p ? r(p.height) : null,
+      edge: p ? r(p.top) : null, rest: p ? r(p.top - ty) : null, bottom: p ? r(p.bottom) : null, ph: p ? r(p.height) : null,
       tf: panel?.style.transform ?? "",
-      fieldTop: b ? r(b.top) : null, fieldH: b ? r(b.height) : null,
+      fieldTop: b ? r(b.top) : null, fieldRest: b ? r(b.top - ty) : null, fieldH: b ? r(b.height) : null,
       st: sc ? Math.round(sc.scrollTop) : null, scH: sc ? Math.round(sc.clientHeight) : null,
       footTop: foot ? r(foot.top) : null, footBottom: foot ? r(foot.bottom) : null,
       pad: panel ? getComputedStyle(panel).paddingBottom : null,
@@ -169,13 +173,22 @@ for (const f of frames) {
   last = key;
 }
 if (process.env.SHOT) await page.screenshot({ path: process.env.SHOT });
+// DOWN=1: the keyboard goes again; the edge comes back to where it rested before it.
+if (process.env.DOWN) {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(700);
+  console.log("edge after the keyboard went:", await page.evaluate((sel) => Math.round(document.querySelector(sel)?.closest(".will-change-transform")?.getBoundingClientRect().top * 10) / 10, fieldSel));
+}
 if (errors.length) console.log("page errors:", errors.slice(0, 3));
 const end = frames[frames.length - 1];
 // The first frame with the keyboard at its full height.
 const atKb = frames.find((f) => f.ih === end.ih && f.vvh === end.vvh);
-const edgeStill = frames.every((f) => f.edge === null || f.edge === end.edge || f.ih === 844);
-const ok = finger ? finger.after - finger.before >= 100 : Boolean(atKb) && edgeStill && end.fieldTop === atKb.fieldTop;
+// The edge where it rested before the keyboard (the opening's slide taken out, so a keyboard that comes
+// while the sheet still rises counts too), and every frame after: it must not move.
+const lastBefore = frames.findLastIndex((f) => f.ih === 844 && f.vvh === 844);
+const edgeStill = frames.slice(Math.max(0, lastBefore)).every((f) => f.rest === null || Math.abs(f.rest - end.edge) < 0.5);
+const ok = finger ? finger.after - finger.before >= 100 : Boolean(atKb) && edgeStill && end.fieldRest === atKb.fieldRest;
 if (finger) console.log(`${ok ? "ok  " : "FAIL"} a finger drawn up the body after the keyboard came: scrolled ${finger.before} -> ${finger.after}`);
-console.log(`${ok ? "ok  " : "FAIL"} ${WHICH}${process.env.COVER ? " with a cover" : ""}: field ${frames.find((f) => f.focus)?.fieldTop} at the tap, ${atKb?.fieldTop} as the keyboard comes, ${end.fieldTop} at rest (body scrolled ${end.st}); edge ${end.edge}${edgeStill ? "" : ", moved"}`);
+console.log(`${ok ? "ok  " : "FAIL"} ${WHICH}${process.env.COVER ? " with a cover" : ""}: field ${frames.find((f) => f.focus)?.fieldTop} at the tap, ${atKb?.fieldTop} as the keyboard comes, ${end.fieldTop} at rest (body scrolled ${end.st}); edge ${frames[lastBefore]?.rest} before the keyboard, ${end.edge} at rest${edgeStill ? "" : ", moved"}`);
 await browser.close();
 process.exit(ok ? 0 : 1);
