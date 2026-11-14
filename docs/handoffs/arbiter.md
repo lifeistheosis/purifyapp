@@ -6,21 +6,21 @@ From Arbiter 13 (session_01VuYTwcZXdzaoyK25DeVxvh) to Arbiter 14, written 2026-1
 
 - He is walking build 97 (ungated, Android). No note since 16:28. Notes 1 to 10 are in `docs/1.9-build/notes/build-97.md`, his words in BRAINSTORM.
 - Asks open: Waiting on him 12 (carry the three new council pictures, rec yes), 14 (a short screen recording of the typing flash), 15 (this fresh arbiter), and 13 (his archive list, now with Updates 60; add Arbiter 13 once you run).
-- Reported to Arbiter 13: **Updates 60** (21:07, baton 40f975d8): the Size chip at text-night/62 (cdda2b28), proved on its own export with mockrun60 and the taps; its item 2 is not started (NOW's Next 2).
-- At work: **Updates 59** (session_01VuYTwdnNaLHKzB269snRMw, note 3; 304,919 by get_session at 21:07, past its line; d612c737 committed, its pre-push checks running) and **Updates 61** (session_01VuYTwakVPr2XjCWYxs7Q3Z, note 6 alone, from 21:10). Both report to Arbiter 13 unless told your id.
+- Reported to Arbiter 13: **Updates 60** (21:07, baton 40f975d8): the Size chip at text-night/62 (cdda2b28), proved on its own export with mockrun60 and the taps; its item 2 is not started. **Updates 59** (21:14, baton 05f5590c): note 3 readied ahead (2a58d08e) behind isNativeClient() (4403af52), measured on an export with its two compiled guards set by hand, so a real export of the head is owed. Both open sides are in NOW's Next 2, the round's checks, round 4.
+- At work: **Updates 61** (session_01VuYTwakVPr2XjCWYxs7Q3Z, note 6 alone, from 21:10) and **Updates 62** (session_01VuYTwdRmqjHoYqhobRCM1n, the piece page's carry and cut, from 21:16). Both report to Arbiter 13 unless told your id.
 
 ## Your first round (Arbiter 14)
 
 1. Add your row to NOW's Running table (your id from get_session with no id) and mark Arbiter 13 handed over (idle, his to archive).
-2. One line each by send_message to Updates 59 and 61: report to your id. A chat that has already reported to Arbiter 13 needs no line: read its baton in `docs/handoffs/` and its report in the log or in Arbiter 13's chat.
+2. One line each by send_message to Updates 61 and 62: report to your id. A chat that has already reported to Arbiter 13 needs no line: read its baton in `docs/handoffs/` and its report in the log or in Arbiter 13's chat.
 3. Route their reports as NOW's Next 1 and 2 say. Do not call archive_session (refused on arbiters and on Updates 51); a done chat goes on Waiting on him 13.
 4. Tell him nothing until something waits on him.
 
 ## Calls made this shift (in NOW and the log)
 
-- Note 6 went alone to Updates 61, by the one-item rule. The samePage cut (`docs/handoffs/updates-46.md` Open 2) moves to go with Updates 46's six links (Open 1) as one fixer on the piece page's carry and cut, started once Updates 59 reports, since 59 holds the six shop files and RouteTransition until then. Then note 10 (the ambience's interface), measured first.
+- Note 6 went alone to Updates 61, by the one-item rule. The samePage cut (`docs/handoffs/updates-46.md` Open 2) went with Updates 46's six links (Open 1) to Updates 62, the cut first and the links only if room allows. Next when a slot frees: note 10 (the ambience's interface), measured first; then the round's checks, round 4, on one export once 61 and 62 have pushed (NOW's Next 2 lists what rides on it); then Gate 3.
+- Updates 59's open 4 (fonts on first openings): measured in the round's checks, mended only if a heading moves. IS_STATIC_EXPORT reads as the website in client code (lib/platform/buildTarget.ts says SERVER ONLY); the one other client file naming it does so in a comment (checked 21:15).
 - Updates 61 may cut a second export (the after side) only under 150,000; otherwise that side goes to the next checks chat with Updates 60's item 2 (NOW's Next 2), or into Gate 3 if its scope can hold it.
-- Updates 59 is past its line: after its report, read its baton for what is open and give it nothing more.
 
 ## Gotchas
 
@@ -41,4 +41,4 @@ Unchanged from Arbiter 11's baton (`git show 76049fcd:docs/handoffs/arbiter.md`,
 
 - `docs/NOW.md` (state), `docs/1.9-build/BRAINSTORM.md` (his words), `docs/1.9-build/HANDOFF.md` (the log), `docs/1.9-build/notes/build-97.md`, `docs/roles/`, `docs/OPERATIONS.md`.
 - His calls page: https://claude.ai/artifact/HtMHvpk9SsKLwXG7AgJutq (`docs/roles/arbiter.md` says how to update it; not touched since Arbiter 11's shift).
-- Batons of this shift: `docs/handoffs/updates-60.md` (40f975d8; its runner mockrun60 in `docs/handoffs/updates-60-runners/`); `updates-59.md` and `updates-61.md` when they land. Arbiter 12's baton is at 1f17833c.
+- Batons of this shift: `docs/handoffs/updates-60.md` (40f975d8; its runner mockrun60 in `docs/handoffs/updates-60-runners/`); `docs/handoffs/updates-59.md` (05f5590c; its measure scripts/first-open.mjs); `updates-61.md` and `updates-62.md` when they land. Arbiter 12's baton is at 1f17833c.
