@@ -23,6 +23,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 
 import { cn } from "@/lib/cn";
+import { useKeptSweep } from "@/lib/ui/keptSweep";
 import { scrollBehavior } from "@/lib/ui/motion";
 import { useScrollTicks } from "@/lib/ui/scrollTicks";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
@@ -59,9 +60,19 @@ export function ChipScroller({
   const ref = useRef<HTMLDivElement | null>(null);
   const { edges, measure } = useScrollEdges(ref);
   useScrollTicks(ref, { enabled: ticks });
+  // Back finds the row where the reader left it (lib/ui/keptSweep.ts); the
+  // first centring leaves a sweep given back where it stands.
+  const given = useKeptSweep(ref, label);
+  const opened = useRef(false);
 
   useEffect(() => {
+    const first = !opened.current;
+    opened.current = true;
     if (centerOn === undefined) return;
+    if (first && given.current) {
+      measure();
+      return;
+    }
     const el = ref.current;
     const current = el?.querySelector<HTMLElement>("[aria-current]");
     if (!el || !current) return;
@@ -69,7 +80,7 @@ export function ChipScroller({
     const chip = current.getBoundingClientRect();
     el.scrollLeft += chip.left - row.left - (row.width - chip.width) / 2;
     measure();
-  }, [centerOn, measure]);
+  }, [centerOn, measure, given]);
 
   return (
     <div className={cn("relative", className)}>
@@ -77,6 +88,7 @@ export function ChipScroller({
         ref={ref}
         role="group"
         aria-label={label}
+        data-sweep={label}
         className={cn(
           "-mx-5 flex snap-x scroll-px-5 overflow-x-auto px-5 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>*]:shrink-0 [&>*]:snap-start",
           bleed === "always" ? "md:-mx-8 md:scroll-px-8 md:px-8" : "md:mx-0 md:scroll-px-0 md:px-0",

@@ -32,6 +32,7 @@ import type { EarnedPalettes } from "@/lib/reader/earned";
 import { FREE_THEMES, READING_THEMES, THEME_FAMILIES, isCollectionTheme, themesOfFamily, type ReadingTheme } from "@/lib/reader/readingModes";
 import { PREVIEW_CHAPTER } from "@/lib/settings/preview";
 import { useScrollTicks } from "@/lib/ui/scrollTicks";
+import { useKeptSweep } from "@/lib/ui/keptSweep";
 
 import { GoalTile, ModeTile } from "./ReadingModePages";
 
@@ -135,8 +136,10 @@ export function GalleryShelves({
 function Shelf({ label, children }: { label: string; children: ReactNode }) {
   const row = useRef<HTMLDivElement>(null);
   useScrollTicks(row);
+  // Back finds the shelf where the reader left it, as Settings' row (lib/ui/keptSweep.ts).
+  useKeptSweep(row, label);
   return (
-    <div ref={row} role="group" aria-label={label} className="set-shelf">
+    <div ref={row} role="group" aria-label={label} data-sweep={label} className="set-shelf">
       {children}
     </div>
   );

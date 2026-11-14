@@ -31,6 +31,7 @@
 import { useCallback, useEffect, useRef, type ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
+import { useKeptSweep } from "@/lib/ui/keptSweep";
 import { scrollBehavior } from "@/lib/ui/motion";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { useScrollTicks } from "@/lib/ui/scrollTicks";
@@ -79,6 +80,9 @@ export function ScrollRail({
   const track = useRef<HTMLElement | null>(null);
   const settled = useRef(false);
   useScrollTicks(track, { enabled: ticks });
+  // Back finds the row where the reader left it (lib/ui/keptSweep.ts).
+  const sweep = label ?? "rail";
+  const given = useKeptSweep(track, sweep);
 
   const measure = useCallback(() => {
     const el = track.current;
@@ -103,10 +107,16 @@ export function ScrollRail({
   }, [measure, children]);
 
   // Bring the current item to the middle: at once when the row first appears,
-  // gliding when the reader moves from one to another.
+  // gliding when the reader moves from one to another. A row given back the
+  // sweep the reader left it at, on Back, opens there instead.
   useEffect(() => {
     const el = track.current;
     if (!el) return;
+    if (!settled.current && given.current) {
+      settled.current = true;
+      measure();
+      return;
+    }
     const target = el.querySelector<HTMLElement>(
       '[aria-current]:not([aria-current="false"]), [aria-selected="true"], [data-current]',
     );
@@ -124,7 +134,7 @@ export function ScrollRail({
     }
     settled.current = true;
     measure();
-  }, [current, measure]);
+  }, [current, measure, given]);
 
   const nudge = (dir: 1 | -1) => {
     const el = track.current;
@@ -140,6 +150,7 @@ export function ScrollRail({
         ref={track as never}
         role={role}
         aria-label={label}
+        data-sweep={sweep}
         onScroll={measure}
         className={cn(
           "flex overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>*]:shrink-0",
