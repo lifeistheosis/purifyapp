@@ -71,17 +71,24 @@ const pictures = (page) =>
   );
 
 async function tapTo(page, cdp, locator, label) {
-  await locator.scrollIntoViewIfNeeded();
+  // To the middle of the screen first (Updates 56): a door at the screen's foot sits under the tab bar, where
+  // the first run's tap opened Discover. A reader taps the door where it shows.
+  await locator.evaluate((el) => el.scrollIntoView({ block: "center" }));
   await page.waitForTimeout(600);
   const href = await locator.getAttribute("href");
   const b = await locator.boundingBox();
   const before = new URL(page.url()).pathname;
-  if (b) await tapAt(cdp, Math.round(b.x + b.width / 2), Math.round(b.y + Math.min(b.height / 2, 40)));
+  let onIt = null;
+  if (b) {
+    const x = Math.round(b.x + b.width / 2), y = Math.round(b.y + Math.min(b.height / 2, 40));
+    onIt = await locator.evaluate((el, [px, py]) => el.contains(document.elementFromPoint(px, py)), [x, y]);
+    await tapAt(cdp, x, y);
+  }
   await page.waitForFunction((p) => location.pathname !== p, before, { timeout: 15000 }).catch(() => {});
   await page.waitForTimeout(1500);
   const after = new URL(page.url()).pathname;
   const norm = (p) => (p ?? "").replace(/\/?$/, "/");
-  say(norm(after) === norm(href) && after !== before, `${label}: tapped, it opens ${href}`, { before, after });
+  say(norm(after) === norm(href) && after !== before, `${label}: tapped, it opens ${href}`, { before, after, onIt });
   return after;
 }
 
@@ -94,13 +101,16 @@ for (const council of [...SEVEN, ...LOCAL]) {
       if (!h) return null;
       const img = h.querySelector("img[data-hero-picture]");
       const src = img ? img.currentSrc || img.src : null;
-      return { preview: !!h.querySelector("img[aria-hidden]"), state: img?.getAttribute("data-hero-picture") ?? "none", file: src?.split("/").pop() ?? null, from: src ? (src.startsWith("https://localhost") ? "bundle" : new URL(src).host) : null, loaded: img ? img.complete && img.naturalWidth > 0 : false };
+      const p = h.querySelector("img[aria-hidden]");
+      return { preview: !!p, previewLoaded: !!p && p.complete && p.naturalWidth > 0, state: img?.getAttribute("data-hero-picture") ?? "none", file: src?.split("/").pop() ?? null, from: src ? (src.startsWith("https://localhost") ? "bundle" : new URL(src).host) : null, loaded: img ? img.complete && img.naturalWidth > 0 : false };
     });
     await page.screenshot({ path: `${shots}/${council}-head.png` });
     if (SEVEN.includes(council)) say(!!head && head.state === "shown" && head.from === "bundle" && head.loaded, `${council}: the head shows its icon from the bundle`, head);
     else if (council === "orange-529") say(head === null, `${council}: no head (his rule: the plate)`, head);
     else {
-      const ok = !!head && head.preview && (head.state === "shown" || head.from === "purifyapp.net");
+      // Updates 56: the live website lacks the picture until the merge, so the head drops it and keeps its
+      // blurred preview (state "none"); the first run scored that as a fault.
+      const ok = !!head && head.preview && head.previewLoaded;
       say(ok && head.state === "shown", `${council}: the head`, head, ok && head.state !== "shown" ? "the live website lacks the picture until the merge: its blurred preview shows" : undefined);
     }
     const door = page.locator("[data-council-door]").first();
@@ -133,8 +143,21 @@ for (const council of [...SEVEN, ...LOCAL]) {
         const img = b.querySelector("img");
         return { name: b.getAttribute("aria-label"), img: !!img, file: img ? (img.currentSrc || img.src).split("/").pop() : null, loaded: img ? img.complete && img.naturalWidth > 0 : false, empty: !img && !b.querySelector("svg") && !(b.textContent ?? "").trim() };
       }));
-      say(row.every((r) => !r.empty), `${council}: no empty round in the Fathers' row`, { row: row.map((r) => `${r.name}${r.img ? (r.loaded ? "" : " (not loaded)") : " (plate)"}`) });
-      for (const [, name, stem] of fathers) {
+      if (row.length) say(row.every((r) => !r.empty), `${council}: no empty round in the Fathers' row`, { row: row.map((r) => `${r.name}${r.img ? (r.loaded ? "" : " (not loaded)") : " (plate)"}`) });
+      // One Father (Orange): CouncilFathers draws no row of rounds, only his card (Updates 56; the first run
+      // looked for a round and found none).
+      const card = row.length ? null : await page.evaluate(() => {
+        const c = document.querySelector("[data-council-fathers] > div");
+        if (!c) return null;
+        const imgs = [...c.querySelectorAll("img")].map((i) => ({ file: (i.currentSrc || i.src).split("/").pop(), loaded: i.complete && i.naturalWidth > 0, hidden: getComputedStyle(i).display === "none" || getComputedStyle(i).opacity === "0" }));
+        return { name: c.querySelector("span.font-serif")?.textContent?.trim() ?? null, imgs, plate: !!c.querySelector('[data-cover="plate"]') };
+      });
+      if (card) {
+        const shown = card.imgs.some((i) => i.loaded && !i.hidden && i.file.startsWith("caesarius-of-arles.v1"));
+        say(shown, `${council}: St Caesarius's card (one Father, no row)`, card, !shown && card.plate && /Caesarius/.test(card.name ?? "") ? "his cover is asked of the live website, which lacks it until the merge: the plate with its cross" : undefined);
+        await page.locator("[data-council-fathers]").screenshot({ path: `${shots}/${council}-caesarius.png` });
+      }
+      for (const [, name, stem] of card ? [] : fathers) {
         const r = name ? row.find((x) => x.name === name) : row.find((x) => /Caesarius/.test(x.name ?? ""));
         const ok = !!r && r.img && r.loaded && (r.file ?? "").startsWith(stem);
         if (stem.startsWith("caesarius")) say(ok, `${council}: St Caesarius's round`, r, !ok && r ? "his cover is asked of the live website, which lacks it until the merge: the plate with its cross" : undefined);
@@ -151,8 +174,12 @@ for (const council of [...SEVEN, ...LOCAL]) {
       }
     }
     say(errors.length === 0, `${council}: no page errors`, errors.length ? errors.slice(0, 2) : undefined);
+    // Updates 56: a local council's head names its picture's AVIF at the website's address (lighter(), absolute
+    // as since 1.7.2, falling back to the JPEG on an error), so that ask is expected; any other is avifFor's fault.
+    const own = `/history/media/council-of-${council}.v1.avif`;
     const avifs = asked.filter((a) => a.startsWith("/history/") && a.endsWith(".avif"));
-    say(avifs.length === 0, `${council}: no History AVIF asked of the website`, avifs.length ? { avifs } : undefined);
+    const others = avifs.filter((a) => !(LOCAL.includes(council) && a === own));
+    say(avifs.length === 0, `${council}: no History AVIF asked of the website`, avifs.length ? { avifs } : undefined, avifs.length && !others.length ? "the head's own address (lighter()), absolute as since 1.7.2: it falls back to the JPEG" : undefined);
   } catch (e) {
     say(false, `${council}: ERROR ${String(e).split("\n")[0].slice(0, 200)}`);
   } finally {
@@ -212,3 +239,5 @@ await browser.close();
 const failed = results.filter((r) => !r.ok && !r.expected).length;
 const expected = results.filter((r) => !r.ok && r.expected).length;
 console.log(`\n${results.length - failed - expected} of ${results.length} passed, ${expected} expected (the live website until the merge), ${failed} failed`);
+// Updates 56: a fault fails the run (the first run exited 0 with 12 failed).
+process.exitCode = failed ? 1 : 0;
