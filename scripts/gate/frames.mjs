@@ -48,7 +48,7 @@
 // screencast fell behind) is "unsure", never a pass and never a fail: the walk
 // records it again.
 //
-//   node scripts/gate/frames.mjs --self-test
+//   node scripts/gate/frames.mjs --self-test [--only <kind>,<kind>]
 //
 // proves it on a page of planted changes: an instant cut, note 5's shape (the
 // screen before gone whole in one frame, the words faded in later), blank
@@ -60,7 +60,10 @@
 // both ways (two pages at half in its middle), a fade out and in through the
 // ground (listed as a dip), the house's page switch from a page heavy with
 // words to a light one, a page whose picture comes before its words, an
-// instant change with motion reduced, and no change at all pass.
+// instant change with motion reduced, and no change at all pass. A page in its
+// outline passes, and so does the outline the screen still draws, pulsing,
+// after the page let it go (the compositor's, Updates 37's Open 5); the same
+// frames with the ground bare are blank.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -100,6 +103,14 @@ const BLANK_MS = 200;
 const OUTLINE_SHARE = 0.03;
 /** How near in time the page's own sample must be to a frame for its word to count. */
 const OUTLINE_NEAR_MS = 50;
+/** The outline's bars in a frame: pixels this far from the frame's ground and no further than the ink line. */
+const OUTLINE_FAINT = 4;
+/** ...over at least this share of where the screen changes, for a frame to carry an outline to match. */
+const OUTLINE_BARS = 0.02;
+/** A frame is the outline still where its bars stand at this much of the outlined frame's, or more (the pulse dims them by half)... */
+const OUTLINE_KEPT = 0.3;
+/** ...and its pattern over the ground follows the outlined frame's this closely (a correlation). */
+const OUTLINE_LIKE = 0.6;
 /** A layout shift this far in one frame is a jump. */
 const JUMP_PX = 24;
 
@@ -441,6 +452,81 @@ async function glideAt({ rec, mask, w, h, startAt, prev, i, end }) {
   return { glide: true, unsure: false, said: `${said}${share ? `; ${Math.round(share * 100)}% of the screen landed in that frame without travelling` : ""}` };
 }
 
+/** A frame's own ground where the screen changes: the middle value of each channel there. */
+function groundIn(px, region) {
+  const g = [];
+  for (let c = 0; c < 3; c++) {
+    const hist = new Uint32Array(256);
+    for (const i of region) hist[px[i + c]]++;
+    let n = 0;
+    let v = 0;
+    while (v < 255 && (n += hist[v]) < region.length / 2) v++;
+    g.push(v);
+  }
+  return g;
+}
+
+/**
+ * Whether a frame is the outline a frame before it stood in, still on the screen (Updates 37's Open
+ * 5): a page swapped its outline for its words, their first frame took some 300ms to draw, and
+ * meanwhile the compositor kept the outline on the screen, pulsing, where the page's own sample
+ * already said it was gone. The outline's bars are the outlined frame's faint pixels (past
+ * OUTLINE_FAINT from its ground, within the ink line). The frame is the outline still where it lifts
+ * those same pixels off its own ground, at OUTLINE_KEPT of the outlined frame's lift or more, in the
+ * same pattern (a correlation of OUTLINE_LIKE over the bars and the bare ground round them).
+ * Normalised so: the pulse only dims the bars. A bare ground lifts nothing and is never the outline,
+ * nor is a frame that keeps only what both frames draw at full ink (a header).
+ */
+export function outlineStill(px, outlined, region) {
+  if (!region.length) return false;
+  const gx = groundIn(px, region);
+  const go = groundIn(outlined, region);
+  const keep = [];
+  let bars = 0;
+  for (const i of region) {
+    let far = 0;
+    for (let c = 0; c < 3; c++) far = Math.max(far, Math.abs(outlined[i + c] - go[c]));
+    if (far > INK_LEVEL) continue;
+    if (far >= OUTLINE_FAINT) bars++;
+    keep.push(i);
+  }
+  if (bars < OUTLINE_BARS * region.length) return false;
+  let liftO = 0;
+  let liftX = 0;
+  let mo = 0;
+  let mx = 0;
+  const vo = new Float64Array(keep.length);
+  const vx = new Float64Array(keep.length);
+  keep.forEach((i, k) => {
+    let a = 0;
+    let b = 0;
+    for (let c = 0; c < 3; c++) {
+      a += outlined[i + c] - go[c];
+      b += px[i + c] - gx[c];
+    }
+    vo[k] = a;
+    vx[k] = b;
+    mo += a;
+    mx += b;
+    if (Math.max(Math.abs(outlined[i] - go[0]), Math.abs(outlined[i + 1] - go[1]), Math.abs(outlined[i + 2] - go[2])) >= OUTLINE_FAINT) {
+      liftO += Math.abs(a);
+      liftX += Math.sign(a) * b;
+    }
+  });
+  if (liftO <= 0 || liftX / liftO < OUTLINE_KEPT) return false;
+  mo /= keep.length;
+  mx /= keep.length;
+  let sxy = 0;
+  let sxx = 0;
+  let syy = 0;
+  for (let k = 0; k < keep.length; k++) {
+    sxy += (vo[k] - mo) * (vx[k] - mx);
+    sxx += (vo[k] - mo) ** 2;
+    syy += (vx[k] - mx) ** 2;
+  }
+  return sxx > 0 && syy > 0 && sxy / Math.sqrt(sxx * syy) >= OUTLINE_LIKE;
+}
+
 /**
  * What the recording shows, as the gate judges it: each fail ({ kind, detail, frames: the indices
  * of the frames that show it }), what is unsure, and the change's own measures.
@@ -597,11 +683,20 @@ export async function judgeFrames(rec, { motion = "on" } = {}) {
       return Boolean(near) && Math.abs(near.t - frames[i].t) <= OUTLINE_NEAR_MS && (near.outline ?? 0) >= OUTLINE_SHARE;
     };
     const empty = after.filter((i) => i !== end && fit(i).before + fit(i).after <= BLANK_SHARE && inks.get(i) <= emptyAt);
-    const inOutline = empty.filter(outlined);
+    // The outline the screen still draws after the page let it go (outlineStill): matched against
+    // the last frame the page's own sample called outlined.
+    const outlinedAt = after.filter(outlined);
+    const kept = (i) => {
+      let last = -1;
+      for (const j of outlinedAt) if (j < i) last = j;
+      return last >= 0 && outlineStill(px[i], px[last], region);
+    };
+    const held = empty.filter((i) => !outlined(i) && kept(i));
+    const inOutline = empty.filter((i) => outlined(i) || held.includes(i));
     const blank = empty.filter((i) => !inOutline.includes(i));
     if (inOutline.length) {
       const lasted = frames[Math.min(inOutline[inOutline.length - 1] + 1, end)].t - frames[inOutline[0]].t;
-      dips.push(`${inOutline.length} frame${inOutline.length === 1 ? "" : "s"} where the page stood in its outline (the house's skeleton), over ${Math.round(lasted)}ms, from ${at(inOutline[0])}ms after the tap`);
+      dips.push(`${inOutline.length} frame${inOutline.length === 1 ? "" : "s"} where the page stood in its outline (the house's skeleton), over ${Math.round(lasted)}ms, from ${at(inOutline[0])}ms after the tap${held.length ? `, ${held.length} of them as the screen still drew it after the page had let it go` : ""}`);
     }
     const runs = [];
     for (const i of blank) {
@@ -862,6 +957,41 @@ function plant(kind) {
       await frame();
       B.style.transition = `opacity 320ms ${curve}`;
       B.style.opacity = "1";
+    } else if (kind === "outlinestays" || kind === "outlinebare") {
+      // The page stands in its outline for five frames and then lets it go. "outlinestays": the
+      // screen still draws it, pulsing, for fifteen frames more, where the page's own sample says it
+      // is gone (its bars keep their look and lose the skeleton's class), as the compositor kept the
+      // Virgin of Vladimir piece's outline while its page's first frame drew (Updates 37's Open 5):
+      // the outline still, listed, not failed. "outlinebare": the same, but after six frames of it the
+      // outline goes (in a task, as a page's own change comes) and the ground stands bare for fifteen
+      // frames: blank, the held frames before it listed.
+      A.style.transition = "opacity 200ms linear";
+      A.style.opacity = "0";
+      await new Promise((r) => setTimeout(r, 230));
+      A.hidden = true;
+      const O = document.createElement("div");
+      O.className = "screen";
+      O.style.background = "#101013";
+      const bar = (h, w, a) => `<div class="sk" style="height:${h}px;width:${w};margin:10px auto;border-radius:4px;background:rgba(255,255,255,${a})"></div>`;
+      O.innerHTML = bar(34, "160px", 0.1) + bar(14, "96px", 0.08) + Array.from({ length: 9 }, () => bar(16, "100%", 0.06)).join("");
+      A.parentElement.append(O);
+      for (let n = 0; n < 5; n++) await frame();
+      for (const el of O.children) el.classList.remove("sk");
+      for (let n = 0; n < (kind === "outlinestays" ? 15 : 6); n++) {
+        O.style.opacity = String([1, 0.8, 0.6, 0.5, 0.6, 0.8][n % 6]);
+        await frame();
+      }
+      if (kind === "outlinebare") {
+        await new Promise((r) => setTimeout(r, 0));
+        O.hidden = true;
+        for (let n = 0; n < 15; n++) await frame();
+      }
+      O.remove();
+      B.style.opacity = "0";
+      B.hidden = false;
+      await frame();
+      B.style.transition = `opacity 320ms ${curve}`;
+      B.style.opacity = "1";
     } else if (kind === "both") {
       // A cross-fade both ways, the old page out as the new comes in: in its middle both are at half.
       B.style.opacity = "0";
@@ -1039,7 +1169,7 @@ function plant(kind) {
 
 /** What a planted change needs standing before the recording: the swap's bar and the route's box. */
 function prepare(kind) {
-  // A picture moved by the scroll alone, as EIKON's story moves its pieces (app/globals.css, .eikon-drift):
+  // A picture moved by the scroll alone, as EIKON's story moves its pieces with motion on (app/globals.css, .eikon-drift):
   // a view timeline, which runs as long as the picture is on the screen and moves only as the page scrolls.
   if (kind.startsWith("scrolldriven")) {
     const st = document.createElement("style");
@@ -1088,6 +1218,9 @@ const CASES = [
   ["the same frames standing in the page's outline (the house's skeleton, too faint for the pixels alone): drawn, listed, not failed", "outline", "on", [], { dip: true }],
   ["with motion reduced, the same blank frames", "blank", "reduce", ["blank"]],
   ["with motion reduced, the same frames in the page's outline", "outline", "reduce", [], { dip: true }],
+  ["with motion reduced, the outline the screen still draws, pulsing, after the page let it go (the compositor's): drawn, listed, not failed", "outlinestays", "reduce", [], { dip: true }],
+  ["the same outline still drawn after the page let it go, with motion on", "outlinestays", "on", [], { dip: true }],
+  ["with motion reduced, that outline gone after six frames and the ground bare for fifteen: blank", "outlinebare", "reduce", ["blank"], { dip: true }],
   ["a box flashed at the corner before it is placed (and moved there at once)", "corner", "on", ["flash", "misplaced", "jump"]],
   ["a jump: something above grows 140px at once (an instant change, so a cut too)", "jump", "on", ["jump", "cut"]],
   ["with motion reduced, a sheet that slides up", "slide", "reduce", ["moves"]],
@@ -1111,7 +1244,7 @@ const CASES = [
   ["a block that appears whole with no travel", "feedappear", "on", ["cut"]],
   ["a block that appears whole where a thread opens, as the posts below glide 160px to make room", "feedappearglide", "on", ["cut"]],
   ["with motion reduced, an instant change", "cut", "reduce", []],
-  ["with motion reduced, a picture moved by the scroll alone (EIKON's story) while the page stands still", "scrolldriven", "reduce", []],
+  ["with motion reduced, a picture moved by the scroll alone (as the front page's phones move, at his word) while the page stands still", "scrolldriven", "reduce", []],
   ["with motion reduced, a picture moved by the scroll alone, and a sheet that slides up", "scrolldrivenslide", "reduce", ["moves"]],
   ["no change at all", "none", "on", []],
 ];
@@ -1122,7 +1255,11 @@ async function selfTest() {
   const browser = await chromium.launch(fs.existsSync(own) ? { executablePath: own } : {});
   let ok = true;
   try {
+    // --only outline,outlinestays runs the cases of those kinds alone.
+    const at = process.argv.indexOf("--only");
+    const only = at > 0 ? process.argv[at + 1].split(",") : null;
     for (const [name, kind, motion, want, also = {}] of CASES) {
+      if (only && !only.includes(kind)) continue;
       let right = false;
       let said = "";
       // A recording that fell behind is made again, as the walk does.
