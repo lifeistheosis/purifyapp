@@ -8077,7 +8077,15 @@ await section(50, async () => {
         nameClass: name?.querySelector("span")?.className ?? "",
         ground: cs(card)?.backgroundColor ?? "",
         status: status ? { text: status.textContent, bg: cs(status).backgroundColor, border: cs(status).borderTopWidth } : null,
-        doors: doors.map((d) => ({ label: d.textContent.trim(), on: d.getAttribute("aria-selected") === "true", h: Math.round(r(d).height) })),
+        // Since the fifteen screens' round 1 (one small choice, one form) the doors are the house's
+        // track, each its name alone, taking a 44px touch (.hit-44's own box), as Settings draws a choice.
+        track: card?.querySelector("[data-profile-doors]")?.classList.contains("set-track") ?? false,
+        doors: doors.map((d) => ({
+          label: d.textContent.trim(),
+          on: d.getAttribute("aria-selected") === "true",
+          icon: Boolean(d.querySelector("svg")),
+          touch: Math.round(Math.max(r(d).height, parseFloat(getComputedStyle(d, "::after").minHeight) || 0)),
+        })),
         frame: card?.querySelector("[data-frame]")?.getAttribute("data-frame") ?? null,
         effect: card?.querySelector(".pfx")?.className ?? null,
         motion: card?.querySelector(".banner-motion")?.className ?? null,
@@ -8106,7 +8114,10 @@ await section(50, async () => {
     must(!/streak/i.test(f.text) && !/\b\d+-day\b/.test(f.text), "no streak on the profile, and no count of days");
     const doorNames = [en["profile.tabAbout"], en["profile.tabBadges"], en["profile.tabPosts"]];
     must(f.doors.map((d) => d.label).join("|") === doorNames.join("|") && f.doors[0].on, `three doors, About open: ${f.doors.map((d) => `${d.label}${d.on ? " (open)" : ""}`).join(", ")}`);
-    must(f.doors.every((d) => d.h === 74), `the doors are a saint's page's, 74px tall (${f.doors.map((d) => d.h).join(", ")})`);
+    must(
+      f.track && f.doors.every((d) => !d.icon && d.touch >= 44),
+      `the doors are the house's track, each its name alone, 44px to the touch (${f.track ? "the track" : "no track"}: ${f.doors.map((d) => `${d.label} ${d.icon ? "with an icon" : "a name"} ${d.touch}px`).join(", ")})`,
+    );
     const free = await colours(page);
     must(Array.isArray(free) && free.length > 20 && free.filter(gold).length === 0, `a free profile wears no gold (${free ? list(free.filter(gold)) || `${free.length} colours, none gold` : "no card"})`);
     must(Array.isArray(free) && free.filter(hued).length === 0, `nor any colour but black, white and grey (${free ? list(free.filter(hued)) || "none" : "no card"})`);

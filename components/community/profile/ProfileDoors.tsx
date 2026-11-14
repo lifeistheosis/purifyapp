@@ -3,7 +3,7 @@
 import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { DOOR, DOOR_OFF, DOOR_ON } from "@/components/ui/doors";
+import { DOOR, DOOR_COLS, DOOR_OFF, DOOR_ON } from "@/components/ui/doors";
 import { cn } from "@/lib/cn";
 import type { ProfileDoor } from "@/lib/profile/doors";
 import { tabForKey } from "@/lib/ui/sectionTabs";
@@ -35,8 +35,6 @@ const LABEL: Record<ProfileDoor, string> = {
   posts: "profile.tabPosts",
   campaigns: "profile.tabCampaigns",
 };
-
-const COLS: Record<number, string> = { 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4" };
 
 export function ProfileDoors({
   doors,
@@ -73,7 +71,7 @@ export function ProfileDoors({
 
   return (
     <div className="mt-5">
-      <div ref={rowRef} role="tablist" aria-label={label} data-profile-doors className={cn("mx-auto grid max-w-[420px] gap-2", COLS[shown.length])}>
+      <div ref={rowRef} role="tablist" aria-label={label} data-profile-doors className={cn("mx-auto max-w-[420px]", DOOR_COLS[shown.length])}>
         {shown.map((door) => (
           <button
             key={door}

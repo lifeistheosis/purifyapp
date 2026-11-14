@@ -198,6 +198,17 @@ describe("Found by checkMock on the round 1 export (Updates 29)", () => {
     expect(rows).toContain('id === current ? "text-paper" : "text-paper/75 [html[data-reading-mode=parchment]_&]:text-paper/85"');
   });
 
+  // Found by the export walk (section 50, Updates 33): the profile kept a grid
+  // of its own while DOOR, DOOR_ON and DOOR_OFF moved to the track, so its
+  // doors stood as three bare names and nothing marked the one open.
+  it("puts the profile's doors on the house's track with the other doors, so the open one is lit", () => {
+    const doors = read("components/community/profile/ProfileDoors.tsx");
+    expect(doors).toContain('import { DOOR, DOOR_COLS, DOOR_OFF, DOOR_ON } from "@/components/ui/doors";');
+    expect(doors).toContain('data-profile-doors className={cn("mx-auto max-w-[420px]", DOOR_COLS[shown.length])}');
+    expect(doors).not.toMatch(/grid-cols-[234]/);
+    expect(doors).toContain("aria-selected={door === open}");
+  });
+
   it("tells the checker why the tour's bloom stays where it is measured, in every language", () => {
     const tour = read("components/whats-new/tour/TourLook.tsx");
     expect(tour).toMatch(/className="tour-bloom"\s+data-mock-allow="mirror"\s+data-mock-why="[^"]*measured on the screen[^"]*"/);
