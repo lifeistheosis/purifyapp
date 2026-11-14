@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, type RefObject } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, type RefObject } from "react";
 
 // A page that changes above the finger.
 //
@@ -14,10 +14,11 @@ import { useCallback, useEffect, useRef, type RefObject } from "react";
 // Two parts keep it still:
 //
 //  - useHeldPlace: at the tap, where the pressed thing stands on the screen
-//    is kept, and for a moment after, each time the page is drawn, the page
-//    is scrolled by whatever the thing has moved, before the reader sees it.
-//    What grew above the finger goes up off the screen instead of pushing
-//    the finger's place down.
+//    is kept, and for a moment after, the page is scrolled by whatever the
+//    thing has moved, before the reader sees it: in the very commit that
+//    makes the change, and each time the page is drawn after it. What grew
+//    above the finger goes up off the screen instead of pushing the finger's
+//    place down.
 //  - useNoShrink: a part of the page that does not get shorter under a tap.
 //    Scrolling cannot answer a part that shrinks at the very top of a page,
 //    where there is nothing above to scroll to, so at the tap the part over
@@ -46,7 +47,18 @@ export function scrollToHold({ was, now, scrollY, max }: { was: number; now: num
  */
 export function useHeldPlace(): (el: Element | null) => void {
   const letGo = useRef<() => void>(() => {});
+  // The hold's answer while it holds, asked again the moment the page has changed.
+  const answerNow = useRef<(() => void) | null>(null);
   useEffect(() => () => letGo.current(), []);
+  // The change a tap makes is drawn in a commit of the page that holds, and
+  // answered in that same commit, before any frame is drawn or measured. Left
+  // to the next frame alone, the answer came after whatever else that frame
+  // asked first: with scroll anchoring off, as WebKit has none, a reading
+  // plan's circle stood 41px from the finger in one frame as the line of days
+  // in a row came over it (Gate 2, 2026-11-14), until the page went up by it.
+  useLayoutEffect(() => {
+    answerNow.current?.();
+  });
   return useCallback((el: Element | null) => {
     if (!el || typeof window === "undefined") return;
     letGo.current();
@@ -60,11 +72,12 @@ export function useHeldPlace(): (el: Element | null) => void {
     const stop = () => {
       holding = false;
       cancelAnimationFrame(frame);
+      answerNow.current = null;
       for (const e of theirs) window.removeEventListener(e, stop, true);
     };
     for (const e of theirs) window.addEventListener(e, stop, { capture: true, passive: true });
     letGo.current = stop;
-    const keep = () => {
+    const answer = () => {
       if (!holding) return;
       // The thing left the page (its row was drawn anew): nothing to keep.
       if (!el.isConnected) return stop();
@@ -74,6 +87,12 @@ export function useHeldPlace(): (el: Element | null) => void {
         const top = scrollToHold({ was, now, scrollY: window.scrollY, max });
         if (Math.abs(top - window.scrollY) >= 0.5) window.scrollTo({ top, behavior: "instant" });
       }
+    };
+    answerNow.current = answer;
+    const keep = () => {
+      if (!holding) return;
+      answer();
+      if (!holding) return;
       if (performance.now() < until) frame = requestAnimationFrame(keep);
       else stop();
     };
