@@ -619,3 +619,83 @@ describe("Settings' quiet words", () => {
     });
   }
 });
+
+// The house's lit row (1.9, Gate 2's first fault, 2026-11-14). A chooser
+// lights the reader's own row with a fine edge and the house's fill,
+// bg-gold/15 (the Bible's translation, components/bible/TranslationList.tsx
+// and BibleRow.tsx; the patron chooser; the language sheet), in a sheet whose
+// ground is the page's. On the two palettes earned by reading the accent is a
+// silver white over a cream ink, so the fill is a step lighter than a card,
+// and the Translation sheet's note under the Bible being read ("Public
+// domain. The Greek Old Testament used by the Apostles."), at 50 percent,
+// read 4.32:1 on Councils and on Cappadocian. Each line under a name on a lit
+// row holds 4.5:1 or more on every palette and every look.
+describe("faint text on the house's lit row", () => {
+  const FILL = 0.15;
+  const goldOf = (selector: string | null): Rgb =>
+    hex((selector ? token(selector, "--color-gold") : null) ?? token("@theme", "--color-gold") ?? token(":root", "--color-gold") ?? "");
+  /** The share a palette draws text-paper/<share> at inside the lit fill: the page's, unless a rule scoped to the fill names it. */
+  const onLit = (mode: Mode, share: number, look?: string): number => {
+    let out = drawn(mode, share, look);
+    const rule = /:where\(([^()]*(?:\([^()]*\)[^()]*)*)\) :where\(\.bg-gold\\\/15\) :is\(([^)]*)\) \{\s*color: color-mix\(in oklab, var\(--color-paper\) (\d+)%/g;
+    for (const m of BARE.matchAll(rule)) {
+      const forMode = mode === "default" ? /html:not\(\[data-reading-mode\]\)/.test(m[1]) : m[1].includes(`data-reading-mode="${mode}"`);
+      const forLook = look !== undefined && m[1].includes(`data-look="${look}"`);
+      if (!forMode && !forLook) continue;
+      if ([...m[2].matchAll(/\.text-paper\\\/(\d+)/g)].some((c) => Number(c[1]) === share)) out = Number(m[3]);
+    }
+    return out;
+  };
+  const source = (file: string) => readFileSync(join(process.cwd(), file), "utf8");
+  const LIST = source("components/bible/TranslationList.tsx");
+  const ROW = source("components/bible/BibleRow.tsx");
+  // The note under each translation's name and each Bible's, as the two rows write it.
+  const NOTES = [
+    Number(/text-caption text-paper\/(\d+)">\s*\{t\(`bible\.translationNote\.\$\{tr\.id\}`\)\}/.exec(LIST)?.[1]),
+    Number(/text-caption text-paper\/(\d+)">\s*\{note\}/.exec(ROW)?.[1]),
+  ];
+
+  it("reads the note's share and the lit fill from the rows that draw them", () => {
+    expect(NOTES.every((share) => share > 40 && share < 70), String(NOTES)).toBe(true);
+    // The note stands inside the fill, so a rule scoped to the fill reaches it.
+    expect(LIST).toContain('? "border-gold/45 bg-gold/15"');
+    expect(ROW).toContain('current ? "border-gold/45 bg-gold/15"');
+  });
+
+  for (const mode of MODES) {
+    it(`${mode}: the note under the Bible being read is 4.5:1 or more on its lit row`, () => {
+      const { night, paper } = colours(mode);
+      const lit = mix(goldOf(mode === "default" ? null : `html[data-reading-mode="${mode}"]`), night, FILL);
+      const short = NOTES.map((share) => ({ share, r: ratio(mix(paper, lit, onLit(mode, share) / 100), lit) }))
+        .filter((n) => n.r < 4.5)
+        .map((n) => `text-paper/${n.share} drawn at ${onLit(mode, n.share)}% on the lit row: ${n.r.toFixed(2)}:1`);
+      expect(short, short.join("\n")).toEqual([]);
+    });
+  }
+
+  it("every look: the note under the Bible being read is 4.5:1 or more on its lit row", () => {
+    const short: string[] = [];
+    for (const look of LOOKS) {
+      const c = lookColours(look.id);
+      const lit = mix(goldOf(`html[data-look="${look.id}"]`), c.night, FILL);
+      for (const share of NOTES) {
+        const at = onLit(look.light ? "parchment" : "default", share, look.id);
+        const r = ratio(mix(c.paper, lit, at / 100), lit);
+        if (r < 4.5) short.push(`${look.id}: text-paper/${share} drawn at ${at}% on the lit row: ${r.toFixed(2)}:1`);
+      }
+    }
+    expect(short, short.join("\n")).toEqual([]);
+  });
+
+  it("the earned palettes' page share is what fell short there, and their rule sits with the page's rules", () => {
+    for (const mode of ["councils", "cappadocian"] as const) {
+      const { night, paper } = colours(mode);
+      const lit = mix(goldOf(`html[data-reading-mode="${mode}"]`), night, FILL);
+      expect(ratio(mix(paper, lit, drawn(mode, 50) / 100), lit), mode).toBeLessThan(4.5);
+    }
+    const block = CSS.slice(CSS.indexOf("Faint text on every palette"));
+    const from = block.indexOf("@layer utilities {");
+    const layer = block.slice(from, block.indexOf("\n}\n", from));
+    expect(layer).toContain(':where(html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :where(.bg-gold\\/15) :is(');
+  });
+});
