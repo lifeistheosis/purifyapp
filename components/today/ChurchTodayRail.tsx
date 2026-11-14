@@ -155,6 +155,7 @@ export function ChurchTodayRail() {
         line: { plain: saintByline(headlineSaint.epithet, undefined) },
         picture: saintPicture(headlineSaint, isNativeClient()),
         href: `/saints/${headlineSaint.slug}`,
+        carry: headlineSaint.iconUrl,
       }
     : headline
       ? { name: headline.name, line: headline.note ? { plain: headline.note } : null, picture: null, href: "/calendar" }
@@ -407,6 +408,12 @@ type BandSaint = {
   line: { plain: string } | null;
   picture: SaintPicture | null;
   href?: string;
+  /**
+   * The address of his icon: the key his page takes a carried picture by
+   * (components/saints/SaintHeroPicture.tsx, `data-carry-into`), as the
+   * Saints tab's cards give it. The band's picture travels into his page.
+   */
+  carry?: string;
   /** No saint on the calendar today. */
   quiet?: boolean;
 };
@@ -476,13 +483,24 @@ function SaintBand({ saint }: { saint: BandSaint }) {
     <>
       {saint.picture ? (
         <>
-          <span aria-hidden className="pointer-events-none absolute inset-y-0 end-0 w-[54%] overflow-hidden">
+          {/* His picture travels into his page, to the icon it shows (lib/ui/routeMotion.ts,
+              "A picture that leads to its own page"); the shade and the words stand on it,
+              so while it travels they are pictured over it (data-carry-over), as on a tile. */}
+          <span
+            aria-hidden
+            data-carry={saint.carry || undefined}
+            className="pointer-events-none absolute inset-y-0 end-0 w-[54%] overflow-hidden"
+          >
             <SaintFace key={saint.picture.src} picture={saint.picture} />
           </span>
-          <span aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-night-deep from-[46%] to-transparent to-[76%] rtl:bg-gradient-to-l" />
+          <span
+            aria-hidden
+            data-carry-over=""
+            className="pointer-events-none absolute inset-0 bg-gradient-to-r from-night-deep from-[46%] to-transparent to-[76%] rtl:bg-gradient-to-l"
+          />
         </>
       ) : null}
-      <span className={cn("relative block px-4 py-3.5", saint.picture && "max-w-[64%]")}>
+      <span data-carry-over="" className={cn("relative block px-4 py-3.5", saint.picture && "max-w-[64%]")}>
         <span className="block font-sans text-caption font-semibold text-paper/55">{t("today.saintEyebrow")}</span>
         {/* The saint's name is English; the quiet line in its place ("No commemoration") is the reader's.
             Its run is left to right, so in Arabic its end is the reader's start (rtl:text-end),
