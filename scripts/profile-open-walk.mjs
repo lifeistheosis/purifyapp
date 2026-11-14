@@ -16,19 +16,21 @@
 // by where it was opened from.
 //
 //   node scripts/profile-open-walk.mjs [--out <export>] [--web] [--motion on|reduce]
-//     [--signed-out] [--json <file>] [--check]
+//     [--signed-out] [--follows-you] [--json <file>] [--frames] [--check]
 //
 // --web measures purifyapp.net itself instead of an export. --check fails
 // (exit 1) on what note 6 forbids: a part that moves inside the card once it
 // is drawn, a part that pops in at full strength, the card changing height
-// once it stands, Follow missing while the profile loads (signed in), and
-// Back or the menu not answering while it loads.
+// once it stands (in fewer than 3 frames, or by over half in one short frame),
+// Follow missing while the profile loads (signed in), and Back or the menu
+// not answering while it loads.
 
 import fs from "node:fs";
 import path from "node:path";
 
 import { chromium } from "playwright";
 
+import { oneFrameJumps } from "../lib/profile/cardSteps.ts";
 import { NATIVE_UA, go, serveLikeTheShell } from "./lib/shell-server.mjs";
 import { motionOptions, pinMotion } from "./lib/motion.mjs";
 
@@ -44,6 +46,9 @@ const MOTION = opt("--motion", "on");
 const SIGNED_IN = !WEB && !argv.includes("--signed-out");
 const CHECK = argv.includes("--check");
 const JSON_FILE = opt("--json");
+// --frames keeps every frame in the JSON (with the card's inline height and
+// transition, the hand-over's own marks), to read a step frame by frame.
+const FRAMES = argv.includes("--frames");
 const WINDOW = 2500;
 const FLOOR = 700;
 const RELATION_MS = 900;
@@ -78,7 +83,9 @@ async function realAnswer(url, reqHeaders) {
 }
 const cors = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "*" };
 const wait = (ms) => new Promise((r) => setTimeout(r, Math.max(0, ms)));
-const RELATION = { mine: false, following: false, followsYou: false, mutuals: [], greeted: false, canGift: false, muted: false };
+// --follows-you plays a reader who follows the viewer: "Follows you" comes
+// with the standing, beside the @handle (build 97 note 6, Updates 71).
+const RELATION = { mine: false, following: false, followsYou: argv.includes("--follows-you"), mutuals: [], greeted: false, canGift: false, muted: false };
 
 async function mainWeb(route) {
   const req = route.request();
@@ -101,7 +108,7 @@ async function mainWeb(route) {
 }
 
 // ── The frames: recorded in the page from just before the tap ────────────
-function recorder({ windowMs, menuLabel }) {
+function recorder({ windowMs, menuLabel, followsYouLabel, keepPost }) {
   const rel = (el, card) => {
     if (!el) return null;
     const r = el.getBoundingClientRect();
@@ -115,21 +122,45 @@ function recorder({ windowMs, menuLabel }) {
   };
   window.__frames = [];
   window.__long = [];
-  try {
-    new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__long.push({ at: e.startTime, ms: e.duration }); }).observe({ type: "longtask", buffered: false });
-  } catch {}
+  // One observer for the page: one made for each case wrote every long task once per case before it.
+  if (!window.__longSeen) {
+    window.__longSeen = true;
+    try {
+      new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__long.push({ at: e.startTime, ms: e.duration }); }).observe({ type: "longtask", buffered: false });
+    } catch {}
+  }
   const t0 = performance.now();
   window.__t0 = t0;
-  // Each frame is read once it is painted (a task posted from its
-  // requestAnimationFrame runs after the paint): read inside the callback, a
-  // box forces a layout the sheet's own ResizeObserver has not yet held, one
-  // the screen never shows.
-  const channel = new MessageChannel();
-  let frameAt = 0;
-  channel.port1.onmessage = () => read(frameAt);
+  // Each frame is read as it is painted: in a ResizeObserver made in that
+  // frame's requestAnimationFrame, the newest one, so its callback runs after
+  // every other observer's (the sheet's hand-over, useDraggableSheet, among
+  // them), after the layout and before the paint. Read inside the
+  // requestAnimationFrame, a box forces a layout the sheet's observer has not
+  // yet held. Read in a task posted from it (the walk's way until Updates 71),
+  // a task that ran before it was read too: the profile's commit, a height the
+  // sheet held back before the next paint (566, 776, 566px in three frames,
+  // 2 runs of 3 in the picture case). With --frames each frame also keeps that
+  // later read (`post`) and how long after the frame it came.
+  let probe = document.getElementById("walk-frame-probe");
+  if (!probe) {
+    probe = document.createElement("div");
+    probe.id = "walk-frame-probe";
+    probe.style.cssText = "position:fixed;left:0;top:0;width:1px;height:1px;visibility:hidden;pointer-events:none";
+    document.body.appendChild(probe);
+  }
   const step = (now) => {
-    frameAt = now;
-    channel.port2.postMessage(null);
+    const ro = new ResizeObserver(() => {
+      ro.disconnect();
+      const f = read(now);
+      if (!keepPost) return;
+      const later = new MessageChannel();
+      later.port1.onmessage = () => {
+        const c = document.querySelector("[data-profile-card]")?.getBoundingClientRect();
+        f.post = c ? { h: Math.round(c.height), lag: Math.round(performance.now() - now) } : null;
+      };
+      later.port2.postMessage(null);
+    });
+    ro.observe(probe);
     if (now - t0 < windowMs) requestAnimationFrame(step);
   };
   const read = (now) => {
@@ -138,7 +169,7 @@ function recorder({ windowMs, menuLabel }) {
     const f = { t: Math.round(t) };
     if (cardEl) {
       const c = cardEl.getBoundingClientRect();
-      f.card = { top: Math.round(c.top), h: Math.round(c.height) };
+      f.card = { top: Math.round(c.top), h: Math.round(c.height), hold: cardEl.style.height || null, tr: cardEl.style.transition || null };
       const scrim = cardEl.parentElement?.querySelector(":scope > button");
       f.scrim = scrim ? Number(getComputedStyle(scrim).opacity) : null;
       const name = cardEl.querySelector("#profile-name");
@@ -161,6 +192,11 @@ function recorder({ windowMs, menuLabel }) {
           // read as the @handle once made it look as if it moved 153px; Updates 66).
           add(parts[key] ? `${key}#${i}` : key, el);
         });
+      // The @handle's own words, and "Follows you" beside them: the row's box
+      // can stay put while what stands in it moves.
+      const handleRow = face ? [...face.children].find((el) => [...el.children].some((c) => c.textContent?.startsWith("@"))) ?? null : null;
+      add("at", handleRow ? [...handleRow.children].find((c) => c.textContent?.startsWith("@")) ?? null : null);
+      add("followsYou", handleRow ? [...handleRow.querySelectorAll("*")].find((c) => c.children.length === 0 && c.textContent?.trim() === followsYouLabel) ?? null : null);
       const actionsEl = menuEl?.closest("div") ?? null;
       add("follow", actionsEl?.querySelector("button[aria-pressed], a") ?? null);
       add("menu", menuEl);
@@ -173,6 +209,7 @@ function recorder({ windowMs, menuLabel }) {
       f.imgs = [...cardEl.querySelectorAll("img")].map((im) => ({ ok: im.complete && im.naturalWidth > 0, s: strength(im, cardEl) }));
     }
     window.__frames.push(f);
+    return f;
   };
   requestAnimationFrame(step);
 }
@@ -204,6 +241,8 @@ function readFrames(frames, longTasks, requests) {
     if (d > 1) out.heightChanges++;
     out.heightStepMax = Math.max(out.heightStepMax, d);
   }
+  // A short frame that carries over half of the change (lib/profile/cardSteps.ts).
+  out.jumps = oneFrameJumps(atRest.map((f) => ({ t: f.t, h: f.card.h })));
   // Each part: when it is first drawn, how strongly, and its largest step inside the card.
   const parts = {};
   for (let i = 0; i < seen.length; i++) {
@@ -289,16 +328,17 @@ async function measure(label, target, probe = null) {
   await target.scrollIntoViewIfNeeded();
   await page.waitForTimeout(800);
   requests.length = 0;
-  await page.evaluate(recorder, { windowMs: WINDOW, menuLabel });
+  await page.evaluate(recorder, { windowMs: WINDOW, menuLabel, followsYouLabel: EN["profile.followsYou"], keepPost: FRAMES });
   clock.tapAt = Date.now();
   await target.tap();
   let probed = null;
   if (probe) probed = await probe();
   await page.waitForTimeout(WINDOW + 300);
-  const frames = await page.evaluate(() => window.__frames);
+  const { frames, t0 } = await page.evaluate(() => ({ frames: window.__frames, t0: window.__t0 }));
   const long = await page.evaluate(() => window.__long);
   const read = readFrames(frames, long, requests.slice());
   read.probe = probed;
+  if (FRAMES) Object.assign(read, { frameLog: frames, longLog: long.map((l) => ({ at: Math.round(l.at - t0), ms: Math.round(l.ms) })) });
   clock.tapAt = Infinity;
   results.push({ from: label, ...read });
   // Close it as a reader does, and let it go.
@@ -356,7 +396,7 @@ await browser.close();
 
 // ── The report ───────────────────────────────────────────────────────────
 const where = WEB ? "purifyapp.net" : `the export at ${path.relative(ROOT, OUT) || OUT}`;
-console.log(`profile-open-walk: ${where}, 390x844, CPU 4x, motion ${MOTION}, ${SIGNED_IN ? "signed in (stand-in)" : "signed out"}`);
+console.log(`profile-open-walk: ${where}, 390x844, CPU 4x, motion ${MOTION}, ${SIGNED_IN ? `signed in (stand-in${RELATION.followsYou ? ", follows you" : ""})` : "signed out"}`);
 for (const r of results) {
   console.log(`\n${r.from}: card drawn ${r.firstCardAt}ms, at rest ${r.restAt}ms, loaded ${r.loadedAt}ms, pictures ${r.picturesAt ?? "none"}ms`);
   console.log(`  height at rest ${r.heightAtRest}px, final ${r.heightFinal}px, ${r.heightChanges} frames changing, largest step ${r.heightStepMax}px`);
@@ -375,6 +415,8 @@ if (CHECK) {
     if (r.heightChanges > 0 && MOTION === "reduce") failures.push(`${r.from}: with motion reduced the card changed height in ${r.heightChanges} frames`);
     // The card's height follows what arrives on the house curve (useDraggableSheet, smoothHeight): eased over frames, never in one.
     if (MOTION !== "reduce" && Math.abs(r.heightFinal - r.heightAtRest) > 100 && r.heightChanges < 3) failures.push(`${r.from}: the card went from ${r.heightAtRest}px to ${r.heightFinal}px in ${r.heightChanges} frames`);
+    // Nor one frame carrying most of it among eased ones (566, 776, 566px, then up: Updates 66, 71).
+    if (MOTION !== "reduce") for (const j of r.jumps ?? []) failures.push(`${r.from}: the card's height moved ${j.step}px in one frame at ${j.at}ms, over half of its ${j.growth}px change`);
     for (const [k, p] of Object.entries(r.parts ?? {})) {
       if (["loading", "panel", "doors", "tabs"].includes(k) && p.gone !== null) continue;
       if (p.stepMax > MOVE && k !== "loading") failures.push(`${r.from}: ${k} moved ${p.stepMax}px in one frame at ${p.stepAt}ms`);

@@ -610,7 +610,9 @@ export function ProfileViewer({
                 celebrating={Boolean(profile.nameDay)}
                 afterHandle={
                   relation?.followsYou ? (
-                    <span className="rounded-md bg-paper/[0.09] px-1.5 py-0.5 font-sans text-caption font-semibold text-paper/72">
+                    // It comes with the standing, after the card: it fades in
+                    // beside the @handle, which keeps its place (ProfileFace).
+                    <span className={cn("rounded-md bg-paper/[0.09] px-1.5 py-0.5 font-sans text-caption font-semibold text-paper/72", ARRIVE)}>
                       {t("profile.followsYou")}
                     </span>
                   ) : null

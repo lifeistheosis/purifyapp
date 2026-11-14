@@ -221,6 +221,7 @@ export function ProfileFace({
   // the card's own ground (.words-halo), which holds them at 10.5:1 with a speck held under
   // them; a card without one draws them as before.
   const halo = isEffect(profile.cosmetics.effect) && "words-halo";
+  const beside = Boolean(profile.handle && afterHandle);
   return (
     <div className="relative flex flex-col items-center text-center">
       <CommunityAvatar
@@ -251,16 +252,25 @@ export function ProfileFace({
         // card's lightest ground: at 60 percent of the ink it read 3.50:1 on
         // Candlelight there (the gate's open-reader walk, 2026-11-11), and at
         // 80 it is 4.5:1 or more on the five palettes and the seventeen looks.
+        //
+        // "Follows you" comes with the viewer's standing, after the card is
+        // drawn: the @handle keeps the middle and it fades in beside it, where
+        // it stays (build 97 note 6). Centred as a pair, the handle moved 44px
+        // in one frame. The empty first column is its twin, so the handle
+        // stands where it stood; a wider one takes room from that column, and
+        // only a handle that leaves no room at all wraps. The row spans the
+        // face either way, so its own box never changes.
         <p
           className={cn(
-            "mt-[7px] flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-sans text-[13.5px]",
+            "mt-[7px] w-full items-center gap-x-2 font-sans text-[13.5px]",
+            beside ? "grid grid-cols-[1fr_auto_1fr]" : "flex flex-wrap justify-center gap-y-1",
             profileSurface(profile.cosmetics).themed ? "text-paper/80" : "text-paper/60",
             halo,
           )}
         >
           {/* No handle, no lone @: a reader not signed in, on the Plus page's try window. */}
-          {profile.handle ? <span>@{profile.handle}</span> : null}
-          {afterHandle}
+          {profile.handle ? <span className={beside ? "col-start-2 [overflow-wrap:anywhere]" : undefined}>@{profile.handle}</span> : null}
+          {beside ? <span className="col-start-3 justify-self-start whitespace-nowrap">{afterHandle}</span> : afterHandle}
         </p>
       ) : null}
       {profile.status || statusHeld ? (
