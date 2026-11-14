@@ -45,7 +45,7 @@ function openingTag(src: string, start: number): { end: number; selfClosing: boo
   throw new Error(`an opening tag at ${start} never closes`);
 }
 
-type PieceLink = { file: string; line: number; slug: string; selfClosing: boolean; body: string };
+type PieceLink = { file: string; line: number; slug: string; selfClosing: boolean; head: string; body: string };
 
 /** Every <Link> whose address is a piece's page (lib/shop/productHref.ts), with what it holds. */
 function pieceLinks(file: string): PieceLink[] {
@@ -63,7 +63,7 @@ function pieceLinks(file: string): PieceLink[] {
       if (close < 0) throw new Error(`${file}: a <Link> never closes`);
       body = src.slice(tag.end, close);
     }
-    out.push({ file, line: src.slice(0, start).split("\n").length, slug: href[1].trim(), selfClosing: tag.selfClosing, body });
+    out.push({ file, line: src.slice(0, start).split("\n").length, slug: href[1].trim(), selfClosing: tag.selfClosing, head, body });
   }
   return out;
 }
@@ -143,5 +143,62 @@ describe("every card on /shop/ that opens a piece carries its picture into the p
     expect(read("components/shop/ProductDetailClient.tsx")).toContain("carry={pieceCarry(product.slug)}");
     expect(read("components/shop/ShopStates.tsx")).toContain("<div data-carry-into={carry}");
     expect(read("components/shop/ProductGallery.tsx")).toContain("data-carry-into={i === 0 ? carry : undefined}");
+  });
+});
+
+// Updates 46's Open 1 (Updates 64, 2026-11-14): the same gap off /shop/. Each
+// of these held its picture in a link to a piece with no name to travel by, so
+// the tapped card's picture stayed behind and the piece's page arrived alone.
+const ELSEWHERE = [
+  "components/shop/SaintIconsRail.tsx", // a saint's page (the website's; it renders nothing in the apps)
+  "components/shop/eikon/EikonBoutique.tsx", // /shop/eikon/
+  "components/shop/SetFinish.tsx", // the cart, the pieces that finish a prayer corner set
+  "components/shop/CartClient.tsx", // the cart's rows
+  "components/shop/OrderBump.tsx", // the cart, and the thank-you page
+];
+const DRAWER = "components/shop/CartDrawer.tsx";
+const SET = "components/shop/SetFinish.tsx";
+
+const holdingPicture = (l: PieceLink) => !l.selfClosing && PICTURE.test(l.body);
+
+describe("off /shop/, every link to a piece that holds its picture carries it into the piece's page", () => {
+  const links = ELSEWHERE.flatMap(pieceLinks);
+
+  it("finds a link to a piece holding its picture in each: the saint's rail, EIKON, the set, the cart's rows, the bump", () => {
+    for (const file of ELSEWHERE) expect(links.filter((l) => l.file === file && holdingPicture(l)).length, file).toBeGreaterThan(0);
+  });
+
+  it("names its picture by the piece the link opens", () => {
+    for (const l of links.filter(holdingPicture)) {
+      const at = `${l.file}:${l.line}`;
+      const named = /data-carry=\{([^}]*)\}/.exec(l.body);
+      expect(named, `${at}: its picture has no name to travel by`).not.toBeNull();
+      expect(named![1], `${at}: its picture travels by another piece's name`).toContain(`pieceCarry(${l.slug})`);
+    }
+  });
+});
+
+describe("the cart drawer closes as a piece opens from it, and its pictures stay", () => {
+  // Read, not walked: the drawer starts its 300ms slide away on the tap, before
+  // the page being left is pictured, so a picture lifted from it would leave
+  // from wherever the slide had taken it, not from under the finger; and on the
+  // way back it would fly into the closed drawer, beyond the screen's edge
+  // (routeMotion's carryBack finds the same link again). So nothing in the
+  // drawer carries until the drawer closes with the page instead of the tap.
+  it("its rows close it, and carry nothing", () => {
+    const rows = pieceLinks(DRAWER).filter(holdingPicture);
+    expect(rows.length).toBeGreaterThan(0);
+    for (const l of rows) {
+      expect(l.head, `${l.file}:${l.line}`).toContain("onClick={close}");
+      expect(l.body, `${l.file}:${l.line}`).not.toContain("data-carry");
+    }
+  });
+
+  it("the set it offers closes it too (it opened the piece under the open drawer), and its pictures do not travel out of it", () => {
+    expect(read(DRAWER)).toMatch(/<SetFinish\b[^>]*\bonOpenPiece=\{close\}/);
+    const links = pieceLinks(SET);
+    expect(links.length).toBeGreaterThanOrEqual(2);
+    for (const l of links) expect(l.head, `${l.file}:${l.line}`).toContain("onClick={onOpenPiece}");
+    expect(read(SET)).toContain("data-carry={onOpenPiece ? undefined : pieceCarry(p.slug)}");
   });
 });

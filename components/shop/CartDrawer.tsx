@@ -189,6 +189,9 @@ export function CartDrawer() {
                       key={item.slug}
                       className="flex gap-3 rounded-xl border border-paper/10 bg-night-soft/60 p-3"
                     >
+                      {/* Its picture stays (no data-carry): the drawer starts sliding away on the tap, before
+                          the page is pictured, and a picture lifted from it would leave from where the slide
+                          had taken it and come back into the closed drawer (lib/shop/__tests__/shopHomeCarry.test.ts). */}
                       <Link
                         href={productHref(item.slug, native)}
                         onClick={close}
@@ -273,6 +276,7 @@ export function CartDrawer() {
               {offers.setFinish ? (
                 <SetFinish
                   compact
+                  onOpenPiece={close}
                   add={offers.setFinish.add}
                   savingsCents={offers.setFinish.savingsCents}
                   percent={promotions.setPercent ?? 0}

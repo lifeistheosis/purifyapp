@@ -8,7 +8,7 @@ import { cn } from "@/lib/cn";
 import { useIsNative } from "@/lib/platform/native";
 import { addToCart } from "@/lib/shop/cart";
 import { formatPrice } from "@/lib/shop/format";
-import { productHref } from "@/lib/shop/productHref";
+import { pieceCarry, productHref } from "@/lib/shop/productHref";
 import type { ShopProductFull } from "@/lib/shop/types";
 
 /**
@@ -56,7 +56,12 @@ export function OrderBump({
       className={cn("flex items-center gap-3 rounded-xl border border-paper/12 bg-paper/[0.03] p-3", className)}
     >
       <Link href={productHref(product.slug, native)} className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-paper/[0.05]">
-        {image ? <Image src={image.media_url} alt={image.alt_text} fill sizes="56px" className="object-cover" /> : null}
+        {image ? (
+          // The picture travels into its page (pieceCarry, lib/ui/routeMotion.ts).
+          <span data-carry={pieceCarry(product.slug)} className="absolute inset-0 overflow-hidden rounded-[inherit]">
+            <Image src={image.media_url} alt={image.alt_text} fill sizes="56px" className="object-cover" />
+          </span>
+        ) : null}
       </Link>
       <div className="min-w-0 flex-1">
         <p className="font-sans text-caption text-paper/55">{heading}</p>

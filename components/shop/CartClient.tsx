@@ -25,7 +25,7 @@ import { getCartToken } from "@/lib/shop/cartSync";
 import { fetchShopConfig, fetchShopProducts } from "@/lib/shop/catalogClient";
 import { formatPrice } from "@/lib/shop/format";
 import { closeNativeCheckout, openStripe } from "@/lib/shop/openStripe";
-import { productHref } from "@/lib/shop/productHref";
+import { pieceCarry, productHref } from "@/lib/shop/productHref";
 import { NO_PROMOTIONS, segmentsOf, type Unlock } from "@/lib/shop/promotions";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useCartInsights, useServerClock } from "@/lib/shop/useCartInsights";
@@ -240,13 +240,16 @@ export function CartClient() {
                     className="shop-vitrine relative h-24 w-20 shrink-0 overflow-hidden rounded-xl ring-1 ring-inset ring-paper/[0.07] md:h-28 md:w-24"
                   >
                     {item.imageUrl ? (
-                      <Image
-                        src={streamedUrl(item.imageUrl)}
-                        alt={item.imageAlt ?? item.title}
-                        fill
-                        sizes="96px"
-                        className="object-contain p-2"
-                      />
+                      // The picture travels into its page (pieceCarry, lib/ui/routeMotion.ts).
+                      <span data-carry={pieceCarry(item.slug)} className="absolute inset-0 overflow-hidden rounded-[inherit]">
+                        <Image
+                          src={streamedUrl(item.imageUrl)}
+                          alt={item.imageAlt ?? item.title}
+                          fill
+                          sizes="96px"
+                          className="object-contain p-2"
+                        />
+                      </span>
                     ) : null}
                   </Link>
                   <div className="flex min-w-0 flex-1 flex-col">

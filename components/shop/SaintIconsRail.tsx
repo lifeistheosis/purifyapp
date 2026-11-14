@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { isNativeClient, useIsNative } from "@/lib/platform/native";
-import { productHref } from "@/lib/shop/productHref";
+import { pieceCarry, productHref } from "@/lib/shop/productHref";
 import type { ShopProductFull } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ScrollRail } from "@/components/ui/ScrollRail";
@@ -71,7 +71,8 @@ export function SaintIconsRail({
                 href={productHref(p.slug, native)}
                 className="group block overflow-hidden rounded-lg border border-paper/10 bg-night-soft/60"
               >
-                <div className="relative aspect-square bg-paper/[0.04]">
+                {/* The picture travels into its page (pieceCarry, lib/ui/routeMotion.ts). */}
+                <div data-carry={pieceCarry(p.slug)} className="relative aspect-square bg-paper/[0.04]">
                   {img ? (
                     <Image
                       src={img.media_url}

@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
 import { useIsNative } from "@/lib/platform/native";
 import { addToCart } from "@/lib/shop/cart";
 import { formatPrice } from "@/lib/shop/format";
-import { productHref } from "@/lib/shop/productHref";
+import { pieceCarry, productHref } from "@/lib/shop/productHref";
 import type { ShopProductFull } from "@/lib/shop/types";
 
 /**
@@ -28,6 +28,7 @@ export function SetFinish({
   currency,
   compact = false,
   onAdded,
+  onOpenPiece,
   className,
 }: {
   add: readonly ShopProductFull[];
@@ -36,6 +37,12 @@ export function SetFinish({
   currency: string;
   compact?: boolean;
   onAdded?: () => void;
+  /**
+   * In a sheet that has to close as a piece opens (the cart drawer): its
+   * close. The pictures then stay: the sheet slides away as the page changes
+   * (components/shop/CartDrawer.tsx, its rows the same).
+   */
+  onOpenPiece?: () => void;
   className?: string;
 }) {
   const { t, tn } = useTranslate();
@@ -77,13 +84,21 @@ export function SetFinish({
             <li key={p.id} className="flex items-center gap-3">
               <Link
                 href={productHref(p.slug, native)}
+                onClick={onOpenPiece}
                 className="shop-vitrine relative h-11 w-11 shrink-0 overflow-hidden rounded-lg ring-1 ring-inset ring-paper/[0.07]"
               >
-                {image ? <Image src={image.media_url} alt={image.alt_text} fill sizes="44px" className="object-contain p-1" /> : null}
+                {image ? (
+                  // The picture travels into its page (pieceCarry, lib/ui/routeMotion.ts), but not out of a sheet
+                  // that closes as the piece opens (onOpenPiece, above).
+                  <span data-carry={onOpenPiece ? undefined : pieceCarry(p.slug)} className="absolute inset-0 overflow-hidden rounded-[inherit]">
+                    <Image src={image.media_url} alt={image.alt_text} fill sizes="44px" className="object-contain p-1" />
+                  </span>
+                ) : null}
               </Link>
               {/* The name whole, on as many lines as it needs (checkMock's cut). */}
               <Link
                 href={productHref(p.slug, native)}
+                onClick={onOpenPiece}
                 data-mock-allow="target"
                 data-mock-why="the piece's picture beside it, 44 by 44, opens the same page (WCAG 2.5.8's equivalent control)"
                 className="min-w-0 flex-1 break-words font-sans text-caption text-paper/80 hover:text-paper"
