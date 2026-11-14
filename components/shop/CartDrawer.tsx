@@ -206,10 +206,13 @@ export function CartDrawer() {
                       </Link>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-2">
+                          {/* The name whole, on as many lines as it needs (checkMock's cut). */}
                           <Link
                             href={productHref(item.slug, native)}
                             onClick={close}
-                            className="min-w-0 truncate font-sans text-detail font-semibold text-paper underline-offset-4 hover:underline"
+                            data-mock-allow="target"
+                            data-mock-why="the piece's picture beside it, 64 by 64, opens the same page (WCAG 2.5.8's equivalent control)"
+                            className="min-w-0 break-words font-sans text-detail font-semibold text-paper underline-offset-4 hover:underline"
                           >
                             {item.title}
                           </Link>
@@ -255,7 +258,7 @@ export function CartDrawer() {
                           <button
                             type="button"
                             onClick={() => removeFromCart(item.slug)}
-                            className="font-sans text-eyebrow font-medium text-paper/45 underline underline-offset-4 hover:text-paper"
+                            className="hit-44 font-sans text-eyebrow font-medium text-paper/45 underline underline-offset-4 hover:text-paper"
                           >
                             {t("prayers.diptychs.remove")}
                           </button>
@@ -287,7 +290,7 @@ export function CartDrawer() {
                 </p>
               </div>
               {preview.savingsCents > 0 ? (
-                <p className="mt-0.5 flex items-center justify-between gap-3 font-sans text-caption font-semibold text-emerald-300">
+                <p className="mt-0.5 flex items-center justify-between gap-3 font-sans text-caption font-semibold text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200">
                   <span>{t("shop.offerSaving")}</span>
                   <span>{t("shop.cartDealSavingAmount", { amount: formatPrice(preview.savingsCents, currency) })}</span>
                 </p>

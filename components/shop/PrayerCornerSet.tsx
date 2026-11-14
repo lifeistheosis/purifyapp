@@ -125,7 +125,7 @@ export function PrayerCornerSet({
               {i > 0 ? (
                 <span
                   aria-hidden
-                  className="absolute left-[calc(var(--g)/-2)] top-[38%] z-10 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full bg-night text-paper ring-1 ring-paper/15 md:h-6 md:w-6"
+                  className="absolute start-[calc(var(--g)/-2)] top-[38%] z-10 flex h-5 w-5 -translate-x-1/2 items-center justify-center rounded-full bg-night text-paper ring-1 ring-paper/15 md:h-6 md:w-6 rtl:translate-x-1/2"
                 >
                   <Plus size={12} />
                 </span>
@@ -136,7 +136,7 @@ export function PrayerCornerSet({
                     <Image src={image.media_url} alt={image.alt_text} fill sizes="(min-width: 768px) 20vw, 30vw" className="object-contain p-2.5 md:p-4" />
                   ) : null}
                 </div>
-                <p className="mt-2 line-clamp-2 font-sans text-caption leading-snug text-paper/75 group-hover:text-paper md:text-detail">
+                <p className="mt-2 font-sans text-caption leading-snug text-paper/75 group-hover:text-paper md:text-detail">
                   {p.title}
                 </p>
                 <p className="mt-0.5 font-sans text-caption font-semibold tabular-nums text-paper md:text-detail">
@@ -161,13 +161,13 @@ export function PrayerCornerSet({
           {offPercent > 0 || free ? (
             <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
               {offPercent > 0 ? (
-                <p className="inline-flex items-center gap-1.5 font-sans text-caption font-semibold text-emerald-300">
+                <p className="inline-flex items-center gap-1.5 font-sans text-caption font-semibold text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200">
                   <Tag size={15} aria-hidden />
                   {t("shop.setSave", { percent: offPercent, amount: formatPrice(priced.savingsCents, currency) })}
                 </p>
               ) : null}
               {free ? (
-                <p className="inline-flex items-center gap-1.5 font-sans text-caption font-semibold text-emerald-300">
+                <p className="inline-flex items-center gap-1.5 font-sans text-caption font-semibold text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200">
                   <Truck size={15} />
                   {t("shop.setShipsFree")}
                 </p>
@@ -182,7 +182,7 @@ export function PrayerCornerSet({
           className={cn(
             "tap-press inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-pill px-6 font-sans text-ui font-semibold transition-colors",
             complete || justAdded
-              ? "border border-emerald-400/50 bg-emerald-400/10 text-emerald-300"
+              ? "border border-emerald-400/50 bg-emerald-400/10 text-emerald-300 [html[data-reading-mode=parchment]_&]:border-emerald-300/50 [html[data-reading-mode=parchment]_&]:text-emerald-200"
               : "bg-paper text-night hover:bg-paper/90",
           )}
         >

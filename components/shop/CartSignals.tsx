@@ -32,8 +32,8 @@ export function CartDemandLine({ count }: { count: number | undefined }) {
   return (
     <p className="inline-flex items-center gap-2 font-sans text-caption font-medium text-paper/75">
       <span className="relative flex h-2 w-2" aria-hidden>
-        <span className="demand-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400/60" />
-        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+        <span className="demand-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400/60 [html[data-reading-mode=parchment]_&]:bg-emerald-300/60" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400 [html[data-reading-mode=parchment]_&]:bg-emerald-300" />
       </span>
       <Cart size={14} className="text-paper/55" />
       {tn("shop.inOtherCarts", count)}
@@ -55,9 +55,9 @@ export function CartDealTag({ deal, skewMs }: { deal: Deal; skewMs: number }) {
   const left = deal.endsAt - now;
   if (left <= 0) return null;
   return (
-    <div className="mt-2 inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 rounded-lg border border-emerald-400/25 bg-emerald-400/[0.07] px-2.5 py-1.5 font-sans text-caption">
-      <Tag size={13} className="text-emerald-300" aria-hidden />
-      <span className="font-semibold text-emerald-300">{t("shop.cartDealUnlocked")}</span>
+    <div className="mt-2 inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 rounded-lg border border-emerald-400/25 [html[data-reading-mode=parchment]_&]:border-emerald-300/25 bg-emerald-400/[0.07] px-2.5 py-1.5 font-sans text-caption">
+      <Tag size={13} className="text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200" aria-hidden />
+      <span className="font-semibold text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200">{t("shop.cartDealUnlocked")}</span>
       <span className="font-semibold text-paper">{t("shop.cartDealOff", { percent: deal.percent })}</span>
       <span className="tabular-nums text-paper/60">{t("shop.cartDealEndsIn", { time: countdownLabel(left) })}</span>
     </div>
@@ -88,14 +88,14 @@ export function OfferTag({
       {offers.map((s) => (
         <span
           key={`${s.kind}-${s.unitCents}`}
-          className="inline-flex flex-wrap items-center gap-x-1.5 rounded-lg border border-emerald-400/25 bg-emerald-400/[0.07] px-2.5 py-1 font-sans text-caption"
+          className="inline-flex flex-wrap items-center gap-x-1.5 rounded-lg border border-emerald-400/25 [html[data-reading-mode=parchment]_&]:border-emerald-300/25 bg-emerald-400/[0.07] px-2.5 py-1 font-sans text-caption"
         >
           {s.kind === "set_bundle" ? (
-            <PrayerRope size={13} className="text-emerald-300" aria-hidden />
+            <PrayerRope size={13} className="text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200" aria-hidden />
           ) : (
-            <Tag size={13} className="text-emerald-300" aria-hidden />
+            <Tag size={13} className="text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200" aria-hidden />
           )}
-          <span className="font-semibold text-emerald-300">
+          <span className="font-semibold text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200">
             {s.kind === "set_bundle"
               ? t("shop.offerSetTag", { percent: s.percent ?? 0 })
               : tn("shop.offerMultiTag", multiBuyMinFor(multiBuy, s.percent) ?? 2, { percent: s.percent ?? 0 })}
@@ -206,7 +206,7 @@ export function CartLadder({
 
 function DoneRow({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
-    <li className="flex items-center gap-2 font-sans text-caption font-semibold text-emerald-300">
+    <li className="flex items-center gap-2 font-sans text-caption font-semibold text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200">
       <span className="shrink-0">{icon}</span>
       <span className="min-w-0">{text}</span>
       <Check size={14} className="shrink-0" aria-hidden />
@@ -233,7 +233,7 @@ export function FreeShippingMeter({
   const pct = Math.min(100, Math.round((subtotalCents / thresholdCents) * 100));
   return (
     <div className="mt-3">
-      <p className={"font-sans text-caption " + (done ? "font-semibold text-emerald-300" : "text-paper/70")}>
+      <p className={"font-sans text-caption " + (done ? "font-semibold text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200" : "text-paper/70")}>
         {done
           ? t("shop.freeShippingUnlocked")
           : t("shop.freeShippingAway", { amount: formatPrice(thresholdCents - subtotalCents, currency) })}
@@ -247,7 +247,7 @@ export function FreeShippingMeter({
         aria-label={t("shop.freeShippingOver", { amount: formatPrice(thresholdCents, currency) })}
       >
         <div
-          className={"h-full rounded-full transition-[width] duration-500 " + (done ? "bg-emerald-400" : "bg-paper")}
+          className={"h-full rounded-full transition-[width] duration-500 " + (done ? "bg-emerald-400 [html[data-reading-mode=parchment]_&]:bg-emerald-300" : "bg-paper")}
           style={{ width: `${pct}%` }}
         />
       </div>

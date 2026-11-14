@@ -61,7 +61,7 @@ export function ShopBySaint({
         </h2>
         <Link
           href="/shop/category/saints"
-          className="inline-flex min-h-11 shrink-0 items-center font-sans text-detail font-medium text-paper/55 transition-colors hover:text-paper motion-reduce:transition-none"
+          className="hit-44 inline-flex min-h-11 shrink-0 items-center font-sans text-detail font-medium text-paper/55 transition-colors hover:text-paper motion-reduce:transition-none"
         >
           {t("common.seeAll")}
         </Link>

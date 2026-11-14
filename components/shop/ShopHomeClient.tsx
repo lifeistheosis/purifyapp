@@ -184,7 +184,7 @@ export function ShopHomeClient() {
             </h2>
             <Link
               href="/shop/category/all"
-              className="inline-flex min-h-11 shrink-0 items-center font-sans text-detail font-medium text-paper/55 transition-colors hover:text-paper motion-reduce:transition-none"
+              className="hit-44 inline-flex min-h-11 shrink-0 items-center font-sans text-detail font-medium text-paper/55 transition-colors hover:text-paper motion-reduce:transition-none"
             >
               {t("common.seeAll")}
             </Link>
@@ -264,7 +264,7 @@ export function ShopHomeClient() {
                 </h2>
                 <Link
                   href="/shop/category/all"
-                  className="inline-flex min-h-11 items-center font-sans text-detail font-medium text-paper/60 hover:text-paper"
+                  className="hit-44 inline-flex min-h-11 items-center font-sans text-detail font-medium text-paper/60 hover:text-paper"
                 >
                   {t("common.seeAll")}
                 </Link>
@@ -339,7 +339,7 @@ export function ShopHomeClient() {
         aria-label={t("shop.requestAnIcon")}
         className="mx-5 mt-16 grid border-y border-paper/10 md:mx-0 md:mt-24 md:grid-cols-2"
       >
-        <Link href="/shop/request" className="group block py-7 md:py-9 md:pr-10">
+        <Link href="/shop/request" className="group block py-7 md:py-9 md:pe-10">
           <h2 className="font-heading text-title-sm text-paper">{t("shop.lookingForASaintYou")}</h2>
           <p className="mt-2 max-w-[44ch] font-serif text-body leading-[1.6] text-paper/65">
             {t("shop.tellUsWhoYouRe")}
@@ -352,7 +352,7 @@ export function ShopHomeClient() {
         <Link
           href="/shop/sell"
           data-mock-allow="stripe" data-mock-why="the line between the shop's two columns on a wide screen"
-          className="group block border-t border-paper/10 py-7 md:border-l md:border-t-0 md:py-9 md:pl-10"
+          className="group block border-t border-paper/10 py-7 md:border-s md:border-t-0 md:py-9 md:ps-10"
         >
           <h2 className="font-heading text-title-sm text-paper">{t("shop.doYouMakeOrSell")}</h2>
           <p className="mt-2 max-w-[44ch] font-serif text-body leading-[1.6] text-paper/65">

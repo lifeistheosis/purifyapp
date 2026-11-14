@@ -31,9 +31,9 @@ const INVENTORY_LABEL_KEYS: Record<ShopInventoryStatus, string> = {
 /** The dot beside the availability line: green for in hand, gold for made
  *  to order, blue for coming, grey for gone. */
 const DOT: Record<ShopInventoryStatus, string> = {
-  ready_to_ship: "bg-emerald-400",
+  ready_to_ship: "bg-emerald-400 [html[data-reading-mode=parchment]_&]:bg-emerald-300",
   special_order: "bg-paper",
-  coming_soon: "bg-sky-400",
+  coming_soon: "bg-sky-400 [html[data-reading-mode=parchment]_&]:bg-sky-300",
   out_of_stock: "bg-paper/35",
 };
 
@@ -141,7 +141,7 @@ export function ProductCard({
           // processor slowed four times: 1,270 ms of drawing with the blur,
           // 633 ms without. Over the vitrine's own dark ground the two look
           // the same.
-          className="absolute right-2 top-2 z-20 h-11 w-11 bg-night/70"
+          className="absolute end-2 top-2 z-20 h-11 w-11 bg-night/70"
         />
       </div>
 
@@ -197,7 +197,7 @@ export function ProductCard({
               className={cn(
                 "tap-press relative z-20 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors",
                 added
-                  ? "border-emerald-400/60 bg-emerald-400/15 text-emerald-300"
+                  ? "border-emerald-400/60 bg-emerald-400/15 text-emerald-300 [html[data-reading-mode=parchment]_&]:border-emerald-300/60 [html[data-reading-mode=parchment]_&]:text-emerald-200"
                   : "border-paper/15 bg-paper/[0.06] text-paper hover:border-paper hover:bg-paper hover:text-night",
               )}
             >

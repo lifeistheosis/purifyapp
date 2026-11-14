@@ -90,7 +90,7 @@ function Fact({ term, value }: { term: string; value: string | null }) {
   return (
     <div className="flex justify-between gap-6 border-b border-white/6 py-2.5 last:border-b-0">
       <dt className="shrink-0 font-sans text-detail text-paper/60">{term}</dt>
-      <dd className="text-right font-sans text-detail text-paper/85">{value}</dd>
+      <dd className="text-end font-sans text-detail text-paper/85">{value}</dd>
     </div>
   );
 }

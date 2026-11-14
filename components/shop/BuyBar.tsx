@@ -159,13 +159,13 @@ export function BuyBar({
           <p className="shrink-0 font-sans text-title-sm font-semibold tabular-nums text-paper md:text-heading">
             {priceLabel}
           </p>
-          <p className="min-w-0 truncate text-right font-sans text-caption text-paper/60 md:mt-1.5 md:whitespace-normal md:text-left md:text-detail">
+          <p className="min-w-0 truncate text-end font-sans text-caption text-paper/60 md:mt-1.5 md:whitespace-normal md:text-start md:text-detail">
             {inventoryLabel}
             {urgencyLabel ? <span className="font-semibold text-paper"> · {urgencyLabel}</span> : null}
             <span className="max-md:hidden"> · {dispatchLabel}</span>
           </p>
         </div>
-        <p className="mt-1 font-sans text-detail font-medium text-emerald-300/90 max-md:hidden">{shippingLabel}</p>
+        <p className="mt-1 font-sans text-detail font-medium text-emerald-300/90 max-md:hidden [html[data-reading-mode=parchment]_&]:text-emerald-200">{shippingLabel}</p>
 
         {purchasable && checkoutOn ? (
           <>
@@ -178,7 +178,7 @@ export function BuyBar({
                 className={cn(
                   "tap-press inline-flex min-h-12 items-center justify-center rounded-pill border px-4 font-sans text-ui font-semibold transition-colors md:order-2",
                   added
-                    ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300"
+                    ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300 [html[data-reading-mode=parchment]_&]:border-emerald-300/50 [html[data-reading-mode=parchment]_&]:text-emerald-200"
                     : "border-paper/25 text-paper hover:border-paper/50",
                 )}
               >
@@ -199,16 +199,25 @@ export function BuyBar({
                 nudge && "ring-2 ring-paper/60 ring-offset-4 ring-offset-night",
               )}
             >
-              <input
-                ref={agreeRef}
-                type="checkbox"
-                checked={agreed}
-                onChange={(e) => {
-                  setAgreed(e.target.checked);
-                  if (e.target.checked && error) movePage(() => setError(null), { grows: [barRef.current] });
-                }}
-                className="mt-0.5 h-4 w-4 shrink-0 accent-paper"
-              />
+              {/* A 44 by 44 reach round the box, inside its label, so a tap anywhere
+                  in it ticks the box (as the sign-up form's). It reaches up only to
+                  the buttons' foot (the label's mt-2.5), never over them, and the
+                  margins keep the box where it was drawn: 0.125rem below the line's
+                  top, the words 0.625rem after it, the label no taller. */}
+              <span className="-mx-3.5 -mt-2.5 -mb-4 inline-flex h-11 w-11 shrink-0 items-start justify-center pt-3">
+                <input
+                  ref={agreeRef}
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={(e) => {
+                    setAgreed(e.target.checked);
+                    if (e.target.checked && error) movePage(() => setError(null), { grows: [barRef.current] });
+                  }}
+                  data-mock-allow="target"
+                  data-mock-why="its reach is the 44 by 44 square round it, inside its label: a tap anywhere there ticks it"
+                  className="h-4 w-4 accent-paper"
+                />
+              </span>
               <span className="font-sans text-caption leading-[1.5] text-paper/60">
                 {t("ui.iAgreeToThe")}{" "}
                 <LegalLink doc="terms" className="underline underline-offset-2 hover:text-paper/80">
