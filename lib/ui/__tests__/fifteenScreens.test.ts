@@ -103,6 +103,23 @@ describe("No zero as a first sight", () => {
     // Every other place the count is drawn is guarded the same way.
     expect(hub.match(/\{of\}/g)).toHaveLength(1);
   });
+
+  it("shows a plan's days read, and its bar, only from the first day read (build 97 note 7)", () => {
+    // His screenshot of The four Gospels: "0 of 89 days read" over an empty bar.
+    const path = read("components/plans/PlanPath.tsx");
+    expect(path).toMatch(/\{read > 0 \? <p[^>]*>\{t\("plans\.progress", \{ read, total: plan\.days\.length \}\)\}<\/p> : null\}/);
+    expect(path.match(/t\("plans\.progress"/g)).toHaveLength(1);
+    // The bar, here and on the plans list's Continue card, is the same count drawn.
+    const bars = (src: string) => [...src.matchAll(/style=\{\{ width: `\$\{Math\.round\(\(read \/ /g)].length;
+    expect(bars(path)).toBe(1);
+    expect(path).toMatch(/\{read > 0 \? \(\s*<div aria-hidden className="mt-3 h-1 /);
+    const list = read("components/plans/PlansClient.tsx");
+    expect(bars(list)).toBe(1);
+    expect(list).toMatch(/\{read > 0 \? \(\s*<span aria-hidden className="mt-4 block h-1 /);
+    // The streak was already guarded: shown from one.
+    expect(list).toContain(") : streak > 0 ? (");
+    expect(read("components/plans/PlanClient.tsx")).toContain(") : streak > 0 && !finished ? (");
+  });
 });
 
 describe("The small line: sentence case, never capitals spaced out", () => {

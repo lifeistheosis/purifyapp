@@ -195,9 +195,12 @@ function ContinueCard({
       <p className="mt-1 font-sans text-caption text-paper/55">
         {minutes ? `${reading(next)} · ${t("plans.minutesADay", { min: minutes })}` : reading(next)}
       </p>
-      <span aria-hidden className="mt-4 block h-1 overflow-hidden rounded-full bg-paper/10">
-        <span className="block h-full rounded-full bg-paper/80" style={{ width: `${Math.round((read / total) * 100)}%` }} />
-      </span>
+      {/* No zero as a first sight (round 1's rule, build 97 note 7): the bar from the first day read. */}
+      {read > 0 ? (
+        <span aria-hidden className="mt-4 block h-1 overflow-hidden rounded-full bg-paper/10">
+          <span className="block h-full rounded-full bg-paper/80" style={{ width: `${Math.round((read / total) * 100)}%` }} />
+        </span>
+      ) : null}
       <button
         type="button"
         onClick={() => onContinue(next)}

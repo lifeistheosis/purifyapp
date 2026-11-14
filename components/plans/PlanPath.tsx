@@ -113,11 +113,14 @@ export function PlanPath({
         <p id="plan-path" role="heading" aria-level={2} className="font-sans text-ui font-semibold text-paper">
           {t("plans.path.title")}
         </p>
-        <p className="font-sans text-caption tabular-nums text-paper/55">{t("plans.progress", { read, total: plan.days.length })}</p>
+        {/* No zero as a first sight (round 1's rule, build 97 note 7): the count and its bar from the first day read. */}
+        {read > 0 ? <p className="font-sans text-caption tabular-nums text-paper/55">{t("plans.progress", { read, total: plan.days.length })}</p> : null}
       </div>
-      <div aria-hidden className="mt-3 h-1 overflow-hidden rounded-full bg-paper/10">
-        <div className="h-full rounded-full bg-paper/80" style={{ width: `${Math.round((read / plan.days.length) * 100)}%` }} />
-      </div>
+      {read > 0 ? (
+        <div aria-hidden className="mt-3 h-1 overflow-hidden rounded-full bg-paper/10">
+          <div className="h-full rounded-full bg-paper/80" style={{ width: `${Math.round((read / plan.days.length) * 100)}%` }} />
+        </div>
+      ) : null}
       <ol className="mt-3">{near.map((i) => row(i, true))}</ol>
 
       <button
