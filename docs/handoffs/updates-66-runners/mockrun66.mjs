@@ -22,7 +22,10 @@ const GROUPS = [WORN, LOOKS.slice(0, 7), LOOKS.slice(7)];
 const HEIGHT = { 390: 844, 800: 1280, 1032: 1376 };
 const messages = (l) => JSON.parse(fs.readFileSync(`${ROOT}/lib/i18n/messages/${l}.json`, "utf8"));
 const EN = messages("en");
-const RELATION = { mine: false, following: false, followsYou: false, mutuals: [], greeted: false, canGift: false, muted: false };
+// FOLLOWS_YOU=1 plays a reader who follows the viewer (Updates 74, for Updates 71's "Follows you" mend): the
+// standing says so, and each jsonl line carries followsYou.
+const FOLLOWS_YOU = process.env.FOLLOWS_YOU === "1";
+const RELATION = { mine: false, following: false, followsYou: FOLLOWS_YOU, mutuals: [], greeted: false, canGift: false, muted: false };
 const cors = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "*" };
 
 /** The export's one Supabase project, and the session a signed-in phone keeps for it (as mockrun60 has it). */
@@ -57,7 +60,16 @@ async function openProfile(page, state) {
   }
   return card.evaluate((el, state) => {
     el.setAttribute("data-run66", "");
-    return { state, busy: Boolean(el.querySelector("[aria-busy]")), doors: Boolean(el.querySelector("[role=tablist]")), statusPlace: Boolean(el.querySelector("[data-profile-status]")), height: Math.round(el.getBoundingClientRect().height), width: Math.round(el.getBoundingClientRect().width) };
+    // "Follows you" against the @handle: which side it stands on, and the gap (no words of either kept).
+    const markSide = () => {
+      const m = [...el.querySelectorAll("span")].find((x) => x.className.includes("bg-paper/[0.09]") && x.className.includes("text-caption"));
+      const h = [...el.querySelectorAll("*")].find((x) => x.children.length === 0 && /^@/.test(x.textContent?.trim() ?? ""));
+      if (!m || !h) return m ? "no handle" : null;
+      const mb = m.getBoundingClientRect();
+      const hb = h.getBoundingClientRect();
+      return { side: mb.left + mb.width / 2 < hb.left + hb.width / 2 ? "left" : "right", gap: Math.round(mb.left >= hb.right ? mb.left - hb.right : hb.left - mb.right), sameRow: Math.abs(mb.top + mb.height / 2 - (hb.top + hb.height / 2)) < 6 };
+    };
+    return { state, followsMark: markSide(), busy: Boolean(el.querySelector("[aria-busy]")), doors: Boolean(el.querySelector("[role=tablist]")), statusPlace: Boolean(el.querySelector("[data-profile-status]")), height: Math.round(el.getBoundingClientRect().height), width: Math.round(el.getBoundingClientRect().width) };
   }, state);
 }
 
@@ -163,19 +175,19 @@ async function run(spec) {
     const opened = await openProfile(page, state);
     if (state === "taps") {
       const done = await taps(page, t);
-      fs.appendFileSync(jsonl, JSON.stringify({ spec, opened, taps: done, errors }) + "\n");
+      fs.appendFileSync(jsonl, JSON.stringify({ spec, followsYou: FOLLOWS_YOU, opened, taps: done, errors }) + "\n");
       console.log(`${spec}: ${JSON.stringify(done)}`);
     } else {
       for (const g of [0, 1, 2]) {
         const r = await checkMock(page, "[data-run66]", { pixels: true, palettes: GROUPS[g] });
-        fs.appendFileSync(jsonl, JSON.stringify({ spec, group: g, opened, ms: Date.now() - t0, failures: r.failures, unmeasured: r.unmeasured?.length ?? 0, unmeasuredList: r.unmeasured ?? [], allowed: r.allowed?.length ?? 0, errors }) + "\n");
+        fs.appendFileSync(jsonl, JSON.stringify({ spec, followsYou: FOLLOWS_YOU, group: g, opened, ms: Date.now() - t0, failures: r.failures, unmeasured: r.unmeasured?.length ?? 0, unmeasuredList: r.unmeasured ?? [], allowed: r.allowed?.length ?? 0, errors }) + "\n");
         console.log(`${spec} group ${g} (busy ${opened.busy}, doors ${opened.doors}, ${opened.width}x${opened.height}): ${r.failures.length} failure(s), ${errors.length} page error(s) (${Math.round((Date.now() - t0) / 1000)}s)`);
       }
     }
   } catch (e) {
     const shot = path.join(path.dirname(jsonl), `fail-${spec.replace(/@/g, "_")}.png`);
     await page.screenshot({ path: shot }).catch(() => {});
-    fs.appendFileSync(jsonl, JSON.stringify({ spec, error: String(e).slice(0, 300), shot, errors }) + "\n");
+    fs.appendFileSync(jsonl, JSON.stringify({ spec, followsYou: FOLLOWS_YOU, error: String(e).slice(0, 300), shot, errors }) + "\n");
     console.log(`${spec}: ERROR ${String(e).split("\n")[0].slice(0, 200)}`);
   } finally {
     release();
