@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state. The log is `docs/1.9-build/HANDOFF.md`, his words are `docs/1.9-build/BRAINSTORM.md`, and how the chats run is `docs/OPERATIONS.md`.
 
-Updated 2026-11-14 01:52 UTC by Arbiter 5, at its first round (first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
+Updated 2026-11-14 01:49 UTC by Arbiter 5, at its first round (first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
 
 ## 1.9 now
 
