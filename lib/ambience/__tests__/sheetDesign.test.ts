@@ -111,3 +111,41 @@ describe("the ambience sheet holds the sounds still (note 11's walk, in note 22)
     expect(html.indexOf('aria-label="ambience.bell"')).toBeLessThan(firstTile);
   });
 });
+
+describe("a sound that takes another's place moves nothing above the sounds (Updates 28's walk, 2026-11-13)", () => {
+  // Two play and a third is tapped: the first stops at once, and the third
+  // plays once it has loaded. Between the two only one played, so the sheet
+  // folded both sounds' own volumes away, opened the line for a second sound,
+  // and a breath later did the opposite: the sheet's top dropped and rose
+  // again, and the sounds under the finger moved with it ("The sea: takes
+  // Rain's place", 7px; the gate's limit is 4).
+  it("counts the sound still loading beside the one that plays, so both volumes stay open", async () => {
+    snap = { ...QUIET, playing: "bell", layers: ["bell"], loading: "sea" };
+    const html = await sheet();
+    const firstTile = html.indexOf("data-ambience-tile=");
+    expect(html.indexOf('aria-label="ambience.bell"')).toBeGreaterThan(-1);
+    expect(html.indexOf('aria-label="ambience.sea"')).toBeGreaterThan(-1);
+    expect(html.indexOf('aria-label="ambience.sea"')).toBeLessThan(firstTile);
+  });
+
+  /** The opening tag of the glide that holds the words a key names. */
+  const glideOf = (html: string, key: string) => {
+    const inner = html.lastIndexOf('<div class="min-h-0 overflow-hidden">', html.indexOf(key));
+    const tag = html.lastIndexOf("<div", inner - 1);
+    return html.slice(tag, html.indexOf(">", tag) + 1);
+  };
+
+  it("keeps the line for a second sound closed while the second is loading", async () => {
+    snap = { ...QUIET, playing: "bell", layers: ["bell"], loading: "sea" };
+    const tag = glideOf(await sheet(), "ambience.layerHint");
+    expect(tag).toContain("grid-rows-[0fr]");
+    expect(tag).toContain('aria-hidden="true"');
+  });
+
+  it("opens the line for a second sound while one plays and none is loading", async () => {
+    snap = { ...QUIET, playing: "bell", layers: ["bell"] };
+    const tag = glideOf(await sheet(), "ambience.layerHint");
+    expect(tag).toContain("grid-rows-[1fr]");
+    expect(tag).not.toContain("aria-hidden");
+  });
+});

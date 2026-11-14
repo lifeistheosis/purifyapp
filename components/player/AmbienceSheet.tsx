@@ -15,6 +15,7 @@ import { cn } from "@/lib/cn";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { isChosen, minutesLeft, setSleepTimer, useSleepTimer, type SleepChoice } from "@/lib/player/sleep";
 import { getAudioSnapshot, subscribeAudio } from "@/lib/prayers/persistentAudioStore";
+import { holdAtEnd } from "@/lib/ui/holdAtEnd";
 
 import { AmbiencePhoto } from "./AmbiencePhoto";
 
@@ -118,7 +119,14 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
   // balance against a voice, and the sleep timer. Not for a reader without
   // Plus, whose sounds are a preview's (its own sheet has its own).
   const playing = ambience.layers.length > 0 && !locked;
-  const pair = playing && ambience.layers.length > 1 ? ambience.layers : null;
+  // The sounds as the reader chose them: those playing, and beside them one
+  // still loading. A third sound takes the first's place at once and plays a
+  // breath later, once loaded; counted only when it played, the pair broke for
+  // that breath, both volumes folded away and opened again, and the sounds
+  // under the finger moved 7px (Updates 28's walk, 2026-11-13).
+  const sounding =
+    playing && ambience.loading && !ambience.layers.includes(ambience.loading) ? [...ambience.layers, ambience.loading] : ambience.layers;
+  const pair = playing && sounding.length > 1 ? sounding : null;
   // The two kept while their own volumes glide away, so they leave as they came.
   const [kept, setKept] = useState<readonly AmbienceId[]>([]);
   if (pair && (pair[0] !== kept[0] || pair[1] !== kept[1])) setKept(pair);
@@ -194,7 +202,7 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
       </Glide>
 
       {/* One playing: a second tile plays beside it (1.9). */}
-      <Glide open={playing && ambience.layers.length === 1}>
+      <Glide open={playing && sounding.length === 1}>
         <p className="pb-3 font-sans text-caption text-paper/50">{t("ambience.layerHint")}</p>
       </Glide>
 
@@ -261,7 +269,10 @@ function Glide({ open, children }: { open: boolean; children: ReactNode }) {
  * grows or shrinks. A sheet stands on the screen's foot, so it grows upward
  * and the part, last in it, stays where it was; once the sheet is at its full
  * height and scrolls, what is added above would push the part down, so the
- * scroll takes it up, frame by frame through a glide.
+ * scroll takes it up, on every frame of a glide (lib/ui/holdAtEnd.ts: the
+ * part keeps its distance from the scroll's end, set whole each frame, where
+ * the first hold added each frame's step and lost what a whole pixel could
+ * not hold).
  */
 function useHoldStill<T extends HTMLElement>() {
   const ref = useRef<T>(null);
@@ -271,15 +282,14 @@ function useHoldStill<T extends HTMLElement>() {
     while (scroller && !/(auto|scroll)/.test(getComputedStyle(scroller).overflowY)) scroller = scroller.parentElement;
     if (!el || !scroller) return;
     const box = scroller;
-    const offset = () => el.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop;
-    let at = offset();
-    const watch = new ResizeObserver(() => {
-      const now = offset();
-      if (Math.abs(now - at) >= 1) box.scrollTop += now - at;
-      at = offset();
-    });
+    const hold = holdAtEnd(box);
+    const watch = new ResizeObserver(hold.resized);
     for (const part of box.children) if (part !== el && !part.contains(el)) watch.observe(part);
-    return () => watch.disconnect();
+    box.addEventListener("scroll", hold.scrolled, { passive: true });
+    return () => {
+      watch.disconnect();
+      box.removeEventListener("scroll", hold.scrolled);
+    };
   }, []);
   return ref;
 }

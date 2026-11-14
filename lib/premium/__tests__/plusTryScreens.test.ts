@@ -129,10 +129,50 @@ describe("the preview's frame", () => {
     );
   });
 
+  it("keeps the room of its longest sound's line, so a sound's name moves nothing above it (Updates 28's walk, 2026-11-13)", () => {
+    // The line names the sound playing. At 390, "The sea plays for a minute, then stops." takes two lines where
+    // Rain's takes one: the preview grew by a line as the sea began, the sheet rose from the screen's foot, and
+    // the strip's tile moved 13.3px under the finger. Every sound's line stands in the same place, unseen, and
+    // the line is as tall as the tallest of them; the one said is the one playing.
+    for (const lang of ["en", "ar"]) {
+      const out = render(createElement(PlusTryPage, { row: row("ambience"), next: row("plans"), onNext: () => {} }), lang);
+      expect(out.indexOf('data-try-sound-line=""'), lang).toBeGreaterThan(-1);
+      const room = out.slice(out.indexOf('data-try-sound-line=""'));
+      for (const t of AMBIENCE_TRACKS) {
+        const line = html(say(lang, "plus.try.minute", { sound: say(lang, t.labelKey) }));
+        expect(room, `${lang} ${t.id}`).toMatch(new RegExp(`<span aria-hidden="true" class="invisible col-start-1 row-start-1">${line.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</span>`));
+      }
+    }
+  });
+
   it("offers no Next after the last feature", () => {
     const rows = plusRowsLedBy(null);
     const last = rows[rows.length - 1];
     expect(render(createElement(PlusTryPage, { row: last, next: null, onNext: () => {} }))).not.toContain("data-plus-try-next");
+  });
+});
+
+describe("the window under the lock's words (Updates 28's walk, 2026-11-13)", () => {
+  // Once a sound's minute is up the lock's words stand over the window, on the night at 85%, and John 1 shows
+  // through them as a backdrop. checkMock with pixels read those verses as words to be read, at 2.4 to 3.4:1,
+  // whenever it measured past the minute (the gate at 390: Councils and every look after it; within the minute
+  // they pass). They are the page under the veil, not words to read there, and say so: to the measure, by
+  // name and reason, and to a screen reader, which hears the lock's words alone.
+  it("marks the page under the lock's words as its backdrop, out of reach", async () => {
+    const { TryWindow } = await import("@/components/billing/plusTry/TryKit");
+    const veiled = render(createElement(TryWindow, { label: "Ambience", overlay: createElement("p", null, "The lock's words") }, createElement("p", null, "A verse")));
+    const page = /<div ([^>]*)><p>A verse<\/p>/.exec(veiled)?.[1] ?? "";
+    expect(page).toContain('aria-hidden="true"');
+    expect(page).toContain('inert=""');
+    expect(page).toContain('data-mock-allow="contrast"');
+    expect(page).toMatch(/data-mock-why="[^"]+"/);
+  });
+
+  it("leaves the page as it is while no lock stands over it", async () => {
+    const { TryWindow } = await import("@/components/billing/plusTry/TryKit");
+    const open = render(createElement(TryWindow, { label: "Ambience" }, createElement("p", null, "A verse")));
+    const page = /<div ([^>]*)><p>A verse<\/p>/.exec(open)?.[1] ?? "";
+    expect(page).not.toMatch(/aria-hidden|inert|data-mock-allow/);
   });
 });
 

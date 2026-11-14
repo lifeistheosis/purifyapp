@@ -39,7 +39,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Close } from "@/components/ui/icons/Close";
-import { getAmbienceTrack } from "@/lib/ambience/ambience";
+import { AMBIENCE_TRACKS, getAmbienceTrack } from "@/lib/ambience/ambience";
 import { useAmbience } from "@/lib/ambience/player";
 import { cn } from "@/lib/cn";
 import { nextTryRow, trySoundOf } from "@/lib/premium/plusTry";
@@ -287,9 +287,19 @@ export function PlusTryPage({
       ) : null}
       {sound ? <TryMinute /> : null}
       <div className="mt-2.5 flex items-start justify-between gap-3">
-        <p className="min-w-0 font-sans text-[12.5px] leading-[1.4] text-paper/60">
-          {sound ? <SoundLine fallback={sound} /> : row.keep ? t(row.keep) : null}
-        </p>
+        {sound ? (
+          // The sound's line in the room of the longest: every sound's line stands in the same place,
+          // unseen, so a name that takes two lines where Rain's took one grows nothing as it begins (the
+          // strip's tile moved 13.3px under the finger at 390 as the sea began; Updates 28's walk).
+          <p data-try-sound-line="" className="grid min-w-0 font-sans text-[12.5px] leading-[1.4] text-paper/60">
+            <span className="col-start-1 row-start-1">
+              <SoundLine fallback={sound} />
+            </span>
+            <SoundLineRoom />
+          </p>
+        ) : (
+          <p className="min-w-0 font-sans text-[12.5px] leading-[1.4] text-paper/60">{row.keep ? t(row.keep) : null}</p>
+        )}
         {next ? (
           <button
             type="button"
@@ -303,6 +313,20 @@ export function PlusTryPage({
         ) : null}
       </div>
     </div>
+  );
+}
+
+/** Every sound's line, unseen, in the one place: the room the line is given, the tallest of them. */
+function SoundLineRoom() {
+  const { t } = useTranslate();
+  return (
+    <>
+      {AMBIENCE_TRACKS.map((track) => (
+        <span key={track.id} aria-hidden className="invisible col-start-1 row-start-1">
+          {t("plus.try.minute", { sound: t(track.labelKey) })}
+        </span>
+      ))}
+    </>
   );
 }
 

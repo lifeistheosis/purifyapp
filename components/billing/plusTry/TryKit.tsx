@@ -53,7 +53,15 @@ export function TryWindow({
       style={style}
     >
       <span aria-hidden className="plus-try-glow pointer-events-none absolute left-1/2 top-[-150px] -z-10 h-[300px] w-[420px] -translate-x-1/2" />
-      <div ref={scrollRef} className={cn("overflow-y-auto overscroll-contain scrollbar-thin", tall ? "h-[clamp(220px,40dvh,340px)]" : "h-[clamp(200px,34dvh,290px)]")}>
+      {/* Under the lock's words (a sound's minute is up) the page is their backdrop, veiled on purpose: out of
+          reach, unheard, and said so to the measure (checkMock read John 1 there at 2.4 to 3.4:1; Updates 28's walk). */}
+      <div
+        ref={scrollRef}
+        className={cn("overflow-y-auto overscroll-contain scrollbar-thin", tall ? "h-[clamp(220px,40dvh,340px)]" : "h-[clamp(200px,34dvh,290px)]")}
+        {...(overlay
+          ? { "aria-hidden": true, inert: true, "data-mock-allow": "contrast", "data-mock-why": "the page under the lock's words once a sound's minute is up, veiled on purpose" }
+          : {})}
+      >
         {loading ? (
           <div aria-hidden className="space-y-3 px-5 pt-8">
             <Skeleton className="mx-auto h-7 w-1/3" weight="faint" />
