@@ -150,7 +150,7 @@ for (const lang of LANGS) {
         const { go } = await import("./lib/shell-server.mjs");
         await go(page, "/bible/john/1", { timeout: 60000 });
       }
-      const word = page.locator('button[data-mock-why="a word in the verse\'s own line"]', { hasText: "λόγος" }).first();
+      const word = page.locator('button[data-mock-why="a word in the verse\'s own line"]', { hasText: /^λόγος/i }).first();
       await word.waitFor({ timeout: 120000 });
       await word.tap();
       await page.getByRole("button", { name: t("bible.wordStudyOpen"), exact: true }).tap();
