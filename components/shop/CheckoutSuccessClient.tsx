@@ -158,7 +158,7 @@ function FollowUpOffer({ orderId }: { orderId: string }) {
 
   if (!data) return null;
   return (
-    <div className="purify-rise purify-rise-3 mx-auto mt-12 max-w-[420px] text-left">
+    <div className="purify-rise purify-rise-3 mx-auto mt-12 max-w-[420px] text-start">
       {added ? (
         <p className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-sans text-detail text-paper/75">
           {t("shop.addedToCart")}

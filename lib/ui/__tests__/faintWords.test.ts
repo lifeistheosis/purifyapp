@@ -92,8 +92,6 @@ const MAY_STAY: { file: string; holds: string; why: string }[] = [
   { file: "components/campaigns/StartCampaign.tsx", holds: "campaigns.create", why: "the send button while it cannot be pressed" },
   { file: "components/community/ComposePage.tsx", holds: "composeSendKey", why: "the send button while it cannot be pressed" },
   { file: "components/eikonBox/EikonBoxClient.tsx", holds: "Claiming", why: "the claim button while it cannot be pressed" },
-  { file: "components/shop/CartClient.tsx", holds: "flatShippingCents", why: "a price struck through, beside the price that holds" },
-  { file: "components/shop/OrderBump.tsx", holds: "product.price_cents", why: "a price struck through, beside the price that holds" },
   { file: "components/shop/ambassador/AmbassadorDashboard.tsx", holds: "money(r.amountCents)", why: "an amount struck through once it was reversed; the amounts that stand are in full ink" },
   { file: "components/shop/seller/SetupChecklist.tsx", holds: "step.done", why: "a single mark before a step's own words" },
   { file: "components/feature/FeatureShell.tsx", holds: "signin.comingSoon", why: "a shell no page uses; nothing draws it" },

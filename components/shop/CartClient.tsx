@@ -251,14 +251,17 @@ export function CartClient() {
                   </Link>
                   <div className="flex min-w-0 flex-1 flex-col">
                     <div className="flex items-start justify-between gap-3">
+                      {/* The name whole, on as many lines as it needs (checkMock's cut). */}
                       <Link
                         href={productHref(item.slug, native)}
-                        className="line-clamp-2 min-w-0 font-heading text-ui font-bold leading-snug text-paper underline-offset-4 hover:underline md:text-body"
+                        data-mock-allow="target"
+                        data-mock-why="the piece's picture beside it, 80 by 96 (96 by 112 wider), opens the same page (WCAG 2.5.8's equivalent control)"
+                        className="min-w-0 break-words font-heading text-ui font-bold leading-snug text-paper underline-offset-4 hover:underline md:text-body"
                       >
                         {item.title}
                       </Link>
                       {lineTotal < listTotal ? (
-                        <p className="shrink-0 text-right font-sans text-ui font-semibold tabular-nums text-paper">
+                        <p className="shrink-0 text-end font-sans text-ui font-semibold tabular-nums text-paper">
                           <span className="block font-sans text-caption font-normal text-paper/45 line-through">
                             {formatPrice(listTotal, item.currency)}
                           </span>
@@ -280,7 +283,7 @@ export function CartClient() {
                           type="button"
                           aria-label={t("shop.reduceQuantityOf", { title: item.title })}
                           onClick={() => setCartQuantity(item.slug, item.quantity - 1)}
-                          className="tap-press hit-44 flex h-9 w-9 items-center justify-center rounded-l-pill text-paper/70 hover:text-paper"
+                          className="tap-press hit-44 flex h-9 w-9 items-center justify-center rounded-s-pill text-paper/70 hover:text-paper"
                         >
                           <Minus size={16} />
                         </button>
@@ -291,7 +294,7 @@ export function CartClient() {
                           type="button"
                           aria-label={t("shop.increaseQuantityOf", { title: item.title })}
                           onClick={() => setCartQuantity(item.slug, item.quantity + 1)}
-                          className="tap-press hit-44 flex h-9 w-9 items-center justify-center rounded-r-pill text-paper/70 hover:text-paper"
+                          className="tap-press hit-44 flex h-9 w-9 items-center justify-center rounded-e-pill text-paper/70 hover:text-paper"
                         >
                           <Plus size={16} />
                         </button>
@@ -299,7 +302,7 @@ export function CartClient() {
                       <button
                         type="button"
                         onClick={() => removeFromCart(item.slug)}
-                        className="inline-flex min-h-11 items-center font-sans text-caption font-medium text-paper/50 underline underline-offset-4 hover:text-paper"
+                        className="hit-44 inline-flex min-h-11 items-center font-sans text-caption font-medium text-paper/50 underline underline-offset-4 hover:text-paper"
                       >
                         {t("prayers.diptychs.remove")}
                       </button>
@@ -335,8 +338,8 @@ export function CartClient() {
           </div>
           {preview.savingsCents > 0 ? (
             <div className="mt-1.5 flex items-center justify-between gap-3">
-              <p className="font-sans text-caption font-semibold text-emerald-300">{t("shop.offerSaving")}</p>
-              <p className="font-sans text-caption font-semibold text-emerald-300">
+              <p className="font-sans text-caption font-semibold text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200">{t("shop.offerSaving")}</p>
+              <p className="font-sans text-caption font-semibold text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200">
                 {t("shop.cartDealSavingAmount", { amount: formatPrice(preview.savingsCents, currency) })}
               </p>
             </div>
@@ -345,18 +348,18 @@ export function CartClient() {
           <div className="mt-1.5 flex items-center justify-between gap-3">
             <p className="font-sans text-caption text-paper/55">{t("shop.shipping")}</p>
             {pro ? (
-              <p className="font-sans text-caption font-semibold text-emerald-300">
+              <p className="font-sans text-caption font-semibold text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200">
                 {config ? (
-                  <span className="mr-1.5 text-paper/40 line-through">
+                  <span className="me-1.5 text-paper/45 line-through">
                     {formatPrice(config.flatShippingCents, currency)}
                   </span>
                 ) : null}
                 {t("shop.freeWithPurifyPro")}
               </p>
             ) : shipsFree ? (
-              <p className="font-sans text-caption font-semibold text-emerald-300">
+              <p className="font-sans text-caption font-semibold text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200">
                 {config ? (
-                  <span className="mr-1.5 text-paper/40 line-through">
+                  <span className="me-1.5 text-paper/45 line-through">
                     {formatPrice(config.flatShippingCents, currency)}
                   </span>
                 ) : null}
@@ -410,16 +413,28 @@ export function CartClient() {
               nudge && "ring-2 ring-paper/60 ring-offset-4 ring-offset-night",
             )}
           >
-            <input
-              ref={agreeRef}
-              type="checkbox"
-              checked={agreed}
-              onChange={(e) => {
-                setAgreed(e.target.checked);
-                if (e.target.checked) setError(null);
-              }}
-              className="mt-0.5 h-4 w-4 shrink-0 accent-paper"
-            />
+            {/* A 44 by 44 reach round the box, inside its label, so a tap anywhere
+                in it ticks the box (as the buy bar's). It rises only into the
+                label's own gap above (mt-4), stops short of Check out below a
+                one-line label (its mt-3), and the margins keep the box where it
+                was drawn: 0.125rem below the line's top, the words 0.625rem
+                after it, the label no taller. The box is the checkout's
+                clickwrap: unticked, Check out still asks first, and the order
+                still carries termsAccepted. Only its reach is new. */}
+            <span className="-mx-3.5 -mt-4 -mb-2.5 inline-flex h-11 w-11 shrink-0 items-start justify-center pt-4.5">
+              <input
+                ref={agreeRef}
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => {
+                  setAgreed(e.target.checked);
+                  if (e.target.checked) setError(null);
+                }}
+                data-mock-allow="target"
+                data-mock-why="its reach is the 44 by 44 square round it, inside its label: a tap anywhere there ticks it"
+                className="h-4 w-4 accent-paper"
+              />
+            </span>
             <span className="font-sans text-caption leading-[1.5] text-paper/60">
               {t("ui.iAgreeToThe")}{" "}
               <LegalLink doc="terms" className="underline underline-offset-2 hover:text-paper/80">

@@ -60,16 +60,19 @@ export function OrderBump({
       </Link>
       <div className="min-w-0 flex-1">
         <p className="font-sans text-caption text-paper/55">{heading}</p>
+        {/* The name whole, on as many lines as it needs (checkMock's cut). */}
         <Link
           href={productHref(product.slug, native)}
-          className="block truncate font-sans text-detail font-semibold text-paper hover:text-paper/80"
+          data-mock-allow="target"
+          data-mock-why="the piece's picture beside it, 56 by 56, opens the same page (WCAG 2.5.8's equivalent control)"
+          className="block break-words font-sans text-detail font-semibold text-paper hover:text-paper/80"
         >
           {product.title}
         </Link>
         {priceCents != null && priceCents < product.price_cents ? (
           <p className="font-sans text-caption tabular-nums">
-            <span className="mr-1.5 text-paper/40 line-through">{formatPrice(product.price_cents, product.currency ?? "usd")}</span>
-            <span className="font-semibold text-emerald-300">{formatPrice(priceCents, product.currency ?? "usd")}</span>
+            <span className="me-1.5 text-paper/45 line-through">{formatPrice(product.price_cents, product.currency ?? "usd")}</span>
+            <span className="font-semibold text-emerald-300 [html[data-reading-mode=parchment]_&]:text-emerald-200">{formatPrice(priceCents, product.currency ?? "usd")}</span>
           </p>
         ) : (
           <p className="font-sans text-caption tabular-nums text-paper/70">{formatPrice(product.price_cents, product.currency ?? "usd")}</p>

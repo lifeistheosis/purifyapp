@@ -81,9 +81,12 @@ export function SetFinish({
               >
                 {image ? <Image src={image.media_url} alt={image.alt_text} fill sizes="44px" className="object-contain p-1" /> : null}
               </Link>
+              {/* The name whole, on as many lines as it needs (checkMock's cut). */}
               <Link
                 href={productHref(p.slug, native)}
-                className="min-w-0 flex-1 truncate font-sans text-caption text-paper/80 hover:text-paper"
+                data-mock-allow="target"
+                data-mock-why="the piece's picture beside it, 44 by 44, opens the same page (WCAG 2.5.8's equivalent control)"
+                className="min-w-0 flex-1 break-words font-sans text-caption text-paper/80 hover:text-paper"
               >
                 {p.title}
               </Link>
