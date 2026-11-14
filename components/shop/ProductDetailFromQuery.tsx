@@ -60,7 +60,13 @@ export function ProductDetailFromQuery() {
     onRouteCommitted();
   }, [slug]);
 
-  return <ProductDetailClient slug={slug} />;
+  // Keyed by the piece, so the piece being opened arrives as itself, in the
+  // same commit as its address: its outline with its picture, which the
+  // card's picture travels into (components/nav/RouteTransition.tsx,
+  // QueryRoute). Unkeyed, the piece being left stayed on screen under the
+  // new address until the new one was read (half a second on the export),
+  // and then changed in place.
+  return <ProductDetailClient key={slug} slug={slug} />;
 }
 
 const DETAIL = "/shop/icons/detail";

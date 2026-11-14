@@ -1,14 +1,15 @@
 "use client";
 
-import { ViewTransition, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { Suspense, ViewTransition, useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { RefObject } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { noteOpening, openingWritten } from "@/lib/nav/addressOpening";
 import { noteWayRoute, noteWayTap } from "@/lib/nav/readerWay";
 import { isNativeClient } from "@/lib/platform/native";
 import { overlayOwnsBack } from "@/lib/platform/useAndroidBack";
 import { outlinesForgotten } from "@/lib/ui/outlineLeave";
-import { arrived, beginNav, canMove, carryIn, dropReturn, endNav, isReturning, liftFrom, noteNav, quietEntrance, returnBy, samePage, takeNav } from "@/lib/ui/routeMotion";
+import { arrived, beginNav, canMove, carryIn, dropReturn, endNav, isReturning, liftFrom, namedByQuery, noteNav, pageOf, quietEntrance, returnBy, samePage, takeNav } from "@/lib/ui/routeMotion";
 import { endRouteExit } from "@/lib/ui/routeTransition";
 
 // On the server there is no layout to read and useLayoutEffect only warns
@@ -71,7 +72,12 @@ const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : use
  * transition go on (routeMotion.arrived).
  *
  * Keyed on `usePathname()`, like its neighbours: a filter that only rewrites
- * the query string is not a page switch.
+ * the query string is not a page switch. The one exception is a page
+ * addressed by its query, the export's page for a piece (routeMotion,
+ * `pageOf`): from one piece to another only the query changes, and that is
+ * pictured by `QueryRoute` below, mounted only on such a page and inside a
+ * Suspense boundary of its own: the static export cannot draw what reads the
+ * query, and leaves it to the device, so no other page reads it.
  *
  * Renders the mark, and nothing a reader can see.
  */
@@ -79,6 +85,8 @@ export function RouteTransition() {
   const pathname = usePathname() ?? "/";
   // The page now on screen, for the listeners, which outlive a render.
   const here = useRef(pathname);
+  // Its query, where the query names the page (QueryRoute): which piece.
+  const queryRef = useRef("");
   // The last address this bridge has dealt with. While it is not the one
   // being rendered, a change of address is on its way, and only then does
   // the mark ask React for a picture.
@@ -94,7 +102,7 @@ export function RouteTransition() {
         // The step the app took, landing on the same page: it closed
         // something that had made a history entry of its own (a sheet), and
         // no page is coming. Let the picture go at once.
-        if (samePage(window.location.pathname, here.current)) dropReturn();
+        if (pageOf(window.location.pathname, window.location.search) === pageOf(here.current, queryRef.current)) dropReturn();
         return;
       }
       // The browser's own Back or Forward: not pictured.
@@ -199,8 +207,69 @@ export function RouteTransition() {
   }, [pathname]);
 
   return (
+    <>
+      <ViewTransition default="none" update={changing && canMove() ? "route-mark" : "none"}>
+        <span aria-hidden data-route-mark={pathname} className="route-mark" />
+      </ViewTransition>
+      {namedByQuery(pathname) ? (
+        <Suspense fallback={null}>
+          <QueryRoute pathname={pathname} queryRef={queryRef} />
+        </Suspense>
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * From one page to another of a page addressed by its query (1.9, Updates
+ * 62; routeMotion, `pageOf`): the export's page for a piece, from one piece
+ * to another (a card in the set or in "You may also like" on a piece's
+ * page), or back. The path does not change, so the bridge above hears
+ * nothing, and this was a cut, filmed on the export (Updates 46's Open 2;
+ * scripts/piece-switch-walk.mjs). It is the bridge's own way, for the query:
+ * a mark that asks React for a picture only while the piece is changing, and
+ * a layout effect that says how the change moves, carries the card's
+ * picture into the new piece's (fault 7's carry), or lets a step back go on.
+ * With motion reduced, nothing is pictured, as everywhere.
+ *
+ * Its first draw is the arrival on the page, which the bridge has dealt
+ * with, so it pictures nothing then.
+ */
+function QueryRoute({ pathname, queryRef }: { pathname: string; queryRef: RefObject<string> }) {
+  const search = useSearchParams().toString();
+  const page = pageOf(pathname, search);
+  const heard = useRef(page);
+  const [settled, setSettled] = useState(page);
+  const changing = settled !== page;
+
+  useIsoLayoutEffect(() => {
+    const from = heard.current;
+    heard.current = page;
+    queryRef.current = search;
+    setSettled(page);
+    if (from === page) return;
+    openingWritten();
+    outlinesForgotten();
+    const note = takeNav(from, page);
+    if (arrived()) {
+      noteWayRoute("traverse");
+      quietEntrance("back");
+      return;
+    }
+    noteWayRoute(note);
+    if (note === "traverse" || !canMove()) return;
+    beginNav(note);
+    quietEntrance(note);
+    carryIn(pathname);
+  }, [page]);
+
+  useEffect(() => {
+    endNav();
+  }, [page]);
+
+  return (
     <ViewTransition default="none" update={changing && canMove() ? "route-mark" : "none"}>
-      <span aria-hidden data-route-mark={pathname} className="route-mark" />
+      <span aria-hidden data-route-mark={page} className="route-mark" />
     </ViewTransition>
   );
 }

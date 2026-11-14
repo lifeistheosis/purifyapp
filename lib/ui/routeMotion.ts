@@ -148,6 +148,36 @@ export function samePage(a: string, b: string): boolean {
 }
 
 /**
+ * Pages addressed by their query, not their path, each with the one
+ * parameter that says which (1.9, Updates 62). The export's page for a piece
+ * is one page, /shop/icons/detail/?slug= (lib/shop/productHref.ts says why
+ * the apps reach a piece that way), so from one piece to another only the
+ * query changes: to the path alone the two were one page, and the switch was
+ * a cut (Updates 46's Open 2, filmed on the export). Here, and only here, the
+ * query names the page, and by that parameter alone: anything else such a
+ * page writes into its query is not a page switch. `samePage` keeps its
+ * meaning for everything that keys on the path.
+ */
+const NAMED_BY_QUERY: ReadonlyMap<string, string> = new Map([["shop/icons/detail", "slug"]]);
+
+/** Whether the page at this path is addressed by its query (above). */
+export function namedByQuery(pathname: string): boolean {
+  return NAMED_BY_QUERY.has(depth(pathname).join("/"));
+}
+
+/**
+ * The page an address opens: its path, and for a page addressed by its
+ * query, which one ("shop/icons/detail?slug=basil"). Two addresses open the
+ * same page when these are equal.
+ */
+export function pageOf(pathname: string, search = ""): string {
+  const at = depth(pathname).join("/");
+  const by = NAMED_BY_QUERY.get(at);
+  const which = by ? new URLSearchParams(search).get(by) : null;
+  return which ? `${at}?${by}=${encodeURIComponent(which)}` : at;
+}
+
+/**
  * What the route change now committing is: what was said of it, or what its
  * two addresses say. Taken once; the note does not outlive its route.
  */

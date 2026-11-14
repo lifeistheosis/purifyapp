@@ -39,6 +39,8 @@ import {
   resetRouteMotionForTests,
   returnBy,
   samePage,
+  namedByQuery,
+  pageOf,
   setDown,
   standBeside,
   takeNav,
@@ -1036,7 +1038,9 @@ describe("the wiring", () => {
     const effect = bridge.slice(bridge.indexOf("useIsoLayoutEffect(() => {"), bridge.indexOf("}, [pathname]);"));
     expect(effect.indexOf("setSettled(pathname);")).toBeGreaterThan(-1);
     expect(effect.indexOf("setSettled(pathname);")).toBeLessThan(effect.indexOf("if (samePage(from, pathname)) return;"));
-    expect(bridge.match(/setSettled\(/g) ?? []).toHaveLength(1);
+    // Once here, and once in the mark for a page addressed by its query, in its own layout effect (below).
+    expect(bridge.match(/setSettled\(/g) ?? []).toHaveLength(2);
+    expect(bridge.slice(bridge.indexOf("function QueryRoute(")).match(/setSettled\(/g) ?? []).toHaveLength(1);
   });
 
   it("which is how React decides what to name (read from the React that Next ships)", () => {
@@ -1071,7 +1075,7 @@ describe("the wiring", () => {
   it("the browser's own Back and Forward are noted, so they are not pictured", () => {
     expect(bridge).toContain('window.addEventListener("popstate", onStep);');
     expect(bridge).toContain('noteNav("traverse");');
-    expect(bridge).toContain("if (samePage(window.location.pathname, here.current)) dropReturn();");
+    expect(bridge).toContain("if (pageOf(window.location.pathname, window.location.search) === pageOf(here.current, queryRef.current)) dropReturn();");
   });
 
   it("the chevron steps back inside a transition, and its floor returns as a page behind would", () => {
@@ -1203,5 +1207,57 @@ describe("the stylesheet", () => {
       expect(css.indexOf(`\n${carried} {`), carried).toBeGreaterThan(css.indexOf(`\n${selector} {`));
       expect(rule(carried), carried).toMatch(new RegExp(`${name}: 0ms;`));
     }
+  });
+});
+
+// Updates 62 (Updates 46's Open 2): on the export a piece's page is one page
+// addressed by its query, /shop/icons/detail/?slug=, so from one piece to
+// another only the query changed and the bridge, keyed on the path, pictured
+// nothing: a cut, filmed on the export (scripts/piece-switch-walk.mjs).
+describe("a page addressed by its query", () => {
+  const bridge = read("components/nav/RouteTransition.tsx");
+  const query = bridge.slice(bridge.indexOf("function QueryRoute("));
+
+  it("is the export's page for a piece, and only it", () => {
+    expect(namedByQuery("/shop/icons/detail/")).toBe(true);
+    expect(namedByQuery("/shop/icons/detail")).toBe(true);
+    expect(namedByQuery("/shop/icons/basil")).toBe(false);
+    expect(namedByQuery("/shop/orders/detail/")).toBe(false);
+    expect(namedByQuery("/saints/")).toBe(false);
+  });
+
+  it("is named by its piece, and by nothing else in its query", () => {
+    expect(pageOf("/shop/icons/detail/", "?slug=a")).not.toBe(pageOf("/shop/icons/detail/", "?slug=b"));
+    expect(pageOf("/shop/icons/detail/", "?slug=a&size=m")).toBe(pageOf("/shop/icons/detail", "slug=a"));
+    expect(pageOf("/shop/icons/detail/", "?slug=a")).toBe("shop/icons/detail?slug=a");
+  });
+
+  it("leaves every other page to its path, and samePage as it was", () => {
+    expect(pageOf("/saints/", "?q=basil")).toBe(pageOf("/saints", ""));
+    expect(pageOf("/shop/icons/basil/", "?slug=a")).toBe("shop/icons/basil");
+    expect(samePage("/shop/icons/detail/", "/shop/icons/detail")).toBe(true);
+  });
+
+  it("from one piece to another moves as two pages side by side, as on the website", () => {
+    expect(takeNav(pageOf("/shop/icons/detail/", "?slug=a"), pageOf("/shop/icons/detail/", "?slug=b"))).toBe("swap");
+    expect(takeNav("/shop/icons/a", "/shop/icons/b")).toBe("swap");
+  });
+
+  it("is pictured by a mark of its own, mounted only on such a page, inside its own Suspense boundary", () => {
+    expect(bridge).toContain("{namedByQuery(pathname) ? (");
+    expect(bridge).toMatch(/<Suspense fallback=\{null\}>\s*<QueryRoute pathname=\{pathname\} queryRef=\{queryRef\} \/>\s*<\/Suspense>/);
+    expect(query).toContain("const page = pageOf(pathname, search);");
+    expect(query).toContain("const changing = settled !== page;");
+    expect(query).toContain('<ViewTransition default="none" update={changing && canMove() ? "route-mark" : "none"}>');
+    expect(query).toContain('<span aria-hidden data-route-mark={page} className="route-mark" />');
+  });
+
+  it("does what the bridge does when a page arrives: settles first, lets a step back go on, carries the card's picture in", () => {
+    const effect = query.slice(query.indexOf("useIsoLayoutEffect(() => {"), query.indexOf("}, [page]);"));
+    const order = ["setSettled(page);", "if (from === page) return;", "takeNav(from, page)", "if (arrived())", "beginNav(note);", "carryIn(pathname);"].map((mark) => effect.indexOf(mark));
+    for (const at of order) expect(at).toBeGreaterThan(-1);
+    expect([...order].sort((x, y) => x - y)).toEqual(order);
+    expect(effect).toContain('if (note === "traverse" || !canMove()) return;');
+    expect(query).toMatch(/useEffect\(\(\) => \{\s*endNav\(\);\s*\}, \[page\]\);/);
   });
 });

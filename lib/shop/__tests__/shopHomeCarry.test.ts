@@ -121,6 +121,15 @@ describe("every card on /shop/ that opens a piece carries its picture into the p
     expect(query).toContain('const DETAIL = "/shop/icons/detail";');
   });
 
+  it("from one piece to another on the export's page, the piece being opened arrives as itself, with its picture to take the card's", () => {
+    // Updates 62: the body was not keyed, so the piece being left stayed on
+    // screen under the new address until the new one was read (filmed on the
+    // export: half a second), and no picture of the new piece was there to
+    // take the card's.
+    const src = read("components/shop/ProductDetailFromQuery.tsx");
+    expect(src).toContain("<ProductDetailClient key={slug} slug={slug} />");
+  });
+
   it("the row of pieces looked at before reads each title whole, never cut by an ellipsis", () => {
     // checkMock on the export at 390 (Updates 46): "Orthodox Cross Beanie" ended by an ellipsis in the row.
     const home = read(HOME);
