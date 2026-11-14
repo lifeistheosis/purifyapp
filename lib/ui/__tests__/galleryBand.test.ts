@@ -139,7 +139,7 @@ describe("the gallery band", () => {
     // An AVIF offered first that fails tries the JPEG behind it before the layer goes.
     expect(piece).toMatch(/if \(avif && !jpegOnly && img\.currentSrc\.endsWith\("\.avif"\)\) setJpegOnly\(true\);\s*else setFailed\(true\);/);
     expect(piece).toContain('{avif && !jpegOnly ? <source type="image/avif" srcSet={avif} /> : null}');
-    expect(code(BAND)).toContain("<BandPicture picture={picture} avif={avif} preview={preview} credit={credit} focus={focus} tall={tall} priority={priority} />");
+    expect(code(BAND)).toContain("<BandPicture picture={picture} avif={avif} preview={preview} credit={credit} focus={focus} tall={tall} priority={priority} carry={carry} />");
   });
 
   // The Ecumenical Councils (1.8, the owner's pick of r3-03, "the seven as a

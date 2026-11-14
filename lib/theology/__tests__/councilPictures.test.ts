@@ -95,7 +95,8 @@ describe("a council's picture on Theology's pages", () => {
     // The tile and its words as the hub draws them (components/theology/TheologyLibrary.tsx).
     const library = code("components/theology/TheologyLibrary.tsx");
     expect(library).toContain('className="council-film press-card relative block h-[150px] w-[108px]');
-    expect(library).toContain('<span className="absolute inset-x-[9px] bottom-2 z-[1]">');
+    // Pictured apart from the picture while it travels into the council's head (cause 8, data-carry-over).
+    expect(library).toContain('<span data-carry-over="" className="absolute inset-x-[9px] bottom-2 z-[1]">');
     // A name of two lines: the numeral's line (14.5px, leading-tight), 2px, two lines of 10.5px at 1.3, 8px from the foot.
     const wordsFrom = 150 - 8 - (14.5 * 1.25 + 2 + 2 * 10.5 * 1.3);
     // The foot, read from the stylesheet: how much of the palette's ground lies over the picture, by how far down the tile.
