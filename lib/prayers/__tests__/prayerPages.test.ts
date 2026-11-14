@@ -178,7 +178,10 @@ describe("a prayer page", () => {
   it("lights the line being read only with motion on, and lets the scroll drive it", () => {
     const lit = code("components/prayers/service/useLitLine.ts");
     expect(lit).toContain("useReducedMotion()");
-    expect(lit).toMatch(/if \(!root \|\| reduced\) return;/);
+    // With motion off nothing is marked; the line is still followed, for the click (build 97 note 1).
+    expect(lit).toContain("const mark = !reduced;");
+    expect(lit).toContain("if (step && mark) step.dataset.praying = \"\";");
+    expect(lit).toContain("if (line && mark) {");
     expect(lit).toContain('addEventListener("scroll", schedule, { passive: true })');
     const css = read("app/globals.css");
     expect(css).toContain(':where([data-motion="full"]) [data-prayer-reader][data-following] [data-line] {');

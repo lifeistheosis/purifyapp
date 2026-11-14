@@ -118,9 +118,10 @@ describe("the line being prayed lit, the rest dim", () => {
     expect(lit).toContain('line?.closest<HTMLElement>("[data-step]")');
     expect(lit).toContain('step.dataset.praying = ""');
     expect(lit).toContain("delete praying.dataset.praying");
-    // One engine: still the scroll, still behind the motion switch.
+    // One engine: still the scroll, the marks still behind the motion switch.
     expect(lit).toContain('addEventListener("scroll", schedule, { passive: true })');
-    expect(lit).toMatch(/if \(!root \|\| reduced\) return;/);
+    expect(lit).toContain("const mark = !reduced;");
+    expect(lit).toContain("if (step && mark) step.dataset.praying = \"\";");
   });
 
   it("knows every prayer of the page as a step, and ticks nothing under a prayer", () => {

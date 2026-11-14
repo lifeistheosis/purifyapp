@@ -28,6 +28,7 @@ import {
   HAND_EVENTS,
   HOLD_MS,
   KEPT_AT,
+  LIT_AT,
   MIN_BAND_PX,
   READING_PLACE,
   SCREEN_EDGE_ATTR,
@@ -152,13 +153,26 @@ describe("going to a place", () => {
     expect(at.top).toBeCloseTo(BAND.top + 0.1 * 605);
   });
 
-  it("stands a line's top at the reading place when asked, short as it is", () => {
-    // A prayer's first line (Begin): where the scroll lights the line, so
-    // the line landed on is the one lit.
-    const line: Span = { top: 700, bottom: 736 };
-    const at = moved(line, shiftToReadingPlace(BAND, line, "top"));
-    expect(at.top).toBeCloseTo(placeIn(BAND) - HAIR_PX);
-    expect(at.top).toBeLessThan(placeIn(BAND));
+  it("stands a line's top over the band's middle when asked, short or tall, where the prayer pages light it (build 97 note 1)", () => {
+    // A prayer's first line (Begin, Your rule today): where the scroll lights
+    // the line, so the line landed on is the one lit. His words: "it should
+    // glow the quite in the middle of the users screen". It stood two fifths
+    // down until build 97.
+    expect(LIT_AT).toBe(KEPT_AT);
+    expect(LIT_AT).toBe(0.5);
+    for (const line of [
+      { top: 700, bottom: 736 },
+      { top: 700, bottom: 820 },
+      { top: 700, bottom: 1400 },
+    ] satisfies Span[]) {
+      const at = moved(line, shiftToReadingPlace(BAND, line, "top"));
+      expect(at.top).toBeCloseTo(middle(BAND) - HAIR_PX);
+      expect(at.top).toBeLessThan(middle(BAND));
+      expect(at.top).toBeGreaterThan(placeIn(BAND));
+    }
+    // The other ways of going somewhere keep the reading place, two fifths down.
+    const verse: Span = { top: 700, bottom: 900 };
+    expect(moved(verse, shiftToReadingPlace(BAND, verse)).top).toBeCloseTo(placeIn(BAND) - HAIR_PX);
   });
 });
 
@@ -399,11 +413,11 @@ describe("the places that go somewhere", () => {
     }
   });
 
-  it("light the line being prayed at the same place", () => {
+  it("light the line being prayed where Begin stands it, over the band's middle (build 97 note 1)", () => {
     const lit = code("components/prayers/service/useLitLine.ts");
     expect(lit).toContain("const band = visibleBand();");
-    expect(lit).toContain("placeIn(band, READING_PLACE + (FOOT - READING_PLACE) * nearFoot)");
-    expect(lit).not.toMatch(/\bconst PLACE\b|view \* \(PLACE/);
+    expect(lit).toContain("const place = y + placeIn(band, litShare(band.bottom - band.top, left)) + ON_PLACE_PX;");
+    expect(lit).not.toMatch(/READING_PLACE|\bconst PLACE\b|view \* \(PLACE/);
   });
 
   it("follow read aloud within the band's middle, after the reader's hands-off time", () => {

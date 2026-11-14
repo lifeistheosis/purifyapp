@@ -8825,7 +8825,7 @@ await section(54, async () => {
 // fling was pulled back up 65 to 66px, a gentle flick ran on 29 to 273px after
 // the finger lifted (the phone's own momentum: 24 to 30px), and a slow drag
 // held still before lifting moved on 30 to 73px. The snapping is gone
-// (components/prayers/service/useEasyScroll.ts); this holds, at three sizes,
+// (components/prayers/service/useLitLine.ts); this holds, at three sizes,
 // that the page rests where the finger lets it go, and that the click as each
 // new prayer arrives, the verse lit and the counting stay. Real touch with its
 // fling: Input.dispatchTouchEvent (the touch kind of synthesizeScrollGesture
@@ -8923,6 +8923,125 @@ await section(55, async () => {
     must(arrivals >= 2 && pulses >= arrivals - 1 && pulses <= arrivals + 1, `a click as each new prayer arrives, none for another verse of the same prayer (${pulses} clicks for ${arrivals} prayers reached)`);
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
+  }
+
+  // Build 97 note 1, his words: "it should glow the quite in the middle of the
+  // users screen. and also the haptic feedback should move you and glow to
+  // the next section (rather than haptic feedback on a arbitrary feeling line
+  // with no visual hook)". The line lit is the one over the band's middle,
+  // Begin stands the first prayer's first line there, and every click is
+  // caught as the phone is asked to move: the line over the middle must be a
+  // new prayer's first line, just arrived, and with motion on the line lit in
+  // that same frame. With motion off nothing is lit and the clicks keep the
+  // same place. Real touch at 390, the clicks on, three prayer pages.
+  for (const motion of ["on", "off"]) {
+    for (const to of ["/prayers/morning/", "/prayers/hours/first-hour/", "/prayers/evening/"]) {
+      const where = `${to} with motion ${motion}`;
+      const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.motion": motion, "purify:scroll-clicks": "on" } });
+      await ctx.addInitScript(() => {
+        // The band as lib/ui/readingPlace.ts reads it (visibleBand), and the line over its middle (useLitLine.ts).
+        const insets = () => {
+          const probe = document.createElement("div");
+          probe.style.cssText = "position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;padding-top:var(--inset-top, env(safe-area-inset-top, 0px));padding-bottom:var(--inset-bottom, env(safe-area-inset-bottom, 0px));";
+          document.body.appendChild(probe);
+          const st = getComputedStyle(probe);
+          const got = { top: parseFloat(st.paddingTop) || 0, bottom: parseFloat(st.paddingBottom) || 0 };
+          probe.remove();
+          return got;
+        };
+        const band = () => {
+          const h = innerHeight;
+          const ins = insets();
+          let top = ins.top;
+          let bottom = h - ins.bottom;
+          for (const el of document.querySelectorAll("[data-screen-edge]")) {
+            const r = el.getBoundingClientRect();
+            const st = getComputedStyle(el);
+            if (r.width <= 0 || r.height <= 0 || st.visibility === "hidden" || !(parseFloat(st.opacity) > 0)) continue;
+            if (el.getAttribute("data-screen-edge") === "top") {
+              if (r.bottom > 0 && r.top < h / 2) top = Math.max(top, Math.min(r.bottom, h));
+            } else if (r.top < h && r.bottom > h / 2) bottom = Math.min(bottom, Math.max(r.top, 0));
+          }
+          return bottom - top >= 96 ? { top, bottom } : { top: ins.top, bottom: h - ins.bottom };
+        };
+        window.__middle = () => {
+          const b = band();
+          const room = b.bottom - b.top;
+          const left = document.documentElement.scrollHeight - (scrollY + innerHeight);
+          const nearFoot = left < room ? 1 - Math.max(0, left) / room : 0;
+          const place = b.top + room * (0.5 + 0.4 * nearFoot);
+          const lines = [...document.querySelectorAll("[data-prayer-reader] [data-line]")];
+          let at = -1;
+          for (let i = 0; i < lines.length; i++) {
+            if (lines[i].getBoundingClientRect().top <= place + 3) at = i;
+            else break;
+          }
+          const line = lines[at] ?? null;
+          const step = line?.closest("[data-step]") ?? null;
+          const own = step ? [...step.querySelectorAll("[data-line]")] : [];
+          const lit = document.querySelector("[data-prayer-reader] [data-lit]");
+          return {
+            step: step?.id ?? null,
+            first: !!line && own[0] === line,
+            off: line ? Math.round(line.getBoundingClientRect().top - place) : null,
+            lit: !lit ? "none" : lit === line ? "same" : "other",
+            middle: Math.round(b.top + room / 2),
+            foot: nearFoot > 0,
+            y: Math.round(scrollY),
+          };
+        };
+        window.__pulses = [];
+        navigator.vibrate = () => {
+          window.__pulses.push(window.__middle());
+          return true;
+        };
+      });
+      const cdp = await ctx.newCDPSession(page);
+      await go(page, "/");
+      await go(page, to);
+      await page.waitForSelector("[data-prayer-reader] [data-line]", { timeout: 20000 });
+      await page.waitForTimeout(800);
+      // Begin: the first prayer's first line stands over the middle, lit there with motion on.
+      const begin = await page.evaluate(() => {
+        const b = [...document.querySelectorAll("button")].find((x) => (x.textContent || "").trim() === "Begin");
+        if (!b) return null;
+        const r = b.getBoundingClientRect();
+        return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) };
+      });
+      must(!!begin, `${where}: Begin is on the page`);
+      if (begin) {
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [begin] });
+        await page.waitForTimeout(40);
+        await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+        await settle(page);
+        const at = await page.evaluate(() => {
+          const first = document.querySelector("[data-prayer-reader] [data-step] [data-line]");
+          const got = window.__middle();
+          return { ...got, firstStep: first?.closest("[data-step]")?.id ?? null, firstOff: first ? Math.round(first.getBoundingClientRect().top - got.middle) : null };
+        });
+        must(at.step === at.firstStep && at.first && at.firstOff >= -4 && at.firstOff <= 1 && at.lit === (motion === "on" ? "same" : "none"), `${where}: Begin stands the first prayer's first line over the band's middle (${at.firstOff}px from it), ${motion === "on" ? "lit there" : "nothing lit"} (${JSON.stringify(at)})`);
+      }
+      // Down the page with gentle swipes: every click with the glow on a new prayer's first line at the middle.
+      await page.evaluate(() => (window.__pulses = []));
+      let arrivals = 0;
+      let prev = (await page.evaluate(() => window.__middle())).step;
+      const rests = [];
+      for (let k = 0; k < 30; k++) {
+        await swipe(cdp, page, 90, 300);
+        const now = await page.evaluate(() => window.__middle());
+        rests.push(now);
+        if (now.step && now.step !== prev) arrivals++;
+        if (now.step) prev = now.step;
+      }
+      const pulses = await page.evaluate(() => window.__pulses);
+      const hooked = pulses.filter((p) => p.first && p.off !== null && p.off <= 3 && p.off >= -40 && p.lit === (motion === "on" ? "same" : "none"));
+      must(pulses.length >= 2 && hooked.length === pulses.length, `${where}: every click comes as a new prayer's first line reaches the band's middle${motion === "on" ? ", lit in the same frame" : ""} (${hooked.length} of ${pulses.length}${hooked.length < pulses.length ? "; " + JSON.stringify(pulses.filter((p) => !hooked.includes(p)).slice(0, 3)) : ""})`);
+      must(pulses.length >= arrivals - 1 && pulses.length <= arrivals + 1, `${where}: a click for each new prayer the glow reaches, none for another verse of the same (${pulses.length} clicks, ${arrivals} prayers reached)`);
+      const away = rests.filter((r) => !r.foot && r.step && (motion === "on" ? r.lit !== "same" : r.lit !== "none"));
+      must(away.length === 0, `${where}: at every rest the line lit is the one over the band's middle${motion === "on" ? "" : " (none lit with motion off)"} (${rests.length - away.length} of ${rests.length}${away.length ? "; " + JSON.stringify(away.slice(0, 2)) : ""})`);
+      must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+      await ctx.close();
+    }
   }
 
   // Morning Prayers walked to the Amen with gentle flicks: every prayer counted once.

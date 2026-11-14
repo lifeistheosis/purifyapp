@@ -104,6 +104,16 @@ export function handTicks(): { tick: () => void; end: () => void } {
 }
 
 /**
+ * Loads the plugin ahead of a click that has a frame to keep (the prayers'
+ * click with the glow, components/prayers/service/useLitLine.ts), which would
+ * otherwise wait on the load the first time. In a browser, or with the clicks
+ * off, nothing.
+ */
+export function readyTicks(): void {
+  if (isNativeClient() && clicksOn()) void haptics();
+}
+
+/**
  * Clicks as `ref`'s row is scrolled by hand past the items `items` picks out
  * (a selector run from the row; its children by default).
  */

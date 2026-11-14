@@ -26,9 +26,10 @@
  *    reader reads on) frees its room. The phone's own edges, the status bar
  *    and the home indicator, always count. A page that marks nothing is read
  *    from the CSS variables the foot's pieces set (app/globals.css).
- *  - The reading place: two fifths of the way down the band, where the
- *    prayer pages light the line being prayed
- *    (components/prayers/service/useLitLine.ts).
+ *  - The reading place: two fifths of the way down the band.
+ *  - The prayer pages light the line being prayed over the band's middle
+ *    (LIT_AT, build 97 note 1), and stand a prayer's first line there when
+ *    they go to it (align "top"; components/prayers/service/useLitLine.ts).
  *  - Going somewhere stands its top at the reading place. A short block (a
  *    verse of a few lines, under a fifth of the band) has its middle at the
  *    band's middle instead, so it reads as centred. One too tall for the room
@@ -52,7 +53,7 @@ export type Span = { top: number; bottom: number };
 export type Align =
   /** A short block centred in the band, a taller one's top at the reading place. */
   | "auto"
-  /** Its top at the reading place whatever its height: a line to be lit there. */
+  /** Its top at the band's middle whatever its height: a line the prayer pages light there (LIT_AT). */
   | "top";
 
 /** The reading place: this far down the band. */
@@ -68,9 +69,10 @@ export const SHORT_BLOCK = 0.2;
 export const ZONE_TOP = 0.1;
 export const ZONE_FOOT = 0.7;
 /**
- * A block set by its top stands this far above the reading place, so the line
- * the prayer pages light there is that one even when the scroll is rounded to
- * the screen's own pixels.
+ * A block set by its top stands this far above its place (the reading place,
+ * or the band's middle for a line the prayer pages light), so the line lit
+ * there is that one even when the scroll is rounded to the screen's own
+ * pixels.
  */
 export const HAIR_PX = 2;
 /** Less room than this between the bars, and the band is the screen between the phone's edges. */
@@ -136,6 +138,7 @@ export function shiftToReadingPlace(band: Span, block: Span, align: Align = "aut
     // Taller than the room under the reading place: it starts higher.
     if (size > room * (1 - READING_PLACE)) return block.top - placeIn(band, ZONE_TOP);
   }
+  if (align === "top") return block.top - (placeIn(band, LIT_AT) - HAIR_PX);
   return block.top - (placeIn(band) - HAIR_PX);
 }
 
@@ -154,6 +157,14 @@ export function inReadingZone(band: Span, block: Span): boolean {
  * same block: a return never walks.
  */
 export const KEPT_AT = 0.5;
+
+/**
+ * Where the prayer pages light the line being prayed (build 97 note 1, his
+ * words: "it should glow the quite in the middle of the users screen"): the
+ * line over the band's middle, the line a page reads back the block the
+ * reader is at by. It was the reading place, two fifths down, until build 97.
+ */
+export const LIT_AT = KEPT_AT;
 
 /**
  * Which of a run of blocks, in the page's order, the reader is at: the last

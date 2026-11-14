@@ -21,8 +21,8 @@
 //    season on the root and the stylesheet lays that light in the room.
 //
 // Two still layers, fixed behind the prayers. No picture, no blur, and
-// nothing here reads the scroll: Easy Scroll and the lit line are not its
-// business (./useEasyScroll.ts, ./useLitLine.ts).
+// nothing here reads the scroll: the lit line and its click are not its
+// business (./useLitLine.ts).
 
 import { useCandleSeason } from "@/components/reader/CandleVeil";
 import { useCandlelightWorn } from "@/components/theme/useWornPalette";

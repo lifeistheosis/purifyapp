@@ -12586,9 +12586,9 @@ html[data-look="blush"] [data-prayer-reader] {
 /* Easy Scroll's snapping (1.9, build 89 note 7; by the verse from build 90
    note 6) went at build 93 note 2: it moved the page after the finger let
    go, pulling a fling back up and running a flick on past the phone's own
-   momentum (the measures are in components/prayers/service/useEasyScroll.ts).
-   The prayers scroll as the phone does; the verse at the reading place is
-   still lit, below, and a click still marks each new prayer. */
+   momentum (the measures are in components/prayers/service/useLitLine.ts).
+   The prayers scroll as the phone does; the verse over the band's middle is
+   lit, below, and a click marks each new prayer as the glow lands in it. */
 
 /* The line being prayed is the page's accent: white with a soft white glow
    (the owner, 2026-10-28: the accent is a glowing white, never yellow). On
@@ -13206,9 +13206,9 @@ html[data-reading-mode="parchment"] .chant-version-dot {
    live lyrics in Now Playing and the read-aloud follow do. The owner,
    2026-10-16: the line being read bright, the rest a step back as you move
    through, driven by the scroll and behind the motion switch. The reader
-   carries data-following once its first line has reached the reading place,
-   and the line there carries data-lit (components/prayers/service/
-   useLitLine.ts). Only with motion on: with it off every line stays at full
+   carries data-following once its first line has reached the band's middle,
+   and the line over it carries data-lit (components/prayers/service/
+   useLitLine.ts, build 97 note 1). Only with motion on: with it off every line stays at full
    strength and nothing moves. The step back is the palette's own, each word
    still 4.5:1 (see "The rest dim"). */
 :where([data-motion="full"]) [data-prayer-reader][data-following] [data-line] {

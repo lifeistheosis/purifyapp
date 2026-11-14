@@ -68,7 +68,6 @@ import { PrayerLight } from "@/components/prayers/service/PrayerLight";
 import { ServiceHeader } from "@/components/prayers/service/ServiceHeader";
 import { PrayerStep } from "@/components/prayers/service/PrayerStep";
 import { RuleEnd } from "@/components/prayers/service/RuleEnd";
-import { useEasyScroll } from "@/components/prayers/service/useEasyScroll";
 import { goToPrayer, useLitLine } from "@/components/prayers/service/useLitLine";
 import { usePassedSteps } from "@/components/prayers/service/usePassedSteps";
 import { isRuleBookmarked, toggleRuleBookmark } from "@/lib/prayers/bookmarks";
@@ -165,11 +164,10 @@ export function PrayerRuleReader({
 }) {
   const { t, locale } = useTranslate();
   const article = useRef<HTMLElement>(null);
+  // The line over the band's middle lit, and a click in the same frame as it
+  // lands in each new prayer (build 97 note 1; build 89 note 7's Easy Scroll,
+  // whose snapping went at build 93 note 2): the phone's own scroll.
   useLitLine(article);
-  // The phone's own scroll, with a click as each new prayer arrives at the
-  // reading place (build 89 note 7's Easy Scroll; its snapping went at build
-  // 93 note 2, service/useEasyScroll.ts).
-  useEasyScroll(article);
 
   const snap = useSyncExternalStore(subscribe, () => readSnap(rule.id), () => SERVER_SNAP);
   const done = useMemo(() => new Set(snap.done), [snap.done]);
@@ -291,7 +289,7 @@ export function PrayerRuleReader({
   function begin() {
     const first = rule.prayers[0];
     if (!first) return;
-    // Its first line at the reading place, lit there, and the reader's focus
+    // Its first line over the band's middle, lit there, and the reader's focus
     // on its name: the way in is also where the focus goes.
     goToPrayer(first.id);
   }
