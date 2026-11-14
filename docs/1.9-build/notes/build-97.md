@@ -60,3 +60,13 @@ Build 97 (run 43608911353, from 231e1ce0, code 59d1fd98), cut ungated at his wor
 **The plan.** A design, so it goes to the Fable round for his yes (CLAUDE.md: every design is justified), with the journal page and the Voice sheet, as part of round 3 (the Bible's opening; the plans sit under the Bible tab). One version, stills from the export, `checkMock` with pixels, a reason for each choice. The plan's own page first, which is what he showed, and the plans list only where the two must meet (the picture carried in). What the page does stays: Begin and the plan's bar, Plus shown and never hidden, progress kept on the device, the citations. On his yes a fixer applies it, with a test that fails on the zero. If the round waits, the zero alone goes to a fixer, since it breaks a rule he has already approved.
 
 **Owner:** the Fable round (NOW, Waiting on him 1), then a fixer.
+
+## Note 8: a scroll in a sheet's window, taken by the sheet
+
+**His words** (about 16:16 UTC), with a screenshot of the Plus preview's Ambience page (6 of 14): "when you hold down to scroll on the Bible in this context and your thumb reaches outside the Bible (because you are scrolling down to read it starts closing the whole entire window)".
+
+**Found** (read in the code, not yet reproduced): the sheet follows the finger through `lib/ui/useDraggableSheet.ts`. Its body takes a gesture once the finger has moved past the slop, and asks only about the sheet's own body: a pull down is taken when that body is scrolled to its top (line 537, `dy > 0 && body.scrollTop <= 0`), and any pull up while the sheet rests at half. It never asks whether the finger began in a window that scrolls inside the sheet, as the preview's Bible does (`TryWindow`, `components/billing/plusTry/TryKit.tsx`), so a scroll that belongs to the verses can be taken by the sheet, which then closes under the reader's thumb. Why he sees it start as his thumb leaves the window is for the fixer to reproduce with real touch at phone size.
+
+**The plan.** A gesture that begins in a window that scrolls inside a sheet belongs to that window while the window has room to scroll that way; the choice is made once, when the gesture starts, and never handed to the sheet halfway through. The handle and the header drag the sheet as before. Every sheet with such a window is walked, not only this one (the Plus preview's pages, Compare, Word study, the journal). A test that fails on the old code: a touch walk that scrolls the window and crosses its edge, and the sheet stays open.
+
+**Owner:** a fixer, with note 2 (the jump and flash when typing starts in a sheet): both are the sheet's own behaviour and likely meet in `lib/ui/useDraggableSheet.ts`, so one chat holds both.
