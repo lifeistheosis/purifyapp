@@ -13233,6 +13233,15 @@ html[data-look] :is(.lm-feature, .lm-avatar) {
 html[data-look] .lm-hero {
  background: transparent !important;
 }
+/* The first launch's questions and the second chance's are a dialog over the
+   whole screen (components/onboarding/OnboardingFlow.tsx, RoadCards.tsx), on
+   lm-hero for Dark's own ground. Cleared with every lm-hero under a look,
+   the page beneath showed through them: Today under "What are you looking
+   for?" on all fifteen looks, its line read 1.14:1 (Updates 31, 2026-11-13).
+   A dialog stands on the look's own ground instead. */
+html[data-look] .lm-hero[role="dialog"] {
+ background: var(--color-night) !important;
+}
 /* The website's front page holds one verse on a band (lm-band, bg-black in
    app/page.tsx). Every look sets it on the look's second ground, a step from
    the page: on a light look a deeper paper, as Light's own band is; on a

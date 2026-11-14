@@ -274,6 +274,27 @@ describe("the stylesheet draws no surface in a fixed colour that a look cannot r
 
 // ── The front page's verse band ────────────────────────────────────────────
 
+describe("the first launch's dialogs stand on the look's own ground", () => {
+  // Every lm-hero is cleared under a look, which is right for the website's
+  // front-page hero (the look's own ground shows through it) and wrong for a
+  // dialog over the whole screen: the page beneath showed through the
+  // questions on all fifteen looks (Updates 31, 2026-11-13).
+  it("a dialog on lm-hero takes the look's own ground, over the rule that clears the rest", () => {
+    const at = CSS.indexOf('\nhtml[data-look] .lm-hero[role="dialog"] {');
+    expect(at, 'html[data-look] .lm-hero[role="dialog"]').toBeGreaterThan(-1);
+    expect(CSS.slice(at, CSS.indexOf("}", at))).toContain("background: var(--color-night) !important;");
+  });
+
+  it("both dialogs that stand on lm-hero say they are dialogs", () => {
+    for (const file of ["components/onboarding/OnboardingFlow.tsx", "components/onboarding/RoadCards.tsx"]) {
+      const code = uncomment(read(file));
+      const at = code.indexOf('className={`lm-hero fixed inset-0');
+      expect(at, file).toBeGreaterThan(-1);
+      expect(code.slice(code.lastIndexOf("<div", at), at), file).toContain('role="dialog"');
+    }
+  });
+});
+
 describe("the website's front-page verse band is the look's own on every look", () => {
   // It was painted by the light looks alone (html[data-look][data-reading-mode=
   // "parchment"] .lm-band): on a dark look it stayed bg-black, a black band
