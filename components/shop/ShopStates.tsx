@@ -1,11 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 import { isNetworkFailure } from "@/lib/api/networkFailure";
 import { cn } from "@/lib/cn";
 import { textDir } from "@/lib/i18n/textDir";
+import { outlineLeft } from "@/lib/ui/outlineLeave";
+
+// On the server there is no layout to read (the same choice components/ui/AfterAMoment.tsx makes).
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 // Shared loading / error / sign-in states for the client shop pages. The shop
 // is online-only inside the native shell, so a dropped connection lands on
@@ -90,10 +95,22 @@ export function ShopHomeSkeleton() {
   );
 }
 
-/** Skeleton for the product detail page. */
+/**
+ * Skeleton for the product detail page. It leaves as a route's outline does,
+ * dissolving over the piece as React takes it out (lib/ui/outlineLeave.ts):
+ * the piece in place of its outline in one frame was a cut (the gate's walk
+ * with motion on, 885ms after the tap).
+ */
 export function ShopDetailSkeleton() {
+  const outline = useRef<HTMLDivElement>(null);
+  useIsoLayoutEffect(() => {
+    const el = outline.current;
+    return () => {
+      if (el) outlineLeft(el);
+    };
+  }, []);
   return (
-    <div className="mx-auto w-full max-w-[1100px] px-5 pt-6 md:px-8" aria-hidden>
+    <div ref={outline} className="mx-auto w-full max-w-[1100px] px-5 pt-6 md:px-8" aria-hidden>
       <Bone className="h-4 w-40" />
       <div className="mt-4 gap-10 md:grid md:grid-cols-[minmax(0,1fr)_360px]">
         <div>

@@ -13,6 +13,13 @@
 // The shop's piece is read on the device by the address's ?slug=, so the page
 // in the bundle is its Suspense fallback until then, and that fallback was null.
 // Now it is the piece's own outline, the one it shows while it is fetched.
+//
+// The gate's walk with motion on found two more things, held here too: the
+// work's outline came in as a cascade, which waits out the page switch and then
+// lets its lines in one by one, so a switch into a long work stood empty for
+// most of a second; and the piece took its outline's place in one frame, a cut.
+// Both outlines now stand whole as the page arrives and dissolve over what
+// replaces them, as a route's outline does (lib/ui/outlineLeave.ts).
 
 import fs from "node:fs";
 import path from "node:path";
@@ -84,6 +91,28 @@ describe("a Father's work in the apps, before its text has come", () => {
     expect(html).toMatch(/text-\[44px\]"> <div class="sk sk-strong absolute inset-0 m-auto/);
     expect(html).toMatch(/text-ui"> <div class="sk sk-mid absolute inset-0 m-auto/);
   });
+});
+
+describe("both outlines, as the page arrives and as they leave", () => {
+  it("the work's outline stands whole: its lines are not a cascade, which waits out the switch", async () => {
+    const html = await workBeforeItsText();
+    const outline = html.slice(html.indexOf("data-work-outline"));
+    expect(outline).not.toMatch(/class="cascade/);
+    expect((outline.match(/class="sk sk-faint sk-line/g) ?? []).length).toBe(9);
+  });
+
+  for (const [rel, name] of [
+    ["components/saints/LazyWritingReader.tsx", "WorkOutline"],
+    ["components/shop/ShopStates.tsx", "ShopDetailSkeleton"],
+  ] as const) {
+    it(`${name} dissolves over what replaces it, from its own layout effect's cleanup`, () => {
+      const src = code(rel);
+      const body = src.slice(src.indexOf(`export function ${name}()`));
+      expect(src).toContain('import { outlineLeft } from "@/lib/ui/outlineLeave";');
+      expect(body).toMatch(/useIsoLayoutEffect\(\(\) => \{\s*const el = outline\.current;\s*return \(\) => \{\s*if \(el\) outlineLeft\(el\);/);
+      expect(body).toMatch(/<div ref=\{outline\}/);
+    });
+  }
 });
 
 describe("the shop's piece, before the device has read its address", () => {
