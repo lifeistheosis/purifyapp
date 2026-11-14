@@ -397,7 +397,11 @@ async function measure(label, locator) {
   const read = readFrames(frames.frames.filter((f) => f.t >= 0));
   const trace = summarise(events, mark, WINDOW);
   const wake = typeof frames.wake === "number" ? frames.wake - down : null;
-  return { label, ...read, wake, click: frames.tap.click === undefined ? null : frames.tap.click - down, trace, loaf: frames.loaf.filter((l) => l.at >= -50).slice(0, 8), frames: frames.frames.filter((f) => f.t >= 0) };
+  // A close read only while the sheet is drawn (Updates 67's open 2): after it has gone, the window
+  // is the Words view as it always is, read on its own below ("nothing over it").
+  const kept = frames.frames.filter((f) => f.t >= 0 && read.gone !== null && f.t < read.gone);
+  const whileDrawn = read.gone !== null ? (({ n, dropped, longest }) => ({ until: read.gone, n, dropped, longest }))(readFrames(kept)) : null;
+  return { label, ...read, whileDrawn, wake, click: frames.tap.click === undefined ? null : frames.tap.click - down, trace, loaf: frames.loaf.filter((l) => l.at >= -50).slice(0, 8), frames: frames.frames.filter((f) => f.t >= 0) };
 }
 
 function line(m) {
@@ -408,6 +412,7 @@ function line(m) {
       (m.moving ? `; moved ${m.moving.first} to ${m.moving.settled ?? "not settled"}ms, top ${m.first?.top} to ${m.last?.top}, biggest step ${m.biggest.d}px in ${m.biggest.gap}ms` : "") +
       (m.photosAtRise !== null ? `; photos at first frame ${m.photosAtRise}, all shown at ${m.photosWhole ?? "never"}ms` : "") +
       (m.gone !== null ? `; the sheet gone at ${m.gone}ms` : "") +
+      (m.whileDrawn ? ` (while drawn: ${m.whileDrawn.n} frames, ${m.whileDrawn.dropped} dropped, longest ${m.whileDrawn.longest}ms)` : "") +
       (m.wake !== null ? `; the player's words woke at ${m.wake}ms` : ""),
   );
   if (tr) console.log(`    main ${JSON.stringify(tr.main)} decode ${tr.decode}ms raster ${JSON.stringify(tr.raster)} viz ${JSON.stringify(tr.viz)}`);
@@ -429,6 +434,11 @@ async function openAndClose(name, opener) {
 console.log(`The ambience sheet while a reading plays, on ${path.relative(ROOT, OUT) || OUT}: 390x844, CPU 4x, motion ${MOTION}${NO_BLUR ? ", the scrim's blur taken away" : ""}.`);
 await go(page, "/bible/john/1/", { timeout: 60000 });
 await page.waitForTimeout(2500);
+// The app's own verdict, read, not assumed: under the native user agent the browser's reducedMotion
+// is not consulted (lib/ui/motionPreference.ts), only the pinned device verdict (Updates 70's gotcha).
+const appMotion = await page.evaluate(() => document.documentElement.dataset.motion ?? null);
+console.log(`  the app's motion: data-motion ${appMotion}`);
+if (appMotion !== (MOTION === "reduce" ? "reduce" : "full")) throw new Error(`the app's motion is ${appMotion}, not what --motion ${MOTION} asks`);
 await tap(visible(`[data-reader-pill] button, [data-reader-dock] button`).filter({ hasText: t("readAloud.listen") }).first());
 if (!(await waitFor(() => [...(window.__media ?? [])].some((a) => !a.paused && a.currentTime > 0), null, 20000))) throw new Error("John 1 never began to play");
 await page.waitForTimeout(1500);
@@ -546,7 +556,12 @@ const CHECKS = [
   (r, fail) => {
     for (const [name, pair] of Object.entries(r.scenes)) {
       if (!/Words/.test(name)) continue;
-      for (const m of [pair.open, pair.close]) if (m.n < MIN_FRAMES) fail(`${m.label}: ${m.n} frames in ${WINDOW}ms (at least ${MIN_FRAMES}), ${m.dropped} dropped, longest ${m.longest}ms`);
+      // The same rate (MIN_FRAMES in WINDOW), a close counted only until its sheet has gone.
+      for (const m of [pair.open, pair.close]) {
+        const w = m === pair.close && m.whileDrawn ? m.whileDrawn : { until: WINDOW, n: m.n, dropped: m.dropped, longest: m.longest };
+        const floor = Math.ceil((MIN_FRAMES * w.until) / WINDOW);
+        if (w.n < floor) fail(`${m.label}: ${w.n} frames in ${w.until}ms${w.until < WINDOW ? " (until the sheet had gone)" : ""} (at least ${floor}), ${w.dropped} dropped, longest ${w.longest}ms`);
+      }
     }
   },
 ];
