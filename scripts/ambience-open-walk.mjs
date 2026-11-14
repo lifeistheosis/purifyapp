@@ -124,6 +124,20 @@ function sampler({ windowMs, sheetSel }) {
   const t0 = performance.now();
   window.__t0 = t0;
   window.__tap = {};
+  // When the player's words wake (Updates 67): the first restyle of a word or row of the lit
+  // words after the tap (the clock's glow, a line's move), none while they rest.
+  window.__wake = null;
+  const words = document.querySelector('[data-sung-look="player"]');
+  if (words) {
+    const mo = new MutationObserver((list) => {
+      if (list.some((m) => m.target.closest?.("li[data-sung]"))) {
+        window.__wake ??= Math.round(performance.now() - t0);
+        mo.disconnect();
+      }
+    });
+    mo.observe(words, { attributes: true, attributeFilter: ["style"], subtree: true });
+    setTimeout(() => mo.disconnect(), windowMs + 200);
+  }
   // The finger's own times: when it touched (the event's time), and when the click's handler ran.
   addEventListener("pointerdown", (e) => (window.__tap.down ??= Math.round(e.timeStamp - t0)), { capture: true, once: true });
   addEventListener("click", () => (window.__tap.click ??= Math.round(performance.now() - t0)), { capture: true, once: true });
@@ -287,8 +301,10 @@ function readFrames(frames) {
   const biggest = steps.reduce((m, s) => (Math.abs(s.d) > Math.abs(m.d) ? s : m), { d: 0, t: 0, gap: 0 });
   const photosAtRise = frames.find((f) => f.photos !== undefined)?.photos ?? null;
   const photosWhole = frames.find((f) => f.photos && /^2+$/.test(f.photos))?.t ?? null;
+  const lastDrawn = frames.findLastIndex((f) => typeof f.top === "number");
+  const gone = lastDrawn >= 0 && lastDrawn < frames.length - 1 ? frames[lastDrawn + 1].t : null;
   const moving = tops.length > 1 ? { first: tops[0].t, settled: tops.find((x, i) => i > 0 && tops.slice(i).every((y) => Math.abs(y.top - tops.at(-1).top) <= 1))?.t ?? null } : null;
-  return { n: frames.length, dropped, longest, jumps, against, biggest, photosAtRise, photosWhole, moving, first: tops[0] ?? null, last: tops.at(-1) ?? null };
+  return { n: frames.length, dropped, longest, jumps, against, biggest, photosAtRise, photosWhole, moving, gone, first: tops[0] ?? null, last: tops.at(-1) ?? null };
 }
 
 // ---- the walk
@@ -363,15 +379,16 @@ async function measure(label, locator) {
   const mark = `ambience-${++marks}`;
   // Scrolled to and measured before the clock starts: the walk's own questions to a slowed page
   // took up to 0.7s, and counted as the app's (the first run of this walk).
-  if (locator.scrollIntoViewIfNeeded) await tap(locator, { dry: true });
-  const box = await locator.boundingBox();
-  if (!box) throw new Error(`${label}: nothing to tap`);
+  // No locator: the window is read with nothing tapped, from its start.
+  if (locator?.scrollIntoViewIfNeeded) await tap(locator, { dry: true });
+  const box = locator ? await locator.boundingBox() : null;
+  if (locator && !box) throw new Error(`${label}: nothing to tap`);
   const { result: frames, events } = await traced(cdp, async () => {
     await page.evaluate(sampler, { windowMs: WINDOW, sheetSel: SHEET });
     await page.evaluate((m) => console.timeStamp(m), mark);
-    await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+    if (box) await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
     await page.waitForTimeout(WINDOW + 250);
-    return page.evaluate(() => ({ frames: window.__frames, loaf: window.__loaf, tap: window.__tap }));
+    return page.evaluate(() => ({ frames: window.__frames, loaf: window.__loaf, tap: window.__tap, wake: window.__wake }));
   });
   // Every time from the touch itself.
   const down = frames.tap.down ?? 0;
@@ -379,7 +396,8 @@ async function measure(label, locator) {
   for (const l of frames.loaf) l.at -= down;
   const read = readFrames(frames.frames.filter((f) => f.t >= 0));
   const trace = summarise(events, mark, WINDOW);
-  return { label, ...read, click: frames.tap.click === undefined ? null : frames.tap.click - down, trace, loaf: frames.loaf.filter((l) => l.at >= -50).slice(0, 8), frames: frames.frames.filter((f) => f.t >= 0) };
+  const wake = typeof frames.wake === "number" ? frames.wake - down : null;
+  return { label, ...read, wake, click: frames.tap.click === undefined ? null : frames.tap.click - down, trace, loaf: frames.loaf.filter((l) => l.at >= -50).slice(0, 8), frames: frames.frames.filter((f) => f.t >= 0) };
 }
 
 function line(m) {
@@ -388,7 +406,9 @@ function line(m) {
   console.log(
     `  ${m.label}: click ran ${m.click ?? "?"}ms after the touch; ${m.n} frames, longest ${m.longest}ms, ${m.dropped} dropped by the gaps; compositor: ${fr}` +
       (m.moving ? `; moved ${m.moving.first} to ${m.moving.settled ?? "not settled"}ms, top ${m.first?.top} to ${m.last?.top}, biggest step ${m.biggest.d}px in ${m.biggest.gap}ms` : "") +
-      (m.photosAtRise !== null ? `; photos at first frame ${m.photosAtRise}, all shown at ${m.photosWhole ?? "never"}ms` : ""),
+      (m.photosAtRise !== null ? `; photos at first frame ${m.photosAtRise}, all shown at ${m.photosWhole ?? "never"}ms` : "") +
+      (m.gone !== null ? `; the sheet gone at ${m.gone}ms` : "") +
+      (m.wake !== null ? `; the player's words woke at ${m.wake}ms` : ""),
   );
   if (tr) console.log(`    main ${JSON.stringify(tr.main)} decode ${tr.decode}ms raster ${JSON.stringify(tr.raster)} viz ${JSON.stringify(tr.viz)}`);
   for (const l of m.loaf.slice(0, 4)) console.log(`    long frame at ${l.at}ms: ${l.ms}ms (script ${l.script}, rAF/observers ${l.render}, style+layout+paint ${l.layout}) ${l.by.join("; ")}`);
@@ -442,6 +462,11 @@ for (const view of ["words", "cover"]) {
 // The controls, over the Words view: each read frame by frame from its tap.
 await tap(visible(`#player-view-tab-words`).first());
 await page.waitForTimeout(1000);
+// First the Words view with nothing over it: what the words cost on their own (Updates 67), so a
+// window after the sheet has gone can be read against it.
+results.rest = await measure("the player's Words view, nothing over it, nothing tapped", null);
+line(results.rest);
+await page.waitForTimeout(400);
 await tap(visible(`${NOW_PLAYING} button[aria-label="${t("bible.moreActions")}"]`).first());
 await page.waitForTimeout(1200);
 await tap(visible(`[role="dialog"] button`).filter({ hasText: t("ambience.title") }).last());
@@ -479,6 +504,13 @@ await control("the sleep timer, off", visible(`${SHEET} [role="group"] button`).
 await control("Birds tapped again (stops)", tile("birds"));
 
 // Over Prayers: the sheet and the player closed, the reading still playing, the bar's sound button.
+// The bar draws that button only while a sound plays (components/prayers/NowPlayingBar.tsx), and
+// names it with the sound ("Ambience, Rain playing"): so a sound is started first, unmeasured, and
+// the button is found by its name's start (Updates 65's find; both its runs stopped here).
+await tap(tile("rain"));
+if (!(await waitFor(({ sel, want }) => document.querySelector(sel)?.lastElementChild?.textContent?.trim() === want, { sel: `${SHEET} [data-ambience-tile="rain"]`, want: t("ambience.playing") }, 20000)))
+  throw new Error("Rain never began to play before Prayers");
+await page.waitForTimeout(600);
 await tap(visible(`${SHEET} button[aria-label="${t("common.close")}"]`).last());
 await page.waitForTimeout(900);
 await tap(visible(`${NOW_PLAYING} button[aria-label="${t("common.close")}"]`).last());
@@ -487,15 +519,17 @@ await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
 await go(page, "/prayers/", { timeout: 60000 });
 await page.waitForTimeout(2500);
 await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
-await openAndClose("over Prayers", async () => visible(`[data-now-playing-bar] button[aria-label="${t("ambience.title")}"], [data-mini-player] button[aria-label="${t("ambience.title")}"]`).first());
+await openAndClose("over Prayers", async () =>
+  visible(`[data-now-playing-bar] button[aria-haspopup="dialog"][aria-label^="${t("ambience.title")}"], [data-mini-player] button[aria-haspopup="dialog"][aria-label^="${t("ambience.title")}"]`).first(),
+);
 
 await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
 if (errors.length) console.log(`  page errors: ${errors.slice(0, 3).join(" | ")}`);
 await browser.close();
 
 if (JSON_FILE) {
-  for (const group of [results.scenes, results.controls])
-    for (const v of Object.values(group)) for (const m of v.open ? [v.open, v.close] : [v]) m.frames = m.frames.map((f) => ({ t: f.t, top: f.top, scrim: f.scrim, photos: f.photos, under: f.under }));
+  for (const group of [results.scenes, results.controls, { rest: results.rest }])
+    for (const v of Object.values(group).filter(Boolean)) for (const m of v.open ? [v.open, v.close] : [v]) m.frames = m.frames.map((f) => ({ t: f.t, top: f.top, scrim: f.scrim, photos: f.photos, under: f.under }));
   fs.writeFileSync(JSON_FILE, JSON.stringify(results, null, 1));
 }
 
