@@ -1151,3 +1151,5 @@ Claude's proposal, for his word:
 **Build 97 note 10, what looked buggy (his word, 2026-11-14, about 16:22 UTC),** asked whether it was a stutter, a jump or the sound: "not the sound but the ui".
 
 **His go on the fixes (his word, 2026-11-14, about 16:28 UTC),** after notes 7 to 10 and Updates 46's start: "fix those things. try and take into account usage also".
+
+**His usage at about 16:27 UTC (his screenshot, 11:27 on his clock), no words, just after "try and take into account usage also":** this chat's context 212.2k of 1M (21% used); the week's limits at 55% for all models and 32% for Fable only, both resetting Friday 3:00 AM on his clock; "Heads up. At this pace you'll run out tomorrow afternoon, before Friday's reset."; no limit resets; usage credits off, balance 0 credits.
