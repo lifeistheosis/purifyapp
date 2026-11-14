@@ -6,7 +6,7 @@ import { Church } from "@/components/ui/icons/Church";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Scroll } from "@/components/ui/icons/Scroll";
 import { withAt, withRead, type PathProgress, type PathRead, type ReadKind } from "@/lib/theology/path";
-import { updatePathProgress } from "@/lib/theology/usePathProgress";
+import { TELL_AFTER_LEAVING_MS, updatePathProgress } from "@/lib/theology/usePathProgress";
 
 /**
  * A read on Theology's path, as the hub and a step show it (1.8, round 3
@@ -46,7 +46,12 @@ export function ReadMeta({ read, progress }: { read: PathRead; progress: PathPro
  * A read opened from the path: the step is where the reader is, and a
  * question, an error or a council counts as read once opened. A study counts
  * once it is read to its end (components/theology/StudyReader.tsx).
+ *
+ * The tap leaves the page, and the page it leaves must not change under the
+ * finger: Theology's head turned from Begin to Where you left off as a topic
+ * opened, half the screen in one frame (the gate's cut, Updates 37). Kept at
+ * once, so the page opened reads it; the page left is told once it has gone.
  */
 export function noteOpened(read: Pick<PathRead, "id" | "kind">, stepId: string): void {
-  updatePathProgress((p) => withAt(read.kind === "study" ? p : withRead(p, read.id), stepId));
+  updatePathProgress((p) => withAt(read.kind === "study" ? p : withRead(p, read.id), stepId), { tellAfter: TELL_AFTER_LEAVING_MS });
 }

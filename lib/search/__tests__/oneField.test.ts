@@ -262,6 +262,13 @@ describe("the screen holds still as it opens (build 87, the owner's note 83)", (
     expect(code("components/search/SearchRows.tsx")).toContain('className="no-scrollbar flex h-[44px] shrink-0');
   });
 
+  it("draws the strip only once every list has come, so no tab is drawn and then pushed along (Updates 38)", () => {
+    // The dictionary's words came first and their tab stood second, at 86px,
+    // then at 663px as the library's kinds came in ahead of it (the gate's
+    // reduced walk, Search from a Father's page, Updates 37).
+    expect(screen).toMatch(/const strip = stripKinds\.length && !stripComing \? \(\s*<KindStrip /);
+  });
+
   it("arrives by fading in where it stands, with no rise", () => {
     const keyframes = /@keyframes search-in \{([^}]*\})\s*\}/.exec(css)?.[1] ?? "";
     expect(keyframes).toMatch(/from \{ opacity: 0; \}/);

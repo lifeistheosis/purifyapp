@@ -558,7 +558,12 @@ export function CommandPalette() {
     <Doors small doors={doorsFound(counts, turn.door)} current={turn.door} counts={counts} off={offDoors} onPick={pickDoor} />
   );
 
-  const strip = stripKinds.length ? (
+  // Drawn once every list has come, never from some of them: the dictionary's
+  // words came before the library's, and their tab was drawn second, then
+  // pushed far along as the library's kinds came in ahead of it (86 to 663px
+  // across in a frame, Search from a Father's page, the gate's reduced walk,
+  // Updates 37). Its place is kept until then (stripComing).
+  const strip = stripKinds.length && !stripComing ? (
     <KindStrip kinds={stripKinds} counts={kindTotals} total={placeRows.length} current={turn.kind} onPick={pickKind} />
   ) : null;
 

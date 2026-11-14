@@ -217,6 +217,18 @@ describe("Gate 2.0's in-page faults under his ruling, each moved (Updates 22)", 
     expect(read("components/saints/web/WebViewSwitch.tsx")).toMatch(/export function chooseWebView[\s\S]{0,400}movePage\(\(\) => \{\s*window\.history\.replaceState\(null, "", url\);/);
   });
 
+  it("the saints' filters cross-fade the list, as a tab does (Updates 38: the list jumped 37 to 43px and half the screen changed in a frame)", () => {
+    const browser = read("components/saints/SaintsBrowser.tsx");
+    expect(browser).toContain("const chooseGroup = (next: (cur: SaintGroupId | null) => SaintGroupId | null) => movePage(() => setActiveGroup(next));");
+    expect(browser).toContain("const chooseCentury = (century: number | null) => movePage(() => setActiveCentury(century));");
+    expect(browser).toContain("onClick={() => chooseGroup(() => null)}");
+    expect(browser).toContain("onClick={() => chooseGroup((cur) => (cur === g.id ? null : g.id))}");
+    expect(browser).toContain("onSelect={chooseCentury}");
+    expect(browser).toMatch(/movePage\(\(\) => \{\s*setActiveGroup\(null\);\s*setActiveCentury\(null\);\s*\}\)/);
+    // No filter is changed outside a move.
+    expect(browser.match(/setActive(Group|Century)\(/g)).toHaveLength(4);
+  });
+
   it("Job's order: the order grows by its row and the moments left glide; a hint is let down", () => {
     const order = read("components/walkthrough/Synthesis.tsx");
     expect(order).toContain("{ grows: [listRef.current], glides: [...left, ...partsAfter(poolRef.current)] },");

@@ -166,7 +166,11 @@ export function ShopHomeClient() {
       <FeaturedIcon icon={featured} waiting={!settled} className="mx-5 mt-3 md:mx-0 md:mt-10" />
 
       {/* ── Shop by saint ─────────────────────────────────────────────── */}
-      <ShopBySaint saints={saints} waiting={!settled} className="mt-5 md:mt-14" />
+      {/* Its place is held while New in's bones below it stand, so the two
+          go together: the catalogue answering first, with no saint among its
+          pieces, took the row's place away under the bones and they rose
+          153px in one frame (the gate's walk from Today, Updates 37). */}
+      <ShopBySaint saints={saints} waiting={!settled || loading} className="mt-5 md:mt-14" />
 
       {loading || (!settled && !error) ? <NewInBones /> : null}
       {error ? <ShopError message={error} onRetry={reload} /> : null}

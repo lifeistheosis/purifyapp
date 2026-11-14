@@ -36,8 +36,18 @@ export function usePathProgress(): PathProgress {
   return useMemo(() => parseProgress(raw), [raw]);
 }
 
-/** Change the kept progress (lib/theology/path.ts, withRead and the rest). */
-export function updatePathProgress(change: (now: PathProgress) => PathProgress): void {
+/**
+ * After a tap that leaves the page, how long the page left is not told of the
+ * change it made: by then it has gone, and the page opened read the change as
+ * it opened (noteOpened, components/theology/PathRead.tsx).
+ */
+export const TELL_AFTER_LEAVING_MS = 1500;
+
+/**
+ * Change the kept progress (lib/theology/path.ts, withRead and the rest). Kept
+ * at once; this tab is told at once, or `tellAfter` ms later.
+ */
+export function updatePathProgress(change: (now: PathProgress) => PathProgress, { tellAfter = 0 }: { tellAfter?: number } = {}): void {
   const now = parseProgress(snapshot());
   const next = change(now);
   if (next === now) return;
@@ -46,5 +56,6 @@ export function updatePathProgress(change: (now: PathProgress) => PathProgress):
   } catch {
     /* a private window: the path just will not remember */
   }
-  window.dispatchEvent(new Event(PATH_EVENT));
+  if (tellAfter > 0) setTimeout(() => window.dispatchEvent(new Event(PATH_EVENT)), tellAfter);
+  else window.dispatchEvent(new Event(PATH_EVENT));
 }

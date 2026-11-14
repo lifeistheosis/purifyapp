@@ -19,6 +19,7 @@ import { CenturyTimeline } from "./CenturyTimeline";
 import { ChipScroller } from "@/components/ui/ChipScroller";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { movePage } from "@/lib/ui/inPageMove";
 
 /*
  * The two filters, redrawn 2026-09-28 at the owner's request ("optimize the
@@ -107,6 +108,14 @@ export function SaintsBrowser({ saints = SAINTS }: { saints?: Saint[] }) {
   const totalAll = saints.length;
   const groupAllCount = saints.filter(inCentury).length;
 
+  // A filter moves as a tab does (lib/ui/inPageMove.ts): the list as it stood
+  // cross-fades into the list it leaves, with the count above it. Changed at
+  // once, the list jumped 37 to 43px under the finger as the count came in, and
+  // half the screen changed in one frame (the gate's walk, Updates 37).
+  // Reduced motion changes it at once, which is still.
+  const chooseGroup = (next: (cur: SaintGroupId | null) => SaintGroupId | null) => movePage(() => setActiveGroup(next));
+  const chooseCentury = (century: number | null) => movePage(() => setActiveCentury(century));
+
   return (
     <>
       {featured.map((s) => (
@@ -127,10 +136,12 @@ export function SaintsBrowser({ saints = SAINTS }: { saints?: Saint[] }) {
             type="button"
             disabled={!isFiltering}
             aria-hidden={!isFiltering || undefined}
-            onClick={() => {
-              setActiveGroup(null);
-              setActiveCentury(null);
-            }}
+            onClick={() =>
+              movePage(() => {
+                setActiveGroup(null);
+                setActiveCentury(null);
+              })
+            }
             className={cn(
               !isFiltering && "invisible",
               "-my-3 -me-3 inline-flex min-h-11 items-center rounded-pill px-3 font-sans text-detail font-medium text-paper/60 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper",
@@ -144,7 +155,7 @@ export function SaintsBrowser({ saints = SAINTS }: { saints?: Saint[] }) {
             label={t("common.all")}
             count={activeCentury == null ? totalAll : groupAllCount}
             active={activeGroup == null}
-            onClick={() => setActiveGroup(null)}
+            onClick={() => chooseGroup(() => null)}
           />
           {/* The group's name in the reader's language: the registry holds the
               catalog key beside the English (lib/saints/groups.ts). */}
@@ -154,7 +165,7 @@ export function SaintsBrowser({ saints = SAINTS }: { saints?: Saint[] }) {
               label={t(g.labelKey)}
               count={g.count}
               active={activeGroup === g.id}
-              onClick={() => setActiveGroup((cur) => (cur === g.id ? null : g.id))}
+              onClick={() => chooseGroup((cur) => (cur === g.id ? null : g.id))}
             />
           ))}
         </ChipScroller>
@@ -172,7 +183,7 @@ export function SaintsBrowser({ saints = SAINTS }: { saints?: Saint[] }) {
         <CenturyTimeline
           counts={centuryCounts}
           active={activeCentury}
-          onSelect={setActiveCentury}
+          onSelect={chooseCentury}
           label={t("saints.byCentury")}
         />
       </div>
