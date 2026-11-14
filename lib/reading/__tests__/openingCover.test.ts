@@ -388,4 +388,24 @@ describe("a book the reader left in the middle", () => {
     // A reader who has started on their own in the meantime is still left where they are.
     expect(landing.indexOf("if (!byAddress && inputSince(opened)) return;")).toBeGreaterThan(landing.indexOf("const land = () => {"));
   });
+
+  it("cross-fades into a paragraph too far down to glide to (Morals on Job, Updates 38)", () => {
+    // Opened at Book 5's paragraph 131, the page glided through some two hours
+    // of text and the screen stood empty for 265 to 415ms of it. Past two
+    // screens (lib/ui/readingPlace.ts, beyondGlide) the page moves as a
+    // pager's Next does: pictured, put at the place at once, and cross-faded.
+    const place = code(PLACE);
+    const landing = place.slice(place.indexOf("export function useLanding"), place.indexOf("export function useKeepPlace"));
+    const far = landing.indexOf("if (beyondGlide(el)) {");
+    expect(far).toBeGreaterThan(landing.indexOf("const land = () => {"));
+    const crossFade = landing.slice(far, landing.indexOf("return;", far));
+    expect(crossFade).toContain("movePage(() => {");
+    expect(crossFade).toContain("goToReadingPlace(el, { smooth: false });");
+    expect(crossFade).toContain("focus();");
+    // Nearer, it still glides.
+    expect(landing.indexOf("goToReadingPlace(el);")).toBeGreaterThan(far);
+    // The focus set by a landing that comes after the page has gone is not set at all.
+    expect(landing).toMatch(/const focus = \(\) => \{\s*if \(gone\) return;/);
+    expect(landing).toMatch(/return \(\) => \{\s*gone = true;/);
+  });
 });

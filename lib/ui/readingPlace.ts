@@ -278,6 +278,22 @@ export function goToReadingPlace(
 }
 
 /**
+ * How many screens away a place may be and still be glided to. Further, no
+ * raster keeps up: Morals on Job, opened at Book 5's paragraph 131, glided
+ * through some two hours of text in about a second, and the screen stood
+ * empty for 265 to 415ms of it (the gate's frames, Updates 37 and 38). A
+ * place further than this is reached as a pager's Next is, the screen as it
+ * stood cross-fading into the place (lib/ui/inPageMove.ts, movePage).
+ */
+export const GLIDE_SCREENS = 2;
+
+/** Whether what is given stands further from the screen than a glide can carry the page (GLIDE_SCREENS). */
+export function beyondGlide(target: Element, screens: number = GLIDE_SCREENS): boolean {
+  if (typeof window === "undefined") return false;
+  return Math.abs(target.getBoundingClientRect().top) > screens * window.innerHeight;
+}
+
+/**
  * How long a place gone to is held while the page settles under it (build 90
  * note 9). The page can still change after it has gone somewhere: a Bible
  * chapter is drawn in English first and its Greek, when the reader keeps it

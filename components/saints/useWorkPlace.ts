@@ -8,11 +8,11 @@ import { arrivalPlace, clearPosition, loadPosition, placeOfHash, savePosition, t
 import { recordProgress } from "@/lib/reading/progress";
 import type { SectionHead } from "@/lib/saints/parts";
 import { elementOfPlace, paragraphAtReadingPlace } from "@/lib/saints/paragraphInView";
-import { arrive, awaitArrival, isMovingInPage, movePageUntil } from "@/lib/ui/inPageMove";
+import { arrive, awaitArrival, isMovingInPage, movePage, movePageUntil } from "@/lib/ui/inPageMove";
 import { inputSince, watchInput } from "@/lib/ui/lastInput";
 import { untilSettled } from "@/lib/ui/routeMotion";
 import { watchOwnScroll } from "@/lib/ui/ownScroll";
-import { goToReadingPlace } from "@/lib/ui/readingPlace";
+import { beyondGlide, goToReadingPlace } from "@/lib/ui/readingPlace";
 
 /**
  * Which chapter of a long text is on the page, where a return lands, and the
@@ -192,8 +192,9 @@ export function useGoToChapter(): (n: number) => void {
  * paragraph when the address names the chapter they are in, or the
  * chapter's top. A paragraph past the first is stood at the reading place
  * and the rest of the chapter steps back for two seconds (globals.css,
- * data-place-focus), smooth on the motion switch; a chapter's top is the top
- * of the page. A reader who has already started on their own is left where
+ * data-place-focus), smooth on the motion switch, or cross-faded into place
+ * when it is more than two screens down (beyondGlide); a chapter's top is the
+ * top of the page. A reader who has already started on their own is left where
  * they are (lib/ui/lastInput.ts): in the apps the text lands a moment after
  * the page opens. A landing that moves the page waits until the page has
  * arrived (1.9): the book opens on its cover, and then goes to the place.
@@ -244,6 +245,7 @@ export function useLanding(
     let timer: ReturnType<typeof setTimeout> | null = null;
     let wait: ReturnType<typeof setTimeout> | null = null;
     let frame = 0;
+    let gone = false;
     const land = () => {
       wait = null;
       frame = requestAnimationFrame(() => {
@@ -253,14 +255,29 @@ export function useLanding(
           window.scrollTo({ top: 0, behavior: "instant" });
           return;
         }
+        const focus = () => {
+          if (gone) return;
+          const root = document.documentElement;
+          el.setAttribute("data-focus", "true");
+          root.setAttribute("data-place-focus", "");
+          timer = setTimeout(() => {
+            el.removeAttribute("data-focus");
+            root.removeAttribute("data-place-focus");
+          }, 2000);
+        };
+        // A place more than two screens down is not glided to: no raster keeps
+        // up, and the screen stood empty mid-glide (Morals on Job, Book 5,
+        // paragraph 131: 265 to 415ms). The page cross-fades into it as a
+        // pager's Next does (lib/ui/readingPlace.ts, beyondGlide).
+        if (beyondGlide(el)) {
+          movePage(() => {
+            goToReadingPlace(el, { smooth: false });
+            focus();
+          });
+          return;
+        }
         goToReadingPlace(el);
-        const root = document.documentElement;
-        el.setAttribute("data-focus", "true");
-        root.setAttribute("data-place-focus", "");
-        timer = setTimeout(() => {
-          el.removeAttribute("data-focus");
-          root.removeAttribute("data-place-focus");
-        }, 2000);
+        focus();
       });
     };
     // A landing that moves the page waits for the page to have arrived (1.9,
@@ -273,6 +290,7 @@ export function useLanding(
     if (settle > 0) wait = setTimeout(land, settle);
     else land();
     return () => {
+      gone = true;
       if (wait) clearTimeout(wait);
       cancelAnimationFrame(frame);
       if (timer) clearTimeout(timer);

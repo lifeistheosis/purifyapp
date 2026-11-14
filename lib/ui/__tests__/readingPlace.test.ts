@@ -23,6 +23,7 @@ const motion = vi.hoisted(() => ({ reduce: false }));
 vi.mock("../motion", () => ({ prefersReducedMotion: () => motion.reduce }));
 
 import {
+  GLIDE_SCREENS,
   HAIR_PX,
   HAND_EVENTS,
   HOLD_MS,
@@ -31,6 +32,7 @@ import {
   READING_PLACE,
   SCREEN_EDGE_ATTR,
   bandOf,
+  beyondGlide,
   blockAt,
   goToReadingPlace,
   heldPlace,
@@ -558,5 +560,20 @@ describe("holding a place while the page settles (build 90 note 9)", () => {
     const flash = code("components/bible/VerseFocusFlash.tsx");
     expect(flash).toMatch(/goToReadingPlace\(flashed\);\s*letGo\?\.\(\);\s*letGo = holdAtReadingPlace\(flashed\);/);
     expect(flash).toMatch(/return \(\) => \{[\s\S]*letGo\?\.\(\);[\s\S]*\};/);
+  });
+});
+
+describe("a place too far to glide to (Updates 38)", () => {
+  // Morals on Job, opened at Book 5's paragraph 131, glided through some two
+  // hours of text in about a second, and the screen stood empty for 265 to
+  // 415ms of it: no raster keeps up. Past two screens a place is reached as a
+  // pager's Next is (components/saints/useWorkPlace.ts, useLanding).
+  it("is more than two screens from the screen, above it or below it", () => {
+    vi.stubGlobal("window", { innerHeight: PHONE });
+    expect(GLIDE_SCREENS).toBe(2);
+    expect(beyondGlide(block({ top: 2 * PHONE + 1, bottom: 2 * PHONE + 200 }))).toBe(true);
+    expect(beyondGlide(block({ top: -2 * PHONE - 1, bottom: -2 * PHONE + 200 }))).toBe(true);
+    expect(beyondGlide(block({ top: 2 * PHONE, bottom: 2 * PHONE + 200 }))).toBe(false);
+    expect(beyondGlide(block({ top: 400, bottom: 600 }))).toBe(false);
   });
 });
