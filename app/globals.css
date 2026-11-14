@@ -13402,12 +13402,22 @@ html[data-look]:not([data-look="nightsky"], [data-look="linen"]):where([data-mot
    frame: their shell is the whole height of the screen with a line at its
    foot, and it ends above the foot the same way. On a wide screen the foot
    stands down (below), and so does this.
+   A bar fixed at the screen's foot (data-foot-bar with .safe-pb: the shop's
+   buy bar and the cart's) is not a page. It took the foot's room too, so on
+   12 of the 14 looks it stood 380px tall at 390 wide, nearly half the
+   screen, its buttons over the middle of the page (Gate 2, 2026-11-14). Its
+   own ground covers the foot, so it stands over it (above the foot's 35,
+   under the cart's scrim at 40 and the tab bar) and keeps the frame's room
+   under its buttons, the bars alone.
    scripts/last-words-walk.mjs walks every screen of the export to hold it;
    lib/ui/__tests__/lookFootRoom.test.ts holds the rule to the foot's own
    lengths. */
 @media (max-width: 767.98px) {
- html.is-native[data-look]:not([data-look="nightsky"], [data-look="linen"]) .safe-pb {
+ html.is-native[data-look]:not([data-look="nightsky"], [data-look="linen"]) .safe-pb:not([data-foot-bar]) {
   padding-bottom: max(calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h)), calc(var(--inset-bottom) + var(--foot-clear)));
+ }
+ html[data-look]:not([data-look="nightsky"], [data-look="linen"]) .safe-pb[data-foot-bar] {
+  z-index: 36;
  }
  html.is-native[data-look]:not([data-look="nightsky"], [data-look="linen"]) .safe-pb-reader {
   padding-bottom: max(calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + var(--reader-dock-room, 0px) + var(--reader-pill-extra, 0px) + 68px), calc(var(--inset-bottom) + var(--foot-clear)));

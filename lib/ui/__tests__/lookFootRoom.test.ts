@@ -38,7 +38,7 @@ const looks = READING_THEMES.filter((t) => t.look).map((t) => t.id);
 describe("the foot's own lengths", () => {
   it("the foot is drawn on every look but the two without one, and the room follows the same list", () => {
     expect(body(`${WITH_FOOT} body::after`)).toContain("background: var(--room);");
-    expect(css).toContain(`html.is-native[data-look]:not(${NO_FOOT}) .safe-pb {`);
+    expect(css).toContain(`html.is-native[data-look]:not(${NO_FOOT}) .safe-pb:not([data-foot-bar]) {`);
     expect(css).toContain(`html.is-native[data-look]:not(${NO_FOOT}) .safe-pb-reader {`);
     expect(css).toContain(`${WITH_FOOT} body > .min-h-screen:not(:has(.safe-pb)) {`);
     // No other list of looks anywhere near a foot: one place says which looks have none.
@@ -68,7 +68,7 @@ describe("the foot's own lengths", () => {
 });
 
 describe("the room under a page on a look with a foot", () => {
-  const phone = css.slice(css.indexOf(`@media (max-width: 767.98px) {\n html.is-native[data-look]:not(${NO_FOOT}) .safe-pb {`));
+  const phone = css.slice(css.indexOf(`@media (max-width: 767.98px) {\n html.is-native[data-look]:not(${NO_FOOT}) .safe-pb:not([data-foot-bar]) {`));
 
   it("is the frame's own room or the foot's height, whichever is taller", () => {
     const frame = /padding-bottom:\s*([^;]+);/.exec(body("html.is-native .safe-pb"))?.[1];
@@ -77,7 +77,7 @@ describe("the room under a page on a look with a foot", () => {
     expect(reader).toBeTruthy();
     const foot = "calc(var(--inset-bottom) + var(--foot-clear))";
     // The frame's sum is written again inside max(): if the frame's rule changes, this fails until the look's does too.
-    expect(body(`html.is-native[data-look]:not(${NO_FOOT}) .safe-pb`)).toBe(`padding-bottom: max(${frame}, ${foot});`);
+    expect(body(`html.is-native[data-look]:not(${NO_FOOT}) .safe-pb:not([data-foot-bar])`)).toBe(`padding-bottom: max(${frame}, ${foot});`);
     expect(body(`html.is-native[data-look]:not(${NO_FOOT}) .safe-pb-reader`)).toBe(`padding-bottom: max(${reader}, ${foot});`);
   });
 
@@ -110,6 +110,51 @@ describe("the room under a page on a look with a foot", () => {
     expect(css.replace(block, "")).not.toMatch(/padding-bottom:[^;]*var\(--foot-clear\)/);
     const wide = css.slice(css.indexOf("@media (min-width: 768px) {\n html[data-look]:not([data-look=\"nightsky\"]) body::before,"));
     expect(wide).toMatch(/^@media \(min-width: 768px\) \{\s*html\[data-look\]:not\(\[data-look="nightsky"\]\) body::before,\s*html\[data-look\] body::after \{\s*display: none;/);
+  });
+});
+
+describe("a bar fixed at the screen's foot, on a look with a foot", () => {
+  // The shop's buy bar carried .safe-pb, and on a look with a foot that gave it the foot's room, 240px under its
+  // buttons, not the bars' 86: on 12 of the 14 looks it stood about 380px tall at 390 wide (465 to 844 on Jordan),
+  // and with the ask line shown it covered "Carved wood" in the middle of the wall cross's page (Gate 2,
+  // 2026-11-14). The cart's bar is the same bar. A bar is not a page: its own ground covers the foot.
+  const phone = css.slice(css.indexOf("@media (max-width: 767.98px) {\n html.is-native[data-look]"));
+  const block = phone.slice(0, phone.indexOf("\n}\n") + 3);
+  const z = (rule: string) => Number(/z-index:\s*(\d+);/.exec(rule)?.[1]);
+
+  it("keeps the frame's room under its buttons, the bars alone, not the foot's", () => {
+    // The look's room is for a page: every .safe-pb but a foot bar.
+    expect(block).toContain(`html.is-native[data-look]:not(${NO_FOOT}) .safe-pb:not([data-foot-bar]) {`);
+    expect(css).not.toContain(`html.is-native[data-look]:not(${NO_FOOT}) .safe-pb {`);
+    // So a foot bar takes the frame's own rule (inset, tab bar, mini player, readings flow), and nothing gives it
+    // the foot's length.
+    expect(body("html.is-native .safe-pb")).not.toContain("--foot-clear");
+    const marked = css.replaceAll(":not([data-foot-bar])", "").match(/[^{}]*\[data-foot-bar\][^{}]*\{[^}]*\}/g) ?? [];
+    expect(marked.length).toBeGreaterThan(1);
+    for (const rule of marked) expect(rule).not.toContain("--foot-clear");
+  });
+
+  it("stands over the foot, under the cart's scrim and the tab bar, at the widths the foot is drawn at", () => {
+    const foot = z(body(`${WITH_FOOT} body::after`));
+    expect(foot).toBe(35);
+    const bar = z(body(`${WITH_FOOT} .safe-pb[data-foot-bar]`));
+    expect(block).toContain(`${WITH_FOOT} .safe-pb[data-foot-bar] {`);
+    expect(bar).toBeGreaterThan(foot);
+    // The cart's scrim (z-40) dims the page and its bar while the drawer is open; the tab bar is z-50.
+    const drawer = readFileSync("components/shop/CartDrawer.tsx", "utf8");
+    expect(drawer).toContain('"fixed inset-0 z-40 bg-night/60');
+    expect(bar).toBeLessThan(40);
+  });
+
+  it("is the shop's buy bar and the cart's: fixed at the foot, each marked a foot bar on its own element", () => {
+    for (const file of ["components/shop/BuyBar.tsx", "components/shop/CartClient.tsx"]) {
+      const src = readFileSync(file, "utf8");
+      const at = src.indexOf("data-foot-bar");
+      expect(at, file).toBeGreaterThan(-1);
+      // The element that carries the mark carries the fixed bar's classes too (its className follows within it).
+      const el = src.slice(at, src.indexOf(">", src.indexOf("className", at)));
+      expect(el, file).toMatch(/fixed inset-x-0 bottom-0 z-30 [^"]*safe-pb/);
+    }
   });
 });
 
