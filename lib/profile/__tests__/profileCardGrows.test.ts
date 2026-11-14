@@ -64,8 +64,9 @@ describe("the profile card grows on a transform", () => {
     expect(VIEWER).toMatch(/status: seed\.status \?\? null,/);
     expect(read("components/community/profile/ProfileHoverCard.tsx")).toMatch(/status: target\.seed\.status \?\? null,/);
     const client = read("components/community/CommunityClient.tsx");
-    expect(client).toMatch(/status: post\.author_status \?\? null,/);
-    expect(client).toMatch(/status: r\.author_status \?\? null,/);
+    // As it came: undefined when the server did not say, so the card holds the line's place (statusWay, Updates 66).
+    expect(client).toMatch(/status: post\.author_status,/);
+    expect(client).toMatch(/status: r\.author_status,/);
     for (const route of ["app/api/community/posts/route.ts", "app/api/community/posts/[id]/replies/route.ts"]) {
       const src = read(route);
       expect(src).toContain("author_status: statusOf(row, authors),");
