@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state. The log is `docs/1.9-build/HANDOFF.md`, his words are `docs/1.9-build/BRAINSTORM.md`, and how the chats run is `docs/OPERATIONS.md`.
 
-Updated 2026-11-14 01:49 UTC by Arbiter 5, at its first round (first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
+Updated 2026-11-14 03:24 UTC by Arbiter 5 (first rewritten to one page at 19:01). What it held before is at d2fde152; the list of chats archived on 2026-11-13 moved to the log.
 
 ## 1.9 now
 
@@ -20,7 +20,7 @@ Updated 2026-11-14 01:49 UTC by Arbiter 5, at its first round (first rewritten t
 | Updates 35 | session_01VuYTwdbs476SdLic8xr96a | from 01:49, from docs/handoffs/updates-34.md (Updates 34 archived 01:46 after 00ace77f..aeac3915, baton 2fd29c14, 9f116b5f, about $35): round 2 (causes 7, 8, 9), the em dashes on the language editor and the seller order page, the weekly letter's spaced capitals, and Back on the other sideways rows (not in that baton); its export confirms the Plus preview's veil class. Files in Updates 33's round 1 patch (the language editor, SaintsBrowser, WritingReader, globals.css among them) wait until that push lands |
 | Updates 23 | session_01VuYTwZhTJ9z4k23jxRtLQC | his three yeses pushed (8c1e2bb6 the voices; e0332a71 Now Playing's dim and its dock mirrored in Arabic; a49e1924..fc87b87b note 23 with Purify's own ask first, its walk finding the bridge outside the words' provider and the ask rising with the Bible's offer, both mended; 2c4b4ad3, da5107c6 the welcome line, shown only once the first-week guide is switched on, its page's one button POSTs, a signed link, no new migration or secret; baton ebea0284). Page for his look: https://claude.ai/artifact/PUsgz1LRYCUuPUPFP3dHQT. Kept open, past its line, only for the pixel guards still running since 19:47 (the voices' six guard-only runs, note 23 at 800 and 1032; results in the early hours UTC); archived once they are in |
 | Fable: Orthodox America, the full film | session_01VuYTwaxbA7b5yzKRKC1Jce | DONE 22:59 (7da346ec; page https://claude.ai/artifact/WG2cBhCekzLx5RLrme7SLk; about 96 minutes of render; about 340,000 tokens by its own count); kept idle for his answer, then archived. From 20:34, at his "now" (not 1.9): 107 seconds, the three scenes, the claim, who they are, where they are, and scene seven re-cut at his word of 21:02 ("the point of the video is to show that america in orthodoxy is growing") on a written source of September 2026 (Sunday attendance up 36% since 2019 in Orthodox parishes, none in all U.S. congregations), the 2010 to 2020 fall kept in one line, no claim that the share of Americans grew; six named source cards, Purify's mark last. Rendering from 21:08, about 90 minutes; past 200,000 tokens, it finishes the page and report, then is archived |
-| Updates 33 | session_01VuYTweFvnCTuQ8EEanrK4x | from 22:52, from docs/handoffs/updates-29.md (Updates 29 archived 22:52 UTC at about 310,000 tokens after 5ebcbfbf: round 1 held as docs/1.9-build/redesign/round-1/updates-29-held.patch with the seven old-form tests rewritten, rules 1 and 3 on Today's other buttons and the stylesheet, and five faults checkMock found, mended with tests; nothing pushed as code). Round 1 pushed alone with the whole checklist (one export, checkMock on the eight that failed and batch B, the website mocks, the taps), its hash to the arbiter; then notes 29, 17, 9. Writes to no other chat: what Updates 32 (ReaderPrefs, .set-well-ref) and Updates 31 must know comes through the arbiter |
+| Updates 36 | session_01VuYTwe1XqvoFGrhP26HM7S | from 03:22, from docs/handoffs/updates-33.md (Updates 33 archived 03:22 after round 1 of the fifteen screens: code 7f19d566..e1dfd24b, record ebe13a23, baton ce66985a; ten faults its export found, each mended with a test; checkMock 37 of 37, tap walk 244 controls with 0 fails online, suite 14,868; about 522,000 tokens, about $45.60). Applies notes 29, 17 and 9 (his yes, 20:47), then three faults by the arbiter's call: the verse to learn's Show the words moving 10px at its tap (RememberCard, it predates round 1), Today's Listen and Community's Try again doing nothing offline, and checkMock pairing Dark's and Light's elements by their place in a list (the reading filter in Arabic). Leaves Updates 35's files alone |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository); waits on his two facts |
 
 Every chat rotates at 200,000 tokens (OPERATIONS section 2).
@@ -45,21 +45,22 @@ Every patch below is his yes. The apply chats take them by area so that patches 
 
 | Note | The patch |
 |---|---|
-| 9, Discover's hold (Updates 29) | docs/1.9-build/drafts/build-95-note-9.patch |
+| 29, Chrysostom's Against the Jews among his print books (Updates 36) | docs/1.9-build/drafts/build-95-note-29-applied.patch (the line word for word as he said yes to it, the publisher's link) |
+| 9, Discover's hold (Updates 36) | docs/1.9-build/drafts/build-95-note-9.patch |
 | 15, the Share row: PUSHED a9188f11, 621ec42e (the chapter grid at 44px or more) | docs/1.9-build/drafts/build-95-note-15.patch |
 | 16, the land looks: PUSHED 62e5a337 | docs/1.9-build/drafts/land-looks/held.patch (its README names Desert's part to drop; Desert's drawing kept once in kept/desert-look/) |
-| 17, the patron chooser (Updates 29) | docs/1.9-build/drafts/build-95-note-17.patch |
+| 17, the patron chooser (Updates 36) | docs/1.9-build/drafts/build-95-note-17.patch |
 | 18 and 19, Settings: PUSHED 2ff41d77, c77723ea (Back keeps the row's sweep) | docs/1.9-build/drafts/build-95-notes-18-19.patch |
 | 22, the ambience photographs: PUSHED b5d9edb3 (Updates 28) | docs/1.9-build/notes/build-95/22-held.patch (decided with it at 14:29: the sea's photograph becomes Simonopetra; the Plus preview takes the photographs) |
-| 25, the fifteen screens, round 1 (Updates 29) | docs/1.9-build/redesign/round-1/applied.patch (held.patch with the build spec, by Updates 27). Then round 2 in a fresh Fable chat from docs/handoffs/fable-fifteen-screens.md, and note 28, the desktop revamp (his yes, 18:53), the computer's frame first |
+| 25, the fifteen screens, round 1: PUSHED 7f19d566..e1dfd24b, record ebe13a23 (Updates 33, with ten faults its export found, each mended) | docs/1.9-build/redesign/round-1/applied.patch (held.patch with the build spec, by Updates 27). Then round 2 in a fresh Fable chat from docs/handoffs/fable-fifteen-screens.md, and note 28, the desktop revamp (his yes, 18:53), the computer's frame first |
 | 27, earning a look: PUSHED 7b3e631c | docs/1.9-build/notes/build-95/earned-looks/prototype.patch (on apply: the 13 earn.* lines in the other 20 catalogs, the whole suite, both native builds) |
 | 3, 4 and 6, the Fast and the Journal: PUSHED 9f3a8ded, 37ca3d75 (Updates 28) | docs/1.9-build/held/fast-journal/fast-journal-look.patch (its README is the handoff; applies on df48a34cd) |
 | The emails, round 3: PUSHED 0d83205d, f05d216b, 6e159b45, ebc97dcb (Updates 28; the shell's spaced capitals to sentence case by round 1's small-line rule, the arbiter's call at 22:50, for the next chat) | docs/1.9-build/drafts/emails-round-3/held.patch (applies on 774248d5). Decided with it at 18:53: Dark for everyone (the light scheme out of all nine), and the account and order emails' shell (lib/email/theme.ts EMAIL_THEMES.night) to Dark, with before and after stills. Also: the retention look wired; a look in real Gmail, Apple Mail and Outlook with the first send, which goes to him alone |
 
 ## Next, in order
 
-1. Updates 23 pushes the voices, note 23 and the opt-in line, and sends one page of stills for his look.
-2. On his design answers: the apply chat applies the yeses; the fifteen screens' round 2 in a fresh Fable chat; then note 28.
+1. Updates 23's pixel guards report (the voices, note 23); it is archived after. Its pages wait on his look (Waiting on him, 2).
+2. Updates 36 applies notes 29, 17 and 9 and its three faults; Updates 35 the last faults. Round 3 of the fifteen screens waits on his answer to round 2 (Waiting on him, 1); then rounds 4 and 5 and note 28.
 3. A fresh SSM chat from docs/handoffs/ssm-board.md once his design answers are in: seven Bibles in the drop's line, the store texts, Discord and board.json; the Holy Mountain's line; the count of looks after Desert; the voices' line; the Vault (the 1.8 kit page, the 1.9 film's first cut, the documentary's first film).
 4. The whole 1.9 film once the screens are final, on his yes to the sample.
 4b. **The full documentary, now** (his "now", 20:33 UTC): being made (Running), one render.
