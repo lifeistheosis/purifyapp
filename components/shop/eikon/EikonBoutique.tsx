@@ -34,7 +34,8 @@ import type { ShopProductFull, ShopStore } from "@/lib/shop/types";
  * width, so the eye travels instead of scanning rows. Two columns on a phone
  * with the same rhythm. Each piece rises into place as it scrolls up the
  * screen (CSS scroll-driven animation, `.eikon-rise` in app/globals.css),
- * where a browser supports it; elsewhere it simply sits there.
+ * where a browser supports it; elsewhere, and with motion reduced, it simply
+ * sits there.
  *
  * `dark-island`: obsidian on every palette, the Light one included, with the
  * dark palette's tokens put back inside it (app/globals.css).

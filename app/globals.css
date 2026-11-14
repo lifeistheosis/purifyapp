@@ -2782,9 +2782,13 @@ html.is-native body {
    `backwards` only, so nothing keeps a transform once it has played
    (lib/ui/__tests__/motionDoctrine.test.ts). Everything else moves with the
    scroll through view timelines where the browser has them, and sits still
-   where it does not. Always on, like the front page's phones: the owner asked
-   for motion that stays (components/marketing/AppsSection.tsx). `both` here
-   is on leaves, never on a wrapper. */
+   where it does not. With motion reduced, all of it stands still, as every
+   motion in the app does (the owner, 2026-11-10; the escape after the
+   @supports block below). This said "always on, like the front page's
+   phones" from 2026-09-30, by analogy: his word of 2026-09-27, motion that
+   stays, named the front page's phones alone
+   (components/marketing/AppsSection.tsx), and they keep it. `both` here is on
+   leaves, never on a wrapper. */
 @keyframes eikon-veil {
  from { opacity: 0; }
  to { opacity: 1; }
@@ -2845,6 +2849,13 @@ html.is-native body {
   animation-timeline: view();
   animation-range: exit 0% exit 100%;
  }
+}
+/* EIKON with motion reduced: the arrival and the scroll story stand still,
+   every piece whole and in its place (the arbiter's call, 2026-11-14; the gate's
+   reduced pass read "transform with the scroll" on three pieces). After the
+   @supports block, so at the same weight it wins. */
+:where([data-motion="reduce"]) :is(.eikon-veil-in, .eikon-rule-in, .eikon-rise, .eikon-drift, .eikon-macro, .eikon-hero) {
+ animation: none;
 }
 
 /* The shop's vitrine (components/shop/ProductCard.tsx and the shop home's

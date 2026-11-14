@@ -28,8 +28,9 @@ import type { ShopProductFull } from "@/lib/shop/types";
  * The motion is CSS scroll-driven (`animation-timeline: view()`, the
  * `.eikon-*` rules in app/globals.css): each frame moves with the scroll, not
  * on a timer, and a browser without the feature shows the same frames still.
- * It is always on, like the phones on the front page, which the owner asked to
- * keep moving (components/marketing/AppsSection.tsx).
+ * With motion reduced the frames stand still too, as every motion in the app
+ * does (the arbiter's call, 2026-11-14): the owner's word to keep motion on
+ * named the front page's phones alone (components/marketing/AppsSection.tsx).
  */
 
 function firstSentence(md: string | null): string | null {

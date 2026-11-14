@@ -148,6 +148,35 @@ describe("motion doctrine", () => {
     }
   });
 
+  it("EIKON stands still with motion reduced; the front page's phones keep his word", () => {
+    // EIKON's story moved under reduced motion ("transform with the scroll" on
+    // three pieces, the gate's reduced pass, Updates 37), on a comment that
+    // copied by analogy his word of 2026-09-27, motion that stays, which named
+    // the front page's phones alone. His rule of 2026-11-10 is that reduced
+    // motion stays still (the arbiter's call, 2026-11-14). Each EIKON motion
+    // class has an escape that takes its animation away, written after the last
+    // rule that gives it one, so at the same weight the escape wins.
+    const src = rules(CSS);
+    const escapes: { selector: string; body: string; at: number }[] = [];
+    const re = /([^{}]+)\{([^{}]*)\}/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(src))) {
+      if (m[1].includes(SWITCH)) escapes.push({ selector: m[1], body: m[2], at: m.index });
+    }
+    for (const cls of ["eikon-veil-in", "eikon-rule-in", "eikon-rise", "eikon-drift", "eikon-macro", "eikon-hero"]) {
+      const given = [...src.matchAll(new RegExp(`\\.${cls}\\s*\\{[^}]*animation`, "g"))];
+      expect(given.length, `.${cls} gives an animation`).toBeGreaterThan(0);
+      const last = given[given.length - 1].index ?? 0;
+      const still = escapes.find((e) => new RegExp(`\\.${cls}(?![\\w-])`).test(e.selector) && /animation:\s*none/.test(e.body));
+      expect(still, `.${cls} needs an escape with animation: none`).toBeTruthy();
+      expect(still!.at, `.${cls}'s escape comes after the rule it quiets`).toBeGreaterThan(last);
+    }
+    // The phones still follow no motion setting (components/marketing/AppsSection.tsx).
+    const phones = fs.readFileSync(path.join(ROOT, "components/marketing/AppsSection.tsx"), "utf8");
+    expect(phones).not.toMatch(/from "@\/lib\/ui\/motion/);
+    expect(phones).not.toMatch(/motion-reduce:|data-motion/);
+  });
+
   it("cascade-rise never reaches a reader route", () => {
     // These trees render `fixed` chrome inline and do not portal it: the
     // chapter pill, the verse toolbar, the commentary

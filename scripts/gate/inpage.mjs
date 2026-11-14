@@ -749,11 +749,15 @@ export function gateInPage() {
           const d = timing.duration;
           if (typeof d === "number" && d < 40) continue;
           // A scroll-driven animation (a view or scroll timeline) has no time of its own: its duration
-          // reads "auto", and it moves only as its scroller does. EIKON's story keeps its scroll-driven
-          // motion on by design (components/shop/eikon/EikonStory.tsx), and this listed it as
-          // "transform over 0ms" on every tap on the shop item while nothing moved (Updates 13 and 18,
-          // the shop item's zero-length transform). So it is listed only in a frame where its progress
-          // changed from the frame before.
+          // reads "auto", and it moves only as its scroller does. EIKON's story moves with the scroll
+          // (components/shop/eikon/EikonStory.tsx), and this listed it as "transform over 0ms" on every
+          // tap on the shop item while nothing moved (Updates 13 and 18, the shop item's zero-length
+          // transform). So it is listed only in a frame where its progress changed from the frame
+          // before. With motion reduced EIKON's story stands still (app/globals.css, the arbiter's call
+          // of 2026-11-14), so in the reduced pass a scroll-driven move is a fault like any other. The
+          // one scroll-driven motion kept on with motion reduced, at the owner's word of 2026-09-27, is
+          // the front page's phones (components/marketing/AppsSection.tsx), which only the website
+          // draws: the export never renders them (app/page.tsx), so no walk here reads them.
           if (typeof d !== "number") {
             const seen = (s.progress ??= new WeakMap());
             const before = seen.get(a);
