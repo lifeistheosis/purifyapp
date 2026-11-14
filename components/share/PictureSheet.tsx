@@ -254,8 +254,39 @@ export function PictureSheet({
     tabRefs.current[next]?.focus();
   }
 
+  // Save and Share, and the line that says the picture was saved, held at the sheet's foot: at the
+  // phone's largest text the sheet meets its 85% cap, and the body above them scrolls while they stay
+  // in view, the picture keeping its size (the old sheet hid 46px under its fold, and scrolled them).
+  // The room is the sheet's as it was: 14px over them (4px of it the body's, the reach of the Words
+  // tab's 44px switches, hit-44, so the body does not scroll by them), 20px under the line.
+  const actions = (
+    <div className="px-4 pb-5 pt-2.5">
+      <div className="grid grid-cols-[1fr_1.6fr] gap-2.5">
+        <button
+          type="button"
+          disabled={!fits || busy}
+          onClick={() => void send("save")}
+          className="tap-press h-[50px] rounded-pill border border-paper/20 font-sans text-[15px] font-semibold text-paper disabled:opacity-40"
+        >
+          {t("common.save")}
+        </button>
+        <button
+          type="button"
+          disabled={!fits || busy}
+          onClick={() => void send("share")}
+          className={cn("tap-press h-[50px] rounded-pill font-sans text-[15px] disabled:opacity-40", ON)}
+        >
+          {t("common.share")}
+        </button>
+      </div>
+      <p role="status" aria-live="polite" className="mt-2 min-h-[18px] text-center font-sans text-caption text-paper/70">
+        {status}
+      </p>
+    </div>
+  );
+
   return (
-    <Sheet open={open} onClose={onClose} title={title} openFull desktop layer={layer}>
+    <Sheet open={open} onClose={onClose} title={title} openFull desktop layer={layer} foot={actions} bodyClassName="!pb-1">
       {/* The picture, as it will be sent. */}
       <div className="relative flex justify-center pt-1">
         <canvas
@@ -432,28 +463,6 @@ export function PictureSheet({
           </div>
         </TabLayer>
       </div>
-
-      <div className="mt-3.5 grid grid-cols-[1fr_1.6fr] gap-2.5">
-        <button
-          type="button"
-          disabled={!fits || busy}
-          onClick={() => void send("save")}
-          className="tap-press h-[50px] rounded-pill border border-paper/20 font-sans text-[15px] font-semibold text-paper disabled:opacity-40"
-        >
-          {t("common.save")}
-        </button>
-        <button
-          type="button"
-          disabled={!fits || busy}
-          onClick={() => void send("share")}
-          className={cn("tap-press h-[50px] rounded-pill font-sans text-[15px] disabled:opacity-40", ON)}
-        >
-          {t("common.share")}
-        </button>
-      </div>
-      <p role="status" aria-live="polite" className="mt-2 min-h-[18px] text-center font-sans text-caption text-paper/70">
-        {status}
-      </p>
 
       {/* The reader's own photo: read here, drawn here, never sent. */}
       <input

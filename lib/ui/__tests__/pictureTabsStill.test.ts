@@ -20,7 +20,7 @@ import { describe, expect, it } from "vitest";
 
 const src = fs.readFileSync(path.join(process.cwd(), "components/share/PictureSheet.tsx"), "utf8");
 const at = src.indexOf('role="tabpanel"');
-const panel = src.slice(src.lastIndexOf("<div", at), src.indexOf('<div className="mt-3.5 grid grid-cols-[1fr_1.6fr]', at));
+const panel = src.slice(src.lastIndexOf("<div", at), src.indexOf("{/* The reader's own photo", at));
 const layer = src.slice(src.indexOf("function TabLayer("), src.indexOf("const TABS"));
 
 describe("the verse picture's tabs share one cell", () => {

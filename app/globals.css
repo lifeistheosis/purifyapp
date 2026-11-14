@@ -11763,11 +11763,17 @@ html[data-reading-mode="parchment"] .remember-lit {
 
 /* The verse picture's text size (components/share/PictureSheet.tsx, his
    "mix of A and B" of round 11): a thin track, white up to the size chosen
-   (--fill), and a white knob lit like the sheet's other choices. */
+   (--fill), and a white knob lit like the sheet's other choices. Its box is
+   44px tall to a finger and its margins give the 8px back, so the track
+   stands where it stood and nothing round it moves: what .hit-44 does for
+   the other small controls, which an input cannot take (it draws no
+   ::after). It was 36 (checkMock, Updates 51), and at 1x the sheet is
+   already within half a pixel of its 85% cap. */
 .picture-range {
  -webkit-appearance: none;
  appearance: none;
- height: 36px;
+ height: 44px;
+ margin-block: -4px;
  background: transparent;
  cursor: pointer;
 }
@@ -11804,9 +11810,10 @@ html[data-reading-mode="parchment"] .remember-lit {
  background: var(--color-paper);
  box-shadow: 0 0 10px rgb(255 255 255 / 0.7);
 }
+/* On the 44px box itself, where it stood when the box was 36 and stood 4px off. */
 .picture-range:focus-visible {
  outline: 2px solid var(--color-paper);
- outline-offset: 4px;
+ outline-offset: 0;
  border-radius: 999px;
 }
 /* Each engine's knob on its own: one it does not know would drop the pair. */
