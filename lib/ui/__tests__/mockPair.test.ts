@@ -40,6 +40,7 @@ describe("checkMock pairs Dark's paints with Light's by element, not by place", 
   it("is proved by the self-test: a line drawn mid-measure fails no good words and hides no colour typed in", () => {
     expect(tool).toContain('const PAIR = `<div data-mock-fixture="pair"');
     expect(tool).toMatch(/const pairRight =\s*!typedIn\("Words that follow the palette"\) &&\s*typedIn\("Words typed in white"\) &&\s*!typedIn\("A line drawn while it is measured"\)/);
-    expect(tool).toMatch(/hyphenRead && shapesOnce && pairRight;/);
+    // The verdict holds it (the self-test's later proofs follow it in the same line, Updates 39's dirRight first).
+    expect(tool).toMatch(/hyphenRead && shapesOnce && pairRight(?: && \w+)*;/);
   });
 });
