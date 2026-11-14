@@ -128,10 +128,18 @@ describe("a study's reader: the part's heading on the subject's light", () => {
     expect(three).toBeLessThanOrEqual(70);
   });
 
-  it("and is left as written everywhere else, where it passes", () => {
-    const named = [...CSS.matchAll(/html\[data-reading-mode="([a-z]+)"\] \.reader-part-heading/g)].map((m) => m[1]).sort();
+  it("and is left as written everywhere else on a phone, where it passes", () => {
+    // At a tablet's widths the heading stands nearer the light, and from md
+    // Dark, Light and these four draw it stronger (Updates 33, round 1's
+    // export; fifteenScreens.test.ts holds those shares). On a phone, as here.
+    const md = CSS.indexOf("@media (min-width: 768px) {\n html:not([data-reading-mode]):not([data-look]) .reader-part-heading");
+    expect(md).toBeGreaterThan(-1);
+    const phone = CSS.slice(0, md) + CSS.slice(CSS.indexOf("\n}\n", md) + 3);
+    const named = [...phone.matchAll(/html\[data-reading-mode="([a-z]+)"\] \.reader-part-heading/g)].map((m) => m[1]).sort();
     expect(named).toEqual(["candlelight", "cappadocian", "councils", "monastery"]);
-    expect(CSS).not.toMatch(/(?:^|[{};,])\s*\.reader-part-heading\s*[{,]/m);
+    expect(phone).not.toMatch(/html:not\(\[data-reading-mode\]\)[^{]*\.reader-part-heading/);
+    expect(phone).not.toMatch(/html\[data-reading-mode="parchment"\][^{]*\.reader-part-heading/);
+    expect(phone).not.toMatch(/(?:^|[{};,])\s*\.reader-part-heading\s*[{,]/m);
   });
 });
 

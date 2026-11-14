@@ -158,8 +158,10 @@ describe("a page of the story", () => {
 
 describe("the quiet", () => {
   it("is decoration, drawn from the engine's variables, and comes only while a page is shown", () => {
-    expect(draw(createElement(TourHush, { shown: true }))).toBe(
-      '<div aria-hidden="true" class="tour-hush" data-shown=""><div class="tour-hush-veil"></div><div class="tour-bloom"></div></div>',
+    // The bloom tells the checker why it stays where the lit thing is measured,
+    // in every language (Updates 33, round 1's export in Arabic).
+    expect(draw(createElement(TourHush, { shown: true }))).toMatch(
+      /^<div aria-hidden="true" class="tour-hush" data-shown=""><div class="tour-hush-veil"><\/div><div class="tour-bloom" data-mock-allow="mirror" data-mock-why="[^"]+"><\/div><\/div>$/,
     );
     expect(draw(createElement(TourHush, { shown: false }))).not.toContain("data-shown");
   });
