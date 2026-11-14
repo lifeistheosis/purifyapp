@@ -164,7 +164,7 @@ for (const lang of LANGS) {
       await page.waitForTimeout(1500);
       return dlg;
     };
-    let dlg = await openStudy();
+    const dlg = await openStudy();
     if (size.zoom !== 1) await zoomText(page, size.zoom);
     await page.waitForTimeout(400);
     const tabs = dlg.getByRole("tab");
@@ -183,15 +183,11 @@ for (const lang of LANGS) {
       );
       await page.waitForTimeout(300);
     }
-    // A verse from each testament's list opens its chapter (once per language).
-    if (size.zoom === 1) {
-      for (const [i, name] of [
-        [1, "New Testament"],
-        [0, "Old Testament"],
-      ]) {
+    // A verse from the list opens its chapter: the New Testament's at 1x, the Old Testament's at 1.3x (one study opened per pass).
+    {
+      for (const [i, name] of [size.zoom === 1 ? [1, "New Testament"] : [0, "Old Testament"]]) {
         if (i === 0) {
-          dlg = await openStudy();
-          await dlg.getByRole("tab").nth(0).tap();
+          await tabs.nth(0).tap();
           await page.waitForTimeout(1500);
         }
         const link = dlg.getByRole("listitem").first().getByRole("link");
