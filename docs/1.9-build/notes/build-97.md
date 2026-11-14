@@ -41,3 +41,9 @@ Build 97 (run 43608911353, from 231e1ce0, code 59d1fd98), cut ungated at his wor
 **Found.** The list below Heart is the phone's own voices, which his answer on "Heart only" (NOW, Waiting on him) would take away. The sheet shows no state while a sample plays, and nothing says whether a voice is on the phone.
 
 **The plan.** The sheet follows that answer: every voice that stays (Heart, and any Plus voice made ahead) shows by its design whether it is downloaded, not downloaded or downloading, with a download control where it is not, and a sample whose control shows it is playing, distinct in both states. Drawn in the Fable round with the journal page, for his yes; applied by a fixer.
+
+## Note 6: a reader's profile, opened the first time
+
+**His words** (about 16:06 UTC), with two screenshots of readers' profiles in Community (their names are not written here: they are other people's): "opening a users profile for the first time is laggy and buggy ensure its smooth and if a loading process needs to happen ensure that's smooth too".
+
+**The plan.** Measure the first opening on the export against the main web: what waits (the sheet's motion, the network, the picture, each tab's content arriving) and what moves. The sheet opens at once and stands in its final size; a quiet loading state in the house's way holds each part's place; what arrives fades in without moving anything; Back, Follow and the menu answer while it loads. A test that fails on the old code; the times before and after in the report. **Owner:** a fixer, with note 3 (first openings), measuring first.
