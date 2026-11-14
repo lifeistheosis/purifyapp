@@ -188,25 +188,33 @@ export function SaintsBrowser({ saints = SAINTS }: { saints?: Saint[] }) {
         />
       </div>
 
-      {isFiltering ? (
-        <p className="mt-10 font-sans text-detail tabular-nums text-paper/55">
-          {tn("saints.saintCount", visible.length)}
-        </p>
-      ) : null}
+      {/* The grid stands where it stands, filtered or not, and the count of a
+          filter sits in the gap above it, out of the flow. Set above it in the
+          flow, the count pushed the grid 37px down under the finger the moment
+          a filter was chosen with motion reduced, where no cross-fade hides
+          the move (the gate's recording, Updates 39). The page with no filter
+          is as it was. */}
+      <div className="relative mt-10">
+        {isFiltering ? (
+          <p className="absolute bottom-full start-0 mb-2 font-sans text-detail tabular-nums text-paper/55">
+            {tn("saints.saintCount", visible.length)}
+          </p>
+        ) : null}
 
-      {/* Deliberately NOT `cascade`. This grid renders the full filtered set
-          (107 cards unfiltered), and the cascade clamps its stagger at the
-          13th child — so cards 14 and up would all hold at opacity 0 for
-          910ms and then appear at once, which is worse than no animation.
-          A stagger is only worth it where the user can actually see it
-          arrive; here about three cards are above the fold and the masthead
-          cascade above already covers the entrance. */}
-      <div className={isFiltering ? "mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" : "mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"}>
-        {visible.map((s) => (
-          <div key={s.slug} className="cv-card">
-            <SaintCard saint={s} />
-          </div>
-        ))}
+        {/* Deliberately NOT `cascade`. This grid renders the full filtered set
+            (107 cards unfiltered), and the cascade clamps its stagger at the
+            13th child — so cards 14 and up would all hold at opacity 0 for
+            910ms and then appear at once, which is worse than no animation.
+            A stagger is only worth it where the user can actually see it
+            arrive; here about three cards are above the fold and the masthead
+            cascade above already covers the entrance. */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {visible.map((s) => (
+            <div key={s.slug} className="cv-card">
+              <SaintCard saint={s} />
+            </div>
+          ))}
+        </div>
       </div>
 
       {visible.length === 0 && (
