@@ -22,7 +22,7 @@
 // note stays words alone, as it is kept on its verse.
 
 import Link from "next/link";
-import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PageBlocks, PageToolbar } from "@/components/journal/PageBlocks";
@@ -33,7 +33,6 @@ import { cn } from "@/lib/cn";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { JOURNAL_KINDS, MAX_BODY, type JournalDraft, type JournalKind, type JournalSource } from "@/lib/journal/entries";
 import { pageIsEmpty } from "@/lib/journal/page";
-import { scrollForWritingLine } from "@/lib/journal/writingLine";
 import { useVerseWords } from "@/lib/saved/verseWords";
 
 /** Each kind's name. A closed map, so every key is a literal the key test reads. */
@@ -42,29 +41,6 @@ export const KIND_KEY: Record<JournalKind, string> = {
   prayer: "journal.kind.prayer",
   question: "journal.kind.question",
 };
-
-/**
- * How tall a field's words are up to the cursor, at the field's own width
- * and type: measured on a twin of it with no height of its own, laid over
- * nothing and gone in the same breath. The field itself is as tall as it was
- * made (30 percent of the screen for a page's last), which says nothing of
- * where its words end, or of where in them the cursor is.
- */
-function wordsHeightOf(el: HTMLTextAreaElement, upTo: number = el.value.length): number {
-  const parent = el.parentElement;
-  if (!parent) return el.offsetHeight;
-  const twin = el.cloneNode() as HTMLTextAreaElement;
-  twin.value = el.value.slice(0, upTo);
-  twin.rows = 1;
-  twin.tabIndex = -1;
-  twin.setAttribute("aria-hidden", "true");
-  twin.removeAttribute("placeholder");
-  Object.assign(twin.style, { position: "absolute", top: "0", insetInlineStart: "0", width: `${el.clientWidth}px`, height: "0px", minHeight: "0px", visibility: "hidden", pointerEvents: "none" });
-  parent.appendChild(twin);
-  const height = twin.scrollHeight;
-  twin.remove();
-  return height;
-}
 
 export function JournalComposer({
   open,
@@ -110,36 +86,10 @@ export function JournalComposer({
     if (open) grow();
   }, [open, draft.body, grow]);
 
-  // Keep the line being written in view when the keyboard comes up or the
-  // words run past the bottom of the sheet (build 95 note 6: "when the
-  // keyboard does open, the page holds still ... with the writing line kept
-  // in sight"). The line is where the cursor is: the foot of the words up to
-  // it, in whichever field has it (lib/journal/writingLine.ts). Until build
-  // 95 only a cursor at the very end of a field was looked after, and by the
-  // field's foot: a line tapped in the middle of a long page was left under
-  // the keyboard, and an empty page was scrolled for nothing.
-  useEffect(() => {
-    if (!open) return;
-    const keepInView = () => {
-      const el = document.activeElement;
-      if (!(el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement) || !el.closest("[data-journal-composer]")) return;
-      const scroller = el.closest<HTMLElement>(".overflow-y-auto");
-      if (!scroller) return;
-      const box = el.getBoundingClientRect();
-      const wordsHeight = el instanceof HTMLTextAreaElement ? wordsHeightOf(el, el.selectionEnd) : box.height;
-      const below = scrollForWritingLine({ fieldTop: box.top, fieldBottom: box.bottom, wordsHeight, scrollerBottom: scroller.getBoundingClientRect().bottom });
-      if (below > 0) scroller.scrollTop += below;
-    };
-    const vv = window.visualViewport;
-    vv?.addEventListener("resize", keepInView);
-    document.addEventListener("focusin", keepInView);
-    document.addEventListener("input", keepInView);
-    return () => {
-      vv?.removeEventListener("resize", keepInView);
-      document.removeEventListener("focusin", keepInView);
-      document.removeEventListener("input", keepInView);
-    };
-  }, [open]);
+  // The line being written stays in view when the keyboard comes up or the
+  // words run past the sheet's foot, and nothing else moves the page while
+  // the keyboard comes: the sheet does it for every field in its body
+  // (lib/ui/sheetKeyboard.ts, build 97 note 2; build 95 note 6 before it).
 
   // The sheet opens with no cursor in it, and the keyboard down (build 95
   // note 6, the owner: "the typing pad pops up automatically and it's buggy

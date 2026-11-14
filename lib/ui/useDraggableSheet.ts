@@ -44,6 +44,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 
 import { sheetLeaves, sheetRises } from "@/lib/ui/overlay";
 import { NO_ROOM, roomUnder, sheetTakes, type Room } from "@/lib/ui/sheetGesture";
+import { holdFieldOnKeyboard } from "@/lib/ui/sheetKeyboard";
 
 type Snap = "full" | "half";
 
@@ -448,6 +449,16 @@ export function useDraggableSheet({
       window.removeEventListener("resize", reflow);
     };
   }, [mounted, measure, paint, setSnap, transitions]);
+
+  // A field in the body while the keyboard comes: the body keeps its scroll,
+  // moved only as far as the line being written needs, and the WebView's own
+  // scroll of the field into view is put back (build 97 note 2,
+  // lib/ui/sheetKeyboard.ts).
+  useEffect(() => {
+    const body = bodyRef.current;
+    if (!mounted || !body) return;
+    return holdFieldOnKeyboard(body);
+  }, [mounted]);
 
   // ── The gesture ───────────────────────────────────────────────────────────
   const begin = useCallback(

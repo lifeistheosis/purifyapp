@@ -83,15 +83,16 @@ describe("the keyboard comes up and the page stays", () => {
     expect(scrollForWritingLine({ fieldTop: 100, fieldBottom: 144, wordsHeight: 900, scrollerBottom: 450 })).toBe(0);
   });
 
+  // From build 97 note 2 the sheet keeps it for every field in its body (lib/ui/sheetKeyboard.ts).
   it("is what the writing sheet keeps the line in view by", () => {
-    const composer = code(read("components/journal/JournalComposer.tsx"));
+    const composer = code(read("lib/ui/sheetKeyboard.ts"));
     expect(composer).toContain("scrollForWritingLine(");
     // The field's foot against the sheet's, which is what scrolled an empty page.
     expect(composer).not.toMatch(/el\.getBoundingClientRect\(\)\.bottom - scroller\.getBoundingClientRect\(\)\.bottom/);
   });
 
   it("looks after the line the cursor is on, wherever in the words it is, and in a line's own field", () => {
-    const composer = code(read("components/journal/JournalComposer.tsx"));
+    const composer = code(read("lib/ui/sheetKeyboard.ts"));
     // Until build 95 only a cursor at the very end of a field was kept in view.
     expect(composer).not.toMatch(/atEnd/);
     expect(composer).toContain("wordsHeightOf(el, el.selectionEnd)");
