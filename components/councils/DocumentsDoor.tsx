@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
 import { avifFor } from "@/lib/media/streamed";
 import { windowStyle, type CoverWindow } from "@/lib/reading/coverWindow";
 
-/** A book in the door's fan: its window onto the council's icon, its own cover's face, or none (a local council's plate). */
+/** A book in the door's fan: its window onto the council's icon or its own cover's face; a book with no picture is not in the fan. */
 export type FanBook = { src?: string; focusY?: number; crop?: CoverWindow };
 
 /**
@@ -30,7 +30,14 @@ export function DocumentsDoor({ href, books, minutes, fan }: { href: string; boo
   // lean follows the page's direction, as the places do: Tailwind's rtl:
   // also matches by language, which a page turned round in its own language
   // would not follow.
-  const [front, atStart, atEnd] = fan;
+  //
+  // Only a book with its real picture stands in the fan (his "all recs" of
+  // 2026-11-13 about 14:29 UTC: "a council's plate given its real picture
+  // where one is allowed and dropped where not"). A local council has no
+  // picture History may show (lib/councils/page.ts, councilEvent), so its
+  // books' plates, a cover's shape with only its ground, are dropped, and a
+  // door with no picture to show is its words alone.
+  const [front, atStart, atEnd] = fan.filter((b): b is FanBook & { src: string } => Boolean(b.src));
   return (
     <Link
       href={href}
@@ -46,32 +53,29 @@ export function DocumentsDoor({ href, books, minutes, fan }: { href: string; boo
           {tn("councils.booksInRoom", books)} · {readingTime(minutes, t)}
         </span>
       </span>
-      <span aria-hidden className="relative block h-[58px] w-[78px] shrink-0">
-        {atStart ? (
-          <span className="absolute bottom-[3px] start-[2px] origin-bottom -rotate-[10deg] [[dir=rtl]_&]:rotate-[10deg]">
-            <MiniCover book={atStart} width={34} />
-          </span>
-        ) : null}
-        {atEnd ? (
-          <span className="absolute bottom-[3px] start-[42px] origin-bottom rotate-[10deg] [[dir=rtl]_&]:-rotate-[10deg]">
-            <MiniCover book={atEnd} width={34} />
-          </span>
-        ) : null}
-        {front ? (
+      {front ? (
+        <span aria-hidden className="relative block h-[58px] w-[78px] shrink-0">
+          {atStart ? (
+            <span className="absolute bottom-[3px] start-[2px] origin-bottom -rotate-[10deg] [[dir=rtl]_&]:rotate-[10deg]">
+              <MiniCover book={atStart} width={34} />
+            </span>
+          ) : null}
+          {atEnd ? (
+            <span className="absolute bottom-[3px] start-[42px] origin-bottom rotate-[10deg] [[dir=rtl]_&]:-rotate-[10deg]">
+              <MiniCover book={atEnd} width={34} />
+            </span>
+          ) : null}
           <span className="absolute bottom-0 start-[20px]">
             <MiniCover book={front} width={38} />
           </span>
-        ) : null}
-      </span>
+        </span>
+      ) : null}
     </Link>
   );
 }
 
-/**
- * A cover too small for its words: the picture and its fade alone, or the
- * room's plate, black with a pool of light, for a book with no picture.
- */
-function MiniCover({ book, width }: { book: FanBook; width: number }) {
+/** A cover too small for its words: the picture and its fade alone. */
+function MiniCover({ book, width }: { book: FanBook & { src: string }; width: number }) {
   // A council's own picture is carried in the apps as AVIF though its JPEG is
   // the website's: offered first, so the fan has it with no signal too
   // (lib/media/streamed.ts, avifFor; the gate's final run of 2026-11-12).
@@ -82,27 +86,23 @@ function MiniCover({ book, width }: { book: FanBook; width: number }) {
       style={{
         width,
         height: Math.round(width * 1.5),
-        backgroundImage: book.src
-          ? "radial-gradient(130% 75% at 50% 0%, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0) 72%)"
-          : "radial-gradient(85% 55% at 50% 40%, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.05) 55%, rgb(255 255 255 / 0) 80%)",
+        backgroundImage: "radial-gradient(130% 75% at 50% 0%, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0) 72%)",
       }}
     >
-      {book.src ? (
-        // The council's icon, a window onto it, coming in whole (build 85, note 52).
-        <picture className="contents">
-          {avif ? <source type="image/avif" srcSet={avif} /> : null}
-          <ArrivingImage
-            src={book.src}
-            loading="lazy"
-            decoding="async"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
-            className="absolute inset-0 h-full w-full object-cover"
-            style={book.crop ? windowStyle(book.crop) : { objectPosition: `50% ${book.focusY ?? 22}%` }}
-          />
-        </picture>
-      ) : null}
+      {/* The council's icon, a window onto it, coming in whole (build 85, note 52). */}
+      <picture className="contents">
+        {avif ? <source type="image/avif" srcSet={avif} /> : null}
+        <ArrivingImage
+          src={book.src}
+          loading="lazy"
+          decoding="async"
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+          }}
+          className="absolute inset-0 h-full w-full object-cover"
+          style={book.crop ? windowStyle(book.crop) : { objectPosition: `50% ${book.focusY ?? 22}%` }}
+        />
+      </picture>
       <span aria-hidden className="absolute inset-x-0 bottom-0 h-[40%] bg-gradient-to-b from-transparent to-black/75" />
     </span>
   );
