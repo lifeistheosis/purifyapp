@@ -1,6 +1,6 @@
 # Baton: Updates 52 (the sheets' rest, build 97 notes 2 and 9)
 
-Written 2026-11-14 about 18:50 UTC, at the budget line. get_session read 91,680 the whole session (stamped a minute after the start), so by the brief's rule my own count of the conversation, about 80,000, doubled, put me at the line after item 1.
+Written 2026-11-14 about 18:50 UTC, at the budget line. get_session read 91,680 until about 18:39, then 254,257 (cost $5.96): past the 200,000 stop line after item 1, so items 2 and 3 were not started.
 
 ## Role and scope
 
@@ -20,7 +20,7 @@ A fixer (docs/roles/fixer.md), from Arbiter 9's brief of 18:16: note 2's jump an
 
 ## Gotchas
 
-- get_session's used_tokens froze at 91,680 from the first minute. Count yourself and double it.
+- get_session's used_tokens stood at 91,680 for the first twenty minutes, then read 254,257. Count yourself and double it, and read it again before each new item.
 - The walk needs a dev server with `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 NEXT_PUBLIC_SUPABASE_ANON_KEY=walk-anon`; COVER=1 adds a cover through More, Cover (Plus is open on a dev server with no RevenueCat key).
 - A build started with `&` inside a Bash call dies with that call's shell; use the tool's background run.
 - `page.setViewportSize` is the app's keyboard (the window shrinks); the export walk's stand-in (visualViewport only) is the website's. They differ: test the one the change is for.
