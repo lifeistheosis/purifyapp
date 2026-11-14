@@ -3,7 +3,10 @@
 //
 // The seller's order page set a refund's resolution note after an em dash; it
 // now stands after the same middle dot that already parts the refund's status
-// from its amount on that line. Comments are not read: only what the page
+// from its amount on that line. The language editor's Russian and Ukrainian
+// closing lines said "perhaps yours is next" with the dash those languages set
+// for an unstated "is"; they say it without one ("perhaps the next will be
+// yours"), the meaning unchanged. Comments are not read: only what the page
 // draws (its strings, its templates and its JSX text).
 
 import fs from "node:fs";
@@ -12,7 +15,7 @@ import path from "node:path";
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
 
-const FILES = ["app/(app)/shop/seller/orders/[id]/page.tsx"];
+const FILES = ["app/(app)/shop/seller/orders/[id]/page.tsx", "app/(app)/language-editor/page.tsx"];
 
 /** Every piece of words the file can draw: string literals, template parts and JSX text. */
 function drawnWords(rel: string): string[] {
