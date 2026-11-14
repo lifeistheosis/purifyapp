@@ -152,8 +152,13 @@ for (const lang of LANGS) {
       }
       const word = page.locator('button[data-mock-why="a word in the verse\'s own line"]', { hasText: /^Λ/ }).first(); // Λόγος, the first word of John 1:1 to begin so (its accent is an oxia, not a tonos)
       await word.waitFor({ timeout: 120000 });
-      await word.tap();
-      await page.getByRole("button", { name: t("bible.wordStudyOpen"), exact: true }).tap();
+      // A tap before the page has woken opens nothing: tap again until the word's card offers its study.
+      const open = page.getByRole("button", { name: t("bible.wordStudyOpen"), exact: true });
+      for (let i = 0; i < 8 && !(await open.isVisible()); i++) {
+        await word.tap();
+        await open.waitFor({ timeout: 4000 }).catch(() => {});
+      }
+      await open.tap();
       const dlg = page.getByRole("dialog").filter({ has: page.getByRole("tablist") });
       await dlg.getByRole("listitem").first().waitFor({ timeout: 60000 });
       await page.waitForTimeout(1500);
