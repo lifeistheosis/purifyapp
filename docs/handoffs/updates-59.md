@@ -8,9 +8,9 @@ Card: `docs/roles/fixer.md`. Branch `ccr-07896cf2-bo0afd`. Build 97 note 3 (`doc
 
 ## Done
 
-- `1891810d` `scripts/first-open.mjs`: the five tabs and the page each opens most, timed tap to settled on the export (shell server, 390x844, CPU 4x through CDP, a fresh browser each run). Settled: the main heading drawn at full opacity, then 300 ms with no layout shift and no move. `--trace` splits the main thread, `--second` times a second opening, `--handoff` times every frame of the onboarding's slate, `--no-keep-prefetch` stubs KeepScrolling's prefetch.
-- `cbb3367b` `lib/nav/readyAhead.ts`, `components/nav/ReadyAhead.tsx` (mounted in RootFrame), started in `HandoffSlate.tsx` and in the onboarding's `finish()`: each page's index.txt read from the bundle, the code files it names loaded one at a time in idle steps, its client modules run once through the bundler's own entry. Stopped by a tap, a key or the background. Never router.prefetch, nothing from outside the bundle.
-- `f2e1cfeb` the guard: `isNativeClient()`, not `IS_STATIC_EXPORT`. The export of `cbb3367ba` (my second and last) showed nothing readied: that flag is server only and reads as the website in client code.
+- `27e539c6` `scripts/first-open.mjs`: the five tabs and the page each opens most, timed tap to settled on the export (shell server, 390x844, CPU 4x through CDP, a fresh browser each run). Settled: the main heading drawn at full opacity, then 300 ms with no layout shift and no move. `--trace` splits the main thread, `--second` times a second opening, `--handoff` times every frame of the onboarding's slate, `--no-keep-prefetch` stubs KeepScrolling's prefetch.
+- `2a58d08e` `lib/nav/readyAhead.ts`, `components/nav/ReadyAhead.tsx` (mounted in RootFrame), started in `HandoffSlate.tsx` and in the onboarding's `finish()`: each page's index.txt read from the bundle, the code files it names loaded one at a time in idle steps, its client modules run once through the bundler's own entry. Stopped by a tap, a key or the background. Never router.prefetch, nothing from outside the bundle.
+- `4403af52` the guard: `isNativeClient()`, not `IS_STATIC_EXPORT`. The export of `cbb3367ba` (my second and last, cut before the rebase onto `2b4221d6` that made it `2a58d08e`) showed nothing readied: that flag is server only and reads as the website in client code.
 - What the measure found (medians of 3, ms, tap to settled; before is the export of `cf3335fbb`, after is the export of `cbb3367ba` with only its two compiled guards set to the mended value):
 
 | Opening | Before | After |
@@ -33,7 +33,7 @@ Card: `docs/roles/fixer.md`. Branch `ccr-07896cf2-bo0afd`. Build 97 note 3 (`doc
 
 | What | Owner | Next step |
 |---|---|---|
-| The real export of `f2e1cfeb` | the checks chat | Cut it (`node scripts/gate/export.mjs`), then `node scripts/first-open.mjs out --runs 3` and `--handoff --runs 3`. Expect the After column and about 36 code files read during the slate. |
+| A real export of `4403af52` or later | the checks chat | Cut it (`node scripts/gate/export.mjs`), then `node scripts/first-open.mjs out --runs 3` and `--handoff --runs 3`. Expect the After column and about 36 code files read during the slate. |
 | The motion walk over the five tabs | the checks chat | On that export: `NODE_USE_ENV_PROXY=1 node scripts/motion-walk.mjs out --only /,/bible/john/1/,/discover/,/prayers/,/account/ --json <f> --shots <d>`, then `--reduced`. It cannot reach the onboarding (it sets it done); the slate's frames are `--handoff` above. |
 | Item 2: six links that hold their picture with no data-carry | a fixer | `docs/handoffs/updates-46.md` Open 1. Not started. |
 | Fonts on first openings | the arbiter | Saints and Settings each read woff2 files after the tap, and Saints settles 316 ms after it switches. Measure whether a font swap moves the heading before readying fonts. |
