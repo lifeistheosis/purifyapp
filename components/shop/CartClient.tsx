@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { CartDealTag, CartLadder, OfferTag } from "@/components/shop/CartSignals";
 import { ProductRail } from "@/components/shop/ProductRail";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Minus } from "@/components/ui/icons/Minus";
 import { Plus } from "@/components/ui/icons/Plus";
 import { apiFetch } from "@/lib/api/client";
@@ -381,6 +382,7 @@ export function CartClient() {
               className="mt-1 inline-flex min-h-11 items-center gap-1 font-sans text-caption font-medium text-paper/80 hover:text-paper"
             >
               {t("shop.freeShippingOnEveryOrder")}
+              <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
             </Link>
           ) : null}
 

@@ -11,6 +11,7 @@ import { PrayerBookIndex } from "@/components/prayers/PrayerBookIndex";
 import { CARD, CARD_BG, CTA, Eyebrow, ICON_TILE, PILL } from "@/components/ui/Graphite";
 import { cn } from "@/lib/cn";
 import { Calendar } from "@/components/ui/icons/Calendar";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Hands } from "@/components/ui/icons/Hands";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Lyre } from "@/components/ui/icons/Lyre";
@@ -190,7 +191,7 @@ export default function PrayersPage() {
                     <h3 className="mt-5 text-lede font-bold leading-tight text-paper md:text-title-sm">{p.title}</h3>
                     <p className="mt-2 font-sans text-detail leading-[1.55] text-paper/65">{p.body}</p>
                     <p className={cn(CTA, "mt-auto pt-5")}>
-                      <span aria-hidden>→</span>
+                      <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
                     </p>
                   </Link>
                 ))}

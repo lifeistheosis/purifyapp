@@ -10,6 +10,7 @@
 import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { CURRENT_VERSION } from "@/lib/whatsNew/version";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import {
   subscribeSeen,
   getSeenSnapshot,
@@ -63,9 +64,7 @@ export function WhatsNewChip({ isDe, tagline }: { isDe: boolean; tagline: string
       <span className="font-sans text-caption sm:text-detail text-paper/85 group-hover:text-paper transition-colors">
         {CURRENT_VERSION} · {tagline}
       </span>
-      <span className="text-paper/55 group-hover:text-paper transition-colors text-detail">
-        →
-      </span>
+      <ChevronRight size={14} aria-hidden className="shrink-0 text-paper/55 transition-colors group-hover:text-paper rtl:-scale-x-100" />
     </Link>
   );
 }

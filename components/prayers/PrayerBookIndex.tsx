@@ -25,6 +25,7 @@ import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CARD, CARD_BG } from "@/components/ui/Graphite";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
 import { RULE_CATEGORY_ORDER, rulesByCategory, type RuleCategory, type RuleMeta } from "@/lib/prayers/rules";
 
@@ -98,12 +99,11 @@ export function PrayerBookIndex({ variant }: { variant: "desktop" | "mobile" }) 
                           {tn("prayers.approxMin", r.estimatedMinutes)}
                         </span>
                       ) : null}
-                      <span
+                      <ChevronRight
+                        size={14}
                         aria-hidden
-                        className="shrink-0 font-sans text-ui text-paper/45 transition-transform duration-200 group-hover/row:translate-x-0.5 group-hover/row:text-paper motion-reduce:transition-none"
-                      >
-                        →
-                      </span>
+                        className="shrink-0 text-paper/45 transition-transform duration-200 group-hover/row:translate-x-0.5 rtl:group-hover/row:-translate-x-0.5 group-hover/row:text-paper motion-reduce:transition-none rtl:-scale-x-100"
+                      />
                     </Link>
                   </li>
                 ))}

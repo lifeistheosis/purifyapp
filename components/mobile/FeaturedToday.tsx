@@ -9,6 +9,7 @@ import {
 import { MobileCard } from "./MobileCard";
 import { MobileSectionLabel } from "./MobileSectionLabel";
 import { T } from "@/components/i18n/T";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
 /**
  * The "Featured today" pair on Discover: one topic, one council, rotating
@@ -55,8 +56,11 @@ export function FeaturedToday({
             <p className="mt-2 font-serif italic text-ui text-paper/75 leading-[1.5]">
               {topic.definition}
             </p>
-            <p className="mt-3 font-sans text-detail font-medium text-paper/75">
-              {topic.citationCount} <T k="ui.citationsFromTheFathers" />
+            <p className="mt-3 flex items-center gap-1 font-sans text-detail font-medium text-paper/75">
+              <span>
+                {topic.citationCount} <T k="ui.citationsFromTheFathers" />
+              </span>
+              <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
             </p>
           </MobileCard>
         )}
@@ -70,8 +74,9 @@ export function FeaturedToday({
             <p className="mt-2 font-sans text-detail text-paper/65 leading-[1.55]">
               <T k="ui.readTheCanonsTheCreed" />
             </p>
-            <p className="mt-3 font-sans text-detail font-medium text-paper/75">
+            <p className="mt-3 flex items-center gap-1 font-sans text-detail font-medium text-paper/75">
               <T k="ui.openTheCouncil" />
+              <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
             </p>
           </MobileCard>
         )}

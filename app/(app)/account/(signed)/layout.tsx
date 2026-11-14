@@ -4,6 +4,7 @@ import { AccountTabs } from "@/components/account/AccountTabs";
 import { AccountAuthGate } from "@/components/account/AccountAuthGate";
 import { AccountTopBar } from "@/components/account/AccountTopBar";
 import { T } from "@/components/i18n/T";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 /**
  * Layout for the signed-in account sub-routes:
@@ -45,8 +46,9 @@ export default function SignedAccountLayout({
                 </p>
                 <Link
                   href="/account"
-                  className="font-sans text-caption text-paper/45 hover:text-paper transition-colors"
+                  className="inline-flex items-center gap-1 font-sans text-caption text-paper/45 hover:text-paper transition-colors"
                 >
+                  <ChevronLeft size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
                   <T k="ui.backToChooser" />
                 </Link>
               </div>

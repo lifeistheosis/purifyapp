@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { apiFetch } from "@/lib/api/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
 const field =
   "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
@@ -90,9 +91,10 @@ export function MerchantApplyForm() {
         </p>
         <Link
           href="/shop/sell/application"
-          className="mt-5 inline-flex font-sans text-detail font-medium text-paper"
+          className="mt-5 inline-flex items-center gap-1 font-sans text-detail font-medium text-paper"
         >
           {t("shop.viewYourApplicationStatus")}
+          <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
         </Link>
       </div>
     );

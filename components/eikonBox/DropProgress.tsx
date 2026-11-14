@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowUpLeft } from "@/components/ui/icons/ArrowUpLeft";
 import { trackingLink } from "@/lib/shop/trackingLink";
 import { CLAIM_STEPS, claimStepIndex, memberClaimStep } from "@/lib/eikonBox/status";
 import type { ClaimStatus, DropStatus } from "@/lib/eikonBox/types";
@@ -103,9 +104,10 @@ export function DropProgress({
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2.5 inline-flex min-h-11 items-center rounded-pill border border-gold/45 bg-gold/12 px-3.5 py-2 font-sans text-detail font-semibold text-gold-pale"
+              className="mt-2.5 inline-flex min-h-11 items-center gap-1 rounded-pill border border-gold/45 bg-gold/12 px-3.5 py-2 font-sans text-detail font-semibold text-gold-pale"
             >
-              Track your parcel ↗
+              Track your parcel
+              <ArrowUpLeft size={13} aria-hidden className="shrink-0 -scale-x-100 rtl:scale-x-100" />
             </a>
           )}
         </div>

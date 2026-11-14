@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
 import { isEikonStore } from "@/lib/shop/eikon";
 import type { ShopProductFull, ShopStore } from "@/lib/shop/types";
@@ -92,11 +93,12 @@ export function StoreDoor({
         ) : null}
         <p
           className={cn(
-            "mt-5 font-sans text-detail font-semibold",
+            "mt-5 flex items-center gap-1 font-sans text-detail font-semibold",
             "text-paper/80 group-hover:text-paper",
           )}
         >
           {t("shop.visitTheStore")}
+          <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
         </p>
       </div>
       {shown.length > 0 ? (

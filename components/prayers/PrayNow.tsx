@@ -18,6 +18,7 @@ import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CARD, CARD_BG } from "@/components/ui/Graphite";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useToday } from "@/lib/calendar/useToday";
@@ -124,9 +125,7 @@ export function PrayNow({ variant }: { variant: "desktop" | "mobile" }) {
                     {tn("prayers.approxMin", c.minutes)}
                   </span>
                 ) : null}
-                <span aria-hidden className="shrink-0 font-sans text-ui text-paper/45">
-                  →
-                </span>
+                <ChevronRight size={14} aria-hidden className="shrink-0 text-paper/45 rtl:-scale-x-100" />
               </Link>
             </li>
           ))}
@@ -154,9 +153,9 @@ export function PrayNow({ variant }: { variant: "desktop" | "mobile" }) {
             ) : null}
             <span
               aria-hidden
-              className="mt-auto self-end pt-4 font-sans text-lede text-paper/45 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-paper motion-reduce:transition-none"
+              className="mt-auto self-end pt-4 font-sans text-lede text-paper/45 transition-transform duration-200 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 group-hover:text-paper motion-reduce:transition-none"
             >
-              →
+              <ChevronRight size={18} aria-hidden className="rtl:-scale-x-100" />
             </span>
           </Link>
         </li>

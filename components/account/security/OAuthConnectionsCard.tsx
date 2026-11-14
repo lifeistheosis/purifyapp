@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { authOrigin } from "@/lib/site";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useIsNative } from "@/lib/platform/native";
 
@@ -423,7 +424,7 @@ export function OAuthConnectionsCard({
             className="mt-3 inline-flex min-h-11 items-center gap-1.5 rounded-pill border border-gold/55 bg-gold/15 text-gold font-sans text-detail font-semibold px-4 py-2 hover:bg-gold/25 hover:border-gold/80 transition-colors"
           >
             {t("ui.setAPassword")}
-            <span aria-hidden>→</span>
+            <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
           </button>
         </div>
       ) : error ? (

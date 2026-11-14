@@ -214,7 +214,7 @@ function VerseSection({
  aria-label={t("bible.jumpToVerse", { verse })}
  className="shrink-0 text-paper/30 hover:text-paper/70 transition-colors text-eyebrow px-1"
  >
- ↑
+ <ChevronDown size={12} aria-hidden className="block rotate-180" />
  </a>
  </div>
  {open && (

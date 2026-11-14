@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Close } from "@/components/ui/icons/Close";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { CARD_BG } from "@/components/ui/Graphite";
 import { reached } from "@/lib/ab/device";
 import { countWeekStep } from "@/lib/analytics/moreCount";
@@ -153,7 +154,7 @@ function StepCard({
         className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night transition-[transform,translate,scale,background-color] motion-reduce:transition-none hover:bg-paper/90 active:scale-[0.98]"
       >
         {t("onboard.day1.open")}
-        <span aria-hidden>{"→"}</span>
+        <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
       </Link>
     </div>
   );

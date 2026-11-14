@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { Book } from "@/components/ui/icons/Book";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Play } from "@/components/ui/icons/Play";
 import { shiftForStyle } from "@/lib/calendar/orthodox";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
@@ -178,9 +179,7 @@ export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
             className="hit-44 mt-2 inline-flex items-center gap-1 font-sans text-detail font-semibold text-paper underline-offset-4 hover:underline"
           >
             {t("today.greet.seeDay")}
-            <span aria-hidden className="inline-block rtl:-scale-x-100">
-              {"→"}
-            </span>
+            <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
           </Link>
         </>
       ) : kind === "verse" && verse ? (

@@ -17,6 +17,7 @@ import { ShopDetailSkeleton, ShopError } from "@/components/shop/ShopStates";
 import { EikonStory } from "@/components/shop/eikon/EikonStory";
 import { PrayerCornerSet } from "@/components/shop/PrayerCornerSet";
 import { Calendar } from "@/components/ui/icons/Calendar";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Lock } from "@/components/ui/icons/Lock";
 import { Truck } from "@/components/ui/icons/Truck";
 import { isEikonProduct } from "@/lib/shop/eikon";
@@ -407,8 +408,9 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                 <p className="mt-1 font-serif text-detail text-paper/65 leading-[1.6] line-clamp-2">
                   {saint.shortBio}
                 </p>
-                <p className="mt-2 font-sans text-detail font-medium text-paper">
+                <p className="mt-2 flex items-center gap-1 font-sans text-detail font-medium text-paper">
                   {t("shop.readTheLife")}
+                  <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
                 </p>
               </Link>
               {/* The saint in his own words (1.8): a line the app can show
@@ -425,8 +427,9 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                       {words.text}
                     </blockquote>
                     <SourceLine cite={words.shown} className="mt-2" />
-                    <Link href={`/saints/${saint.slug}#writings`} className="mt-3 inline-block font-sans text-detail font-medium text-paper hover:underline">
+                    <Link href={`/saints/${saint.slug}#writings`} className="mt-3 inline-flex items-center gap-1 font-sans text-detail font-medium text-paper hover:underline">
                       {t("shop.readTheWritings")}
+                      <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
                     </Link>
                   </div>
                 );

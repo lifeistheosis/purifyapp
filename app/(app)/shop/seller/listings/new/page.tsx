@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ListingForm } from "@/components/shop/seller/ListingForm";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { getSellerContext } from "@/lib/shop/seller";
 
 export const metadata: Metadata = { title: "New listing" };
@@ -32,9 +33,10 @@ export default async function NewListingPage() {
     <div className="max-w-[760px] pb-16">
       <Link
         href="/shop/seller/listings"
-        className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
+        className="inline-flex items-center gap-1 font-sans text-detail font-medium text-paper/60 hover:text-paper"
       >
-        ← Listings
+        <ChevronLeft size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
+        Listings
       </Link>
       <h1 className="mt-3 font-display-serif text-heading text-paper">
         New listing

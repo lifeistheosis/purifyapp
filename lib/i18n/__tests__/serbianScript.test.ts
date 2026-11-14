@@ -41,7 +41,7 @@ const MASKS = [
 /** Names of more than one word, read whole so that their words are not allowed alone. */
 const PHRASES: Array<[string, string]> = [
   ["Service Book of the Holy Orthodox-Catholic Apostolic Church", "a book's title, cited as it was published"],
-  ["Supabase Dashboard → Authentication → Settings", "another service's screens, named as it shows them"],
+  ["Supabase Dashboard, Authentication, Settings", "another service's screens, named as it shows them"],
   ["Manual Linking", "a setting of another service, named as it shows it"],
   ["New King James", "a translation's name"],
   ["New International", "a translation's name"],

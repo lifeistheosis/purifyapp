@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Saint } from "@/lib/saints/saints";
 import { SaintIcon } from "./SaintIcon";
 import { T } from "@/components/i18n/T";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
 /** Distinguished full-width card for the featured saint (the Theotokos),
  *  pinned above the saints grid. */
@@ -49,8 +50,9 @@ export function FeaturedSaintCard({ saint }: { saint: Saint }) {
               ))}
             </ul>
           ) : null}
-          <p className="mt-5 font-sans text-ui font-medium text-gold group-hover:text-gold/80 transition-colors duration-150">
-            <T k="saints.readHerLife" /> →
+          <p className="mt-5 flex items-center gap-1 font-sans text-ui font-medium text-gold group-hover:text-gold/80 transition-colors duration-150">
+            <T k="saints.readHerLife" />
+            <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
           </p>
         </div>
       </div>

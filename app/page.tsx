@@ -5,6 +5,7 @@ import { Navbar } from "@/components/nav/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { HeroChristIcon } from "@/components/marketing/HeroChristIcon";
 import { WhatsNewChip } from "@/components/marketing/WhatsNewChip";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { latestPatch } from "@/lib/changelog";
 import { MadeOfStrip } from "@/components/marketing/MadeOfStrip";
 import { AppsSection } from "@/components/marketing/AppsSection";
@@ -435,8 +436,9 @@ export default async function Home() {
  <p className="font-sans text-ui text-paper/65 leading-[1.6] mb-5">
  {ch.body}
  </p>
- <span className="font-sans text-detail font-medium text-paper/75 group-hover:text-gold transition-colors">
- {isDe ? "Anfangen →" : "Begin →"}
+ <span className="inline-flex items-center gap-1 font-sans text-detail font-medium text-paper/75 group-hover:text-gold transition-colors">
+ {isDe ? "Anfangen" : "Begin"}
+ <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
  </span>
  </Link>
  ))}

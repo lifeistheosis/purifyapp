@@ -7,6 +7,7 @@ import { ProductCard } from "@/components/shop/ProductCard";
 import { SaintAvatar } from "@/components/shop/SaintAvatar";
 import { ShopBrowseControls } from "@/components/shop/ShopBrowseControls";
 import { ShopError, ShopGridSkeleton } from "@/components/shop/ShopStates";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { filterProducts, type BrowseFilters } from "@/lib/shop/browse";
 import { shopSaint } from "@/lib/shop/bySaint";
 import { fetchShopHome, fetchShopProducts, peekShopHome } from "@/lib/shop/catalogClient";
@@ -118,9 +119,10 @@ export function CategoryClient({ category }: { category: string }) {
         {saint ? (
           <Link
             href={`/saints/${saint.slug}`}
-            className="mt-2 inline-flex min-h-11 items-center font-sans text-detail font-medium text-paper/70 transition-colors hover:text-paper motion-reduce:transition-none"
+            className="mt-2 inline-flex min-h-11 items-center gap-1 font-sans text-detail font-medium text-paper/70 transition-colors hover:text-paper motion-reduce:transition-none"
           >
             {t("shop.readTheLife")}
+            <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
           </Link>
         ) : null}
       </header>

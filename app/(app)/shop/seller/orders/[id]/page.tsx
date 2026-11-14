@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { RefundDecisionCard } from "@/components/shop/seller/RefundDecisionCard";
 import { SellerOrderActions } from "@/components/shop/seller/SellerOrderActions";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { formatPrice } from "@/lib/shop/format";
 import { REFUND_STATUS_LABELS } from "@/lib/shop/refunds";
 import { getSellerContext } from "@/lib/shop/seller";
@@ -81,9 +82,10 @@ export default async function SellerOrderPage({
     <div className="max-w-[760px] pb-16">
       <Link
         href="/shop/seller/orders"
-        className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
+        className="inline-flex items-center gap-1 font-sans text-detail font-medium text-paper/60 hover:text-paper"
       >
-        ← Orders
+        <ChevronLeft size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
+        Orders
       </Link>
 
       <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { KIND_LABEL_KEY, KindIcon, savedSource, savedTitle, shortDate } from "@/components/saved/kinds";
 import { CARD, CARD_BG, CTA, Eyebrow, ICON_TILE_SM, PILL } from "@/components/ui/Graphite";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { bookmarkHref, useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
 
@@ -41,9 +42,9 @@ export function ProfileActivity() {
     <section className="mt-12">
       <div className="flex items-center justify-between gap-3">
         <Eyebrow level={2}>{t("ui.lastSaved")}</Eyebrow>
-        {/* ui.seeAll carries its own arrow in every language. */}
-        <Link href="/saved" className={cn(PILL, "hit-44 px-4 py-1.5 text-detail")}>
+        <Link href="/saved" className={cn(PILL, "hit-44 gap-1 px-4 py-1.5 text-detail")}>
           {t("ui.seeAll")}
+          <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
         </Link>
       </div>
       {hydrated && items.length === 0 ? (
@@ -81,7 +82,7 @@ export function ProfileActivity() {
                     <p className="mt-1.5 line-clamp-1 font-sans text-detail text-paper/55">{source}</p>
                   ) : null}
                   <p className={cn(CTA, "mt-auto pt-5")}>
-                    <span aria-hidden>→</span>
+                    <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
                   </p>
                 </Link>
               </li>

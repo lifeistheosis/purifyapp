@@ -7,6 +7,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Switch, Track } from "@/components/settings/LitPanel";
 import { RequestIcon } from "@/components/shop/RequestIcon";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { Pen } from "@/components/ui/icons/Pen";
 import { Search } from "@/components/ui/icons/Search";
 import { apiFetch } from "@/lib/api/client";
@@ -152,7 +153,8 @@ export function RequestIconForm({
       <div className="shop-raise rounded-[20px] p-6">
         <p className="font-heading text-[22px] font-semibold text-paper">{t("shop.yourRequestIsWithUs")}</p>
         <p className="mt-3 font-serif text-body leading-[1.65] text-paper/70">{t("shop.weReadEveryRequestAnd")}</p>
-        <Link href="/shop" className="mt-5 inline-flex min-h-11 items-center font-sans text-detail font-medium text-paper">
+        <Link href="/shop" className="mt-5 inline-flex min-h-11 items-center gap-1 font-sans text-detail font-medium text-paper">
+          <ChevronLeft size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
           {t("shop.backToTheShopX")}
         </Link>
       </div>

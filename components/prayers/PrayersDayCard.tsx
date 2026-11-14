@@ -6,6 +6,7 @@ import { FAST_DOT } from "@/lib/calendar/fastDot";
 import { useChurchDay } from "@/lib/calendar/useChurchDay";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CARD, CARD_BG, CTA, Eyebrow } from "@/components/ui/Graphite";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { dateLocale } from "@/lib/i18n/deviceDates";
@@ -63,8 +64,9 @@ export function PrayersDayCard() {
           <Skeleton className="mt-3 h-3 w-40" weight="faint" />
         </>
       )}
-      <p className={cn(CTA, "mt-auto pt-6")}>
-        {t("prayers.openToday")} <span aria-hidden>→</span>
+      <p className={cn(CTA, "mt-auto flex items-center gap-1 pt-6")}>
+        {t("prayers.openToday")}
+        <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
       </p>
     </Link>
   );

@@ -14,6 +14,7 @@ import { ShopError, ShopGridSkeleton } from "@/components/shop/ShopStates";
 import { StoreDoor } from "@/components/shop/StoreDoor";
 import { VitrineImage } from "@/components/shop/VitrineImage";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Lock } from "@/components/ui/icons/Lock";
 import { Seal } from "@/components/ui/icons/Seal";
 import { Truck } from "@/components/ui/icons/Truck";
@@ -339,8 +340,9 @@ export function ShopHomeClient() {
           <p className="mt-2 max-w-[44ch] font-serif text-body leading-[1.6] text-paper/65">
             {t("shop.tellUsWhoYouRe")}
           </p>
-          <p className="mt-3 font-sans text-detail font-semibold text-paper/80 group-hover:text-paper">
+          <p className="mt-3 flex items-center gap-1 font-sans text-detail font-semibold text-paper/80 group-hover:text-paper">
             {t("shop.requestAnIconX")}
+            <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
           </p>
         </Link>
         <Link
@@ -352,8 +354,9 @@ export function ShopHomeClient() {
           <p className="mt-2 max-w-[44ch] font-serif text-body leading-[1.6] text-paper/65">
             {t("shop.purifyIsOpeningACuratedX")}
           </p>
-          <p className="mt-3 font-sans text-detail font-semibold text-paper/80 group-hover:text-paper">
+          <p className="mt-3 flex items-center gap-1 font-sans text-detail font-semibold text-paper/80 group-hover:text-paper">
             {t("shop.sellOnPurifyX")}
+            <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
           </p>
         </Link>
       </section>

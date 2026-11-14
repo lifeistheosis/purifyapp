@@ -23,7 +23,13 @@ const HELD = 45;
 describe("the prayers' small marks", () => {
   it("draws every arrow at the end of a row at a share the palettes lift", () => {
     for (const file of ["components/prayers/PrayNow.tsx", "components/prayers/PrayerBookIndex.tsx"]) {
-      const arrows = [...read(file).matchAll(/className="([^"]*)"[^>]*>\s*→\s*</g)].map((m) => m[1]);
+      // The arrow is the house's chevron, mirrored in a right-to-left language (a typed one did not turn:
+      // lib/i18n/__tests__/typedArrows.test.ts). Its share is on the icon, or on the span that holds it.
+      const code = read(file);
+      const arrows = [
+        ...[...code.matchAll(/<ChevronRight\b[^>]*?\bclassName="([^"]*)"/g)].map((m) => m[1]),
+        ...[...code.matchAll(/className="([^"]*)"[^>]*>\s*<ChevronRight\b/g)].map((m) => m[1]),
+      ].filter((cls) => /(?:^|\s)text-paper\/\d+(?:\s|$)/.test(cls));
       expect(arrows.length, `${file}: its arrows`).toBeGreaterThan(0);
       for (const cls of arrows) {
         const share = Number(/(?:^|\s)text-paper\/(\d+)(?:\s|$)/.exec(cls)?.[1]);

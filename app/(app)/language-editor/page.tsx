@@ -1,5 +1,6 @@
 import { LOCALES, type LocaleCode } from "@/lib/i18n/locales";
 import { getServerLocale } from "@/lib/i18n/server";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
 const DISCORD_URL = "https://discord.gg/VzBYYUsNJ6";
 
@@ -51,7 +52,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "It starts on the Discord.",
   ctaBody:
    "No theology degree required. We need a careful native reader who knows how the Church speaks in your language. Come say hello and name your language.",
-  cta: "Join the Discord →",
+  cta: "Join the Discord",
   closing: "One language at a time. Maybe yours next.",
  },
  de: {
@@ -74,7 +75,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "Es beginnt auf Discord.",
   ctaBody:
    "Kein Theologiestudium nötig. Wir brauchen einen aufmerksamen Muttersprachler, der weiß, wie die Kirche in deiner Sprache spricht. Komm vorbei, sag Hallo und nenne deine Sprache.",
-  cta: "Discord beitreten →",
+  cta: "Discord beitreten",
   closing: "Eine Sprache nach der anderen. Vielleicht deine als nächste.",
  },
  fr: {
@@ -97,7 +98,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "Tout commence sur le Discord.",
   ctaBody:
    "Aucun diplôme de théologie requis. Il nous faut un lecteur natif attentif qui sait comment l’Église parle dans votre langue. Venez dire bonjour et nommez votre langue.",
-  cta: "Rejoindre le Discord →",
+  cta: "Rejoindre le Discord",
   closing: "Une langue à la fois. La vôtre, peut-être, la prochaine.",
  },
  es: {
@@ -120,7 +121,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "Empieza en el Discord.",
   ctaBody:
    "No hace falta un título en teología. Necesitamos a un lector nativo atento que sepa cómo habla la Iglesia en tu idioma. Ven, saluda y dinos tu idioma.",
-  cta: "Únete al Discord →",
+  cta: "Únete al Discord",
   closing: "Un idioma a la vez. Quizá el tuyo sea el próximo.",
  },
  ro: {
@@ -143,7 +144,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "Începe pe Discord.",
   ctaBody:
    "Nu e nevoie de diplomă în teologie. Avem nevoie de un cititor nativ atent care știe cum vorbește Biserica în limba ta. Vino să saluți și spune-ne limba ta.",
-  cta: "Intră pe Discord →",
+  cta: "Intră pe Discord",
   closing: "O limbă pe rând. Poate a ta urmează.",
  },
  el: {
@@ -166,7 +167,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "Ξεκινά στο Discord.",
   ctaBody:
    "Δεν χρειάζεται πτυχίο θεολογίας. Χρειαζόμαστε έναν προσεκτικό φυσικό ομιλητή που ξέρει πώς μιλά η Εκκλησία στη γλώσσα σας. Ελάτε να πείτε ένα γεια και πείτε μας τη γλώσσα σας.",
-  cta: "Μπείτε στο Discord →",
+  cta: "Μπείτε στο Discord",
   closing: "Μία γλώσσα κάθε φορά. Ίσως η δική σας η επόμενη.",
  },
  ru: {
@@ -189,7 +190,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "Всё начинается в Discord.",
   ctaBody:
    "Богословского образования не требуется. Нам нужен внимательный носитель языка, который знает, как Церковь говорит на вашем языке. Зайдите, поздоровайтесь и назовите свой язык.",
-  cta: "Войти в Discord →",
+  cta: "Войти в Discord",
   closing: "По одному языку за раз. Возможно, ваш — следующий.",
  },
  uk: {
@@ -212,7 +213,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "Усе починається в Discord.",
   ctaBody:
    "Богословської освіти не потрібно. Нам потрібен уважний носій мови, який знає, як Церква говорить вашою мовою. Завітайте, привітайтеся й назвіть свою мову.",
-  cta: "Увійти в Discord →",
+  cta: "Увійти в Discord",
   closing: "По одній мові за раз. Можливо, ваша — наступна.",
  },
  sr: {
@@ -235,7 +236,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "Почиње на Discord-у.",
   ctaBody:
    "Није потребна диплома из богословља. Потребан нам је пажљив изворни говорник који зна како Црква говори на вашем језику. Дођите, поздравите и реците свој језик.",
-  cta: "Придружи се Discord-у →",
+  cta: "Придружи се Discord-у",
   closing: "Један по један језик. Можда је ваш следећи.",
  },
  it: {
@@ -258,7 +259,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "Si comincia su Discord.",
   ctaBody:
    "Non serve una laurea in teologia. Ci serve un lettore madrelingua attento che sappia come parla la Chiesa nella tua lingua. Vieni a salutarci e dicci la tua lingua.",
-  cta: "Entra nel Discord →",
+  cta: "Entra nel Discord",
   closing: "Una lingua alla volta. Magari la tua è la prossima.",
  },
  pt: {
@@ -281,7 +282,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "Começa no Discord.",
   ctaBody:
    "Não é preciso diploma em teologia. Precisamos de um leitor nativo atento que saiba como a Igreja fala no seu idioma. Venha dizer olá e diga o seu idioma.",
-  cta: "Entrar no Discord →",
+  cta: "Entrar no Discord",
   closing: "Um idioma de cada vez. Talvez o seu seja o próximo.",
  },
  bg: {
@@ -304,7 +305,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "Започва в Discord.",
   ctaBody:
    "Не е нужна богословска степен. Нужен ни е внимателен носител на езика, който знае как Църквата говори на вашия език. Елате, поздравете и кажете своя език.",
-  cta: "Влез в Discord →",
+  cta: "Влез в Discord",
   closing: "По един език наведнъж. Може би вашият е следващият.",
  },
  ar: {
@@ -327,7 +328,7 @@ const COPY: Partial<Record<LocaleCode, Copy>> & { en: Copy } = {
   ctaTitle: "يبدأ الأمر على Discord.",
   ctaBody:
    "لا حاجة إلى شهادة في اللاهوت. نحتاج إلى قارئ من أبناء اللغة، يقظ، يعرف كيف تتحدث الكنيسة بلغتك. تعال وألقِ التحية وأخبرنا بلغتك.",
-  cta: "انضم إلى Discord →",
+  cta: "انضم إلى Discord",
   closing: "لغة واحدة في كل مرة. ربما لغتك هي التالية.",
  },
 };
@@ -406,9 +407,10 @@ export default async function LanguageEditorPage({
       href={DISCORD_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className="mt-6 inline-flex items-center justify-center font-sans text-ui font-semibold rounded-pill px-5 py-3 bg-gold text-night hover:bg-gold-soft transition-colors"
+      className="mt-6 inline-flex items-center justify-center gap-1 font-sans text-ui font-semibold rounded-pill px-5 py-3 bg-gold text-night hover:bg-gold-soft transition-colors"
      >
       {c.cta}
+      <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
      </a>
     </section>
 

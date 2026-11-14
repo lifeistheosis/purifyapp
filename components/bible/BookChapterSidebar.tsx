@@ -22,9 +22,10 @@ export function BookChapterSidebar({
       <div className="sticky top-[72px] px-5 py-8 max-h-[calc(100dvh-72px)] overflow-y-auto scrollbar-thin">
         <Link
           href="/bible"
-          className="inline-flex items-center font-sans text-caption text-paper/45 hover:text-paper transition-colors mb-4"
+          className="inline-flex items-center gap-1 font-sans text-caption text-paper/45 hover:text-paper transition-colors mb-4"
         >
-          ← {t("bible.allBooks")}
+          <ChevronLeft size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
+          {t("bible.allBooks")}
         </Link>
 
         <p className="font-sans text-caption font-semibold text-paper/55 mb-2">

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowUpLeft } from "@/components/ui/icons/ArrowUpLeft";
 import { Instagram } from "@/components/ui/icons/Instagram";
 import { Discord } from "@/components/ui/icons/Discord";
 import { TikTok } from "@/components/ui/icons/TikTok";
@@ -59,7 +60,7 @@ export function Footer() {
   {
    heading: t("footer.prayer"),
    links: [
-    { label: t("prayers.openTodaysPrayer").replace(" →", ""), href: "/prayers/today" },
+    { label: t("prayers.openTodaysPrayer"), href: "/prayers/today" },
     { label: t("prayers.morningRule"), href: "/prayers/morning" },
     { label: t("prayers.eveningRule"), href: "/prayers/evening" },
     { label: t("prayers.jesusPrayer"), href: "/prayers/jesus-prayer" },
@@ -139,9 +140,7 @@ export function Footer() {
           >
            {l.label}
            {l.external && (
-            <span aria-hidden className="ms-1 text-paper/40">
-             ↗
-            </span>
+            <ArrowUpLeft size={13} aria-hidden className="ms-1 shrink-0 -scale-x-100 text-paper/40 rtl:scale-x-100" />
            )}
           </Link>
          </li>

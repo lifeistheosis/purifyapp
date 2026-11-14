@@ -95,7 +95,6 @@ const MAY_STAY: { file: string; holds: string; why: string }[] = [
   { file: "components/shop/CartClient.tsx", holds: "flatShippingCents", why: "a price struck through, beside the price that holds" },
   { file: "components/shop/OrderBump.tsx", holds: "product.price_cents", why: "a price struck through, beside the price that holds" },
   { file: "components/shop/ambassador/AmbassadorDashboard.tsx", holds: "money(r.amountCents)", why: "an amount struck through once it was reversed; the amounts that stand are in full ink" },
-  { file: "components/layout/Footer.tsx", holds: "↗", why: "a single arrow beside a link's own words: a mark" },
   { file: "components/shop/seller/SetupChecklist.tsx", holds: "step.done", why: "a single mark before a step's own words" },
   { file: "components/feature/FeatureShell.tsx", holds: "signin.comingSoon", why: "a shell no page uses; nothing draws it" },
 ];

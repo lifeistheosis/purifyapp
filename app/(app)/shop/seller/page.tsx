@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { OpenStoreRequest } from "@/components/shop/seller/OpenStoreRequest";
 import { SetupChecklist } from "@/components/shop/seller/SetupChecklist";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { connectStatus } from "@/lib/shop/connect";
 import { earningsSummary } from "@/lib/shop/earnings";
 import { formatPrice } from "@/lib/shop/format";
@@ -204,9 +205,10 @@ export default async function SellerOverviewPage() {
           </h2>
           <Link
             href="/shop/seller/orders"
-            className="font-sans text-detail font-medium text-paper"
+            className="inline-flex items-center gap-1 font-sans text-detail font-medium text-paper"
           >
-            All orders →
+            All orders
+            <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
           </Link>
         </div>
 

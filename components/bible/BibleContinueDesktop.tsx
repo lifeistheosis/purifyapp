@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 
 import { readLastRead, type LastRead } from "@/lib/bible/lastRead";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
 export function BibleContinueDesktop() {
   const { t } = useTranslate();
@@ -47,9 +48,7 @@ export function BibleContinueDesktop() {
           {resumeVerse ? `, ${t("bible.verseWord")} ${resumeVerse}` : ""}
         </span>
       </span>
-      <span aria-hidden className="shrink-0 font-serif text-lede text-gold/70 transition-colors group-hover:text-gold">
-        →
-      </span>
+      <ChevronRight size={18} aria-hidden className="shrink-0 text-gold/70 transition-colors group-hover:text-gold rtl:-scale-x-100" />
     </Link>
   );
 }

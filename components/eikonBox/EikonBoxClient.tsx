@@ -12,6 +12,7 @@ import type {
 import { AddressForm, EMPTY_ADDRESS, toFields, type AddressFields } from "./AddressForm";
 import { DropProgress } from "./DropProgress";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
 
 /**
@@ -199,9 +200,10 @@ export function EikonBoxClient() {
         </p>
         <Link
           href="/pricing"
-          className="mt-4 inline-flex min-h-11 items-center rounded-pill border border-gold/45 bg-gold/12 px-4 py-2.5 font-sans text-detail font-semibold text-gold-pale"
+          className="mt-4 inline-flex min-h-11 items-center gap-1 rounded-pill border border-gold/45 bg-gold/12 px-4 py-2.5 font-sans text-detail font-semibold text-gold-pale"
         >
-          See what Pro includes →
+          See what Pro includes
+          <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
         </Link>
       </div>
     );

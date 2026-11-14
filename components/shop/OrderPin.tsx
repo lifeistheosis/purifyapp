@@ -106,6 +106,7 @@ export function OrderSide({ order, now }: { order: BuyerOrder; now: number }) {
           className="mt-3.5 flex min-h-11 items-center justify-between border-t border-paper/[0.09] pt-3 font-sans text-detail font-semibold text-paper"
         >
           {t("shop.viewTheOrder")}
+          <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
         </Link>
       </div>
     </section>

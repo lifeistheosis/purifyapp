@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { MessageThread } from "@/components/shop/MessageThread";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { fetchThreadMessages } from "@/lib/shop/messages";
 import { getSellerContext } from "@/lib/shop/seller";
 import { createClient } from "@/lib/supabase/server";
@@ -36,9 +38,10 @@ export default async function SellerConversationPage({
     <div className="max-w-[760px] pb-16">
       <Link
         href="/shop/seller/messages"
-        className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
+        className="inline-flex items-center gap-1 font-sans text-detail font-medium text-paper/60 hover:text-paper"
       >
-        ← Messages
+        <ChevronLeft size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
+        Messages
       </Link>
       <h1 className="mt-3 font-display-serif text-title text-paper">
         {conv.subject}
@@ -46,9 +49,10 @@ export default async function SellerConversationPage({
       {conv.order_id ? (
         <Link
           href={`/shop/seller/orders/${conv.order_id}`}
-          className="mt-1 inline-block font-sans text-detail font-medium text-paper"
+          className="mt-1 inline-flex items-center gap-1 font-sans text-detail font-medium text-paper"
         >
-          View the order →
+          View the order
+          <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
         </Link>
       ) : null}
 

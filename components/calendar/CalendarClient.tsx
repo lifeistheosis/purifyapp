@@ -65,6 +65,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { useIsPhoneWidth } from "@/lib/ui/viewport";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
 type CalStyle = "new" | "old";
 
@@ -136,8 +137,9 @@ function ReadingCard({ reading: r }: { reading: ReadingRef }) {
       <p className="mt-2 font-display-serif text-lede text-paper leading-tight">
         <Reference>{referenceIn(r.label, r.book, localBookNames(t))}</Reference>
       </p>
-      <span className="mt-auto pt-4 inline-block font-sans text-caption font-medium text-gold group-hover:text-gold-soft transition-colors">
-        <T k="calendar.readFullPassage" /> →
+      <span className="mt-auto pt-4 inline-flex items-center gap-1 font-sans text-caption font-medium text-gold group-hover:text-gold-soft transition-colors">
+        <T k="calendar.readFullPassage" />
+        <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
       </span>
     </Link>
   );

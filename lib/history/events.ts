@@ -519,7 +519,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     precision: "traditional",
     era: "persecution",
     categories: ["martyrs", "writings", "patriarchates"],
-    region: "Antioch → Rome",
+    region: "Antioch to Rome",
     importance: 2,
     preview: "Condemned to the beasts, the bishop of Antioch writes seven letters that reveal the early Church's mind.",
     summary:

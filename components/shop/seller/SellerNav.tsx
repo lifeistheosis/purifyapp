@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 
 /**
  * Console navigation, host-dashboard style: a quiet left rail on
@@ -94,8 +95,9 @@ export function SellerNav({ storeName }: { storeName: string }) {
         </ul>
         <Link
           href="/shop"
-          className="mt-6 block px-4 font-sans text-detail text-paper/55 hover:text-paper"
+          className="mt-6 flex items-center gap-1 px-4 font-sans text-detail text-paper/55 hover:text-paper"
         >
+          <ChevronLeft size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
           {t("shop.backToTheShopXX")}
         </Link>
       </nav>

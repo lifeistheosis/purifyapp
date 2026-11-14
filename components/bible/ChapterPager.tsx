@@ -9,6 +9,8 @@ import {
  getBook,
 } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
 /**
  * End-of-chapter pager. The NEXT chapter gets a big, visually-weighted tile
@@ -66,12 +68,7 @@ export function ChapterPager({
  })}
  </p>
  </div>
- <span
- aria-hidden
- className="shrink-0 text-paper/55 group-hover:text-gold transition-colors text-title"
- >
- →
- </span>
+ <ChevronRight size={24} aria-hidden className="shrink-0 text-paper/55 group-hover:text-gold transition-colors rtl:-scale-x-100" />
  </div>
  </Link>
  )}
@@ -85,8 +82,9 @@ export function ChapterPager({
  <span className="block font-sans text-caption text-paper/55">
  {t("bible.previousChapter")}
  </span>
- <span className="block mt-1 font-sans text-ui text-paper/75">
- ← {prevBookName} {prev.chapter}
+ <span className="mt-1 flex items-center gap-1 font-sans text-ui text-paper/75">
+ <ChevronLeft size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
+ {prevBookName} {prev.chapter}
  </span>
  </Link>
  )}
@@ -102,9 +100,10 @@ export function ChapterPager({
  <Link
  href={`/bible/${pBook.slug}/1${vq(pBook.slug)}`}
  // 19px of words, 44 to the touch (.hit-44): nothing else to tap within reach.
- className="hit-44 hover:text-paper transition-colors"
+ className="hit-44 inline-flex items-center gap-1 hover:text-paper transition-colors"
  >
- ⇤ {t(`bible.books.${pBook.slug}`)}
+ <ChevronLeft size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
+ {t(`bible.books.${pBook.slug}`)}
  </Link>
  ) : (
  <span />
@@ -115,9 +114,10 @@ export function ChapterPager({
  {nBook ? (
  <Link
  href={`/bible/${nBook.slug}/1${vq(nBook.slug)}`}
- className="hit-44 hover:text-paper transition-colors"
+ className="hit-44 inline-flex items-center gap-1 hover:text-paper transition-colors"
  >
- {t(`bible.books.${nBook.slug}`)} ⇥
+ {t(`bible.books.${nBook.slug}`)}
+ <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
  </Link>
  ) : (
  <span />

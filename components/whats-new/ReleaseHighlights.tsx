@@ -12,6 +12,8 @@ import { createPortal } from "react-dom";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CARD, CARD_BG, PILL } from "@/components/ui/Graphite";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Close } from "@/components/ui/icons/Close";
 import { cn } from "@/lib/cn";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
@@ -229,20 +231,16 @@ function HighlightDialog({
         </figure>
 
         <div className="flex items-center justify-between gap-3 px-5 py-4 md:px-6">
-          <button type="button" onClick={() => onMove(prev)} className={cn(PILL, "px-4 text-detail")}>
-            <span aria-hidden className="mr-1.5">
-              ←
-            </span>
+          <button type="button" onClick={() => onMove(prev)} className={cn(PILL, "gap-1.5 px-4 text-detail")}>
+            <ChevronLeft size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
             {t("common.previous")}
           </button>
           <span className="font-sans text-caption tabular-nums text-paper/50">
             {shown + 1} / {ITEMS.length}
           </span>
-          <button type="button" onClick={() => onMove(next)} className={cn(PILL, "px-4 text-detail")}>
+          <button type="button" onClick={() => onMove(next)} className={cn(PILL, "gap-1.5 px-4 text-detail")}>
             {t("common.next")}
-            <span aria-hidden className="ml-1.5">
-              →
-            </span>
+            <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
           </button>
         </div>
       </div>

@@ -180,7 +180,7 @@ export default async function DiscoverPage() {
                   <p className="mt-2 font-sans text-ui leading-[1.55] text-paper/65">
                     {t(m, "discover.tile.readingBlurb")}
                   </p>
-                  <p className={CTA}>{t(m, "reading.enterReadingRoom")} →</p>
+                  <p className={CTA}>{t(m, "reading.enterReadingRoom")}</p>
                 </Link>
 
                 <Link href="/saints" className={CARD} style={CARD_BG}>
@@ -193,7 +193,7 @@ export default async function DiscoverPage() {
                   <p className="mt-2 font-sans text-ui leading-[1.55] text-paper/65">
                     {t(m, "discover.tile.saintsBlurb")}
                   </p>
-                  <p className={CTA}>{t(m, "saints.eyebrow")} →</p>
+                  <p className={CTA}>{t(m, "saints.eyebrow")}</p>
                 </Link>
               </div>
             </section>

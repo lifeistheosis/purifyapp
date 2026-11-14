@@ -4,6 +4,7 @@ import type { Saint } from "@/lib/saints/saints";
 import { SaintIcon } from "./SaintIcon";
 import { FeastDays } from "./FeastDays";
 import { T } from "@/components/i18n/T";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
 export function SaintCard({ saint }: { saint: Saint }) {
   return (
@@ -74,8 +75,9 @@ export function SaintCard({ saint }: { saint: Saint }) {
             <T k="saints.workCount" count={saint.works.length} />
           </span>
         )}
-        <span className="font-sans text-paper/45 group-hover:text-paper transition-colors duration-150">
-          <T k="saints.read" /> →
+        <span className="inline-flex items-center gap-1 font-sans text-paper/45 group-hover:text-paper transition-colors duration-150">
+          <T k="saints.read" />
+          <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
         </span>
       </div>
     </Link>

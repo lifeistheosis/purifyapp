@@ -5,6 +5,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { authOrigin } from "@/lib/site";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { connectionAware } from "@/lib/auth/friendlyError";
 
 /**
@@ -88,7 +89,8 @@ export function ForgotForm() {
         <p role="alert" className="font-sans text-detail text-crimson-soft">{error}</p>
       ) : null}
       <p className="text-center font-sans text-caption text-paper/55">
-        <Link href="/signin" className="inline-flex min-h-11 items-center px-3 hover:text-paper">
+        <Link href="/signin" className="inline-flex min-h-11 items-center gap-1 px-3 hover:text-paper">
+          <ChevronLeft size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
           {t("ui.backToSignIn")}
         </Link>
       </p>

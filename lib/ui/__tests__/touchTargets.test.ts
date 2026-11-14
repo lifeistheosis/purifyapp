@@ -837,7 +837,7 @@ describe("touch targets", () => {
   it("the small text links the same checkMock run found are 44px to the touch", () => {
     // John 1's links to the neighbouring books (41 by 19) and Today's "See all" (51 by 19).
     const pager = readFileSync(join(ROOT, "components/bible/ChapterPager.tsx"), "utf8");
-    expect((pager.match(/className="hit-44 hover:text-paper transition-colors"/g) ?? []).length).toBe(2);
+    expect((pager.match(/className="hit-44 inline-flex items-center gap-1 hover:text-paper transition-colors"/g) ?? []).length).toBe(2);
     const pray = readFileSync(join(ROOT, "components/today/PrayNowCard.tsx"), "utf8");
     expect(pray).toContain('className="hit-44 tap-press inline-flex items-center gap-0.5');
   });
