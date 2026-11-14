@@ -142,7 +142,9 @@ describe("/api/admin/readers", () => {
     ];
     state.tables = {
       profiles: { data: [{ id: ID_C, handle: "choir.sample", display_name: "Sample Reader C", joined_at: "2026-09-02T10:00:00Z" }], error: null },
-      entitlements: { data: [{ user_id: ID_C, plus_until: "2026-11-14T00:00:00Z", pro_until: null, plus_source: "apple", auto_renew: true, billing_issue_at: null }], error: null },
+      // A year from whenever the test runs: the route reads the real clock, and a fixed
+      // "2026-11-14T00:00:00Z" lapsed at that midnight and failed every run after it (Updates 32).
+      entitlements: { data: [{ user_id: ID_C, plus_until: new Date(Date.now() + 365 * 86_400_000).toISOString(), pro_until: null, plus_source: "apple", auto_renew: true, billing_issue_at: null }], error: null },
       user_badges: { data: [{ user_id: ID_C, badge: "beta_tester", granted_at: "2026-10-02T00:00:00Z", granted_by: "owner@example.com", note: null }], error: null },
       user_verification: { data: [{ user_id: ID_C, status: "requested", claim: "I run my parish choir's page", requested_at: "2026-10-27T10:00:00Z" }], error: null },
       clergy_verifications: { data: null, error: { code: "42P01", message: "relation does not exist" } },
