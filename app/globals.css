@@ -10068,6 +10068,27 @@ body[data-route-exit] [data-route-content] {
 .route-fade[data-after-outline] .cascade > * {
  --cascade-start: 0ms;
 }
+/* The same for the page's other entrances that wait for that fade: a page
+   that opens like a book (a Father's work, the Bible's chapter: "The chapter
+   opens like a book", above) and a saint's head. Behind an outline that is
+   going they begin with its dissolve. A book's words keep no fifth of a
+   second behind its head here either: that is the outline's own time, and
+   they come in under its lines as the lines go. Waiting both, a work opened
+   at a passage stood empty for up to 700ms after its outline, gliding down
+   to the passage with no words on it (cause 7, the gate's walk with motion
+   on, 2026-11-14). */
+.route-fade[data-after-outline] :is(.page-open-title, .page-open-sub, .page-open-rule, .page-open-after, .page-open-words) {
+ --page-open-start: 0ms;
+}
+.route-fade[data-after-outline] .page-open-after {
+ animation-delay: 0ms;
+}
+.route-fade[data-after-outline] .page-open-words > :nth-child(-n + 8) {
+ animation-delay: calc(var(--line, 0) * var(--stagger-step-tight));
+}
+.route-fade[data-after-outline] .saint-head-in {
+ --saint-head-start: 0ms;
+}
 
 /* Airbnb-style listing card. The surface rises a few px with a soft shadow
    on pointer hover (springs back on leave) and dips on tap, so a grid of

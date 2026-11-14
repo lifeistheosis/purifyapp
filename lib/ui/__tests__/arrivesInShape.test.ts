@@ -127,3 +127,68 @@ describe("the shop's piece, before the device has read its address", () => {
     expect((html.match(/class="sk /g) ?? []).length).toBeGreaterThanOrEqual(5);
   });
 });
+
+// The gate's walk with motion on, on the export of 2a273a46 (Updates 37): the
+// outline now stood whole and dissolved, and then the page stood empty for 256
+// to 699ms. A page that opens like a book waits for the route's own fade
+// before its head rises (260ms) and keeps its words a fifth of a second behind
+// the head (220ms more). Behind an outline there is no fade to wait for, and
+// the outline is gone in DISSOLVE_MS: the head arrived over an emptied page,
+// and a work opened at a passage glided down to it with no words on it at all.
+describe("behind an outline that is going, the page's entrances begin with its dissolve", () => {
+  const css = code("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+  /** The declarations of the rule said exactly so. */
+  const rule = (selector: string) => {
+    const at = css.indexOf(`\n${selector} {`);
+    return at < 0 ? null : css.slice(at, css.indexOf("}", at));
+  };
+  const ms = (name: string) => Number(new RegExp(`${name}:\\s*(\\d+)ms`).exec(css)?.[1] ?? NaN);
+  /** A delay as the stylesheet writes it, in ms: the sum of its terms, with the first line's --line of 0. */
+  const delayOf = (expr: string, start: number) => {
+    const plain = expr
+      .replace(/var\(--(page-open-start|saint-head-start), \d+ms\)/g, `${start}ms`)
+      .replace(/var\(--(line|i), 0\) \* var\(--[\w-]+\)/g, "0ms")
+      .replace(/^calc\(|\)$/g, "");
+    return plain.split("+").reduce((sum, term) => sum + Number(/^\s*(-?\d+)ms\s*$/.exec(term)?.[1] ?? NaN), 0);
+  };
+  /** When a part of the page begins, behind an outline that is going. */
+  const startsAfterOutline = (selector: string, startVar: string) => {
+    const own = rule(`.route-fade[data-after-outline] ${selector}`);
+    const ownDelay = own ? /animation-delay:\s*([^;]+);/.exec(own)?.[1] : undefined;
+    if (ownDelay) return delayOf(ownDelay.trim(), 0);
+    const base = /animation-delay:\s*([^;]+);/.exec(rule(selector) ?? "")?.[1] ?? "";
+    const lifted = [...css.matchAll(/\n\.route-fade\[data-after-outline\] ([^{\n]+) \{([^}]*)\}/g)].find((m) => m[1].includes(selector.split(" ")[0]) && m[2].includes(`${startVar}: 0ms;`));
+    return delayOf(base.trim(), lifted ? 0 : ms("--duration-route-enter"));
+  };
+
+  it("every entrance that waits for the route's fade is lifted behind an outline, said after the wait", () => {
+    const waits = [...css.matchAll(/\n(\.route-fade [^{\n]+) \{\s*(--[\w-]+): var\(--duration-route-enter\);\s*\}/g)].map((m) => ({ selector: m[1], name: m[2] }));
+    expect(waits.map((w) => w.name).sort()).toEqual(["--cascade-start", "--page-open-start", "--saint-head-start"]);
+    for (const { selector, name } of waits) {
+      const after = selector.replace(/^\.route-fade /, ".route-fade[data-after-outline] ");
+      expect(css.indexOf(`\n${after} {`), after).toBeGreaterThan(css.indexOf(`\n${selector} {`));
+      expect(rule(after), after).toMatch(new RegExp(`${name}: 0ms;`));
+    }
+  });
+
+  it("a page that opens like a book: its head and its words begin while the outline is still dissolving, the words at its first frame", async () => {
+    const { DISSOLVE_MS } = await import("@/lib/ui/outlineLeave");
+    const parts = [".page-open-title", ".page-open-sub", ".page-open-rule", ".page-open-after", ".page-open-words > :nth-child(-n + 8)"];
+    const starts = Object.fromEntries(parts.map((p) => [p, startsAfterOutline(p, "--page-open-start")]));
+    for (const p of parts) {
+      expect(Number.isFinite(starts[p]), p).toBe(true);
+      expect(starts[p], `${p} begins ${starts[p]}ms after the outline starts to go`).toBeLessThan(DISSOLVE_MS);
+    }
+    // The words, a Father's work's (page-open-after) and the chapter's first line (page-open-words), at once.
+    expect(starts[".page-open-after"]).toBe(0);
+    expect(starts[".page-open-words > :nth-child(-n + 8)"]).toBe(0);
+    // A saint's head too: its first step at once.
+    expect(startsAfterOutline(".saint-head-in", "--saint-head-start")).toBe(0);
+  });
+
+  it("with motion off nothing changes: the page is simply there", () => {
+    for (const p of [".page-open-after", ".page-open-words > :nth-child(-n + 8)", ".saint-head-in"]) {
+      expect(css, p).toContain(`:where([data-motion="reduce"]) ${p}`);
+    }
+  });
+});
