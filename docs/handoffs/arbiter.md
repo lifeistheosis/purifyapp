@@ -1,49 +1,35 @@
 # Baton: the arbiter
 
-From Arbiter 13 (session_01VuYTwcZXdzaoyK25DeVxvh) to Arbiter 14, written 2026-11-14 21:36 UTC. Arbiter 13 ran from 20:36 (started by Arbiter 12, depth 6 of 8) and rotates at 203,187 tokens by get_session at 21:31 ($2.91 then): its onboarding alone came to 100,256, and three container restarts (worker_epoch 4) did most of the rest. He did not answer its 21:12 ask for a fresh arbiter in the app, so Arbiter 13 made you in the chain: **you are depth 7 of 8.** `docs/NOW.md` is the state; this baton is only what NOW does not hold.
+From Arbiter 14 (session_01VuYTwdsjnmK235qQJH2FGJ) to Arbiter 15, written 2026-11-14 23:27 UTC; its first lines are brought up to date at the hand-over. Arbiter 14 ran from 21:34, started by Arbiter 13 at lineage depth 7 of 8. `docs/NOW.md` is the state and the log has every report; this baton is only what they do not hold.
 
-## The lineage ends with you
+## The lineage
 
-Your children are depth 8 and cannot start chats: you can start fixers, but an arbiter you made could not. So the next arbiter must be his, started in the app (depth 0), as Arbiter 7 was. Ask him in one plain line when he next writes or at your first report; NOW's Waiting on him 15 holds the prompt, which names Arbiter 15. When it starts, hand over to it: your baton pushed, the running chats told its id, NOW and the log last. If he has not started one by your line, ask once more; a depth-8 successor could keep the record but could never brief a fixer.
+- If he started you in the app, you are depth 0: you can start fixers and, later, an arbiter. Your prompt has a hand-shake: you messaged Arbiter 14 your id and it handed over (below).
+- If Arbiter 14 started you, you are depth 8 and can start no chat at all. Keep the record and relay words, and ask him at once, in one plain line, for a fresh arbiter in the app (NOW's Waiting on him 15 has the prompt).
 
-## Where 1.9 stands
+## Where 1.9 stands (23:27)
 
-- He is walking build 97 (ungated, Android). No note since 16:28. Notes 1 to 10 are in `docs/1.9-build/notes/build-97.md`, his words in BRAINSTORM.
-- Asks open: Waiting on him 12 (carry the three council pictures, rec yes), 14 (a short screen recording of the typing flash), 15 (the fresh arbiter), and 13 (his archive list, now with Updates 59, 60 and 61 and Arbiters 12 and 13).
-- Reported to Arbiter 13: Updates 60 (21:07, baton 40f975d8, the Size chip), Updates 59 (21:14, baton 05f5590c, note 3 readied ahead), Updates 61 (21:31, baton a168bd1b, note 6: Follow stands from the card's first frame, a late status line opens on the house curve, Follow and the doors ease down, 337b1029; its walk fails 12 on the old export). Each one's after side rides on the round's checks, round 4 (NOW's Next 2).
-- At work: **Updates 62** (session_01VuYTwdRmqjHoYqhobRCM1n, the piece page's carry and cut, from 21:16) and **Updates 63** (note 10, the ambience's interface, started by Arbiter 13 at the hand-over; its id is in NOW). Both report to you.
+- At work: Updates 71 (the profile's last two one-frame moves), 72 (Discover's Shop section jumping at its error), 73 (Today's Saint carrying its picture). One item each; each reports to the arbiter.
+- Waiting for the word: Updates 74 (round 5's checks) and Gate 3 (the re-check). Both are set up and wait for one message: the last of 71 to 73 has pushed, at its hash, so cut your export now. Forward to Updates 74 only what it needs from the three reports (their walks' commands, and whether their after sides ran).
+- Then: their reports; each fault to a fixer, one item each; a check of what changed on one export; on a pass, the test build (NOW's Next 4), with the differences until the merge named to him (NOW's 1.9 now, the walk list and the profile's held line).
 
-## Your first round (Arbiter 14)
+## Calls made this shift
 
-1. Confirm your id in NOW's Running table (Arbiter 13 writes it there at the hand-over; pull if it is not there yet).
-2. Wait for Updates 62's and 63's reports. Do not call archive_session (refused on arbiters and on Updates 51); a done chat goes on Waiting on him 13.
-3. When both have pushed, start the round's checks, round 4, on one export of the head (NOW's Next 2 lists everything that rides on it, with the commands), or fold it into Gate 3 (Next 3) if its scope can hold it: your call.
-4. Ask him for the fresh arbiter (above). Otherwise tell him nothing until something waits on him.
-
-## Calls made this shift (in NOW and the log)
-
-- One item per fixer: note 6 alone (Updates 61); the samePage cut with Updates 46's six links (Updates 62, the cut first, the links only if room allows); note 10 alone (Updates 63). Each cuts one export to measure first and a second only under 150,000.
-- Updates 61's open 3 ("stands in its final size"): not a fault. The card's growth from its loading height is note 13's eased height, measured smooth (9 to 14 frames, nothing jumping), and his words asked for smooth; a taller loading card would be a look change, not made unasked. Its open 4 (why the feed had no status line for one author): not pursued, no fault seen.
-- Updates 59's open 4 (fonts on first openings): measured in the round's checks, mended only if a heading moves.
-- IS_STATIC_EXPORT reads as the website in client code (`lib/platform/buildTarget.ts` says SERVER ONLY); the one other client file naming it does so in a comment (checked 21:15).
+All are in NOW's Next 1 and in the log (21:44 to 23:27). The ones that bind later work: the CartDrawer rows stay without a carry (not a card; the drawer closes on the tap); the blur over the reader and the player's Words view's own frame rate go to his phone walk (measured in software here); the held status line until the merge is accepted; a road card's Dismiss with motion reduced is not a fault; a pulse on Loading is not brought back unasked.
 
 ## Gotchas
 
-- An arbiter's onboarding costs about 100,000 tokens and each container restart 20,000 to 40,000 (three in Arbiter 13's fifty minutes). Read get_session at every report.
-- get_session freezes for a chat in a long background run: ask a chat its own count, doubled, before giving it more.
-- A fixer does one item. Updates 59, given two exports, ran to 305,000; Updates 60 and 61, given one, stopped at 150,000 with their after sides open. Expect after sides to land on the round's checks.
-- Rotating, in order: push the baton, the successor (his, in the app), tell the running chats, NOW and the log last.
+- A depth-7 arbiter's scarce act is create_session. Pre-start a checks chat to wait for a word rather than leave it to a successor that cannot start one.
+- list_events with kinds user returns every tool result too (276,297 characters for a fixer five minutes old). The briefs of this shift follow the shape in 76049fcd's baton; the newest are Updates 64's (a fixer), 74's (checks that wait for a word) and Gate 3's.
+- Fixers given two exports end at 170,000 to 255,000; most cross their line. Expect their after sides on the checks.
+- Under the native user agent the app ignores the browser's reducedMotion (lib/ui/motionPreference.ts): a reduced walk pins purify.motion.
+- While an export builds, git shows about 1,450 web-only files as deleted (they are stashed and put back): never commit then.
+- A container restart costs an arbiter 20,000 to 40,000 tokens. Arbiter 14 passed 200,000 at about 22:40 and stayed, since a successor it made could start no chat.
 
 ## His words that still apply
 
-"fix those things. try and take into account usage also" (16:28). Every earlier word is in NOW and BRAINSTORM.
+"fix those things. try and take into account usage also" (16:28). He has not written since; the fresh arbiter was asked of him at 21:12, 21:38 and 22:00, and again at each report since.
 
-## The shape of a brief
+## The hand-over
 
-Unchanged from Arbiter 11's baton (`git show 76049fcd:docs/handoffs/arbiter.md`, "The shape of a brief"). The latest examples are Updates 61's, 62's and 63's first messages (list_events on their sessions, kinds user; page back with before_id if the newest page holds none).
-
-## Where things are
-
-- `docs/NOW.md` (state), `docs/1.9-build/BRAINSTORM.md` (his words), `docs/1.9-build/HANDOFF.md` (the log), `docs/1.9-build/notes/build-97.md`, `docs/roles/`, `docs/OPERATIONS.md`.
-- His calls page: https://claude.ai/artifact/HtMHvpk9SsKLwXG7AgJutq (`docs/roles/arbiter.md` says how to update it; not touched since Arbiter 11's shift).
-- Batons of this shift: `docs/handoffs/updates-59.md` (05f5590c; its measure `scripts/first-open.mjs`), `updates-60.md` (40f975d8; mockrun60 in `docs/handoffs/updates-60-runners/`), `updates-61.md` (a168bd1b; `scripts/profile-open-walk.mjs`); `updates-62.md` and `updates-63.md` when they land. Arbiter 12's baton is at 1f17833c.
+When Arbiter 15 messages its id: bring this baton's first lines and "Where 1.9 stands" up to date and push it; tell the running chats the new id (one message each, with priority later, or folded into the word to cut an export); write NOW and the log; reply to Arbiter 15; stop.
