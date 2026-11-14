@@ -16,6 +16,9 @@
 //     top. The body drags too: pulling down when it is scrolled to the top,
 //     and pulling up while the sheet rests at half (so the first swipe opens
 //     it rather than scrolling text hidden below the edge of the screen).
+//     A gesture begun in a window that scrolls inside the body stays that
+//     window's while it has room to scroll that way (lib/ui/sheetGesture.ts,
+//     build 97 note 8).
 //   - Release settles by position and speed: a flick down closes it, a flick
 //     up opens it fully.
 //   - The scrim dims and blurs in step with the sheet: gradually on open and
@@ -40,6 +43,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { sheetLeaves, sheetRises } from "@/lib/ui/overlay";
+import { NO_ROOM, roomUnder, sheetTakes, type Room } from "@/lib/ui/sheetGesture";
 
 type Snap = "full" | "half";
 
@@ -519,6 +523,8 @@ export function useDraggableSheet({
     let startY = 0;
     let tracking = false;
     let taken = false;
+    /** What the windows under the finger could scroll when it landed. */
+    let room: Room = NO_ROOM;
     const onStart = (e: TouchEvent) => {
       if (e.touches.length !== 1 || closing.current) return;
       // A surface that is itself dragged, like a photo being cropped, keeps
@@ -527,6 +533,9 @@ export function useDraggableSheet({
       startY = e.touches[0].clientY;
       tracking = true;
       taken = false;
+      // Read as the finger lands, before anything has scrolled under it, so
+      // the choice below is made on the window as the reader found it.
+      room = e.target instanceof Element ? roomUnder<Element>(e.target, body, (el) => getComputedStyle(el).overflowY) : NO_ROOM;
     };
     const onMove = (e: TouchEvent) => {
       if (!tracking) return;
@@ -534,9 +543,9 @@ export function useDraggableSheet({
       const dy = y - startY;
       if (!taken) {
         if (Math.abs(dy) < SLOP_PX) return;
-        const pullDown = dy > 0 && body.scrollTop <= 0;
-        const pullUpAtHalf = dy < 0 && snap.current === "half";
-        if (!pullDown && !pullUpAtHalf) {
+        // Decided once: a gesture left to scrolling stays scrolling to its
+        // end, wherever the thumb goes (build 97 note 8).
+        if (!sheetTakes({ dy, room, bodyTop: body.scrollTop, atHalf: snap.current === "half" })) {
           tracking = false;
           return;
         }
