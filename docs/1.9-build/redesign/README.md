@@ -6,7 +6,7 @@ Build 95 note 25 (his word, 2026-11-13 about 08:13 UTC: "I want everything fixed
 
 | Round | What | Page | State |
 |---|---|---|---|
-| 1 | Today, and the four house rules | https://claude.ai/artifact/7i93tDncctM4SU3qeqPjb4 | his yes to all five, 2026-11-13 20:47 UTC; being applied |
+| 1 | Today, and the four house rules | https://claude.ai/artifact/7i93tDncctM4SU3qeqPjb4 | his yes to all five, 2026-11-13 20:47 UTC; pushed by Updates 33, 2026-11-14 (`7f19d566` to `e1dfd24b`, with ten faults its export found, each mended; the record under note 25 in `docs/1.9-build/notes/build-95.md`) |
 | 2 | The first launch, Prayers, Discover | https://claude.ai/artifact/NhoSL95Kip76jng4gemM6z | his no to all three (2026-11-13 by 22:05 UTC: "no to all 3"); kept as the record, for the Vault; nothing applied |
 | 3 | The Bible's opening, You, Plus | | not begun |
 | 4 | Saints, Community, the shop | | not begun |
