@@ -1,0 +1,42 @@
+(node:25873) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+3 screens on a phone, every named control on each, 1 at a time, reading the main web, with the app's motion on, as a reader's phone has it, as a reader for whom nothing is locked
+  1 of 3 /prayers/bows/: 5 tapped, 0 failed, 0 unsure (1 min)
+  2 of 3 /reading/: 7 tapped, 0 failed, 0 unsure (1 min)
+  3 of 3 /community/: 0 tapped, 0 failed, 0 unsure (2 min)
+
+3 of 3 screens walked, 12 controls tapped, 0 gestures, in 2 minutes, with the app's motion on, as a reader's phone has it
+
+motion: 0 finding(s)
+
+transitions: 0 finding(s)
+
+layers: 0 finding(s)
+
+edge: 0 finding(s)
+
+layers in passing: 3 seen (for the eye, not failed: two layers crossing while one moves)
+  tap a "Read it in Purify" (went to /councils/first-nicaea/the-twenty-canons/): div[data-mobile-topbar=true][data-plates=true] meets div[data-work-progress]: 390 by 2px at 0,0 (div[data-plates-row=true][data-screen-edge=top] drawn over div)
+    on 1 screen(s): /prayers/bows/
+    in components/nav/MobileTopBar.tsx | components/saints/MobileWorkProgressBar.tsx
+  tap a "Read it in Purify" (went to /councils/first-nicaea/the-twenty-canons/): div[data-reader-chrome=true][data-reader-pill=true][data-work-pill] "Chapter switcher" meets nav[data-tab-bar=true][data-screen-edge=bottom] "Primary": 364 by 77px at 13,761 (span drawn over div "Today Bible Discover Prayers You")
+    on 1 screen(s): /prayers/bows/
+    in components/saints/MobileWorkPill.tsx | components/nav/MobileTabBar.tsx
+  tap a "Read it in Purify" (went to /saints/basil-the-great/on-the-holy-spirit/): div[data-mobile-topbar=true][data-plates=true] meets div[data-outline-ghost]: 170 by 32px at 110,21 (div[data-plates-row=true][data-screen-edge=top] drawn over div)
+    on 1 screen(s): /prayers/bows/
+    in components/nav/MobileTopBar.tsx | not found by its marks; see the still
+
+slow to answer, nothing on the screen moved for more than 350ms after the tap (for the eye) (1):
+  /prayers/bows/ tap a "Read it in Purify" (went to /councils/third-constantinople/the-canons-of-trullo/): the screen first answered 804ms after the tap
+
+dips through the ground, a fifth of a second or less at the foot of a fade (not failed; for the eye) (8):
+  /prayers/bows/ tap a "Read it in Purify" (went to /councils/first-nicaea/the-twenty-canons/): 3 frames with nothing drawn where the screen changes (at most 4% of it inked, 21% of the screen before and after together) for 47ms, from 308ms after the tap
+  /prayers/bows/ tap a "Read it in Purify" (went to /councils/third-constantinople/the-canons-of-trullo/): 3 frames with nothing drawn where the screen changes (at most 3% of it inked, 23% of the screen before and after together) for 51ms, from 823ms after the tap
+  /prayers/bows/ tap a "Read it in Purify" (went to /saints/basil-the-great/on-the-holy-spirit/): 8 frames where the page stood in its outline (the house's skeleton), over 134ms, from 253ms after the tap
+  /prayers/bows/ tap a "Read it in Purify" (went to /saints/basil-the-great/on-the-holy-spirit/): 1 frame with nothing drawn where the screen changes (at most 2% of it inked, 20% of the screen before and after together) for 14ms, from 387ms after the tap
+  /prayers/bows/ tap a "Read it in Purify" (went to /councils/first-nicaea/the-twenty-canons/): 3 frames with nothing drawn where the screen changes (at most 4% of it inked, 22% of the screen before and after together) for 47ms, from 276ms after the tap
+  /prayers/bows/ tap a "Read it in Purify" (went to /saints/basil-the-great/on-the-holy-spirit/): 2 frames where the page stood in its outline (the house's skeleton), over 33ms, from 261ms after the tap
+  /prayers/bows/ tap a "Read it in Purify" (went to /saints/basil-the-great/on-the-holy-spirit/): 3 frames with nothing drawn where the screen changes (at most 2% of it inked, 9% of the screen before and after together) for 47ms, from 294ms after the tap
+  /reading/ the page switch from /: 1 frame with nothing drawn where the screen changes (at most 1% of it inked, 15% of the screen before and after together) for 17ms, from 566ms after the tap
+
+written: docs/handoffs/updates-94-runners/walks/w-open-on-2.json

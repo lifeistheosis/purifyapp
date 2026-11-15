@@ -1,0 +1,16 @@
+w-open-on-1 EXIT 0 13:48
+w-open-on-2 EXIT 0 13:49
+w-open-reduced-1 EXIT 0 13:51
+w-open-reduced-2 EXIT 0 13:52
+w-new-on-1 EXIT 0 13:54
+w-new-on-2 EXIT 0 13:55
+w-new-reduced-1 EXIT 0 13:57
+w-new-reduced-2 EXIT 0 13:58
+replies-on-1 EXIT 1 13:59
+replies-on-2 EXIT 1 14:01
+replies-reduce-1 EXIT 1 14:02
+replies-reduce-2 EXIT 1 14:04
+mock94 EXIT 0 14:05
+DONE
+replies-on-3 EXIT 0
+replies-reduce-3 EXIT 0
