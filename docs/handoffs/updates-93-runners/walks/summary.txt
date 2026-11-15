@@ -1,0 +1,12 @@
+ow-new-1.json: on, new reader, no Plus, screens 10, tapped 0, reached 331, findings 0, unsure 0, errors 0, control errors 0
+ow-open-1.json: on, open reader, screens 10, tapped 0, reached 331, findings 0, unsure 0, errors 0, control errors 0
+owr-new-1.json: reduce, new reader, no Plus, screens 10, tapped 0, reached 331, findings 0, unsure 0, errors 0, control errors 0
+owr-open-1.json: reduce, open reader, screens 10, tapped 0, reached 331, findings 0, unsure 0, errors 0, control errors 0
+tw-new-1.json: on, new reader, no Plus, screens 10, tapped 10, reached 107, findings 0, unsure 0, errors 0, control errors 0
+tw-new-2.json: on, new reader, no Plus, screens 10, tapped 10, reached 107, findings 0, unsure 0, errors 0, control errors 0
+tw-open-1.json: on, open reader, screens 10, tapped 10, reached 107, findings 0, unsure 0, errors 0, control errors 0
+tw-open-2.json: on, open reader, screens 10, tapped 10, reached 107, findings 0, unsure 0, errors 0, control errors 0
+twr-new-1.json: reduce, new reader, no Plus, screens 10, tapped 10, reached 107, findings 0, unsure 0, errors 0, control errors 0
+twr-new-2.json: reduce, new reader, no Plus, screens 10, tapped 10, reached 107, findings 0, unsure 0, errors 0, control errors 0
+twr-open-1.json: reduce, open reader, screens 10, tapped 10, reached 107, findings 0, unsure 0, errors 0, control errors 0
+twr-open-2.json: reduce, open reader, screens 10, tapped 10, reached 107, findings 0, unsure 0, errors 0, control errors 0
