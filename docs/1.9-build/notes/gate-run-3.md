@@ -40,6 +40,8 @@ The runner's `buybar`: Buy now tapped with the box not ticked, then the foot bar
 
 Started 00:52 UTC on the 15th, the two readers' lanes at once (two workers each, `--online --json --shots`), then the same with `--reduced`. **Not read: it was running at the line.** A chain in the container pushes each lane's JSON (gzipped) and the end of its log to `docs/handoffs/gate-3-walks/` when the four end, with their times in its README.txt. Count the findings of kind blank and the fails, not the dips (Updates 69's gotcha); for each fail, whether a fixer has it (the profile's opening: Updates 71; Discover's Shop section offline: Updates 72; Today's Saint's carry: Updates 73) or it is new; the arbiter's note 2 (the Chat door on /discover/, drawn at y 698 then 617 at 679ms with nothing moving it) measured alone if seen.
 
+**Landed after the line:** the chain pushed the four lanes in `ae41343a9` (motion on 00:52 to 02:06 UTC, reduced to 02:34 UTC). **All four lanes exited 1**, so each holds at least one fail; none read here.
+
 ## 6. The web build
 
 Not run (the line).

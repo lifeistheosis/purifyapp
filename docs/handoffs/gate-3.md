@@ -16,7 +16,7 @@ Card: `docs/roles/admin.md`. Branch `ccr-07896cf2-bo0afd`. One export of the hea
 
 | What | Owner | Next step |
 |---|---|---|
-| The motion walk's four lanes | the next Admin chat | Read `docs/handoffs/gate-3-walks/` (pushed by a chain when the lanes end, about 02:40 UTC; if absent, the container was lost and the walk is run again on an export of the head). Count kind blank and the fails, not the dips; fault 7 is in /shop/. |
+| The motion walk's four lanes | the next Admin chat | Read `docs/handoffs/gate-3-walks/` (landed in `ae41343a9` at 02:34 UTC; all four lanes exited 1, so each holds a fail). Count kind blank and the fails, not the dips; fault 7 is in /shop/. |
 | Fault 2's own heart, fault 8's exact day, a thread open with replies | the next Admin chat | The runner's three commands, in the record's last section (a few minutes, on any export of the same app code). |
 | The web build | the next Admin chat | `npm run build`, last. |
 
