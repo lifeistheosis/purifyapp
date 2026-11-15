@@ -196,8 +196,13 @@ export function useCampaignsAnswerForSwitch(): boolean | null {
 /**
  * On the first launch, with no answer kept yet, ask for it as the app opens,
  * so Community, when the reader first goes there, already knows. Mounted once,
- * by the app's frame (components/layout/AppFrame.tsx). Asks nobody in a
- * closed build, nor once an answer is kept (Community asks again itself).
+ * by the root frame (components/layout/RootFrame.tsx), which every screen has,
+ * Today among them. Until Updates 88 it was the (app) frame's, which Today is
+ * outside: a cold start at Today asked nothing, the first switch into Community
+ * asked as Community was drawn, and the no closed the switch's held place, 77px
+ * in one frame with motion reduced, measured on the export (docs/handoffs/
+ * updates-88.md). Asks nobody in a closed build, nor once an answer is kept
+ * (Community asks again itself).
  */
 export function useAskCampaignsAtFirstLaunch(): void {
   useEffect(() => {

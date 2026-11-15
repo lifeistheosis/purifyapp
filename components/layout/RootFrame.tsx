@@ -22,6 +22,7 @@
 import type { ReactNode } from "react";
 
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
+import { useAskCampaignsAtFirstLaunch } from "@/lib/campaigns/useCampaignsOpen";
 import { DesktopPresenceBridge } from "@/components/desktop/DesktopPresenceBridge";
 import { DiscordFirstRun } from "@/components/desktop/DiscordFirstRun";
 import { ErrorReportBridge } from "@/components/errors/ErrorReportBridge";
@@ -79,6 +80,12 @@ export function RootFrame({
   catechismAvailable: boolean;
   children: ReactNode;
 }) {
+  // Community's switch knows the server's answer before the reader first goes
+  // there. Here, not in the (app) frame, because Today is outside that group: on
+  // a cold start at Today nothing asked, so the first switch into Community asked
+  // as it was drawn, and its no closed the switch's held place under the reader
+  // (Updates 88; lib/campaigns/useCampaignsOpen.ts).
+  useAskCampaignsAtFirstLaunch();
   return (
     <>
       <MessagesProvider locale={locale} messages={messages}>

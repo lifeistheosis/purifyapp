@@ -99,7 +99,8 @@ describe("late parts measured or read on the device (Updates 18)", () => {
     expect(hook).toMatch(/if \(!missed\) keepAnswer\(open\);/);
     expect(hook).toMatch(/if \(campaignsInBuild\(\) && keptAnswer\(\) === "none"\) ask\(\);/);
     expect(code("components/community/CommunityClient.tsx")).toMatch(/const campaignsOpen = useCampaignsAnswerForSwitch\(\);/);
-    expect(code("components/layout/AppFrame.tsx")).toMatch(/useAskCampaignsAtFirstLaunch\(\);/);
+    // Updates 88: asked by the root frame, which Today has too; the (app) frame is not on Today, so a cold start there asked nothing.
+    expect(code("components/layout/RootFrame.tsx")).toMatch(/useAskCampaignsAtFirstLaunch\(\);/);
   });
 
   it("Export gathers the library as the page renders on the device", () => {
