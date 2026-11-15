@@ -1165,3 +1165,5 @@ Claude's proposal, for his word:
 **Send the test build (his word, 2026-11-15, about 18:30 UTC),** to Arbiter 14: "finalize the build and send it".
 
 **Android only for now (his word, 2026-11-15, about 18:33 UTC),** to Arbiter 14, after the iPhone build was started with the Android one: "not iPhone only android until I say the build is finally finished after critiques".
+
+**The link (his word, 2026-11-15, about 18:50 UTC),** to Arbiter 14: "send the android link".
