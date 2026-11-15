@@ -100,6 +100,11 @@ if (SIZE.length !== 2 || SIZE.some((n) => !Number.isInteger(n) || n < 300 || n >
 const [WIDTH, HEIGHT] = SIZE;
 const ONLINE = has("--online");
 const SELF_TEST = has("--self-test");
+// --loaded track | sound (build 98 notes 14 and 8): no screen walk; instead every tab switch, both
+// ways, with a track loaded in the player, or with a sound playing alone. --cpu slows the page as a
+// phone is for Now Playing's timings (4 by default).
+const LOADED = flag("--loaded");
+const CPU = Math.max(1, Number(flag("--cpu") ?? 4));
 const OUT = path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 
@@ -136,6 +141,7 @@ const RECORD = { moves: REDUCED, width: WIDTH, height: HEIGHT, minMs: 900, still
 const CHROME = "[data-tab-bar], [data-mobile-topbar], [data-plates], [data-plates-row]";
 const CHROME_SCREENS = REDUCED ? 1 : 3;
 const chromeSeen = new Map();
+if (LOADED) process.exit(await loadedTour());
 
 // ── Stills ─────────────────────────────────────────────────────────────
 
@@ -693,3 +699,223 @@ if (JSON_OUT) {
   console.log(`\nwritten: ${JSON_OUT}`);
 }
 process.exit([...findings.values()].some((f) => f.check !== "layers in passing") || errors.length ? 1 : 0);
+
+// ── With something loaded (build 98 notes 14 and 8) ────────────────────
+//
+// His word of 2026-11-15: "a small stutter when switching between these screens", the reader's
+// dock over the tab bar while a track was loaded. No walk had ever had anything loaded in the
+// player, so no tab switch with the dock or the mini player was ever measured. Here every tab
+// switch, both ways (twenty), is recorded and judged as any tap is (a cut, a blank frame, a box
+// that jumps fail), with a track loaded (--loaded track: the dock on the Bible, the mini player
+// everywhere else) or a sound playing alone (--loaded sound), and the foot is counted after each
+// switch: one player shown, never two and never none. With a track, Now Playing's opening and
+// closing are timed at --cpu, frame by frame in the page: the longest frame and every frame over
+// 50ms (note 8). The track is John 10 read aloud, from the Bible's own Listen, its recording a stand-in: the
+// export's own bell (out/audio/ambience/bell.mp3), served for the recordings' host, so the walk
+// asks nothing of the network.
+
+async function loadedTour() {
+  const browser = await chromium.launch({ ...(fs.existsSync("/opt/pw-browsers/chromium") ? { executablePath: "/opt/pw-browsers/chromium" } : {}), args: ["--autoplay-policy=no-user-gesture-required"] });
+  const ctx = await browser.newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions(MODE) });
+  await ctx.addInitScript(() => {
+    try {
+      localStorage.setItem("purify:onboarded", "99");
+      localStorage.setItem("purify:whatsNewSeen", "99");
+    } catch {}
+  });
+  await pinMotion(ctx, MODE);
+  await installGate(ctx);
+  if (SELLS_PLUS) await asAndroidShell(ctx);
+  await serveLikeTheShell(ctx, OUT, {});
+  const bell = fs.readFileSync(path.join(OUT, "audio/ambience/bell.mp3"));
+  await ctx.route("https://audio.purifyapp.net/**/*.mp3", (r) => r.fulfill({ status: 200, contentType: "audio/mpeg", body: bell }));
+  const page = await ctx.newPage();
+  const cdp = await ctx.newCDPSession(page);
+  const tabs = ["Today", "Bible", "Discover", "Prayers", "You"];
+  const tapTab = async (i) => {
+    const box = await page.evaluate((n) => {
+      const a = document.querySelectorAll("[data-tab-bar] a")[n];
+      const r = a?.getBoundingClientRect();
+      return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
+    }, i);
+    if (!box) throw new Error(`no tab ${tabs[i]}`);
+    await tapAt(cdp, box.x, box.y);
+  };
+  const tapWhere = async (find) => {
+    const box = await page.evaluate(find);
+    if (!box) return false;
+    await tapAt(cdp, box.x, box.y);
+    return true;
+  };
+  // The foot's players as they stand: the mini player and the reader's dock that are drawn.
+  // The box of the foot's player that is drawn, or null.
+  const footBox = () =>
+    page.evaluate(() => {
+      const el = [...document.querySelectorAll("[data-mini-player] .mini-player, [data-reader-dock] .reader-dock")].find((e) => getComputedStyle(e.closest("[data-mini-player], [data-reader-dock]")).display !== "none" && e.getBoundingClientRect().height > 0);
+      const r = el?.getBoundingClientRect();
+      return r ? { top: r.top, bottom: r.bottom } : null;
+    });
+  const footNow = () =>
+    page.evaluate(() =>
+      [...document.querySelectorAll("[data-mini-player], [data-reader-dock]")]
+        .filter((el) => {
+          const s = getComputedStyle(el);
+          const r = el.getBoundingClientRect();
+          return s.display !== "none" && s.visibility !== "hidden" && Number(s.opacity) > 0.05 && r.height > 0;
+        })
+        .map((el) => (el.matches("[data-reader-dock]") ? "dock" : "mini player")),
+    );
+  const centre = (sel) => `(() => { const el = [...document.querySelectorAll(${JSON.stringify(sel)})].find((e) => e.getBoundingClientRect().height > 0); const r = el?.getBoundingClientRect(); return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null; })()`;
+  const report = { loaded: LOADED, motion: MODE, switches: [], nowPlaying: null, setup: null };
+  let failed = 0;
+  try {
+    await go(page, "/", { timeout: 60000 });
+    await sleep(1500);
+    await firstTouch(page, cdp);
+    if (LOADED === "track") {
+      await go(page, "/bible/john/10/", { timeout: 30000 });
+      await sleep(1500);
+      const played = await tapWhere(`(() => { const el = [...document.querySelectorAll("[data-reader-pill] button")].find((b) => /Listen/.test(b.textContent ?? "")); const r = el?.getBoundingClientRect(); return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null; })()`);
+      if (!played) throw new Error("no Listen on John 10's pill");
+      await sleep(1500);
+    } else {
+      await tapTab(1);
+      await sleep(1800);
+      // The pill's sound button: after the chapter's name, the last of its buttons that opens a sheet.
+      if (!(await tapWhere(`(() => { const el = [...document.querySelectorAll("[data-reader-pill] button[aria-haspopup='dialog']")].pop(); const r = el?.getBoundingClientRect(); return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null; })()`))) throw new Error("no sound button on the Bible's pill");
+      await sleep(900);
+      if (!(await tapWhere(centre("[role='dialog'] button[aria-pressed='false']")))) throw new Error("no sound in the ambience sheet");
+      await sleep(900);
+      await page.keyboard.press("Escape");
+      await sleep(900);
+    }
+    await tapTab(0);
+    await sleep(1500);
+    report.setup = { foot: await footNow() };
+    if (report.setup.foot.length !== 1) throw new Error(`after loading, the foot shows ${report.setup.foot.join(" and ") || "nothing"}`);
+    for (let a = 0; a < tabs.length; a++) {
+      for (let b = 0; b < tabs.length; b++) {
+        if (a === b) continue;
+        const back = async () => {
+          await tapTab(a);
+          await sleep(1500);
+        };
+        await back();
+        const boxBefore = await footBox();
+        // Frame by frame in the page, the foot's players while the switch runs: the dock and the
+        // mini player are one surface, so every frame shows exactly one. Two at once is the mini
+        // player left standing over the new page; none is the cut between them.
+        await page.evaluate(() => {
+          const w = window;
+          w.__foot = [];
+          w.__footOn = true;
+          const shownOf = (el) => {
+            const st = getComputedStyle(el);
+            return st.display !== "none" && st.visibility !== "hidden" && Number(st.opacity) > 0.05 && el.getBoundingClientRect().height > 0;
+          };
+          const loop = () => {
+            w.__foot.push([...document.querySelectorAll("[data-mini-player], [data-reader-dock]")].filter(shownOf).length);
+            if (w.__footOn) requestAnimationFrame(loop);
+          };
+          requestAnimationFrame(loop);
+        });
+        const rec = await recordFrames(page, cdp, () => tapTab(b), RECORD);
+        const r = { v: await judged(rec, `/loaded-${LOADED}/`, `${tabs[a]}-${tabs[b]}`) };
+        await sleep(600);
+        const foot = await footCut(rec, boxBefore, await footBox());
+        const counts = await page.evaluate(() => {
+          window.__footOn = false;
+          return window.__foot;
+        });
+        const shown = await footNow();
+        const fails = r.v.fails.map((f) => `${f.kind}: ${f.detail}`);
+        const two = counts.filter((c) => c > 1).length;
+        const none = counts.filter((c) => c === 0).length;
+        if (two) fails.push(`one surface: ${two} frame(s) with the dock and the mini player both drawn`);
+        if (none) fails.push(`one surface: ${none} frame(s) with no player at the foot (a cut between them)`);
+        // The foot as the reader sees it, which during a switch is the browser's pictures and not the
+        // page: half or more of the change at the foot in one frame, outside reduced motion, is a cut.
+        if (MODE !== "reduce" && foot && foot.total >= 4 && foot.share >= 0.5) fails.push(`cut at the foot: ${Math.round(foot.share * 100)}% of its change in one frame, ${foot.ms}ms after the tap`);
+        if (shown.length !== 1) fails.push(`one surface: the foot shows ${shown.join(" and ") || "nothing"} after the switch`);
+        const unsure = r.v.unsure.length > 0 && !fails.length;
+        if (fails.length) failed += 1;
+        report.switches.push({ from: tabs[a], to: tabs[b], foot: shown, fails, unsure, vtNames: r.v.vtNames, footChange: foot });
+        console.log(`  ${tabs[a]} to ${tabs[b]}: ${fails.length ? `FAIL ${fails.join("; ")}` : unsure ? "unsure" : "pass"} (foot: ${shown.join(", ") || "none"})`);
+      }
+    }
+    if (LOADED === "track") {
+      // Now Playing, opened from the mini player on Prayers and closed with its own button, timed at --cpu.
+      await tapTab(3);
+      await sleep(1500);
+      const timed = async (act) => {
+        await page.evaluate(() => {
+          const w = window;
+          w.__frames = [];
+          w.__framesOn = true;
+          let last = performance.now();
+          const loop = (t) => {
+            w.__frames.push(Math.round((t - last) * 10) / 10);
+            last = t;
+            if (w.__framesOn) requestAnimationFrame(loop);
+          };
+          requestAnimationFrame(loop);
+        });
+        await act();
+        await sleep(1200);
+        const frames = await page.evaluate(() => {
+          window.__framesOn = false;
+          return window.__frames;
+        });
+        return { frames: frames.length, longest: Math.max(0, ...frames), over50: frames.filter((f) => f > 50).length, first10: frames.slice(0, 10) };
+      };
+      await cdp.send("Emulation.setCPUThrottlingRate", { rate: CPU });
+      const open = await timed(() => tapWhere(centre("[data-mini-player] button[aria-label^='Now playing']")));
+      const openFoot = await page.evaluate(() => Boolean(document.querySelector("[role='dialog'][aria-modal='true']")));
+      const close = await timed(() => tapWhere(centre("[role='dialog'] button[aria-label='Close'], [role='dialog'] button[aria-label^='Close']")));
+      await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
+      report.nowPlaying = { cpu: CPU, opened: openFoot, open, close };
+      console.log(`  Now Playing at CPU ${CPU}x: open ${open.frames} frames, longest ${open.longest}ms, ${open.over50} over 50ms (first: ${open.first10.join(" ")}); close ${close.frames} frames, longest ${close.longest}ms, ${close.over50} over 50ms`);
+      if (!openFoot) failed += 1;
+    }
+  } catch (e) {
+    report.error = String(e?.message ?? e);
+    console.log(`  not walked: ${report.error}`);
+    failed += 1;
+  }
+  await ctx.close();
+  await browser.close();
+  if (JSON_OUT) fs.writeFileSync(JSON_OUT, JSON.stringify(report, null, 2));
+  const n = report.switches.length;
+  console.log(`\n${n} tab switches with ${LOADED === "track" ? "a track loaded" : "a sound playing alone"}, ${MODE === "reduce" ? "reduced motion" : "motion on"}: ${n - report.switches.filter((s) => s.fails.length).length} passed, ${report.switches.filter((s) => s.fails.length).length} failed${report.error ? `; stopped: ${report.error}` : ""}`);
+  return failed ? 1 : 0;
+}
+
+/** The foot's player, the box it stands in before the switch and after it, frame by frame from the tap: its whole change, and the largest share of it in one frame. */
+async function footCut(rec, a, b) {
+  if (!a && !b) return null;
+  const top = Math.max(0, Math.min(a?.top ?? HEIGHT, b?.top ?? HEIGHT) - 4) / HEIGHT;
+  const bottom = Math.min(HEIGHT, Math.max(a?.bottom ?? 0, b?.bottom ?? 0) + 4) / HEIGHT;
+  const after = rec.frames.filter((f) => f.t >= rec.tapped - 50);
+  if (after.length < 3) return null;
+  const px = await Promise.all(
+    after.map(async (f) => {
+      const buf = Buffer.from(f.data, "base64");
+      const { width: w, height: h } = await sharp(buf).metadata();
+      const y = Math.round(h * top);
+      return sharp(buf).extract({ left: 0, top: y, width: w, height: Math.max(1, Math.round(h * bottom) - y) }).resize(96, 40, { fit: "fill" }).greyscale().raw().toBuffer();
+    }),
+  );
+  const d = (a, b) => {
+    let t = 0;
+    for (let i = 0; i < a.length; i++) t += Math.abs(a[i] - b[i]);
+    return t / a.length;
+  };
+  const total = d(px[0], px[px.length - 1]);
+  let worst = 0;
+  let at = 1;
+  for (let i = 1; i < px.length; i++) {
+    const step = d(px[i - 1], px[i]);
+    if (step > worst) [worst, at] = [step, i];
+  }
+  return { total: Math.round(total * 10) / 10, worst: Math.round(worst * 10) / 10, share: total > 0 ? Math.round((worst / total) * 100) / 100 : 0, ms: Math.round(after[at].t - rec.tapped), frames: after.length };
+}

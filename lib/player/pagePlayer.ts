@@ -45,6 +45,14 @@ function subscribe(listener: () => void): () => void {
  */
 export const EVERYTHING = "*";
 
+/**
+ * The class on <html> while the page on the screen is the player for
+ * everything (app/globals.css, "One surface at the foot"): the mini player
+ * stays mounted under it, unseen and keeping no room, so that leaving the
+ * page it is there in the same picture as the page it comes back over.
+ */
+export const HOSTS_CLASS = "hosts-player";
+
 /** Whether the player's recording is one a page on the screen plays with its own controls. */
 export function playsOnPage(src: string | null | undefined, paths: readonly string[]): boolean {
   if (!src) return false;
@@ -73,8 +81,23 @@ const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : use
 export function useOwnPlayer(paths: readonly string[]): void {
   const key = paths.join("\n");
   useIsoLayoutEffect(() => {
-    set(key ? key.split("\n") : NONE);
-    return () => set(NONE);
+    const next = key ? key.split("\n") : NONE;
+    set(next);
+    // The class is written here, on the page itself, and not left to the mini
+    // player's own render (build 98 note 14): a page arrives in a View
+    // Transition whose picture is taken once this commit's layout effects
+    // have run, and a render the store asks for here comes only after that
+    // picture. The mini player then stood in the picture of the Bible and cut
+    // out a moment after it; on the way back it was missing from the picture
+    // and cut in. A class written now is in the picture (app/globals.css,
+    // "One surface at the foot").
+    const root = document.documentElement;
+    const hosts = hostsEverything(next);
+    if (hosts) root.classList.add(HOSTS_CLASS);
+    return () => {
+      set(NONE);
+      if (hosts) root.classList.remove(HOSTS_CLASS);
+    };
   }, [key]);
 }
 

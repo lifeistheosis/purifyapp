@@ -70,7 +70,7 @@ import { getAmbienceTrack } from "@/lib/ambience/ambience";
 import { stopAmbience, useAmbience } from "@/lib/ambience/player";
 import { openAmbience } from "@/lib/ambience/sheet";
 import { connectLockScreen } from "@/lib/player/lockScreen";
-import { hostsEverything, playsOnPage, usePagePlayer } from "@/lib/player/pagePlayer";
+import { EVERYTHING, hostsEverything, playsOnPage, usePagePlayer } from "@/lib/player/pagePlayer";
 import { openNowPlaying, useNowPlayingSheet } from "@/lib/player/sheet";
 import { pause, play, unload, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { noteFootMoved, watchScrollAway } from "@/lib/ui/scrollAway";
@@ -88,7 +88,13 @@ export function NowPlayingBar() {
   // page is the player for everything (the Bible reader's dock on a phone,
   // 1.9), whose pill carries the sound's own button.
   const soundOnly = !src && Boolean(sound);
-  const visible = (Boolean(src) && !open && !playsOnPage(src, ownPlayer)) || (soundOnly && !hostsEverything(ownPlayer));
+  // A page that is the player for everything (the reader's dock) does not
+  // take the bar away: it stays mounted, unseen under the page's class
+  // (lib/player/pagePlayer.ts, HOSTS_CLASS), so a page switch to or from it
+  // pictures the dock and the bar as one surface changing form (build 98
+  // note 14). A chant's page that plays its own recording still takes it.
+  const ownOnly = hostsEverything(ownPlayer) ? ownPlayer.filter((p) => p !== EVERYTHING) : ownPlayer;
+  const visible = (Boolean(src) && !open && !playsOnPage(src, ownOnly)) || soundOnly;
 
   // The lock screen and the notification's controls (1.8), in the apps only.
   // Here because this bar is mounted once for the whole app (RootFrame). The

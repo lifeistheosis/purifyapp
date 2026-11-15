@@ -1181,6 +1181,52 @@ html.reader-focus.has-reader-dock {
  transition: none;
 }
 
+/* One surface at the foot (build 98 note 14, his word of 2026-11-15: "a small
+   stutter when switching between these screens"). While anything is loaded,
+   the reader's dock is the player on a page that is the player for
+   everything, and the mini player is everywhere else. They are one thing to
+   the reader, so a page switch to or from such a page changes one into the
+   other: both wear one name in the View Transitions, and the browser moves
+   the one into the place and shape of the other on the house curve, inside
+   the page switch, while the pages change under them.
+
+   The mini player is never taken away for the dock: it stays mounted and is
+   unseen under the page's class (lib/player/pagePlayer.ts, HOSTS_CLASS,
+   written in the commit that brings the page, so it is in the switch's
+   picture), and keeps no room there. Before, it left by a render that came
+   after the picture: it stood in the picture of the Bible and cut out a
+   moment later, and coming back it cut in. The room each page keeps at its
+   foot is in the same picture, so it changes with the move.
+
+   Under reduced motion no page switch is started (routeMotion.canMove): the
+   two simply change, in one frame, with no blank between. */
+html.hosts-player [data-mini-player] {
+ display: none;
+}
+html.hosts-player.has-now-playing,
+html.hosts-player.has-now-playing.now-playing-drawn {
+ --now-playing-h: 0px;
+}
+html.hosts-player.reader-focus.has-reader-dock {
+ --now-playing-h: 64px;
+}
+.mini-player,
+.reader-dock {
+ view-transition-name: foot-player;
+}
+::view-transition-group(foot-player) {
+ animation-duration: var(--duration-route-enter);
+ animation-timing-function: var(--ease-house);
+}
+::view-transition-old(foot-player),
+::view-transition-new(foot-player) {
+ block-size: 100%;
+ object-fit: cover;
+ overflow: clip;
+ animation-duration: var(--duration-route-enter);
+ animation-timing-function: var(--ease-house);
+}
+
 /* A work's section pill arrives gently (1.8, the owner's note 14 of build 80:
    opening the Conferences, "Section 1 of 603" appeared at once). It comes
    into the page with the work's text, which in the apps is read from the

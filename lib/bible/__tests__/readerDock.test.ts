@@ -42,9 +42,9 @@ describe("a page that is the player for everything", () => {
     expect(hostsEverything([])).toBe(false);
   });
 
-  it("is what the mini player steps aside for, a sound playing alone included", () => {
-    expect(BAR).toContain("(soundOnly && !hostsEverything(ownPlayer))");
-    expect(BAR).toContain("!playsOnPage(src, ownPlayer)");
+  it("is what the mini player steps aside for, a sound playing alone included: unseen under the page's class, never unmounted (build 98 note 14)", () => {
+    expect(BAR).toContain("const ownOnly = hostsEverything(ownPlayer) ? ownPlayer.filter((p) => p !== EVERYTHING) : ownPlayer;");
+    expect(BAR).toContain("!playsOnPage(src, ownOnly)) || soundOnly;");
   });
 });
 
