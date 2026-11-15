@@ -4,7 +4,8 @@
 // request outside the bundle aborted, as a phone with no signal answers. Reached the app's way (a cold
 // start at the front door, then the router). For each run it records the button's size, what the finger
 // meets at its middle, its top before and after the tap, whether the line under it ("No signal") came,
-// the page's layout shifts across the tap, and checkMock's failures before and after.
+// the page's layout shifts from the card's settling through the tap (each with its time since the tap; checkMock
+// itself runs between, before the tap), and checkMock's failures before and after.
 //   node offline4b.mjs <out dir> <jsonl> <spec>...    spec: <width>@<lang>@<new|open>
 // A new reader is the Android shell that sells Plus (SELLS_PLUS's way); the open reader is the same
 // export with nothing locked.
@@ -78,6 +79,7 @@ async function run(spec) {
       const btn = hit?.closest("button");
       return btn && btn.textContent.trim() === said ? "Try again" : (hit?.tagName ?? "nothing");
     }, [b.x + b.width / 2, b.y + b.height / 2, label]);
+    rec.tapAt = await page.evaluate(() => Math.round(performance.now()));
     await page.touchscreen.tap(b.x + b.width / 2, b.y + b.height / 2);
     await page.waitForTimeout(1500);
     const a = await btn.boundingBox();
@@ -86,7 +88,7 @@ async function run(spec) {
       const s = document.querySelector("[data-feed-unreached]");
       return s ? { said: s.textContent.trim().slice(0, 80), role: s.getAttribute("role") } : null;
     });
-    rec.shifts = await page.evaluate(() => window.__shifts);
+    rec.shifts = (await page.evaluate(() => window.__shifts)).map((x) => ({ ...x, sinceTap: x.at - rec.tapAt }));
     const after = await checkMock(page, "body", { pixels: true, palettes: WORN });
     rec.afterMock = { failures: after.failures.map((f) => (typeof f === "string" ? f : JSON.stringify(f)).slice(0, 300)), unmeasured: after.unmeasured?.length ?? 0 };
     rec.errors = errors;
