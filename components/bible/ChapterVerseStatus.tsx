@@ -5,7 +5,7 @@ import { flushSync } from "react-dom";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { VERSE_ROWS, verseAtReadingPlace } from "@/lib/bible/verseInView";
 import { cn } from "@/lib/cn";
-import { gliding } from "@/lib/ui/readingPlace";
+import { gliding, landingDue, onLanded } from "@/lib/ui/readingPlace";
 
 // On the server there is no page to read, and useLayoutEffect only warns.
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -66,7 +66,12 @@ export function ChapterVerseStatus({
   // the pill rising 52px to it, a frame after a verse link had landed (Gate
   // 3c, group 8). While the page glides to the verse a link named, a shut
   // line waits for the end and opens once, with that verse's words (group 5;
-  // lib/ui/readingPlace.ts, gliding).
+  // lib/ui/readingPlace.ts, gliding). A verse link's landing tells the line
+  // itself, in the landing's own microtask (or frame, with motion on), and a
+  // shut line waits for it while it is due: told by the scroll's event, the
+  // line settled after every other frame callback, and a read in that frame
+  // found the chapter at its verse with the line shut, or with the words read
+  // at the scroll of the page left (Updates 91; readingPlace.ts, goOnArrival).
   useIsoLayoutEffect(() => {
     const title = document.getElementById("chapter-title");
     const verses = Array.from(document.querySelectorAll<HTMLElement>(VERSE_ROWS));
@@ -86,6 +91,7 @@ export function ChapterVerseStatus({
     const settle = (apply: (set: () => void) => void) => {
       raf = 0;
       if (!open && gliding()) return;
+      if (!open && landingDue()) return;
       const nowOpen = title ? title.getBoundingClientRect().bottom < 0 : false;
       const n = verseAtReadingPlace();
       const moved = verses.length > 0 && !!n && n !== current;
@@ -110,9 +116,16 @@ export function ChapterVerseStatus({
     };
     // Before the first paint: a page that opens already scrolled opens its line with it.
     settle((set) => set());
+    // The landing, just after it has moved the page: settled now, so the
+    // frame that first shows the chapter at its verse shows the line with it.
+    const stopHearing = onLanded(() => {
+      cancelAnimationFrame(raf);
+      settle(flushSync);
+    });
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
+      stopHearing();
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);

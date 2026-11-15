@@ -302,15 +302,50 @@ export function goToReadingPlace(
  * under the pill 582 then 530, James 1's line 27px sideways). So it goes in a
  * microtask: after the whole of React's commit, Next's own scroll for the
  * route among it (an ancestor's layout effect, run after the page's), and
- * before the browser paints; the scroll's event then falls in the steps of
- * that same first frame, where the line settles.
+ * before the browser paints.
  *
  * With motion on it goes in the next frame, as it always has: the glide
  * starts there, and a shut running line waits it out (gliding).
+ *
+ * The running line hears the landing from here, not from the scroll's event
+ * (Updates 91). The event comes in the first frame's scroll steps, and the
+ * line settled in an animation frame asked for from it, after every frame
+ * callback asked for before: a read in requestAnimationFrame in that frame
+ * (the motion walk's) found the chapter at its verse with the line still shut
+ * (the fade 582, then 530 a frame on), or with the words read at the scroll
+ * of the page left (James 1, "v 5 of 27 · 2 min left", then "v 19 of 27").
+ * So a landing is due from this call until it has run (landingDue), and a
+ * shut line waits while it is; once it has moved the page the line is told
+ * at once, in the same microtask or frame (onLanded).
  */
 export function goOnArrival(go: () => void, reduced: boolean = prefersReducedMotion()): void {
-  if (reduced) queueMicrotask(go);
-  else requestAnimationFrame(go);
+  landingsDue += 1;
+  const land = () => {
+    try {
+      go();
+    } finally {
+      landingsDue -= 1;
+      for (const hear of [...hearers]) hear();
+    }
+  };
+  if (reduced) queueMicrotask(land);
+  else requestAnimationFrame(land);
+}
+
+let landingsDue = 0;
+const hearers = new Set<() => void>();
+
+/** Whether an arrival's landing has been asked for (goOnArrival) and has not run yet. */
+export function landingDue(): boolean {
+  return landingsDue > 0;
+}
+
+/** Hears each arrival's landing just after it has moved the page (goOnArrival). Answers the way to stop. */
+export function onLanded(hear: () => void): () => void {
+  hearers.add(hear);
+  return () => {
+    hearers.delete(hear);
+  };
 }
 
 /** The longest a glide to the reading place is waited for (a reader's own touch can stop it short). */

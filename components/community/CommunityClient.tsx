@@ -963,7 +963,13 @@ function CommunityScreen({
                 // Say so, and offer the way out. Rendering the empty state here
                 // would tell the reader the community is quiet when in fact we
                 // could not reach it.
-                <div className="mt-3 rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
+                //
+                // No top margin of its own: React keeps the outline's element
+                // for the card, and a margin here moved it (and, collapsing
+                // through the box's own mt-2, the box) 4px down the moment the
+                // feed could not be reached (Updates 88 and 91, Community
+                // offline: y 343 then 347). It starts where the outline did.
+                <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
                   <p className="font-serif text-lede text-paper/80">
                     {t("community.loadFailed")}
                   </p>
@@ -985,7 +991,8 @@ function CommunityScreen({
                   ) : null}
                 </div>
               ) : result.posts.length === 0 ? (
-                <div className="mt-3 rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
+                // Starts where the outline did, as the card above.
+                <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
                   <p className="font-serif text-lede text-paper/80">
                     {t("community.quietHere")}
                   </p>
