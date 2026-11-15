@@ -13,7 +13,8 @@ import { cn } from "@/lib/cn";
  * the server render (never favorited) from flashing.
  *
  * The heart is named by the piece it sits on (1.9, Updates 77): it said
- * "Save this icon" on every piece, a prayer rope and a cross among them.
+ * "Save this icon" on every piece, a prayer rope and a cross among them, and
+ * "Remove from saved" in English in every language.
  */
 export function FavoriteButton({
   productSlug,
@@ -44,7 +45,7 @@ export function FavoriteButton({
   // Replay the pop only when the heart goes on (not on remove). Keyed off a
   // nonce bumped by the click so the CSS animation re-fires each save.
   const [pop, setPop] = useState(0);
-  const label = saved ? "Remove from saved" : t("saints.saveAria", { name: title });
+  const label = saved ? t("saints.saveRemoveAria", { name: title }) : t("saints.saveAria", { name: title });
 
   return (
     <button
