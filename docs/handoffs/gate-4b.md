@@ -19,15 +19,17 @@ Written by Gate 4b (session_01VuYTwZqENgMg5ynEb8M8NS), started by Arbiter 14. Th
 ## The verdict in one line each
 
 - **Tap walk:** pass. 1,010 controls a reader, 0 failed; 50 sheets a reader, 0 failed; the three looks answered.
-- **checkMock:**
-  - Fault A: the You line, Arabic, Light, 4.50:1.
+- **checkMock** (all twelve runs, 44 of 44 screens each):
+  - Fault A: the You line, Arabic, Light, 4.50:1, all six Arabic runs.
+  - Fault D: Settings' "Daily quiet" card, Arabic, Candlelight, 4.29:1, at 800 and 1032.
+  - Fault E: /plan/'s yearly price line, Arabic, 1032, 4.40 to 4.49:1.
   - Fault B: the checker misses EIKON's fixed backdrop on Light (not the app).
   - The verse landing's two-second step back on Dark, for the arbiter.
   - Community offline with Try again: pass.
 - **Language:**
   - Fault C: Community's door place closes 77px on a direct open, in every language.
   - Otherwise pass: rtl before the first paint, no English catalog string, no mirrored frame in the switch.
-- **Suite and build:** in the record, section 4.
+- **Suite and build:** both exit 0. 15,312 tests passed and 9 skipped; 6,526 of 6,526 pages.
 
 ## Left
 

@@ -24,11 +24,15 @@ Started by Arbiter 14 (session_01VuYTwdsjnmK235qQJH2FGJ) at about 07:15 UTC: the
   - /settings/ "Strict rule": already chosen, and now kept (`purify:fasting-rule` `strict`).
   - /settings/ "Haptic feedback" (new reader only): on to off, kept (`purify:scroll-clicks` `off`).
 
-## 2. checkMock with pixels: three faults, one of them in the checker
+## 2. checkMock with pixels: three faults in Arabic, and one in the checker
 
-The guardrail walk (`docs/handoffs/gate-4b-runners/guard4b.sh`), `--online`, all 44 screens, the five palettes and the two earned. Done so far: the new reader in English and Arabic at 390, the open reader in English at 390 (44 of 44 measured each; 42, 41 and 42 clean). The other nine (800 and 1032 for both readers, and the open reader in Arabic at 390) are running after the suite and the build.
+The guardrail walk (`docs/handoffs/gate-4b-runners/guard4b.sh`), `--online`, all 44 screens, the five palettes and the two earned. All twelve runs finished, 07:24 to 10:54 UTC: both readers, en and ar, at 390, 800 and 1032. Each measured 44 of 44 screens with no errors. Clean, new reader (en 390, ar 390, en 800, ar 800, en 1032, ar 1032): 42, 41, 42, 40, 42, 39. Open reader, in the same order: 42, 41, 42, 41, 42, 40.
 
-**Fault A: /account/ in Arabic on Light.** The line "Private on this device · no account needed" (`ui.privateOnThisDeviceNo`) over the You picture (`you.v2.jpg`) is **4.50:1 at its least on the pixels under it; it needs 4.5:1** (below it before rounding). Arabic 390, new reader. In English the same line is 6.27:1 on Light, and in Arabic 4.58 on Candlelight. File: `components/you/YouIdentity.tsx:57` (`words-halo ... text-caption text-paper`).
+**Fault A: /account/ in Arabic on Light.** The line "Private on this device · no account needed" (`ui.privateOnThisDeviceNo`) over the You picture (`you.v2.jpg`) is **4.50:1 at its least on the pixels under it; it needs 4.5:1** (below it before rounding). Arabic 390, new reader. It fails in **all six Arabic runs** (both readers, 390, 800 and 1032) and in no English run: in English the same line is 6.27:1 on Light. In Arabic it is 4.58 on Candlelight. File: `components/you/YouIdentity.tsx:57` (`words-halo ... text-caption text-paper`).
+
+**Fault D: /settings/ in Arabic on Candlelight.** The "Daily quiet" card (`onboard.intent.quiet`, "السكينة اليومية") is **4.29:1 at its least on the pixels under it, where 4.5:1 is needed**. It sits over its picture in First focus (`components/settings/FirstFocus.tsx`, onboarding's picture cards, `lib/onboarding/pictures`). Seen at 800 and 1032 for the new reader (2 of 2); not at 390, and not for the open reader.
+
+**Fault E: /plan/ in Arabic at 1032.** The yearly price line (`premium.orPerYear`, drawn by `components/premium/PlanWords.tsx:16`) is **4.49:1 at its least on the gradient under it on Dark and Black, and 4.40:1 on Monastery**, where 4.5:1 is needed. The gradient is PlanScreen's (`components/premium/PlanScreen.tsx:176` to `182`). Seen for both readers (2 of 2); not at 390 or 800.
 
 **Fault B (the checker): /shop/eikon/ on Light, 27 words at 1.15 to 1.22:1.** By eye (a still on Light, `probe4b.mjs`) the words are white on the room's obsidian and read clearly. The room's backdrop is a fixed layer beside the words, not behind them in the tree (`components/shop/eikon/EikonBoutique.tsx:63`, `fixed inset-0 -z-10 bg-[#0a0a0a]`; read on Light: rgb(10, 10, 10), opacity 1, the h1 white). checkMock's contrast takes the background from the words' ancestors, so it measured white on the body's parchment (rgb(241, 232, 212)). **Not an app fault; the checker's** (`scripts/mock-check.mjs`). The other palettes pass only because their body is dark too. At 4s, alone, the probe measured 59 such lines on Light.
 
@@ -71,14 +75,20 @@ Each alone, after the language measures, on the tree at the export's head (only 
 ## The faults, by cause (one fixer each)
 
 1. **Community's door place on a direct open** (fault C): `components/community/CommunityHead.tsx:94`, `app/globals.css:9587`, `lib/campaigns/doorPrepaint.ts`. A new reader's first open of /community/ by a link or a notification holds the place and closes it 77px.
-2. **The You picture's line in Arabic on Light** (fault A): `components/you/YouIdentity.tsx:57`, 4.50:1 at its least where 4.5 is needed.
+2. **Arabic words over a picture or a gradient, just under 4.5:1** (faults A, D and E). The Arabic line runs longer or is mirrored, so it sits over a brighter part of what is under it:
+   - A: `components/you/YouIdentity.tsx:57`, Light, every size, 4.50.
+   - D: `components/settings/FirstFocus.tsx`, Candlelight, 800 and 1032, 4.29.
+   - E: `components/premium/PlanWords.tsx:16` on `PlanScreen.tsx:176`, 1032, 4.40 to 4.49.
 3. **The checker** (fault B): `scripts/mock-check.mjs` takes no fixed backdrop beside the words as their background (EIKON on Light). The owner of checkMock. No app change.
 4. **For the arbiter, not a fixer yet:** the verse landing's two-second step back measures 3.33:1 on Dark (`components/bible/VerseFocusFlash.tsx:89`, `app/globals.css:12411`). Allow it by name in the walk, or ask the owner.
 
 ## Left
 
-(Written at the end.)
+- The controls past the 150 walked on /community/ (38 more) and /saints/ (163 more) were not tapped.
+- The 40 looks on /community/ were answered from the record (no still, no pixels), not by eye.
+- Not asked of this run, so not run: the light looks, offline on other screens, and the website.
+- The arbiter's call on the verse landing's two seconds (above).
 
 ## Budget
 
-(Written at the end.)
+get_session read 91,637 at the first step, 184,578 when the tap walks ended, 249,882 after the language measures and 296,175 at the end. My own count passed 150,000 after the language measures, about 158,000. After that I started only the plan's own unfinished steps: the suite, the build and the nine guardrail runs left, all in the background. My own count was about 185,000 at the end.
