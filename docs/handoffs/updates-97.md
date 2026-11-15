@@ -1,6 +1,6 @@
 # Baton: Updates 97 (a chapter's Community section, offline and at the foot)
 
-Done 2026-11-15. Mend: `9139600d`, then `9f6b8936` and `46074d1f` (how an answer waits, found by the probe after the export). Brief: Arbiter 14. Runs: `docs/handoffs/updates-97-runners/` (one export, of `74dc0d0a`).
+Done 2026-11-15. Mend: `9139600d`, then `9f6b8936` and `78c5297e` (how an answer waits, found by the probe after the export). Brief: Arbiter 14. Runs: `docs/handoffs/updates-97-runners/` (one export, of `74dc0d0a`).
 
 **Mended.** Updates 95's item 2 (Gate 4 group 2): from /history/alaska-mission/, "Matthew 28:19-20" moved the chapter's foot with no network, motion on.
 
@@ -18,7 +18,7 @@ Done 2026-11-15. Mend: `9139600d`, then `9f6b8936` and `46074d1f` (how an answer
 - **A feed that cannot be reached draws no section and moves nothing.** Only the feed's own answer is kept: `if (alive && res.state === "ok") setLoaded(...)`. A failed, dark or unreached feed draws nothing, which is also truer offline.
 - **An answer is drawn only while the section's place is below the screen** (the choice the brief offered: let it arrive below the screen). The place is read in a frame, at once and after every scroll or resize, and the section is let in when the place is below the screen (`top >= innerHeight`). A chapter read from its top gets it as before (its foot is far below); a reader at the foot gets it once the place has gone below the screen, so they never see it arrive. Nothing is drawn while the place is on the screen or above it (WebKit has no scroll anchoring, so a section let in above the screen would move the page on iOS).
 - **`9139600d` used an IntersectionObserver; `9f6b8936` replaced it** after `probe97` on the export: a reader standing at Matthew 28's foot had the place a few pixels above the screen when the answer came, and a jump up carried it to below the screen without crossing it. An observer reports only crossings, so the section never came (nothing moved, but nothing arrived either). Read in a frame after every scroll, a jump is seen like a glide.
-- **`9f6b8936` also asked for a quarter of a screen to spare; `46074d1f` took it out.** After the glide to Matthew 28:19 the place stands at y 1015, below the 844 screen but inside that quarter, so a reader who then reads down would never have had the section. With no margin it comes as it did before.
+- **`9f6b8936` also asked for a quarter of a screen to spare; `78c5297e` took it out.** After the glide to Matthew 28:19 the place stands at y 1015, below the 844 screen but inside that quarter, so a reader who then reads down would never have had the section. With no margin it comes as it did before.
 - **The place is kept from the first frame** by an empty holder, `<div ref={slot} />`, in the chapter's plain block column: no class and no children, so the margins run through it and the page is laid out as before.
 - **Online the section is unchanged**: the same card, words and links. Only when it is let in differs, and only for a reader who stands where it would appear.
 - Why not keep its place drawn from the first frame: the brief's other road. The section's height depends on the answer (none, one to three posts, the "see all" link), so a box drawn early would still change height, and offline it would have to stay empty or go.
@@ -38,7 +38,7 @@ The one that passes is the precondition: the section's own card and its quiet li
 - typecheck **0**; eslint **clean** on the 2 changed files.
 - `npm run test:unit` **exit 0**, the whole suite alone: files 1229 passed, 1 skipped; tests 15345 passed, 9 skipped.
 - `npm run build` (web) not run: no CSS, server or shared file changed (one client component and a test).
-- Again for each later change: `9f6b8936`, typecheck 0, the whole suite exit 0 (files 1229 passed, 1 skipped; tests 15345 passed, 9 skipped); `46074d1f`, SUITE3.
+- Again for each later change: `9f6b8936`, typecheck 0, the whole suite exit 0 (files 1229 passed, 1 skipped; tests 15345 passed, 9 skipped); `78c5297e`, typecheck 0, the whole suite exit 0 (files 1229 passed, 1 skipped; tests 15345 passed, 9 skipped), eslint clean on the 2 changed files.
 - The push guard passed each time (28s, then 1m 47s). `node scripts/gate/export.mjs` **exit 0** on `74dc0d0a` (the observer's version; one export, as briefed).
 
 ## The walk, after (export of `74dc0d0a`)
@@ -66,6 +66,6 @@ Updates 95's probe with the section among the boxes it reads and a `feed` networ
 
 ## Left
 
-- **The next export carries `9f6b8936` and `46074d1f`.** Read on a patch of this one, not walked on a build. Its walk: the same command, offline and online, and `probe97.mjs` at the foot (`--end --delay 2500 --up 1500`).
+- **The next export carries `9f6b8936` and `78c5297e`.** Read on a patch of this one, not walked on a build. Its walk: the same command, offline and online, and `probe97.mjs` at the foot (`--end --delay 2500 --up 1500`).
 - A reader who stands with the section's place on the screen and never scrolls up (a chapter that fits on one screen, Psalm 117) does not get the section on that visit. That is the choice: it comes in only where nobody sees it come.
 - Updates 95's other left: on dev, the arrival on /history/alaska-mission/ replaced a list in the account's thread far below the screen. Not seen by the walks.
