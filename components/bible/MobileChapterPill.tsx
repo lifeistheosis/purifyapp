@@ -21,6 +21,7 @@ import { useIsNative } from "@/lib/platform/native";
 import { ReaderDock } from "./ReaderDock";
 import { spokenOf } from "@/lib/listen/speech/spoken";
 import { listenToChapter } from "@/lib/readAloud/play";
+import { useReadingComing } from "@/lib/readAloud/rollOn";
 
 /** Where the pill stands: a phone's width on the web (md:hidden), and every width in the apps (native-md-flex). */
 const PHONE = "(max-width: 767.98px)";
@@ -173,7 +174,13 @@ export function MobileChapterPill({
   // chapter already playing.
   const loaded = readingOfSrc(src);
   const said = spokenOf(src);
+  // A reading on its way to this chapter (a chapter that ended rolling on, the
+  // player's next and previous) counts as loaded: the page comes a moment
+  // before its reading does, and the dock offered Listen for that moment, then
+  // Speed (lib/readAloud/rollOn.ts, readingComing).
+  const coming = useReadingComing(slug, chapter);
   const hereLoaded =
+    coming ||
     (!bible && loaded?.book === slug && loaded.chapter === chapter) ||
     (said?.kind === "bible" && said.book === slug && said.chapter === chapter && said.bible === (bible?.id ?? null));
   const listenHere = reads && !hereLoaded;

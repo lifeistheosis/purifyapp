@@ -29,7 +29,7 @@ import { useCanSpeak } from "@/lib/listen/speech/voices";
 import { captionLines, lineAt } from "@/lib/player/captions";
 import { hasReadAloud, readAloudManifest, readingOfSrc, useHasReadAloud, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 import { listenToChapter } from "@/lib/readAloud/play";
-import { askToListenAt, takeListenAsk } from "@/lib/readAloud/rollOn";
+import { askToListenAt, readingCame, takeListenAsk } from "@/lib/readAloud/rollOn";
 import { currentTimeNow, getAudioSnapshot, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { cn } from "@/lib/cn";
 import { goToReadingPlace, inReadingZone, visibleBand } from "@/lib/ui/readingPlace";
@@ -211,7 +211,8 @@ export function ReadAloudFollow({ book, chapter, bible = null }: { book: string;
   // Arriving from a reading that ended, or the player's next or previous: this chapter's reading goes on, read as it is read here.
   useEffect(() => {
     if (!available || !takeListenAsk(book, chapter)) return;
-    void listenToChapter({ book, chapter, title: `${t(`bible.books.${book}`)} ${chapter}`, t, bible });
+    // On its way until it has begun or could not: the dock offers Speed meanwhile, not Listen (lib/readAloud/rollOn.ts).
+    void listenToChapter({ book, chapter, title: `${t(`bible.books.${book}`)} ${chapter}`, t, bible }).finally(() => readingCame(book, chapter));
   }, [book, chapter, t, available, bible]);
 
   // The reading ended at its last verse: on into the next chapter, if it has
