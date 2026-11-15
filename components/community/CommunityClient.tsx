@@ -382,6 +382,11 @@ function CommunityScreen({
   const [followingFeed, setFollowingFeed] = useState<PostsResult | undefined>(undefined);
   // Ask a Priest reads its own list: questions are fewer than the feed's fifty.
   const [questionsFeed, setQuestionsFeed] = useState<PostsResult | undefined>(undefined);
+  // What Ask a Priest shows, for its next list to be weighed against.
+  const shownQuestions = useRef<PostsResult | undefined>(undefined);
+  useEffect(() => {
+    shownQuestions.current = questionsFeed;
+  }, [questionsFeed]);
   const [giftSent, setGiftSent] = useState(false);
   // Amen, Praying, Glory to God this reader has given, from the same call as
   // ownership, for the same reason: per reader, so never in the cached feed.
@@ -550,14 +555,24 @@ function CommunityScreen({
     void (async () => {
       const next = await fetchCommunityPosts(null, { category: "question" });
       if (!alive) return;
-      setQuestionsFeed((prev) => {
+      const settle = (prev: PostsResult | undefined): PostsResult => {
         if (next.state === "error" && prev?.state === "ok") return prev;
         if (next.state === "ok" && prev?.state === "ok") {
           const posts = reconcilePosts(prev.posts, next.posts);
           return posts === prev.posts ? prev : { state: "ok", posts };
         }
         return next;
-      });
+      };
+      // A list that changes what the tab shows (the first, over its waiting
+      // rows) moves in as the tab did (FeedTabs), after the tab's own move:
+      // Gate 3c saw it land in one frame. One that changes nothing is let be.
+      const shown = shownQuestions.current;
+      if (settle(shown) === shown) {
+        setQuestionsFeed(settle);
+        return;
+      }
+      await afterMoves();
+      if (alive) movePage(() => setQuestionsFeed(settle));
     })();
     return () => {
       alive = false;

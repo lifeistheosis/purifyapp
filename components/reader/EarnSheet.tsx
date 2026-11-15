@@ -6,7 +6,10 @@
 //
 // The house sheet. The councils' names come with the sheet, not with every
 // screen that shows the card: lib/councils/councils.ts is asked for only once
-// the Councils sheet is open.
+// the Councils sheet is asked for. The sheet opens once they have come, with
+// its doors in it, and rises as one piece: opened before them, it grew by its
+// whole list at once a moment later (Gate 3c, Settings' Councils card: the
+// panel 467px up in one frame). If they cannot come, it opens without them.
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -36,17 +39,22 @@ export function EarnSheet({ goal, locked, onClose }: { goal: keyof EarnedPalette
   useEffect(() => {
     if (!wanted) return;
     let live = true;
-    void import("@/lib/councils/councils").then(({ COUNCILS }) => {
-      if (!live) return;
-      const by = new Map(COUNCILS.map((c) => [c.slug, c]));
-      setCouncils(COUNCIL_PAGES.flatMap((slug) => (by.get(slug) ? [{ slug, byname: by.get(slug)!.byname, year: by.get(slug)!.year }] : [])));
-    });
+    void import("@/lib/councils/councils").then(
+      ({ COUNCILS }) => {
+        if (!live) return;
+        const by = new Map(COUNCILS.map((c) => [c.slug, c]));
+        setCouncils(COUNCIL_PAGES.flatMap((slug) => (by.get(slug) ? [{ slug, byname: by.get(slug)!.byname, year: by.get(slug)!.year }] : [])));
+      },
+      () => {
+        if (live) setCouncils([]);
+      },
+    );
     return () => {
       live = false;
     };
   }, [wanted]);
 
-  if (!goal) return null;
+  if (!goal || wanted) return null;
   const progress = earned[goal];
   const title = t(goal === "councils" ? "settings.paletteCouncils" : "settings.paletteCappadocian");
   return (

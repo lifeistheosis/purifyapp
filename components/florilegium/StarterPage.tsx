@@ -14,6 +14,7 @@ import { useFlorilegia } from "@/lib/florilegium/florilegium";
 import { gatheringHref } from "@/lib/florilegium/href";
 import { keptStarter, starterById, starterItems, starterPicture, starterReference, type Starter } from "@/lib/florilegium/starters";
 import { useCoversVersion } from "@/lib/readAloud/useCovers";
+import { movePage } from "@/lib/ui/inPageMove";
 import { useMounted } from "@/lib/useMounted";
 
 import { FLOR_BUTTON, FLOR_H1, FLOR_KICKER, FLOR_ROW, FLOR_TITLE, FLOR_TRAY } from "./florStyle";
@@ -33,7 +34,12 @@ import { useBookName } from "./useBookName";
  *                 (components/prayers/service/ServiceHeader.tsx).
  *   one action    Keep this gathering. Once kept the button gives way to a
  *                 row that says so in words, "In your gatherings", and opens
- *                 the reader's own copy. The page stays where it is.
+ *                 the reader's own copy. The page stays where it is. The
+ *                 row is let down in the button's place and the passage
+ *                 glides to make room, as a part of a page opens (the
+ *                 owner's ruling of 2026-11-13, lib/ui/inPageMove.ts; Gate
+ *                 3c saw it cut, the passage stepping down in one frame).
+ *                 Under reduced motion it changes at once.
  *   the passage   set to read: a verse a line, as it will be kept, in the
  *                 size the app reads Scripture at, its verse numbers small
  *                 beside it.
@@ -58,6 +64,8 @@ export function StarterPage({ id }: { id: string }) {
   const locked = usePlusFeatures() === false;
   // One tap keeps once, however fast a second follows while Plus is asked.
   const keeping = useRef(false);
+  // Where the button gives way to the kept row.
+  const action = useRef<HTMLDivElement>(null);
 
   const starter = starterById(id);
   if (!starter) return null;
@@ -73,13 +81,24 @@ export function StarterPage({ id }: { id: string }) {
     void plusFeaturesNow()
       .then((ok) => {
         if (ok === false) {
+          keeping.current = false;
           upgrade.open("florilegium");
           return;
         }
-        const id = create(t(s.nameKey), starterReference(s, bookName(s.book)));
-        for (const item of starterItems(s, bookName(s.book))) addItem(id, item);
+        // Still keeping until the row stands: the move makes the change a frame or two on.
+        movePage(
+          () => {
+            try {
+              const id = create(t(s.nameKey), starterReference(s, bookName(s.book)));
+              for (const item of starterItems(s, bookName(s.book))) addItem(id, item);
+            } finally {
+              keeping.current = false;
+            }
+          },
+          { grows: [action.current] },
+        );
       })
-      .finally(() => {
+      .catch(() => {
         keeping.current = false;
       });
   }
@@ -112,7 +131,7 @@ export function StarterPage({ id }: { id: string }) {
         </header>
 
         {/* Said aloud when it changes: a reader who cannot see the button give way to the row hears that it is kept. */}
-        <div className="mt-6" data-starter-action="" aria-live="polite">
+        <div ref={action} className="mt-6" data-starter-action="" aria-live="polite">
           {kept ? (
             // Kept, in words, with the way to open it (build 89 note 6).
             <div className={FLOR_TRAY} data-starter-kept="">

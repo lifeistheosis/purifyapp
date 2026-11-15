@@ -7,6 +7,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sliders } from "@/components/ui/icons/Sliders";
 import { cn } from "@/lib/cn";
 import { FEED_FILTER_KEYS, type FeedFilter } from "@/lib/community/halves";
+import { movePage } from "@/lib/ui/inPageMove";
 import { tabForKey } from "@/lib/ui/sectionTabs";
 
 /**
@@ -22,6 +23,13 @@ import { tabForKey } from "@/lib/ui/sectionTabs";
  *
  * The words are a tablist (the arrows move along them in the reading
  * direction); the sliders are a menu of radio items (ActionMenu).
+ *
+ * A word is a tab, and a tab moves as a page switch does (the owner's ruling
+ * of 2026-11-13): the lit rule and the feed under it cross-fade on the house
+ * curve, and under reduced motion the feed changes at once
+ * (lib/ui/inPageMove.ts). Gate 3c saw "Ask a Priest" cut, half the change in
+ * one frame. A choice behind the sliders is a filter, which may change at
+ * once, and does.
  */
 export function FeedTabs({
   tabs,
@@ -38,13 +46,14 @@ export function FeedTabs({
   const listRef = useRef<HTMLDivElement>(null);
   const onTab = tabs.includes(filter);
   const sliderOn = !onTab && sliders.includes(filter);
+  const choose = (next: FeedFilter) => movePage(() => onFilter(next));
 
   function onKeyDown(e: KeyboardEvent<HTMLButtonElement>) {
     const rtl = typeof document !== "undefined" && document.documentElement.dir === "rtl";
     const next = tabForKey(e.key, Math.max(0, tabs.indexOf(filter)), tabs.length, rtl);
     if (next === null) return;
     e.preventDefault();
-    onFilter(tabs[next]);
+    choose(tabs[next]);
     listRef.current?.querySelector<HTMLButtonElement>(`[data-feed-tab="${tabs[next]}"]`)?.focus();
   }
 
@@ -63,7 +72,7 @@ export function FeedTabs({
               // With a choice behind the sliders on, the first word keeps the
               // way in for the keyboard.
               tabIndex={on || (!onTab && i === 0) ? 0 : -1}
-              onClick={() => onFilter(id)}
+              onClick={() => choose(id)}
               onKeyDown={onKeyDown}
               className={cn(
                 // hit-44: a short word ("All") is 18px wide, and takes a
