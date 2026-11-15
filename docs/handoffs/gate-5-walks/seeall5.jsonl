@@ -1,0 +1,4 @@
+{"spec":"390@en@open","href":"?length=under20","link":{"w":56,"h":20},"at":{"search":"?length=under20","sy":205,"dir":"ltr","seeAllLeft":0},"mock":{"failures":[],"unmeasured":0},"errors":[]}
+{"spec":"800@en@open","href":"?length=under20","link":{"w":56,"h":20},"at":{"search":"?length=under20","sy":25,"dir":"ltr","seeAllLeft":0},"error":"Error: page.evaluate: Target page, context or browser has been closed","errors":[]}
+{"spec":"800@en@open","href":"?length=under20","link":{"w":56,"h":20},"at":{"search":"?length=under20","sy":25,"dir":"ltr","seeAllLeft":0},"error":"Error: page.evaluate: Target page, context or browser has been closed","errors":[]}
+{"spec":"1032@en@open","href":"?length=under20","link":{"w":56,"h":20},"at":{"search":"?length=under20","sy":0,"dir":"ltr","seeAllLeft":0},"error":"Error: page.evaluate: Target page, context or browser has been closed","errors":[]}
