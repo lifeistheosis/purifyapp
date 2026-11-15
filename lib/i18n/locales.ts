@@ -141,7 +141,7 @@ export function getLocale(code: string | null | undefined): Locale {
  * These apply only when reading what a DEVICE says. A stored choice is
  * always one of our own codes, and `resolveLocale` stays strict about it.
  */
-const DEVICE_SPELLINGS: Record<string, LocaleCode> = {
+export const DEVICE_SPELLINGS: Record<string, LocaleCode> = {
   tl: "fil", // Tagalog, the name Filipino went by before BCP-47 gave it its own
   in: "id", // Indonesian, as Java and older Android spell it
   mo: "ro", // Moldavian, retired in 2008 in favour of "ro"

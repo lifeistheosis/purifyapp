@@ -21,6 +21,7 @@ import { MOTION_PREPAINT } from "@/lib/ui/motionPrepaint";
 import { STORE_PREPAINT } from "@/lib/platform/storePrepaint";
 import { STREAK_PREPAINT } from "@/lib/streak/streakPrepaint";
 import { doorPrepaint } from "@/lib/campaigns/doorPrepaint";
+import { LANGUAGE_PREPAINT } from "@/lib/i18n/languagePrepaint";
 import { serverOpening } from "@/lib/campaigns/opening";
 import { bankHasQuestions } from "@/lib/catechism/bank";
 import { SITE_URL } from "@/lib/site";
@@ -302,6 +303,19 @@ export default async function RootLayout({
  suppressHydrationWarning
  dangerouslySetInnerHTML={{ __html: STREAK_PREPAINT }}
  />
+ {/* The reader's language, before the launch slate paints: sets lang and
+     dir on <html> from the language this device last applied, else from the
+     device's own, so the slate's sky is drawn the reader's way from the first
+     frame and never turns under it (Updates 82). The apps only: the website's
+     server writes the reader's language on <html> itself.
+     lib/i18n/languagePrepaint.ts. */}
+ {IS_STATIC_EXPORT ? (
+ <script
+ nonce={nonce}
+ suppressHydrationWarning
+ dangerouslySetInnerHTML={{ __html: LANGUAGE_PREPAINT }}
+ />
+ ) : null}
  {/* The door to Pray together, before Community paints: sets
      data-pray-door on <html> where the device already knows campaigns are
      not open for this reader, so the switch's place is not held and then

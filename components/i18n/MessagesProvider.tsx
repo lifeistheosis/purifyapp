@@ -4,13 +4,18 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
+  useLayoutEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import { getLocale, type LocaleCode } from "@/lib/i18n/locales";
 import { loadClientLanguage } from "@/lib/i18n/client";
-import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
+import { languageSettled, subscribeLanguageSettled } from "@/lib/i18n/launchLanguage";
+import { APPLIED_LANGUAGE_KEY } from "@/lib/i18n/languagePrepaint";
+import { isNativeClient } from "@/lib/platform/native";
 import { RouteLanguageHold } from "./LaunchLanguageGate";
 import { interpolate, resolvePluralKey } from "@/lib/i18n/plural";
 import enCatalog from "@/lib/i18n/messages/en.json";
@@ -44,6 +49,20 @@ type Ctx = {
 
 const MessagesContext = createContext<Ctx | null>(null);
 
+/** Put a language on <html>, and in the apps keep it for the language pre-paint. */
+function showLanguage(code: LocaleCode): void {
+  const root = document.documentElement;
+  const dir = getLocale(code).dir;
+  if (root.lang !== code) root.lang = code;
+  if (root.dir !== dir) root.dir = dir;
+  if (!isNativeClient()) return;
+  try {
+    window.localStorage.setItem(APPLIED_LANGUAGE_KEY, code);
+  } catch {
+    // Storage refused (a private window): the next open guesses from the device.
+  }
+}
+
 export function MessagesProvider({
   locale,
   messages,
@@ -64,21 +83,51 @@ export function MessagesProvider({
     messages: messages ?? EN_MESSAGES,
   });
 
+  // The language on <html> is the language of the words drawn (Updates 82).
+  // It is written in the commit that draws them, before that frame is painted,
+  // never ahead of it: written by setLocale before React drew the new table, a
+  // switch in Settings drew 195 to 272ms of frames mirrored with the old words
+  // (docs/handoffs/updates-81.md, step 3b). Nothing is written at mount: the
+  // server wrote the page's language, and in the apps the language pre-paint
+  // (lib/i18n/languagePrepaint.ts) has already written the reader's.
+  const shown = useRef(state.locale);
+  const asked = useRef(false);
+  useLayoutEffect(() => {
+    if (shown.current === state.locale) return;
+    shown.current = state.locale;
+    showLanguage(state.locale);
+  }, [state.locale]);
+  // And once the opening language is settled, <html> says what is drawn, if
+  // no language was asked for: the pre-paint guessed from what this device
+  // last applied, and the reader may have chosen otherwise on another device
+  // or in the phone's settings since.
+  useEffect(() => {
+    const follow = () => {
+      if (!asked.current) showLanguage(shown.current);
+    };
+    if (languageSettled()) {
+      follow();
+      return;
+    }
+    return subscribeLanguageSettled(follow);
+  }, []);
+
   const setLocale = useCallback(async (next: LocaleCode) => {
+    asked.current = true;
     // The catalog and the faces its words are drawn in, both before the
     // words are committed, so they are drawn once (lib/i18n/client.ts).
     const nextMessages = await loadClientLanguage(next);
     setState({ locale: next, messages: nextMessages });
-    document.documentElement.lang = next;
-    document.documentElement.dir = getLocale(next).dir;
   }, []);
 
   const value = useMemo(() => ({ ...state, setLocale }), [state, setLocale]);
   return (
     <MessagesContext.Provider value={value}>
       {/* In the apps, a screen reached before the reader's language is on
-          the screen waits for it under the launch slate (LaunchLanguageGate). */}
-      {IS_STATIC_EXPORT ? <RouteLanguageHold>{children}</RouteLanguageHold> : children}
+          the screen waits for it under the launch slate (LaunchLanguageGate).
+          It decides on the device: a flag of the build cannot, in a client
+          bundle (Updates 82). */}
+      <RouteLanguageHold>{children}</RouteLanguageHold>
     </MessagesContext.Provider>
   );
 }

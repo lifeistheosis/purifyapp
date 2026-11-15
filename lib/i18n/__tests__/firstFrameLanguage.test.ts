@@ -16,12 +16,25 @@ import { createElement } from "react";
 import { prerender } from "react-dom/static";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-// The apps: the static export, on a screen other than Today.
-vi.mock("@/lib/platform/buildTarget", () => ({ BUILD_TARGET: "android", IS_STATIC_EXPORT: true }));
-const where = vi.hoisted(() => ({ path: "/community/" }));
-vi.mock("next/navigation", () => ({ usePathname: () => where.path }));
+// The apps as the phone runs them: a client bundle, where the build's own flag
+// says "the website" (lib/platform/buildTarget.ts is server only), so it is not
+// mocked here; Updates 80 mocked it to true, and the hold passed here while it
+// was never on the phone (Updates 82). The device says it is the apps, the
+// router renders a screen other than Today, and the page was opened on the
+// front door's document.
+const where = vi.hoisted(() => ({
+  path: "/community/",
+  segments: ["(app)", "community"] as string[] | null,
+  native: true,
+}));
+vi.mock("next/navigation", () => ({
+  usePathname: () => where.path,
+  useSelectedLayoutSegments: () => where.segments,
+}));
+vi.mock("@/lib/platform/native", () => ({ isNativeClient: () => where.native }));
 
-import { MessagesProvider, useTranslate } from "@/components/i18n/MessagesProvider";
+import { MessagesProvider, useSetLocale, useTranslate } from "@/components/i18n/MessagesProvider";
+import type { LocaleCode } from "../locales";
 import { facesReady, loadClientLanguage, scriptSample } from "../client";
 import { forgetLaunchLanguageForTests, markLanguageSettled } from "../launchLanguage";
 
@@ -42,14 +55,21 @@ async function html(stream: ReadableStream<Uint8Array>): Promise<string> {
 }
 
 describe("a screen the apps reach before the reader's language is settled", () => {
+  /** The front door's document is what was opened (NativeBridge reads the same mark). */
+  let frontDoor = true;
   beforeEach(() => {
     forgetLaunchLanguageForTests();
     g.window = globalThis;
+    frontDoor = true;
+    g.document = { querySelector: (sel: string) => (sel === "[data-front-door]" && frontDoor ? {} : null) };
   });
   afterEach(() => {
     delete g.window;
+    delete g.document;
     forgetLaunchLanguageForTests();
     where.path = "/community/";
+    where.segments = ["(app)", "community"];
+    where.native = true;
   });
 
   it("draws nothing until the language is settled, so no English word is drawn first", async () => {
@@ -67,6 +87,7 @@ describe("a screen the apps reach before the reader's language is settled", () =
 
   it("does not hold Today, which carries the launch slate and holds itself", async () => {
     where.path = "/";
+    where.segments = [];
     let drawn = false;
     const done = prerender(screen()).then((r) => {
       drawn = true;
@@ -75,6 +96,27 @@ describe("a screen the apps reach before the reader's language is settled", () =
     await tick();
     expect(drawn).toBe(true);
     await done;
+  });
+
+  it("tells the front door from the screen by what the router renders, not by the address", async () => {
+    // Next takes the router's first address from the location, so on the front
+    // door opened at /community/ the address is the screen's from the first render.
+    where.path = "/community/";
+    where.segments = [];
+    const { prelude } = await prerender(screen());
+    expect(await html(prelude)).toContain("Sign in");
+  });
+
+  it("holds nothing on the website, which draws each page in the reader's language", async () => {
+    where.native = false;
+    const { prelude } = await prerender(screen());
+    expect(await html(prelude)).toContain("Sign in");
+  });
+
+  it("holds nothing when the screen's own document was opened, whose first render is already drawn", async () => {
+    frontDoor = false;
+    const { prelude } = await prerender(screen());
+    expect(await html(prelude)).toContain("Sign in");
   });
 
   it("does not hold a screen once the language is settled", async () => {
@@ -152,6 +194,43 @@ describe("a language's words wait for their faces", () => {
 });
 
 describe("the provider", () => {
+  function Probe({ grab }: { grab: (set: (next: LocaleCode) => Promise<void>) => void }) {
+    grab(useSetLocale());
+    return null;
+  }
+
+  it("writes lang and dir only in the commit that draws the new words, never ahead of them", async () => {
+    // Updates 81, step 3b: setLocale wrote them before React drew the new table,
+    // and a switch in Settings drew 195 to 272ms of mirrored frames with the old words.
+    forgetLaunchLanguageForTests();
+    where.segments = [];
+    const root = { lang: "en", dir: "ltr" };
+    g.window = globalThis;
+    g.document = { documentElement: root };
+    let setLocale: ((next: LocaleCode) => Promise<void>) | undefined;
+    try {
+      await prerender(
+        createElement(MessagesProvider, { locale: "en" } as ProviderProps, createElement(Probe, { grab: (set) => (setLocale = set) })),
+      );
+      expect(setLocale).toBeTypeOf("function");
+      await setLocale?.("ar");
+      // A static render commits nothing, so nothing may have been written.
+      expect(root).toEqual({ lang: "en", dir: "ltr" });
+    } finally {
+      delete g.window;
+      delete g.document;
+      where.segments = ["(app)", "community"];
+      forgetLaunchLanguageForTests();
+    }
+  });
+
+  it("writes them in a layout effect on the committed language, and nothing at mount", () => {
+    const src = fs.readFileSync(path.join(process.cwd(), "components/i18n/MessagesProvider.tsx"), "utf8");
+    expect(src).toMatch(/useLayoutEffect\(\(\) => \{\s*if \(shown\.current === state\.locale\) return;\s*shown\.current = state\.locale;\s*showLanguage\(state\.locale\);\s*\}, \[state\.locale\]\);/);
+    const set = src.slice(src.indexOf("const setLocale = useCallback"));
+    expect(set.slice(0, set.indexOf("}, []);"))).not.toContain("documentElement");
+  });
+
   it("commits a language only after loadClientLanguage, faces and all", () => {
     const src = fs.readFileSync(path.join(process.cwd(), "components/i18n/MessagesProvider.tsx"), "utf8");
     const load = src.indexOf("await loadClientLanguage(next)");
