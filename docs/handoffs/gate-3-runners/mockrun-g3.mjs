@@ -48,7 +48,7 @@ async function open(page, state, t) {
     return page.evaluate(() => {
       const e = document.querySelector("[data-featured]");
       e.setAttribute("data-g3", "");
-      return { line: [...e.querySelectorAll("p,span,div")].map((x) => x.textContent.trim()).find((s) => s.includes("·"))?.slice(0, 90) ?? null };
+      return { line: [...e.querySelectorAll("p,span,div")].map((x) => x.textContent.trim()).filter((s) => s.includes("·")).sort((a, b) => a.length - b.length)[0]?.slice(0, 90) ?? null };
     });
   }
   if (state === "buybar") {
@@ -79,8 +79,9 @@ async function open(page, state, t) {
   }
   if (state === "thread") {
     await go(page, "/community/", { timeout: 60000 });
-    const opener = page.getByRole("button", { name: /^\d+ (replies|reply)\b/i }).first();
-    await opener.waitFor({ timeout: 120000 });
+    await page.getByRole("button", { name: /^\d+ (replies|reply)\b/i }).first().waitFor({ timeout: 120000 });
+    const most = await page.evaluate(() => { const all = [...document.querySelectorAll("button")].map((b, i) => [i, /^(\d+) repl/.exec(b.textContent.trim())?.[1]]).filter((x) => x[1]); all.sort((a, b) => b[1] - a[1]); const b = document.querySelectorAll("button")[all[0][0]]; b.setAttribute("data-g3-open", ""); return Number(all[0][1]); });
+    const opener = page.locator("[data-g3-open]");
     await page.waitForTimeout(2500);
     await opener.evaluate((b) => b.scrollIntoView({ block: "center" }));
     await page.waitForTimeout(800);
@@ -97,6 +98,28 @@ async function open(page, state, t) {
       const r = part.getBoundingClientRect();
       return { label, repliesTop: Math.round(r.top), repliesEnd: Math.round(r.bottom), barTop, inView: r.top < barTop };
     }, label);
+  }
+  if (state === "heart") {
+    const out = [];
+    for (const at of ["/shop/", "/shop/category/all/"]) {
+      await go(page, at, { timeout: 60000 });
+      await page.waitForTimeout(4000);
+      const r = await page.evaluate((sold) => {
+        const tag = [...document.querySelectorAll("*")].find((e) => e.children.length === 0 && e.textContent.trim() === sold);
+        if (!tag) return { at: location.pathname, sold: false };
+        let card = tag; while (card && !card.querySelector('button[aria-label], button')) card = card.parentElement;
+        const heart = [...card.querySelectorAll("button")].find((b) => /save/i.test(b.getAttribute("aria-label") ?? b.textContent));
+        heart.scrollIntoView({ block: "center" });
+        const b = heart.getBoundingClientRect();
+        const hit = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
+        heart.setAttribute("data-g3-heart", "");
+        return { at: location.pathname, sold: true, heart: [Math.round(b.width), Math.round(b.height)], meets: hit === heart || heart.contains(hit) ? "the heart" : (hit?.closest("a")?.getAttribute("href") ?? hit?.tagName) };
+      }, t("shop.outOfStock") ?? "Out of Stock");
+      if (r.sold) { await page.locator("[data-g3-heart]").tap(); await page.waitForTimeout(1500); r.after = await page.evaluate(() => location.pathname); }
+      out.push(r);
+    }
+    await page.evaluate(() => document.body.setAttribute("data-g3", ""));
+    return { hearts: out };
   }
   if (state === "privacy") {
     await go(page, "/privacy/", { timeout: 60000 });
@@ -130,6 +153,7 @@ async function run(spec) {
     } catch {}
   }, lang);
   await pinMotion(ctx, "on");
+  if (process.env.FIXED_DATE) await ctx.clock.setFixedTime(new Date(process.env.FIXED_DATE));
   await serveLikeTheShell(ctx, OUT, {});
   for (const at of ["https://purifyapp.net/**", "https://purifyapp.onrender.com/**", "https://*.supabase.co/storage/v1/object/public/**"]) await ctx.route(at, mainWeb);
   const page = await ctx.newPage();
@@ -139,6 +163,7 @@ async function run(spec) {
   try {
     const opened = await open(page, state, t);
     if (!opened) throw new Error("nothing to measure");
+    if (state === "heart") { fs.appendFileSync(jsonl, JSON.stringify({ spec, opened, failures: [], sel: "-", group: "-" }) + "\n"); console.log(spec, JSON.stringify(opened)); return; }
     const groups = state === "featured" || state === "buybar" ? [0, 1, 2] : [0];
     for (const sel of ["[data-g3]", "[data-g3b]"]) {
       if (!(await page.$(sel))) continue;
