@@ -216,3 +216,15 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 
 - The dock and the mini player read as one surface at the foot: at a switch, one turns into the other in the page switch itself (one name for both in the View Transitions, so the bar morphs from one form to the other on the house curve), and the room each page keeps at its foot changes with the move, not before it. Reduced motion: they simply change, with no blank between.
 - The motion walk gains a pass with a track loaded, and one with a sound playing alone: every tab switch, both ways, failing a cut, a blank frame or a box that jumps. A test that fails on 78c5297e1.
+
+## His go, and who holds what (2026-11-15, 22:08 UTC)
+
+**His words (about 22:06 UTC):** "ensure this is a new build and if not fix all of these issues and come back to me with a new link to redownload for android". He walked build 98, the newest (the journal's words in his note 4 screenshot reached the app on 2026-11-14 at 18:39 UTC, after his walk of build 97). Brainstorm mode ends: every plan above is started.
+
+- **Updates 98a** (player): notes 2, 14 and 8. The Bible's pill and dock on every text read aloud; the dock and the mini player as one surface across tab switches, and the motion walk's playing pass; Now Playing's opening.
+- **Updates 98b** (lines and the Bible's sheets): notes 9, 13, 6 and 7. Now Playing's saved line; a chant's words following from Play; the Bible downloads' words and their proof before the merge; the version in the books sheet.
+- **Updates 98c** (the keyboard and the journal's quotes): notes 4 (the freeze) and 12, one native mend; note 5, the editor's Quote searching Purify's library.
+- **Fable round 3** (stills only, for his yes, on a held branch): the journal as its own page with note 5's quoting in it (build 97 note 2, notes 4 and 5), the chants door (note 3), You and Profile as one design (round 3's You, note 11), the Bible's opening and Plus (round 3), a plan's own page (build 97 note 7).
+- **Asked of him:** note 1, the voices (rec: Heart for English, the phone's voice for the other 18 languages, the Voice sheet out of 1.9).
+- **No build change:** note 10, campaigns, which appear for his account when the merge is live.
+- **Then:** his yes on the stills; a fixer applies them; the pre-build gate on one export; build 99 to the android-release page, its number named to him, with campaigns and the Bible downloads named on their own lines as waiting for the merge.
