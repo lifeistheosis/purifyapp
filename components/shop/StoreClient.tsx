@@ -16,7 +16,7 @@ import {
   filterProducts,
   type BrowseFilters,
 } from "@/lib/shop/browse";
-import { fetchShopStore } from "@/lib/shop/catalogClient";
+import { fetchShopStore, peekShopStore } from "@/lib/shop/catalogClient";
 import { CategoryChips } from "@/components/shop/CategoryChips";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import type { ShopCategory, ShopProductFull, ShopStore } from "@/lib/shop/types";
@@ -73,6 +73,8 @@ export function StoreClient({ slug }: { slug: string }) {
         return fetchShopStore(slug, { preview: true }).catch(() => null);
       }),
     [slug],
+    // Read already by the door that opened it, the room is whole as it opens.
+    () => peekShopStore(slug),
   );
   // Declared before the early returns so hook order stays stable.
   const [filters, setFilters] = useState<BrowseFilters>({});

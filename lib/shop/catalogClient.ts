@@ -175,6 +175,15 @@ export function fetchShopStore(
   );
 }
 
+/**
+ * A store already read this visit, without asking: the store door reads its
+ * room as it is shown (components/shop/StoreDoor.tsx), so the room opens whole
+ * and its first piece's picture is there to take the door's (Gate 3c, group 7).
+ */
+export function peekShopStore(slug: string): ShopStoreData | null {
+  return peekJson<ShopStoreData>(`/api/shop/catalog/store/${encodeURIComponent(slug)}`);
+}
+
 export function fetchShopConfig(): Promise<ShopConfig> {
   return getJson<ShopConfig>("/api/shop/catalog/config");
 }

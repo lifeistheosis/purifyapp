@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
+import { fetchShopStore } from "@/lib/shop/catalogClient";
 import { isEikonStore } from "@/lib/shop/eikon";
 import { pieceCarry } from "@/lib/shop/productHref";
 import type { ShopProductFull, ShopStore } from "@/lib/shop/types";
@@ -42,6 +44,14 @@ export function StoreDoor({
   const { t } = useTranslate();
   const eikon = isEikonStore(store);
   const shown = pieces.filter((p) => p.media.length > 0).slice(0, 3);
+  // The room is read as its door is shown, so it opens whole and its first
+  // piece's picture is there to take the door's: a room read only after it
+  // opened stood in its outline at the switch, and the picture had nowhere to
+  // go (Gate 3c, group 7). Nothing is drawn from it here; a read that fails
+  // leaves the room to read itself, as it always did.
+  useEffect(() => {
+    fetchShopStore(store.slug).catch(() => {});
+  }, [store.slug]);
   return (
     <Link
       href={`/shop/${store.slug}`}

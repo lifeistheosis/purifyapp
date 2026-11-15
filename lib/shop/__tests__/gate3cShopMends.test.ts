@@ -15,7 +15,16 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+const ROOM_READ = { store: { slug: "eikon" }, products: [{ slug: "russian-christ-flag", media: [{ media_url: "https://purifyapp.net/shop/flag.png" }] }] };
+vi.mock("@/lib/api/client", () => ({
+  apiFetch: async () => ({ ok: true, status: 200, json: async () => ROOM_READ }),
+}));
+vi.mock("@/lib/supabase/client", () => ({ createClient: () => ({}) }));
+vi.mock("@/lib/media/streamed", () => ({ streamedDeep: <T,>(v: T) => v }));
+
+import { fetchShopStore, peekShopStore } from "@/lib/shop/catalogClient";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 /** A file's code without its notes. */
@@ -35,6 +44,17 @@ describe("the store door carries its first picture into the room it opens (group
     expect(door).toContain("{shown.map((p, i) => (");
     expect(door).toContain("data-carry={i === 0 ? pieceCarry(p.slug) : undefined}");
     expect(door.match(/data-carry=/g)).toHaveLength(1);
+  });
+
+  it("the door reads its room as it is shown, and the room opens from that read, whole, with the picture there to take", async () => {
+    // Measured on the first export (beb478c8): the room was read only after it opened, so at the
+    // switch it stood in its outline, nothing took the picture, and it faded where it stood.
+    expect(peekShopStore("eikon")).toBeNull();
+    await fetchShopStore("eikon");
+    expect(peekShopStore("eikon")).toEqual(ROOM_READ);
+    expect(peekShopStore("another")).toBeNull();
+    expect(door).toMatch(/useEffect\(\(\) => \{\s*fetchShopStore\(store\.slug\)\.catch\(\(\) => \{\}\);\s*\}, \[store\.slug\]\);/);
+    expect(code("components/shop/StoreClient.tsx")).toMatch(/\[slug\],\s*\(\) => peekShopStore\(slug\),\s*\);/);
   });
 
   it("EIKON's room takes it on that piece's own picture, which still carries itself on to the piece's page", () => {
