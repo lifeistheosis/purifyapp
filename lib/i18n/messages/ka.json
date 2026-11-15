@@ -4254,7 +4254,7 @@
   "player.offline.savingOne": "ინახება: {book}",
   "player.offline.waitingWifi": "Wi-Fi-ს ელოდება. შენახულია {done} / {total}",
   "player.offline.waitingSignal": "კავშირს ელოდება. შენახულია {done} / {total}",
-  "player.offline.useData": "მობილური ინტერნეტის გამოყენება",
+  "player.offline.useData": "მობილური ინტერნეტით",
   "player.offline.saved": "{book} შენახულია ხაზგარეშე მოსასმენად",
   "player.offline.remove": "წაშლა",
   "player.offline.failed": "ზოგიერთი თავი ვერ შეინახა. ისინი ონლაინ დაიკვრება.",

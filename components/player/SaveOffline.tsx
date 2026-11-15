@@ -563,7 +563,10 @@ export function SaveOfflineNote({ src, className }: { src: string | null; classN
   } else if (offline) {
     const { book, saved } = offline;
     const job = saving.job?.book === book ? saving.job : null;
-    if (job?.waiting === "wifi") line = { words: t("player.offline.waitWifi"), acts: ["useData", "cancel"] };
+    // Waiting for Wi-Fi, one choice beside the words, as the Words view offers
+    // it: Use mobile data. With Cancel too it ran past the line at 360 in
+    // eleven languages (build 98 note 9); the saving still waits for Wi-Fi.
+    if (job?.waiting === "wifi") line = { words: t("player.offline.waitWifi"), acts: ["useData"] };
     else if (job?.waiting === "signal") line = { words: t("player.offline.waitSignal"), acts: ["cancel"] };
     else if (job) line = { words: t("player.offline.saving", { done: job.done, total: job.total }), acts: [] };
     else if (saving.failed === book) line = { words: t("player.offline.failedSome"), acts: [] };

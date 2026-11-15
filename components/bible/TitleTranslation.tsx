@@ -1,65 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
-import { Sheet } from "@/components/ui/Sheet";
+import { openBooks, setConfiguredTranslations } from "@/lib/bible/booksSheet";
 
-import { TranslationList, useTranslationChoice } from "./TranslationList";
+import { useTranslationChoice } from "./TranslationList";
 
 /**
  * The translation beside the chapter, on a phone and a tablet (1.9, build 93
  * note 20; the owner: "changing the bibles translation or the version of the
  * Bible should be as easy as switching your chapter"). Under the chapter's
  * title, where "Chapter 1 ⌄" opens the books: the translation the chapter is
- * read in, with the same small chevron, one tap from the page. It opens the
- * house's sheet with the translations the reader has and those to download,
- * the one being read checked (TranslationList, the rows the ••• sheet and the
- * computer's pill show), and the switch keeps the reader's verse
- * (lib/bible/keepPlace.ts). A Bible without the book says so in its row, and
- * its chapter in English says why. The computer chooses from the toolbar's
- * pill (TranslationSwitcher), so this stands where the pill does not.
+ * read in, with the same small chevron, one tap from the page. The computer
+ * chooses from the toolbar's pill (TranslationSwitcher), so this stands where
+ * the pill does not.
+ *
+ * From build 98 note 7 (the owner: "incorporate the change Bible version with
+ * this screen") it opens the books sheet on its versions (MobileChapterSheet,
+ * lib/bible/booksSheet.ts), so the books and the versions are one sheet: the
+ * same rows the ••• sheet and the computer's pill show (TranslationList), the
+ * one being read checked, downloads with them, and the switch keeps the
+ * reader's verse (lib/bible/keepPlace.ts). It hands the sheet the licensed
+ * translations its page has keys for, since the pill that holds the sheet is
+ * not given them.
  */
 export function TitleTranslation({ currentSlug, configuredLicensed = [] }: { currentSlug: string; configuredLicensed?: string[] }) {
   const { t } = useTranslate();
-  const { testament, list, current, choose, shown, chooseBible, label } = useTranslationChoice(currentSlug, configuredLicensed);
-  const [open, setOpen] = useState(false);
+  const { label } = useTranslationChoice(currentSlug, configuredLicensed);
+  const configured = configuredLicensed.join();
+  useEffect(() => {
+    setConfiguredTranslations(configured ? configured.split(",") : []);
+  }, [configured]);
   return (
-    <>
-      <div data-reader-chrome className="page-open-sub mt-0.5 flex justify-center md:hidden native-md-flex">
-        <button
-          type="button"
-          data-title-translation=""
-          // The 1.9 tour's way to the new Bibles on a phone: the translation beside the chapter.
-          data-tour="bibles"
-          aria-haspopup="dialog"
-          aria-label={t("bible.switchTranslationCurrentAria", { name: label })}
-          onClick={() => setOpen(true)}
-          className="tap-press inline-flex min-h-11 items-center gap-[5px] px-3 font-sans text-ui text-paper/55 hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
-        >
-          <span dir="auto">{label}</span>
-          <ChevronDown size={17} aria-hidden className="text-paper/50" />
-        </button>
-      </div>
-      <Sheet open={open} onClose={() => setOpen(false)} title={t("bible.translationLabel")}>
-        <TranslationList
-          testament={testament}
-          list={list}
-          current={current}
-          configured={configuredLicensed}
-          onChoose={(tr) => {
-            setOpen(false);
-            choose(tr);
-          }}
-          book={currentSlug}
-          shown={shown}
-          onChooseBible={(bible) => {
-            setOpen(false);
-            chooseBible(bible);
-          }}
-        />
-      </Sheet>
-    </>
+    <div data-reader-chrome className="page-open-sub mt-0.5 flex justify-center md:hidden native-md-flex">
+      <button
+        type="button"
+        data-title-translation=""
+        // The 1.9 tour's way to the new Bibles on a phone: the translation beside the chapter.
+        data-tour="bibles"
+        aria-haspopup="dialog"
+        aria-label={t("bible.switchTranslationCurrentAria", { name: label })}
+        onClick={() => openBooks("versions")}
+        className="tap-press inline-flex min-h-11 items-center gap-[5px] px-3 font-sans text-ui text-paper/55 hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+      >
+        <span dir="auto">{label}</span>
+        <ChevronDown size={17} aria-hidden className="text-paper/50" />
+      </button>
+    </div>
   );
 }

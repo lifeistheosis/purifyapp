@@ -69,8 +69,9 @@ describe("the sheet", () => {
   });
 
   it("opens with the Bible's search over the list, still while it scrolls, and opens full", () => {
-    expect(sheet).toContain("lead={<BibleSearch layer onNavigate={onClose}");
-    expect(sheet).toContain("foot={<BooksDoors onClose={onClose} />}");
+    // On the books; the versions (build 98 note 7) are a list of their own.
+    expect(sheet).toContain('lead={view === "books" ? <BibleSearch layer onNavigate={onClose}');
+    expect(sheet).toContain('foot={view === "books" ? <BooksDoors onClose={onClose} /> : null}');
     expect(sheet).toMatch(/<Sheet\b[\s\S]*?\bopenFull\b/);
     // The primitive holds the two still, over and under the part that scrolls.
     const primitive = code("components/ui/Sheet.tsx");
@@ -86,7 +87,7 @@ describe("the sheet", () => {
 
   it("opens on the book being read, and a tap on another opens its grid in its place", () => {
     expect(sheet).toContain("const [openBook, setOpenBook] = useState<string | null>(currentSlug);");
-    expect(sheet).toMatch(/if \(open !== wasOpen\) \{\s*setWasOpen\(open\);\s*if \(open\) setOpenBook\(currentSlug\);/);
+    expect(sheet).toMatch(/if \(open !== wasOpen\) \{\s*setWasOpen\(open\);\s*if \(open\) \{\s*setOpenBook\(currentSlug\);/);
     expect(sheet).toContain("setOpenBook((now) => (now === slug ? null : slug));");
     // The open book in the middle of what the sheet shows as it opens.
     expect(sheet).toContain('el?.querySelector<HTMLElement>("[data-open-book]")?.parentElement');
@@ -145,6 +146,8 @@ describe("the sheet", () => {
         "bible.chAbbrev",
         "bible.chapterN",
         "bible.pickABook",
+        // The version at its head (build 98 note 7), named as the line under the title names it.
+        "bible.switchTranslationCurrentAria",
         "bible.theNewTestament",
         "bible.theOldTestament",
         "journal.title",

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -12,6 +12,7 @@ import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { Pen } from "@/components/ui/icons/Pen";
 import { Sheet } from "@/components/ui/Sheet";
 import { bibleCanon, getBook, type BibleBook } from "@/lib/bible/books";
+import { BOOKS_OPEN_EVENT, booksViewOf, configuredTranslations, type BooksView } from "@/lib/bible/booksSheet";
 import { dayReadings, readingsOptionsFor } from "@/lib/calendar/orthodox";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useToday } from "@/lib/calendar/useToday";
@@ -21,6 +22,7 @@ import { scrollBehavior } from "@/lib/ui/motion";
 
 import { BibleSearch } from "./BibleSearch";
 import { SavedBookMark } from "./SavedBookMark";
+import { TranslationList, useTranslationChoice } from "./TranslationList";
 
 /**
  * The books sheet (1.8, the owner's pick A of r3-20, "Straight into the
@@ -42,6 +44,14 @@ import { SavedBookMark } from "./SavedBookMark";
  *  - At its foot, the three doors the tab's page held: today's readings,
  *    walked one after another as Today walks them, the reading plans and
  *    the journal.
+ *  - At its head, by the chapter, the version being read with its small
+ *    chevron (build 98 note 7; the owner: "incorporate the change Bible
+ *    version with this screen"). A tap turns the sheet to the versions, the
+ *    rows the ••• sheet and the computer's pill show (TranslationList),
+ *    downloads with them; a choice keeps the reader's verse
+ *    (lib/bible/keepPlace.ts) and turns back to the books. The line under
+ *    the chapter's title opens it on the versions (TitleTranslation), and a
+ *    choice made there closes it, as that line's own sheet did.
  *
  * Every word is one the app already had. Routing closes the sheet and goes
  * to /bible/{slug}/{chapter}; the Sheet primitive handles the backdrop,
@@ -64,10 +74,33 @@ export function MobileChapterSheet({
   // The book whose chapters show. Each opening starts on the one being read.
   const [openBook, setOpenBook] = useState<string | null>(currentSlug);
   const [wasOpen, setWasOpen] = useState(open);
+  // The books or the versions; the view an opening asked for (the line under
+  // the title asks for the versions), and the one it opened on.
+  const [view, setView] = useState<BooksView>("books");
+  const [asked, setAsked] = useState<BooksView>("books");
+  const [openedOn, setOpenedOn] = useState<BooksView>("books");
+  // Whether the reader has turned it since it opened: only a turn fades.
+  const [turned, setTurned] = useState(false);
   if (open !== wasOpen) {
     setWasOpen(open);
-    if (open) setOpenBook(currentSlug);
+    if (open) {
+      setOpenBook(currentSlug);
+      setView(asked);
+      setOpenedOn(asked);
+      setAsked("books");
+      setTurned(false);
+    }
   }
+  const turn = (to: BooksView) => {
+    setView(to);
+    setTurned(true);
+  };
+  // The same event the pill opens the sheet on says which view (lib/bible/booksSheet.ts).
+  useEffect(() => {
+    const ask = (e: Event) => setAsked(booksViewOf(e));
+    window.addEventListener(BOOKS_OPEN_EVENT, ask);
+    return () => window.removeEventListener(BOOKS_OPEN_EVENT, ask);
+  }, []);
 
   const list = useRef<HTMLDivElement | null>(null);
   /** The row just tapped and where it stood, so it stays under the finger. */
@@ -123,10 +156,14 @@ export function MobileChapterSheet({
       title={getBook(currentSlug) ? `${name} ${currentChapter}` : t("bible.pickABook")}
       // Long, and opened to read from, not to be pulled up first.
       openFull
-      lead={<BibleSearch layer onNavigate={onClose} className="pb-2 pt-0.5" />}
-      foot={<BooksDoors onClose={onClose} />}
+      titleExtra={<VersionHead book={currentSlug} view={view} onTurn={() => turn(view === "books" ? "versions" : "books")} />}
+      lead={view === "books" ? <BibleSearch layer onNavigate={onClose} className="pb-2 pt-0.5" /> : null}
+      foot={view === "books" ? <BooksDoors onClose={onClose} /> : null}
     >
-      <div ref={placeList} data-books-sheet="">
+      {view === "versions" ? (
+        <SheetVersions book={currentSlug} turned={turned} onChosen={() => (openedOn === "versions" ? onClose() : turn("books"))} />
+      ) : (
+      <div ref={placeList} data-books-sheet="" className={turned ? TURN : undefined}>
         {bibleCanon().map(({ testament, categories }) => (
           <section key={testament} aria-labelledby={`books-${testament}`}>
             <h2 id={`books-${testament}`} className="px-1 pb-0.5 pt-5 font-heading text-[21px] font-bold leading-[1.2] text-paper">
@@ -155,7 +192,74 @@ export function MobileChapterSheet({
           </section>
         ))}
       </div>
+      )}
     </Sheet>
+  );
+}
+
+/** The versions' list, which the version at the head names while it shows. */
+const VERSIONS_ID = "books-sheet-versions";
+
+/** A turn between the books and the versions: a fade on the house curve, none with motion off. */
+const TURN = "motion-safe:animate-[page-open-fade_var(--duration-base)_var(--ease-house)_backwards]";
+
+/**
+ * The version being read, at the sheet's head by the chapter: its short name
+ * and the chapter's small chevron, as the line under the title shows it. A tap
+ * turns the sheet to the versions, and back; the chevron turns with it.
+ */
+function VersionHead({ book, view, onTurn }: { book: string; view: BooksView; onTurn: () => void }) {
+  const { t } = useTranslate();
+  const { label } = useTranslationChoice(book, configuredTranslations());
+  return (
+    <button
+      type="button"
+      data-books-version=""
+      aria-expanded={view === "versions"}
+      aria-controls={view === "versions" ? VERSIONS_ID : undefined}
+      aria-label={t("bible.switchTranslationCurrentAria", { name: label })}
+      onClick={onTurn}
+      className="tap-press inline-flex min-h-11 max-w-[38vw] items-center gap-[5px] px-1.5 font-sans text-ui text-paper/70 hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+    >
+      <span dir="auto" className="min-w-0 truncate">
+        {label}
+      </span>
+      <ChevronDown
+        size={15}
+        aria-hidden
+        className={cn("shrink-0 text-paper/60 motion-safe:transition-transform motion-safe:duration-[var(--duration-fast)] motion-safe:ease-[var(--ease-house)]", view === "versions" && "rotate-180")}
+      />
+    </button>
+  );
+}
+
+/**
+ * The versions, in the sheet's body: the rows of every place a version is
+ * chosen (TranslationList), downloads with them. A choice keeps the reader's
+ * verse (useTranslationChoice holds it, lib/bible/keepPlace.ts).
+ */
+function SheetVersions({ book, turned, onChosen }: { book: string; turned: boolean; onChosen: () => void }) {
+  const configured = configuredTranslations();
+  const { testament, list, current, choose, shown, chooseBible } = useTranslationChoice(book, configured);
+  return (
+    <div id={VERSIONS_ID} data-books-versions="" className={cn("pt-3", turned && TURN)}>
+      <TranslationList
+        testament={testament}
+        list={list}
+        current={current}
+        configured={configured}
+        onChoose={(tr) => {
+          onChosen();
+          choose(tr);
+        }}
+        book={book}
+        shown={shown}
+        onChooseBible={(bible) => {
+          onChosen();
+          chooseBible(bible);
+        }}
+      />
+    </div>
   );
 }
 

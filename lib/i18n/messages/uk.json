@@ -2752,7 +2752,7 @@
   "notifications.fromPurify": "Від Purify",
   "notifications.downloads": "Завантаження",
   "downloads.downloaded": "Завантажено",
-  "downloads.savedToListen": "Збережено, можна слухати без мережі",
+  "downloads.savedToListen": "Збережено для слухання без мережі",
   "downloads.saving": "Збереження: {percent}%",
   "downloads.stopped": "Зупинено, коли Purify закрився. Запустіть знову, щоб завершити.",
   "downloads.ask.title": "Показувати завантаження у сповіщеннях?",

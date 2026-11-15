@@ -4,8 +4,11 @@
 // title tapped (the line comes: saved, with Remove) and tapped again (it goes). Asked each time: did the
 // cover's box or the title's move at all, and is the line one line? At 360, 390 and 412, and in Arabic.
 // Then every language's words for every state of the line measured in the line's own font against the
-// line's width at 360: each must fit on its one line. Run from the repository's root; writes nothing.
-//   node scripts/gate/saved-line.mjs [export folder, default out/]
+// line's width at 360: each must fit on its one line. At 390, 800 and 1032 and in Arabic, Now Playing with the
+// line held to checkMock with pixels on the five palettes, the two earned and the fourteen looks. Run from the
+// repository's root; writes nothing, unless --stills=<folder> asks for Now Playing with the line at 390 and in
+// Arabic, as a phone draws it (twice the pixels).
+//   node scripts/gate/saved-line.mjs [export folder, default out/] [--stills=<folder>]
 import fs from "node:fs";
 import path from "node:path";
 
@@ -13,11 +16,16 @@ import { chromium } from "playwright";
 
 import { motionOptions, pinMotion } from "../lib/motion.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
+import { EVERY, checkMock } from "../mock-check.mjs";
 
 const OWN = "/opt/pw-browsers/chromium";
 const ROOT = new URL("../..", import.meta.url).pathname;
-const OUT = path.resolve(process.argv[2] ?? path.join(ROOT, "out"));
-const SRC = "/audio/chants/prayer-rope-anthem/en.mp3";
+const args = process.argv.slice(2);
+const OUT = path.resolve(args.find((a) => !a.startsWith("--")) ?? path.join(ROOT, "out"));
+const STILLS = args.find((a) => a.startsWith("--stills="))?.slice(9) ?? null;
+// The version the chant's page plays in the app's language: the Arabic in Arabic, else the English.
+const version = (lang) => (lang === "ar" ? "ar" : "en");
+const srcOf = (lang) => `/audio/chants/prayer-rope-anthem/${version(lang)}.mp3`;
 const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN, args: ["--autoplay-policy=no-user-gesture-required"] } : {});
 console.log(`Now Playing's saved line, on ${path.relative(ROOT, OUT) || OUT}`);
 
@@ -61,14 +69,17 @@ function boxes() {
 }
 
 let faults = 0;
-for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"], [390, 844, "ar"]]) {
-  const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
+for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"], [800, 1280, "en"], [1032, 1366, "en"], [390, 844, "ar"]]) {
+  const still = STILLS && w === 390;
+  const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: still ? 2 : 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
   await pinMotion(ctx, "on");
-  await ctx.addInitScript(([src, lang]) => {
+  const src = srcOf(lang);
+  const bytes = fs.statSync(path.join(ROOT, "public", src)).size;
+  await ctx.addInitScript(([src, lang, v, bytes]) => {
     try {
       localStorage.setItem("purify:onboarded", "99");
       localStorage.setItem("purify:whatsNewSeen", "99");
-      localStorage.setItem("purify:chants.saved", JSON.stringify({ "prayer-rope-anthem/en": { file: `https://purifyapp.net${src}`, bytes: 3045805, src } }));
+      localStorage.setItem("purify:chants.saved", JSON.stringify({ [`prayer-rope-anthem/${v}`]: { file: `https://purifyapp.net${src}`, bytes, src } }));
       if (lang !== "en") localStorage.setItem("CapacitorStorage.purify_locale", lang);
     } catch {}
     // The recording's file on the "phone": the Filesystem plugin's own store in a browser (its IndexedDB,
@@ -84,9 +95,9 @@ for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"]
       for (const [p, type] of [["/LIBRARY_NO_CLOUD", "directory"], ["/LIBRARY_NO_CLOUD/audio", "directory"], ["/LIBRARY_NO_CLOUD/audio/chants", "directory"], [folder, "directory"]]) {
         tx.objectStore("FileStorage").put({ path: p, folder: p.slice(0, p.lastIndexOf("/")), type, size: 0, ctime: Date.now(), mtime: Date.now() });
       }
-      tx.objectStore("FileStorage").put({ path: `${folder}/en.mp3`, folder, type: "file", size: 3045805, ctime: Date.now(), mtime: Date.now(), content: "" });
+      tx.objectStore("FileStorage").put({ path: `${folder}/${v}.mp3`, folder, type: "file", size: bytes, ctime: Date.now(), mtime: Date.now(), content: "" });
     };
-  }, [SRC, lang]);
+  }, [src, lang, version(lang), bytes]);
   await serveLikeTheShell(ctx, OUT, {});
   await answerWebsite(ctx);
   const page = await ctx.newPage();
@@ -121,6 +132,16 @@ for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"]
   await tap(mark);
   await page.waitForTimeout(700);
   const b = await page.evaluate(boxes);
+  if (still) {
+    fs.mkdirSync(STILLS, { recursive: true });
+    await page.screenshot({ path: path.join(STILLS, `now-playing-saved-line-390${lang === "en" ? "" : `-${lang}`}.png`) });
+  }
+  if ([390, 800, 1032].includes(w)) {
+    await page.evaluate(() => [...document.querySelectorAll('[role="dialog"]')].find((d) => d.querySelector("h2"))?.setAttribute("data-line-check", "1"));
+    const r = await checkMock(page, '[data-line-check="1"]', { pixels: true, palettes: EVERY });
+    if (r.failures.length) faults += 1;
+    console.log(`${r.failures.length ? "FAULT" : "ok   "} ${w} ${lang}: Now Playing with the line on the five palettes, the two earned and the fourteen looks${r.failures.length ? `: ${r.failures.slice(0, 4).map((f) => `${f.check} [${f.palette}] ${f.what}: ${f.detail}`.slice(0, 200)).join("; ")}` : ""}`);
+  }
   await tap(mark);
   await page.waitForTimeout(700);
   const c = await page.evaluate(boxes);
@@ -137,38 +158,64 @@ for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"]
     for (const f of fs.readdirSync(path.join(ROOT, "lib/i18n/messages")).filter((x) => x.endsWith(".json"))) all[f.slice(0, -5)] = JSON.parse(fs.readFileSync(path.join(ROOT, "lib/i18n/messages", f), "utf8"));
     await tap(mark);
     await page.waitForTimeout(700);
-    const over = await page.evaluate((all) => {
+    const over = await page.evaluate(async (all) => {
       const sheet = [...document.querySelectorAll('[role="dialog"]')].find((d) => d.querySelector("h2"));
       const p = sheet.querySelector("[data-saved-line] p");
       const span = p.querySelector("span");
       const button = p.querySelector("button");
       const room = p.clientWidth;
-      const ctx2 = document.createElement("canvas").getContext("2d");
-      const width = (el, s) => {
-        const cs = getComputedStyle(el);
-        ctx2.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-        return ctx2.measureText(s).width;
+      // Drawn, not guessed: each piece in a copy of the line's own span or button (its font, size and
+      // weight), laid out unseen inside the line (so in its font), measured once every script's font has loaded.
+      const shelf = document.createElement("div");
+      shelf.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;left:0;top:0";
+      p.appendChild(shelf);
+      const drawn = new Map();
+      const piece = (el, s) => {
+        const k = `${el === button ? "b" : "s"}${s}`;
+        if (!drawn.has(k)) {
+          const e = document.createElement("span");
+          e.className = el.className;
+          // Each its own box: on one shared line, right-to-left runs of neighbouring pieces reorder into one another.
+          e.style.cssText = "padding:0;display:block;width:max-content;unicode-bidi:isolate";
+          e.textContent = s;
+          shelf.appendChild(e);
+          drawn.set(k, e);
+        }
+        return k;
       };
-      const out = [];
+      const plan = [];
       for (const [lang, m] of Object.entries(all)) {
         const states = [
           [m["downloads.savedToListen"], [m["player.offline.remove"]]],
-          [m["player.offline.waitWifi"], [m["player.offline.useData"], m["common.cancel"]]],
+          [m["player.offline.waitWifi"], [m["player.offline.useData"]]],
           [m["player.offline.waitSignal"], [m["common.cancel"]]],
           [m["player.offline.saving"].replace("{done}", "28").replace("{total}", "28"), []],
           [m["downloads.saving"].replace("{percent}", "100"), []],
           [m["player.offline.failedSome"], []],
           [m["player.offline.failedChant"], []],
         ];
-        for (const [words, acts] of states) {
-          const total = width(span, words) + acts.reduce((n, a) => n + 8 + width(button, a) + 8, 0);
-          if (total > room) out.push(`${lang} "${words}${acts.length ? ` + ${acts.join(" + ")}` : ""}" ${Math.round(total)}px of ${room}px`);
-        }
+        for (const [words, acts] of states) plan.push([lang, words, acts, piece(span, words), acts.map((a) => piece(button, a))]);
       }
-      return { room, out };
+      // Each script's face is fetched only once text in it is drawn (unicode-range): ask for every piece's.
+      await Promise.all([...drawn.values()].map((e) => {
+        const cs = getComputedStyle(e);
+        return document.fonts.load(`${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`, e.textContent).catch(() => null);
+      }));
+      await document.fonts.ready;
+      await new Promise((r) => setTimeout(r, 300));
+      const width = (k) => drawn.get(k).getBoundingClientRect().width;
+      const out = [];
+      let widest = 0;
+      for (const [lang, words, acts, w, as] of plan) {
+        const total = width(w) + as.reduce((n, a) => n + 8 + width(a) + 8, 0);
+        widest = Math.max(widest, total);
+        if (total > room) out.push(`${lang} "${words}${acts.length ? ` + ${acts.join(" + ")}` : ""}" ${Math.round(total)}px of ${room}px`);
+      }
+      shelf.remove();
+      return { room, out, widest: Math.round(widest) };
     }, all);
     if (over.out.length) faults += 1;
-    console.log(`${over.out.length ? "FAULT" : "ok   "} every language's words for every state on one line at 360 (${over.room}px): ${over.out.length ? over.out.join("; ") : "all fit"}`);
+    console.log(`${over.out.length ? "FAULT" : "ok   "} every language's words for every state on one line at 360 (${over.room}px): ${over.out.length ? over.out.join("; ") : `all fit, the widest ${over.widest}px`}`);
   }
   await ctx.close();
 }

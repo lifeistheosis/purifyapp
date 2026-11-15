@@ -35,11 +35,11 @@ describe("the translation beside the chapter", () => {
     expect(line).toContain("<ChevronDown size={17}");
   });
 
-  it("opens the house's sheet with the rows the ••• sheet and the computer's pill show", () => {
+  it("opens the books sheet on its versions, with the rows the ••• sheet and the computer's pill show (build 98 note 7)", () => {
     const line = code("components/bible/TitleTranslation.tsx");
-    expect(line).toContain('<Sheet open={open} onClose={() => setOpen(false)} title={t("bible.translationLabel")}>');
+    expect(line).toContain('onClick={() => openBooks("versions")}');
     expect(line).toContain("useTranslationChoice(currentSlug, configuredLicensed)");
-    for (const f of ["components/bible/TitleTranslation.tsx", "components/bible/ReaderMoreSheet.tsx", "components/bible/TranslationSwitcher.tsx"]) {
+    for (const f of ["components/bible/MobileChapterSheet.tsx", "components/bible/ReaderMoreSheet.tsx", "components/bible/TranslationSwitcher.tsx"]) {
       expect(code(f), f).toContain("<TranslationList");
     }
   });

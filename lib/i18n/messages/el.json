@@ -2708,7 +2708,7 @@
   "notifications.fromPurify": "Από το Purify",
   "notifications.downloads": "Λήψεις",
   "downloads.downloaded": "Η λήψη ολοκληρώθηκε",
-  "downloads.savedToListen": "Αποθηκεύτηκε για ακρόαση εκτός σύνδεσης",
+  "downloads.savedToListen": "Έτοιμο για ακρόαση εκτός σύνδεσης",
   "downloads.saving": "Αποθήκευση: {percent}%",
   "downloads.stopped": "Σταμάτησε όταν έκλεισε το Purify. Ξεκινήστε το ξανά για να ολοκληρωθεί.",
   "downloads.ask.title": "Να εμφανίζονται οι λήψεις στις ειδοποιήσεις σας;",

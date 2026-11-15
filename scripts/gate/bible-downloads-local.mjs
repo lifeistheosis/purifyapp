@@ -38,7 +38,7 @@ await ctx.route(/^https:\/\/purifyapp\.net\/(bibles\/|icon-192\.png)/, async (ro
     const response = await route.fetch({ url: `${WEB}${u.pathname}`, headers: { ...route.request().headers(), origin: "https://localhost" } });
     answered.push(`${response.status()} ${u.pathname}`);
     return route.fulfill({ response });
-  } catch (e) {
+  } catch {
     return route.abort();
   }
 });
@@ -60,13 +60,37 @@ const notNow = async () => {
     await page.waitForTimeout(700);
   }
 };
+// The versions as a phone reader reaches them: the line under the chapter's title (build 93 note 20), which
+// opens the books sheet on its versions from build 98 note 7.
 const openTranslations = async () => {
   await notNow();
-  await tap(page.getByRole("button", { name: en["bible.moreActions"] }).filter({ visible: true }).first());
-  await page.waitForTimeout(800);
-  await tap(page.locator("[role=dialog] button", { hasText: en["bible.translationLabel"] }).filter({ visible: true }).first());
-  await page.waitForTimeout(900);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(400);
+  await tap(page.locator("[data-title-translation]").filter({ visible: true }).first());
+  await page.waitForTimeout(1100);
 };
+/** Brings the row into the sheet's view and taps it, once it has stopped moving (a list redrawn by a download). */
+const tapRow = async (find) => {
+  for (let i = 0; i < 6; i++) {
+    try {
+      const el = find();
+      await el.scrollIntoViewIfNeeded({ timeout: 3000 });
+      await page.waitForTimeout(350);
+      if (await tap(find())) return true;
+    } catch {
+      await page.waitForTimeout(600);
+    }
+  }
+  return false;
+};
+/** What the open sheet offers, for a fault's line. */
+const offered = () =>
+  page.evaluate(() =>
+    [...document.querySelectorAll("[role=dialog] button")]
+      .map((b) => b.getAttribute("aria-label") || b.textContent.trim())
+      .filter(Boolean)
+      .join(" | "),
+  );
 const closeSheets = async () => {
   for (let i = 0; i < 3 && (await page.locator("[role=dialog]").filter({ visible: true }).count()); i++) {
     await page.keyboard.press("Escape");
@@ -80,11 +104,21 @@ await page.waitForTimeout(2000);
 await openTranslations();
 const downloaded = [];
 for (let n = 0; n < 12; n++) {
-  const button = page.locator('[role=dialog] button[aria-label^="Download "]').filter({ visible: true }).first();
+  // A row's tap downloads its Bible and then reads on in it, which closes the sheet as any choice does:
+  // the versions opened afresh for each.
+  if (n > 0) {
+    await page.waitForTimeout(800);
+    await notNow();
+    await closeSheets();
+    await openTranslations();
+  }
+  // WALK_ONLY=<part of a title> walks that one version alone.
+  const button = page.locator(`[role=dialog] button[aria-label^="Download ${process.env.WALK_ONLY ?? ""}"]`).filter({ visible: true }).first();
   if (!(await button.count())) break;
   const label = await button.getAttribute("aria-label");
-  const name = label.replace(/^Download /, "").replace(/, [^,]*$/, "");
-  await tap(button);
+  // "Download {name}, {size}": the name is everything before the last comma (a title may hold one).
+  const name = label.slice("Download ".length, label.lastIndexOf(", "));
+  await tapRow(() => page.locator(`[role=dialog] button[aria-label="${label}"]`).filter({ visible: true }).first());
   const manage = page.locator(`[role=dialog] button[aria-label="${en["bible.downloads.manageAria"].replace("{name}", name)}"]`);
   const failed = page.locator("[role=dialog]", { hasText: /Could not download|Not available to download/ });
   const t0 = Date.now();
@@ -92,11 +126,11 @@ for (let n = 0; n < 12; n++) {
   const ok = (await manage.count()) > 0;
   downloaded.push(name);
   if (!ok) faults += 1;
-  console.log(`${ok ? "ok   " : "FAULT"} downloaded ${name}${ok ? ` in ${Math.round((Date.now() - t0) / 100) / 10} s` : ` (${(await failed.count()) ? "the sheet said it failed" : "not on the phone after 90 s"})`}`);
+  console.log(`${ok ? "ok   " : "FAULT"} downloaded ${name}${ok ? ` in ${Math.round((Date.now() - t0) / 100) / 10} s` : ` (${(await failed.count()) ? "the sheet said it failed" : "not on the phone after 90 s"}; the sheet offers: ${await offered()})`}`);
 }
 if (downloaded.length < 7) {
   faults += 1;
-  console.log(`FAULT only ${downloaded.length} versions offered to download`);
+  console.log(`FAULT only ${downloaded.length} versions offered to download (the sheet offers: ${await offered()})`);
 }
 const statuses = [...new Set(answered.map((a) => a.split(" ")[0]))];
 console.log(`${statuses.every((s) => s === "200") ? "ok   " : "FAULT"} the local web answered ${answered.length} requests: ${statuses.join(", ")}`);
@@ -108,8 +142,7 @@ online = false;
 await ctx.setOffline(true);
 for (const name of downloaded) {
   await openTranslations();
-  const row = page.locator("[role=dialog] button", { hasText: name }).filter({ visible: true }).first();
-  await tap(row);
+  await tapRow(() => page.locator("[role=dialog] button", { hasText: name }).filter({ visible: true }).first());
   await page.waitForTimeout(1800);
   await closeSheets();
   const verses = await page.locator("[data-verse]").count();
@@ -123,7 +156,13 @@ for (const name of downloaded) {
 for (const name of downloaded) {
   await openTranslations();
   const manage = page.locator(`[role=dialog] button[aria-label="${en["bible.downloads.manageAria"].replace("{name}", name)}"]`).first();
-  await tap(manage);
+  if (!(await manage.count())) {
+    faults += 1;
+    console.log(`FAULT no options for ${name} (the sheet offers: ${await offered()})`);
+    await closeSheets();
+    continue;
+  }
+  await tapRow(() => manage);
   await page.waitForTimeout(500);
   const id = await manage.getAttribute("aria-controls");
   await tap(page.locator(`[id="${id}"] button`).first());

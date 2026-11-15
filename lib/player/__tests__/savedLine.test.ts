@@ -32,6 +32,13 @@ describe("Now Playing's saved line keeps its room (build 98 note 9)", () => {
     expect(note).toContain("invisible opacity-0 motion-safe:[transition:opacity_var(--duration-fast)_var(--ease-house),visibility_0s_linear_var(--duration-fast)]");
   });
 
+  it("offers one choice while it waits for Wi-Fi, as the Words view does, so the wait holds to its line", () => {
+    // With Cancel beside Use mobile data it ran past the line at 360 in eleven languages; the walk's
+    // every-language step measures each state as drawn (scripts/gate/saved-line.mjs).
+    expect(note).toMatch(/waiting === "wifi"\) line = \{ words: t\("player\.offline\.waitWifi"\), acts: \["useData"\] \}/);
+    expect(note).toMatch(/waiting === "signal"\) line = \{ words: t\("player\.offline\.waitSignal"\), acts: \["cancel"\] \}/);
+  });
+
   it("says every state in words that never repeat the title, in every language", () => {
     for (const state of ["downloads.savedToListen", "player.offline.waitWifi", "player.offline.waitSignal", "player.offline.saving", "downloads.saving", "player.offline.failedSome", "player.offline.failedChant", "player.offline.remove", "player.offline.useData", "common.cancel"]) {
       expect(keys).toContain(state);
