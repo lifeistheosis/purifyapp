@@ -10,7 +10,7 @@ A fixer (docs/roles/fixer.md). Held android/, components/ui/Sheet.tsx, lib/ui/us
 
 - **Notes 4 and 12, the keyboard's slide, a0bf82c95.** The plugin's listener padded the window by the keyboard's whole height at the start of its slide. Now a WindowInsetsAnimationCompat callback beside it moves the room with the keys on every frame and the listener settles it at the end. Compiled here (javac 21, android.jar 36, androidx.core 1.17.0) and by **CI run 43770272198** (run number 99, publish false, success on fa3af57df; a compile check, nothing uploaded). Tests failing on 78c5297e1: lib/ui/__tests__/keyboardSlide.test.ts 6 of 6.
 - **The scrim's blink, a0bf82c95.** `scrimStrip` measures the strip from the panel's own top. lib/ui/__tests__/scrimStrip.test.ts fails 3 of 3 on 78c5297e1.
-- **Note 5, the editor's Quote searches the library, a0bf82c95, fa3af57df, 99e82874f.** lib/journal/__tests__/libraryQuote.test.ts fails on 78c5297e1 (the module is missing). The walk's checkMock found the passages clamped at three lines (cut); shown whole since 99e82874f.
+- **Note 5, the editor's Quote searches the library, a0bf82c95, fa3af57df, ba58bd710.** lib/journal/__tests__/libraryQuote.test.ts fails on 78c5297e1 (the module is missing). The walk's checkMock found the passages clamped at three lines (cut); shown whole since ba58bd710.
 - Checklist: typecheck 0; the whole suite green (1,232 files; its one failure, writingSheet's reading of the old Quote tool, mended in fa3af57df and passing 26 of 26); eslint clean on the changed files; two exports (the second because the walk found the clamp); the walks and checkMock as in docs/1.9-build/notes/build-98.md under notes 4, 5 and 12.
 
 ## Open, each with its owner
