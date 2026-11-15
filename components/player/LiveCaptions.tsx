@@ -4,6 +4,7 @@ import { memo, useEffect, useLayoutEffect, useRef, type ReactNode } from "react"
 
 import { clockNow, subscribeClock } from "@/lib/player/clock";
 import { followWord, lineAt, lineParts, wordAt, wordsOf, type CaptionLine } from "@/lib/player/captions";
+import { houseEase, seen, wakeClock } from "@/lib/player/wordsGlide";
 import { getAudioSnapshot, type CaptionSource } from "@/lib/prayers/persistentAudioStore";
 import { cn } from "@/lib/cn";
 import { textDir } from "@/lib/i18n/textDir";
@@ -69,25 +70,6 @@ const HANDS_OFF_MS = 4000;
 const MOVE_MS = 520;
 
 type Look = "player" | "page";
-
-/** cubic-bezier(0.22, 1, 0.36, 1), the house curve (--ease-house), for the scroll the script drives. */
-function houseEase(p: number): number {
-  const cx = 0.66;
-  const bx = 3 * (0.36 - 0.22) - cx;
-  const ax = 1 - cx - bx;
-  const cy = 3;
-  const by = -3;
-  const ay = 1;
-  let t = p;
-  for (let i = 0; i < 8; i++) {
-    const x = ((ax * t + bx) * t + cx) * t - p;
-    const dx = (3 * ax * t + 2 * bx) * t + cx;
-    if (Math.abs(x) < 1e-5 || dx === 0) break;
-    t -= x / dx;
-  }
-  t = Math.min(1, Math.max(0, t));
-  return ((ay * t + by) * t + cy) * t;
-}
 
 function reduced(): boolean {
   return typeof document !== "undefined" && document.documentElement.dataset.motion === "reduce";
@@ -313,7 +295,8 @@ export const LiveCaptions = memo(function LiveCaptions({
     return Math.max(0, Math.min(max, Math.round(row.offsetTop - box.clientHeight * ANCHOR)));
   }
 
-  function scrollTo(top: number, smooth: boolean) {
+  /** To `top`: gliding on the house curve, on the clock given or the wall's, or at once. */
+  function scrollTo(top: number, smooth: boolean, clock?: (now: number) => number) {
     const box = boxRef.current;
     if (!box) return;
     stopScroll();
@@ -324,7 +307,7 @@ export const LiveCaptions = memo(function LiveCaptions({
     }
     const start = performance.now();
     const step = (now: number) => {
-      const p = Math.min(1, (now - start) / MOVE_MS);
+      const p = clock ? clock(now) : Math.min(1, (now - start) / MOVE_MS);
       box.scrollTop = from + (top - from) * houseEase(p);
       scrolling.current = p < 1 ? requestAnimationFrame(step) : 0;
     };
@@ -440,13 +423,22 @@ export const LiveCaptions = memo(function LiveCaptions({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current, active, live, timed]);
 
-  // Shown again (Now Playing's words chosen): the line being sung, in place.
+  // Woken (a sheet over the player gone, or Now Playing's words chosen
+  // again): to the line being sung. Where the words can be seen as they wake,
+  // they glide there on the house curve, as the line moves while reading,
+  // paced by the frames so the wake's own long frame carries no more of the
+  // way than two short ones (Updates 75: they stepped 87px in the one frame
+  // the ambience sheet left). Where they cannot (the Words view chosen from
+  // Cover, its panel still at opacity 0), they stand in place at once and
+  // fade in there. At once with Purify's motion off (scrollTo).
   useLayoutEffect(() => {
     if (!active) return;
     const cur = currentRef.current;
     if (cur < 0) return;
     const top = targetFor(cur);
-    if (top !== null) scrollTo(top, false);
+    if (top === null) return;
+    if (seen(boxRef.current)) scrollTo(top, true, wakeClock(MOVE_MS));
+    else scrollTo(top, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 

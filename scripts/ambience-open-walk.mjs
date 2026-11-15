@@ -25,9 +25,11 @@
 //   node scripts/ambience-open-walk.mjs [--out <export>] [--motion on|reduce]
 //     [--no-blur] [--json <file>] [--check] [--film <dir>]
 //
-// --film <dir> films only the player's words as the sheet leaves (Updates 74): the sheet opened over
-// the Words view and held until the line being read has moved on, then closed; every frame's words
-// read where it is painted (a ResizeObserver made in that frame's rAF), the screencast's frames saved.
+// --film <dir> films only the player's words as they wake (Updates 74 and 75): the sheet opened over
+// the Words view and held until the line being read has moved on, then closed (<dir>/close); then the
+// Cover view chosen and held the same way, then Words again (<dir>/cover). Every frame's words read
+// where it is painted (a ResizeObserver made in that frame's rAF), the screencast's frames saved,
+// <dir>/film.json; with motion on it fails (exit 1) when one frame carries over half of the move.
 // --no-blur takes the scrim's blur away (a diagnosis: what the blur costs).
 // --check fails (exit 1) on what note 10 forbids, below (CHECKS).
 
@@ -52,6 +54,10 @@ const CHECK = argv.includes("--check");
 const NO_BLUR = argv.includes("--no-blur");
 const JSON_FILE = opt("--json");
 const WINDOW = 1500;
+/** A frame no later than this after the one before it is a short one (lib/profile/cardSteps.ts). */
+const SHORT_FRAME_MS = 34;
+/** A move of the player's words under this is not judged by the film. */
+const WORDS_MOVE_PX = 24;
 const OWN = "/opt/pw-browsers/chromium";
 const EN = JSON.parse(fs.readFileSync(path.join(ROOT, "lib/i18n/messages/en.json"), "utf8"));
 const t = (key) => EN[key] ?? key;
@@ -455,6 +461,116 @@ if (FILM) {
     const rows = box ? [...box.querySelectorAll("li[data-sung]")] : [];
     return { at: rows.findIndex((r) => r.getAttribute("aria-current") === "true"), top: box ? Math.round(box.scrollTop) : null };
   });
+  /** Until the line being read has moved on from the one read at `from`, while the words rest. */
+  async function movedOn(from) {
+    let now = await lit();
+    for (let i = 0; i < 60 && now.at === from.at; i++) {
+      await page.waitForTimeout(500);
+      now = await lit();
+    }
+    await page.waitForTimeout(600);
+    return lit();
+  }
+  /**
+   * One tap filmed: every frame's words read where it is painted (a ResizeObserver made in that
+   * frame's rAF; the MessageChannel sampler above can repeat a time and read a state never painted,
+   * Updates 71 and 74), with the words' panel's opacity, the screencast's frames saved in `dir`.
+   * Judged as lib/profile/cardSteps.ts's oneFrameJumps judges a card (the model rule): the words'
+   * whole move from the last frame before the tap to the last one read, and every frame that
+   * carried over half of it. The house curve covers under two fifths of a glide in 34ms, so a
+   * short frame never carries half; a frame that does is a jump, and with Purify's motion on so is
+   * a long one (a glide paced by its frames never carries half in one, Updates 75), unless the
+   * words were not drawn on one side of it (their panel at opacity 0). A move under WORDS_MOVE_PX
+   * is not judged; one line of the player's words is about 40 to 90px.
+   */
+  async function film(name, dir, locator) {
+    fs.mkdirSync(dir, { recursive: true });
+    const shots = [];
+    const onShot = (f) => {
+      shots.push({ at: f.metadata.timestamp * 1000, data: f.data });
+      cdp.send("Page.screencastFrameAck", { sessionId: f.sessionId }).catch(() => {});
+    };
+    cdp.on("Page.screencastFrame", onShot);
+    await cdp.send("Page.startScreencast", { format: "jpeg", quality: 70, everyNthFrame: 1 });
+    await page.evaluate(({ sheetSel, ms }) => {
+      window.__film = [];
+      const t0 = performance.timeOrigin + performance.now();
+      window.__film0 = t0;
+      // The touch's own time: read after the tap returns, it came 50 to 100ms late at CPU 4x and put
+      // the move before it (the first run of Cover to Words).
+      window.__filmTap = null;
+      const down = (e) => {
+        if (window.__filmTap === null) window.__filmTap = Math.round(performance.timeOrigin + e.timeStamp - t0);
+      };
+      addEventListener("pointerdown", down, { capture: true, once: true });
+      addEventListener("touchstart", down, { capture: true, once: true, passive: true });
+      const box = document.querySelector('[data-sung-look="player"]');
+      const panel = document.getElementById("player-view-panel-words");
+      const end = performance.now() + ms;
+      const frame = () => {
+        // Read where the frame is painted: after its rAF callbacks, style and layout.
+        const ro = new ResizeObserver(() => {
+          ro.disconnect();
+          const rows = [...box.querySelectorAll("li[data-sung]")];
+          const at = rows.findIndex((r) => r.getAttribute("aria-current") === "true");
+          const b = box.getBoundingClientRect();
+          window.__film.push({
+            t: Math.round(performance.timeOrigin + performance.now() - t0),
+            sheet: !!document.querySelector(sheetSel),
+            scroll: Math.round(box.scrollTop),
+            at,
+            litTop: at >= 0 ? Math.round(rows[at].getBoundingClientRect().top - b.top) : null,
+            op: panel ? Number(Number(getComputedStyle(panel).opacity).toFixed(2)) : null,
+          });
+        });
+        ro.observe(document.documentElement);
+        if (performance.now() < end) requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
+    }, { sheetSel: SHEET, ms: 2000 });
+    await tap(locator);
+    const tapped = await page.evaluate(() => window.__filmTap ?? Math.round(performance.timeOrigin + performance.now() - window.__film0));
+    await page.waitForTimeout(2300);
+    await cdp.send("Page.stopScreencast");
+    cdp.off("Page.screencastFrame", onShot);
+    const { film: read, t0 } = await page.evaluate(() => ({ film: window.__film, t0: window.__film0 }));
+    const frames = read.map((f) => ({ ...f, t: f.t - tapped }));
+    const gone = frames.some((f) => f.t <= 0 && f.sheet) ? (frames.find((f) => f.t > 0 && !f.sheet)?.t ?? null) : null;
+    console.log(`  film, ${name}: tapped; ${gone !== null ? `the sheet gone at ${gone}ms; ` : ""}${frames.length} frames read`);
+    for (const f of frames) if (f.t >= -50) console.log(`    ${f.t}ms sheet ${f.sheet ? "on" : "gone"}, words scrolled ${f.scroll}px, line ${f.at} at ${f.litTop}px, panel ${f.op}`);
+    let big = { d: 0 };
+    for (let i = 1; i < frames.length; i++) {
+      const d = frames[i].scroll - frames[i - 1].scroll;
+      if (Math.abs(d) > Math.abs(big.d)) big = { d, t: frames[i].t, gap: frames[i].t - frames[i - 1].t, from: frames[i - 1].scroll, to: frames[i].scroll };
+    }
+    const moving = frames.filter((f, i) => i > 0 && f.scroll !== frames[i - 1].scroll).length;
+    const base = [...frames].reverse().find((f) => f.t <= 0) ?? frames[0];
+    const growth = frames.length ? frames[frames.length - 1].scroll - base.scroll : 0;
+    // A step is seen only where the words were drawn on both sides of it: one taken while their
+    // panel stood at opacity 0 (the Words view chosen, before its fade has begun) is never seen.
+    const jumps = [];
+    const unseen = [];
+    if (Math.abs(growth) >= WORDS_MOVE_PX)
+      for (let i = 1; i < frames.length; i++) {
+        const step = frames[i].scroll - frames[i - 1].scroll;
+        const gap = frames[i].t - frames[i - 1].t;
+        if (frames[i].t <= 0 || Math.abs(step) <= Math.abs(growth) / 2) continue;
+        const jump = { at: frames[i].t, step, gap, short: gap <= SHORT_FRAME_MS, op: [frames[i - 1].op, frames[i].op] };
+        (frames[i - 1].op === 0 || frames[i].op === 0 ? unseen : jumps).push(jump);
+      }
+    console.log(big.d ? `  film, ${name}: the words moved ${growth}px in all; the biggest one-frame step ${big.d}px at ${big.t}ms (${big.from} to ${big.to}, ${big.gap}ms after the frame before), in ${moving} frame(s) of movement` : `  film, ${name}: the words never moved`);
+    for (const j of jumps) console.log(`    over half of the move in one frame: ${j.step}px of ${growth} at ${j.at}ms, ${j.gap}ms after the frame before (${j.short ? "a short frame" : "a long frame"}), the panel at ${j.op.join(" then ")}`);
+    for (const j of unseen) console.log(`    over half of the move in one frame, unseen: ${j.step}px of ${growth} at ${j.at}ms, the panel at ${j.op.join(" then ")} (not judged)`);
+    for (const s of shots) {
+      const ms = Math.round(s.at - t0 - tapped);
+      if (ms >= -100 && ms <= 1500) fs.writeFileSync(path.join(dir, `frame-${String(ms + 1000).padStart(5, "0")}.jpg`), Buffer.from(s.data, "base64"));
+    }
+    console.log(`  film, ${name}: ${shots.length} screencast frames, those from -100 to 1500ms saved in ${dir} (named by ms from the tap, plus 1000)`);
+    return { gone, frames, big, moving, growth, jumps, unseen };
+  }
+
+  // The sheet's close: opened over the Words view from the player's ••• sheet and held there until
+  // the line being read has moved on, so the words have somewhere to go when they wake.
   await tap(visible("[data-reader-dock] .reader-dock-card button[aria-label], [data-reader-dock] .reader-dock-pill button[aria-label], [data-now-playing-bar] button[aria-label], [data-mini-player] button[aria-label]").first());
   await page.locator(NOW_PLAYING).first().waitFor({ timeout: 15000 });
   await page.waitForTimeout(1500);
@@ -465,64 +581,31 @@ if (FILM) {
   await page.waitForTimeout(1200);
   await tap(visible(`[role="dialog"] button`).filter({ hasText: t("ambience.title") }).last());
   await page.locator(SHEET).first().waitFor({ timeout: 15000 });
-  let held = await lit();
-  for (let i = 0; i < 60 && held.at === before.at; i++) {
-    await page.waitForTimeout(500);
-    held = await lit();
-  }
-  await page.waitForTimeout(600);
-  held = await lit();
-  console.log(`  film: the line read when the sheet opened ${before.at} (words at ${before.top}px); while it was open the line came to ${held.at} (words still at ${held.top}px)`);
-  const shots = [];
-  cdp.on("Page.screencastFrame", (f) => {
-    shots.push({ at: f.metadata.timestamp * 1000, data: f.data });
-    cdp.send("Page.screencastFrameAck", { sessionId: f.sessionId }).catch(() => {});
-  });
-  await cdp.send("Page.startScreencast", { format: "jpeg", quality: 70, everyNthFrame: 1 });
-  await page.evaluate(({ sheetSel, ms }) => {
-    window.__film = [];
-    const t0 = performance.timeOrigin + performance.now();
-    window.__film0 = t0;
-    const box = document.querySelector('[data-sung-look="player"]');
-    const end = performance.now() + ms;
-    const frame = () => {
-      // Read where the frame is painted: after its rAF callbacks, style and layout.
-      const ro = new ResizeObserver(() => {
-        ro.disconnect();
-        const rows = [...box.querySelectorAll("li[data-sung]")];
-        const at = rows.findIndex((r) => r.getAttribute("aria-current") === "true");
-        const b = box.getBoundingClientRect();
-        window.__film.push({ t: Math.round(performance.timeOrigin + performance.now() - t0), sheet: !!document.querySelector(sheetSel), scroll: Math.round(box.scrollTop), at, litTop: at >= 0 ? Math.round(rows[at].getBoundingClientRect().top - b.top) : null });
-      });
-      ro.observe(document.documentElement);
-      if (performance.now() < end) requestAnimationFrame(frame);
-    };
-    requestAnimationFrame(frame);
-  }, { sheetSel: SHEET, ms: 2000 });
-  await tap(visible(`${SHEET} button[aria-label="${t("common.close")}"]`).last());
-  const tapped = await page.evaluate(() => Math.round(performance.timeOrigin + performance.now() - window.__film0));
-  await page.waitForTimeout(2300);
-  await cdp.send("Page.stopScreencast");
-  const { film, t0 } = await page.evaluate(() => ({ film: window.__film, t0: window.__film0 }));
-  const frames = film.map((f) => ({ ...f, t: f.t - tapped }));
-  const gone = frames.find((f) => f.t > 0 && !f.sheet)?.t ?? null;
-  console.log(`  film: Close tapped; the sheet gone at ${gone}ms; ${frames.length} frames read`);
-  for (const f of frames) if (f.t >= -50) console.log(`    ${f.t}ms sheet ${f.sheet ? "on" : "gone"}, words scrolled ${f.scroll}px, line ${f.at} at ${f.litTop}px`);
-  let big = { d: 0 };
-  for (let i = 1; i < frames.length; i++) {
-    const d = frames[i].scroll - frames[i - 1].scroll;
-    if (Math.abs(d) > Math.abs(big.d)) big = { d, t: frames[i].t, from: frames[i - 1].scroll, to: frames[i].scroll };
-  }
-  const moving = frames.filter((f, i) => i > 0 && f.scroll !== frames[i - 1].scroll).length;
-  console.log(big.d ? `  film: the words' biggest one-frame move ${big.d}px at ${big.t}ms (${big.from} to ${big.to}), in ${moving} frame(s) of movement` : "  film: the words never moved");
-  for (const s of shots) {
-    const ms = Math.round(s.at - t0 - tapped);
-    if (ms >= -100 && ms <= 1500) fs.writeFileSync(path.join(FILM, `frame-${String(ms + 1000).padStart(5, "0")}.jpg`), Buffer.from(s.data, "base64"));
-  }
-  fs.writeFileSync(path.join(FILM, "film.json"), JSON.stringify({ motion: MOTION, before, held, gone, frames, big, moving }, null, 1));
-  console.log(`  film: ${shots.length} screencast frames, those from -100 to 1500ms saved in ${FILM} (named by ms from the tap, plus 1000)`);
+  const held = await movedOn(before);
+  console.log(`  film, close: the line read when the sheet opened ${before.at} (words at ${before.top}px); while it was open the line came to ${held.at} (words still at ${held.top}px)`);
+  const close = await film("close", path.join(FILM, "close"), visible(`${SHEET} button[aria-label="${t("common.close")}"]`).last());
+
+  // Cover to Words (Updates 63's "as on coming back from Cover"): the Cover view chosen, held there
+  // until the line being read has moved on, then the Words view chosen again.
+  await page.waitForTimeout(1500);
+  await tap(visible("#player-view-tab-cover").first());
+  await page.waitForTimeout(800);
+  const onCover = await lit();
+  const coverHeld = await movedOn(onCover);
+  console.log(`  film, cover: the line read when Cover was chosen ${onCover.at} (words at ${onCover.top}px); on Cover the line came to ${coverHeld.at} (words still at ${coverHeld.top}px)`);
+  const cover = await film("cover", path.join(FILM, "cover"), visible("#player-view-tab-words").first());
+
+  const fails = MOTION === "reduce" ? [] : [["close", close], ["cover", cover]].filter(([, f]) => f.jumps.length);
+  fs.writeFileSync(path.join(FILM, "film.json"), JSON.stringify({ motion: MOTION, close: { before, held, ...close }, cover: { before: onCover, held: coverHeld, ...cover } }, null, 1));
+  console.log(
+    MOTION === "reduce"
+      ? "  film: motion reduced, so the words move at once when they wake; not judged."
+      : fails.length
+        ? `  film: FAIL, over half of the words' move in one frame on ${fails.map(([n]) => n).join(" and ")}.`
+        : "  film: PASS, no frame carried over half of the words' move, on the close or on Cover to Words.",
+  );
   await browser.close();
-  process.exit(0);
+  process.exit(fails.length ? 1 : 0);
 }
 
 // Over the reader: while a reading plays the pager's sound button gives way to the dock, so the
@@ -637,8 +720,12 @@ const CHECKS = [
   (r, fail) => {
     for (const [name, pair] of Object.entries(r.scenes)) {
       if (!/Words/.test(name)) continue;
-      // The same rate (MIN_FRAMES in WINDOW), a close counted only until its sheet has gone.
-      for (const m of [pair.open, pair.close]) {
+      // The same rate (MIN_FRAMES in WINDOW), a close counted only until its sheet has gone. A close
+      // with Purify's motion reduced is not held to it (the arbiter's call, Updates 75): the sheet
+      // dissolves where it stands (lib/ui/useDraggableSheet.ts, DISSOLVE_MS), so nothing moves to
+      // drop a frame of; round 5's one reduced FAIL was a long frame at the tap (107ms, 59ms of
+      // script at CPU 4x) before a sheet that stood still. The opening is still held.
+      for (const m of r.motion === "reduce" ? [pair.open] : [pair.open, pair.close]) {
         const w = m === pair.close && m.whileDrawn ? m.whileDrawn : { until: WINDOW, n: m.n, dropped: m.dropped, longest: m.longest };
         const floor = Math.ceil((MIN_FRAMES * w.until) / WINDOW);
         if (w.n < floor) fail(`${m.label}: ${w.n} frames in ${w.until}ms${w.until < WINDOW ? " (until the sheet had gone)" : ""} (at least ${floor}), ${w.dropped} dropped, longest ${w.longest}ms`);
@@ -649,6 +736,7 @@ const CHECKS = [
 if (CHECK) {
   // Each check is handed a function (the array itself crashed the walk at the first failure).
   for (const c of CHECKS) c(results, (what) => failures.push(what));
+  if (MOTION === "reduce") console.log("  motion reduced: a close is not held to the frame floor (its sheet dissolves where it stands); an opening is.");
   if (failures.length) {
     console.log(`FAIL: ${failures.length}`);
     for (const f of failures) console.log(`  - ${f}`);
