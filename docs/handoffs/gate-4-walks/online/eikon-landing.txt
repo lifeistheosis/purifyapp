@@ -1,0 +1,9 @@
+(node:27242) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS /shop/stores/ (motion on): EIKON's door opens its room and its first picture lands in it {"opened":true,"key":"piece:russian-christ-flag","taker":"piece:russian-christ-flag","carried":["::view-transition-group(carried)","::view-transition-new(carried)","::view-transition-old(carried)"]}
+PASS /shop/ (motion on): EIKON's door opens its room and its first picture lands in it {"opened":true,"key":"piece:russian-christ-flag","taker":"piece:russian-christ-flag","carried":["::view-transition-group(carried)","::view-transition-new(carried)","::view-transition-old(carried)"]}
+PASS /shop/stores/ (motion reduce): EIKON's door opens its room and nothing moves {"opened":true,"transitions":0}
+PASS /shop/ (motion reduce): EIKON's door opens its room and nothing moves {"opened":true,"transitions":0}
+
+all passed
+EIKON EXIT 0
