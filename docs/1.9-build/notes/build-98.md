@@ -188,3 +188,17 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 
 - One native mend for note 4 and this note: the window follows the keyboard frame by frame as the keys slide, not in one step, so no frame is drawn at the wrong size. One fixer holds both.
 - The search's own walk and test run again on the export, so the page's half stays mended; the proof of the native half is his walk of the next build, named to him with it.
+
+## Note 13: a chant's words follow the singing once it starts
+
+**His words (2026-11-15, about 22:02 UTC),** with a screenshot of The Prayer Rope Anthem's page at 5:02 on his clock (the Trinity icon, "Performer not known", "English · Hymn"; Words, About and Versions with Words chosen; lines from the middle of the song in view, none lit; the page's player at 0:07 of 2:06, playing): "it should automatically follow  the lyrics one started".
+
+**Found (the arbiter, 22:06 UTC, from the code of 78c5297e1 and a probe):**
+
+- The words are `ChantWords` in `LiveCaptions` (`components/player/LiveCaptions.tsx`, look "page"), in their own scrolling box between the doors and the page's player. Following is built: while the version plays and its timing is known, the line being sung rises to a third of the way down, unless the reader has scrolled in the last few seconds. The timing is in the apps (`CHANT_TIMING`, `lib/chants/media.ts`), and the main web serves it too (probed 22:05 UTC, `/chant-timing/prayer-rope-anthem/en.json` 200), so this is not the website.
+- What his screenshot shows: playing at 0:07, the box still where it was left, in the middle of the song, and no line lit. Following moves the words only when a line is being sung and the reader has not scrolled for a while, so in the opening seconds before the first line nothing moves, and a box scrolled before Play stays there. Pressing Play does not bring the words to where the singing is. Not yet reproduced on the export: a fixer reproduces it first.
+
+**Plan (nothing is built until he says start):**
+
+- When a version starts (Play, a seek, the next version), the words go at once, on the house curve, to the line being sung, or to the first line in the opening before any is sung, wherever the box had been scrolled; then they follow line by line. A reader's own scroll pauses the following for its few seconds, and it comes back by itself. Reduced motion: the words move without gliding.
+- Reproduced first on the export (the Anthem, Words, the box scrolled to the middle, Play), then mended, with a test that fails on 78c5297e1: from Play, the first line comes into view within a moment and the sung line stays in view to the end. The same in Now Playing's Words view, which shares the code.
