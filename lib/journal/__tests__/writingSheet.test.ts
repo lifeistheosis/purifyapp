@@ -71,7 +71,11 @@ describe("one empty quote at a time", () => {
   });
 
   it("Quote goes to the one waiting, and lays a card only when none waits", () => {
-    const tool = code(blocks).slice(code(blocks).indexOf('label={t("journal.page.addQuote")}'));
+    // Since build 98 note 5 Quote opens Purify's library first, and words of
+    // one's own are its last row (components/journal/LibraryQuote.tsx): that
+    // row keeps the rule.
+    expect(code(blocks)).toContain('onClick={() => (panel === "quote" ? editor.shutPanel() : setPanel("quote"))}');
+    const tool = code(blocks).slice(code(blocks).indexOf("onOwn={() => {"));
     expect(tool).toMatch(/const at = emptyQuoteAt\(editor\.page\.blocks\);\s*if \(at >= 0\) editor\.focusBlock\(at\);\s*else editor\.insert\(\{ type: "quote", text: "", by: "" \}\);/);
     // And the editor can hand the cursor to a block already on the page.
     // (For a reader who is writing: build 95 note 6, lib/journal/writing.ts.)
