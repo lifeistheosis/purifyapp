@@ -428,7 +428,7 @@ describe("what a page leads to", () => {
     const rail = code(RAIL);
     expect(rail).toContain('<LeafPart id="related-title" title={title} count={rows.length} data-related="">');
     expect(rail).toContain("const rows = ORDER.flatMap((g) => groups[g].map((link) => ({ g, link })));");
-    expect(rail).toContain('className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5"');
+    expect(rail).toContain('className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5 theology-row-leaves"');
     expect(rail).toContain("<RelatedMark group={g} link={link} />");
     expect(rail).toContain("<T k={GROUP_LABEL[g]} />");
     // Pictures lead: a Father's face, a council's picture; a way's row wears no icon tile (1.9, the fifteen screens, rule 4).
@@ -446,7 +446,7 @@ describe("what a page leads to", () => {
     const rail = code(RAIL);
     // r3-13's rows: each kind named once over its tray, no mark.
     expect(rail).toContain('<aside className="mt-8">');
-    expect(rail).toContain('className="theology-row mx-1.5 flex min-h-[44px] items-center gap-3 rounded-[14px] px-3 py-2"');
+    expect(rail).toContain('className="theology-row mx-1.5 flex min-h-[44px] items-center gap-3 rounded-[14px] px-3 py-2 theology-row-leaves"');
     expect(code("components/theology/TopicReader.tsx")).toContain("<RelatedRail groups={rest} bare />");
     // And these three are the pages that draw the new form.
     for (const file of [TOPIC, HERESY, READER]) expect(code(file), file).toMatch(/<RelatedRail groups=\{(?:related|groups)\}(?: title=\{<T k="study\.apologetics\.goDeeper" \/>\})? \/>/);

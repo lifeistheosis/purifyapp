@@ -30,7 +30,7 @@ export function RecentStudies({ studies }: { studies: RecentStudy[] }) {
       <ul className="theology-tray mt-2.5 overflow-hidden rounded-[20px] px-1.5 py-1">
         {studies.map((s) => (
           <li key={s.slug} className="theology-rule">
-            <Link href={`/theology/${s.slug}`} className="theology-row flex min-h-[56px] items-center gap-3 rounded-[14px] px-2 py-2">
+            <Link href={`/theology/${s.slug}`} className="theology-row flex min-h-[56px] items-center gap-3 rounded-[14px] px-2 py-2 theology-row-leaves">
               <FatherFace father={s.father} size={38} />
               <span lang="en" dir="ltr" className="min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.26] text-paper/92 rtl:text-right">
                 {s.title}

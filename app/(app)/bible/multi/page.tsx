@@ -1,6 +1,6 @@
-import { Suspense } from "react";
 
 import { MultiVerseClient } from "@/components/bible/MultiVerseClient";
+import { ArrivalBoundary } from "@/components/layout/ArrivalBoundary";
 
 // Multi-reference result page.
 //
@@ -29,8 +29,8 @@ export const metadata = {
 
 export default function MultiPage() {
   return (
-    <Suspense fallback={null}>
+    <ArrivalBoundary>
       <MultiVerseClient />
-    </Suspense>
+    </ArrivalBoundary>
   );
 }

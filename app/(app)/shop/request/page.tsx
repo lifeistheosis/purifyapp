@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { RequestFormIsland } from "@/components/shop/RequestFormIsland";
 import { T } from "@/components/i18n/T";
+import { ArrivalBoundary } from "@/components/layout/ArrivalBoundary";
 
 export const metadata: Metadata = {
   title: "Request an Icon",
@@ -25,9 +25,9 @@ export default function RequestIconPage() {
         </p>
       </header>
       <div className="mt-4 pb-8">
-        <Suspense fallback={null}>
+        <ArrivalBoundary>
           <RequestFormIsland />
-        </Suspense>
+        </ArrivalBoundary>
       </div>
     </div>
   );

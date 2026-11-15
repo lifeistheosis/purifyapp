@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { CheckoutCancelledClient } from "@/components/shop/CheckoutCancelledClient";
+import { ArrivalBoundary } from "@/components/layout/ArrivalBoundary";
 
 export const metadata: Metadata = { title: "Checkout cancelled" };
 
@@ -10,8 +10,8 @@ export const metadata: Metadata = { title: "Checkout cancelled" };
 // native shell.
 export default function CheckoutCancelledPage() {
   return (
-    <Suspense fallback={null}>
+    <ArrivalBoundary>
       <CheckoutCancelledClient />
-    </Suspense>
+    </ArrivalBoundary>
   );
 }

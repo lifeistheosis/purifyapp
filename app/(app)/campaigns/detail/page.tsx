@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 
 import { CampaignMenuButton } from "@/components/campaigns/CampaignMenuButton";
 import { CampaignPage } from "@/components/campaigns/CampaignPage";
 import { CampaignsGate } from "@/components/campaigns/CampaignsGate";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { campaignsInBuild } from "@/lib/campaigns/flags";
+import { ArrivalBoundary } from "@/components/layout/ArrivalBoundary";
 
 export const metadata = {
   // It names nobody: the campaign is read on the device, and a link to this
@@ -24,7 +24,7 @@ export default function CampaignDetailPage() {
   if (!campaignsInBuild()) notFound();
   return (
     // The campaign's id is read from the address on the device.
-    <Suspense fallback={null}>
+    <ArrivalBoundary>
       <CampaignsGate>
         {/* The bars are mounted here, by the page, and set by the page's
             component: the clear one over the picture once the campaign is on
@@ -43,6 +43,6 @@ export default function CampaignDetailPage() {
           plainBar={<MobileTopBar titleKey="community.prayerCampaigns" back backFallback={HOME} />}
         />
       </CampaignsGate>
-    </Suspense>
+    </ArrivalBoundary>
   );
 }

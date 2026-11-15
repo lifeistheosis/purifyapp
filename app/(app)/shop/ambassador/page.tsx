@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { AmbassadorDashboard } from "@/components/shop/ambassador/AmbassadorDashboard";
+import { ArrivalBoundary } from "@/components/layout/ArrivalBoundary";
 
 export const metadata: Metadata = {
   title: "Ambassador",
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 // export as well as on the website.
 export default function AmbassadorPage() {
   return (
-    <Suspense fallback={null}>
+    <ArrivalBoundary>
       <AmbassadorDashboard />
-    </Suspense>
+    </ArrivalBoundary>
   );
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { UnsubscribeClient } from "@/components/email/UnsubscribeClient";
+import { ArrivalBoundary } from "@/components/layout/ArrivalBoundary";
 
 export const metadata: Metadata = {
   title: "Unsubscribe",
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 // the same shape as /shop/checkout/cancelled.
 export default function UnsubscribePage() {
   return (
-    <Suspense fallback={null}>
+    <ArrivalBoundary>
       <UnsubscribeClient />
-    </Suspense>
+    </ArrivalBoundary>
   );
 }

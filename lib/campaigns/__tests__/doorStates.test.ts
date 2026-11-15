@@ -274,10 +274,14 @@ describe("the page that stands at a campaign's address", () => {
   });
 
   it("the gate draws the campaign on a yes, waits while it asks, and says which of the two it is otherwise", () => {
-    const gate = read("components/campaigns/CampaignsGate.tsx").replace(/\/\*[\s\S]*?\*\//g, "");
+    const gate = read("components/campaigns/CampaignsGate.tsx").replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
     expect(gate).toMatch(
-      /const door = useCampaignsDoor\(\);\s*if \(door === "open"\) return <>\{children\}<\/>;\s*if \(door === "asking"\) return <div data-campaigns-asking="" className="min-h-\[60vh\]" \/>;\s*if \(!campaignsInBuild\(\)\) return <NotFoundScreen \/>;\s*return <CampaignsClosed unreached=\{door === "unreached"\} \/>;/,
+      /if \(door === "open"\) return <>\{children\}<\/>;\s*if \(door === "asking"\) return <DoorAsking \/>;\s*if \(!campaignsInBuild\(\)\) return <NotFoundScreen \/>;\s*return <CampaignsClosed unreached=\{door === "unreached"\} \/>;/,
     );
+    // While it asks, a door mounted by a page switch holds the page being left (Updates 90), and
+    // past the hold's bound says it is loading: never the empty box 60% of the screen high it drew.
+    expect(gate).toMatch(/if \(door === "asking" && bySwitch\) \{\s*const wait = holdForCampaignsDoor\(\);\s*if \(wait\) use\(wait\);\s*\}/);
+    expect(gate).not.toContain("min-h-[60vh]");
   });
 
   it("has its one new line in the catalog, with no em dash", () => {

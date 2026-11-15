@@ -139,7 +139,7 @@ export function StepView({
                         href={read.href}
                         data-read-state={s}
                         onClick={() => noteOpened(read, step.id)}
-                        className={`${s === "next" ? "path-lit" : "theology-row"} -mx-2 flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5`}
+                        className={`${s === "next" ? "path-lit" : "theology-row theology-row-leaves"} -mx-2 flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5`}
                       >
                         <ReadMark read={read} />
                         <span className="min-w-0 flex-1">

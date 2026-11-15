@@ -114,7 +114,7 @@ export function ApologeticsReader({
               <li key={i} className="theology-rule">
                 <Link
                   href={`/bible?q=${encodeURIComponent(s.bibleRef ?? s.ref)}`}
-                  className="theology-row flex min-h-[54px] items-start gap-3 rounded-[14px] px-2.5 py-3"
+                  className="theology-row flex min-h-[54px] items-start gap-3 rounded-[14px] px-2.5 py-3 theology-row-leaves"
                 >
                   <span className="min-w-0 flex-1">
                     <span lang="en" dir="ltr" className="block font-sans text-ui font-semibold text-paper rtl:text-right">

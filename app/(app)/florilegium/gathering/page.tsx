@@ -1,7 +1,7 @@
-import { Suspense } from "react";
 
 import { FlorilegiumByQuery } from "@/components/florilegium/FlorilegiumByQuery";
 import { GatheringBar } from "@/components/florilegium/GatheringBar";
+import { ArrivalBoundary } from "@/components/layout/ArrivalBoundary";
 
 export const metadata = {
   title: "Florilegium",
@@ -23,9 +23,9 @@ export default function GatheringByQueryPage() {
       <section data-florilegium-page="gathering" className="bg-night px-5 pb-12 pt-6 md:px-8 md:py-14">
         <div className="mx-auto w-full max-w-[640px]">
           {/* The query is read on the device (useSearchParams). */}
-          <Suspense fallback={null}>
+          <ArrivalBoundary>
             <FlorilegiumByQuery />
-          </Suspense>
+          </ArrivalBoundary>
         </div>
       </section>
     </>

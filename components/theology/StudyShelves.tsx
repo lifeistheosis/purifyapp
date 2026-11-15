@@ -73,7 +73,7 @@ export function StudyShelves({ shelves }: { shelves: StudyShelf[] }) {
                   <Link
                     href={study.href}
                     data-read-state={read ? "read" : undefined}
-                    className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5"
+                    className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5 theology-row-leaves"
                   >
                     {study.father ? (
                       <span data-row-picture="" className="shrink-0">

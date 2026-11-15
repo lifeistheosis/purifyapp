@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { FirstWeekClient } from "@/components/email/FirstWeekClient";
+import { ArrivalBoundary } from "@/components/layout/ArrivalBoundary";
 
 export const metadata: Metadata = {
   title: "Your first week",
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 // the same shape as /email/unsubscribe.
 export default function FirstWeekPage() {
   return (
-    <Suspense fallback={null}>
+    <ArrivalBoundary>
       <FirstWeekClient />
-    </Suspense>
+    </ArrivalBoundary>
   );
 }

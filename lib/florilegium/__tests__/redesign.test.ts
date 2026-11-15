@@ -280,9 +280,10 @@ describe("a gathering's page", () => {
     const inApps = code("app/(app)/florilegium/gathering/page.tsx");
     for (const page of [onTheWeb, inApps]) expect(page).toContain("<GatheringBar />");
     // In the apps the query is read on the device, in a boundary; the bar is not in it, nor in one of its own.
-    expect(inApps.match(/<Suspense /g)).toHaveLength(1);
-    expect(inApps).toMatch(/<Suspense fallback=\{null\}>\s*<FlorilegiumByQuery \/>\s*<\/Suspense>/);
-    expect(inApps.indexOf("<GatheringBar />")).toBeLessThan(inApps.indexOf("<Suspense "));
+    // The export's boundary, drawn in the page's HTML alone (components/layout/ArrivalBoundary.tsx, Updates 90).
+    expect(inApps.match(/<ArrivalBoundary>/g)).toHaveLength(1);
+    expect(inApps).toMatch(/<ArrivalBoundary>\s*<FlorilegiumByQuery \/>\s*<\/ArrivalBoundary>/);
+    expect(inApps.indexOf("<GatheringBar />")).toBeLessThan(inApps.indexOf("<ArrivalBoundary>"));
     const bar = code("components/florilegium/GatheringBar.tsx");
     // Its name once the name has gone up under the bar, and the way back to the gatherings.
     expect(bar).toContain("const open = useGatheringNow();");

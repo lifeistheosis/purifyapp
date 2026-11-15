@@ -115,7 +115,7 @@ export default async function CreedPage() {
             {sources.map((s) =>
               s.title ? (
                 <li key={s.council} className="theology-rule">
-                  <Link href={`/councils/${s.council}/${s.document}`} className="theology-row flex min-h-[56px] items-center gap-3 rounded-[14px] px-2 py-2">
+                  <Link href={`/councils/${s.council}/${s.document}`} className="theology-row flex min-h-[56px] items-center gap-3 rounded-[14px] px-2 py-2 theology-row-leaves">
                     <CouncilMark slug={s.council} />
                     <span className="min-w-0 flex-1">
                       <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92 rtl:text-right">

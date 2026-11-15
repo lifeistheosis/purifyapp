@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { EmailChangeStateView } from "@/components/account/security/EmailChangeState";
+import { ArrivalBoundary } from "@/components/layout/ArrivalBoundary";
 
 export const metadata: Metadata = {
   title: "Change email",
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 // the same shape as /email/unsubscribe.
 export default function EmailChangePage() {
   return (
-    <Suspense fallback={null}>
+    <ArrivalBoundary>
       <EmailChangeStateView />
-    </Suspense>
+    </ArrivalBoundary>
   );
 }

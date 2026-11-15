@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { CheckoutSuccessClient } from "@/components/shop/CheckoutSuccessClient";
+import { ArrivalBoundary } from "@/components/layout/ArrivalBoundary";
 
 export const metadata: Metadata = { title: "Order confirmed" };
 
@@ -9,8 +9,8 @@ export const metadata: Metadata = { title: "Order confirmed" };
 // the native local-first export.
 export default function CheckoutSuccessPage() {
   return (
-    <Suspense fallback={null}>
+    <ArrivalBoundary>
       <CheckoutSuccessClient />
-    </Suspense>
+    </ArrivalBoundary>
   );
 }

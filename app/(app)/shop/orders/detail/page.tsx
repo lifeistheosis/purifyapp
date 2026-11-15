@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { OrderDetailClient } from "@/components/shop/OrderDetailClient";
+import { ArrivalBoundary } from "@/components/layout/ArrivalBoundary";
 
 export const metadata: Metadata = { title: "Order" };
 
@@ -10,8 +10,8 @@ export const metadata: Metadata = { title: "Order" };
 // it exportable for the native shell (a dynamic [id] segment could not be).
 export default function OrderDetailPage() {
   return (
-    <Suspense fallback={null}>
+    <ArrivalBoundary>
       <OrderDetailClient />
-    </Suspense>
+    </ArrivalBoundary>
   );
 }

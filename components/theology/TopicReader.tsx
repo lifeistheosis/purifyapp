@@ -184,7 +184,7 @@ function ScripturePart({ body }: { body: TheologyBody }) {
           <li key={i} className="theology-rule">
             <Link
               href={`/bible?q=${encodeURIComponent(s.bibleRef ?? s.ref)}`}
-              className="theology-row mx-1.5 flex items-start gap-3 rounded-[14px] px-3 py-3"
+              className="theology-row mx-1.5 flex items-start gap-3 rounded-[14px] px-3 py-3 theology-row-leaves"
             >
               <span className="min-w-0 flex-1">
                 <span lang="en" dir="ltr" className="block font-sans text-ui font-semibold text-paper rtl:text-right">
@@ -229,7 +229,7 @@ function RelatedPart({ body, groups, events }: { body: TheologyBody; groups: Rel
               const minutes = getTopicMeta(slug)?.estimatedMinutes;
               return (
                 <li key={slug} className="theology-rule">
-                  <Link href={`/theology/${slug}`} className="theology-row mx-1.5 flex min-h-[48px] items-center gap-3 rounded-[14px] px-3 py-2.5">
+                  <Link href={`/theology/${slug}`} className="theology-row mx-1.5 flex min-h-[48px] items-center gap-3 rounded-[14px] px-3 py-2.5 theology-row-leaves">
                     <span lang="en" dir="ltr" className="min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.25] text-paper/92 rtl:text-right">
                       {/* The study's own title. This printed the slug ("council
                           of florence") until build 80. */}

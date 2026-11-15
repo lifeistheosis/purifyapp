@@ -103,6 +103,13 @@ function useReader(): YouWho {
       setReader({ state: "in", id: local.id, name: readerName(local) });
       return;
     }
+    // No session kept on the device: signed out, from the first frame, as
+    // the shop's signed pages say it (lib/shop/signedOutAtOnce.ts). Until
+    // now the screen waited for resolveUser, and its outline under the bar
+    // (the 178 and 230px boxes below) stood for a frame or two and was gone:
+    // with motion reduced, /account/ flashed a box 330 by 30px, 3 of 4 runs
+    // (Updates 90). The ask still runs, and a signed-in answer stands.
+    setReader({ state: "out" });
     let cancelled = false;
     resolveUser().then((auth) => {
       if (cancelled) return;

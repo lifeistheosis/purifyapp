@@ -44,7 +44,7 @@ export function WaysRows({ counts }: { counts: WayCounts }) {
     <ul data-theology-ways="rows" className="theology-tray overflow-hidden rounded-[20px] px-1.5 py-1">
       {WAYS.map((w) => (
         <li key={w.key} className="theology-rule">
-          <Link href={w.href} className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5">
+          <Link href={w.href} className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5 theology-row-leaves">
             <span className="min-w-0 flex-1">
               <span className="block truncate font-serif text-[17px] font-semibold leading-[1.3] text-paper">
                 <T k={w.label} />
@@ -99,7 +99,7 @@ export function CreedRow({ added = false }: { added?: boolean }) {
   return (
     <ul data-theology-creed="" className="theology-tray overflow-hidden rounded-[20px] px-1.5 py-1">
       <li>
-        <Link href="/theology/creed" className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5">
+        <Link href="/theology/creed" className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5 theology-row-leaves">
           <span className="min-w-0 flex-1">
             <span className="block truncate font-serif text-[17px] font-semibold leading-[1.3] text-paper">
               <T k="creed.title" />

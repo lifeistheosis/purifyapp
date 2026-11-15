@@ -42,6 +42,8 @@ let asking = false;
 let unreached = false;
 /** Whether the return of a signal is already being waited for, so it is waited for once. */
 let listening = false;
+/** The server has answered once in this page load: a page switch is held for the first answer alone (holdForCampaignsDoor). */
+let heard = false;
 
 // The server's last answer, kept on the device (Updates 18, Gate 2.0's
 // Community settling, 2026-11-13). Community keeps the switch's place empty
@@ -96,6 +98,7 @@ function ask(): void {
       answer = open;
       partsOn = on;
       unreached = missed;
+      heard = true;
       // A server that was not reached said nothing to keep.
       if (!missed) keepAnswer(open);
       asking = false;
@@ -258,8 +261,51 @@ export function useCampaignPart(part: CampaignPart): boolean {
   );
 }
 
+/** The longest a page switch holds the page being left while the door is asked: the signed pages' bound (lib/auth/signedHold.ts). */
+export const DOOR_HOLD_MS = 600;
+
+let hold: { over: boolean; wait: Promise<void> } | null = null;
+
+/**
+ * The wait a campaign page's door holds a page switch on, or null when it is
+ * not to hold (1.9, Updates 90). Until now the door drew an empty box 60% of
+ * the screen high while it asked the server, so a switch into a campaign's
+ * page stood empty for as long as the answer took. Now the door, mounted by a
+ * switch, suspends on this, and React keeps the page being left on the
+ * screen (with no new boundary above the door: components/layout/
+ * ArrivalBoundary.tsx) until the answer comes or DOOR_HOLD_MS passes. Past
+ * the bound the door draws its own waiting line, so a slow line never holds
+ * the screen still.
+ *
+ * Only the first answer of a page load is held for: once the server has
+ * answered, an answer asked again (Try again, the signal's return) is asked
+ * on a page already drawn, which must never suspend. A closed build holds
+ * nothing.
+ */
+export function holdForCampaignsDoor(): Promise<void> | null {
+  if (!campaignsInBuild() || heard || answer !== null) return null;
+  if (!hold) {
+    const entry: { over: boolean; wait: Promise<void> } = { over: false, wait: Promise.resolve() };
+    entry.wait = new Promise<void>((resolve) => {
+      const end = () => {
+        if (entry.over) return;
+        entry.over = true;
+        waiting.delete(end);
+        resolve();
+      };
+      waiting.add(end);
+      setTimeout(end, DOOR_HOLD_MS);
+    });
+    hold = entry;
+    ask();
+  }
+  return hold.over ? null : hold.wait;
+}
+
 /** Test seam: forget the answer. */
 export function __forgetCampaignsOpen(): void {
+  heard = false;
+  hold = null;
   kept = null;
   markedNone = null;
   answer = null;

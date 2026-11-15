@@ -1,11 +1,16 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { use, useState, useSyncExternalStore, type ReactNode } from "react";
 
 import { CampaignsClosed } from "@/components/campaigns/CampaignsClosed";
 import { NotFoundScreen } from "@/components/layout/NotFoundScreen";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { campaignsInBuild } from "@/lib/campaigns/flags";
-import { useCampaignsDoor } from "@/lib/campaigns/useCampaignsOpen";
+import { holdForCampaignsDoor, useCampaignsDoor } from "@/lib/campaigns/useCampaignsOpen";
+
+const noSubscribe = () => () => {};
+const onTheDevice = () => true;
+const inThePageHtml = () => false;
 
 /**
  * The door of every campaign page (1.9). A page shown in the apps cannot
@@ -28,8 +33,32 @@ import { useCampaignsDoor } from "@/lib/campaigns/useCampaignsOpen";
  */
 export function CampaignsGate({ children }: { children: ReactNode }) {
   const door = useCampaignsDoor();
+  // Mounted by a page switch, not woken from the page's HTML (whose first
+  // render must match it), and fixed at the first render: only a switch is
+  // held, and a door already drawn never suspends (Updates 90).
+  const mounted = useSyncExternalStore(noSubscribe, onTheDevice, inThePageHtml);
+  const [bySwitch] = useState(mounted);
+  if (door === "asking" && bySwitch) {
+    // The page being left stays on the screen until the server answers, for
+    // DOOR_HOLD_MS at the most (lib/campaigns/useCampaignsOpen.ts).
+    const wait = holdForCampaignsDoor();
+    if (wait) use(wait);
+  }
   if (door === "open") return <>{children}</>;
-  if (door === "asking") return <div data-campaigns-asking="" className="min-h-[60vh]" />;
+  if (door === "asking") return <DoorAsking />;
   if (!campaignsInBuild()) return <NotFoundScreen />;
   return <CampaignsClosed unreached={door === "unreached"} />;
+}
+
+/**
+ * The wait past the hold's bound, or in the page's HTML: a line that says so,
+ * where an empty box 60% of the screen high stood until 1.9 (Updates 90).
+ */
+function DoorAsking() {
+  const { t } = useTranslate();
+  return (
+    <p role="status" data-campaigns-asking="" className="px-5 py-16 text-center font-sans text-detail text-paper/70">
+      {t("common.loading")}
+    </p>
+  );
 }

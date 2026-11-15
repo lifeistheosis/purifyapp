@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import { ConversationClient } from "@/components/shop/ConversationClient";
+import { ArrivalBoundary } from "@/components/layout/ArrivalBoundary";
 
 export const metadata: Metadata = { title: "Conversation" };
 
@@ -10,8 +10,8 @@ export const metadata: Metadata = { title: "Conversation" };
 // native shell.
 export default function ConversationPage() {
   return (
-    <Suspense fallback={null}>
+    <ArrivalBoundary>
       <ConversationClient />
-    </Suspense>
+    </ArrivalBoundary>
   );
 }

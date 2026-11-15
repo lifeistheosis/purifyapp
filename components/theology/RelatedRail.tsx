@@ -63,7 +63,7 @@ export function RelatedRail({
         <ul className={`${WAY_TRAY} mt-2.5`}>
           {rows.map(({ g, link }) => (
             <li key={link.href} className="theology-rule">
-              <Link href={link.href} className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5">
+              <Link href={link.href} className="theology-row flex min-h-[60px] items-center gap-3 rounded-[14px] px-2.5 py-2.5 theology-row-leaves">
                 <RelatedMark group={g} link={link} />
                 <span className="min-w-0 flex-1">
                   <span lang="en" dir="ltr" className="block font-serif text-[17px] font-semibold leading-[1.3] text-paper rtl:text-right">
@@ -100,7 +100,7 @@ export function RelatedRail({
                   <li key={l.href} className="theology-rule">
                     <Link
                       href={l.href}
-                      className="theology-row mx-1.5 flex min-h-[44px] items-center gap-3 rounded-[14px] px-3 py-2"
+                      className="theology-row mx-1.5 flex min-h-[44px] items-center gap-3 rounded-[14px] px-3 py-2 theology-row-leaves"
                     >
                       {/* A related saint's, council's or study's name is English (build 90 note 4). */}
                       <span lang="en" dir="ltr" className="min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.25] text-paper/92 rtl:text-right">
