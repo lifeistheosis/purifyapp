@@ -1,6 +1,11 @@
 // Updates 51: a quote's picture still opens its own looks on Look, after build 97 note 9 (51e8a8168) moved the
 // Look tab into the shared cell. Today's saying card, Share as a picture, real touch, 390 by 844, on the export.
 //   node quote51.mjs <out dir> <json out> [en|ar]
+// Updates 81: QUOTE51_DAY=<yyyy-mm-dd> fixes the page's clock to that day at 10:30, as export-walk.mjs does, so
+// the walk can stand on a day whose headline saint has words of his own on Today (data/today/saint-words.json;
+// 2026-11-13, St John Chrysostom, is the one such day from 10 November to 31 December on the New Calendar). On
+// such a day the share tapped is the saint's band's (QUOTE51_SHARE=saying taps the saying's instead), and the
+// record says which bands and shares stood on Today.
 import fs from "node:fs";
 const R = "/home/user/purifyapp/scripts";
 const { chromium } = await import("/home/user/purifyapp/node_modules/playwright/index.mjs");
@@ -29,12 +34,15 @@ await ctx.addInitScript((l) => {
 await serveLikeTheShell(ctx, base, {});
 for (const at of ["https://purifyapp.net/**", "https://purifyapp.onrender.com/**", "https://*.supabase.co/**"]) await ctx.route(at, mainWeb);
 const page = await ctx.newPage();
+const DAY = process.env.QUOTE51_DAY ?? null;
+if (DAY) await page.clock.setFixedTime(new Date(`${DAY}T10:30:00`));
 const errors = [];
 page.on("pageerror", (e) => errors.push(String(e).slice(0, 200)));
 const cdp = await ctx.newCDPSession(page);
 const SHOTS = outFile.replace(/\.json$/, "");
 fs.mkdirSync(SHOTS, { recursive: true });
-const SHEET = `[role="dialog"][aria-label="${t("picture.title")}"]`;
+// The saint's picture sheet is named by his name (ChurchTodayRail.tsx, title={saint.name}), not "picture.title".
+const SHEET = DAY && process.env.QUOTE51_SHARE !== "saying" ? '[role="dialog"]:has([role="tabpanel"])' : `[role="dialog"][aria-label="${t("picture.title")}"]`;
 
 async function tap(selector) {
   const loc = page.locator(selector).first();
@@ -76,7 +84,7 @@ try {
   // Updates 76: twice the share control was not found in 45s. When the wait fails, Today is pictured as it
   // stands and its bands are named; then the page is scrolled through (a band may render only once near)
   // and the control is waited for again, so the record says which it was.
-  const SHARE = "[data-saying-share], [data-saint-share]";
+  const SHARE = DAY ? (process.env.QUOTE51_SHARE === "saying" ? "[data-saying-share]" : "[data-saint-share]") : "[data-saying-share], [data-saint-share]";
   try {
     await page.waitForSelector(SHARE, { timeout: 45000 });
   } catch {
@@ -97,7 +105,18 @@ try {
     await page.locator(SHARE).first().scrollIntoViewIfNeeded();
   }
   await page.waitForTimeout(2500);
-  await tap("[data-saying-share], [data-saint-share]");
+  if (DAY) {
+    const stood = await page.evaluate(() => ({
+      day: new Date().toDateString(),
+      bands: [...document.querySelectorAll("[data-today-band]")].map((b) => b.getAttribute("data-today-band")),
+      saintShares: document.querySelectorAll("[data-saint-share]").length,
+      sayingShares: document.querySelectorAll("[data-saying-share]").length,
+      saint: document.querySelector('[data-today-band="saint"] a[href^="/saints/"]')?.getAttribute("href") ?? null,
+      saintWords: (document.querySelector('[data-today-band="saint"]')?.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 120),
+    }));
+    say(stood.saintShares > 0, `on ${DAY} Today's saint band has words and its own share (tapping ${SHARE})`, stood);
+  }
+  await tap(SHARE);
   await page.waitForSelector(`${SHEET} [role="tabpanel"]`, { timeout: 20000 });
   await page.waitForTimeout(2500);
   const a = await panel();
