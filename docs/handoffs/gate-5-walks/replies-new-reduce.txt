@@ -1,0 +1,6 @@
+(node:9807) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+reduce new tap 1: 104 frames, 0 changed; waiting drawn in 0
+  tl 6172.1  part 490+102  n 3  -  card
+reduce new tap 2: 102 frames, 0 changed; waiting drawn in 0
+  tl 7922  part 490+102  n 3  -  card
