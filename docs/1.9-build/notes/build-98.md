@@ -159,3 +159,18 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 - Release day, in `flags.ts`'s order: the merge carries campaigns at "testers", so the main web shows them to his account alone and runs his signed SQL; he walks them on his phone (build 98 or the next); one line opens them for every reader, at his word and once the words that are his, a lawyer's and a priest's are settled (items 113 and 129); then the stores.
 - Until then, every message that sends him a test build names campaigns on its own line: "not until 1.9 is on the website".
 - If he wants them on his phone before release day, the only true way is the test web, which he declined on 11 November; it would take his steps on Render and a day of setup. Not recommended: it moves the drop day for a look he gets on release day anyway.
+
+## Note 11: the profile revamped
+
+**His words (2026-11-15, about 21:53 UTC),** with two screenshots at 4:53 on his clock: Profile (the round picture with the cross, "Purify", his account's email address under it, Edit; Member since May 2026, Last signed in 3 hours ago, Plan Purify Plus; Your Community profile, "Your handle, status, badges and how your card looks."; Patron saint, its note about the feast morning, and the Holy Apostle James, Son of Zebedee, Feast April 30) and the You tab under its fresco (the picture, "Purify", "Your profile" and its chevron, eight round badges, 9 days with the week's dots, "This week · 3 verses kept · 2 notes written", Where you left off with Morning prayers, Homilies on the Gospel of Matthew and Luke 10, then A verse you kept): "can your revamp the your profile screen".
+
+**Found (the arbiter, 21:55 UTC, from the code of 78c5297e1):**
+
+- "Your profile" on You opens Profile (`app/(app)/account/(signed)/profile/page.tsx`, `components/profile/ProfileTabClient.tsx`). On a phone it is three things: `ProfileHero` (the picture, the name, the sign-in address, Edit, and three facts in a list: member since, last signed in, the plan), a row to the Community profile, and the patron saint (`PatronSaintPicker`). A computer adds the stats, the activity and the settings links.
+- It reads as an account's record, not as who the reader is: the sign-in address stands under the name, large, on a screen people screenshot and share; "Last signed in" means nothing to a reader; the plan is a row of text; and what is the reader's own (the patron saint, the badges, the days kept, the Community card) is split between this page, You and the Community profile, a tap apart.
+- You is in round 3 of the fifteen screens (the Bible's opening, You, Plus), which waits with the Fable round (NOW, Waiting on him 1). Profile was not in it.
+
+**Plan (nothing is built until he says start):**
+
+- Profile joins the Fable round beside You, drawn as one design, so the two read as one place: who the reader is first (the picture, the name, the patron saint and the badges), the life they keep (the days, the week) and the Community card, with the account's facts (the address, the plan, sign-in) moved behind Edit or into Settings, not on the face of the page.
+- Stills at phone width from the app's own components, checkMock passing on all five palettes and in Arabic, each choice with its reason, for his yes; then a fixer builds it with a test that fails on 78c5297e1.

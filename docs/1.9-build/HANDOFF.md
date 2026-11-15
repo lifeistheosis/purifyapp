@@ -750,3 +750,5 @@ dash.
 - 2026-11-15 21:44 UTC, Arbiter 14: build 98 note 9 recorded: Now Playing's saved line (SaveOfflineNote) stands in the flow with no room kept, so the centred Cover view jumps by two lines as it appears and goes; plan: room kept, one line of shorter words, a fade, a test on the boxes. Nothing built.
 
 - 2026-11-15 21:44 UTC, Arbiter 14: build 98 note 10 recorded (campaigns still not seen). Found: build 98 has the pages at "testers", but the main web runs main, closed, so it says no to every account; only the merge brings the website side and his signed SQL. Named twice in lists (builds 95 and 98), never on its own line: the arbiter's miss. From now, each test build message names campaigns on its own line. No build change.
+
+- 2026-11-15 21:55 UTC, Arbiter 14: build 98 note 11 recorded (revamp the profile). Profile (ProfileTabClient: ProfileHero's picture, name, sign-in address and three facts; the Community row; the patron saint) reads as an account record; plan: it joins the Fable round beside You as one design, the account's facts moved off its face. NOW item 1 amended. Nothing built. His email is in his screenshot and is not written in the record.
