@@ -15,6 +15,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { forgetHold, useSignedHold } from "@/lib/auth/signedHold";
 import { getClientPlan, type ClientPlan } from "@/lib/entitlements/client";
 import { PLUS_ROWS, PRO_ROWS, SOON_LABEL, rowsHere } from "@/lib/premium/plusRows";
 import { useDesktopApp } from "@/lib/desktop/useDesktopApp";
@@ -77,9 +78,18 @@ const FREE: ClientPlan = {
   supporter: false,
 };
 
+/** Where a reader without Plus is sent from this screen. */
+const NO_PLAN = "/premium";
+
 export function PlanScreen() {
   const { t } = useTranslate();
   const router = useRouter();
+  // A reader who is not signed in has no plan to show: the switch holds the
+  // page they are leaving while the session is read and goes straight on to
+  // the offer, never through the waiting line below (lib/auth/signedHold.ts;
+  // Gate 3c group 2, 22 frames of it). Signed in, it reads the plan as before.
+  useSignedHold("/plan", NO_PLAN, () => true);
+  useEffect(() => forgetHold("/plan"), []);
   const [plan, setPlan] = useState<ClientPlan | null>(null);
 
   useEffect(() => {
@@ -104,7 +114,7 @@ export function PlanScreen() {
   }, []);
 
   useEffect(() => {
-    if (plan && plan.tier === "free") router.replace("/premium");
+    if (plan && plan.tier === "free") router.replace(NO_PLAN);
   }, [plan, router]);
 
   if (!plan || plan.tier === "free") {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { forgetHold, useSignedHold } from "@/lib/auth/signedHold";
 import { isNativeClient } from "@/lib/platform/native";
 import { resolveUser } from "@/lib/supabase/resolveUser";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -23,14 +24,34 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * WebView's local session and renders when signed in, redirects on a RESOLVED
  * signed-out, and shows a retry (never a fake sign-out) when it genuinely
  * can't tell.
+ *
+ * With no session stored on the device it first holds the page the reader is
+ * leaving while the session is read (lib/auth/signedHold.ts, the one rule for
+ * signed pages), so a reader who is not signed in goes straight from that page
+ * to sign in, never through this gate's waiting line (Gate 3c, group 1: 22 to
+ * 24 frames of it on every switch into an account screen). A reader with a
+ * session stored arrives as before.
+ *
+ * `to` is where a reader who is not signed in goes: sign in, coming back here.
  */
-export function AccountAuthGate({ children }: { children: React.ReactNode }) {
+export function AccountAuthGate({
+  children,
+  to,
+}: {
+  children: React.ReactNode;
+  to?: string;
+}) {
   const { t } = useTranslate();
   const router = useRouter();
   const pathname = usePathname();
+  const away = to ?? `/signin?next=${encodeURIComponent(pathname)}`;
+  const held = useSignedHold(pathname, away, isNativeClient);
   const [state, setState] = useState<"loading" | "in" | "out" | "unresolved">(
-    "loading",
+    () => (held?.state === "signed-in" ? "in" : held?.state === "unresolved" ? "unresolved" : "loading"),
   );
+
+  // Drawn: the next visit reads the session again.
+  useEffect(() => forgetHold(pathname), [pathname]);
   const [attempt, setAttempt] = useState(0);
 
   // The retry handler resets to "loading" before bumping `attempt` (state
@@ -54,7 +75,7 @@ export function AccountAuthGate({ children }: { children: React.ReactNode }) {
         setState("in");
       } else if (auth.state === "signed-out") {
         setState("out");
-        router.replace(`/signin?next=${encodeURIComponent(pathname)}`);
+        router.replace(away);
       } else {
         setState("unresolved");
       }
@@ -62,7 +83,7 @@ export function AccountAuthGate({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [router, pathname, attempt]);
+  }, [router, away, attempt]);
 
   if (state === "in") return <>{children}</>;
 
