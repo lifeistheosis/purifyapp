@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from "react";
 
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Heart } from "@/components/ui/icons/Heart";
 import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
 
 /**
  * Product favorite, backed by the app-wide bookmarks store so saved
- * icons appear on /saved beside verses and prayers. Mounted gate keeps
+ * pieces appear on /saved beside verses and prayers. Mounted gate keeps
  * the server render (never favorited) from flashing.
+ *
+ * The heart is named by the piece it sits on (1.9, Updates 77): it said
+ * "Save this icon" on every piece, a prayer rope and a cross among them.
  */
 export function FavoriteButton({
   productSlug,
@@ -28,6 +32,7 @@ export function FavoriteButton({
   imageAlt?: string;
   className?: string;
 }) {
+  const { t } = useTranslate();
   const { toggle, isBookmarked } = useBookmarks();
   const [mounted, setMounted] = useState(false);
   /* eslint-disable-next-line react-hooks/set-state-in-effect -- one-time
@@ -39,6 +44,7 @@ export function FavoriteButton({
   // Replay the pop only when the heart goes on (not on remove). Keyed off a
   // nonce bumped by the click so the CSS animation re-fires each save.
   const [pop, setPop] = useState(0);
+  const label = saved ? "Remove from saved" : t("saints.saveAria", { name: title });
 
   return (
     <button
@@ -56,8 +62,8 @@ export function FavoriteButton({
         });
       }}
       aria-pressed={saved}
-      aria-label={saved ? "Remove from saved" : "Save this icon"}
-      title={saved ? "Remove from saved" : "Save this icon"}
+      aria-label={label}
+      title={label}
       className={cn(
         "tap-press inline-flex h-11 w-11 items-center justify-center rounded-full border transition-colors",
         saved
