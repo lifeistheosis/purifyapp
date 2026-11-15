@@ -747,24 +747,38 @@ async function loadedTour() {
     await tapAt(cdp, box.x, box.y);
     return true;
   };
+  /** Waits for `find` (a box in the page, or null) to find something, up to `ms`. */
+  const until = async (find, ms) => {
+    const end = Date.now() + ms;
+    for (;;) {
+      if (await page.evaluate(find)) return true;
+      if (Date.now() > end) return false;
+      await sleep(250);
+    }
+  };
   // The foot's players as they stand: the mini player and the reader's dock that are drawn.
   // The box of the foot's player that is drawn, or null.
+  // The foot's surface: with a track, the dock on the Bible and the mini player everywhere else;
+  // with a sound playing alone, the Bible's pill (which carries the sound's own button, lit) and
+  // the mini player everywhere else (Updates 98e: the count expected a player on the Bible).
+  const FOOT = LOADED === "sound" ? ["[data-mini-player]", "[data-reader-pill]"] : ["[data-mini-player]", "[data-reader-dock]"];
+  const FACE = LOADED === "sound" ? ["[data-mini-player] .mini-player", "[data-reader-pill] [data-fit]"] : ["[data-mini-player] .mini-player", "[data-reader-dock] .reader-dock"];
   const footBox = () =>
-    page.evaluate(() => {
-      const el = [...document.querySelectorAll("[data-mini-player] .mini-player, [data-reader-dock] .reader-dock")].find((e) => getComputedStyle(e.closest("[data-mini-player], [data-reader-dock]")).display !== "none" && e.getBoundingClientRect().height > 0);
+    page.evaluate(({ foot, face }) => {
+      const el = [...document.querySelectorAll(face.join(", "))].find((e) => getComputedStyle(e.closest(foot.join(", "))).display !== "none" && e.getBoundingClientRect().height > 0);
       const r = el?.getBoundingClientRect();
       return r ? { top: r.top, bottom: r.bottom } : null;
-    });
+    }, { foot: FOOT, face: FACE });
   const footNow = () =>
-    page.evaluate(() =>
-      [...document.querySelectorAll("[data-mini-player], [data-reader-dock]")]
+    page.evaluate((foot) =>
+      [...document.querySelectorAll(foot.join(", "))]
         .filter((el) => {
           const s = getComputedStyle(el);
           const r = el.getBoundingClientRect();
           return s.display !== "none" && s.visibility !== "hidden" && Number(s.opacity) > 0.05 && r.height > 0;
         })
-        .map((el) => (el.matches("[data-reader-dock]") ? "dock" : "mini player")),
-    );
+        .map((el) => (el.matches("[data-reader-dock]") ? "dock" : el.matches("[data-reader-pill]") ? "pill" : "mini player")),
+    FOOT);
   const centre = (sel) => `(() => { const el = [...document.querySelectorAll(${JSON.stringify(sel)})].find((e) => e.getBoundingClientRect().height > 0); const r = el?.getBoundingClientRect(); return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null; })()`;
   const report = { loaded: LOADED, motion: MODE, switches: [], nowPlaying: null, setup: null };
   let failed = 0;
@@ -779,12 +793,18 @@ async function loadedTour() {
       if (!played) throw new Error("no Listen on John 10's pill");
       await sleep(1500);
     } else {
-      await tapTab(1);
-      await sleep(1800);
-      // The pill's sound button: after the chapter's name, the last of its buttons that opens a sheet.
-      if (!(await tapWhere(`(() => { const el = [...document.querySelectorAll("[data-reader-pill] button[aria-haspopup='dialog']")].pop(); const r = el?.getBoundingClientRect(); return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null; })()`))) throw new Error("no sound button on the Bible's pill");
-      await sleep(900);
-      if (!(await tapWhere(centre("[role='dialog'] button[aria-pressed='false']")))) throw new Error("no sound in the ambience sheet");
+      // The chapter the Bible's tab then opens, as with a track. Its pill comes with the chapter,
+      // which in the apps is read after the page opens, so the walk waits for the pill's sound
+      // button (Updates 98e: tapped 1.8s after the tab, it was not there yet, and the pass never ran).
+      await go(page, "/bible/john/10/", { timeout: 30000 });
+      const soundButton = centre("[data-reader-pill] button[aria-haspopup='dialog'][aria-label='Ambience']");
+      if (!(await until(soundButton, 15000))) throw new Error("no sound button on the Bible's pill");
+      await sleep(600);
+      await tapWhere(soundButton);
+      const aSound = centre("[role='dialog'] button[aria-pressed='false']");
+      if (!(await until(aSound, 8000))) throw new Error("no sound in the ambience sheet");
+      await sleep(500);
+      await tapWhere(aSound);
       await sleep(900);
       await page.keyboard.press("Escape");
       await sleep(900);
@@ -805,7 +825,7 @@ async function loadedTour() {
         // Frame by frame in the page, the foot's players while the switch runs: the dock and the
         // mini player are one surface, so every frame shows exactly one. Two at once is the mini
         // player left standing over the new page; none is the cut between them.
-        await page.evaluate(() => {
+        await page.evaluate((foot) => {
           const w = window;
           w.__foot = [];
           w.__footOn = true;
@@ -814,15 +834,17 @@ async function loadedTour() {
             return st.display !== "none" && st.visibility !== "hidden" && Number(st.opacity) > 0.05 && el.getBoundingClientRect().height > 0;
           };
           const loop = () => {
-            w.__foot.push([...document.querySelectorAll("[data-mini-player], [data-reader-dock]")].filter(shownOf).length);
+            w.__foot.push([...document.querySelectorAll(foot.join(", "))].filter(shownOf).length);
             if (w.__footOn) requestAnimationFrame(loop);
           };
           requestAnimationFrame(loop);
-        });
+        }, FOOT);
         const rec = await recordFrames(page, cdp, () => tapTab(b), RECORD);
         const r = { v: await judged(rec, `/loaded-${LOADED}/`, `${tabs[a]}-${tabs[b]}`) };
         await sleep(600);
         const foot = await footCut(rec, boxBefore, await footBox());
+        // --shots: the foot's band in every frame from the tap, side by side (their times in the report).
+        if (SHOTS && foot) foot.strip = await footStrip(rec, boxBefore, await footBox(), path.join(SHOTS, `foot-${LOADED}-${MODE}-${tabs[a]}-${tabs[b]}.png`)).catch(() => null);
         const counts = await page.evaluate(() => {
           window.__footOn = false;
           return window.__foot;
@@ -847,26 +869,47 @@ async function loadedTour() {
       // Now Playing, opened from the mini player on Prayers and closed with its own button, timed at --cpu.
       await tapTab(3);
       await sleep(1500);
+      // Frame by frame from the tap: each frame's time, where the panel stands (its top, from the
+      // foot of the screen up to 0), and whether a blurred layer is drawn in it while it moves
+      // (Updates 98e: the slide's start, measured from the tap, and the blur that moved with it).
       const timed = async (act) => {
         await page.evaluate(() => {
           const w = window;
           w.__frames = [];
+          w.__panel = [];
           w.__framesOn = true;
+          w.__t0 = performance.now();
           let last = performance.now();
           const loop = (t) => {
             w.__frames.push(Math.round((t - last) * 10) / 10);
             last = t;
+            const panel = document.querySelector("[data-now-playing] > .dark-island, [role='dialog'][aria-modal='true'][aria-label='Now playing'] > .dark-island");
+            const r = panel?.getBoundingClientRect();
+            const moving = Boolean(r && r.top > 1 && r.top < innerHeight - 1);
+            w.__panel.push({ t: Math.round(t - w.__t0), top: r ? Math.round(r.top) : null, blur: moving && Boolean(panel.querySelector("[style*='blur(']")) });
             if (w.__framesOn) requestAnimationFrame(loop);
           };
           requestAnimationFrame(loop);
         });
         await act();
         await sleep(1200);
-        const frames = await page.evaluate(() => {
+        const { frames, panel } = await page.evaluate(() => {
           window.__framesOn = false;
-          return window.__frames;
+          return { frames: window.__frames, panel: window.__panel };
         });
-        return { frames: frames.length, longest: Math.max(0, ...frames), over50: frames.filter((f) => f > 50).length, first10: frames.slice(0, 10) };
+        const moved = panel.find((p) => p.top !== null && p.top > 1 && p.top < HEIGHT - 1);
+        const landed = [...panel].reverse().find((p) => p.top !== null && p.top > 1);
+        return {
+          frames: frames.length,
+          longest: Math.max(0, ...frames),
+          over50: frames.filter((f) => f > 50).length,
+          first10: frames.slice(0, 10),
+          movedAt: moved ? moved.t : null,
+          lastMoving: landed ? landed.t : null,
+          blurMoving: panel.filter((p) => p.blur).length,
+          // Where the panel stood, every third frame (for the report).
+          trace: panel.filter((_, i) => i % 3 === 0).slice(0, 24).map((p) => `${p.t}:${p.top ?? "-"}${p.blur ? "b" : ""}`).join(" "),
+        };
       };
       await cdp.send("Emulation.setCPUThrottlingRate", { rate: CPU });
       const open = await timed(() => tapWhere(centre("[data-mini-player] button[aria-label^='Now playing']")));
@@ -874,8 +917,14 @@ async function loadedTour() {
       const close = await timed(() => tapWhere(centre("[role='dialog'] button[aria-label='Close'], [role='dialog'] button[aria-label^='Close']")));
       await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
       report.nowPlaying = { cpu: CPU, opened: openFoot, open, close };
-      console.log(`  Now Playing at CPU ${CPU}x: open ${open.frames} frames, longest ${open.longest}ms, ${open.over50} over 50ms (first: ${open.first10.join(" ")}); close ${close.frames} frames, longest ${close.longest}ms, ${close.over50} over 50ms`);
+      console.log(`  Now Playing at CPU ${CPU}x: open ${open.frames} frames, longest ${open.longest}ms, ${open.over50} over 50ms (first: ${open.first10.join(" ")}); the slide moving from ${open.movedAt}ms to ${open.lastMoving}ms after the tap, a blurred layer moving in ${open.blurMoving} frame(s); close ${close.frames} frames, longest ${close.longest}ms, ${close.over50} over 50ms, a blurred layer moving in ${close.blurMoving} frame(s)`);
       if (!openFoot) failed += 1;
+      // No blur moves with the sheet (CLAUDE.md; note 8): a blurred layer in a moving panel is the
+      // costliest thing a phone's web view can be asked to move.
+      if (MODE !== "reduce" && open.blurMoving + close.blurMoving > 0) {
+        console.log(`  FAIL Now Playing: a blurred layer moved with the sheet in ${open.blurMoving + close.blurMoving} frame(s)`);
+        failed += 1;
+      }
     }
   } catch (e) {
     report.error = String(e?.message ?? e);
@@ -917,5 +966,36 @@ async function footCut(rec, a, b) {
     const step = d(px[i - 1], px[i]);
     if (step > worst) [worst, at] = [step, i];
   }
-  return { total: Math.round(total * 10) / 10, worst: Math.round(worst * 10) / 10, share: total > 0 ? Math.round((worst / total) * 100) / 100 : 0, ms: Math.round(after[at].t - rec.tapped), frames: after.length };
+  return {
+    total: Math.round(total * 10) / 10,
+    worst: Math.round(worst * 10) / 10,
+    share: total > 0 ? Math.round((worst / total) * 100) / 100 : 0,
+    ms: Math.round(after[at].t - rec.tapped),
+    frames: after.length,
+    // Each frame's time from the tap and its step from the one before, as a share of the whole change.
+    steps: px.map((p, i) => ({ ms: Math.round(after[i].t - rec.tapped), share: i && total > 0 ? Math.round((d(px[i - 1], p) / total) * 100) / 100 : 0 })),
+  };
+}
+
+/** The foot's band (the boxes before and after, and 120px over them) in every frame from the tap to 900ms, side by side, full size. */
+async function footStrip(rec, a, b, file) {
+  const top = Math.max(0, Math.min(a?.top ?? HEIGHT, b?.top ?? HEIGHT) - 120);
+  const bottom = Math.min(HEIGHT, Math.max(a?.bottom ?? 0, b?.bottom ?? 0) + 70);
+  const after = rec.frames.filter((f) => f.t >= rec.tapped - 50 && f.t <= rec.tapped + 900);
+  if (!after.length) return null;
+  const tiles = await Promise.all(
+    after.map(async (f) => {
+      const buf = Buffer.from(f.data, "base64");
+      const { width: w, height: h } = await sharp(buf).metadata();
+      const k = h / HEIGHT;
+      return sharp(buf).extract({ left: 0, top: Math.round(top * k), width: w, height: Math.max(1, Math.round((bottom - top) * k)) }).resize(WIDTH, Math.round(bottom - top), { fit: "fill" }).png().toBuffer();
+    }),
+  );
+  const gap = 6;
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  await sharp({ create: { width: tiles.length * WIDTH + (tiles.length - 1) * gap, height: Math.round(bottom - top), channels: 3, background: { r: 255, g: 0, b: 128 } } })
+    .composite(tiles.map((input, n) => ({ input, left: n * (WIDTH + gap), top: 0 })))
+    .png()
+    .toFile(file);
+  return { file: path.basename(file), times: after.map((f) => Math.round(f.t - rec.tapped)) };
 }

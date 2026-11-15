@@ -58,7 +58,7 @@
 // bar draws in the same way: the sound's mark in the disc's place, its name,
 // and Stop.
 
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { AmbienceButton, AmbienceIcon } from "@/components/player/AmbienceButton";
@@ -70,6 +70,7 @@ import { getAmbienceTrack } from "@/lib/ambience/ambience";
 import { stopAmbience, useAmbience } from "@/lib/ambience/player";
 import { openAmbience } from "@/lib/ambience/sheet";
 import { connectLockScreen } from "@/lib/player/lockScreen";
+import { noteCarryFrom } from "@/lib/player/carry";
 import { EVERYTHING, hostsEverything, playsOnPage, usePagePlayer } from "@/lib/player/pagePlayer";
 import { openNowPlaying, useNowPlayingSheet } from "@/lib/player/sheet";
 import { pause, play, unload, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
@@ -167,6 +168,9 @@ export function NowPlayingBar() {
   const openLabel = `${t("prayers.nowPlaying")}: ${title ?? ""}`;
   const toggle = () => (playing ? pause() : play());
   const toggleLabel = playing ? t("prayers.pause") : t("prayers.play");
+  // Opening Now Playing carries the disc's picture up into the cover's place
+  // (build 98 note 8, lib/player/carry.ts).
+  const noteCarry = (e: MouseEvent<HTMLElement>) => noteCarryFrom(e.currentTarget.querySelector("img"));
 
   return (
     <MiniPlayer
@@ -174,6 +178,7 @@ export function NowPlayingBar() {
         <>
           <button
             type="button"
+            onClickCapture={noteCarry}
             onClick={() => openNowPlaying()}
             aria-label={openLabel}
             className="tap-press flex min-w-0 flex-1 items-center gap-3 text-start"
@@ -213,6 +218,7 @@ export function NowPlayingBar() {
         <>
           <button
             type="button"
+            onClickCapture={noteCarry}
             onClick={() => openNowPlaying()}
             aria-label={openLabel}
             className="tap-press hit-44 flex h-full min-w-0 items-center gap-2.5 text-start"

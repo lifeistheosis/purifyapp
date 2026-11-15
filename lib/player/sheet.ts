@@ -47,6 +47,18 @@ export function openNowPlaying(opts: { view?: PlayerView } = {}): void {
   set({ open: true, ...(opts.view ? { view: opts.view } : {}) });
 }
 
+/**
+ * The view kept on the device, read before the player is first opened: Now
+ * Playing stands built while anything is loaded (build 98 note 8), so it is
+ * built in the view it will open in, and opening it only slides it.
+ */
+export function primeNowPlayingView(): void {
+  if (primed) return;
+  primed = true;
+  const view = readView();
+  if (view !== state.view) set({ view });
+}
+
 export function closeNowPlaying(): void {
   set({ open: false });
 }

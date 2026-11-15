@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { Reference } from "@/components/bible/Reference";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -15,8 +15,9 @@ import { openVoiceSheet, useVoiceSheet } from "@/lib/listen/speech/sheet";
 import { playerOpenForGone, useVoiceShown } from "@/lib/listen/speech/speak";
 import { cn } from "@/lib/cn";
 import { verseOf } from "@/lib/player/captions";
+import { takeCarry } from "@/lib/player/carry";
 import { useSungLines } from "@/lib/player/clock";
-import { closeNowPlaying, setPlayerView, useNowPlayingSheet, type PlayerView } from "@/lib/player/sheet";
+import { closeNowPlaying, primeNowPlayingView, setPlayerView, useNowPlayingSheet, type PlayerView } from "@/lib/player/sheet";
 import { useSleepTimer } from "@/lib/player/sleep";
 import { nextSpeed, saveSpeed, speedText } from "@/lib/player/speed";
 import { playingOf, readHref, shareHref } from "@/lib/player/steps";
@@ -87,12 +88,36 @@ import { OptionWord, PositionBar, optionClass } from "./Transport";
  */
 const LOOPS: LoopMode[] = ["off", "inf", 3, 7, 12];
 
+/** The slide up and down, on the house curve (app/globals.css, --ease-house), which the carried picture shares. */
+const SLIDE_MS = 380;
+const HOUSE = "cubic-bezier(0.22, 1, 0.36, 1)";
+/** Where the panel docks beside the page and slides from the side: nothing is carried there. */
+const WIDE = "(min-width: 768px)";
+const still = () => document.documentElement.dataset.motion === "reduce";
+
 export function NowPlayingSheet() {
   const { t, locale } = useTranslate();
   const audio = usePersistentAudio();
   const { open, view } = useNowPlayingSheet();
-  const [mounted, setMounted] = useState(false);
-  const [shown, setShown] = useState(false);
+  // Built while anything is loaded, not when it is opened (build 98 note 8,
+  // his word of 2026-11-15: "make the music player opening more smooth"). The
+  // tap used to mount the whole screen, the large cover and its decoding
+  // included, and slide it two frames later, so the slide began while the
+  // phone was still building it. Now it stands built and drawn closed, out of
+  // sight, out of reach and out of hearing, and a tap only slides it. Ready
+  // once it has been drawn closed: opened before that, it slides then.
+  const hasSrc = Boolean(audio.src);
+  const [ready, setReady] = useState(false);
+  const up = open && ready;
+  // Up and still: the slide has ended. The blurred picture behind it all is
+  // drawn only then, and taken away as soon as it goes down, so no blur ever
+  // moves (a blurred layer in motion costs an Android phone its frames).
+  const [settled, setSettled] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const coverRef = useRef<HTMLDivElement>(null);
+  const thumbRef = useRef<HTMLSpanElement>(null);
+  const flightRef = useRef<HTMLDivElement>(null);
   const [sleepMenu, setSleepMenu] = useState(false);
   const [moreMenu, setMoreMenu] = useState(false);
   const sleep = useSleepTimer();
@@ -112,26 +137,111 @@ export function NowPlayingSheet() {
     playerOpenForGone(open);
   }, [open, gone]);
   const hasWords = Boolean(audio.captions && audio.captions.length > 0);
+  const words = hasWords && view === "words";
   // The one clock that lights the words and counts the verses
   // (lib/player/clock.ts), running while the player is open.
   const sung = useSungLines(audio.captions, audio.duration, open && hasWords);
 
-  // Slide in after mounting, slide out before unmounting.
   /* eslint-disable react-hooks/set-state-in-effect -- the sheet's own
-     enter and leave, driven by the store's open flag. */
+     readiness and rest, driven by what is loaded and the store's open flag. */
   useEffect(() => {
-    if (open) {
-      setMounted(true);
-      const id = requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)));
-      return () => cancelAnimationFrame(id);
+    if (!hasSrc) {
+      setReady(false);
+      return;
     }
-    setShown(false);
+    // Built in the view it will open in, so opening changes nothing but its place.
+    primeNowPlayingView();
+    let second = 0;
+    const first = requestAnimationFrame(() => {
+      second = requestAnimationFrame(() => setReady(true));
+    });
+    return () => {
+      cancelAnimationFrame(first);
+      cancelAnimationFrame(second);
+    };
+  }, [hasSrc]);
+  useEffect(() => {
+    if (open) return;
     setSleepMenu(false);
     setMoreMenu(false);
-    const id = setTimeout(() => setMounted(false), 380);
-    return () => clearTimeout(id);
   }, [open]);
+  useEffect(() => {
+    if (!up) {
+      setSettled(false);
+      return;
+    }
+    if (still()) {
+      setSettled(true);
+      return;
+    }
+    // The panel's own transitionend settles it; this, if that never comes.
+    const id = setTimeout(() => setSettled(true), SLIDE_MS + 240);
+    return () => clearTimeout(id);
+  }, [up]);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  // The mini player's picture carried up into the cover's place as the
+  // screen rises (note 8): the house's way, a card carrying its picture into
+  // what it opens. The panel clips what is inside it, so a copy flies on its
+  // own, over the panel, from where the tapped picture stood (lib/player/
+  // carry.ts) to where the cover will stand once the panel is up, on the
+  // panel's curve and time, so the two land together; the cover is hidden
+  // while it flies and shown in the frame it lands. It leaves the mini
+  // player round and lands square: a round copy over a square one, the round
+  // fading as they fly. Transform and opacity only, which the compositor
+  // draws whatever the page is doing. On a phone alone (on a wider screen the
+  // panel comes from the side), and never under reduced motion.
+  useLayoutEffect(() => {
+    if (!up) return;
+    const from = takeCarry();
+    const root = rootRef.current;
+    const slab = panelRef.current;
+    const flight = flightRef.current;
+    const target = (words ? thumbRef : coverRef).current?.querySelector("img");
+    if (!from || !root || !slab || !flight || !target || !target.complete || target.naturalWidth === 0) return;
+    if (still() || window.matchMedia(WIDE).matches) return;
+    const p = slab.getBoundingClientRect();
+    const t = target.getBoundingClientRect();
+    // The panel's top is the screen's once it is up.
+    const to = { left: t.left - p.left, top: t.top - p.top, width: t.width, height: t.height };
+    if (to.width < 4 || to.height < 4) return;
+    const look = getComputedStyle(target);
+    const copy = (radius: string, shadow: string) => {
+      const img = document.createElement("img");
+      img.src = target.currentSrc || target.src;
+      img.alt = "";
+      img.decoding = "sync";
+      img.style.cssText = `position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:${look.objectPosition};border-radius:${radius};box-shadow:${shadow}`;
+      return img;
+    };
+    const square = copy(look.borderTopLeftRadius, look.boxShadow);
+    const round = copy("50%", "none");
+    flight.replaceChildren(square, round);
+    Object.assign(flight.style, { left: `${to.left}px`, top: `${to.top}px`, width: `${to.width}px`, height: `${to.height}px`, display: "block" });
+    root.dataset.carrying = "";
+    const timing: KeyframeAnimationOptions = { duration: SLIDE_MS, easing: HOUSE, fill: "both" };
+    const moves = [
+      flight.animate(
+        [
+          { transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width}, ${from.height / to.height})` },
+          { transform: "none" },
+        ],
+        timing,
+      ),
+      round.animate([{ opacity: from.round ? 1 : 0 }, { opacity: 0 }], { duration: SLIDE_MS * 0.6, easing: "linear", fill: "both" }),
+    ];
+    let landed = false;
+    const land = () => {
+      if (landed) return;
+      landed = true;
+      for (const m of moves) m.cancel();
+      flight.style.display = "none";
+      flight.replaceChildren();
+      delete root.dataset.carrying;
+    };
+    moves[0].finished.then(land, land);
+    return land;
+  }, [up, words]);
 
   // Esc closes, unless a sheet stands over the player, and the page under it
   // does not scroll while it is open. The lock is the counted one every sheet
@@ -161,9 +271,8 @@ export function NowPlayingSheet() {
     if (open && !audio.src) closeNowPlaying();
   }, [open, audio.src]);
 
-  if (!mounted || !audio.src) return null;
+  if (!audio.src) return null;
 
-  const words = hasWords && view === "words";
   const loopIndex = LOOPS.indexOf(audio.loopMode);
   const loopLabel =
     audio.loopMode === "off" ? t("common.off") : audio.loopMode === "inf" ? t("prayers.audio.loop") : `${audio.loopMode}×`;
@@ -190,7 +299,18 @@ export function NowPlayingSheet() {
   const panel = "absolute inset-0 flex flex-col transition-opacity duration-[380ms] ease-[var(--ease-house)] motion-reduce:transition-none";
 
   return (
-    <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label={t("prayers.nowPlaying")}>
+    // Closed, it stands built but unseen (app/globals.css, .now-playing-closed):
+    // out of reach and out of hearing, and no dialog, so nothing reads it as up.
+    <div
+      ref={rootRef}
+      data-now-playing=""
+      className={cn("fixed inset-0 z-[70]", !up && "now-playing-closed pointer-events-none")}
+      role={up ? "dialog" : undefined}
+      aria-modal={up ? true : undefined}
+      aria-label={up ? t("prayers.nowPlaying") : undefined}
+      aria-hidden={up ? undefined : true}
+      inert={!up}
+    >
       {/* On a computer the page stays in view, dimmed, beside the panel: the
           house's own dim, every sheet's (components/ui/Sheet.tsx), drawn from
           the palette's night, so Light and every look dim in their own colour. */}
@@ -200,10 +320,14 @@ export function NowPlayingSheet() {
         onClick={closeNowPlaying}
         className={cn(
           "absolute inset-0 hidden bg-night/60 transition-opacity duration-300 md:block",
-          shown ? "opacity-100" : "opacity-0",
+          up ? "opacity-100" : "opacity-0",
         )}
       />
       <div
+        ref={panelRef}
+        onTransitionEnd={(e) => {
+          if (e.target === e.currentTarget && up) setSettled(true);
+        }}
         data-mock-allow="stripe" data-mock-why="the player's edge, docked beside the page on a wide screen"
         className={cn(
           // Dark on every palette, as a player is (dark-island puts the
@@ -211,21 +335,20 @@ export function NowPlayingSheet() {
           // it docks at the end of the line and leaves that way: the right in
           // English, the left in Arabic, its edge on the side the page is.
           "dark-island absolute inset-0 flex flex-col overflow-hidden bg-night md:start-auto md:w-[440px] md:border-s md:border-paper/10",
-          "transition-transform duration-[380ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] [:where([data-motion=reduce])_&]:transition-none",
-          shown ? "translate-y-0" : "translate-y-full md:translate-y-0 md:translate-x-full md:rtl:-translate-x-full",
+          // The house curve, which the carried picture shares, so they land together.
+          "transition-transform duration-[380ms] ease-[var(--ease-house)] [:where([data-motion=reduce])_&]:transition-none",
+          up ? "translate-y-0" : "translate-y-full md:translate-y-0 md:translate-x-full md:rtl:-translate-x-full",
         )}
       >
-        {/* The picture again, grey and soft, behind it all: still, once the
-            sheet is up, so the blur is drawn once and not on every frame. */}
-        {audio.art ? (
+        {/* The picture again, grey and soft, behind it all: drawn once the
+            slide has ended and faded in where it stands, taken away as the
+            slide down starts, so the blur never moves (build 98 note 8). */}
+        {audio.art && up && settled ? (
           <CoverArt
             src={audio.art}
             fallback={audio.artFallback}
             size={440}
-            className={cn(
-              "pointer-events-none absolute -inset-16 h-[calc(100%+8rem)] w-[calc(100%+8rem)] max-w-none transition-opacity duration-700",
-              shown ? "opacity-30" : "opacity-0",
-            )}
+            className="now-playing-backdrop pointer-events-none absolute -inset-16 h-[calc(100%+8rem)] w-[calc(100%+8rem)] max-w-none"
             style={{ filter: "grayscale(1) blur(42px) brightness(0.5)" }}
           />
         ) : null}
@@ -290,7 +413,7 @@ export function NowPlayingSheet() {
               className={cn(panel, words ? "pointer-events-none opacity-0" : "opacity-100")}
             >
               {/* As large as the screen leaves it, to 340px, and square. */}
-              <div className="relative flex min-h-0 flex-1 items-center justify-center [container-type:size]">
+              <div ref={coverRef} data-carry-to="" className="relative flex min-h-0 flex-1 items-center justify-center [container-type:size]">
                 {audio.art ? (
                   <CoverArt
                     src={audio.art}
@@ -326,12 +449,14 @@ export function NowPlayingSheet() {
               >
                 <div className="flex items-center gap-3">
                   {audio.art ? (
-                    <CoverArt
-                      src={audio.art}
-                      fallback={audio.artFallback}
-                      size={48}
-                      className="h-12 w-12 shrink-0 rounded-[10px] object-[50%_18%]"
-                    />
+                    <span ref={thumbRef} data-carry-to="" className="contents">
+                      <CoverArt
+                        src={audio.art}
+                        fallback={audio.artFallback}
+                        size={48}
+                        className="h-12 w-12 shrink-0 rounded-[10px] object-[50%_18%]"
+                      />
+                    </span>
                   ) : (
                     <CrossPlate size="thumb" className="h-12 w-12 shrink-0 rounded-[10px]" />
                   )}
@@ -360,7 +485,7 @@ export function NowPlayingSheet() {
                   // they ease to the line being read, as on coming back from Cover;
                   // the ambience uncovers them once its close has run, not as it
                   // starts, or the glow held its fall to 26 frames (Updates 67).
-                  active={words && !covered && !ambienceLeaving}
+                  active={up && words && !covered && !ambienceLeaving}
                   look="player"
                   rtl={audio.rtl}
                   onSeek={seek}
@@ -468,6 +593,8 @@ export function NowPlayingSheet() {
           <SleepTimerSheet open={sleepMenu} onClose={() => setSleepMenu(false)} layer="over-player" />
         </div>
       </div>
+      {/* The carried picture, over the panel while it flies (above). */}
+      <div ref={flightRef} aria-hidden className="pointer-events-none fixed origin-top-left" style={{ display: "none" }} />
     </div>
   );
 }

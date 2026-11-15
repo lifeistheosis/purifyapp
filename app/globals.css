@@ -1209,7 +1209,22 @@ html.is-native.has-text-pill .safe-pb {
    foot is in the same picture, so it changes with the move.
 
    Under reduced motion no page switch is started (routeMotion.canMove): the
-   two simply change, in one frame, with no blank between. */
+   two simply change, in one frame, with no blank between.
+
+   The change happens where the two stand, and nothing in it waits on the
+   page (Updates 98e, from the motion walk's strips of build 98 note 14). The
+   browser's own move from one box to the other animates the box's width and
+   height, which only the page's main thread can draw, and that thread is
+   busiest just then, building the page that arrives: in the strips the two
+   pictures faded into each other in the old box for 40 to 60ms and the box
+   then leapt most of the way in one frame (50 to 78% of the change), on a
+   computer; a phone is slower still. So the box does not move: the bar and
+   the card each stand at their own size on the foot of it and fade into each
+   other, which the screen's compositor draws on its own, on time whatever the
+   page is doing. The picture that leaves stands where it stood: the page that
+   hosts the player writes the step between their feet (--foot-shift, under
+   .foot-handover, lib/player/pagePlayer.ts) in the commit that brings it or
+   takes it away. */
 html.hosts-player [data-mini-player] {
  display: none;
 }
@@ -1227,14 +1242,50 @@ html.hosts-player.reader-focus.has-reader-dock {
 ::view-transition-group(foot-player) {
  animation-duration: var(--duration-route-enter);
  animation-timing-function: var(--ease-house);
+ animation-name: none;
 }
 ::view-transition-old(foot-player),
 ::view-transition-new(foot-player) {
- block-size: 100%;
- object-fit: cover;
- overflow: clip;
+ inset-block: auto 0;
+ inset-inline: 0;
+ margin-inline: auto;
+ inline-size: auto;
+ block-size: auto;
  animation-duration: var(--duration-route-enter);
  animation-timing-function: var(--ease-house);
+}
+html.foot-handover::view-transition-old(foot-player) {
+ inset-block-end: calc(-1 * var(--foot-shift, 0px));
+}
+
+/* Now Playing stands ready (build 98 note 8, his word of 2026-11-15: "make
+   the music player opening more smooth"; components/player/NowPlayingSheet.tsx).
+   While anything is loaded it is built and drawn closed, and a tap only
+   slides it. Closed it is unseen, once its slide down has run, and seen at
+   once as it opens. The blurred picture behind it comes only once the slide
+   has ended, and fades in where it stands. While the mini player's picture
+   flies up into the cover's place, the cover waits unseen and is shown in the
+   frame the copy lands. */
+.now-playing-closed {
+ visibility: hidden;
+ transition: visibility 0s linear 380ms;
+}
+.now-playing-backdrop {
+ opacity: 0.3;
+ animation: now-playing-backdrop-in 700ms var(--ease-house) both;
+}
+@keyframes now-playing-backdrop-in {
+ from { opacity: 0; }
+ to { opacity: 0.3; }
+}
+[data-now-playing][data-carrying] [data-carry-to] img {
+ visibility: hidden;
+}
+:where([data-motion="reduce"]) .now-playing-closed {
+ transition: none;
+}
+:where([data-motion="reduce"]) .now-playing-backdrop {
+ animation: none;
 }
 
 /* A work's section pill arrives gently (1.8, the owner's note 14 of build 80:

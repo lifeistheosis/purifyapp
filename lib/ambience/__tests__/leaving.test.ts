@@ -54,6 +54,6 @@ describe("the ambience sheet's close, over the player's words", () => {
   it("keeps Now Playing's words at rest until then", () => {
     const player = read("components/player/NowPlayingSheet.tsx");
     expect(player).toMatch(/const ambienceLeaving = useAmbienceLeaving\(\) && ambienceSheet\.overPlayer;/);
-    expect(player).toMatch(/active=\{words && !covered && !ambienceLeaving\}/);
+    expect(player).toMatch(/active=\{(up && )?words && !covered && !ambienceLeaving\}/);
   });
 });

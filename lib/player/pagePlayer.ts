@@ -53,6 +53,73 @@ export const EVERYTHING = "*";
  */
 export const HOSTS_CLASS = "hosts-player";
 
+/**
+ * The class on <html> for the moment a page that is the player for
+ * everything comes or goes, with --foot-shift: how far the foot of the form
+ * that leaves stood below the foot of the one that comes (app/globals.css,
+ * "One surface at the foot"). In a page switch the two pictures stand on the
+ * foot of the arriving form's box and fade into each other; this keeps the
+ * leaving one where it stood. Taken back once the switch has run.
+ */
+export const HANDOVER_CLASS = "foot-handover";
+const HANDOVER_MS = 900;
+
+/** Where the feet of the mini player and the dock stood (from the top of the screen) when the page that hosts the player came. */
+let feet: { mini: number; dock: number } | null = null;
+let handoverTimer: ReturnType<typeof setTimeout> | null = null;
+/** True from a hosting page's leaving to the end of that commit: a hosting page that comes in the same commit is a dock to a dock. */
+let leaving = false;
+
+/** The foot of a form at the foot of the screen, or null when it is not drawn. */
+function footOf(selector: string): number | null {
+  const el = document.querySelector(selector);
+  if (!el) return null;
+  const r = el.getBoundingClientRect();
+  return r.height > 0 ? r.bottom : null;
+}
+
+/** Written in the commit that brings or takes away the page, so the switch's picture has it. */
+function handOver(root: HTMLElement, shift: number | null): void {
+  if (shift === null) {
+    if (handoverTimer) clearTimeout(handoverTimer);
+    handoverTimer = null;
+    root.classList.remove(HANDOVER_CLASS);
+    root.style.removeProperty("--foot-shift");
+    return;
+  }
+  root.style.setProperty("--foot-shift", `${Math.round(shift)}px`);
+  root.classList.add(HANDOVER_CLASS);
+  if (handoverTimer) clearTimeout(handoverTimer);
+  handoverTimer = setTimeout(() => {
+    handoverTimer = null;
+    root.classList.remove(HANDOVER_CLASS);
+    root.style.removeProperty("--foot-shift");
+  }, HANDOVER_MS);
+}
+
+/** A page that hosts the player arrives: the mini player is still drawn, and the dock is in the page. */
+function handOverArriving(root: HTMLElement): void {
+  if (leaving) {
+    // From one such page to another (a chapter to the next): the dock in
+    // both pictures, standing where it stood.
+    handOver(root, null);
+    return;
+  }
+  const mini = footOf("[data-mini-player] .mini-player");
+  const dock = footOf("[data-reader-dock] .reader-dock");
+  feet = mini !== null && dock !== null ? { mini, dock } : null;
+  handOver(root, feet ? feet.mini - feet.dock : null);
+}
+
+/** It leaves: the dock goes, the mini player comes back where it stood. */
+function handOverLeaving(root: HTMLElement): void {
+  handOver(root, feet ? feet.dock - feet.mini : null);
+  leaving = true;
+  queueMicrotask(() => {
+    leaving = false;
+  });
+}
+
 /** Whether the player's recording is one a page on the screen plays with its own controls. */
 export function playsOnPage(src: string | null | undefined, paths: readonly string[]): boolean {
   if (!src) return false;
@@ -93,9 +160,11 @@ export function useOwnPlayer(paths: readonly string[]): void {
     // "One surface at the foot").
     const root = document.documentElement;
     const hosts = hostsEverything(next);
+    if (hosts) handOverArriving(root);
     if (hosts) root.classList.add(HOSTS_CLASS);
     return () => {
       set(NONE);
+      if (hosts) handOverLeaving(root);
       if (hosts) root.classList.remove(HOSTS_CLASS);
     };
   }, [key]);
@@ -105,3 +174,6 @@ export function useOwnPlayer(paths: readonly string[]): void {
 export function pagePlayerNow(): readonly string[] {
   return here;
 }
+
+/** Test seam: the hand-over between the mini player and the dock, as the page's arrival and leaving run it. */
+export const footHandoverForTests = { arriving: handOverArriving, leaving: handOverLeaving };

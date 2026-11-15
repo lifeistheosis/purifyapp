@@ -81,6 +81,6 @@ describe("the player's words under a sheet", () => {
     const player = fs.readFileSync(path.join(process.cwd(), "components/player/NowPlayingSheet.tsx"), "utf8");
     expect(player).toMatch(/const covered = [^;]*ambienceSheet\.open && ambienceSheet\.overPlayer/);
     const words = player.slice(player.indexOf('id="player-view-panel-words"'));
-    expect(words.slice(0, words.indexOf("</LiveCaptions>") > 0 ? words.indexOf("</LiveCaptions>") : words.indexOf("/>", words.indexOf("<LiveCaptions")))).toMatch(/active=\{words && !covered && !ambienceLeaving\}/);
+    expect(words.slice(0, words.indexOf("</LiveCaptions>") > 0 ? words.indexOf("</LiveCaptions>") : words.indexOf("/>", words.indexOf("<LiveCaptions")))).toMatch(/active=\{(up && )?words && !covered && !ambienceLeaving\}/);
   });
 });
