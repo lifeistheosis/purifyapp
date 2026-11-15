@@ -5,7 +5,7 @@ Written 2026-11-15 by Updates 88 (session_01VuYTwaG7qBZAdSVCiaEKc2), a fixer sta
 ## Commits
 
 - **b0d5d194**: both mends, their tests and the two runners (pushed; the guard passed in 47s).
-- **3d81aeec**: the held screen's wake taken out again. It did not shorten the wait on export 2 (below).
+- **3e096d81**: the held screen's wake taken out again. It did not shorten the wait on export 2 (below).
 - This file.
 
 ## Item 1: the held screen is parked, as proved
@@ -24,7 +24,7 @@ Written 2026-11-15 by Updates 88 (session_01VuYTwaG7qBZAdSVCiaEKc2), a fixer sta
   - It is a transition, as the move is, so it never interrupts the screen's own render. A default-priority update would.
   - It is bounded, apps only, front door's document only, and only after a held render.
   - Holding the commit instead is not offered by React: the only commit-suspending paths are suspensey resources (stylesheets with precedence), which would put a stand-in resource in the page.
-- **It did not work, so it is out (3d81aeec).** On export 2, Saints on the runner's path waited 1,669, 1,542 and 1,393ms after the words went in (1,133 to 1,385 before). The frames show the main thread idle until one long frame of 253 to 290ms (Saints' render) just before it is drawn, before and after alike. So the wait is not the parked lanes the wake answers.
+- **It did not work, so it is out (3e096d81).** On export 2, Saints on the runner's path waited 1,669, 1,542 and 1,393ms after the words went in (1,133 to 1,385 before). The frames show the main thread idle until one long frame of 253 to 290ms (Saints' render) just before it is drawn, before and after alike. So the wait is not the parked lanes the wake answers.
 - **Left, not proved:** what Saints waits for. Updates 87's trace had "a timer, then a chunk evaluated, then React's update". One reading: the screen waits on a code file the ready-ahead (`lib/nav/readyAhead.ts`, which loads files as script elements in idle steps after settle) has claimed, so it is run only at the ready-ahead's next step. That is not my file and not traced.
 - 61af8a5e and ff3aa6d1 are untouched.
 
@@ -52,7 +52,7 @@ Written 2026-11-15 by Updates 88 (session_01VuYTwaG7qBZAdSVCiaEKc2), a fixer sta
 ## The tests, failing on the old code
 
 With the five app files put back (heldScreenWake.ts moved aside, the four others stashed) and the tests kept:
-- `lib/i18n/__tests__/heldScreenWake.test.ts` did not load: `Cannot find module '../heldScreenWake'`. It went out with the wake in 3d81aeec.
+- `lib/i18n/__tests__/heldScreenWake.test.ts` did not load: `Cannot find module '../heldScreenWake'`. It went out with the wake in 3e096d81.
 - `lib/campaigns/__tests__/askAtFirstLaunch.test.ts`: 2 of 2 fail.
 - On the new code both pass, beside `arrivesWhole`, `heldScreenCost`, `firstFrameLanguage`, `rootFrame` and `doorPrepaint`: 7 files, 68 tests.
 - `lib/ui/__tests__/arrivesWhole.test.ts` pinned the ask in AppFrame. It now pins it in RootFrame, with the reason beside it.
@@ -62,7 +62,7 @@ With the five app files put back (heldScreenWake.ts moved aside, the four others
 - typecheck **0**; eslint on the 8 changed files **clean**.
 - `npm run test:unit` **exit 0**: files 1,217 passed, 1 skipped; tests 15,293 passed, 9 skipped.
 - `npm run build` **exit 0**, 6,526 of 6,526 pages.
-- 3d81aeec only takes out the wake: the hold is back to its own code, and two files go. The guard ran typecheck, eslint and the related tests on it.
+- 3e096d81 only takes out the wake: the hold is back to its own code, and two files go. The guard ran typecheck, eslint and the related tests on it.
 - Not run: checkMock with pixels and the taps. Nothing drawn changed, only when the ask goes out.
 
 ## The measures
