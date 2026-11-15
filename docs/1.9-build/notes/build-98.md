@@ -80,3 +80,20 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 - The editor's Quote opens a search of Purify's own library (Scripture, the Fathers' works, the saints' lives, the prayers, the chants, the councils). The reader picks the passage, and it lands as a library quote: verbatim, cited, "Quoted from Purify's library", not editable as the source's words, with Open back to its page. A quote of one's own stays as the second choice and never wears the library's mark (`docs/editorial-standards.md`).
 - As agreed on 8 November: Scripture and quotes of one's own for everyone, the rest of the library for Plus, shown with the Plus mark.
 - Drawn inside the journal page in the Fable round (note 4), for his yes, then built with it. A test that fails on 78c5297e1: the editor's Quote finds a Father's passage and lays it cited.
+
+## Note 6: the Bible versions will not download
+
+**His words (2026-11-15, about 21:23 UTC),** with a screenshot of the Translation sheet at 4:23 on his clock (King James Version (1611) chosen; World English Bible saying "Could not download. Check your connection and try again."; the Russian Synodal 7.5 MB, the Greek Septuagint and Patriarchal text 8.8 MB, the Serbian of Karadžić and Daničić 5.8 MB and the Arabic Van Dyck below, each with a download mark): "its not letting me download any of the Bible version".
+
+**Found (the arbiter, 21:25 UTC, probed and read):**
+
+- No download can work in build 98. The apps fetch a version from the website (`lib/bible/downloads/store.ts`, `/bibles/<id>/`, kept out of the apps by `scripts/native-build.mjs`), and the main web runs 1.8 until the merge: it answers every one 404 (probed 21:25 UTC: `en-web`, `ru-synodal`, `grc-lxx-patriarchal`, `sr-danicic-karadzic`, `ar-van-dyck`, each `index.json` 404 in under a second). Build 95 note 21 found the same, and "Bible versions" was named to him with build 98 among the differences until the merge, but in a list, not plainly enough to save him the walk.
+- The words are wrong, a fault in the app. With the website answering in under a second, the sheet should say "Not available to download right now. Try again later." (build 95 note 21's mend, Updates 12, `7ec49b1c`: a failed fetch asks whether the website answers at all, a no-cors HEAD, before it says offline). His phone said "Check your connection". So that mend does not hold on a phone: the reach question fails in the app's web view, or the app asks another address. Its test passes with a stand-in fetch, which is why nothing caught it.
+- And so the download path is unproved on a phone. Nothing has downloaded a version end to end in the app since the versions were made, because the main web has never had them.
+
+**Plan (nothing is built until he says start):**
+
+- A fixer finds why the phone takes a 404 for no connection (the address the app asks, the reach question in the web view), mends it, and adds a test that fails on 78c5297e1.
+- Proof before the merge, since there is no test web: the web build of the branch run locally answers each of the seven versions 200 with the app's CORS header (curl with the app's origin); and a walk of the export as the app, against those files, downloads every version, reads it offline, and deletes it.
+- After the merge, before the store builds: each version's `index.json` and a book probed on purifyapp.net, and one download on his phone.
+- Named to him plainly now: the versions download only once 1.9 is on the website.
