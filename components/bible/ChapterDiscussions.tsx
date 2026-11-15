@@ -52,13 +52,24 @@ export function ChapterDiscussions({ book, bookName, chapter }: { book: string; 
   const waiting = loaded !== null && loaded.ref === ref && placed !== ref;
   useEffect(() => {
     const el = slot.current;
-    if (!waiting || !el || typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver((entries) => {
-      const e = entries[entries.length - 1];
-      if (e && !e.isIntersecting && e.boundingClientRect.top >= (e.rootBounds?.bottom ?? window.innerHeight)) setPlaced(ref);
-    });
-    io.observe(el);
-    return () => io.disconnect();
+    if (!waiting || !el) return;
+    // Read in a frame, at once and after every scroll (an IntersectionObserver misses a jump that carries the
+    // place from above the screen to below it). A quarter of a screen to spare covers a frame of a fling.
+    let frame = 0;
+    const check = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        if (el.getBoundingClientRect().top >= window.innerHeight * 1.25) setPlaced(ref);
+      });
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    };
   }, [waiting, ref]);
 
   if (!enabled) return null;

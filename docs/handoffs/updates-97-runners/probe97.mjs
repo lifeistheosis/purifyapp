@@ -4,7 +4,7 @@
 // feed: every request off this origin is cut but a chapter's Community feed, which answers at once (after
 // --delay ms) with the walks' one stand-in post in plain words (scripts/lib/main-web.mjs): the online answer
 // at its fastest, while a reader still stands where the chapter opened. --up: then scroll up that far, as a
-// reader going back to the verses, and read on. --end: 700ms after the page opens, stand at its end (the
+// reader going back to the verses, and read on. --end: 700ms after the chapter is drawn, stand at its end (the
 // chapter's foot, KeepScrolling on the screen), as a reader who has read to the foot when the answer comes.
 const ROOT = "/home/user/purifyapp";
 const R = `${ROOT}/scripts`;
@@ -79,9 +79,9 @@ else {
   await page.waitForTimeout(400);
   await loc.click();
 }
-if (END) { await page.waitForTimeout(700); await page.evaluate(() => window.__p.marks.push({ tl: Math.round(document.timeline.currentTime), what: "stand at the end" }) || scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" })); }
+if (END) { await page.waitForFunction((f) => location.pathname !== f && document.querySelector("[data-keep-scrolling]"), from, { timeout: 30000 }); await page.waitForTimeout(700); await page.evaluate(() => { window.__p.marks.push({ tl: Math.round(document.timeline.currentTime), what: "stand at the end" }); scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" }); }); }
 await page.waitForTimeout(3000);
-if (UP) { await page.evaluate((y) => window.__p.marks.push({ tl: Math.round(document.timeline.currentTime), what: `scroll up ${y}` }) || scrollBy({ top: -y, behavior: "instant" }), UP); await page.waitForTimeout(2000); }
+if (UP) { await page.evaluate((y) => { window.__p.marks.push({ tl: Math.round(document.timeline.currentTime), what: `scroll up ${y}` }); scrollBy({ top: -y, behavior: "instant" }); }, UP); await page.waitForTimeout(2000); }
 const W = await page.evaluate(() => window.__p);
 console.log(`${from} -> ${to} (${mode}, ${net}${DELAY ? ` +${DELAY}ms` : ""}${END ? ", at the end" : ""}${UP ? `, up ${UP}` : ""}${OUT ? ", export" : ", dev"}) at ${new Date(t0).toISOString()}`);
 const all = [...W.frames.map((f) => ({ tl: f.tl, s: `F ${JSON.stringify({ ...f, tl: undefined })}` })), ...W.marks.map((m) => ({ tl: m.tl, s: `  ${m.what}` }))].sort((a, b) => a.tl - b.tl);

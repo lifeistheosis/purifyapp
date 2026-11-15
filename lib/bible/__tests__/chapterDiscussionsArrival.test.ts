@@ -32,10 +32,10 @@ describe("a chapter's Community section moves nothing when it arrives", () => {
   });
 
   it("is drawn only once its place is below the screen, so nothing the reader can see moves", () => {
-    expect(src).toContain("new IntersectionObserver(");
-    expect(src).toContain(
-      "if (e && !e.isIntersecting && e.boundingClientRect.top >= (e.rootBounds?.bottom ?? window.innerHeight)) setPlaced(ref);",
-    );
+    // Read in a frame, at once and after every scroll, with a quarter of a screen to spare.
+    expect(src).toContain("if (el.getBoundingClientRect().top >= window.innerHeight * 1.25) setPlaced(ref);");
+    expect(src).toContain('window.addEventListener("scroll", check, { passive: true });');
+    expect(src).toContain("check();");
     expect(src.match(/\bsetPlaced\(/g)).toHaveLength(1);
     expect(src).toContain("if (!loaded || loaded.ref !== ref || placed !== ref) return <div ref={slot} />;");
   });
