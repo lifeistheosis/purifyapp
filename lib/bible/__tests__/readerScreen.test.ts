@@ -516,12 +516,14 @@ describe("the tab bar steps away on the reading screens, and on no other", () =>
     // chapter's, and since round 3 r3-13 a theology study read part by part,
     // where "the tab bar steps away, as in the Bible"; and since round 6
     // (r3-29 A, "As the Bible reads") a Father's work and a council's
-    // document, each chapter as the Bible's page.
+    // document, each chapter as the Bible's page; and since build 98 note 2
+    // a life and an event, while their foot pill stands (TextPill's screen,
+    // "make the listen system the same as the Bible listening system").
     const mounts = execFileSync("git", ["grep", "-l", "useScrollAway();", "--", "app", "components", "lib"], { cwd: root, encoding: "utf8" })
       .split("\n")
       .filter(Boolean)
       .filter((f) => !f.includes("__tests__"));
-    expect(mounts.sort()).toEqual([SCREEN, "components/theology/StudyReader.tsx", "components/saints/WritingReader.tsx", "components/councils/CouncilReader.tsx"].sort());
+    expect(mounts.sort()).toEqual([SCREEN, "components/theology/StudyReader.tsx", "components/saints/WritingReader.tsx", "components/councils/CouncilReader.tsx", "components/reading/TextPill.tsx"].sort());
   });
 
   it("brings what stands on it to the foot while it is away, in the apps alone, as focus mode does", () => {
