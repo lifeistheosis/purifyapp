@@ -63,7 +63,10 @@ The guardrail walk (`docs/handoffs/gate-4b-runners/guard4b.sh`), `--online`, all
 
 ## 4. The suite and the web build
 
-(Running: `npm run test:unit`, then `npm run build`, each alone.)
+Each alone, after the language measures, on the tree at the export's head (only scripts and docs after it):
+
+- `npm run test:unit`: **exit 0**, 09:08 to 09:12 UTC. Files 1,223 passed and 1 skipped (1,224); tests 15,312 passed and 9 skipped (15,321).
+- `npm run build`: **exit 0**, 09:12 to 09:15 UTC, 6,526 of 6,526 pages.
 
 ## The faults, by cause (one fixer each)
 
