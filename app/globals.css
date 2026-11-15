@@ -3300,6 +3300,32 @@ html[data-reading-mode="black"] .shop-raise {
 .you-hero-who[data-you-who-place="out"] {
  padding-top: calc(var(--hero-top) + 5.6rem);
 }
+/* The line on where things are kept, on Light and the light looks (1.9,
+   Updates 96): a soft wash of the page's own ground under it, as the shade
+   under the bar is. The close halo held it at 390, but wider, the mirrored
+   Arabic line stands over the ladder's dark rungs and the halo's blurs cover
+   only about three quarters of the ground under its thin strokes: 3.99:1 at
+   800 and 1032. At 70 of the ground the line reads 5.78:1 at the least
+   (Stone) over a pixel as dark as black, before the halo. The band runs the
+   width of the hero and fades over its gutters and over half a rem above and
+   below the line; it is drawn behind the words and moves nothing. The dark
+   palettes are not touched: white on the picture already holds there.
+   lib/ui/__tests__/wordsOnPictures.test.ts holds it. */
+html[data-reading-mode="parchment"] .you-hero-line {
+ position: relative;
+ isolation: isolate;
+}
+html[data-reading-mode="parchment"] .you-hero-line::before {
+ content: "";
+ position: absolute;
+ inset: -0.5rem -1.25rem;
+ z-index: -1;
+ pointer-events: none;
+ background-image: linear-gradient(180deg, transparent, rgb(241 232 212 / 0.7) 0.5rem, rgb(241 232 212 / 0.7) calc(100% - 0.5rem), transparent);
+ background-image: linear-gradient(180deg, transparent, color-mix(in srgb, var(--color-night) 70%, transparent) 0.5rem, color-mix(in srgb, var(--color-night) 70%, transparent) calc(100% - 0.5rem), transparent);
+ -webkit-mask-image: linear-gradient(90deg, transparent, rgb(0 0 0) 1.25rem, rgb(0 0 0) calc(100% - 1.25rem), transparent);
+ mask-image: linear-gradient(90deg, transparent, rgb(0 0 0) 1.25rem, rgb(0 0 0) calc(100% - 1.25rem), transparent);
+}
 .you-hero-ring {
  box-shadow: 0 0 0 1.5px rgb(255 255 255 / 0.85), 0 0 18px rgb(255 255 255 / 0.35), 0 10px 22px -8px rgb(0 0 0 / 0.9);
 }

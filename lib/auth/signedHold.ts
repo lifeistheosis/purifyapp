@@ -105,14 +105,19 @@ export function holdStep(
       entry.leaving = true;
       leave(bare(entry.from) === bare(path) ? "replace" : "push");
     });
-    entry.over = Promise.race([asked, env.wait(HOLD_MS)]).then(() => {
-      entry.done = true;
+    // One promise for the whole hold, and it resolves only when the page is
+    // to draw: React keeps the first promise a waiting page was given (see
+    // useSignedHold), so a hold that sends the reader on never resolves it.
+    entry.over = new Promise<void>((resolve) => {
+      void Promise.race([asked, env.wait(HOLD_MS)]).then(() => {
+        entry.done = true;
+        if (!entry.leaving) resolve();
+      });
     });
     holds.set(path, entry);
     hold = entry;
   }
-  if (hold.leaving) return { wait: NEVER };
-  if (!hold.done) return { wait: hold.over };
+  if (hold.leaving || !hold.done) return { wait: hold.over };
   return { answer: hold.answer };
 }
 
@@ -150,7 +155,20 @@ export function useSignedHold(path: string, to: string, enabled: () => boolean):
   const router = useRouter();
   const hydrated = useSyncExternalStore(noSubscribe, () => true, () => false);
   if (!hydrated || !enabled() || readLocalSessionUser()) return undefined;
-  const step = holdStep(path, signedOutAtOnce, (how) => (how === "push" ? router.push(to) : router.replace(to)));
-  if ("wait" in step) use(step.wait);
-  return "answer" in step ? step.answer : null;
+  const leave = (how: "push" | "replace") => (how === "push" ? router.push(to) : router.replace(to));
+  // React renders a page that waited once more when its promise resolves, and
+  // hands `use` the promise it was first given at that place, whatever it is
+  // handed now (react-dom, trackUsedThenable: "Reuse the previous thenable").
+  // The hold used to hand it its own promise first and NEVER on the way on,
+  // so `use` returned the first, resolved, and this hook said "the bound
+  // passed": the gate committed its waiting line and only then went on to
+  // sign in (/set-password/'s blank, 1.9, Updates 96). So a step read before
+  // a wait is never trusted after it: the hold is asked again until it
+  // answers, and a hold that sends the reader on never answers.
+  let step = holdStep(path, signedOutAtOnce, leave);
+  while ("wait" in step) {
+    use(step.wait);
+    step = holdStep(path, signedOutAtOnce, leave);
+  }
+  return step.answer;
 }

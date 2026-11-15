@@ -66,6 +66,20 @@ describe("a signed page with no session stored", () => {
     expect(leave).toHaveBeenCalledTimes(1);
   });
 
+  it("on the way on, holds on the one promise it first held on, and never resolves it (React replays with the first)", async () => {
+    const { e } = env("/");
+    const { ask, answer } = asker();
+    const page = fresh();
+    const first = holdStep(page, ask, () => {}, e);
+    let resolved = false;
+    if ("wait" in first) void first.wait.then(() => (resolved = true));
+    answer({ state: "signed-out" });
+    await flush();
+    const after = holdStep(page, ask, () => {}, e);
+    expect("wait" in after && "wait" in first && after.wait === first.wait).toBe(true);
+    expect(resolved).toBe(false);
+  });
+
   it("replaces when the address already shows the page (a step back, a cold start)", async () => {
     const page = fresh();
     const { e } = env(`${page}/`);

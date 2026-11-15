@@ -54,7 +54,7 @@ export function YouIdentity({ who }: { who: YouWho }) {
   const known = who.state === "out";
   return (
     <div data-you-who={who.state} aria-hidden={known ? undefined : true} className={cn(!known && "invisible")}>
-      <p className="words-halo words-halo-close mb-2.5 font-sans text-caption text-paper">{t("ui.privateOnThisDeviceNo")}</p>
+      <p className="words-halo words-halo-close mb-2.5 font-sans text-caption text-paper you-hero-line">{t("ui.privateOnThisDeviceNo")}</p>
       <Link
         href="/signin?next=/account"
         data-you-signin={known ? "" : undefined}

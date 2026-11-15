@@ -121,7 +121,7 @@ describe("the words that wear it, at the ink they were measured at", () => {
   // Candlelight in Arabic, whose thin strokes the three layers cover only in part. It wears the close halo: the
   // house's three layers and a second at 1px, no wider, on every palette and in an old WebView.
   it("lays the close halo under You's line on where things are kept", () => {
-    expect(read("components/you/YouIdentity.tsx")).toContain('className="words-halo words-halo-close mb-2.5 font-sans text-caption text-paper"');
+    expect(read("components/you/YouIdentity.tsx")).toContain('className="words-halo words-halo-close mb-2.5 font-sans text-caption text-paper you-hero-line"');
     for (const selector of [".words-halo.words-halo-close", 'html[data-reading-mode="parchment"] .words-halo.words-halo-close']) {
       const values = [...rule(CSS, selector).matchAll(/text-shadow:\s*([^;]+);/g)].map((m) => m[1].replace(/\s+/g, " ").trim());
       expect(values, selector).toHaveLength(2);
@@ -131,6 +131,36 @@ describe("the words that wear it, at the ink they were measured at", () => {
         expect(value).not.toMatch(/rgb\(0 0 0|#000\b/);
       }
       expect(values[1]).not.toMatch(/rgb\(/);
+    }
+  });
+
+  // Updates 92's walk after the close halo: the same line read 3.99:1 at 800 and 1032 in Arabic on Light and six
+  // light looks, the mirrored line over the ladder's dark rungs. A soft wash of the page's ground lies under it on
+  // Light and the light looks (they all run on Light's reading mode), strong enough to hold the line at 4.5:1 with
+  // a margin over a pixel as dark as black, before the halo; the dark palettes are not touched.
+  it("lays a soft wash of the page's ground under You's line on Light and the light looks, behind the words", () => {
+    expect(read("components/you/YouIdentity.tsx")).toMatch(/className="[^"]*\bwords-halo-close\b[^"]*\byou-hero-line\b[^"]*"/);
+    const touched = [...CSS.matchAll(/([^{}]+)\{[^{}]*\}/g)].flatMap((m) => m[1].split(",").map((s) => s.trim())).filter((s) => s.includes("you-hero-line"));
+    expect(touched, "only on Light and the light looks").toEqual(['html[data-reading-mode="parchment"] .you-hero-line', 'html[data-reading-mode="parchment"] .you-hero-line::before']);
+    const host = rule(CSS, 'html[data-reading-mode="parchment"] .you-hero-line');
+    expect(host).toMatch(/isolation:\s*isolate/);
+    expect(host).toMatch(/position:\s*relative/);
+    const wash = rule(CSS, 'html[data-reading-mode="parchment"] .you-hero-line::before');
+    for (const want of [/position:\s*absolute/, /z-index:\s*-1/, /pointer-events:\s*none/, /mask-image:\s*linear-gradient\(90deg, transparent/]) expect(wash).toMatch(want);
+    const shares = [...wash.matchAll(/color-mix\(in srgb, var\(--color-night\) (\d+)%, transparent\)/g)].map((m) => Number(m[1]) / 100);
+    const plain = [...wash.matchAll(/rgb\(241 232 212 \/ ([\d.]+)\)/g)].map((m) => Number(m[1]));
+    expect(shares.length).toBeGreaterThanOrEqual(2);
+    expect(plain.length).toBeGreaterThanOrEqual(2);
+    const share = Math.min(...shares, ...plain);
+    const lin = (c: number) => (c / 255 <= 0.04045 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4);
+    const lum = (rgb: number[]) => 0.2126 * lin(rgb[0]) + 0.7152 * lin(rgb[1]) + 0.0722 * lin(rgb[2]);
+    const channels = (s: string) => s.split(" ").map(Number);
+    const light = ["jordan", "blush", "rose", "lavender", "olive", "stone", "linen"];
+    for (const selector of ['html[data-reading-mode="parchment"]', ...light.map((look) => `html[data-look="${look}"]`)]) {
+      const ground = channels(own(selector, "--color-night")).map((c) => c * share);
+      const ink = lum(channels(own(selector, "--color-paper")));
+      const ratio = (lum(ground) + 0.05) / (ink + 0.05);
+      expect(ratio, `${selector}: the line over black under the wash`).toBeGreaterThanOrEqual(5);
     }
   });
 
