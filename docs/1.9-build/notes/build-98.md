@@ -148,7 +148,7 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 
 **His words (2026-11-15, about 21:42 UTC):** "and I STILL don't see the prayer campaigns."
 
-**Found (the arbiter, 21:45 UTC, from `lib/campaigns/flags.ts` on the branch and the record):**
+**Found (the arbiter, 21:44 UTC, from `lib/campaigns/flags.ts` on the branch and the record):**
 
 - Build 98 carries the campaign pages (`CAMPAIGNS_OPENING` is "testers" on the branch), but an app shows their doors only when the website says yes (`lib/campaigns/useCampaignsOpen.ts`). The main web runs `main`, where the switch is still closed, so it says no to every account, his too, and build 98 shows nothing. No build can show them before the merge, because the website side (the routes, and the SQL he signed) only reaches the main web with it.
 - He chose this on 2026-11-11 ("I won't make the test web just make it public. im tryna get v1.9 out as soon as possible"): the test web would have shown them in a test build; without it, the release-day order in `flags.ts` stands in for it. It was named with build 98 among the differences until the merge, and with build 95 (note 2) before, both times in a list. He has now walked two builds expecting them. The arbiter should have said it on its own line, in plain words, with the day he will see them.
