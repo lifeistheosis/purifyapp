@@ -23,6 +23,25 @@ export function pathOf(href: string): string {
   return href.split(/[?#]/, 1)[0].replace(/\/+$/, "") || "/";
 }
 
+/**
+ * The page whose opening is the quotation's: taken with its request, so the
+ * page's own first landing (a section's top, components/saints/useWorkPlace.ts)
+ * leaves the scroll to the words being brought up. Before, the page went to
+ * the place the address names, then to the section's top, then to the words,
+ * three steps a frame or a few apart, on the screen (Gate 4: "Read it in
+ * Purify" on /prayers/bows/, 54% of the change in one frame).
+ */
+let landing: { path: string; at: number } | null = null;
+/** How long the page has to make its first landing: its text can land a moment after it opens. */
+const LANDING_MS = 10_000;
+
+/** Whether this page's first landing is the quotation's, once: asking clears it. */
+export function takeQuoteLanding(pathname: string): boolean {
+  const was = landing;
+  landing = null;
+  return !!was && was.path === pathOf(pathname) && Math.abs(Date.now() - was.at) <= LANDING_MS;
+}
+
 /** Asks the page at `href` to light `texts` when it opens. */
 export function requestQuoteFocus(href: string, texts: readonly string[]): void {
   try {
@@ -49,6 +68,7 @@ export function takeQuoteFocus(pathname: string): string[] | null {
     }
     if (request.path !== pathOf(pathname)) return null;
     sessionStorage.removeItem(KEY);
+    landing = { path: request.path, at: Date.now() };
     const texts = Array.isArray(request.texts) ? request.texts : [];
     return texts.filter((t): t is string => typeof t === "string" && t.trim().length > 0);
   } catch {

@@ -22,7 +22,7 @@ import { describe, expect, it } from "vitest";
  *
  * This file finds every Try again in the app's components and reads its
  * handler, and the function it calls when that is in the same file, up to
- * the read's first await. Two are left, by name, with the reason.
+ * the read's first await. Any left are named, with the reason.
  */
 
 const ROOT = join(__dirname, "..", "..", "..");
@@ -80,11 +80,9 @@ function retries(): Retry[] {
 
 /** Left, by name. Each says why; a mend takes it off this list. */
 const LEFT: Record<string, string> = {
-  // A post's replies: their Try again shares loadReplies with the opening of
-  // the replies, whose waiting rows grow and fold the card with the page's
-  // glide (lib/ui/inPageMove.ts). Outside the feed's card that Updates 93 was
-  // given in this file; named for the next fixer.
-  "components/community/CommunityClient.tsx#loadReplies": "the replies' card",
+  // None. A post's replies were the last (Updates 93 named them): their Try
+  // again shared loadReplies with the opening, which draws the waiting rows.
+  // Since Updates 94 it asks with askRepliesAgain, held below.
 };
 
 describe("Try again asks behind the card it was tapped on", () => {
@@ -124,6 +122,21 @@ describe("Try again asks behind the card it was tapped on", () => {
       expect(r, key).toBeTruthy();
       expect(WAITING.test(r!.reads), key).toBe(true);
     }
+  });
+
+  it("a post's replies ask again behind their card: no waiting rows, and a read that fails again lands with no move (Updates 94)", () => {
+    const src = read("components/community/CommunityClient.tsx");
+    const r = all.find((x) => x.file === "components/community/CommunityClient.tsx" && x.handler.includes("askRepliesAgain"));
+    expect(r, "the replies' Try again calls askRepliesAgain").toBeTruthy();
+    expect(r!.reads).toContain("const askRepliesAgain = useCallback(async () => {");
+    expect(WAITING.test(r!.reads)).toBe(false);
+    // The read it shares with the opening: it sets no waiting state of its own, and a retry that fails again leaves the card as it stood.
+    const body = src.slice(src.indexOf("const readReplies = useCallback("), src.indexOf("const loadReplies = useCallback("));
+    expect(body.length).toBeGreaterThan(0);
+    expect(WAITING.test(body)).toBe(false);
+    expect(body).toMatch(/if \(again && res\.state !== "ok"\) return land\(\);/);
+    // The opening still draws its waiting rows.
+    expect(src).toMatch(/const loadReplies = useCallback\(async \(\) => \{\s*setRepliesState\("loading"\);\s*await readReplies\(false\);/);
   });
 
   it("the shop asks again behind its card: reload sets no loading state (lib/shop/useAsyncData.ts)", () => {

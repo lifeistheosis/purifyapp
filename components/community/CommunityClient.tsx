@@ -1477,8 +1477,11 @@ function PostCardInner({
     if (part && isMovingInPage()) catchUpOpened(part);
   });
 
-  const loadReplies = useCallback(async () => {
-    setRepliesState("loading");
+  // The read, and the rows landing. The opening draws the waiting rows first
+  // (loadReplies); Try again asks behind the card it was tapped on and draws
+  // nothing in its place (askRepliesAgain, Updates 93's rule): a read that
+  // fails again leaves the same card, with no move over it.
+  const readReplies = useCallback(async (again: boolean) => {
     const res = await fetchReplies(post.id);
     // The rows take the waiting rows' place as the opening did: the card
     // grows or folds to them and the posts below glide (the walk's "1 reply":
@@ -1491,6 +1494,7 @@ function PostCardInner({
         setRepliesState("error");
       }
     };
+    if (again && res.state !== "ok") return land();
     // A card no longer on the screen (the reader has gone on) has nothing to
     // move. One whose opening is still moving moves its rows in after it.
     if (!cardRef.current?.isConnected) return land();
@@ -1501,6 +1505,15 @@ function PostCardInner({
     landing.current = part !== null && isFollowingOpened(part);
     movePage(land, landing.current ? { grows: [card], glides: [...partsBefore(card), ...partsAfter(card)] } : { grows: [card] });
   }, [post.id, partsId]);
+
+  const loadReplies = useCallback(async () => {
+    setRepliesState("loading");
+    await readReplies(false);
+  }, [readReplies]);
+
+  const askRepliesAgain = useCallback(async () => {
+    await readReplies(true);
+  }, [readReplies]);
 
   async function toggleReplies() {
     const next = !open;
@@ -2278,7 +2291,7 @@ function PostCardInner({
                   </p>
                   <button
                     type="button"
-                    onClick={() => void loadReplies()}
+                    onClick={() => void askRepliesAgain()}
                     className="hit-44 mt-2 font-sans text-detail font-semibold text-gold-pale hover:text-paper"
                   >
                     {t("community.tryAgain")}

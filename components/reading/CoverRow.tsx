@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 
 import { WorkCover } from "@/components/covers/WorkCover";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { ScrollRail } from "@/components/ui/ScrollRail";
 import { cn } from "@/lib/cn";
+import { arrive, awaitArrival, movePageUntil } from "@/lib/ui/inPageMove";
 import { cardHref, type Card, type TileCard } from "@/lib/reading/select";
 
 type T = (key: string, replacements?: Record<string, string | number>) => string;
@@ -23,6 +24,28 @@ export function readingTime(minutes: number, t: T): string {
 /** A card's quiet line: how long, and "Selections" for an excerpt. */
 export function cardMeta(card: Pick<Card, "minutes" | "selections">, t: T): string {
   return [card.selections ? t("reading.work.selections") : null, readingTime(card.minutes, t)].filter(Boolean).join(" · ");
+}
+
+/** What a row says as the room's list takes its place (lib/ui/inPageMove.ts, arrive). */
+export const SEE_ALL_ARRIVED = "reading-see-all";
+
+/**
+ * A See all that is the room's own list ("?length=under20") opens in place,
+ * moved as a page switch is (1.9, the owner's ruling of 2026-11-13: an
+ * in-page change that moves content moves as a page switch does). It was the
+ * router's: a soft visit to the same page, and a fifth of a second later the
+ * room turned into its list in one frame (Gate 4: 51% of the change in one
+ * frame at 195ms, online and offline). Now the address changes inside the
+ * move, and the screen as it stood is
+ * held until the list is in the page: the rows leave as it comes (their
+ * layout effect's clean-up says so), and the two cross-fade. With motion
+ * reduced the list is there at once and still (movePageUntil).
+ */
+export function openListInPlace(e: MouseEvent<HTMLAnchorElement>, href: string): void {
+  if (!href.startsWith("?") || e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  // A state of null, not the router's own: with it the router hears the address and the room reads it (its own writes pass the router's state so it is not told).
+  movePageUntil(() => window.history.pushState(null, "", href), awaitArrival(SEE_ALL_ARRIVED));
 }
 
 /** Whether a row is about to be seen, so its covers load before they are swiped to. */
@@ -84,6 +107,8 @@ export function CoverRow({
     watch.observe(el);
     return () => watch.disconnect();
   }, [near]);
+  // The rows go in the change that draws the room's list: a See all's move is held until then.
+  useLayoutEffect(() => () => arrive(SEE_ALL_ARRIVED), []);
   return (
     <RowNear.Provider value={near}>
       <section ref={section} aria-labelledby={`row-${id}`} data-reading-row={id} data-near={near ? "" : undefined} className={cn("mt-9 md:mt-11", className)}>
@@ -95,6 +120,7 @@ export function CoverRow({
             <Link
               href={seeAll}
               prefetch={false}
+              onClick={(e) => openListInPlace(e, seeAll)}
               className="tap-press hit-44 inline-flex shrink-0 items-center gap-0.5 font-sans text-detail font-medium text-paper/60 hover:text-paper"
             >
               {t("common.seeAll")}

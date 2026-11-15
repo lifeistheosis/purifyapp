@@ -20,12 +20,14 @@
 // found again.
 
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 
 import { locate, takeQuoteFocus } from "@/lib/reading/quoteFocus";
 import { inputSince, watchInput } from "@/lib/ui/lastInput";
 
 const NAME = "purify-quote";
+
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * A grey wash behind the words, which lifts them off the black of every dark
@@ -70,7 +72,7 @@ function bringUp(range: Range): void {
 export function QuoteFocus() {
   const pathname = usePathname();
 
-  useEffect(() => {
+  useIsoLayoutEffect(() => {
     const texts = takeQuoteFocus(pathname);
     if (!texts?.length) return;
     const lights = typeof CSS !== "undefined" && "highlights" in CSS && typeof Highlight === "function" ? CSS.highlights : null;
@@ -119,8 +121,15 @@ export function QuoteFocus() {
       }
     };
 
-    // The first look comes after the page's own first moves: the router's
-    // scroll to the place the link names, a long work opening that section.
+    // The first look is made in the change that draws the page, before it is
+    // painted (1.9, Updates 94): after the router's scroll to the place the
+    // link names, made earlier in the same change, and inside a page switch's
+    // own picture, so the page opens at the words in one step. The page's own
+    // landing at a section's top leaves the scroll to it (takeQuoteLanding).
+    // Made a frame or two later, as it was, the page went to the address's
+    // place, then to the section's top, then to the words, on the screen.
+    search();
+    // And again once the page has settled, for words drawn after it.
     frame = requestAnimationFrame(() => {
       frame = requestAnimationFrame(search);
     });
@@ -133,7 +142,10 @@ export function QuoteFocus() {
       const redrawn = [...found.values()].some((r) => !live(r));
       if (!coming && !redrawn) return;
       clearTimeout(queued);
-      queued = setTimeout(search, 120);
+      // Words not yet brought up are looked for in the change that draws them,
+      // before it is painted: a page that came after its outline opens at them.
+      if (coming && !scrolled) search();
+      else queued = setTimeout(search, 120);
     });
     watch.observe(root(), { childList: true, subtree: true, characterData: true });
 

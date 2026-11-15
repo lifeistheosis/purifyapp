@@ -6,6 +6,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useSyncExternalStore }
 import { hashFor } from "@/lib/nav/addressOpening";
 import { arrivalPlace, clearPosition, loadPosition, placeOfHash, savePosition, type WorkPlace } from "@/lib/reader/position";
 import { recordProgress } from "@/lib/reading/progress";
+import { takeQuoteLanding } from "@/lib/reading/quoteFocus";
 import type { SectionHead } from "@/lib/saints/parts";
 import { elementOfPlace, paragraphAtReadingPlace } from "@/lib/saints/paragraphInView";
 import { arrive, awaitArrival, isMovingInPage, movePage, movePageUntil } from "@/lib/ui/inPageMove";
@@ -252,6 +253,8 @@ export function useLanding(
         if (!byAddress && inputSince(opened)) return;
         const el = place.paragraph > 0 ? elementOfPlace(place) : null;
         if (!el || el.id === `s${place.sectionN}`) {
+          // A page opened to light a quotation is brought to the words as it is drawn (components/reading/QuoteFocus.tsx); a step to the top after would be a second landing.
+          if (takeQuoteLanding(window.location.pathname)) return;
           window.scrollTo({ top: 0, behavior: "instant" });
           return;
         }

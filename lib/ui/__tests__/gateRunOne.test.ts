@@ -82,7 +82,7 @@ describe("a finger's 44px", () => {
     // The writer's picture, the day's link, the replies' Try again, and a waiting reply's two buttons.
     expect(src).toContain('<AuthorButton seed={seed} decorative className="hit-44 shrink-0 rounded-full">');
     expect(classNear(src, "href={`/saints/${post.feast_slug}`}")).toMatch(/^hit-44 /);
-    expect(classNear(src, "onClick={() => void loadReplies()}")).toMatch(/^hit-44 /);
+    expect(classNear(src, "onClick={() => void askRepliesAgain()}")).toMatch(/^hit-44 /);
     expect(classNear(src, "onClick={() => void sendReply(p.body, p.tempId)}")).toMatch(/^hit-44 /);
     expect(classNear(src, "onClick={() => discardPending(p.tempId)}")).toMatch(/^hit-44 /);
   });
