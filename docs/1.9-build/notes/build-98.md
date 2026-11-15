@@ -174,3 +174,17 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 
 - Profile joins the Fable round beside You, drawn as one design, so the two read as one place: who the reader is first (the picture, the name, the patron saint and the badges), the life they keep (the days, the week) and the Community card, with the account's facts (the address, the plan, sign-in) moved behind Edit or into Settings, not on the face of the page.
 - Stills at phone width from the app's own components, checkMock passing on all five palettes and in Arabic, each choice with its reason, for his yes; then a fixer builds it with a test that fails on 78c5297e1.
+
+## Note 12: the search still stutters as it opens
+
+**His words (2026-11-15, about 22:00 UTC),** with a screenshot of Search at 4:54 on his clock (Search; Look in: Everything, Bible, Saints, Prayers, Reading; Today: Ephesians 2:14-22 · Luke 10:25-37, St. Paisius Velichkovsky, The Ninth Hour; the round plate and "Search Purify" above the keyboard): "when click the search there's still a random screen stutter that makes it not smooth".
+
+**Found (the arbiter, 22:03 UTC, from the record and the code of 78c5297e1):**
+
+- The page's half was mended for build 95 note 5 (Updates 4, `8f03f670`: Discover was cut away and the screen's words faded in on a dark ground) and is held by `lib/search/__tests__/searchMotion.test.ts` and `scripts/search-motion-walk.mjs`.
+- What is left is the cause named then and not mended, the same as note 4's freeze: the field takes the focus, the keyboard rises, and the app's window is made shorter by the keyboard's whole height in one step (the safe-area plugin's padding, no WindowInsetsAnimation callback). The frame in which the window shrinks is drawn before the page is laid out at its new size (build 95 note 5: "the field is missing from that one frame"), so the screen stutters once while the keys slide. A browser cannot show it; only a phone does, which is why every walk passed.
+
+**Plan (nothing is built until he says start):**
+
+- One native mend for note 4 and this note: the window follows the keyboard frame by frame as the keys slide, not in one step, so no frame is drawn at the wrong size. One fixer holds both.
+- The search's own walk and test run again on the export, so the page's half stays mended; the proof of the native half is his walk of the next build, named to him with it.
