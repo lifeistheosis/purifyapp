@@ -73,7 +73,29 @@ const panel = () =>
 
 try {
   await go(page, "/", { timeout: 60000 });
-  await page.waitForSelector("[data-saying-share], [data-saint-share]", { timeout: 45000 });
+  // Updates 76: twice the share control was not found in 45s. When the wait fails, Today is pictured as it
+  // stands and its bands are named; then the page is scrolled through (a band may render only once near)
+  // and the control is waited for again, so the record says which it was.
+  const SHARE = "[data-saying-share], [data-saint-share]";
+  try {
+    await page.waitForSelector(SHARE, { timeout: 45000 });
+  } catch {
+    await page.screenshot({ path: `${SHOTS}/today-at-45s.png`, fullPage: true });
+    const seen = await page.evaluate(() => ({
+      path: location.pathname,
+      bands: [...document.querySelectorAll("[data-today-band]")].map((b) => b.getAttribute("data-today-band")),
+      main: (document.querySelector("main")?.innerText ?? document.body.innerText).replace(/\s+/g, " ").slice(0, 300),
+      height: document.scrollingElement.scrollHeight,
+    }));
+    for (let y = 0; y < seen.height; y += 400) {
+      await page.evaluate((top) => window.scrollTo(0, top), y);
+      await page.waitForTimeout(300);
+    }
+    const late = await page.waitForSelector(SHARE, { timeout: 20000 }).then(() => true, () => false);
+    say(late, `share control ${late ? "found only after scrolling Today" : "not found in 45s, nor after scrolling"} (picture at 45s: today-at-45s.png)`, seen);
+    if (!late) throw new Error("no share control on Today");
+    await page.locator(SHARE).first().scrollIntoViewIfNeeded();
+  }
   await page.waitForTimeout(2500);
   await tap("[data-saying-share], [data-saint-share]");
   await page.waitForSelector(`${SHEET} [role="tabpanel"]`, { timeout: 20000 });

@@ -13,11 +13,14 @@
 //     a `keyboard` sheet taller than what the keyboard leaves: its edge stays while the field shows; until
 //     build 97 it rose from 110.6 to the cap at 12.8 in one frame. KB_AFTER=900 brings the keyboard after
 //     the sheet has risen; the default brings it while it still rises, as autoFocus does)
+//   NATIVE=1 node scripts/keyboard-sheet-walk.mjs out florilegium step 300   (the florilegium picker, tall with
+//     GATHERINGS, 8 by default, kept on the device; opened from a verse's Gather in the Bible; Updates 76)
 //
 // A dev server needs NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 NEXT_PUBLIC_SUPABASE_ANON_KEY=walk-anon.
 // Modes: step (one resize, as Android pads the window), anim (eight), vv (the website's: the visual viewport only).
 // On the export: give a folder in place of the address (`out`, after npm run build:android); it is served as the
 // phones' shells serve it and each screen is opened the way the app opens it (scripts/lib/shell-server.mjs).
+import fs from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright";
 import { go, serveLikeTheShell } from "./lib/shell-server.mjs";
@@ -80,6 +83,24 @@ if (WHICH === "journal") {
     await page.evaluate(() => document.activeElement?.blur?.());
     console.log("cover:", await page.locator("[data-page-cover]").count());
   }
+} else if (WHICH === "florilegium") {
+  // Updates 76 (updates-53.md Open 3): the picker is tall only with several gatherings, so GATHERINGS (8 by
+  // default) empty ones are kept on the device as the app keeps them (lib/florilegium/florilegium.ts), and the
+  // picker is opened from a verse's tools in the Bible (components/bible/VerseRow.tsx, MobileVerseToolbar.tsx; a
+  // Father's passage on a doctrine's reading is the other way, a page the export does not carry); its field is
+  // the new gathering's name, shown by "Begin a new gathering" with autoFocus. Plus decides whether the picker
+  // or the upgrade sheet opens (plusFeaturesNow), so the walk says which did.
+  await ctx.addInitScript((n) => {
+    try {
+      const now = Date.now();
+      const rows = Array.from({ length: n }, (_, i) => ({ id: `walk-${i}`, title: `Gathering ${i + 1}`, createdAt: now - i * 1000, updatedAt: now - i * 1000, items: [] }));
+      localStorage.setItem("purify:florilegia", JSON.stringify(rows));
+    } catch {}
+  }, Number(process.env.GATHERINGS ?? 8));
+  await open(process.env.PAGE ?? "/bible/john/1/");
+  await page.locator("[data-verse-door]").first().waitFor({ timeout: 120000 });
+  await page.waitForTimeout(1500);
+  fieldSel = process.env.FIELD ?? "[data-florilegium-naming] input";
 } else {
   await open("/prayers/personal/");
   await page.waitForTimeout(2500);
@@ -128,6 +149,22 @@ if (WHICH === "journal") {
   if (!box) { console.log("no field"); process.exit(2); }
   await page.waitForTimeout(150);
   await page.touchscreen.tap(box.x + box.width / 2, box.y + Math.min(box.height / 2, 20));
+} else if (WHICH === "florilegium") {
+  const door = page.locator("[data-verse-door]").first();
+  await door.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  await door.tap();
+  await page.waitForTimeout(700);
+  const label = JSON.parse(fs.readFileSync(new URL("../lib/i18n/messages/en.json", import.meta.url), "utf8"))["bible.gatherToFlorilegium"];
+  await page.getByRole("button", { name: label }).first().tap();
+  const begin = page.locator("[data-florilegium-begin]").first();
+  const opened = await begin.waitFor({ timeout: 20000 }).then(() => "the picker", () => "not the picker");
+  console.log("Gather opened:", opened, await page.locator('[role="dialog"] h2, [role="dialog"] [id]').first().textContent().catch(() => ""));
+  if (opened !== "the picker") { if (process.env.SHOT) await page.screenshot({ path: process.env.SHOT }); process.exit(2); }
+  console.log("gatherings in the picker:", await page.locator("[data-gather-row]").count());
+  await page.waitForTimeout(Number(process.env.KB_AFTER ?? 900));
+  await begin.tap();
+  await page.waitForTimeout(80);
 } else {
   const btn = page.getByRole("button", { name: process.env.OPENER ?? "Add: For the living" }).first();
   await btn.scrollIntoViewIfNeeded();
