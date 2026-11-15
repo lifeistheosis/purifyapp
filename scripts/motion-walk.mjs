@@ -86,6 +86,13 @@ const WORKERS = Math.max(1, Number(flag("--workers") ?? 2));
 const REDUCED = has("--reduced");
 const MODE = REDUCED ? "reduce" : "on";
 const MAX = Math.max(1, Number(flag("--max") ?? (REDUCED ? 6 : 30)));
+// With --controls the names are the limit: every control on the screen is marked,
+// so a named one further down than the lane's limit is still reached. Before this
+// the limit was taken first and the names applied after, so the reduced lane's six
+// never reached EIKON's door (0 taps in Updates 86's four runs) nor the library's
+// creed row, "Terms of Service", "Psalm 14:1" and "2 Peter 1:3-4" (Updates 90).
+// Gate 4, 2026-11-15.
+const MARK = CONTROLS ? 1000 : MAX;
 const JSON_OUT = flag("--json");
 const SHOTS = flag("--shots");
 const SIZE = (flag("--size") ?? "390x844").split("x").map(Number);
@@ -120,7 +127,7 @@ checkSells(OUT);
 checkStoreExport(OUT);
 const list = ONLY ?? screens(OUT);
 const ON = WIDTH === 390 && HEIGHT === 844 ? "on a phone" : `at ${WIDTH} by ${HEIGHT}`;
-console.log(`${list.length} screens ${ON}, up to ${MAX} controls each, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${motionWords(MODE)}, ${readerWords()}`);
+console.log(`${list.length} screens ${ON}, ${CONTROLS ? "every named control" : `up to ${MAX} controls`} on each, ${WORKERS} at a time, ${ONLINE ? "reading the main web" : "with no network"}, ${motionWords(MODE)}, ${readerWords()}`);
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const slug = (at) => at.replace(/^\/|\/$/g, "").replace(/\//g, "_") || "home";
@@ -333,7 +340,7 @@ async function walkScreen(ctx, at, kept) {
     }
     // 4. Every control.
     await fresh(page, at, kept);
-    const marked = await page.evaluate(markControls, MAX);
+    const marked = await page.evaluate(markControls, MARK);
     result.found = marked.found;
     const inChrome = await page.evaluate((sel) => [...document.querySelectorAll("[data-tapwalk]")].sort((a, b) => Number(a.dataset.tapwalk) - Number(b.dataset.tapwalk)).map((el) => Boolean(el.closest(sel))), CHROME);
     for (const c of marked.controls) {
@@ -358,10 +365,10 @@ async function walkScreen(ctx, at, kept) {
         let aim = null;
         const ready = async () => {
           await fresh(page, at, kept);
-          const again = (await page.evaluate(markControls, MAX)).controls[c.i];
+          const again = (await page.evaluate(markControls, MARK)).controls[c.i];
           if (!again || again.name !== c.name) return "the screen drew differently on its second visit";
           await firstTouch(page, cdp);
-          if ((await reach(page, c, MAX)) === "redrawn") return "the screen kept drawing it again as it was reached";
+          if ((await reach(page, c, MARK)) === "redrawn") return "the screen kept drawing it again as it was reached";
           const handle = await page.$(`[data-tapwalk="${c.i}"]`);
           const box = handle && (await handle.boundingBox());
           if (!box) return "out of reach";
