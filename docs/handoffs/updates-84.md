@@ -41,7 +41,7 @@ One export of `cd160f55`'s head; `--only` the six source screens, `--controls` t
 | reduced: fade 582 then 530, five chapters (Ephesians 2, Luke 10, Psalms 4, Ephesians 4, James 1) | 4/4 each (Luke 10 open 2/2) | 4/4 each, unchanged |
 | reduced: running line 27px, James 1:19-20 | not seen | 4/4, new |
 
-Also seen, outside these controls: the walk's own arrival on /bible/mult/ from / drew blank for 18 frames, about 0.3 s (motion on 3/4, reduced 2/4); Gate 3c saw it once. Only layer crossings (for the eye) otherwise.
+Also seen, outside these controls: the walk's own arrival on /bible/multi/ from / drew blank for 18 frames, about 0.3 s (motion on 3/4, reduced 2/4); Gate 3c saw it once. Only layer crossings (for the eye) otherwise.
 
 ## Left
 
