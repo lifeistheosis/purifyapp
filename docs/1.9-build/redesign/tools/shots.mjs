@@ -7,6 +7,8 @@
 //   set     localStorage values before the app starts (a new reader by default: questions done, nothing kept)
 //   steps   [{ tap: "css" } | { scroll: y } | { wait: ms } | { eval: "js" }] after arriving
 //   full    a still of the whole page as well as the first screen
+//   voice   a phone's voice stand-in (scripts/lib/fake-voice.mjs), and the recordings served by the
+//           export's own bell, so Listen plays a text in the still (build 98 note 2)
 // Run from the repository's root (it imports the repo's own checker).
 import fs from "node:fs";
 import path from "node:path";
@@ -18,6 +20,7 @@ const SCALE = Number(flags.find((f) => f.startsWith("--scale="))?.split("=")[1] 
 const repo = process.cwd();
 const { checkMock, printMockCheck } = await import(pathToFileURL(path.join(repo, "scripts/mock-check.mjs")));
 const { NATIVE_UA, serveLikeTheShell, go } = await import(pathToFileURL(path.join(repo, "scripts/lib/shell-server.mjs")));
+const { fakeVoice } = await import(pathToFileURL(path.join(repo, "scripts/lib/fake-voice.mjs")));
 const { createRequire } = await import("node:module");
 const { chromium } = createRequire(path.join(repo, "package.json"))("playwright");
 
@@ -46,6 +49,11 @@ for (const shot of plan) {
   }, { "purify:onboarded": "99", "purify:whatsNewSeen": "99", ...(shot.set ?? {}) });
   if (shot.clock) await ctx.clock.setFixedTime(new Date(shot.clock));
   await serveLikeTheShell(ctx, OUT, {});
+  if (shot.voice) {
+    await ctx.addInitScript(fakeVoice);
+    const bell = fs.readFileSync(path.join(OUT, "audio/ambience/bell.mp3"));
+    await ctx.route("https://audio.purifyapp.net/**/*.mp3", (r) => r.fulfill({ status: 200, contentType: "audio/mpeg", body: bell }));
+  }
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e).slice(0, 160)));

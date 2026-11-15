@@ -23,6 +23,7 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 import { checkMock, EVERY, printMockCheck } from "../mock-check.mjs";
+import { fakeVoice } from "../lib/fake-voice.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 import { firstTouch, tapAt } from "../lib/tap.mjs";
 import { judgeFrames, recordFrames } from "./frames.mjs";
@@ -58,50 +59,6 @@ const TEXTS = [
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const RECORD = { width: WIDTH, height: HEIGHT, minMs: 900, stillMs: 450, maxMs: 2600 };
-
-/**
- * A phone's voice for the walk: one local voice, and an utterance that starts at once, says a word
- * every 300ms and ends after a minute, so Listen plays as a phone's voice would.
- */
-function fakeVoice() {
-  const voice = { voiceURI: "walk-voice", name: "Walk", lang: navigator.language || "en-US", localService: true, default: true };
-  let timers = [];
-  class Utterance {
-    constructor(text) {
-      this.text = text;
-      this.voice = null;
-      this.lang = "";
-      this.rate = 1;
-      this.volume = 1;
-    }
-  }
-  const synth = new EventTarget();
-  Object.assign(synth, {
-    speaking: false,
-    paused: false,
-    pending: false,
-    getVoices: () => [voice],
-    speak(u) {
-      timers.push(setTimeout(() => u.onstart?.({}), 30));
-      for (let i = 1; i < 200; i++) timers.push(setTimeout(() => u.onboundary?.({ name: "word", charIndex: Math.min(i * 6, Math.max(0, u.text.length - 1)), charLength: 5 }), 30 + i * 300));
-      timers.push(setTimeout(() => u.onend?.({}), 60000));
-      synth.speaking = true;
-    },
-    cancel() {
-      for (const t of timers) clearTimeout(t);
-      timers = [];
-      synth.speaking = false;
-    },
-    pause() {
-      synth.paused = true;
-    },
-    resume() {
-      synth.paused = false;
-    },
-  });
-  Object.defineProperty(window, "speechSynthesis", { value: synth, configurable: true });
-  Object.defineProperty(window, "SpeechSynthesisUtterance", { value: Utterance, configurable: true });
-}
 
 /** What stands at the foot and in the page, as a reader sees it. */
 const state = (page) =>
