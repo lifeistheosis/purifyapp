@@ -13,8 +13,11 @@
 // (lib/walkthroughs/people.ts), cut to the face by placing the picture in a
 // box that clips it, so no new file is made. It is asked of the website in the
 // apps (lib/media/streamed.ts), fades in when it has come (on the app's motion
-// switch), and with no signal it is left out and the name stands alone. It is
-// beside the name it shows, so it is hidden from a screen reader.
+// switch), and with no signal its square stays as it opened, empty, so the
+// name beside it never moves: it used to go, and the name and feast slid 72px
+// to the start after the sheet had opened (Gate 4, 2026-11-15, Job's notes
+// with no network). It is beside the name it shows, so it is hidden from a
+// screen reader.
 
 import { useEffect, useRef, useState } from "react";
 
@@ -38,7 +41,6 @@ function PortraitIcon({ portrait }: { portrait: Portrait }) {
     setState(el.naturalWidth > 1 ? "shown" : "gone");
   }, [src]);
 
-  if (state === "gone") return null;
   const at = portraitPlacement(portrait);
   return (
     <span aria-hidden data-walk-portrait={state} className="relative block size-14 shrink-0 overflow-hidden rounded-[10px] bg-paper/[0.06]">

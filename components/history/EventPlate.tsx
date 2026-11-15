@@ -15,8 +15,11 @@
 //
 // The picture lives on the website (lib/history/media.ts). Until it arrives
 // the plate holds its own size; if it cannot arrive (no signal in the apps)
-// the plate is gone, with no empty box left behind, and the account stands
-// alone.
+// the plate stays as it opened, on the picture's own colours, so nothing
+// under it moves. It used to go, and the page moved after it had arrived:
+// the account rose by the plate's height and the column under the top bar
+// fell 30px, the plate's empty holder's margin running through it (Gate 4,
+// 2026-11-15, the /history/ pages with no network).
 //
 // It never shows half arrived (1.7.2: the owner saw the pictures load
 // "spiratically", a band at a time, in the event's sheet). The plate opens on
@@ -50,25 +53,20 @@ export function EventPlate({
   className?: string;
 }) {
   const ref = useRef<HTMLImageElement>(null);
-  const [failed, setFailed] = useState(false);
   const [arrived, setArrived] = useState(false);
   // An AVIF the website does not have yet (a picture added on a branch, the
   // website a deploy behind) falls back to the JPEG: a <picture> whose chosen
   // source fails does not try the next one by itself.
   const [jpegOnly, setJpegOnly] = useState(false);
 
-  // A picture that loaded or failed before the page could listen (the
-  // website's first paint, or one already kept by the browser) is read from
-  // the <img> itself, so a broken picture never shows and a kept one is not
-  // made to wait.
+  // A picture that loaded before the page could listen (the website's first
+  // paint, or one already kept by the browser) is read from the <img> itself,
+  // so a kept one is not made to wait. One that failed never arrives: it
+  // stays unseen under the preview, and the plate keeps its place.
   useEffect(() => {
     const img = ref.current;
-    if (!img || !img.complete) return;
-    if (img.naturalWidth === 0) setFailed(true);
-    else setArrived(true);
+    if (img?.complete && img.naturalWidth > 0) setArrived(true);
   }, []);
-
-  if (failed) return null;
 
   const focus = picture.shape === "wide" && picture.focus ? { objectPosition: picture.focus } : undefined;
   const img = (
@@ -91,7 +89,6 @@ export function EventPlate({
         }}
         onError={(e) => {
           if (!jpegOnly && picture.avif && e.currentTarget.currentSrc.endsWith(".avif")) setJpegOnly(true);
-          else setFailed(true);
         }}
         style={focus}
         className={cn(
