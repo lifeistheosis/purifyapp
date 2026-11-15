@@ -65,6 +65,23 @@ const SCRIM_BLUR_PX = 10;
  *  rounded corners (rounded-t-3xl is 24px), so they still show it. */
 const CORNER_PX = 32;
 
+/**
+ * The scrim's strip behind a full-width sheet: from the screen's top to just
+ * under the sheet's top edge, where the panel stands (`panelTop`, its layout
+ * top with no slide) moved by the slide `y`.
+ *
+ * Measured from the panel's own top, not from the window's height less the
+ * panel's: when the window shrinks for the keyboard, the window's resize is
+ * heard before React has sized the box a `fill` or `keyboard` sheet stands in,
+ * so the panel is still as tall as before in a window 300px shorter, and that
+ * difference read below zero: the strip was set to 0px and back in the same
+ * frame (Updates 52, item 4). Since build 98 the window follows the keyboard
+ * frame by frame on Android, so that happens on every frame of the slide.
+ */
+export function scrimStrip(panelTop: number, y: number, viewport: number): number {
+  return Math.min(viewport, Math.max(0, Math.round(panelTop + y + CORNER_PX)));
+}
+
 /** A half rest only exists when it would hide at least this much. */
 const MIN_HALF_GAIN = 64;
 
@@ -151,6 +168,8 @@ export function useDraggableSheet({
   /** Gap between the panel's resting bottom and the screen's: a sheet lifted
    *  off the edge (a desktop card) has that much further to travel to leave. */
   const below = useRef(0);
+  /** Where the panel's top edge stands with no slide (scrimStrip). */
+  const topAt = useRef<number | null>(null);
   const halfAt = useRef<number | null>(null);
   /** A sheet that spans the screen's width and rests on its bottom edge. */
   const fullBleed = useRef(false);
@@ -189,6 +208,7 @@ export function useDraggableSheet({
     const rect = panel.getBoundingClientRect();
     exactHeight.current = rect.height;
     below.current = Math.max(0, window.innerHeight - (rect.bottom - offset.current));
+    topAt.current = rect.top - offset.current;
     fullBleed.current = rect.width >= window.innerWidth - 2 && below.current < 2;
     const visibleHalf = Math.round(window.innerHeight * half);
     const gain = height.current - visibleHalf;
@@ -221,8 +241,7 @@ export function useDraggableSheet({
       const p = Math.min(1, Math.max(0, (height.current - y) / range));
       scrim.style.opacity = String(p);
       if (fullBleed.current) {
-        const top = window.innerHeight - height.current + y;
-        const next = Math.min(window.innerHeight, Math.max(0, Math.round(top + CORNER_PX)));
+        const next = scrimStrip(topAt.current ?? window.innerHeight - height.current, y, window.innerHeight);
         const m = motion.current;
         scrim.style.transition = !m
           ? "none"

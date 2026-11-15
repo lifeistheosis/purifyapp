@@ -5180,6 +5180,8 @@
   "journal.page.versePlaceholder": "Un versetto, come Giovanni 3:16",
   "journal.page.quotePlaceholder": "Le parole che citi",
   "journal.page.quoteBy": "Chi l'ha detto",
+  "journal.page.quoteOwn": "Parole tue",
+  "journal.page.quoteFind": "Trova le parole",
   "journal.notebooks": "Quaderni",
   "journal.share.action": "Condividi questa pagina",
   "journal.share.left": "Rimaste questo mese: {count}",

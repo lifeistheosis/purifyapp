@@ -5210,6 +5210,8 @@
   "journal.page.versePlaceholder": "A verse, as John 3:16",
   "journal.page.quotePlaceholder": "The words you are quoting",
   "journal.page.quoteBy": "Who said it",
+  "journal.page.quoteOwn": "Words of your own",
+  "journal.page.quoteFind": "Find the words",
   "journal.notebooks": "Notebooks",
   "journal.share.action": "Share this page",
   "journal.share.left": "Left this month: {count}",

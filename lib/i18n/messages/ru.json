@@ -5335,6 +5335,8 @@
   "journal.page.versePlaceholder": "Стих, например От Иоанна 3:16",
   "journal.page.quotePlaceholder": "Слова, которые вы цитируете",
   "journal.page.quoteBy": "Кто это сказал",
+  "journal.page.quoteOwn": "Свои слова",
+  "journal.page.quoteFind": "Найти слова",
   "journal.notebooks": "Тетради",
   "journal.share.action": "Поделиться этой страницей",
   "journal.share.left": "Осталось в этом месяце: {count}",

@@ -5472,6 +5472,8 @@
   "journal.page.versePlaceholder": "آية، مثل يوحنا 3:16",
   "journal.page.quotePlaceholder": "الكلمات التي تقتبسها",
   "journal.page.quoteBy": "مَن قالها",
+  "journal.page.quoteOwn": "كلمات من عندك",
+  "journal.page.quoteFind": "ابحث عن الكلمات",
   "journal.notebooks": "الدفاتر",
   "journal.share.action": "شارك هذه الصفحة",
   "journal.share.left": "المتبقي هذا الشهر: {count}",

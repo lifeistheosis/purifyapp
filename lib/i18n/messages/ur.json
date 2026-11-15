@@ -5175,6 +5175,8 @@
   "journal.page.versePlaceholder": "ایک آیت، جیسے یوحنا 3:16",
   "journal.page.quotePlaceholder": "وہ الفاظ جن کا آپ اقتباس دے رہے ہیں",
   "journal.page.quoteBy": "کس نے کہا",
+  "journal.page.quoteOwn": "اپنے الفاظ",
+  "journal.page.quoteFind": "الفاظ تلاش کریں",
   "journal.notebooks": "نوٹ بکس",
   "journal.share.action": "یہ صفحہ شیئر کریں",
   "journal.share.left": "اس مہینے باقی: {count}",

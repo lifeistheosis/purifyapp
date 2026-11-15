@@ -5203,6 +5203,8 @@
   "journal.page.versePlaceholder": "Un verset, comme Jean 3:16",
   "journal.page.quotePlaceholder": "Les mots que vous citez",
   "journal.page.quoteBy": "Qui l'a dit",
+  "journal.page.quoteOwn": "Vos propres mots",
+  "journal.page.quoteFind": "Trouver les mots",
   "journal.notebooks": "Carnets",
   "journal.share.action": "Partager cette page",
   "journal.share.left": "Restant ce mois-ci : {count}",

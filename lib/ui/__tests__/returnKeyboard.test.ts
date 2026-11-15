@@ -66,18 +66,26 @@ describe("another app's keyboard, as the reader comes back", () => {
     expect(body.match(/isVisible\(WindowInsetsCompat\.Type\.ime\(\)\)/g)).toHaveLength(1);
     // Every use of the keyboard in the listener goes through that reading:
     // the padding on both branches and the bottom inset handed to the page.
-    expect(body).toContain("v.setPadding(0, 0, 0, keyboardVisible ? imeInsets.bottom : 0);");
-    expect(body).toContain("keyboardVisible ? imeInsets.bottom : systemBarsInsets.bottom");
+    // (Each padding goes through room() since build 98: while the keyboard
+    // slides, the room follows the keys frame by frame; keyboardSlide.test.ts.)
+    expect(body).toContain("v.setPadding(0, 0, 0, room(v, keyboardVisible ? imeInsets.bottom : 0));");
+    expect(body).toContain("room(v, keyboardVisible ? imeInsets.bottom : systemBarsInsets.bottom)");
     expect(body).toContain("getBottomInset(systemBarsInsets, keyboardVisible)");
     expect(body.match(/imeInsets\.bottom/g)).toHaveLength(2);
   });
 
   it("leaves Purify's own keyboard as it was: the room is made while a field has the focus", () => {
-    // The padding itself is the plugin's, unchanged: the keyboard's own height,
-    // under a page whose field asked for it.
+    // The padding itself is the plugin's: the keyboard's own height, under a
+    // page whose field asked for it. Since build 98 it reaches that height with
+    // the keys, frame by frame, instead of in one step (keyboardSlide.test.ts):
+    // the two padding lines are the only others the patch changes.
     const patch = read(PATCH);
     const removed = patch.split("\n").filter((l) => l.startsWith("-") && !l.startsWith("---"));
-    expect(removed).toEqual(["-            boolean keyboardVisible = windowInsets.isVisible(WindowInsetsCompat.Type.ime());"]);
+    expect(removed).toEqual([
+      "-            boolean keyboardVisible = windowInsets.isVisible(WindowInsetsCompat.Type.ime());",
+      "-                v.setPadding(0, 0, 0, keyboardVisible ? imeInsets.bottom : 0);",
+      "-            v.setPadding(systemBarsInsets.left, systemBarsInsets.top, systemBarsInsets.right, keyboardVisible ? imeInsets.bottom : systemBarsInsets.bottom);",
+    ]);
     // The plugin is the only part of the app that pads the window for a
     // keyboard: Capacitor's own SystemBars inset handling is off (capacitor.config.ts),
     // and the activity sets no listener of its own (MainActivity.java).

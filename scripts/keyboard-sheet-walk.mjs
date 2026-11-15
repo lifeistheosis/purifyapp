@@ -17,7 +17,12 @@
 //     GATHERINGS, 8 by default, kept on the device; opened from a verse's Gather in the Bible; Updates 76)
 //
 // A dev server needs NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 NEXT_PUBLIC_SUPABASE_ANON_KEY=walk-anon.
-// Modes: step (one resize, as Android pads the window), anim (eight), vv (the website's: the visual viewport only).
+// Modes: step (one resize, as Android padded the window until build 98), anim (eight), frames (a resize on
+// every frame of the keyboard's slide on Android's ease-out curve, as the Android app follows the keys from
+// build 98, notes 4 and 12: the safe-area patch's KeyboardSlide; DOWN=1 closes it the same way),
+// vv (the website's: the visual viewport only).
+// Every write to the scrim's strip is kept (a MutationObserver with the old values, so a strip set to 0px and
+// back inside one frame is seen, Updates 52 item 4); a 0px strip while the sheet is open fails the walk.
 // On the export: give a folder in place of the address (`out`, after npm run build:android); it is served as the
 // phones' shells serve it and each screen is opened the way the app opens it (scripts/lib/shell-server.mjs).
 import fs from "node:fs";
@@ -138,10 +143,28 @@ await page.evaluate((sel) => {
       focus: document.activeElement === f,
       docScroll: Math.round(document.scrollingElement.scrollTop),
     });
+    if (scrim && !window.__scrimSeen) {
+      window.__scrimSeen = true;
+      window.__scrimWrites = [];
+      const h = (style) => /(?:^|;)\s*height:\s*([^;]+)/.exec(style ?? "")?.[1]?.trim() ?? "";
+      new MutationObserver((records) => {
+        for (const m of records) window.__scrimWrites.push(h(m.oldValue));
+        window.__scrimWrites.push(h(scrim.getAttribute("style")));
+      }).observe(scrim, { attributes: true, attributeFilter: ["style"], attributeOldValue: true });
+    }
     if (frames.length < 400) requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
 }, fieldSel);
+/** The Android keyboard's slide: about 285ms on an ease-out curve, one window size a frame. */
+const slide = async (from, to) => {
+  const n = 18;
+  for (let i = 1; i <= n; i++) {
+    const f = 1 - Math.pow(1 - i / n, 3);
+    await page.setViewportSize({ width: 390, height: Math.round(from + (to - from) * f) });
+    await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => r())));
+  }
+};
 
 if (WHICH === "journal") {
   const field = page.locator(fieldSel).first();
@@ -180,7 +203,8 @@ else if (MODE === "anim") {
     await page.setViewportSize({ width: 390, height: Math.round(844 - (KB * i) / 8) });
     await page.waitForTimeout(30);
   }
-} else await page.evaluate((kb) => window.__kb(kb), KB);
+} else if (MODE === "frames") await slide(844, 844 - KB);
+else await page.evaluate((kb) => window.__kb(kb), KB);
 // Android WebView, once its size has changed for the keyboard, scrolls the focused field's box into
 // view (ImeAdapterImpl.updateAfterViewSizeChanged -> scrollFocusedEditableNodeIntoView ->
 // WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView: CenterIfNeeded in every scroller).
@@ -219,7 +243,8 @@ for (const f of frames) {
 if (process.env.SHOT) await page.screenshot({ path: process.env.SHOT });
 // DOWN=1: the keyboard goes again; the edge comes back to where it rested before it.
 if (process.env.DOWN) {
-  await page.setViewportSize({ width: 390, height: 844 });
+  if (MODE === "frames") await slide(844 - KB, 844);
+  else await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(700);
   console.log("edge after the keyboard went:", await page.evaluate((sel) => Math.round(document.querySelector(sel)?.closest(".will-change-transform")?.getBoundingClientRect().top * 10) / 10, fieldSel));
 }
@@ -231,7 +256,10 @@ const atKb = frames.find((f) => f.ih === end.ih && f.vvh === end.vvh);
 // while the sheet still rises counts too), and every frame after: it must not move.
 const lastBefore = frames.findLastIndex((f) => f.ih === 844 && f.vvh === 844);
 const edgeStill = frames.slice(Math.max(0, lastBefore)).every((f) => f.rest === null || Math.abs(f.rest - end.edge) < 0.5);
-const ok = finger ? finger.after - finger.before >= 100 : Boolean(atKb) && edgeStill && end.fieldRest === atKb.fieldRest;
+const scrimWrites = await page.evaluate(() => window.__scrimWrites ?? []);
+const blinks = scrimWrites.filter((h) => h === "0px").length;
+console.log(`${blinks ? "FAIL" : "ok  "} the scrim's strip: ${scrimWrites.length} writes, ${blinks} of them 0px`);
+const ok = !blinks && (finger ? finger.after - finger.before >= 100 : Boolean(atKb) && edgeStill && end.fieldRest === atKb.fieldRest);
 if (finger) console.log(`${ok ? "ok  " : "FAIL"} a finger drawn up the body after the keyboard came: scrolled ${finger.before} -> ${finger.after}`);
 console.log(`${ok ? "ok  " : "FAIL"} ${WHICH}${process.env.COVER ? " with a cover" : ""}: field ${frames.find((f) => f.focus)?.fieldTop} at the tap, ${atKb?.fieldTop} as the keyboard comes, ${end.fieldTop} at rest (body scrolled ${end.st}); edge ${frames[lastBefore]?.rest} before the keyboard, ${end.edge} at rest${edgeStill ? "" : ", moved"}`);
 await browser.close();

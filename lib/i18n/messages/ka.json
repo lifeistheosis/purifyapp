@@ -5175,6 +5175,8 @@
   "journal.page.versePlaceholder": "მუხლი, მაგალითად იოანე 3:16",
   "journal.page.quotePlaceholder": "სიტყვები, რომლებსაც იმოწმებთ",
   "journal.page.quoteBy": "ვინ თქვა",
+  "journal.page.quoteOwn": "საკუთარი სიტყვები",
+  "journal.page.quoteFind": "იპოვეთ სიტყვები",
   "journal.notebooks": "რვეულები",
   "journal.share.action": "ამ გვერდის გაზიარება",
   "journal.share.left": "დარჩენილია ამ თვეში: {count}",

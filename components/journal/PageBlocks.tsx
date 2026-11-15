@@ -21,6 +21,7 @@ import { PlusMark } from "@/components/billing/PlusMark";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { HighlightNamesSheet } from "@/components/bible/HighlightNamesSheet";
 import { HighlightPicker } from "@/components/bible/HighlightPicker";
+import { LibraryQuote } from "@/components/journal/LibraryQuote";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SearchField } from "@/components/search/SearchField";
 import { Book } from "@/components/ui/icons/Book";
@@ -635,7 +636,9 @@ function RemoveButton({ onClick, label, high = false }: { onClick: () => void; l
 
 /**
  * The row under the page, above the keyboard: Verse finds a verse and lays
- * its card where the cursor is; Quote opens a quote of one's own there;
+ * its card where the cursor is; Quote searches Purify's library and lays the
+ * passage chosen, cited, or a quote of one's own as its second choice (build
+ * 98 note 5, ./LibraryQuote.tsx);
  * Highlight colours the paragraph the cursor is in, and with nothing written
  * says so. Verse and Highlight open their panel over the row and close it
  * again. No tool is ever dim: each one tapped does or says something.
@@ -656,6 +659,7 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
   };
   const targetBlock = target !== null ? editor.page.blocks[target] : null;
   const active = targetBlock?.type === "text" ? (targetBlock.color ?? null) : null;
+  const verseLabel = useVerseCardLabel();
 
   return (
     <div data-page-toolbar="" className="border-t border-paper/10 bg-night">
@@ -667,6 +671,30 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
             if (at >= 0) editor.show(at);
             else editor.insert(b);
             setPanel(null);
+          }}
+        />
+      ) : null}
+      {panel === "quote" ? (
+        <LibraryQuote
+          locked={locked}
+          onLocked={() => {
+            setPanel(null);
+            upgrade.open("journal");
+          }}
+          verseLabel={verseLabel}
+          onPick={(b) => {
+            // A verse is laid once, as from the Verse tool; a passage where the cursor is.
+            const at = verseAt(editor.page.blocks, b);
+            if (at >= 0) editor.show(at);
+            else editor.insert(b);
+            setPanel(null);
+          }}
+          onOwn={() => {
+            setPanel(null);
+            // One empty quote of one's own at a time: a second tap goes to the one waiting.
+            const at = emptyQuoteAt(editor.page.blocks);
+            if (at >= 0) editor.focusBlock(at);
+            else editor.insert({ type: "quote", text: "", by: "" });
           }}
         />
       ) : null}
@@ -756,13 +784,8 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
         <Tool
           icon={<ChatBubble size={18} />}
           label={t("journal.page.addQuote")}
-          onClick={() => {
-            setPanel(null);
-            // One empty quote at a time: a second tap goes to the one waiting.
-            const at = emptyQuoteAt(editor.page.blocks);
-            if (at >= 0) editor.focusBlock(at);
-            else editor.insert({ type: "quote", text: "", by: "" });
-          }}
+          pressed={panel === "quote"}
+          onClick={() => (panel === "quote" ? editor.shutPanel() : setPanel("quote"))}
         />
         <Tool
           icon={<Highlighter size={18} />}

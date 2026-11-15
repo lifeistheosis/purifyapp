@@ -5337,6 +5337,8 @@
   "journal.page.versePlaceholder": "Werset, na przykład Ewangelia Jana 3:16",
   "journal.page.quotePlaceholder": "Słowa, które cytujesz",
   "journal.page.quoteBy": "Kto to powiedział",
+  "journal.page.quoteOwn": "Własne słowa",
+  "journal.page.quoteFind": "Znajdź słowa",
   "journal.notebooks": "Notatniki",
   "journal.share.action": "Udostępnij tę stronę",
   "journal.share.left": "Pozostało w tym miesiącu: {count}",

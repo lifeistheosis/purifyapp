@@ -5175,6 +5175,8 @@
   "journal.page.versePlaceholder": "Ein Vers, etwa Johannes 3:16",
   "journal.page.quotePlaceholder": "Die Worte, die du zitierst",
   "journal.page.quoteBy": "Wer hat es gesagt",
+  "journal.page.quoteOwn": "Eigene Worte",
+  "journal.page.quoteFind": "Worte finden",
   "journal.notebooks": "Notizbücher",
   "journal.share.action": "Diese Seite teilen",
   "journal.share.left": "Übrig in diesem Monat: {count}",

@@ -5175,6 +5175,8 @@
   "journal.page.versePlaceholder": "Isang talata, gaya ng Juan 3:16",
   "journal.page.quotePlaceholder": "Ang mga salitang sinisipi mo",
   "journal.page.quoteBy": "Sino ang nagsabi",
+  "journal.page.quoteOwn": "Sarili mong mga salita",
+  "journal.page.quoteFind": "Hanapin ang mga salita",
   "journal.notebooks": "Mga notebook",
   "journal.share.action": "Ibahagi ang pahinang ito",
   "journal.share.left": "Natitira ngayong buwan: {count}",

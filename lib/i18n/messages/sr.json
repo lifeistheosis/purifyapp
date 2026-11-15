@@ -5258,6 +5258,8 @@
   "journal.page.versePlaceholder": "Стих, на пример Јован 3:16",
   "journal.page.quotePlaceholder": "Речи које цитирате",
   "journal.page.quoteBy": "Ко је то рекао",
+  "journal.page.quoteOwn": "Ваше речи",
+  "journal.page.quoteFind": "Пронађите речи",
   "journal.notebooks": "Свеске",
   "journal.share.action": "Подели ову страницу",
   "journal.share.left": "Преостало овог месеца: {count}",

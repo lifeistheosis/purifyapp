@@ -5175,6 +5175,8 @@
   "journal.page.versePlaceholder": "Bir ayet, örneğin Yuhanna 3:16",
   "journal.page.quotePlaceholder": "Alıntıladığınız sözler",
   "journal.page.quoteBy": "Kim söyledi",
+  "journal.page.quoteOwn": "Kendi sözleriniz",
+  "journal.page.quoteFind": "Sözleri bulun",
   "journal.notebooks": "Defterler",
   "journal.share.action": "Bu sayfayı paylaş",
   "journal.share.left": "Bu ay kalan: {count}",

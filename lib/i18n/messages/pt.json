@@ -5180,6 +5180,8 @@
   "journal.page.versePlaceholder": "Um versículo, como João 3:16",
   "journal.page.quotePlaceholder": "As palavras que você cita",
   "journal.page.quoteBy": "Quem disse",
+  "journal.page.quoteOwn": "Palavras suas",
+  "journal.page.quoteFind": "Encontrar as palavras",
   "journal.notebooks": "Cadernos",
   "journal.share.action": "Compartilhar esta página",
   "journal.share.left": "Restam este mês: {count}",
