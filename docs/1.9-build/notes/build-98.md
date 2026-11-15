@@ -202,3 +202,17 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 
 - When a version starts (Play, a seek, the next version), the words go at once, on the house curve, to the line being sung, or to the first line in the opening before any is sung, wherever the box had been scrolled; then they follow line by line. A reader's own scroll pauses the following for its few seconds, and it comes back by itself. Reduced motion: the words move without gliding.
 - Reproduced first on the export (the Anthem, Words, the box scrolled to the middle, Play), then mended, with a test that fails on 78c5297e1: from Play, the first line comes into view within a moment and the sung line stays in view to the end. The same in Now Playing's Words view, which shares the code.
+
+## Note 14: a stutter switching tabs while something is loaded in the player
+
+**His words (2026-11-15, about 22:04 UTC),** with a screenshot of the foot of Luke 10 on a phone: the reader's dock (the Trinity icon, The Prayer Rope Anthem with its progress, Play; Luke 10 with its arrows, Listen and the sleep timer) above the tab bar (Today, Bible chosen, Discover, Prayers, You): "also there's a small stutter when switching between these screens".
+
+**Found (the arbiter, 22:05 UTC, from the code of 78c5297e1):**
+
+- While anything is loaded, the foot of the screen changes hands at every switch to or from the Bible: on the Bible the reader's dock is the player (`components/bible/ReaderDock.tsx`), and everywhere else the mini player is (`components/prayers/NowPlayingBar.tsx`). The mini player leaves by vanishing (`if (!visible) return null`, the moment the Bible says it is the player for everything, `lib/player/pagePlayer.ts`) and comes back the same way, with no move of its own, while the page itself moves in the page switch. Two bars that are one thing to the reader cut out and in under a moving page: that is the stutter.
+- The motion walk (`scripts/motion-walk.mjs`) never had anything loaded in the player, so no tab switch with the dock or the mini player was ever measured. Every walk passed without seeing it.
+
+**Plan (nothing is built until he says start):**
+
+- The dock and the mini player read as one surface at the foot: at a switch, one turns into the other in the page switch itself (one name for both in the View Transitions, so the bar morphs from one form to the other on the house curve), and the room each page keeps at its foot changes with the move, not before it. Reduced motion: they simply change, with no blank between.
+- The motion walk gains a pass with a track loaded, and one with a sound playing alone: every tab switch, both ways, failing a cut, a blank frame or a box that jumps. A test that fails on 78c5297e1.
