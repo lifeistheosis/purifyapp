@@ -33,7 +33,7 @@ await ctx.addInitScript(() => { try { localStorage.setItem("purify:onboarded", "
 await pinMotion(ctx, mode);
 if (NEW) await (await import(`${R}/lib/sells-plus.mjs`)).asAndroidShell(ctx);
 if (OUT) await serveLikeTheShell(ctx, OUT, {});
-if (net === "feed") await ctx.route((u) => !u.href.startsWith(BASE), async (r) => {
+if (net === "feed") await ctx.route((u) => !u.href.startsWith(BASE) || /\/api\/community\/posts\?chapter=/.test(u.href), async (r) => {
   const u = r.request().url();
   if (!/\/api\/community\/posts\?chapter=/.test(u)) return r.abort();
   const cors = { "access-control-allow-origin": r.request().headers()["origin"] ?? "*", "access-control-allow-credentials": "true", "access-control-allow-headers": "authorization, content-type", "access-control-allow-methods": "GET, OPTIONS" };
