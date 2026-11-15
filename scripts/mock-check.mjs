@@ -291,12 +291,86 @@ async function look(arg) {
   // ground, so the stack is painted and read where the words are
   // (paintedGround, below). A picture has no colour to read: not measured,
   // and said.
+  // A backdrop laid behind the words by a box beside them, not around them (1.9, Gate 4b's fault B, mended by
+  // Updates 92): EIKON's room is a layer fixed to the screen beside its words (EikonBoutique, `fixed inset-0
+  // -z-10`, obsidian), so every parent of the words is clear, and the walk read white words on the body's paper on
+  // Light, 1.15:1, where a reader sees them on obsidian. A sibling of the words or of a parent counts when it is
+  // placed out of the flow (fixed or absolute), drawn whole (no fade, shown), covers where the words are, and is
+  // painted under them: a negative z-index under anything in the flow, or a z-index under the words' own placed
+  // box, or the same and earlier. One under the flow is painted just above the background of the box its
+  // stacking begins at, so the parents between still lie over it; the canvas, where the body's background goes
+  // when the root draws none, lies under it. A picture is said, as a face's is; a fade of opaque stops is read as
+  // a face's stops are.
+  const stacksHere = (n) => {
+    if (n === document.documentElement) return true;
+    const cs = getComputedStyle(n);
+    const zSet = cs.zIndex !== "auto";
+    const item = n.parentElement && /flex|grid/.test(getComputedStyle(n.parentElement).display);
+    return (
+      /fixed|sticky/.test(cs.position) ||
+      (cs.position !== "static" && zSet) ||
+      (item && zSet) ||
+      Number(cs.opacity) < 1 ||
+      cs.isolation === "isolate" ||
+      cs.mixBlendMode !== "normal" ||
+      !none(cs.maskImage) ||
+      !none(cs.clipPath) ||
+      pinsHere(cs)
+    );
+  };
+  const zOf = (cs) => (cs.position === "static" ? null : cs.zIndex === "auto" ? 0 : parseInt(cs.zIndex, 10) || 0);
+  const backdropOf = (child, parent, at) => {
+    const ownZ = zOf(getComputedStyle(child));
+    let before = true;
+    for (const s of parent.children) {
+      if (s === child) {
+        before = false;
+        continue;
+      }
+      const cs = getComputedStyle(s);
+      if (!/^(?:fixed|absolute)$/.test(cs.position) || cs.display === "none" || cs.visibility !== "visible" || Number(cs.opacity) < 0.999) continue;
+      const z = zOf(cs);
+      const under = z < 0 ? ownZ === null || ownZ > z : ownZ !== null && (ownZ > z || (ownZ === z && before));
+      if (!under) continue;
+      const r = s.getBoundingClientRect();
+      if (r.left > at.left + 0.5 || r.top > at.top + 0.5 || r.right < at.right - 0.5 || r.bottom < at.bottom - 0.5) continue;
+      const image = cs.backgroundImage && cs.backgroundImage !== "none" ? cs.backgroundImage : null;
+      if (image && !/^(?:linear|radial)-gradient\(/.test(image)) return { unknown: `${s.tagName.toLowerCase()} beside it lays a picture behind its words` };
+      const stops = image ? [...image.matchAll(STOP)].map((m) => rgba(m[0])) : [rgba(cs.backgroundColor)];
+      if (!stops.length || stops.some((c) => c[3] < 0.999)) continue;
+      let root = document.documentElement;
+      for (let n = s.parentElement; n; n = n.parentElement) {
+        if (stacksHere(n)) {
+          root = n;
+          break;
+        }
+      }
+      return { node: s, z, root, rgbs: stops.map((c) => c.slice(0, 3)) };
+    }
+    return null;
+  };
+  // The root draws no background of its own, so the body's is the canvas's, under every layer.
+  const bodyOnCanvas = () => {
+    const h = getComputedStyle(document.documentElement);
+    return rgba(h.backgroundColor)[3] === 0 && none(h.backgroundImage);
+  };
   const groundOf = (el, at) => {
     const layers = [];
     const painted = [];
     let gradient = false;
     let base = null;
-    for (let n = el; n; n = n.parentElement) {
+    let behind = null;
+    let laid = null;
+    for (let n = el, prev = null; n; prev = n, n = n.parentElement) {
+      if (prev && !behind) {
+        const back = backdropOf(prev, n, at);
+        if (back?.unknown) return back;
+        if (back) behind = back;
+      }
+      if (behind && (behind.z >= 0 || n === behind.root || (n === document.body && behind.root === document.documentElement && bodyOnCanvas()))) {
+        laid = behind;
+        break;
+      }
       if (!painted.length) {
         const face = faceOf(n);
         if (face) return face;
@@ -318,6 +392,11 @@ async function look(arg) {
         base = n;
         break;
       }
+    }
+    if (laid && !gradient) {
+      const over = (rgb) => layers.reduceRight((g, c) => g.map((v, i) => c[i] * c[3] + v * (1 - c[3])), rgb);
+      if (laid.rgbs.length > 1) return { rgbs: laid.rgbs.map(over) };
+      return { rgb: over(laid.rgbs[0]), job: { el, at, base: laid.node } };
     }
     if (gradient) return { paint: { el, at, nodes: painted, base } };
     let g = [255, 255, 255];
@@ -1892,6 +1971,18 @@ const DIRPARTS = `<div data-mock-fixture="dirmore" class="bg-night px-4 pb-4" st
 const SHAPE_SQUARE = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4L20 4L20 20L4 20Z" /></svg>`;
 const SHAPE_KITE = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12,2 20,10 12,22 4,10" /></svg>`;
 const SHAPE_SPARKLE = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3.5c.7 4 2.5 5.8 6.5 6.5-4 .7-5.8 2.5-6.5 6.5-.7-4-2.5-5.8-6.5-6.5 4-.7 5.8-2.5 6.5-6.5z" /></svg>`;
+/**
+ * A backdrop laid behind words by a box beside them (Gate 4b's fault B, mended by Updates 92: EIKON's room, a layer
+ * fixed to the screen beside its words). Measured on Light, whose body is paper. White words on the black layer
+ * beside them pass: it is under them and over the part's own clear background. White words whose own parent lays
+ * paper over the same layer fail: a layer under the flow lies under the backgrounds of the boxes between.
+ */
+const BACKDROP = `<div data-mock-fixture="backdrop" style="position:fixed;left:0;right:0;top:120px;z-index:400;padding:16px;font:16px sans-serif">
+  <div style="position:absolute;inset:0;z-index:-1;background:#0a0a0a"></div>
+  <p style="margin:0;color:#ffffff">White words on a backdrop beside them</p>
+  <div style="margin-top:12px;padding:8px;background:#f1e8d4"><p style="margin:0;color:#ffffff">White words where the backdrop lies under paper</p></div>
+</div>`;
+
 const SHAPES = `<div data-mock-fixture="shapes" style="padding:16px;background:#101010;color:#ffffff;display:flex;flex-wrap:wrap;gap:4px">${Array.from(
   { length: 24 },
   (_, i) => `${SHAPE_SQUARE}${SHAPE_KITE}${i % 8 === 3 ? SHAPE_SPARKLE : ""}`,
@@ -2102,6 +2193,18 @@ async function selfTest() {
       pastEdge?.left === true &&
       byPixels.unmeasured.length === 1 &&
       byPixels.unmeasured[0].startsWith(`"Words past the screen's edge": `);
+    // A backdrop beside the words, on Light (Gate 4b's fault B): the black layer under white words is their ground,
+    // and the paper a parent lays over it is the ground of the words in that parent.
+    await page.evaluate((html) => {
+      for (const f of document.querySelectorAll("[data-mock-fixture]")) f.style.display = "none";
+      document.body.insertAdjacentHTML("beforeend", html);
+    }, BACKDROP);
+    await settle(page);
+    const backdrop = await checkMock(page, "[data-mock-fixture=backdrop]", { palettes: PALETTES.filter(([name]) => name === "Light") });
+    const onBackdrop = (what) => backdrop.failures.some((f) => f.check === "contrast" && f.what === `"${what}"`);
+    const backdropRead = PALETTES.some(([name]) => name === "Light") && !onBackdrop("White words on a backdrop beside them") && onBackdrop("White words where the backdrop lies under paper");
+    console.log(`\na backdrop beside the words, on Light: ${backdropRead ? "read under the white words, and under the paper laid over it" : `misread (${backdrop.failures.filter((f) => f.check === "contrast").map((f) => f.what).join(", ") || "nothing failed"})`}`);
+    await page.evaluate(() => document.querySelector("[data-mock-fixture=backdrop]")?.remove());
     const caught = new Set(bad.failures.map((f) => f.check));
     const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays", "sparkle", "picture", "dashed", "keys", "cut"].filter((c) => !caught.has(c));
     // A Father's own words keep their edition's dash, and a reader's own title its cut, by name; each allowance is said in the report.
@@ -2130,11 +2233,11 @@ async function selfTest() {
       said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
       said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
       good.unmeasured.length === 3;
-    const ok = listsWhole && missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead && shapesOnce && pairRight && dirRight;
+    const ok = listsWhole && missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead && shapesOnce && pairRight && dirRight && backdropRead;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${listsWhole ? "" : "a palette of the registry is left out of the lists, or the old lists were not caught; "}${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}${shapesOnce ? "" : " an outline drawn many times was read more than once, or a sparkle drawn among them was not caught"}${pairRight ? "" : " a part that drew more while it was measured had its paints compared with their neighbours' on Light"}${dirRight ? "" : " a part that changed with the direction had its boxes compared by place, not each with itself"}`,
+        : `\nself-test FAILED: ${listsWhole ? "" : "a palette of the registry is left out of the lists, or the old lists were not caught; "}${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}${shapesOnce ? "" : " an outline drawn many times was read more than once, or a sparkle drawn among them was not caught"}${pairRight ? "" : " a part that drew more while it was measured had its paints compared with their neighbours' on Light"}${dirRight ? "" : " a part that changed with the direction had its boxes compared by place, not each with itself"}${backdropRead ? "" : " a backdrop laid beside the words was not read as their ground, or was read through the paper laid over it"}`,
     );
     return ok;
   } finally {

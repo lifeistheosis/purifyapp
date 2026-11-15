@@ -63,7 +63,7 @@ import path from "node:path";
 
 import { chromium } from "playwright";
 
-import { checkMock, LOOKS as THEMES } from "./mock-check.mjs";
+import { checkMock, EVERY, LOOKS as THEMES } from "./mock-check.mjs";
 import { screens } from "./lib/screens.mjs";
 import { assertMotion, motionOptions, motionWords, pinMotion } from "./lib/motion.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "./lib/shell-server.mjs";
@@ -102,6 +102,9 @@ if (LIGHT) argv.splice(argv.indexOf("--light"), 1);
 const SEVEN = ["Desert", "Jordan", "Blush", "Roses", "Lavender", "Olive", "Stone"];
 const LIGHT_LOOKS = THEMES.filter(([label]) => SEVEN.includes(label));
 if (LIGHT && LIGHT_LOOKS.length !== SEVEN.length) throw new Error(`--light: mock-check's looks lack ${SEVEN.filter((l) => !LIGHT_LOOKS.some(([x]) => x === l)).join(", ")}`);
+// Every palette and look at once, all 21 (Updates 92, 2026-11-15: the brief asked checkMock on all 21). --every.
+const EVERY_ONE = argv.includes("--every");
+if (EVERY_ONE) argv.splice(argv.indexOf("--every"), 1);
 const SELF_TEST = argv.includes("--self-test");
 if (SELF_TEST) argv.splice(argv.indexOf("--self-test"), 1);
 const OUT = path.resolve(argv[0] ?? "out");
@@ -224,7 +227,7 @@ async function walkOne(page, at) {
       const wrong = await assertMotion(page, "on");
       if (wrong) throw new Error(wrong);
       // Words over a picture are measured on the pixels under their letters, on every palette.
-      const r = await checkMock(page, "body", { pixels: true, ...(LIGHT ? { palettes: LIGHT_LOOKS } : {}) });
+      const r = await checkMock(page, "body", { pixels: true, ...(EVERY_ONE ? { palettes: EVERY } : LIGHT ? { palettes: LIGHT_LOOKS } : {}) });
       const left = r.looks.filter((l) => l.left);
       if (LOOKS && left.length) {
         fs.mkdirSync(LOOKS, { recursive: true });
