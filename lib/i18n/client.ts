@@ -55,3 +55,76 @@ export async function loadClientCatalog(code: LocaleCode): Promise<Messages> {
     return { ...en };
   }
 }
+
+// THE READER'S OWN FACES, BEFORE THEIR WORDS (Updates 80, 1.9).
+//
+// Every script but Latin is drawn in a face that is not preloaded (app/layout.tsx:
+// Noto Sans and Noto Serif for Greek and Cyrillic, Noto Sans Arabic and Noto Naskh
+// Arabic for Arabic and Urdu, the two Georgian faces, Noto Sans Devanagari for
+// Nepali, and DM Sans's latin-ext file for the letters of Romanian, Turkish,
+// Polish and Hungarian). A browser asks for a face only when it first lays out a
+// letter it covers, and `display: swap` draws the fallback until it arrives. So a
+// language's words, committed the moment their catalog came, were drawn once in
+// the fallback and again in their face: on the export, Community's sign-in link in
+// Arabic widened 2.8px a frame later, as Noto Naskh Arabic and Noto Sans Arabic
+// finished loading (docs/handoffs/updates-79.md, step 3).
+//
+// So the faces are asked for first, with the letters the catalog itself draws:
+// `document.fonts.load` fetches exactly the faces whose unicode-range covers them
+// and passes over the rest, so this is right for every language without a table
+// of which face is whose. It never holds the words longer than FACES_WAIT_MS.
+
+/** The longest a language's words wait for their faces. */
+export const FACES_WAIT_MS = 1500;
+
+/** The faces the chrome is drawn in, as next/font names them on <html> (app/layout.tsx). */
+export const FACE_VARIABLES = [
+  "--font-dm-sans",
+  "--font-dm-serif",
+  "--font-lora",
+  "--font-noto-sans-x",
+  "--font-noto-serif-x",
+  "--font-noto-sans-arabic",
+  "--font-noto-naskh",
+  "--font-noto-sans-georgian",
+  "--font-noto-serif-georgian",
+  "--font-noto-sans-devanagari",
+] as const;
+
+/** Every letter beyond ASCII that a catalog draws, once each. */
+export function scriptSample(messages: Messages): string {
+  const seen = new Set<string>();
+  for (const value of Object.values(messages)) {
+    for (const ch of value) if ((ch.codePointAt(0) ?? 0) > 0x7f) seen.add(ch);
+  }
+  return [...seen].join("");
+}
+
+/** Resolves once the faces that draw these words are loaded, or the wait is over. Never rejects. */
+export async function facesReady(messages: Messages, ms: number = FACES_WAIT_MS): Promise<void> {
+  if (typeof document === "undefined" || !document.fonts?.load) return;
+  const sample = scriptSample(messages);
+  if (!sample) return;
+  const css = getComputedStyle(document.documentElement);
+  const asks = FACE_VARIABLES.map((v) => css.getPropertyValue(v).trim())
+    .filter(Boolean)
+    .map((family) => document.fonts.load(`400 1em ${family}`, sample).catch(() => []));
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  await Promise.race([
+    Promise.all(asks),
+    new Promise<void>((resolve) => {
+      timer = setTimeout(resolve, ms);
+    }),
+  ]);
+  if (timer) clearTimeout(timer);
+}
+
+/**
+ * A language ready to be drawn: its catalog, and the faces its words are drawn
+ * in. English is the language the apps are built in, and its faces are preloaded.
+ */
+export async function loadClientLanguage(code: LocaleCode): Promise<Messages> {
+  const messages = await loadClientCatalog(code);
+  if (code !== "en") await facesReady(messages);
+  return messages;
+}

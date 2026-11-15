@@ -99,9 +99,21 @@ export function whenLanguageSettled(): Promise<void> {
   });
 }
 
+let settledOnce: Promise<void> | null = null;
+
+/**
+ * The same promise as whenLanguageSettled, one for the whole page, for a
+ * component that suspends on it (React's use() needs the same promise on
+ * every render): components/i18n/LaunchLanguageGate.tsx, RouteLanguageHold.
+ */
+export function languageSettledPromise(): Promise<void> {
+  return (settledOnce ??= whenLanguageSettled());
+}
+
 /** For tests: as a page that has only just loaded. */
 export function forgetLaunchLanguageForTests(): void {
   settled = false;
+  settledOnce = null;
   if (deadline) clearTimeout(deadline);
   deadline = undefined;
   listeners.clear();

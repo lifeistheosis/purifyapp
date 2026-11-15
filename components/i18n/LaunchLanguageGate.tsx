@@ -13,11 +13,13 @@
 // that should settle the language can delay the first screen and never
 // withhold it.
 
-import { useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { use, useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 
 import {
   armLanguageDeadline,
   languageSettled,
+  languageSettledPromise,
   subscribeLanguageSettled,
 } from "@/lib/i18n/launchLanguage";
 
@@ -36,4 +38,35 @@ export function LaunchLanguageGate({ children }: { children: ReactNode }) {
     armLanguageDeadline();
   }, []);
   return settled ? <>{children}</> : null;
+}
+
+/**
+ * Every other screen of the apps, reached before the opening language is on
+ * the screen (Updates 80, 1.9).
+ *
+ * The apps load one document, the front door's, and reach every other screen
+ * by the router (scripts/lib/shell-server.mjs). A screen opened straight
+ * away, as a notification or a link opens one, was drawn at once, before the
+ * reader's words had come, so it was drawn in English and again in their
+ * language a moment later: Community's sign-in link in Arabic moved 20.5px
+ * sideways and the tab bar's labels changed under it
+ * (docs/handoffs/updates-79.md, step 3). The gate above holds only Today.
+ *
+ * This suspends such a screen until the language is settled. The router's
+ * move to it is a transition, and a transition that suspends keeps the screen
+ * it came from: the front door under the launch slate. So the slate covers
+ * the wait, and the screen is drawn once, in the reader's language and faces.
+ * The settled mark has its own deadline (lib/i18n/launchLanguage.ts), so the
+ * worst a fault can do is open the screen late, never withhold it.
+ *
+ * The apps only (MessagesProvider): the website draws each page on the
+ * server in the reader's language. Never on the server, and never Today,
+ * which the gate above holds and which carries the slate.
+ */
+export function RouteLanguageHold({ children }: { children: ReactNode }) {
+  const path = usePathname();
+  if (typeof window !== "undefined" && path && path !== "/" && !languageSettled()) {
+    use(languageSettledPromise());
+  }
+  return <>{children}</>;
 }

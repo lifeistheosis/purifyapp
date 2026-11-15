@@ -9,7 +9,9 @@ import {
   type ReactNode,
 } from "react";
 import { getLocale, type LocaleCode } from "@/lib/i18n/locales";
-import { loadClientCatalog } from "@/lib/i18n/client";
+import { loadClientLanguage } from "@/lib/i18n/client";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
+import { RouteLanguageHold } from "./LaunchLanguageGate";
 import { interpolate, resolvePluralKey } from "@/lib/i18n/plural";
 import enCatalog from "@/lib/i18n/messages/en.json";
 
@@ -63,7 +65,9 @@ export function MessagesProvider({
   });
 
   const setLocale = useCallback(async (next: LocaleCode) => {
-    const nextMessages = await loadClientCatalog(next);
+    // The catalog and the faces its words are drawn in, both before the
+    // words are committed, so they are drawn once (lib/i18n/client.ts).
+    const nextMessages = await loadClientLanguage(next);
     setState({ locale: next, messages: nextMessages });
     document.documentElement.lang = next;
     document.documentElement.dir = getLocale(next).dir;
@@ -72,7 +76,9 @@ export function MessagesProvider({
   const value = useMemo(() => ({ ...state, setLocale }), [state, setLocale]);
   return (
     <MessagesContext.Provider value={value}>
-      {children}
+      {/* In the apps, a screen reached before the reader's language is on
+          the screen waits for it under the launch slate (LaunchLanguageGate). */}
+      {IS_STATIC_EXPORT ? <RouteLanguageHold>{children}</RouteLanguageHold> : children}
     </MessagesContext.Provider>
   );
 }
