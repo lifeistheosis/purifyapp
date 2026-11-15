@@ -20,7 +20,11 @@ for size in 390x844 800x1280 1032x1376; do
 done
 fi
 if [ "$PART" != walk ]; then
-NODE_USE_ENV_PROXY=1 node $D/seeall5.mjs out $D/seeall5.jsonl 390@en@open 800@en@open 1032@en@open 390@ar@open 800@ar@open 1032@ar@open > $D/seeall5.txt 2>&1
-echo "seeall5 EXIT $? $(date -u +%H:%M:%S)"
+# Each spec its own process, capped at 20 minutes (the first chain, 2026-11-15 16:08: the browser closed under the
+# 800 run and the process hung until the two-hour limit). SPECS overrides the list.
+for spec in ${SPECS:-390@en@open 800@en@open 1032@en@open 390@ar@open 800@ar@open 1032@ar@open}; do
+  timeout 1200 env NODE_USE_ENV_PROXY=1 node $D/seeall5.mjs out $D/seeall5.jsonl $spec >> $D/seeall5.txt 2>&1
+  echo "seeall5 $spec EXIT $? $(date -u +%H:%M:%S)"
+done
 fi
 echo "DONE guard $PART $(date -u +%H:%M:%S)"
