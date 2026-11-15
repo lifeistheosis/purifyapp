@@ -124,17 +124,19 @@ const aimAt = (page, i) =>
 async function film(page, cdp, label, act) {
   const shots = [];
   const onFrame = (p) => {
-    shots.push(p.data);
+    shots.push({ d: p.data, ts: p.metadata?.timestamp });
     cdp.send("Page.screencastFrameAck", { sessionId: p.sessionId }).catch(() => {});
   };
   if (SHOTS) {
     cdp.on("Page.screencastFrame", onFrame);
     await cdp.send("Page.startScreencast", { format: "jpeg", quality: 70, maxWidth: 390, maxHeight: 844, everyNthFrame: 1 });
   }
-  const before = await page.evaluate(() => {
+  // Updates 76: the film's clock in the page's wall time, so each painted frame gets its time from the
+  // same zero as the states (the screencast's timestamp is wall time in seconds).
+  const [before, wall0] = await page.evaluate(() => {
     window.__vt = [];
     window.__film(1500);
-    return location.search;
+    return [location.search, Date.now()];
   });
   await act();
   await page.waitForFunction((b) => location.search !== b, before, { timeout: 8000 }).catch(() => {});
@@ -144,7 +146,8 @@ async function film(page, cdp, label, act) {
     cdp.off("Page.screencastFrame", onFrame);
     const dir = path.join(SHOTS, label.replace(/\W+/g, "-"));
     fs.mkdirSync(dir, { recursive: true });
-    shots.forEach((d, n) => fs.writeFileSync(path.join(dir, `${String(n).padStart(3, "0")}.jpg`), Buffer.from(d, "base64")));
+    shots.forEach((s, n) => fs.writeFileSync(path.join(dir, `${String(n).padStart(3, "0")}.jpg`), Buffer.from(s.d, "base64")));
+    fs.writeFileSync(path.join(dir, "times.json"), JSON.stringify(shots.map((s, n) => ({ n, t: s.ts ? Math.round(s.ts * 1000 - wall0) : null }))));
   }
   const after = await page.evaluate(() => ({ at: location.pathname + location.search, vt: window.__vt, frames: window.__frames }));
   const names = after.vt.flatMap((v) => v.names);
