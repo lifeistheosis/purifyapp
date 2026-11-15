@@ -1167,3 +1167,5 @@ Claude's proposal, for his word:
 **Android only for now (his word, 2026-11-15, about 18:33 UTC),** to Arbiter 14, after the iPhone build was started with the Android one: "not iPhone only android until I say the build is finally finished after critiques".
 
 **The link (his word, 2026-11-15, about 18:50 UTC),** to Arbiter 14: "send the android link".
+
+**Brainstorm mode on, for build 98 (his word, 2026-11-15, about 20:54 UTC),** to Arbiter 14: "I'm gonna list out a couple things from this version build. And I also saw some stuff you actually didn't add that we referenced. Brainstorm mode on." His notes go to `notes/build-98.md`, each with what he saw and, once looked into, the cause and the planned fix; nothing new from them is built until he says start.

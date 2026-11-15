@@ -1,0 +1,5 @@
+# Build 98: his notes
+
+Build 98 (Android build run 98, id 43747286418, from c8c2d6ace; the app code 78c5297e1), cut at his word (2026-11-15 about 18:30 UTC: "finalize the build and send it"), on the android-release page from 18:39 UTC (app-release.apk, app-release.aab, app-debug.apk). Android only: no iPhone build until he says the build is finished after his critiques (his word, about 18:33 UTC). Named to him with it: the differences until the merge (campaigns, the profile's empty status line, Bible versions, the links to the 86 new works, patrons 162 now and 270 after), the calls he may overrule (the verse landing's 2 s focus dim; a one-screen chapter's Community section only on a scroll), and the gap (See all's list unmeasured with checkMock at 800, 1032 and in ar).
+
+Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans only. Each note below has his words, word for word, then, once looked into, what was found and the plan. Nothing from them is built until he says start.
