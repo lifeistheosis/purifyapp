@@ -47,6 +47,10 @@ const SIZES = [
   [1032, 1366],
 ];
 const ALL = EVERY;
+// PREVIEW_ONLY=390[,800,...] runs the Plus preview alone at those widths (Updates 79, 2026-11-15, for the one
+// contrast fail at 390 that moved between runs): it also says when checkMock ran against the preview's minute
+// (TRY_MINUTE_MS, lib/premium/plusTry.ts) and reads a failing line's box against the window's own clip.
+const PREVIEW_ONLY = process.env.PREVIEW_ONLY ? process.env.PREVIEW_ONLY.split(",").map(Number) : null;
 checkSells(OUT);
 // The five palettes, the two earned by reading and every look the registry holds (seventeen until build 95 note 16 took the sea's two).
 if (PALETTES.length !== 5 || EARNED.length !== 2 || LOOKS.length < 1) throw new Error(`expected the five palettes, the two earned and the looks, found ${PALETTES.length}, ${EARNED.length} and ${LOOKS.length}`);
@@ -200,7 +204,9 @@ async function shot(page, name) {
 
 console.log(`The ambience sheet on the export, ${readerWords()}, motion on.`);
 
-if (!SELLS_PLUS) {
+if (PREVIEW_ONLY) {
+  console.log(`PREVIEW_ONLY: the Plus preview alone, at ${PREVIEW_ONLY.join(", ")}`);
+} else if (!SELLS_PLUS) {
   // ---- play: each of the six, from the bundle, by a tap.
   {
     const lang = "en";
@@ -371,7 +377,7 @@ if (SELLS_PLUS) {
   // does not move; checkMock with pixels on the preview at each width, in English and in Arabic.
   console.log("\npreview: the Plus preview's strip, with the photographs");
   for (const lang of ["en", "ar"]) {
-    for (const size of SIZES) {
+    for (const size of SIZES.filter((z) => !PREVIEW_ONLY || PREVIEW_ONLY.includes(z[0]))) {
       const { ctx, page } = await open(lang, size, { blocked: lang === "en" ? [] : ["rain"] });
       await openSheet(page, lang);
       await tapAt(page, tileOf(page, lang, "rain"));
@@ -380,6 +386,11 @@ if (SELLS_PLUS) {
       await page.waitForTimeout(1200);
       const tryIt = plus.locator('[data-plus-try-open="ambience"]').first();
       if (await tryIt.count()) await tapAt(page, tryIt);
+      const tryAt = await page.evaluate(() => {
+        window.__restAt = null;
+        new MutationObserver(() => { if (window.__restAt === null && document.querySelector(".plus-try-rest")) window.__restAt = performance.now(); }).observe(document.body, { subtree: true, childList: true });
+        return performance.now();
+      });
       const preview = page.locator('[data-plus-try="ambience"]').first();
       if (!(await preview.waitFor({ timeout: 10000 }).then(() => true, () => false))) {
         fail(`the Plus preview of Ambience did not open at ${size[0]} in ${lang}`);
@@ -410,10 +421,37 @@ if (SELLS_PLUS) {
         if (text.includes(t(lang, "ambience.playing")) && moved <= 4) ok(`a finger on The sea in the strip plays it, and the tile does not move (${moved.toFixed(1)}px)`);
         else fail(`The sea in the strip: "${text}", moved ${moved.toFixed(1)}px`);
       }
+      const ckFrom = await page.evaluate(() => performance.now());
       const result = await checkMock(page, '[data-plus-try="ambience"]', { palettes: ALL, pixels: true });
+      const ck = await page.evaluate(() => ({ now: performance.now(), rest: window.__restAt }));
+      const secs = (x) => `${((x - tryAt) / 1000).toFixed(1)}s`;
+      console.log(`      the minute: checkMock ran from ${secs(ckFrom)} to ${secs(ck.now)} after Try it; the lock's words came ${ck.rest === null ? "not yet" : `at ${secs(ck.rest)}${ck.rest > ckFrom && ck.rest < ck.now ? ", while checkMock ran" : ""}`}`);
       if (result.failures.length) {
         fail(`checkMock the Plus preview at ${size[0]} in ${lang}: ${result.failures.length} failure(s)`);
         for (const f of result.failures.slice(0, 12)) console.log(`      ${f.check} on ${f.palette}: ${f.what} ${f.detail ?? ""}`);
+        // Each failing line's box against the window's own clip, as it stands now (checkMock puts every scroll back).
+        for (const f of result.failures.filter((x) => x.check === "contrast").slice(0, 6)) {
+          const said = String(f.what).replace(/^"|"$/g, "").slice(0, 30);
+          const box = await page.evaluate((said) => {
+            const root = document.querySelector('[data-plus-try="ambience"]');
+            const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+            for (let t = w.nextNode(); t; t = w.nextNode()) {
+              if (!t.textContent.replace(/\s+/g, " ").trim().startsWith(said)) continue;
+              const r = document.createRange();
+              r.selectNodeContents(t);
+              const b = r.getBoundingClientRect();
+              let clip = null;
+              for (let n = t.parentElement; n && n !== root; n = n.parentElement) {
+                const cs = getComputedStyle(n);
+                if (cs.overflowY !== "visible") { const c = n.getBoundingClientRect(); clip = { cls: String(n.className).slice(0, 40), overflowY: cs.overflowY, top: Math.round(c.top), bottom: Math.round(c.bottom), scrollTop: Math.round(n.scrollTop), scrollHeight: n.scrollHeight, clientHeight: n.clientHeight }; break; }
+              }
+              const inside = clip ? Math.min(b.bottom, clip.bottom) - Math.max(b.top, clip.top) >= 1 : null;
+              return { top: Math.round(b.top), bottom: Math.round(b.bottom), clip, inside, rest: Boolean(document.querySelector(".plus-try-rest")) };
+            }
+            return null;
+          }, said);
+          console.log(`      the box of "${said}": ${JSON.stringify(box)}`);
+        }
       } else ok(`checkMock the Plus preview at ${size[0]} in ${lang}: passes on ${ALL.length} palettes and looks`);
       if (result.allowed?.length) for (const a of result.allowed) console.log(`      allowed: ${a}`);
       await shot(page, `preview-${lang}-${size[0]}`);
