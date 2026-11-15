@@ -98,3 +98,7 @@ In the same frame the first post (top 343) loses 80.7px of height and the second
 ### 4. The web build
 
 `npm run build` of the head's app code (`5bf09c2ce`; the commits pulled in while it ran, `1266647c` and the ones before it, touch only docs and scripts), alone in the container, 01:18 to 01:22 UTC: **exit 0, 6,526 of 6,526 static pages.**
+
+### 5. The motion walk: not read (the line)
+
+Gate 3b stopped at its line of 200,000 tokens (get_session 204,388 at about 01:24 UTC) before Gate 3's walk results landed (due about 02:40 UTC in `docs/handoffs/gate-3-walks/`). Left, with the reading's rules, in `docs/handoffs/gate-3b.md`: the blank findings and the fails, each against Updates 71, 72 and 73; fault 7 on /shop/; every carry record; the walk run again on an export of the head if nothing lands by 03:30 UTC.
