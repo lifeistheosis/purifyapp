@@ -143,3 +143,19 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 - Shorter words that do not repeat the title, from the existing keys first ("Saved to listen offline", Remove), in all 21 languages, held to one line in the longest of them and in Arabic.
 - The same for every state the line has (saving, waiting for Wi-Fi or a signal, failed), and for the Words view.
 - A test that fails on 78c5297e1: the cover's and the title's boxes stay where they are as the line appears and goes, at 360, 390 and 412, and in Arabic.
+
+## Note 10: the prayer campaigns are still not there
+
+**His words (2026-11-15, about 21:42 UTC):** "and I STILL don't see the prayer campaigns."
+
+**Found (the arbiter, 21:45 UTC, from `lib/campaigns/flags.ts` on the branch and the record):**
+
+- Build 98 carries the campaign pages (`CAMPAIGNS_OPENING` is "testers" on the branch), but an app shows their doors only when the website says yes (`lib/campaigns/useCampaignsOpen.ts`). The main web runs `main`, where the switch is still closed, so it says no to every account, his too, and build 98 shows nothing. No build can show them before the merge, because the website side (the routes, and the SQL he signed) only reaches the main web with it.
+- He chose this on 2026-11-11 ("I won't make the test web just make it public. im tryna get v1.9 out as soon as possible"): the test web would have shown them in a test build; without it, the release-day order in `flags.ts` stands in for it. It was named with build 98 among the differences until the merge, and with build 95 (note 2) before, both times in a list. He has now walked two builds expecting them. The arbiter should have said it on its own line, in plain words, with the day he will see them.
+- An app follows the website with no new store build, so build 98, already on his phone, shows campaigns for his account the moment the merge is live.
+
+**Plan (no build change; his word decides the order):**
+
+- Release day, in `flags.ts`'s order: the merge carries campaigns at "testers", so the main web shows them to his account alone and runs his signed SQL; he walks them on his phone (build 98 or the next); one line opens them for every reader, at his word and once the words that are his, a lawyer's and a priest's are settled (items 113 and 129); then the stores.
+- Until then, every message that sends him a test build names campaigns on its own line: "not until 1.9 is on the website".
+- If he wants them on his phone before release day, the only true way is the test web, which he declined on 11 November; it would take his steps on Render and a day of setup. Not recommended: it moves the drop day for a look he gets on release day anyway.
