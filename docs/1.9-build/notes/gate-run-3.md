@@ -51,3 +51,46 @@ Not run (the line).
 - Fault 8's exact case: `FIXED_DATE=2026-11-14T13:00:00Z node docs/handoffs/gate-3-runners/mockrun-g3.mjs out <jsonl> 2 featured@800@ar featured@1032@ar` (Candlelight is in group 0; confirm the line reads "مختارات · 25 دقيقة").
 - The thread open with replies: `thread@390@en thread@800@en thread@1032@en` with the same runner.
 - `npm run build`, last.
+
+## Gate 3b
+
+Run by Gate 3b (session_01VuYTwcHj8T9AyPYdHcB3cD), started by Arbiter 14 at about 01:00 UTC on the 15th to finish what Gate 3 left at its line. It names faults and mends no app code.
+
+**The export:** `node scripts/gate/export.mjs` of `5bf09c2ce`, the head at 01:04 UTC (Updates 75's mend `1e84aa0f`, the player's words, over Gate 3's `d6bef349d`; everything else since is docs and scripts). Cut 01:05 to 01:08 UTC: 205.2 MB on disk in 7,372 files, 75.1 MB packed, the same switches as Gate 3's, the main web's anon key read into that command alone, checked, printed and written nowhere. The tree was clean after it.
+
+**Its runners** (`docs/handoffs/gate-3b-runners/`): `tapwatch.mjs` taps a door the way a reader does and reads, inside requestAnimationFrame, where every block of words on or near the screen stands in each frame from the tap to 2 s after (getBoundingClientRect of the box and of its first line of words), with the fonts that finished loading (`document.fonts`), the woff2 files that arrived (resource timing) and the animations running in that frame. `chatcause.mjs` reads what changes inside /community/'s first two posts in the frame their height changes.
+
+### 1. Gate 3's three probes (its runner, `mockrun-g3.mjs`)
+
+| Probe | Measured | Result |
+|---|---|---|
+| a. Fault 2's own heart | `heart@390@en`, then every sold-out card on /shop/ and /shop/category/all/ read alone | **Pass.** The one sold-out card on both pages is the Greek 33-knot rope (`?slug=greek-33-knot-prayer-rope`). Its heart is 47 by 47; at its centre the finger meets the heart itself, not the card's link; after the tap the address stays /shop/ (and /shop/category/all/) and the heart's `aria-pressed` turns (false to true, and back). |
+| b. Fault 8's exact case | `FIXED_DATE=2026-11-14T13:00:00Z`, `featured@800@ar featured@1032@ar` | **Pass.** The featured line read "مختارات · 25 دقيقة · عصر المجامع المسكونية", Gate 2's Selections line. 0 failures and 0 unmeasured in all three groups (Candlelight's group 0 among them), at 800 and at 1032. |
+| c. A thread open with replies | `thread@390@en thread@800@en thread@1032@en` | **Pass.** The runner opened "5 replies". 0 failures and 0 unmeasured at each width; the replies start in view, above the tab bar (top 114, 114 and 173 against the bar's 761, 1197 and 1293). |
+
+Seen on the way, outside the scope: the rope's heart is named "Save this icon".
+
+### 2. The font swap (Updates 69's item 4): measured, not mended
+
+`tapwatch.mjs` at 390 by 844 with the CPU slowed 4 times (`Emulation.setCPUThrottlingRate`), a cold context each try, a reader signed out, online: Saints by its door on /discover/, Settings by its door on /account/, in English and Arabic, five tries of each (the first three read at most 600 blocks and the cap was reached; tries 4 and 5 read the 47 to 100 blocks on or near the screen, and found the same opened blocks: 9 on Saints, 32 on Settings). **Pass: nothing moved.** No block of words on the opened page changed its top, left, height or line of words by 0.5px or more in the 2 s after the tap, in any try.
+
+| Page | woff2 after the tap (ms after it, tries 4 and 5) | The opened page's first words drawn | What turned loaded, and when |
+|---|---|---|---|
+| Saints, en | `d67845dd9b0bd5f5` and `e25d7a25cd1e8809` at 849 to 1294; `617f0885e0ac87a9` at 2471 or not in the 2 s | 916 to 1360 | Cardo (the two files) in the frame the first words were drawn; Noto Sans (Cyrillic range) later, after the window |
+| Saints, ar | the same two at 1118 to 1775; `617f0885e0ac87a9` at 2998 to 3797 | 1164 to 1838 | the same; in tries 1 to 3 Noto Sans turned loaded inside the window (1307 to 1643) with no block moving |
+| Settings, en | `e929b158eb81aae9` at 430 to 455, `3fb72f389f036d11` at 520 to 573 | 483 to 526 | DM Serif Display (two ranges) and Lora in the frame the first words were drawn; Noto Serif 76 to 119ms after, with no block moving |
+| Settings, ar | the same two at 420 to 609 and 542 to 734 | 481 to 677 | the same; Noto Serif 100ms after the first words |
+
+The only moves of 1px or more in the window were on Discover itself, before it left: the tapped Saints tile's heading and blurb, 3.1px and back while its press transition ran. The fonts each page's words wear arrive before those words are first drawn; the faces that arrive after (Noto Sans, Noto Serif) moved nothing on screen.
+
+### 3. The arbiter's note 2: the Chat door on /discover/ (measured early, at 01:13 UTC)
+
+`tapwatch.mjs chat@en@1@1..3`: from /discover/ at 390 by 844, CPU unslowed as the motion walk runs, online, three tries. **A fault, repeated in 3 of 3.**
+
+| Try | /community/'s posts first drawn | The second post (the v1.8 announcement) | When |
+|---|---|---|---|
+| 1 | 559ms after the tap | drawn with its top at 697.7, then at 617: **80.7px up** | 681ms after the tap |
+| 2 | 208ms | the same, 80.7px up | 371ms |
+| 3 | 217ms | the same, 80.7px up | 352ms |
+
+In the same frame the first post (top 343) loses 80.7px of height and the second loses 59.8px. `chatcause.mjs` read inside them: both start at 354px and end at 273.3 and 294.2 with no element inside either changing height and nothing added or removed. **The cause as read:** each post is `content-visibility: auto` with `contain-intrinsic-size: auto 320px` (`components/community/CommunityClient.tsx:1866`, with `py-4`); the posts are first laid out at the placeholder (320 + 32 + 2 = 354) and take their real heights a few frames later, so everything under the first post jumps. Updates 72's 698 to 617 at 679ms is this. Also in 3 of 3, when the posts arrive: the sign-in line above them ("Sign in to share with the community." and its link "Sign in") steps 1px down (cause not read). Owner: the fixer of /community/; told to the arbiter at once.
