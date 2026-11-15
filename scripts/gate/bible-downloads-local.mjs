@@ -101,15 +101,18 @@ const closeSheets = async () => {
 let faults = 0;
 await go(page, "/bible/john/1/", { timeout: 60000 });
 await page.waitForTimeout(2000);
+// John 1:3 as the English shows it, so a version that falls back to the English is not taken for read.
+const english = await page.evaluate(() => document.getElementById("v3")?.textContent.trim() ?? "");
 await openTranslations();
 const downloaded = [];
 for (let n = 0; n < 12; n++) {
   // A row's tap downloads its Bible and then reads on in it, which closes the sheet as any choice does:
   // the versions opened afresh for each.
+  // From the chapter afresh each time, as a reader coming back to it (what is on the phone stays).
   if (n > 0) {
     await page.waitForTimeout(800);
-    await notNow();
-    await closeSheets();
+    await go(page, "/bible/john/1/", { timeout: 60000 });
+    await page.waitForTimeout(2000);
     await openTranslations();
   }
   // WALK_ONLY=<part of a title> walks that one version alone.
@@ -146,10 +149,10 @@ for (const name of downloaded) {
   await page.waitForTimeout(1800);
   await closeSheets();
   const verses = await page.locator("[data-verse]").count();
-  const words = await page.evaluate(() => (document.querySelector("main")?.innerText ?? "").length);
-  const ok = verses >= 20 && words > 1500;
+  const v3 = await page.evaluate(() => document.getElementById("v3")?.textContent.trim() ?? "");
+  const ok = verses >= 20 && v3.length > 20 && v3 !== english;
   if (!ok) faults += 1;
-  console.log(`${ok ? "ok   " : "FAULT"} offline, ${name}: John 1 ${ok ? `read from the phone (${verses} verses)` : `NOT read (${verses} verses, ${words} characters)`}`);
+  console.log(`${ok ? "ok   " : "FAULT"} offline, ${name}: John 1 ${ok ? `read from the phone (${verses} verses; 1:3 "${v3.slice(0, 48)}")` : `NOT read in it (${verses} verses; 1:3 "${v3.slice(0, 48)}")`}`);
 }
 
 // Each removed from the phone.
