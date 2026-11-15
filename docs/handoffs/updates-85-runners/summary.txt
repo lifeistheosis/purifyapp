@@ -1,0 +1,56 @@
+mw-open-1.json: open reader, on
+  reached /community/ Ask a Priest: tapped 1, failed 0
+  reached /florilegium/begin/beatitudes/ Keep this gathering: tapped 1, failed 0
+  reached /settings/ John Chapter 1: tapped 7, failed 0
+  reached /settings/reading-mode/ John Chapter 1: tapped 21, failed 0
+  findings (not layers in passing): 0
+  errors: 0, controlErrors: 0, unsure: 0
+mw-open-2.json: open reader, on
+  reached /community/ Ask a Priest: tapped 1, failed 0
+  reached /florilegium/begin/beatitudes/ Keep this gathering: tapped 1, failed 0
+  reached /settings/ John Chapter 1: tapped 7, failed 0
+  reached /settings/reading-mode/ John Chapter 1: tapped 21, failed 0
+  findings (not layers in passing): 0
+  errors: 0, controlErrors: 0, unsure: 0
+mw-new-1.json: new reader, no Plus, on
+  reached /community/ Ask a Priest: tapped 1, failed 0
+  reached /florilegium/begin/beatitudes/ Keep this gathering: tapped 1, failed 0
+  reached /settings/ John Chapter 1: tapped 7, failed 0
+  reached /settings/reading-mode/ John Chapter 1: tapped 21, failed 0
+  findings (not layers in passing): 0
+  errors: 0, controlErrors: 0, unsure: 0
+mw-new-2.json: new reader, no Plus, on
+  reached /community/ Ask a Priest: tapped 1, failed 0
+  reached /florilegium/begin/beatitudes/ Keep this gathering: tapped 1, failed 0
+  reached /settings/ John Chapter 1: tapped 7, failed 0
+  reached /settings/reading-mode/ John Chapter 1: tapped 21, failed 0
+  findings (not layers in passing): 0
+  errors: 0, controlErrors: 0, unsure: 0
+mwr-open-1.json: open reader, reduce
+  reached /community/ Ask a Priest: tapped 1, failed 0
+  reached /florilegium/begin/beatitudes/ Keep this gathering: tapped 1, failed 0
+  reached /settings/reading-mode/ John Chapter 1: tapped 4, failed 0
+  findings (not layers in passing): 1
+   - jump: the page switch from /: section "Sign in to share with the community. Sig" jumped 77px in one frame (from 0,197 to 0,120), 335ms after the tap: something above it changed size at once | /community/
+  errors: 0, controlErrors: 0, unsure: 0
+mwr-open-2.json: open reader, reduce
+  reached /community/ Ask a Priest: tapped 1, failed 0
+  reached /florilegium/begin/beatitudes/ Keep this gathering: tapped 1, failed 0
+  reached /settings/reading-mode/ John Chapter 1: tapped 4, failed 0
+  findings (not layers in passing): 1
+   - jump: the page switch from /: section "Sign in to share with the community. Sig" jumped 77px in one frame (from 0,197 to 0,120), 346ms after the tap: something above it changed size at once | /community/
+  errors: 0, controlErrors: 0, unsure: 0
+mwr-new-1.json: new reader, no Plus, reduce
+  reached /community/ Ask a Priest: tapped 1, failed 0
+  reached /florilegium/begin/beatitudes/ Keep this gathering: tapped 1, failed 0
+  reached /settings/reading-mode/ John Chapter 1: tapped 4, failed 0
+  findings (not layers in passing): 1
+   - jump: the page switch from /: section "Sign in to share with the community. Sig" jumped 77px in one frame (from 0,197 to 0,120), 284ms after the tap: something above it changed size at once | /community/
+  errors: 0, controlErrors: 0, unsure: 0
+mwr-new-2.json: new reader, no Plus, reduce
+  reached /community/ Ask a Priest: tapped 1, failed 0
+  reached /florilegium/begin/beatitudes/ Keep this gathering: tapped 1, failed 0
+  reached /settings/reading-mode/ John Chapter 1: tapped 4, failed 0
+  findings (not layers in passing): 1
+   - jump: the page switch from /: section "Sign in to share with the community. Sig" jumped 77px in one frame (from 0,197 to 0,120), 325ms after the tap: something above it changed size at once | /community/
+  errors: 0, controlErrors: 0, unsure: 0
