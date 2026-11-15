@@ -94,3 +94,7 @@ The only moves of 1px or more in the window were on Discover itself, before it l
 | 3 | 217ms | the same, 80.7px up | 352ms |
 
 In the same frame the first post (top 343) loses 80.7px of height and the second loses 59.8px. `chatcause.mjs` read inside them: both start at 354px and end at 273.3 and 294.2 with no element inside either changing height and nothing added or removed. **The cause as read:** each post is `content-visibility: auto` with `contain-intrinsic-size: auto 320px` (`components/community/CommunityClient.tsx:1866`, with `py-4`); the posts are first laid out at the placeholder (320 + 32 + 2 = 354) and take their real heights a few frames later, so everything under the first post jumps. Updates 72's 698 to 617 at 679ms is this. Also in 3 of 3, when the posts arrive: the sign-in line above them ("Sign in to share with the community." and its link "Sign in") steps 1px down (cause not read). Owner: the fixer of /community/; told to the arbiter at once.
+
+### 4. The web build
+
+`npm run build` of the head's app code (`5bf09c2ce`; the commits pulled in while it ran, `1266647c` and the ones before it, touch only docs and scripts), alone in the container, 01:18 to 01:22 UTC: **exit 0, 6,526 of 6,526 static pages.**
