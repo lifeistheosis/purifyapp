@@ -944,7 +944,8 @@ async function footCut(rec, a, b) {
   if (!a && !b) return null;
   const top = Math.max(0, Math.min(a?.top ?? HEIGHT, b?.top ?? HEIGHT) - 4) / HEIGHT;
   const bottom = Math.min(HEIGHT, Math.max(a?.bottom ?? 0, b?.bottom ?? 0) + 4) / HEIGHT;
-  const after = rec.frames.filter((f) => f.t >= rec.tapped - 50);
+  // In the order they were drawn: the screencast can hand a frame over after a later one.
+  const after = rec.frames.filter((f) => f.t >= rec.tapped - 50).sort((x, y) => x.t - y.t);
   if (after.length < 3) return null;
   const px = await Promise.all(
     after.map(async (f) => {
@@ -981,7 +982,7 @@ async function footCut(rec, a, b) {
 async function footStrip(rec, a, b, file) {
   const top = Math.max(0, Math.min(a?.top ?? HEIGHT, b?.top ?? HEIGHT) - 120);
   const bottom = Math.min(HEIGHT, Math.max(a?.bottom ?? 0, b?.bottom ?? 0) + 70);
-  const after = rec.frames.filter((f) => f.t >= rec.tapped - 50 && f.t <= rec.tapped + 900);
+  const after = rec.frames.filter((f) => f.t >= rec.tapped - 50 && f.t <= rec.tapped + 900).sort((x, y) => x.t - y.t);
   if (!after.length) return null;
   const tiles = await Promise.all(
     after.map(async (f) => {
