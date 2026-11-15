@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 
-import { goToReadingPlace, holdAtReadingPlace } from "@/lib/ui/readingPlace";
+import { goOnArrival, goToReadingPlace, holdAtReadingPlace } from "@/lib/ui/readingPlace";
+
+// On the server there is no page to read, and useLayoutEffect only warns.
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * When a chapter page loads with a `#v123` hash, whether from the
@@ -35,15 +38,24 @@ import { goToReadingPlace, holdAtReadingPlace } from "@/lib/ui/readingPlace";
  * verse, so the page that had landed on Matthew 5:44 stood at 5:22. Held
  * until the reader moves the page, or for a few seconds at most
  * (lib/ui/readingPlace.ts, holdAtReadingPlace).
+ *
+ * With motion reduced the chapter a link opens is drawn at its verse from its
+ * first frame (Gate 3c rule 3, Updates 89). It was painted at its top, or at
+ * the scroll of the page left, and stood at the verse a frame or two later,
+ * with the running line a frame behind that: this waited for React's passive
+ * effect and then a frame. It goes now while the page is put on screen,
+ * before it is painted (lib/ui/readingPlace.ts, goOnArrival). With motion on
+ * it glides from the next frame, as it did.
  */
 export function VerseFocusFlash() {
  const pathname = usePathname();
 
- useEffect(() => {
+ useIsoLayoutEffect(() => {
  let timer: ReturnType<typeof setTimeout> | null = null;
  let letGo: (() => void) | null = null;
+ let live = true;
 
- function focusFromHash() {
+ function focusFromHash(arriving: boolean) {
  const hash = window.location.hash;
  // #v123 -> single verse
  // #v14-26 -> range (search result for "James 2:14-26"); flash all
@@ -53,8 +65,8 @@ export function VerseFocusFlash() {
  const to = m[2] ? parseInt(m[2], 10) : from;
  if (!Number.isFinite(from) || !Number.isFinite(to) || to < from) return;
 
- // Defer one frame so the verse list has mounted and laid out.
- requestAnimationFrame(() => {
+ const land = () => {
+ if (!live) return;
  const head = document.getElementById(`v${from}`);
  if (!head) return;
 
@@ -78,13 +90,19 @@ export function VerseFocusFlash() {
  for (const el of flashed) el.removeAttribute("data-focus");
  root.removeAttribute("data-verse-focus");
  }, 2000);
- });
+ };
+ // Arriving, the verse list has mounted and laid out with the page. A
+ // change of the hash on the page waits a frame, as it always has.
+ if (arriving) goOnArrival(land);
+ else requestAnimationFrame(land);
  }
 
- focusFromHash();
- window.addEventListener("hashchange", focusFromHash);
+ const onHash = () => focusFromHash(false);
+ focusFromHash(true);
+ window.addEventListener("hashchange", onHash);
  return () => {
- window.removeEventListener("hashchange", focusFromHash);
+ live = false;
+ window.removeEventListener("hashchange", onHash);
  if (timer) clearTimeout(timer);
  letGo?.();
  document.documentElement.removeAttribute("data-verse-focus");

@@ -290,6 +290,29 @@ export function goToReadingPlace(
   return top;
 }
 
+/**
+ * When a page that arrives with a place to go to goes there (Gate 3c rule 3,
+ * Updates 89). Called from a layout effect, while the page is being put on
+ * screen and before it is painted.
+ *
+ * With motion reduced the page goes there at once and must be drawn there
+ * from its first frame: a verse link's chapter was painted at its top (or at
+ * the scroll of the page left) and then stood at the verse, and the running
+ * line, told by the scroll's event, caught up a frame later still (the fade
+ * under the pill 582 then 530, James 1's line 27px sideways). So it goes in a
+ * microtask: after the whole of React's commit, Next's own scroll for the
+ * route among it (an ancestor's layout effect, run after the page's), and
+ * before the browser paints; the scroll's event then falls in the steps of
+ * that same first frame, where the line settles.
+ *
+ * With motion on it goes in the next frame, as it always has: the glide
+ * starts there, and a shut running line waits it out (gliding).
+ */
+export function goOnArrival(go: () => void, reduced: boolean = prefersReducedMotion()): void {
+  if (reduced) queueMicrotask(go);
+  else requestAnimationFrame(go);
+}
+
 /** The longest a glide to the reading place is waited for (a reader's own touch can stop it short). */
 export const GLIDE_MS = 2000;
 
