@@ -224,7 +224,9 @@ export function MobileWorkPill({
           onClick={openWorkContents}
           aria-label={pickLabel}
           data-pill-name=""
-          className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
+          // Never under a touch's 44px (checkMock, build 98 note 2): with Listen beside the sound,
+          // a long part's name ("Discourse I") squeezed it to 31px wide.
+          className="flex h-11 min-w-11 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
         >
           {/* The work's widest names under the one shown, unseen, in the one
               place: they hold the pill's width, so the arrows do not move as

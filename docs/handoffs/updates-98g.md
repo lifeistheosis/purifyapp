@@ -1,0 +1,26 @@
+# Updates 98g: hand-over
+
+Started by Arbiter 14 on 2026-11-15 to finish Updates 98f's build 98 note 2 (one way to listen, the Bible's), the dock's "1x" jump, and the stills for his yes. Stopped at its token line (its own count).
+
+## Done
+
+**The suite, the gates.** On a clean `npm ci` (patch-package applied both native patches) the whole unit suite found one fault in note 2's code: `readerScreen.test.ts` pins the pages that mount the reader's screen, and TextPill (a life, an event) was not on it; it is now, with the reason (`62860a0f`). typecheck 0; `npm run lint` 0 errors (52 warnings, none in a touched file); `npm run build` (web) exit 0, 6,526 pages; `node scripts/gate/export.mjs --platform android` exit 0. The suite's count after the last change is in build-98.md's Done line.
+
+**Note 2 walked as a reader** with `scripts/gate/listen-walk.mjs` (new): the export served as the shell serves it, 390 by 844, real touch, a phone's voice stood in (`scripts/lib/fake-voice.mjs`, one utterance at a time: headless Chromium has none), recordings served by the export's bell. On a life, an event, a study's part, a Father's work (Four Discourses against the Arians) and a council's section (the twenty canons of Nicaea I): at rest one pill with Listen and none in the page; Listen tapped, one bar, the dock, the mini player stepped aside; Pause and Play from the dock; the study's, the work's and the council's parts turned from the dock's arrow (the page's part and its heading follow); a drag down draws the dock in (360px to about 195) and the tab bar steps away, on a life and an event too, as on the Bible; a drag up brings both back. The tap on Listen and the dock's turn recorded frame by frame and judged by `scripts/gate/frames.mjs`: no cut, blank or jump on any of the five. A one-chapter work (On the Incarnation) shows its name alone in the dock, as its pill's two arrows are both at their end.
+
+**The dock's 1x jump, found and mended** (`59462310`). Measured on the export with a MutationObserver on the dock's row (the probe is in this hand-over's last section): as the bell standing in for John 10 ended (60s, which is when 98a's tour reached Discover to Bible), the page followed the reading to John 11 before John 11's reading began (ReadAloudFollow takes the ask once the page is drawn; the voice and the timings are found before anything plays). For 54ms the dock read John 11 as not loaded and offered Listen (x 238, 80px wide), then Speed (x 290, 29px): one reused button, 52px. A chapter whose reading is on its way (`lib/readAloud/rollOn.ts`: from the ask until the page's reading has begun or could not; a reload keeps the ask) now counts as loaded for the Bible pill and its dock. `lib/readAloud/__tests__/rollOnComing.test.ts` fails 5 of 5 on 78c5297e1 (run in a worktree of it) and passes 5 of 5. I touched `components/bible/ReadAloud.tsx` (one line, ReadAloudFollow) and `lib/readAloud/rollOn.ts`, which no chat holds.
+
+**checkMock with pixels**, every palette and look (EVERY), at 390 on the five texts at rest and playing. Mended in my files: the work pill's chapter name was squeezed to 31.4px wide beside Listen (target); `min-w-11` (`MobileWorkPill.tsx`).
+
+## Open, and exactly where
+
+1. **Found, not mine to change, for the arbiter:**
+   - *contrast while playing* (every text, Dark 3.09:1, Light 2.00:1): the paragraphs not being read step back to opacity 0.4, the owner's own lyric light of 1.7 (`app/globals.css`, "Read aloud (1.7)"), the very rule the Bible's verses wear. Not new with note 2; a change would change the Bible's reading too, so it is his call.
+   - *cut while playing*: the dock's track title ends in an ellipsis on a long name ("The life of St. Athanasius the G..."), as the mini player's does (`NowPlayingBar.tsx`, `block truncate`, Updates 98e's file); the full name is in the button's label. Room for it (two lines) would change the player row the owner picked.
+   - *mirror while playing* (2 to 18 boxes): the reading marks' layers (`components/reading/MarksLayer.tsx`, MarkHost) placed with left, not start; they come only while reading.
+   - *the dock drawn in at once on an event*: Listen's tap is a hand on the glass, so the page's own move to the paragraph being read inside the next 1.2s reads as the reader reading on (`lib/ui/scrollAway.ts`, HAND_MS). The Bible rarely meets it (its first verse is in view).
+2. Not run for want of tokens: see build-98.md's Done line for what was and was not run at 800, 1032, in Arabic and on the computer.
+
+## The probe
+
+`roll-probe`: John 10's Listen on the export, then 66s on the page logging every change to `[data-reader-dock] .reader-dock-card .ms-auto` with its time, the address, the slot's words and the button's x and width. Before the mend: `58830 /bible/john/11/ Listen | Sleep timer 238 80`, `58884 /bible/john/11/ 1× | Sleep timer 290 29`. The script is `scripts/gate/listen-walk.mjs`'s neighbour in spirit; rebuild it from this description if needed (a MutationObserver on the dock, as 98f's baton asked).

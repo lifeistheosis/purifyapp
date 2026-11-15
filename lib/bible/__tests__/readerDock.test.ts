@@ -92,7 +92,8 @@ describe("the dock", () => {
     // Known by the chapter the loaded recording reads, whichever address it
     // has: streamed, or saved to the phone while it played.
     expect(PILL).toContain("const loaded = readingOfSrc(src);");
-    expect(PILL).toMatch(/const hereLoaded =\s*\(!bible && loaded\?\.book === slug && loaded\.chapter === chapter\) \|\|/);
+    // A reading on its way to this chapter counts as loaded (lib/readAloud/rollOn.ts, rollOnComing.test.ts).
+    expect(PILL).toMatch(/const hereLoaded =\s*coming \|\|\s*\(!bible && loaded\?\.book === slug && loaded\.chapter === chapter\) \|\|/);
     // Read in the reader's voice for the chapter, in the Bible the page shows it in (1.9, build 95 note 25).
     expect(PILL).toContain("onListen={() => listenToChapter({ book: slug, chapter, title: `${bookName} ${chapter}`, t, bible })}");
     expect(DOCK).toContain("await onListen();");
