@@ -2,6 +2,7 @@
 // Build 98 note 2, walked as a reader: every text read aloud listens as the Bible does.
 //
 //   node scripts/gate/listen-walk.mjs <export> [--size 390x844] [--lang ar] [--check] [--shots dir] [--only life,work]
+//   node scripts/gate/listen-walk.mjs <export> --computer    (the computer as it was: Listen in the page, the mini player)
 //
 // His words (2026-11-15): "make the listen system the same as the Bible listening system (UI/ux)
 // one so there isn't a floating button". On a life, an event, a study's part, a Father's work and
@@ -39,11 +40,13 @@ const has = (name) => {
   if (at >= 0) argv.splice(at, 1);
   return at >= 0;
 };
-const [WIDTH, HEIGHT] = (flag("--size") ?? "390x844").split("x").map(Number);
+const [WIDTH, HEIGHT] = (flag("--size") ?? (argv.includes("--computer") ? "1280x900" : "390x844")).split("x").map(Number);
 const LANG = flag("--lang") ?? "en";
 const SHOTS = flag("--shots");
 const ONLY = flag("--only")?.split(",") ?? null;
 const CHECK = has("--check");
+const COMPUTER = has("--computer");
+const DESKTOP_UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
 const OUT = path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}`);
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
@@ -53,8 +56,8 @@ const TEXTS = [
   { key: "life", to: "/saints/athanasius-the-great/", screen: true },
   { key: "event", to: "/history/arian-controversy-begins/", screen: true },
   { key: "study", to: "/theology/essence-energies/read/", turns: true },
-  { key: "work", to: "/saints/athanasius-the-great/on-the-incarnation/", turns: true },
-  { key: "council", to: "/councils/nicaea-325/the-creed-of-nicaea/", turns: true, fallback: "/councils/nicaea-325/" },
+  { key: "work", to: "/saints/athanasius-the-great/four-discourses-against-the-arians/", turns: true },
+  { key: "council", to: "/councils/first-nicaea/the-twenty-canons/", turns: true, fallback: "/councils/first-nicaea/the-symbol-of-the-faith/" },
 ].filter((t) => !ONLY || ONLY.includes(t.key));
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -86,7 +89,7 @@ const state = (page) =>
       away: document.body.hasAttribute("data-reader-away"),
       screen: document.body.hasAttribute("data-reader-screen"),
       dockWidth: dock ? Math.round(dock.getBoundingClientRect().width) : null,
-      tabBarShown: barBox ? Math.max(0, Math.round(Math.min(innerHeight, barBox.bottom) - Math.max(0, barBox.top))) : null,
+      tabBarShown: bar && shown(bar) && barBox ? Math.max(0, Math.round(Math.min(innerHeight, barBox.bottom) - Math.max(0, barBox.top))) : 0,
       dockName: rowName?.textContent?.trim() ?? null,
       dockSlot: [...document.querySelectorAll("[data-reader-dock] .reader-dock-card .ms-auto button")].map((b) => b.textContent?.trim() || b.getAttribute("aria-label")),
       playing: [...document.querySelectorAll("[data-reader-dock] .reader-dock-card button")].some((b) => /Pause/i.test(b.getAttribute("aria-label") ?? "")),
@@ -100,10 +103,20 @@ const box = (sel, pick = "first") =>
   `(() => { const all = [...document.querySelectorAll(${JSON.stringify(sel)})].filter((e) => { const r = e.getBoundingClientRect(); return r.height > 0 && r.width > 0 && getComputedStyle(e).visibility !== "hidden"; }); const el = ${pick === "last" ? "all[all.length - 1]" : "all[0]"}; const r = el?.getBoundingClientRect(); return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null; })()`;
 
 async function scrollBy(page, cdp, dy) {
-  // A finger's drag, in steps, as a reader's scroll: the scroll watchers read the page's scroll.
-  const x = WIDTH / 2;
-  const y0 = dy > 0 ? HEIGHT * 0.7 : HEIGHT * 0.3;
-  await cdp.send("Input.synthesizeScrollGesture", { x, y: y0, yDistance: -dy, speed: 1200, gestureSourceType: "touch", repeatCount: 1 });
+  // A finger's drag, as a reader's: touch events the scroll watchers hear (lib/ui/scrollAway.ts counts
+  // a scroll as the reader's only after a hand on the glass), in steps, so the page scrolls with it.
+  const x = Math.round(WIDTH / 2);
+  let y = Math.round(dy > 0 ? HEIGHT * 0.75 : HEIGHT * 0.3);
+  const steps = 12;
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+  for (let i = 0; i < steps; i++) {
+    y -= dy / steps / 2;
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y: Math.round(y) }] });
+    await sleep(16);
+  }
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  // And the rest of the way, as the page's fling would carry it, while the hand is still counted.
+  await page.evaluate((d) => window.scrollBy(0, d / 2), dy);
   await sleep(900);
 }
 
@@ -111,7 +124,7 @@ const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromi
 const results = [];
 let failed = 0;
 for (const text of TEXTS) {
-  const ctx = await browser.newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: WIDTH < 700, hasTouch: true, userAgent: NATIVE_UA, locale: LANG === "ar" ? "ar" : "en-US" });
+  const ctx = await browser.newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: !COMPUTER && WIDTH < 700, hasTouch: !COMPUTER, userAgent: COMPUTER ? DESKTOP_UA : NATIVE_UA, locale: LANG === "ar" ? "ar" : "en-US" });
   await ctx.addInitScript((lang) => {
     try {
       localStorage.setItem("purify:onboarded", "99");
@@ -149,6 +162,21 @@ for (const text of TEXTS) {
       await go(page, text.fallback, { timeout: 45000 });
       await sleep(2000);
     }
+    if (COMPUTER) {
+      // The computer as it was: Listen in the page under the title, no pill, and while it plays the mini player.
+      const before = await state(page);
+      r.steps.rest = before;
+      if (before.listenInPage !== 1) fail(`the computer shows ${before.listenInPage} Listen in the page`);
+      if (before.pill || before.dock) fail("the computer shows the pill or the dock");
+      const here = await centreOf(page, box("[data-listen-here]"));
+      if (here) await page.mouse.click(here.x, here.y);
+      await sleep(1800);
+      const after = await state(page);
+      r.steps.playing = after;
+      if (after.dock || after.pill) fail("playing on the computer: the pill or the dock");
+      if (after.mini !== 1) fail(`playing on the computer: ${after.mini} mini players`);
+      throw Object.assign(new Error("done"), { done: true });
+    }
     await firstTouch(page, cdp);
     await sleep(300);
     const rest = await state(page);
@@ -170,6 +198,7 @@ for (const text of TEXTS) {
     await sleep(1200);
     const playing = await state(page);
     r.steps.playing = playing;
+    r.steps.afterListen = { away: playing.away, scrollY: await page.evaluate(() => Math.round(scrollY)) };
     if (playing.dock !== 1) fail("playing: no dock");
     if (playing.mini) fail("playing: the mini player shows");
     if (playing.pill) fail("playing: the pill still shows");
@@ -183,7 +212,7 @@ for (const text of TEXTS) {
       if (r.steps.playingCheck !== "ok") fail("checkMock playing");
     }
     // Pause and Play from the dock's card.
-    const toggle = await centreOf(page, box("[data-reader-dock] .reader-dock-card button.bg-paper"));
+    const toggle = (await centreOf(page, box("[data-reader-dock] .reader-dock-card button.bg-paper"))) ?? (await centreOf(page, box("[data-reader-dock] .reader-dock-pill button.bg-paper")));
     if (toggle) {
       await tapAt(cdp, toggle.x, toggle.y);
       await sleep(700);
@@ -196,20 +225,25 @@ for (const text of TEXTS) {
     } else fail("no Play or Pause on the dock");
     // A part turned from the dock.
     if (text.turns) {
-      const before = await state(page);
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await sleep(900);
+      const partOf = () => page.evaluate(() => ({ name: document.querySelector("[data-reader-dock] .reader-dock-card span.font-semibold, [data-reader-dock] .reader-dock-card [aria-haspopup='dialog'] span")?.textContent?.trim() ?? null, y: Math.round(scrollY), hash: location.hash, first: [...document.querySelectorAll("main h2, main h3")].find((h) => { const b = h.getBoundingClientRect(); return b.bottom > 0 && b.top < innerHeight; })?.textContent?.trim().slice(0, 60) ?? null }));
+      const before = { ...(await state(page)), part: await partOf() };
       const nextArrow = await centreOf(page, box("[data-reader-dock] .reader-dock-card button[aria-label], [data-reader-dock] .reader-dock-card a[aria-label]", "first"));
       const arrows = await page.evaluate(() => [...document.querySelectorAll("[data-reader-dock] .reader-dock-card .hit-44.size-8")].map((e) => ({ tag: e.tagName, label: e.getAttribute("aria-label"), box: (() => { const b = e.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2 }; })() })));
       const next = arrows.filter((a) => a.tag === "BUTTON" || a.tag === "A").at(-1);
       if (next && nextArrow) {
         await judge("turn", () => tapAt(cdp, next.box.x, next.box.y));
         await sleep(900);
-        const after = await state(page);
-        r.steps.turn = { from: before.dockName, to: after.dockName, foot: after.foot };
-        if (before.dockName === after.dockName) fail("the dock's arrow did not turn the part");
+        const after = { ...(await state(page)), part: await partOf() };
+        r.steps.turn = { from: before.part, to: after.part, foot: after.foot };
+        if (JSON.stringify(before.part) === JSON.stringify(after.part)) fail("the dock's arrow did not turn the part");
         if (after.foot.length !== 1) fail(`after the turn the foot shows ${after.foot.join(" and ") || "nothing"}`);
       } else fail("no arrow on the dock");
     }
     // Reading on: the dock draws in (and on a life and an event the tab bar steps away); back on a scroll up.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await sleep(900);
     const atRestWidth = (await state(page)).dockWidth;
     await scrollBy(page, cdp, 700);
     const down = await state(page);
@@ -224,13 +258,13 @@ for (const text of TEXTS) {
     if (up.away) fail("a scroll up did not bring the dock back");
     if (!up.tabBarShown) fail("the tab bar did not come back on a scroll up");
   } catch (e) {
-    fail(`stopped: ${String(e).slice(0, 240)}`);
+    if (!e.done) fail(`stopped: ${String(e).slice(0, 240)}`);
   }
   if (errors.length) r.errors = errors;
   if (r.fails.length) failed += 1;
   results.push(r);
   console.log(`${r.fails.length ? "FAIL" : "ok  "} ${text.key} ${r.to}${r.fails.length ? `: ${r.fails.join("; ")}` : ""}`);
-  console.log(`     ${JSON.stringify({ rest: r.steps.rest && { foot: r.steps.rest.foot, listenInPill: r.steps.rest.listenInPill, listenInPage: r.steps.rest.listenInPage }, playing: r.steps.playing && { foot: r.steps.playing.foot, slot: r.steps.playing.dockSlot, name: r.steps.playing.dockName }, pausePlay: r.steps.pausePlay, turn: r.steps.turn, scroll: r.steps.scroll, listenMotion: r.steps["listen:motion"], turnMotion: r.steps["turn:motion"], errors: r.errors })}`);
+  console.log(`     ${JSON.stringify({ rest: r.steps.rest && { foot: r.steps.rest.foot, listenInPill: r.steps.rest.listenInPill, listenInPage: r.steps.rest.listenInPage }, playing: r.steps.playing && { foot: r.steps.playing.foot, slot: r.steps.playing.dockSlot, name: r.steps.playing.dockName }, afterListen: r.steps.afterListen, pausePlay: r.steps.pausePlay, turn: r.steps.turn, scroll: r.steps.scroll, listenMotion: r.steps["listen:motion"], turnMotion: r.steps["turn:motion"], errors: r.errors })}`);
   await ctx.close();
 }
 await browser.close();

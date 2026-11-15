@@ -18,21 +18,38 @@ export function fakeVoice() {
       this.volume = 1;
     }
   }
+  // One utterance at a time, as a phone's voice queues them: each starts as the one before it
+  // ends, says a word every 300ms, and takes a minute.
   const synth = new EventTarget();
+  let queue = [];
+  const next = () => {
+    const u = queue[0];
+    if (!u || synth.paused) return;
+    synth.speaking = true;
+    timers.push(setTimeout(() => u.onstart?.({}), 30));
+    for (let i = 1; i < 200; i++) timers.push(setTimeout(() => u.onboundary?.({ name: "word", charIndex: Math.min(i * 6, Math.max(0, u.text.length - 1)), charLength: 5 }), 30 + i * 300));
+    timers.push(
+      setTimeout(() => {
+        queue.shift();
+        u.onend?.({});
+        synth.speaking = queue.length > 0;
+        next();
+      }, 60000),
+    );
+  };
   Object.assign(synth, {
     speaking: false,
     paused: false,
     pending: false,
     getVoices: () => [voice],
     speak(u) {
-      timers.push(setTimeout(() => u.onstart?.({}), 30));
-      for (let i = 1; i < 200; i++) timers.push(setTimeout(() => u.onboundary?.({ name: "word", charIndex: Math.min(i * 6, Math.max(0, u.text.length - 1)), charLength: 5 }), 30 + i * 300));
-      timers.push(setTimeout(() => u.onend?.({}), 60000));
-      synth.speaking = true;
+      queue.push(u);
+      if (queue.length === 1) next();
     },
     cancel() {
       for (const t of timers) clearTimeout(t);
       timers = [];
+      queue = [];
       synth.speaking = false;
     },
     pause() {
