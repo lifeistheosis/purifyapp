@@ -97,3 +97,33 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 - Proof before the merge, since there is no test web: the web build of the branch run locally answers each of the seven versions 200 with the app's CORS header (curl with the app's origin); and a walk of the export as the app, against those files, downloads every version, reads it offline, and deletes it.
 - After the merge, before the store builds: each version's `index.json` and a book probed on purifyapp.net, and one download on his phone.
 - Named to him plainly now: the versions download only once 1.9 is on the website.
+
+## Note 7: the version chosen in the books sheet
+
+**His words (2026-11-15, about 21:30 UTC),** with a screenshot of the books sheet at 4:24 on his clock ("Luke 10" and its cross; Search the Bible; The New Testament, the Gospels with Luke open on its 24 chapters and 10 lit, then Acts and the Pauline Epistles; Today's readings, Reading plans and Your journal at its foot): "incorporate the change Bible version with this screen".
+
+**Found (the arbiter, 21:33 UTC, from the code of 78c5297e1):**
+
+- On a phone the version is changed from two other places: the line under the chapter's title (`components/bible/TitleTranslation.tsx`, build 93 note 20, his "as easy as switching your chapter"), which opens a sheet of its own, and the reader's ••• sheet (`components/bible/ReaderMoreSheet.tsx`). Both show the same rows (`components/bible/TranslationList.tsx`). The books sheet (`components/bible/MobileChapterSheet.tsx`, opened from the pill's name) has no version in it.
+
+**Plan (nothing is built until he says start):**
+
+- One sheet for where and what you read: the books sheet carries the version being read at its head, by the chapter ("Luke 10", then "King James Version" with its small chevron). A tap turns the same sheet to the versions (the same `TranslationList` rows, downloads with them), and a choice keeps the reader's verse (`lib/bible/keepPlace.ts`) and turns the sheet back to the books.
+- The line under the chapter's title opens this same sheet on its versions, so there is one sheet, not two.
+- Drawn from the app's own parts, stills from the export through checkMock, each choice with its reason, for his yes; then built, with a test that fails on 78c5297e1 (the books sheet offers the version).
+
+## Note 8: Now Playing opens smoothly
+
+**His words (2026-11-15, about 21:31 UTC),** with two screenshots at 4:30 on his clock: the mini player over Morning prayers (The Prayer Rope Anthem, English, Pause and the cross) and Now Playing open on Cover (the Trinity icon, The Prayer Rope Anthem, English, 2 MB with the download mark, 0:10 of 2:06, back 15, Pause, on 15, next, then Loop, Ambience, Sleep timer and Read): "make the music player opening more smooth".
+
+**Found (the arbiter, 21:33 UTC, from the code of 78c5297e1):**
+
+- Now Playing (`components/player/NowPlayingSheet.tsx`) is built only when it is opened: the tap mounts the whole screen (the large cover, its words view, the controls) and two frames later slides it up over 380 ms. So the slide starts while the phone is still building and decoding the picture, which is where a stutter at the start comes from.
+- The grey, blurred copy of the picture behind it (`filter: blur(42px)` on a layer 8rem wider than the screen on every side) fades in over 700 ms inside the panel that is sliding. Its own comment says it is drawn once "once the sheet is up", but it moves and fades during the slide, the costliest thing an Android web view can be asked to move.
+- Nothing carries over from the mini player: its disc and the cover are two pictures, so the screen rises from the foot as a separate thing, where the house's way is that a card carries its picture into what it opens.
+
+**Plan (nothing is built until he says start):**
+
+- First measure the opening on the export at a phone's speed (the motion walk's frame times: the longest frame, any blank frame), before and after.
+- Then: Now Playing kept built and ready while anything is loaded, so a tap only slides it; the blurred backdrop drawn once the slide has ended, not during it; and the mini player's picture carried up into the cover's place as the screen rises, on the house curve, the controls following. Reduced motion: no movement, as everywhere.
+- Proof: the motion walk with no long or blank frame on opening and closing, and his walk of the next build, since only a phone shows the real frames.
