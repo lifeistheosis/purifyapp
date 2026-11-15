@@ -1,9 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { VERSE_ROWS, verseAtReadingPlace } from "@/lib/bible/verseInView";
 import { cn } from "@/lib/cn";
+import { gliding } from "@/lib/ui/readingPlace";
+
+// On the server there is no page to read, and useLayoutEffect only warns.
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * "v 11 of 42 · 3 min left", a running line over the chapter's pill at the
@@ -53,24 +58,18 @@ export function ChapterVerseStatus({
     setMinutes(null);
   }
 
-  // Open once the chapter title's bottom edge is above the viewport.
-  useEffect(() => {
+  // Open once the chapter title's bottom edge is above the viewport, and the
+  // verse over the reading line, as the page scrolls and as it opens. Both are
+  // read in the frame the page moved, before it is painted, and set in it
+  // (flushSync), so the line is never drawn a frame behind the page: an
+  // observer told it a frame late, and the line opened, with the fade under
+  // the pill rising 52px to it, a frame after a verse link had landed (Gate
+  // 3c, group 8). While the page glides to the verse a link named, a shut
+  // line waits for the end and opens once, with that verse's words (group 5;
+  // lib/ui/readingPlace.ts, gliding).
+  useIsoLayoutEffect(() => {
     const title = document.getElementById("chapter-title");
-    if (!title) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) setShow(e.boundingClientRect.bottom < 0);
-      },
-      { threshold: 0 },
-    );
-    obs.observe(title);
-    return () => obs.disconnect();
-  }, [chapterKey]);
-
-  // The verse over the reading line, as the page scrolls and as it opens.
-  useEffect(() => {
     const verses = Array.from(document.querySelectorAll<HTMLElement>(VERSE_ROWS));
-    if (verses.length === 0) return;
     // The words from each verse to the end, read from the English of each
     // row (the Greek beside it is not counted), or from a downloaded Bible's
     // (1.9, components/bible/DownloadedChapter.tsx).
@@ -81,24 +80,36 @@ export function ChapterVerseStatus({
       sum += text.split(/\s+/).filter(Boolean).length;
       wordsFrom.set(Number(verses[i].id.slice(1)), sum);
     }
+    let open = false;
     let current = 1;
     let raf = 0;
-    const settle = () => {
+    const settle = (apply: (set: () => void) => void) => {
       raf = 0;
+      if (!open && gliding()) return;
+      const nowOpen = title ? title.getBoundingClientRect().bottom < 0 : false;
       const n = verseAtReadingPlace();
-      if (n && n !== current) {
-        current = n;
-        setVerse(n);
-        const words = wordsFrom.get(n) ?? 0;
-        // Under a minute's reading left says nothing worth a line.
-        setMinutes(words >= WORDS_A_MINUTE ? Math.round(words / WORDS_A_MINUTE) : null);
-      }
+      const moved = verses.length > 0 && !!n && n !== current;
+      if (nowOpen === open && !moved) return;
+      apply(() => {
+        if (nowOpen !== open) {
+          open = nowOpen;
+          setShow(nowOpen);
+        }
+        if (n && moved) {
+          current = n;
+          setVerse(n);
+          const words = wordsFrom.get(n) ?? 0;
+          // Under a minute's reading left says nothing worth a line.
+          setMinutes(words >= WORDS_A_MINUTE ? Math.round(words / WORDS_A_MINUTE) : null);
+        }
+      });
     };
     // Once a frame at most, whatever moved the page.
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(settle);
+      if (!raf) raf = requestAnimationFrame(() => settle(flushSync));
     };
-    raf = requestAnimationFrame(settle);
+    // Before the first paint: a page that opens already scrolled opens its line with it.
+    settle((set) => set());
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {

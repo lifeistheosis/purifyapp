@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { AmbienceButton } from "@/components/player/AmbienceButton";
@@ -11,7 +12,7 @@ import { pillAt, type PillLevel, type SectionHead } from "@/lib/saints/parts";
 import { PLACE_ROWS, parsePlace } from "@/lib/saints/paragraphInView";
 import { openWorkContents } from "@/lib/saints/workNow";
 import { useOverlayOpen } from "@/lib/ui/overlay";
-import { KEPT_AT, blockAt, placeIn, visibleBand } from "@/lib/ui/readingPlace";
+import { KEPT_AT, blockAt, gliding, placeIn, visibleBand } from "@/lib/ui/readingPlace";
 
 import { usePartWords } from "./partWords";
 import { WORK_HEAD_ID } from "./WorkHead";
@@ -256,33 +257,46 @@ function RunningLine({ head, words }: { head: SectionHead; words: readonly numbe
     setMinutes(null);
   }
 
-  useEffect(() => {
+  // Open once the title has gone up, and the minutes from the line being
+  // read, both read in the frame the page moved, before it is painted, and set
+  // in it (flushSync): an observer told the line a frame late, and it was
+  // drawn one way and then another as a work's place arrived (Gate 3c, group
+  // 5, "Chapter 3 of 14" 28px). While the page glides to a place, a shut line
+  // waits for the end and opens once (lib/ui/readingPlace.ts, gliding).
+  useIsoLayoutEffect(() => {
     const title = document.getElementById(WORK_HEAD_ID);
-    if (!title || typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver(([e]) => setShow(e.boundingClientRect.bottom < 0), { threshold: 0 });
-    io.observe(title);
-    return () => io.disconnect();
-  }, [head.n]);
-
-  useEffect(() => {
+    let open = false;
     let raf = 0;
-    const settle = () => {
+    const settle = (apply: (set: () => void) => void) => {
       raf = 0;
+      if (!open && gliding()) return;
+      const nowOpen = title ? title.getBoundingClientRect().bottom < 0 : false;
+      let next: number | null | undefined;
       const rows = document.querySelectorAll<HTMLElement>(PLACE_ROWS);
-      if (!rows.length) return;
-      const line = placeIn(visibleBand(), KEPT_AT);
-      const at = blockAt(rows.length, (i) => rows[i].getBoundingClientRect().top, line);
-      const place = parsePlace(rows[at].getAttribute("data-place"));
-      if (!place) return;
-      const r = rows[at].getBoundingClientRect();
-      const left = wordsLeft(words, place.paragraph, r.height > 0 ? (line - r.top) / r.height : 0);
-      // Under a minute's reading left says nothing worth a line.
-      setMinutes(left >= WORDS_PER_MINUTE ? Math.round(left / WORDS_PER_MINUTE) : null);
+      if (rows.length) {
+        const line = placeIn(visibleBand(), KEPT_AT);
+        const at = blockAt(rows.length, (i) => rows[i].getBoundingClientRect().top, line);
+        const place = parsePlace(rows[at].getAttribute("data-place"));
+        if (place) {
+          const r = rows[at].getBoundingClientRect();
+          const left = wordsLeft(words, place.paragraph, r.height > 0 ? (line - r.top) / r.height : 0);
+          // Under a minute's reading left says nothing worth a line.
+          next = left >= WORDS_PER_MINUTE ? Math.round(left / WORDS_PER_MINUTE) : null;
+        }
+      }
+      apply(() => {
+        if (nowOpen !== open) {
+          open = nowOpen;
+          setShow(nowOpen);
+        }
+        if (next !== undefined) setMinutes(next);
+      });
     };
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(settle);
+      if (!raf) raf = requestAnimationFrame(() => settle(flushSync));
     };
-    raf = requestAnimationFrame(settle);
+    // Before the first paint: a work that opens at its place opens its line with it.
+    settle((set) => set());
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {

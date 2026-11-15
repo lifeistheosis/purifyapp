@@ -284,8 +284,28 @@ export function goToReadingPlace(
   const shift = shiftToReadingPlace(band ?? visibleBand(), block, align);
   const end = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
   const top = Math.min(end, Math.max(0, window.scrollY + shift));
-  window.scrollTo({ top, behavior: smooth && !prefersReducedMotion() ? "smooth" : "auto" });
+  const glides = smooth && !prefersReducedMotion();
+  glide = glides && Math.abs(window.scrollY - top) > 1 ? { top, until: performance.now() + GLIDE_MS } : null;
+  window.scrollTo({ top, behavior: glides ? "smooth" : "auto" });
   return top;
+}
+
+/** The longest a glide to the reading place is waited for (a reader's own touch can stop it short). */
+export const GLIDE_MS = 2000;
+
+let glide: { top: number; until: number } | null = null;
+
+/**
+ * True while the page glides to where goToReadingPlace sent it (Gate 3c,
+ * group 5). A running line that is still shut waits for the end, so it opens
+ * once, with the words of the place the page lands on: it opened partway and
+ * then lost its "· 1 min left", and moved 25px sideways, about a second after
+ * a verse link arrived.
+ */
+export function gliding(): boolean {
+  if (!glide || typeof window === "undefined") return false;
+  if (performance.now() > glide.until || Math.abs(window.scrollY - glide.top) <= 1) glide = null;
+  return glide !== null;
 }
 
 /**

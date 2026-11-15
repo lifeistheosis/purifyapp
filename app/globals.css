@@ -9824,6 +9824,13 @@ html[data-reading-mode="parchment"] .compose-plate {
 }
 :where([data-motion="reduce"]) .route-fade {
  animation: none;
+ /* With no fade to carry, the wrapper is no box (Gate 3c, group 8). It stays
+    put when a page within the same section replaces the one inside it, so
+    when the way back above it went (/bible/multi/ to /bible/, /chants/ to a
+    chant, /saints/ to a saint) it moved up 51px with its new page already in
+    it: no frame showed the page low, but the box was measured moving after
+    arrival. As contents its pages stand straight in <main>. */
+ display: contents;
 }
 
 /* ── Route exit ───────────────────────────────────────────────────────
