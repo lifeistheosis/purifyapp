@@ -49,7 +49,7 @@ On the export of 38610013d, 390x844, CPU 4x, online (the main web's live feed):
 
 ## Second item: the shop's heart (the arbiter's word, 2026-11-15)
 
-- **79c2d30d**. The heart on every piece (components/shop/FavoriteButton.tsx) said "Save this icon", in English, on a prayer rope and a cross too (Gate 3b heard it on the sold-out 33-knot rope). Its aria-label and title are now `t("saints.saveAria", { name: title })`: "Save {name} to your saved list" with the piece's own name, the words the saints' and the events' hearts already use (BookmarkSaintButton, BookmarkEventButton), in all 21 languages. "Remove from saved" is as it was. No look changes.
+- **145e5202**. The heart on every piece (components/shop/FavoriteButton.tsx) said "Save this icon", in English, on a prayer rope and a cross too (Gate 3b heard it on the sold-out 33-knot rope). Its aria-label and title are now `t("saints.saveAria", { name: title })`: "Save {name} to your saved list" with the piece's own name, the words the saints' and the events' hearts already use (BookmarkSaintButton, BookmarkEventButton), in all 21 languages. "Remove from saved" is as it was. No look changes.
 - **The test**, lib/shop/__tests__/favoriteHeartLabel.test.ts: no "this icon", the label through `saints.saveAria` with the piece's name for both aria-label and title, and those words with `{name}` in every language. On the old code 2 of 3 fail (the third holds the words that were already there).
 - **The checklist**: typecheck 0; test:unit 1206 files passed, 1 skipped, 15215 tests passed, 9 skipped; eslint clean on both files. No export (the arbiter's word) and no web build (no CSS, server or shared file).
 
