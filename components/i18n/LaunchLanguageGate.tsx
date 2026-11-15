@@ -13,7 +13,7 @@
 // that should settle the language can delay the first screen and never
 // withhold it.
 
-import { startTransition, use, useEffect, useLayoutEffect, useReducer, useSyncExternalStore, type ReactNode } from "react";
+import { use, useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { usePathname, useSelectedLayoutSegments } from "next/navigation";
 
 import {
@@ -23,7 +23,6 @@ import {
   languageSettledPromise,
   subscribeLanguageSettled,
 } from "@/lib/i18n/launchLanguage";
-import { attachHeldScreenWake, heldScreenDrawn, heldScreenHeld, wakeHeldScreen } from "@/lib/i18n/heldScreenWake";
 import { FRONT_DOOR_MARK } from "@/lib/nav/entry";
 import { isNativeClient } from "@/lib/platform/native";
 
@@ -93,12 +92,6 @@ export function todayMayDraw(pathname: string | null | undefined): boolean {
  * opened on the front door's document. A screen whose own document was
  * opened is drawn by its first render, and holding a later render of it would
  * hold the very commit that settles the language.
- *
- * Woken once the language is settled (Updates 88). React tries the held move
- * again when the promise resolves, but an update landing while the move is
- * suspended marks it suspended again and the told promise never tells twice, so
- * the screen waited for some unrelated update, 1.7 to 1.9 s on the export. The
- * hold's own update, in a later task, starts it (lib/i18n/heldScreenWake.ts).
  */
 export function RouteLanguageHold({ children }: { children: ReactNode }) {
   // The device's answer is the same for the page's whole life, so the hold is
@@ -109,24 +102,7 @@ export function RouteLanguageHold({ children }: { children: ReactNode }) {
 
 function HoldInTheApps({ children }: { children: ReactNode }) {
   const onAScreen = (useSelectedLayoutSegments()?.length ?? 0) > 0;
-  // Its own update, which draws nothing: the children are the same element, so
-  // React goes no further than this component. It wakes a held screen once the
-  // language is settled (Updates 88; lib/i18n/heldScreenWake.ts).
-  const [, nudge] = useReducer((n: number) => n + 1, 0);
-  useEffect(() => {
-    const detach = attachHeldScreenWake(() => startTransition(nudge));
-    const leave = subscribeLanguageSettled(() => wakeHeldScreen());
-    if (languageSettled()) wakeHeldScreen();
-    return () => {
-      detach();
-      leave();
-    };
-  }, []);
-  useLayoutEffect(() => {
-    if (onAScreen) heldScreenDrawn();
-  }, [onAScreen]);
   if (onAScreen && !languageSettled() && document.querySelector(FRONT_DOOR_MARK) !== null) {
-    heldScreenHeld();
     use(languageSettledPromise());
   }
   return <>{children}</>;
