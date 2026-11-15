@@ -16,6 +16,7 @@ import { BUDGET_BAND_LABELS } from "@/lib/shop/format";
 import { REQUEST_WORD_KEY, requestLife, type RequestLife } from "@/lib/shop/requestLife";
 import { requestSaint, saintByName, saintShortName } from "@/lib/shop/requestSaint";
 import type { ShopBudgetBand, ShopIconRequest } from "@/lib/shop/types";
+import { useSignedOutPeek } from "@/lib/shop/signedOutAtOnce";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useWide } from "@/lib/shop/useWide";
 import { createClient } from "@/lib/supabase/client";
@@ -24,6 +25,9 @@ import { AUTH_UNRESOLVED_MESSAGE, resolveUser } from "@/lib/supabase/resolveUser
 type Result =
   | { signedIn: false }
   | { signedIn: true; requests: ShopIconRequest[]; email: string | null };
+
+/** A reader with no session kept on the device: the same answer the loader gives (lib/shop/signedOutAtOnce.ts). */
+const SIGNED_OUT: Result = { signedIn: false };
 
 async function load(): Promise<Result> {
   // Auth-required page: an unresolved check (auth lock, network) must land
@@ -64,7 +68,9 @@ const KIND_KEY: Record<ShopIconRequest["request_type"], string> = {
  */
 export function RequestsClient() {
   const { t } = useTranslate();
-  const { data, error, loading, reload } = useAsyncData(load, []);
+  // Signed out on the device, Sign in is the first frame, not the loading bones (Gate 3c, group 9).
+  const signedOut = useSignedOutPeek(SIGNED_OUT);
+  const { data, error, loading, reload } = useAsyncData(load, [], signedOut);
   const wide = useWide();
 
   if (loading && !data) return <ShopLoading label={t("shop.loadingYourRequests")} />;

@@ -14,6 +14,7 @@ import { readOrders, type BuyerOrder } from "@/lib/shop/buyerReads";
 import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
 import { groupOrders, orderTitle, STATUS_KEY, storyEstimate, type OrderGroup } from "@/lib/shop/orderStory";
 import { trackingLink } from "@/lib/shop/trackingLink";
+import { useSignedOutPeek } from "@/lib/shop/signedOutAtOnce";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { createClient } from "@/lib/supabase/client";
 import { AUTH_UNRESOLVED_MESSAGE, resolveUser } from "@/lib/supabase/resolveUser";
@@ -30,6 +31,9 @@ const DASHED_MARK = {
 } as const;
 
 type Result = { signedIn: false } | { signedIn: true; orders: BuyerOrder[]; now: number };
+
+/** A reader with no session kept on the device: the same answer the loader gives (lib/shop/signedOutAtOnce.ts). */
+const SIGNED_OUT: Result = { signedIn: false };
 
 async function load(): Promise<Result> {
   // Auth-required page: an unresolved check (auth lock, network) must land
@@ -52,7 +56,9 @@ async function load(): Promise<Result> {
  */
 export function OrdersClient() {
   const { t } = useTranslate();
-  const { data, error, loading, reload } = useAsyncData(load, []);
+  // Signed out on the device, Sign in is the first frame, not the loading bones (Gate 3c, group 9).
+  const signedOut = useSignedOutPeek(SIGNED_OUT);
+  const { data, error, loading, reload } = useAsyncData(load, [], signedOut);
 
   // Asking again after a Remove keeps the list on screen.
   if (loading && !data) return <ShopListSkeleton />;

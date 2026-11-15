@@ -25,8 +25,8 @@ import { buildRelated } from "@/lib/theology/relations";
 /** Where a mark in the claim or the response leads: its source, under them. */
 const HERESY_SOURCE = "heresy-source-";
 
-/** A row of a tray: a council that condemned the error. */
-const ROW = "theology-row flex min-h-[54px] items-center gap-3 rounded-[14px] px-2 py-2";
+/** A row of a tray: a council that condemned the error. It opens the council, so with motion reduced it does not light as it is pressed (app/globals.css, .theology-row-leaves). */
+const ROW = "theology-row flex min-h-[54px] items-center gap-3 rounded-[14px] px-2 py-2 theology-row-leaves";
 
 /** Where a council's words stand, as the line under every quotation is drawn (components/citations/SourceLine.tsx). */
 const PLACE = "tap-press hit-44 inline-flex max-w-full items-start gap-1.5 font-sans text-detail leading-[1.45] text-paper/60 hover:text-paper";

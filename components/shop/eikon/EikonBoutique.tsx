@@ -93,9 +93,12 @@ export function EikonBoutique({ store, products }: { store: ShopStore; products:
             return (
               <li key={p.id} className={cn(NARROW[i % NARROW.length], WIDE[i % WIDE.length], "md:mx-0 md:px-0")}>
                 <Link href={productHref(p.slug, native)} className="eikon-rise group block">
-                  {/* The picture travels into its page (pieceCarry, lib/ui/routeMotion.ts). */}
+                  {/* The picture travels into its page (pieceCarry, lib/ui/routeMotion.ts),
+                      and takes the store door's, which opens this room
+                      (components/shop/StoreDoor.tsx). */}
                   <div
                     data-carry={pieceCarry(p.slug)}
+                    data-carry-into={pieceCarry(p.slug)}
                     className={cn(
                       "relative overflow-hidden rounded-[3px] bg-[#141414] ring-1 ring-inset ring-paper/[0.06] transition-[box-shadow] duration-500 group-hover:ring-paper/30",
                       RATIO[i % RATIO.length],

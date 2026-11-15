@@ -7,6 +7,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
 import { isEikonStore } from "@/lib/shop/eikon";
+import { pieceCarry } from "@/lib/shop/productHref";
 import type { ShopProductFull, ShopStore } from "@/lib/shop/types";
 
 /**
@@ -103,9 +104,13 @@ export function StoreDoor({
       </div>
       {shown.length > 0 ? (
         <ul aria-hidden className={cn("relative mt-7 grid grid-cols-3 gap-2.5 md:gap-4", wide && "md:col-span-7 md:mt-0")}>
-          {shown.map((p) => (
+          {shown.map((p, i) => (
             <li
               key={p.id}
+              // The first piece travels into the room the door opens, to its
+              // own picture there (pieceCarry, lib/ui/routeMotion.ts): EIKON's
+              // pieces, /shop/eikon/ (Gate 3c, group 7).
+              data-carry={i === 0 ? pieceCarry(p.slug) : undefined}
               className={cn(
                 "relative aspect-[4/5] overflow-hidden rounded-xl",
                 eikon ? "shop-vitrine ring-1 ring-inset ring-paper/[0.06]" : "shop-vitrine",

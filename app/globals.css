@@ -8209,6 +8209,15 @@ html[data-reading-mode="parchment"] .theology-row:is(:active, :focus-visible) .t
 :where([data-motion="reduce"]) .theology-row {
  transition: none;
 }
+/* With motion reduced, a row that opens another page does not light as it
+   is pressed (the heresies' rows): the page comes in at once, so the light,
+   drawn on the tap, stood for two frames and was gone, a flash (Gate 3c,
+   group 9: "Marcionism", 150 by 30px for 2 frames, 3 of 4). The keyboard's
+   chosen row still lights. */
+:where([data-motion="reduce"]) .theology-row.theology-row-leaves:active:not(:focus-visible) {
+ background: none;
+ box-shadow: none;
+}
 /* A row's glyph on its small raised plate. */
 .theology-plate {
  background: linear-gradient(180deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.035));

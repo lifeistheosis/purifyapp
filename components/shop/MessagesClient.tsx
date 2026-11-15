@@ -12,6 +12,7 @@ import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 import { readInbox, type BuyerOrder } from "@/lib/shop/buyerReads";
 import { inboxRows, readTicketSeen, type InboxRow } from "@/lib/shop/inbox";
 import { piecePhoto } from "@/lib/shop/orderStory";
+import { useSignedOutPeek } from "@/lib/shop/signedOutAtOnce";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { createClient } from "@/lib/supabase/client";
 import { AUTH_UNRESOLVED_MESSAGE, resolveUser } from "@/lib/supabase/resolveUser";
@@ -19,6 +20,9 @@ import { AUTH_UNRESOLVED_MESSAGE, resolveUser } from "@/lib/supabase/resolveUser
 export type InboxView = { rows: InboxRow[]; orders: Map<string, BuyerOrder>; now: number };
 
 type Result = { signedIn: false } | ({ signedIn: true } & InboxView);
+
+/** A reader with no session kept on the device: the same answer the loader gives (lib/shop/signedOutAtOnce.ts). */
+const SIGNED_OUT: Result = { signedIn: false };
 
 /** The reader's inbox, read on the device under their own policies (lib/shop/buyerReads.ts). */
 export async function loadInbox(): Promise<Result> {
@@ -42,7 +46,9 @@ export async function loadInbox(): Promise<Result> {
  */
 export function MessagesClient() {
   const { t } = useTranslate();
-  const { data, error, loading, reload } = useAsyncData(loadInbox, []);
+  // Signed out on the device, Sign in is the first frame, not the loading bones (Gate 3c, group 9).
+  const signedOut = useSignedOutPeek(SIGNED_OUT);
+  const { data, error, loading, reload } = useAsyncData(loadInbox, [], signedOut);
 
   if (loading && !data) return <ShopListSkeleton />;
   if (error) return <ShopError message={error} onRetry={reload} />;
