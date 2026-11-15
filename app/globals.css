@@ -9584,6 +9584,14 @@ html[data-reading-mode="parchment"] .part-segment[data-state="current"] {
  height: 0;
  margin-top: 0;
 }
+/* Where the device already knows the answer is no, the place is not held at
+   all, from the first paint. The page's HTML is drawn before the app runs,
+   and it holds the place for every reader; a pre-paint script marks <html>
+   for a reader the answer is no for (lib/campaigns/doorPrepaint.ts), and
+   Community draws no place under the same mark once it wakes. */
+:root[data-pray-door="none"] .community-door-place {
+ display: none;
+}
 @keyframes community-door-in {
  from {
   opacity: 0;

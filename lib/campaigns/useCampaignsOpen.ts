@@ -31,6 +31,7 @@ import { useEffect, useSyncExternalStore } from "react";
 
 import { apiFetch } from "@/lib/api/client";
 
+import { DOOR_MARK, DOOR_MARKED_NONE, KEPT_ANSWER_KEY } from "./doorPrepaint";
 import { campaignsInBuild } from "./flags";
 import { CAMPAIGN_PART_NAMES, type CampaignPart } from "./model";
 import { partInThisBuild } from "./partsHere";
@@ -50,7 +51,7 @@ let listening = false;
 // device last time lets Community draw no place from its first frame. Only a
 // no is read before the server answers: a door is still drawn only on a live
 // yes, and a campaign's own page still waits for the server.
-const KEPT = "purify:campaigns:lastAnswer";
+const KEPT = KEPT_ANSWER_KEY;
 let kept: "yes" | "no" | "none" | null = null;
 function keptAnswer(): "yes" | "no" | "none" {
   if (kept === null) {
@@ -158,15 +159,38 @@ const readAnswer = () => answer;
 const closedAnswer = () => false as const;
 const unasked = () => null;
 
-const readAnswerOrKeptNo = () => answer ?? (keptAnswer() === "no" ? false : null);
+// The door known shut before the first paint (Updates 78): what the page's
+// pre-paint marked on <html> (./doorPrepaint.ts), which is the kept no or, on
+// the website, a reader with no account while the server opens campaigns to
+// its admins alone. Read once: the mark is set before the page is drawn.
+let markedNone: boolean | null = null;
+function doorMarkedNone(): boolean {
+  if (markedNone === null) {
+    try {
+      markedNone = document.documentElement.getAttribute(DOOR_MARK) === DOOR_MARKED_NONE;
+    } catch {
+      markedNone = false;
+    }
+  }
+  return markedNone;
+}
+
+const readAnswerOrKnownNo = () => answer ?? (keptAnswer() === "no" || doorMarkedNone() ? false : null);
+
+/** The switch's answer as it stands (below). Exported for the test that holds it. */
+export function campaignsAnswerForSwitchNow(): boolean | null {
+  return campaignsInBuild() ? readAnswerOrKnownNo() : false;
+}
 
 /**
- * Community's switch: the answer, or, until the server has said, the no it
- * gave this device last time (KEPT, above). Null until then otherwise, and on
- * the server, so nothing is baked into a page's HTML.
+ * Community's switch: the answer, or, until the server has said, a no the
+ * device already knows: the one the server gave it last time (KEPT, above),
+ * or the one the page's pre-paint marked (doorMarkedNone). Null until then
+ * otherwise, and on the server, so nothing is baked into a page's HTML; the
+ * HTML's held place is hidden under the same mark (app/globals.css).
  */
 export function useCampaignsAnswerForSwitch(): boolean | null {
-  return useSyncExternalStore(subscribe, campaignsInBuild() ? readAnswerOrKeptNo : closedAnswer, campaignsInBuild() ? unasked : closedAnswer);
+  return useSyncExternalStore(subscribe, campaignsAnswerForSwitchNow, campaignsInBuild() ? unasked : closedAnswer);
 }
 
 /**
@@ -232,6 +256,7 @@ export function useCampaignPart(part: CampaignPart): boolean {
 /** Test seam: forget the answer. */
 export function __forgetCampaignsOpen(): void {
   kept = null;
+  markedNone = null;
   answer = null;
   asking = false;
   unreached = false;

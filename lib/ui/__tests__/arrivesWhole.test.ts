@@ -94,7 +94,8 @@ describe("late parts measured or read on the device (Updates 18)", () => {
   it("Community keeps no empty place for the switch where the server said no last time", () => {
     // The kept 77px place closed as the answer came, and the page rose under it.
     const hook = code("lib/campaigns/useCampaignsOpen.ts");
-    expect(hook).toMatch(/const readAnswerOrKeptNo = \(\) => answer \?\? \(keptAnswer\(\) === "no" \? false : null\);/);
+    // Updates 78: the same kept no, and beside it the no the page's pre-paint marked on <html> (lib/campaigns/doorPrepaint.ts).
+    expect(hook).toMatch(/const readAnswerOrKnownNo = \(\) => answer \?\? \(keptAnswer\(\) === "no" \|\| doorMarkedNone\(\) \? false : null\);/);
     expect(hook).toMatch(/if \(!missed\) keepAnswer\(open\);/);
     expect(hook).toMatch(/if \(campaignsInBuild\(\) && keptAnswer\(\) === "none"\) ask\(\);/);
     expect(code("components/community/CommunityClient.tsx")).toMatch(/const campaignsOpen = useCampaignsAnswerForSwitch\(\);/);

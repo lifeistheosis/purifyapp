@@ -20,6 +20,8 @@ import { DESKTOP_HOME_PREPAINT } from "@/lib/desktop/homeRedirect";
 import { MOTION_PREPAINT } from "@/lib/ui/motionPrepaint";
 import { STORE_PREPAINT } from "@/lib/platform/storePrepaint";
 import { STREAK_PREPAINT } from "@/lib/streak/streakPrepaint";
+import { doorPrepaint } from "@/lib/campaigns/doorPrepaint";
+import { serverOpening } from "@/lib/campaigns/opening";
 import { bankHasQuestions } from "@/lib/catechism/bank";
 import { SITE_URL } from "@/lib/site";
 import { getServerLocale } from "@/lib/i18n/server";
@@ -299,6 +301,17 @@ export default async function RootLayout({
  nonce={nonce}
  suppressHydrationWarning
  dangerouslySetInnerHTML={{ __html: STREAK_PREPAINT }}
+ />
+ {/* The door to Pray together, before Community paints: sets
+     data-pray-door on <html> where the device already knows campaigns are
+     not open for this reader, so the switch's place is not held and then
+     closed under the page. The website writes its own position in (the
+     apps' server may stand ahead of their build, so they read only what it
+     told them last time). lib/campaigns/doorPrepaint.ts. */}
+ <script
+ nonce={nonce}
+ suppressHydrationWarning
+ dangerouslySetInnerHTML={{ __html: doorPrepaint(!IS_STATIC_EXPORT && serverOpening() === "testers") }}
  />
  {/* Everything mounted around the page is one client component, on purpose:
      each client component rendered from here is named in EVERY page's
