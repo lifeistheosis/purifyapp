@@ -155,7 +155,8 @@ export function LibraryQuote({
                   }}
                   className="tap-press block min-h-11 w-full rounded-xl px-2 py-2 text-start hover:bg-paper/[0.06]"
                 >
-                  <span dir="auto" className="line-clamp-3 font-serif text-body leading-[1.55] text-paper">{p.text}</span>
+                  {/* Whole: what the reader reads here is what lands, word for word. */}
+                  <span dir="auto" className="block font-serif text-body leading-[1.55] text-paper">{p.text}</span>
                 </button>
               </li>
             ))

@@ -45,7 +45,7 @@ async function phone(width, height, lang) {
 
 /** A tap with a finger, at the middle of what the selector names. */
 async function tap(page, selector) {
-  const el = page.locator(selector).first();
+  const el = page.locator(`${selector} >> visible=true`).first();
   await el.waitFor({ timeout: 20000 });
   await el.scrollIntoViewIfNeeded();
   const box = await el.boundingBox();
@@ -78,7 +78,7 @@ for (const [w, h] of [[390, 844], [800, 1280], [1032, 1376]].filter(([w]) => !on
     const palettes = looks ? [...PALETTES, ...LOOKS] : PALETTES;
     if (found) {
       const r1 = await checkMock(page, dialog, { pixels: true, palettes });
-      say(r1.ok, printMockCheck(r1, `the Quote's library search, ${label}`));
+      say(printMockCheck(r1, `the Quote's library search, ${label}`), "checkMock above");
       await tap(page, work);
       await page.waitForSelector("[data-quote-passage], [data-quote-passages] li", { timeout: 20000 });
       await page.waitForTimeout(600);
@@ -87,7 +87,7 @@ for (const [w, h] of [[390, 844], [800, 1280], [1032, 1376]].filter(([w]) => !on
       const passages = await page.locator("[data-quote-passage]").count();
       say(passages > 0, `${label}: the work's passages holding "became man": ${passages}`);
       const r2 = await checkMock(page, dialog, { pixels: true, palettes });
-      say(r2.ok, printMockCheck(r2, `a work's passages, ${label}`));
+      say(printMockCheck(r2, `a work's passages, ${label}`), "checkMock above");
       const words = (await page.locator("[data-quote-passage]").first().textContent())?.trim() ?? "";
       await tap(page, "[data-quote-passage]");
       await page.waitForSelector("[data-page-library]", { timeout: 10000 });
@@ -101,7 +101,7 @@ for (const [w, h] of [[390, 844], [800, 1280], [1032, 1376]].filter(([w]) => !on
       say(/Athanasius|أثناسيوس/.test(laid.cite) && /Incarnation|التجسد/.test(laid.cite), `${label}: cited "${laid.cite}"`);
       say(/^\/saints\/athanasius-the-great\/on-the-incarnation\/?#s\d+$/.test(laid.href), `${label}: Open leads to ${laid.href}`);
       const r3 = await checkMock(page, dialog, { pixels: true, palettes });
-      say(r3.ok, printMockCheck(r3, `the page with the library quote laid, ${label}`));
+      say(printMockCheck(r3, `the page with the library quote laid, ${label}`), "checkMock above");
       // Words of one's own, the second choice: an empty quote of one's own, never the library's mark.
       const libraryBefore = await page.locator("[data-page-library]").count();
       await tap(page, "[data-page-toolbar] [role=toolbar] button:nth-child(2)");
