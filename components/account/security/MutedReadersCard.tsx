@@ -56,7 +56,7 @@ export function MutedReadersCard() {
           <button
             type="button"
             onClick={() => {
-              setMutes(null);
+              // Asked again behind the card (Updates 93).
               void load();
             }}
             className="mt-2 font-sans text-detail font-semibold text-gold-pale hover:text-paper"

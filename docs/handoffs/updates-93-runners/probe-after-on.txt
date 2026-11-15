@@ -1,0 +1,29 @@
+
+on /campaigns/ tap 1 (tapped at tl 3002.1; 68 frames)
+  tl 2835.4  btn y 327  card 217+158  waiting -  n 7  status -  below 
+  tl 3085.4  btn y 328  card 217+158  waiting -  n 7  status -  below 
+  tl 3302  btn y 327  card 217+158  waiting -  n 7  status -  below 
+
+on /campaigns/ tap 2 (tapped at tl 4118.6; 66 frames)
+  tl 3985.4  btn y 327  card 217+158  waiting -  n 7  status -  below 
+  tl 4202  btn y 328  card 217+158  waiting -  n 7  status -  below 
+  tl 4418.7  btn y 327  card 217+158  waiting -  n 7  status -  below 
+
+on /shop/stores/ tap 1 (tapped at tl 2622.3; 67 frames)
+  tl 2472.3  btn y 489  card 345+256  waiting -  n 52  status -  below 
+
+on /shop/stores/ tap 2 (tapped at tl 3739; 66 frames)
+  tl 3605.6  btn y 489  card 345+256  waiting -  n 52  status -  below 
+
+on /community/moderate/ tap 1 (tapped at tl 2486.6; 68 frames)
+  tl 2336.6  btn y 267  card 185+156  waiting -  n 13  status -  below 
+
+on /community/moderate/ tap 2 (tapped at tl 3620; 66 frames)
+  tl 3486.6  btn y 267  card 185+156  waiting -  n 13  status -  below 
+
+on /community/ tap 1 (tapped at tl 2564.5; 69 frames)
+  tl 2414.5  btn y 453  card 343+249  waiting -  n 40  status 43  below p@625"Speak with charity"
+  tl 2647.9  btn y 453  card 343+249  waiting -  n 41  status 43  below p@625"Speak with charity"
+
+on /community/ tap 2 (tapped at tl 3697.8; 66 frames)
+  tl 3564.4  btn y 453  card 343+249  waiting -  n 41  status 43  below p@625"Speak with charity"

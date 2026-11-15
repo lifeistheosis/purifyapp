@@ -679,10 +679,8 @@ export function ProfileViewer({
                   {loaded.state === "error" ? (
                     <button
                       type="button"
-                      onClick={() => {
-                        setLoaded({ state: "loading" });
-                        setVersion((v) => v + 1);
-                      }}
+                      // Asked again behind the card: no waiting state in its place (Updates 93).
+                      onClick={() => setVersion((v) => v + 1)}
                       className="mt-4 inline-flex min-h-11 items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
                     >
                       {t("community.tryAgain")}

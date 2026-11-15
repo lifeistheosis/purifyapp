@@ -20,8 +20,8 @@ export function MerchantApplyGate() {
   >("loading");
   const [attempt, setAttempt] = useState(0);
 
-  // The retry handler resets to "loading" before bumping `attempt` (state
-  // updates belong in handlers, not effect bodies).
+  // The retry handler bumps `attempt`, and the card stands until the answer
+  // takes its place (Updates 93: no waiting state drawn for a retry).
   useEffect(() => {
     let cancelled = false;
     resolveUser().then((auth) => {
@@ -49,7 +49,7 @@ export function MerchantApplyGate() {
         <button
           type="button"
           onClick={() => {
-            setState("loading");
+            // Asked again behind the card (Updates 93).
             setAttempt((n) => n + 1);
           }}
           className="tap-press mt-4 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"

@@ -164,7 +164,7 @@ function Campaigns({ signedIn }: { signedIn: boolean }) {
             <button
               type="button"
               onClick={() => {
-                setBoard(null);
+                // Asked again behind the line (Updates 93).
                 setVersion((v) => v + 1);
               }}
               className="hit-44 font-semibold text-paper underline underline-offset-4"

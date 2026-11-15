@@ -142,10 +142,8 @@ export function ModerationClient() {
           <p className="font-sans text-ui text-paper/75">{t("mod.loadFailed")}</p>
           <button
             type="button"
-            onClick={() => {
-              setLoaded({ state: "loading" });
-              void load();
-            }}
+            // Asked again behind the card: no waiting rows in its place (Updates 93).
+            onClick={() => void load()}
             className="mt-3 inline-flex min-h-11 items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
           >
             {t("community.tryAgain")}

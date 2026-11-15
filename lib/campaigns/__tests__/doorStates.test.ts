@@ -155,19 +155,39 @@ describe("the server's answer, as a campaign's own page reads it", () => {
 });
 
 describe("what was not heard is asked again", () => {
-  it("by the reader's tap: the page shows it is asking, then what was answered", async () => {
+  it("by the reader's tap: the card stands while it asks, then what was answered takes its place", async () => {
     device();
     server.answers = ["fails"];
     const page = await open();
     expect(campaignsDoorNow()).toBe("unreached");
     const before = page.told();
     askCampaignsAgain();
-    // At once: asking again, and the page is told so.
-    expect(campaignsDoorNow()).toBe("asking");
-    expect(page.told()).toBe(before + 1);
+    // At once: asked, and nothing else. The page is not told it is asking, so
+    // the card is not taken down for the door's waiting line and put back a
+    // frame later, as it was with no signal (Gate 4, Updates 93).
+    expect(server.asked).toBe(2);
+    expect(campaignsDoorNow()).toBe("unreached");
+    expect(campaignsOpenNow()).toBe(false);
+    expect(page.told()).toBe(before);
     await settled();
     expect(campaignsDoorNow()).toBe("open");
-    expect(server.asked).toBe(2);
+    expect(page.told()).toBe(before + 1);
+    page.stop();
+  });
+
+  it("asked again with still no signal, the card stays as it was", async () => {
+    device();
+    server.answers = ["fails", "fails"];
+    const page = await open();
+    const seen: string[] = [];
+    const watch = subscribeCampaignsOpen(() => seen.push(campaignsDoorNow()));
+    askCampaignsAgain();
+    expect(campaignsDoorNow()).toBe("unreached");
+    await settled();
+    // Every state the page was shown while it asked: "unreached", never "asking".
+    expect(seen).toEqual(["unreached"]);
+    expect(campaignsDoorNow()).toBe("unreached");
+    watch();
     page.stop();
   });
 

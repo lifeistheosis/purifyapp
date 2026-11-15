@@ -90,7 +90,9 @@ describe("a campaign's door holds the page switch while it asks, and no longer",
     await flush();
     expect(campaignsDoorNow()).toBe("unreached");
     askCampaignsAgain();
-    expect(campaignsDoorNow()).toBe("asking");
+    // Asked behind the card that stands: the door stays as it was (Updates 93), and nothing holds.
+    expect(calls).toHaveLength(2);
+    expect(campaignsDoorNow()).toBe("unreached");
     expect(holdForCampaignsDoor()).toBeNull();
   });
 

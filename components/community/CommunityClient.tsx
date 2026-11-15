@@ -983,10 +983,23 @@ function CommunityScreen({
                   {/* With no connection, Try again says why nothing came, under the
                       button so nothing above it moves, and again at each tap; the
                       feed loads by itself once the connection is back (the poll's
-                      "online"). 1.9, the gate's offline walk. */}
-                  {tries > 0 && result.unreached ? (
-                    <p key={tries} role="status" data-feed-unreached="" className="rise-in mt-3 font-sans text-ui text-paper/70">
-                      {t("auth.noSignal")}
+                      "online"). 1.9, the gate's offline walk. Its place is held
+                      from the card's first frame, by the same words unseen, so
+                      they come into it and nothing below moves: the line used to
+                      grow the card at the first tap, and the guidelines under it
+                      dropped 56px in one frame (Gate 4, Updates 93). The live
+                      region stands from the first frame too, so each tap's words
+                      are heard as they come. */}
+                  {result.unreached ? (
+                    <p role="status" data-feed-unreached="" className="mt-3 grid font-sans text-ui text-paper/70">
+                      <span aria-hidden="true" className="invisible col-start-1 row-start-1">
+                        {t("auth.noSignal")}
+                      </span>
+                      {tries > 0 ? (
+                        <span key={tries} className="rise-in col-start-1 row-start-1">
+                          {t("auth.noSignal")}
+                        </span>
+                      ) : null}
                     </p>
                   ) : null}
                 </div>

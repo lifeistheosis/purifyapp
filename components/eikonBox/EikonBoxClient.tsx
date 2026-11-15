@@ -74,6 +74,7 @@ export function EikonBoxClient() {
       if (!res.ok) throw new Error("load failed");
       const data = (await res.json()) as EikonBoxCurrent;
       setState(data);
+      setLoadError(false);
       const prefill = data.claim?.shippingAddress ?? data.savedAddress ?? data.suggestedAddress;
       setFields(toFields(prefill));
       setEditingAddress(!prefill);
@@ -172,11 +173,8 @@ export function EikonBoxClient() {
         </p>
         <button
           type="button"
-          onClick={() => {
-            setLoading(true);
-            setLoadError(false);
-            void load();
-          }}
+          // Asked again behind the card: no waiting state in its place (Updates 93).
+          onClick={() => void load()}
           className="mt-3 min-h-11 rounded-pill border border-paper/20 px-4 py-2 font-sans text-detail font-semibold text-paper"
         >
           Try again

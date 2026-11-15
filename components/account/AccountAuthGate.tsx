@@ -54,9 +54,9 @@ export function AccountAuthGate({
   useEffect(() => forgetHold(pathname), [pathname]);
   const [attempt, setAttempt] = useState(0);
 
-  // The retry handler resets to "loading" before bumping `attempt` (state
-  // updates belong in handlers, not effect bodies — same shape as
-  // useAsyncData.reload).
+  // The retry handler bumps `attempt`, and the card stands until the answer
+  // takes its place (Updates 93: no waiting state drawn for a retry, the same
+  // rule as useAsyncData.reload).
   useEffect(() => {
     // Web: the server proxy already gated this route. Reaching here means
     // signed in — render without the redundant (and failure-prone) client
@@ -96,7 +96,7 @@ export function AccountAuthGate({
         <button
           type="button"
           onClick={() => {
-            setState("loading");
+            // Asked again behind the card (Updates 93).
             setAttempt((n) => n + 1);
           }}
           className="tap-press mt-5 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"

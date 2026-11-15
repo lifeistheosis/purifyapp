@@ -63,14 +63,14 @@ export function useAsyncData<T>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...deps, nonce]);
 
-  // Reset to a loading state from the event handler (not the effect, which
-  // React discourages) and re-run the fetch. Deps-driven refetches keep the
-  // previous data on screen (stale-while-revalidate); an explicit retry shows
-  // the loading state again.
-  const reload = () => {
-    setState((s) => ({ data: s.data, error: null, loading: true }));
-    setNonce((n) => n + 1);
-  };
+  // Re-run the fetch, behind whatever is on screen: the answer takes its
+  // place when it comes, as a deps-driven refetch's does. An explicit retry
+  // used to show the loading state again, so Try again with no signal took
+  // the shop's card down for its skeleton and put it back two frames later,
+  // when the read failed at once (Gate 4: /shop/, a category, the stores;
+  // Updates 93). The rule for every offline card is in
+  // lib/ui/__tests__/retryKeepsCard.test.ts.
+  const reload = () => setNonce((n) => n + 1);
 
   return { ...state, reload };
 }

@@ -1,0 +1,37 @@
+
+on /campaigns/ tap 1 (tapped at tl 6807.8; 70 frames)
+  tl 6657.9  btn y 327  card 217+158  waiting -  n 7  status -  below 
+  tl 6907.9  btn y none  card none  waiting door-line  n 3  status -  below 
+  tl 6924.6  btn y 327  card 217+158  waiting -  n 7  status -  below 
+
+on /campaigns/ tap 2 (tapped at tl 7957.8; 66 frames)
+  tl 7824.5  btn y 327  card 217+158  waiting -  n 7  status -  below 
+  tl 8024.5  btn y none  card none  waiting door-line  n 3  status -  below 
+  tl 8041.1  btn y 327  card 217+158  waiting -  n 7  status -  below 
+
+on /shop/stores/ tap 1 (tapped at tl 4067.4; 69 frames)
+  tl 3917.5  btn y 489  card 345+256  waiting -  n 52  status -  below 
+  tl 4134.1  btn y none  card none  waiting bone  n 82  status -  below 
+  tl 4167.5  btn y 489  card 345+256  waiting -  n 52  status -  below 
+
+on /shop/stores/ tap 2 (tapped at tl 5217.4; 67 frames)
+  tl 5084.1  btn y 489  card 345+256  waiting -  n 52  status -  below 
+  tl 5300.7  btn y none  card none  waiting bone  n 82  status -  below 
+  tl 5317.4  btn y 489  card 345+256  waiting -  n 52  status -  below 
+
+on /community/moderate/ tap 1 (tapped at tl 3706.7; 69 frames)
+  tl 3556.7  btn y 267  card 185+156  waiting -  n 13  status -  below 
+  tl 3790.2  btn y none  card none  waiting aria-busy,bone  n 36  status -  below 
+  tl 3806.8  btn y 267  card 185+156  waiting -  n 13  status -  below 
+
+on /community/moderate/ tap 2 (tapped at tl 4856.8; 67 frames)
+  tl 4723.4  btn y 267  card 185+156  waiting -  n 13  status -  below 
+  tl 4923.5  btn y none  card none  waiting aria-busy,bone  n 36  status -  below 
+  tl 4940.1  btn y 267  card 185+156  waiting -  n 13  status -  below 
+
+on /community/ tap 1 (tapped at tl 4324.7; 68 frames)
+  tl 4174.7  btn y 453  card 343+193  waiting -  n 38  status -  below p@569"Speak with charity"
+  tl 4391.4  btn y 453  card 343+249  waiting -  n 39  status 43  below p@625"Speak with charity"
+
+on /community/ tap 2 (tapped at tl 5441.4; 67 frames)
+  tl 5308  btn y 453  card 343+249  waiting -  n 39  status 43  below p@625"Speak with charity"

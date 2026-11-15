@@ -76,8 +76,9 @@ function keepAnswer(open: boolean): void {
 let partsOn: ReadonlySet<CampaignPart> = new Set();
 const waiting = new Set<() => void>();
 
-function ask(): void {
-  if (asking || answer !== null) return;
+/** Ask the server. `again` asks behind an answer that stands, which only Try again and the signal's return do (askCampaignsAgain). */
+function ask(again = false): void {
+  if (asking || (answer !== null && !again)) return;
   asking = true;
   void apiFetch("/api/campaigns/open")
     .then(async (res) => {
@@ -128,11 +129,15 @@ function askWhenOnline(): void {
  */
 export function askCampaignsAgain(): void {
   if (!campaignsInBuild() || asking || !unreached) return;
-  // Asking again: the answer, when it comes, says afresh whether the server was reached.
-  answer = null;
-  // The pages show that they are asking, then what was answered.
-  for (const cb of waiting) cb();
-  ask();
+  // Asked behind the card that says the server was not reached: the answer
+  // that stands stays drawn until the new one comes, which says afresh
+  // whether the server was reached. Until Updates 93 the pages were told
+  // they were asking, so the card gave way to the door's waiting line and
+  // came back a frame later: with no signal the read fails at once, and the
+  // gate's walk saw a box drawn for one frame and dropped (Gate 4, /campaigns/
+  // and four more). Every offline card asks again this way (the rule is in
+  // lib/ui/__tests__/retryKeepsCard.test.ts).
+  ask(true);
 }
 
 /** Wait for the answer, asking for it if nobody has. A closed build waits for nothing and asks nobody. Exported for the test that holds that. */

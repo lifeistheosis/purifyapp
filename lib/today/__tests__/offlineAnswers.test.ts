@@ -159,7 +159,19 @@ describe("Community's feed with no connection", () => {
     const line = panel.indexOf('{t("auth.noSignal")}');
     expect(button).toBeGreaterThan(0);
     expect(line).toBeGreaterThan(button);
-    expect(panel).toContain('{tries > 0 && result.unreached ? (\n                    <p key={tries} role="status" data-feed-unreached="" className="rise-in ');
+    expect(panel).toContain('<span key={tries} className="rise-in col-start-1 row-start-1">');
+  });
+
+  it("holds the line's place from the card's first frame, so nothing below moves at the first tap (Updates 93)", () => {
+    const feed = code("components/community/CommunityClient.tsx");
+    const panel = feed.slice(feed.indexOf('{t("community.loadFailed")}'), feed.indexOf('{t("community.quietHere")}'));
+    // The line stands whenever the feed was not reached, not only after a tap:
+    // the card is its full height from its first frame.
+    expect(panel).toContain('{result.unreached ? (\n                    <p role="status" data-feed-unreached="" className="mt-3 grid ');
+    expect(panel).not.toMatch(/tries > 0 && result\.unreached/);
+    // The same words, unseen and unheard, hold the place; each tap's words come into that same cell.
+    expect(panel).toMatch(/<span aria-hidden="true" className="invisible col-start-1 row-start-1">\s*\{t\("auth\.noSignal"\)\}/);
+    expect(panel).toMatch(/\{tries > 0 \? \(\s*<span key=\{tries\} className="rise-in col-start-1 row-start-1">\s*\{t\("auth\.noSignal"\)\}/);
   });
 
   it("has both lines in every language the app carries", async () => {
