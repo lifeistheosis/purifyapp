@@ -100,7 +100,7 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 - After the merge, before the store builds: each version's `index.json` and a book probed on purifyapp.net, and one download on his phone.
 - Named to him plainly now: the versions download only once 1.9 is on the website.
 
-**Done (Updates 98b, 2026-11-15, `4743c05ff`), the words; the walk past the first version open.** Cause, proved in Chromium against purifyapp.net from https://localhost: the main web's 404 carries `Cross-Origin-Resource-Policy: same-origin`, so the no-cors HEAD to the Bible's own address was refused as no signal is. The question is now asked of the website's icon (`REACH_PATH`, `cross-origin` on every version of the website). store.test.ts fails on 78c5297e1. The branch's web build run here answers all seven 200 with `Access-Control-Allow-Origin: *`; `scripts/gate/bible-downloads-local.mjs` downloaded the World English Bible, read it offline and removed it; the other six wait on the walk (docs/handoffs/updates-98b.md, open 3). Only after the merge: purifyapp.net probed, one download on his phone.
+**Done (Updates 98b, 2026-11-15, `579e30eeb`), the words; the walk past the first version open.** Cause, proved in Chromium against purifyapp.net from https://localhost: the main web's 404 carries `Cross-Origin-Resource-Policy: same-origin`, so the no-cors HEAD to the Bible's own address was refused as no signal is. The question is now asked of the website's icon (`REACH_PATH`, `cross-origin` on every version of the website). store.test.ts fails on 78c5297e1. The branch's web build run here answers all seven 200 with `Access-Control-Allow-Origin: *`; `scripts/gate/bible-downloads-local.mjs` downloaded the World English Bible, read it offline and removed it; the other six wait on the walk (docs/handoffs/updates-98b.md, open 3). Only after the merge: purifyapp.net probed, one download on his phone.
 
 ## Note 7: the version chosen in the books sheet
 
@@ -148,7 +148,7 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 - The same for every state the line has (saving, waiting for Wi-Fi or a signal, failed), and for the Words view.
 - A test that fails on 78c5297e1: the cover's and the title's boxes stay where they are as the line appears and goes, at 360, 390 and 412, and in Arabic.
 
-**Done in part (Updates 98b, 2026-11-15, `4743c05ff`).** The line keeps one line of room always, says each state in one line without the title, fades on the house curve. savedLine.test.ts fails on 78c5297e1. `scripts/gate/saved-line.mjs` on build 98's export: the title moved 37 to 56 px; on mine nothing moved at 360, 390 and 412. Open: the Wi-Fi wait and the saved words overflow 360 in twelve languages (docs/handoffs/updates-98b.md, open 1), and the walk's Arabic pass (open 2).
+**Done in part (Updates 98b, 2026-11-15, `579e30eeb`).** The line keeps one line of room always, says each state in one line without the title, fades on the house curve. savedLine.test.ts fails on 78c5297e1. `scripts/gate/saved-line.mjs` on build 98's export: the title moved 37 to 56 px; on mine nothing moved at 360, 390 and 412. Open: the Wi-Fi wait and the saved words overflow 360 in twelve languages (docs/handoffs/updates-98b.md, open 1), and the walk's Arabic pass (open 2).
 
 ## Note 10: the prayer campaigns are still not there
 
@@ -209,7 +209,7 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 - When a version starts (Play, a seek, the next version), the words go at once, on the house curve, to the line being sung, or to the first line in the opening before any is sung, wherever the box had been scrolled; then they follow line by line. A reader's own scroll pauses the following for its few seconds, and it comes back by itself. Reduced motion: the words move without gliding.
 - Reproduced first on the export (the Anthem, Words, the box scrolled to the middle, Play), then mended, with a test that fails on 78c5297e1: from Play, the first line comes into view within a moment and the sung line stays in view to the end. The same in Now Playing's Words view, which shares the code.
 
-**Done (Updates 98b, 2026-11-15, `4743c05ff`).** Play, a seek and another version bring the words to the line being sung, or the first in the opening, wherever the box was (lib/player/meetSinging.ts, LiveCaptions.tsx, Now Playing's Words view too). meetSinging.test.ts fails on 78c5297e1. `scripts/gate/chant-follow.mjs`: build 98's export FAULT 4 of 4, mine ok 4 of 4, motion on and off.
+**Done (Updates 98b, 2026-11-15, `579e30eeb`).** Play, a seek and another version bring the words to the line being sung, or the first in the opening, wherever the box was (lib/player/meetSinging.ts, LiveCaptions.tsx, Now Playing's Words view too). meetSinging.test.ts fails on 78c5297e1. `scripts/gate/chant-follow.mjs`: build 98's export FAULT 4 of 4, mine ok 4 of 4, motion on and off.
 
 ## Note 14: a stutter switching tabs while something is loaded in the player
 

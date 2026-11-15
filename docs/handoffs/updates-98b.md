@@ -6,7 +6,7 @@ Fixer for build 98 notes 6, 7, 9 and 13, started by Arbiter 14 on 2026-11-15 abo
 
 ## Done
 
-- **Note 6, the honest words** (`4743c05ff`). Cause, proved in Chromium against purifyapp.net from
+- **Note 6, the honest words** (`579e30eeb`). Cause, proved in Chromium against purifyapp.net from
   https://localhost: the main web answers a missing Bible 404 with `Cross-Origin-Resource-Policy:
   same-origin`, so the app's no-cors HEAD to the Bible's own address is refused exactly as no signal is
   ("GET cors bible: REJECTED", "HEAD no-cors bible: REJECTED", "HEAD no-cors icon: resolved opaque").
@@ -14,18 +14,18 @@ Fixer for build 98 notes 6, 7, 9 and 13, started by Arbiter 14 on 2026-11-15 abo
   website makes `cross-origin` (next.config.ts PICTURE_SOURCES; live probe: /icon-192.png 200 and
   /favicon.ico 404, both `cross-origin`). Test: `lib/bible/downloads/__tests__/store.test.ts` (two tests
   fail on 78c5297e1).
-- **Note 9, the saved line** (`4743c05ff`). `SaveOfflineNote` keeps one line of room always, one line in
+- **Note 9, the saved line** (`579e30eeb`). `SaveOfflineNote` keeps one line of room always, one line in
   every state, words that never repeat the title (`downloads.savedToListen`, `downloads.saving` first;
   four new keys `player.offline.waitWifi`, `waitSignal`, `failedSome`, `failedChant`, each taken from that
   language's own existing sentence, in all 21), fade on the house curve, none with motion off. Tests:
   `lib/player/__tests__/savedLine.test.ts` (3 of 3 fail on 78c5297e1); walk `scripts/gate/saved-line.mjs`.
-- **Note 13, the words meet the singing** (`4743c05ff`). `lib/player/meetSinging.ts` and
+- **Note 13, the words meet the singing** (`579e30eeb`). `lib/player/meetSinging.ts` and
   `LiveCaptions.tsx`: Play, a seek, another version bring the words to the line being sung (or the
   first, in the opening) wherever the box was; a reader's scroll still pauses, and the following comes
   back by itself, now in the opening too. Tests: `lib/player/__tests__/meetSinging.test.ts` (fails on
   78c5297e1); walk `scripts/gate/chant-follow.mjs`.
 
-## Proof (2026-11-15, on the gate export of 4743c05ff and on build 98's own export)
+## Proof (2026-11-15, on the gate export of 579e30eeb and on build 98's own export)
 
 - `chant-follow.mjs`: build 98 FAULT 4 of 4 (after Play the sung line out of view in 10 of 28 looks; after a
   seek, out of view, box left at 0); mine ok 4 of 4, motion on and off.
