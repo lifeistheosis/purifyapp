@@ -37,3 +37,46 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 - A work and a council: their pill becomes the Bible's pill and dock, with their own parts' arrows and names. A life, a study's part and an event: the same pill and dock, with the text's own arrows where it has parts and its name alone where it has none.
 - Built from the Bible's own components (`ReaderDock`, `MobileChapterPill`), so the look is the one he picked; the one new arrangement is a text with no parts to turn. Before it reaches a test build: stills of a work and a life, at rest and playing, rendered from the export, passed through `checkMock`, each choice with its reason, for his yes.
 - Tests that fail on 78c5297e1: none of the five texts draws Listen in the page on a phone, and with something playing each shows one bar, the dock, never two.
+
+## Note 3: the chants door
+
+**His words (2026-11-15, about 21:12 UTC),** with a screenshot of the card on Prayers (a white disc with a play mark; "Sung prayer", "Chants", "Hymns to listen to and pray with, the words lit as they are sung."): "I wanted this design revamped it doesn't fit its purpose".
+
+**Found (the arbiter, 21:16 UTC, from the code of 78c5297e1):**
+
+- The card is `FeatureBand` (`components/mobile/SoftTiles.tsx`), which its own comment calls "the meditation-app 'Daily Calm' idiom", drawn on Prayers on a phone (`components/mobile/PrayersMobile.tsx`, by "The heart of prayer") and on a computer (`app/(app)/prayers/page.tsx`).
+- It is a door to the chants library (`/chants`), but the white play disc says a tap will play something, and a tap plays nothing: it opens a page. Nothing on it shows a chant, its words or the singers. A borrowed meditation-app band, not a door made for sung prayer.
+- No earlier note of his on this card was found in the record; the gate only measured its contrast (2026-11-11 and 2026-11-13).
+
+**Plan (nothing is built until he says start):**
+
+- The door drawn for what it is, the way into the library of sung prayer: what is inside shown (the chants' own pictures, the Prayer Rope Anthem first, as its comment intends), the name, and no play mark unless a tap really plays. A destination takes a form of its own, pictures or a card, as his rule on pills has it (build 89 note 10).
+- Drawn in the Fable round from the app's own parts (the chants pages' covers and tiles), checkMock passing, each choice with its reason, for his yes; then a fixer applies it on both Prayers pages.
+
+## Note 4: the journal revamped, and the freeze when typing starts
+
+**His words (2026-11-15, about 21:13 UTC),** with two screenshots of a journal entry's sheet at 4:13 on his clock (Close, "Sunday, November 15", Done; "Epistle · Ephesians 2:14-22" and Open; Reflection, Prayer and Question; Title; "Write what is on your heart, or pray in your own words."; Verse, Quote, Highlight and More at the foot; in the second, the keyboard up and the four tools standing on it): "I wanted this system and design revamped and when you click to type it still had a freeze frame bug".
+
+**Found (the arbiter, 21:16 UTC, from the record and the code of 78c5297e1):**
+
+- The revamp is build 97 note 2's plan: the writing as its own page, not a sheet; one calm surface (the day and its reading, the kind, the title, the words), one Done, and everything else behind one quiet control. It was to be drawn first in a Fable round of stills (NOW, Waiting on him 1), asked of him at 15:59 on the 14th and again since. No yes came, so nothing was drawn, and build 98 has the same sheet. That should have been named to him with build 98.
+- The freeze is the fault of build 97 note 2 ("a jump and a flash for the typing"). The jump inside the page was mended on 14 November (Updates 52). What is left is native (Updates 52, item 4, `docs/handoffs/updates-52.md`): the app has no keyboard plugin, and the window is padded by the keyboard's height in one step at the start of the keyboard's slide (the safe-area plugin's insets listener with no WindowInsetsAnimation callback; MainActivity's EdgeToEdge), so the page is resized at once while the keys are still sliding. It holds, then jumps, and the window's own ground can show under the foot. The native mend waited on his screen recording (Waiting on him 14); his word now is enough to make it.
+
+**Plan (nothing is built until he says start):**
+
+- The revamp: the Fable round draws the journal as its own page first (with note 5's quoting in it), stills at phone width from the app's own components, checkMock passing, each choice with its reason, for his yes; then a fixer builds it. A Fable run costs real compute, so it starts only at his word.
+- The freeze: a fixer makes the native mend, so the page follows the keyboard frame by frame as the keys slide (a WindowInsetsAnimation callback setting the padding with the keyboard, not in one step), and removes the scrim's one-frame blink Updates 52 saw. The new page, and every sheet with a field, passes the keyboard walk on the export. Only a phone shows the freeze, so the proof is his walk of the next test build, and that limit is named to him with it.
+
+## Note 5: quoting real works from inside the journal
+
+**His words (2026-11-15, about 21:14 UTC),** with a screenshot of the same sheet with a Quote block opened ("The words you are quoting" with its cross, then "Who said it" by a speech mark) and the keyboard up: "still wanted you to be able to quote from here by linking real works from purify".
+
+**Found (the arbiter, 21:16 UTC, from the record and the code of 78c5297e1):**
+
+- The plan he agreed on 8 November (`docs/1.9-build/JOURNAL.md`, "In the editor: the Quote block searches the same library: Scripture, the Fathers, the saints' lives, the prayers, the chants") was built from one side only: Quote in journal, from a paragraph held on a library page or a verse's Study (`lib/journal/quoteInJournal.ts`, step 1d). The editor's own Quote (his screenshot) is a quote of one's own only, the words and "Who said it" typed by hand. It never searches the library. Not built, and not named to him: a miss.
+
+**Plan (nothing is built until he says start):**
+
+- The editor's Quote opens a search of Purify's own library (Scripture, the Fathers' works, the saints' lives, the prayers, the chants, the councils). The reader picks the passage, and it lands as a library quote: verbatim, cited, "Quoted from Purify's library", not editable as the source's words, with Open back to its page. A quote of one's own stays as the second choice and never wears the library's mark (`docs/editorial-standards.md`).
+- As agreed on 8 November: Scripture and quotes of one's own for everyone, the rest of the library for Plus, shown with the Plus mark.
+- Drawn inside the journal page in the Fable round (note 4), for his yes, then built with it. A test that fails on 78c5297e1: the editor's Quote finds a Father's passage and lays it cited.
