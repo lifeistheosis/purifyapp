@@ -14,7 +14,7 @@ for reader in $READERS; do
       echo "== $tag $(date -u +%H:%M:%S)"
       sells=(); [ "$reader" = new ] && sells=(env SELLS_PLUS=1)
       langs=(); [ "$lang" != en ] && langs=(--lang "$lang")
-      "${sells[@]}" env NODE_USE_ENV_PROXY=1 node scripts/guardrail-walk.mjs out --only "$ONLY" --workers 1 --online --size "$size" "${langs[@]}" \
+      "${sells[@]}" env NODE_USE_ENV_PROXY=1 node scripts/guardrail-walk.mjs out --only "$ONLY" --workers "${WORKERS:-1}" --online --size "$size" "${langs[@]}" \
         --json "$RES/$tag.json" --looks "$RES/looks-$tag" > "$RES/$tag.log" 2>&1
       echo "   exit $? $(date -u +%H:%M:%S)"
     done
