@@ -5,7 +5,8 @@ import { memo, useEffect, useLayoutEffect, useRef, type ReactNode } from "react"
 import { clockNow, subscribeClock } from "@/lib/player/clock";
 import { followWord, lineAt, lineParts, wordAt, wordsOf, type CaptionLine } from "@/lib/player/captions";
 import { houseEase, seen, wakeClock } from "@/lib/player/wordsGlide";
-import { getAudioSnapshot, type CaptionSource } from "@/lib/prayers/persistentAudioStore";
+import { lineToMeet, singingStarted } from "@/lib/player/meetSinging";
+import { getAudioSnapshot, subscribeAudio, type CaptionSource } from "@/lib/prayers/persistentAudioStore";
 import { cn } from "@/lib/cn";
 import { textDir } from "@/lib/i18n/textDir";
 
@@ -148,6 +149,8 @@ export const LiveCaptions = memo(function LiveCaptions({
   /** The word last kept in sight: its line and its place. */
   const sungWord = useRef({ line: -1, word: -1 });
   const following = live && timed && active;
+  const linesRef = useRef(lines);
+  linesRef.current = lines;
 
   const parts = (el: HTMLLIElement | null | undefined) => ({
     grow: el?.querySelector<HTMLElement>("[data-sung-grow]") ?? null,
@@ -295,6 +298,19 @@ export const LiveCaptions = memo(function LiveCaptions({
     return Math.max(0, Math.min(max, Math.round(row.offsetTop - box.clientHeight * ANCHOR)));
   }
 
+  /**
+   * The words to where the singing is (build 98 note 13): the line being sung,
+   * or the first in the opening before any is sung (lib/player/meetSinging.ts),
+   * gliding on the house curve, at once with Purify's motion off (scrollTo).
+   * Nothing once the singing is over.
+   */
+  function meetSinging(cur: number, smooth: boolean) {
+    const at = cur >= 0 ? cur : lineToMeet(linesRef.current, getAudioSnapshot().currentTime);
+    if (at === null) return;
+    const top = targetFor(at);
+    if (top !== null) scrollTo(top, smooth);
+  }
+
   /** To `top`: gliding on the house curve, on the clock given or the wall's, or at once. */
   function scrollTo(top: number, smooth: boolean, clock?: (now: number) => number) {
     const box = boxRef.current;
@@ -379,6 +395,9 @@ export const LiveCaptions = memo(function LiveCaptions({
   useLayoutEffect(() => {
     settleFlip();
     stopScroll();
+    // Another version is a start (build 98 note 13): the reader's last scroll
+    // was of the other words, so the following holds back for it no longer.
+    lastHand.current = -Infinity;
     shown.current = current;
     pending.current = null;
     const box = boxRef.current;
@@ -434,13 +453,44 @@ export const LiveCaptions = memo(function LiveCaptions({
   useLayoutEffect(() => {
     if (!active) return;
     const cur = currentRef.current;
-    if (cur < 0) return;
+    if (cur < 0) {
+      // In the opening, before any line is sung, while it plays: the first line
+      // (build 98 note 13). Paused, the words stay where the reader left them.
+      if (live && timed && getAudioSnapshot().playing) meetSinging(cur, seen(boxRef.current));
+      return;
+    }
     const top = targetFor(cur);
     if (top === null) return;
     if (seen(boxRef.current)) scrollTo(top, true, wakeClock(MOVE_MS));
     else scrollTo(top, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
+
+  // The singing started (build 98 note 13): Play pressed, a seek while it
+  // plays, or another recording begun, read from the player's own answers
+  // (lib/player/meetSinging.ts), nothing drawn again for it. The words go at
+  // once to the line being sung, or in the opening to the first, wherever the
+  // box had been scrolled: Play is the reader's own word, so the following
+  // holds back no longer for a scroll before it. Words loaded already playing
+  // (Play on this version's page, which loads it as it starts) meet it too.
+  useEffect(() => {
+    if (!live || !timed) return;
+    let was = getAudioSnapshot();
+    if (was.playing && followingRef.current) {
+      lastHand.current = -Infinity;
+      meetSinging(currentRef.current, seen(boxRef.current));
+    }
+    return subscribeAudio(() => {
+      const now = getAudioSnapshot();
+      const started = singingStarted(was, now);
+      was = now;
+      if (!started || !followingRef.current) return;
+      lastHand.current = -Infinity;
+      meetSinging(-1, true);
+    });
+    // meetSinging and the refs it reads are stable for the words' life.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [live, timed]);
 
   // The reader's own scrolling: leave the words where they put them for a
   // while, then, if the words are still being sung, go back to the line.
@@ -454,10 +504,9 @@ export const LiveCaptions = memo(function LiveCaptions({
       stopScroll();
       window.clearTimeout(back);
       back = window.setTimeout(() => {
-        const cur = currentRef.current;
-        if (cur < 0 || !followingRef.current || !getAudioSnapshot().playing) return;
-        const top = targetFor(cur);
-        if (top !== null) scrollTo(top, true);
+        if (!followingRef.current || !getAudioSnapshot().playing) return;
+        // To the line being sung, or in the opening to the first (build 98 note 13).
+        meetSinging(currentRef.current, true);
       }, HANDS_OFF_MS + 50);
     };
     box.addEventListener("wheel", hand, { passive: true });

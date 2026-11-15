@@ -22,7 +22,7 @@ Object.assign(globalThis, {
   },
 });
 
-const { bibleDownload, downloadBible, readBibleBook, removeBible, savedBibles, resetBibleStoreForTests, bookUrl, FAILED_WORDS } = await import("@/lib/bible/downloads/store");
+const { bibleDownload, downloadBible, readBibleBook, removeBible, savedBibles, resetBibleStoreForTests, bookUrl, FAILED_WORDS, REACH_PATH } = await import("@/lib/bible/downloads/store");
 const { readBibleChoice, writeBibleChoice } = await import("@/lib/bible/downloads/choice");
 const { SITE_URL } = await import("@/lib/site");
 
@@ -73,6 +73,12 @@ function website(change?: (url: string, body: string) => string | null) {
     asked.push({ url, cache: init?.cache });
     if (init?.signal?.aborted) throw new DOMException("aborted", "AbortError");
     const rel = url.replace(SITE_URL, "");
+    // The picture the app asks when a file could not be had (REACH_PATH): there
+    // while the website is, and gone with the signal, as every address is.
+    if (rel === REACH_PATH) {
+      if (change?.(url, "") === null) throw new TypeError("Failed to fetch");
+      return new Response(null, { status: 200 });
+    }
     const file = path.join(ROOT, "public", rel);
     if (!rel.startsWith("/bibles/") || !fs.existsSync(file)) return new Response("not found", { status: 404 });
     const body = fs.readFileSync(file, "utf8");
@@ -120,7 +126,8 @@ describe("downloading a Bible", () => {
 
   it("begins again where a download stopped, and does not download a kept book twice", async () => {
     let cut = true;
-    const flaky = website((url, body) => (cut && url.endsWith("/revelation.json") ? null : body));
+    // The signal lost as Revelation is asked: lost for every address, the question whether the website answers too.
+    const flaky = website((url, body) => (cut && (url.endsWith("/revelation.json") || url.endsWith(REACH_PATH)) ? null : body));
     expect(await downloadBible(RU, { fetcher: flaky, plugin, native: true })).toBe("failed");
     expect(bibleDownload(RU)).toEqual({ state: "failed", reason: "offline" });
     const kept = files.size;
@@ -183,20 +190,37 @@ describe("what a stopped download says (build 95 note 21)", () => {
   });
 
   it("says the same when the app may not read the website's answer (the main web's 404 has no CORS header), since the website answered", async () => {
-    // As the browser in the app does: an answer without Access-Control-Allow-Origin
-    // throws, as no signal does; asked without CORS, the same answer comes back.
+    // The main web (1.8) as the browser in the app meets it, probed in Chromium
+    // from https://localhost on 2026-11-15 (build 98 note 6): every answer but a
+    // picture's carries "Cross-Origin-Resource-Policy: same-origin" and no
+    // Access-Control-Allow-Origin, so a request with CORS throws on it, and so
+    // does one without CORS, refused by that policy, exactly as with no signal.
+    // A picture's answer is "cross-origin": asked without CORS, it comes back.
     const modes: (RequestMode | undefined)[] = [];
     const mainWeb = async (url: string, init?: RequestInit) => {
       asked.push({ url, cache: init?.cache });
       modes.push(init?.mode);
-      if (init?.mode === "no-cors") return new Response(null, { status: 404 });
+      const picture = /\.(?:png|jpg|jpeg|webp|gif|avif|svg|ico)$/.test(new URL(url, SITE_URL).pathname);
+      if (init?.mode === "no-cors" && picture) return new Response(null, { status: 200 });
       throw new TypeError("Failed to fetch");
     };
     expect(await downloadBible(RU, { fetcher: mainWeb, plugin, native: true })).toBe("failed");
     expect(bibleDownload(RU)).toEqual({ state: "failed", reason: "unavailable" });
-    // The question was asked of the same address, without CORS, then the file once more.
-    expect(asked.map((a) => a.url)).toEqual([index, index, index]);
+    // The question was asked of the website's icon, without CORS, then the file once more.
+    expect(asked.map((a) => a.url)).toEqual([index, `${SITE_URL}${REACH_PATH}`, index]);
     expect(modes).toEqual([undefined, "no-cors", undefined]);
+  });
+
+  it("asks whether the website answers of a picture it keeps, whose answer the app may have on every version of the website", () => {
+    // A picture file under public/, and one the headers make "cross-origin":
+    // the rule for every picture (PICTURE_SOURCES) and its header, as the main web serves them.
+    expect(REACH_PATH).toMatch(/^\/[\w-]+\.png$/);
+    expect(fs.existsSync(path.join(ROOT, "public", REACH_PATH))).toBe(true);
+    const config = fs.readFileSync(path.join(ROOT, "next.config.ts"), "utf8");
+    expect(config).toMatch(/const pictureHeaders = \[\s*\{ key: "Cross-Origin-Resource-Policy", value: "cross-origin" \}/);
+    const sources = config.slice(config.indexOf("const PICTURE_SOURCES = ["), config.indexOf("];", config.indexOf("const PICTURE_SOURCES = [")));
+    expect(sources).toContain("png|");
+    expect(config).toContain("...PICTURE_SOURCES.map((source) => ({ source, headers: pictureHeaders }))");
   });
 
   it("asks once more when the website answers, so a moment's trouble does not stop a download", async () => {

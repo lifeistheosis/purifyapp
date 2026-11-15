@@ -517,12 +517,21 @@ export function SaveOfflineRow({ src, onLeave, className }: { src: string | null
   );
 }
 
+/** What the saved line says, and the choices beside its words: plain data, so the words it said stay as it fades. */
+type NoteLine = { words: string; acts: ("useData" | "cancel" | "remove")[] };
+
 /**
- * The one line about saving, over the player's controls: how far the saving
- * has come, what it waits for (Wi-Fi, with Use mobile data and Cancel; a
- * signal, with Cancel), that some chapters could not be saved, or (once the
- * check is tapped) the saved book with Remove. Nothing when there is nothing
- * to say.
+ * The one line about saving, over the player's controls: saving's progress, a
+ * wait for Wi-Fi or a signal, a failure, or, once the check is tapped, that
+ * the recording is kept, with Remove.
+ *
+ * It never moves anything (build 98 note 9, his word of 2026-11-15: "it moves
+ * the whole UI and it doesn't move well"). Its room is kept under the views
+ * whether it speaks or not, one line tall, so Now Playing's cover and title
+ * stand where they are as it comes and goes; it says what it says in one line
+ * at 360 px, in every language, words that never repeat the title just above
+ * it; and it fades in and out on the house curve, at once with Purify's
+ * motion off. Silent, it is hidden to a tap and to a screen reader alike.
  */
 export function SaveOfflineNote({ src, className }: { src: string | null; className?: string }) {
   const { t } = useTranslate();
@@ -535,74 +544,73 @@ export function SaveOfflineNote({ src, className }: { src: string | null; classN
   useEffect(() => {
     if (isNativeClient()) void checkSaved();
   }, []);
-  const action = "tap-press hit-44 px-1 font-semibold text-paper/85 underline-offset-4 hover:underline";
 
-  // A chant (1.9): saving it, that it could not be saved, or (once its check
-  // is tapped) the kept recording with Remove.
+  let line: NoteLine | null = null;
+  let remove: (() => void) | null = null;
   if (chant.chant) {
+    // A chant (1.9): saving it, that it could not be saved, or (once its check
+    // is tapped) the kept recording with Remove.
     const c = chant.chant;
-    const says = chant.job
-      ? t("player.offline.savingOne", { book: c.name })
-      : chant.failed
-        ? t("player.offline.failedOne", { book: c.name })
-        : c.saved && chant.isOpen
-          ? t("player.offline.saved", { book: c.name })
-          : null;
-    return (
-      <p role="status" className={cn("flex min-h-0 flex-wrap items-center justify-center gap-x-2 text-center font-sans text-caption text-paper/60", className)}>
-        {says ? <span>{says}</span> : null}
-        {says && c.saved && chant.isOpen && !chant.job ? (
-          <button
-            type="button"
-            onClick={() => {
-              setOpen(null);
-              void removeChant(c.ref);
-            }}
-            className={action}
-          >
+    if (chant.job) line = { words: t("downloads.saving", { percent: Math.round(chant.job.share * 100) }), acts: [] };
+    else if (chant.failed) line = { words: t("player.offline.failedChant"), acts: [] };
+    else if (c.saved && chant.isOpen) {
+      line = { words: t("downloads.savedToListen"), acts: ["remove"] };
+      remove = () => {
+        setOpen(null);
+        void removeChant(c.ref);
+      };
+    }
+  } else if (offline) {
+    const { book, saved } = offline;
+    const job = saving.job?.book === book ? saving.job : null;
+    if (job?.waiting === "wifi") line = { words: t("player.offline.waitWifi"), acts: ["useData", "cancel"] };
+    else if (job?.waiting === "signal") line = { words: t("player.offline.waitSignal"), acts: ["cancel"] };
+    else if (job) line = { words: t("player.offline.saving", { done: job.done, total: job.total }), acts: [] };
+    else if (saving.failed === book) line = { words: t("player.offline.failedSome"), acts: [] };
+    else if (saved && opened === book) {
+      line = { words: t("downloads.savedToListen"), acts: ["remove"] };
+      remove = () => {
+        setOpen(null);
+        void removeBook(book);
+      };
+    }
+  }
+
+  // The words it last said, kept while it fades out (set during the render
+  // only when they change, so nothing is drawn twice for it).
+  const [kept, setKept] = useState<NoteLine | null>(line);
+  if (line && (line.words !== kept?.words || line.acts.join() !== kept.acts.join())) setKept(line);
+  const shown = line ?? kept;
+  const action = "tap-press hit-44 shrink-0 px-1 font-semibold text-paper/85 underline-offset-4 hover:underline";
+
+  return (
+    <div role="status" data-saved-line={line ? "speaks" : "silent"} className={cn("h-5 min-w-0", className)}>
+      <p
+        aria-hidden={line ? undefined : true}
+        className={cn(
+          "flex h-full min-w-0 items-center justify-center gap-x-2 whitespace-nowrap text-center font-sans text-caption leading-5 text-paper/60",
+          line
+            ? "visible opacity-100 motion-safe:[transition:opacity_var(--duration-fast)_var(--ease-house),visibility_0s]"
+            : "invisible opacity-0 motion-safe:[transition:opacity_var(--duration-fast)_var(--ease-house),visibility_0s_linear_var(--duration-fast)]",
+        )}
+      >
+        {shown ? <span className="min-w-0 truncate">{shown.words}</span> : null}
+        {shown?.acts.includes("useData") ? (
+          <button type="button" onClick={() => void saveOverMobileData()} className={action}>
+            {t("player.offline.useData")}
+          </button>
+        ) : null}
+        {shown?.acts.includes("cancel") ? (
+          <button type="button" onClick={cancelSaving} className={action}>
+            {t("common.cancel")}
+          </button>
+        ) : null}
+        {shown?.acts.includes("remove") ? (
+          <button type="button" onClick={() => remove?.()} className={action}>
             {t("player.offline.remove")}
           </button>
         ) : null}
       </p>
-    );
-  }
-
-  if (!offline) return null;
-  const { book, name, saved } = offline;
-  const job = saving.job?.book === book ? saving.job : null;
-  const line = job
-    ? { text: jobText(t, job), remove: false }
-    : saving.failed === book
-      ? { text: t("player.offline.failed"), remove: false }
-      : saved && opened === book
-        ? { text: t("player.offline.saved", { book: name }), remove: true }
-        : null;
-  return (
-    <p role="status" className={cn("flex min-h-0 flex-wrap items-center justify-center gap-x-2 text-center font-sans text-caption text-paper/60", className)}>
-      {/* While it waits, the words on their own line and its choices together under them. */}
-      {line ? <span className={job?.waiting ? "basis-full" : undefined}>{line.text}</span> : null}
-      {job?.waiting === "wifi" ? (
-        <button type="button" onClick={() => void saveOverMobileData()} className={action}>
-          {t("player.offline.useData")}
-        </button>
-      ) : null}
-      {job?.waiting ? (
-        <button type="button" onClick={cancelSaving} className={action}>
-          {t("common.cancel")}
-        </button>
-      ) : null}
-      {line?.remove ? (
-        <button
-          type="button"
-          onClick={() => {
-            setOpen(null);
-            void removeBook(book);
-          }}
-          className={action}
-        >
-          {t("player.offline.remove")}
-        </button>
-      ) : null}
-    </p>
+    </div>
   );
 }

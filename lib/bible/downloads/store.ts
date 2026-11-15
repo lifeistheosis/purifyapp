@@ -27,6 +27,7 @@ import { useSyncExternalStore } from "react";
 
 import { streamedUrl } from "@/lib/media/streamed";
 import { isNativeClient } from "@/lib/platform/native";
+import { SITE_URL } from "@/lib/site";
 
 import { downloadableBible, type BibleId } from "./catalog";
 import { readBibleChoice, writeBibleChoice } from "./choice";
@@ -236,6 +237,26 @@ function readManifest(text: string, id: BibleId): BibleManifest {
 const REACH_WAIT_MS = 8000;
 
 /**
+ * The address the question "can the website be reached?" is asked of: the
+ * website's own icon, a picture, whose answer every version of the website
+ * gives "Cross-Origin-Resource-Policy: cross-origin" (next.config.ts,
+ * PICTURE_SOURCES; probed on the main web 2026-11-15).
+ *
+ * Not the file's own address (build 98 note 6). Every other answer of the main
+ * web says "same-origin", and the browser in the app refuses such an answer to
+ * a request from https://localhost even without CORS, throwing exactly as it
+ * throws with no signal: so the question asked of a Bible's own address came
+ * back "no answer" on a phone that was online, and the sheet said "Check your
+ * connection" where it should have said the Bible is not available.
+ */
+export const REACH_PATH = "/icon-192.png";
+
+/** Where the question is asked: the website's in the apps, the page's own on the web. */
+function reachUrl(native: boolean): string {
+  return native ? `${SITE_URL}${REACH_PATH}` : REACH_PATH;
+}
+
+/**
  * Whether the website answers at all, asked when a file could not be had. The
  * question is asked without CORS ("no-cors"), so any answer counts, even one
  * the app may not read: in the apps a missing file comes back from the main
@@ -243,7 +264,8 @@ const REACH_WAIT_MS = 8000;
  * on it exactly as it throws with no signal (probed 2026-11-13: the six
  * Bibles answer 404 that way until the merge). An answer means the website
  * was reached and the file was not there for the app; no answer in time, or
- * none at all, means there is no way to the website.
+ * none at all, means there is no way to the website. It is asked of
+ * REACH_PATH, whose answer the app may have, never of the file's address.
  */
 async function websiteAnswers(url: string, fetcher: Fetch): Promise<boolean> {
   const wait = new AbortController();
@@ -258,13 +280,13 @@ async function websiteAnswers(url: string, fetcher: Fetch): Promise<boolean> {
   }
 }
 
-async function fetchText(url: string, fetcher: Fetch, signal: AbortSignal, cache: RequestCache): Promise<string> {
+async function fetchText(url: string, fetcher: Fetch, signal: AbortSignal, cache: RequestCache, reach: string): Promise<string> {
   let res: Response;
   try {
     res = await fetcher(url, { signal, cache });
   } catch {
     if (signal.aborted) throw new Stopped("cancelled");
-    if (!(await websiteAnswers(url, fetcher))) throw new Stopped("offline");
+    if (!(await websiteAnswers(reach, fetcher))) throw new Stopped("offline");
     // The website answers: asked once more, since a moment's trouble passes (a
     // change of network, the app waking). Refused again while the website
     // answers, the file is not there for the app.
@@ -308,7 +330,8 @@ async function download(
   setProgress(id, { state: "downloading", done: 0, total: downloadableBible(id)?.bytes ?? 0 }, controller);
   try {
     const fs = plugin ?? (await import("@capacitor/filesystem"));
-    const manifest = readManifest(await fetchText(manifestUrl(id, native), fetcher, signal, "no-cache"), id);
+    const reach = reachUrl(native);
+    const manifest = readManifest(await fetchText(manifestUrl(id, native), fetcher, signal, "no-cache", reach), id);
 
     // Books kept by an earlier download of this version.
     const partial = readJson<Record<string, { version: string; done: string[] }>>(PARTIAL_KEY) ?? {};
@@ -340,9 +363,9 @@ async function download(
     const worker = async () => {
       for (let entry = queue.shift(); entry; entry = queue.shift()) {
         const url = bookUrl(id, entry.book, native);
-        let text = await fetchText(url, fetcher, signal, "default");
+        let text = await fetchText(url, fetcher, signal, "default", reach);
         // A copy kept from an earlier version of the Bible: ask the website itself.
-        if (!checkBook(text, id, entry)) text = await fetchText(url, fetcher, signal, "reload");
+        if (!checkBook(text, id, entry)) text = await fetchText(url, fetcher, signal, "reload", reach);
         if (!checkBook(text, id, entry)) throw new Stopped("unavailable");
         try {
           await save(entry.book, text);
