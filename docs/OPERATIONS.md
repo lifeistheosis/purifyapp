@@ -100,7 +100,7 @@ The arbiter rotates itself the same way. Its baton is `docs/NOW.md` plus every w
 - parts 3 to 5;
 - the web build.
 
-**A test build reaches him on the page he downloads from** (2026-11-13: build 95 was kept as a run artifact, so he walked build 93 from the release page and found faults mended days before). Every test build is published to the android-release page (nothing public links to it) and to TestFlight, and before he is told, the arbiter reads the page's asset dates and names the build number he should see.
+**A test build reaches him on the page he downloads from** (2026-11-13: build 95 was kept as a run artifact, so he walked build 93 from the release page and found faults mended days before). Every test build is published to the android-release page (nothing public links to it), and before he is told, the arbiter reads the page's asset dates and names the build number he should see. TestFlight waits: no iPhone build is started until he says the build is finished after his critiques (his word, 2026-11-15: "not iPhone only android until I say the build is finally finished after critiques").
 
 During a final check, no app code lands. Any code change after it means a new export and a new check of what changed.
 
