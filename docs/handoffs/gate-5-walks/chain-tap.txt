@@ -1,0 +1,3 @@
+tap-open EXIT 0 15:38:57 written: docs/handoffs/gate-5-walks/tap-open.json
+tap-new EXIT 0 16:03:37 written: docs/handoffs/gate-5-walks/tap-new.json
+DONE tap 16:03:37
