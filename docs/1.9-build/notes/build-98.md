@@ -127,3 +127,19 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 - First measure the opening on the export at a phone's speed (the motion walk's frame times: the longest frame, any blank frame), before and after.
 - Then: Now Playing kept built and ready while anything is loaded, so a tap only slides it; the blurred backdrop drawn once the slide has ended, not during it; and the mini player's picture carried up into the cover's place as the screen rises, on the house curve, the controls following. Reduced motion: no movement, as everywhere.
 - Proof: the motion walk with no long or blank frame on opening and closing, and his walk of the next build, since only a phone shows the real frames.
+
+## Note 9: the saved line in Now Playing moves the whole screen
+
+**His words (2026-11-15, about 21:41 UTC),** with two screenshots of Now Playing on Cover at 4:41 on his clock, The Prayer Rope Anthem paused at 0:41: in the first, the check mark by the title and under it "The Prayer Rope Anthem (English) is saved to listen offline" and Remove, the cover's top at about 332 and the title's at about 1170 (of 2000 in his screenshot); in the second, no line, "2 MB" and the download mark, the cover's top at about 370 and the title's at about 1250: "optimize the small text that appears here. it moves the whole UI and it doesn't move well".
+
+**Found (the arbiter, 21:43 UTC, from the code of 78c5297e1):**
+
+- The line is `SaveOfflineNote` (`components/player/SaveOffline.tsx`), "the one line about saving, over the player's controls": saving's progress, a wait for Wi-Fi or a signal, a failure, or, once the check is tapped, the saved recording with Remove. It stands in the page's flow with no height of its own when silent (`min-h-0`), so when it speaks it adds two lines, and the Cover view, whose parts are centred, moves the cover and the title up by about 40 and 80 of his screenshot's pixels; when it goes, they fall back. Nothing eases either way: it is a jump.
+- Its words repeat the title just above it ("The Prayer Rope Anthem (English) is saved..."), which is why it takes two lines at phone width.
+
+**Plan (nothing is built until he says start):**
+
+- The line never moves anything: its room is kept under the title whether it speaks or not, it says what it says in one line at 360 px, and it fades in and out on the house's curve (reduced motion: no fade).
+- Shorter words that do not repeat the title, from the existing keys first ("Saved to listen offline", Remove), in all 21 languages, held to one line in the longest of them and in Arabic.
+- The same for every state the line has (saving, waiting for Wi-Fi or a signal, failed), and for the Words view.
+- A test that fails on 78c5297e1: the cover's and the title's boxes stay where they are as the line appears and goes, at 360, 390 and 412, and in Arabic.
