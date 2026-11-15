@@ -1,0 +1,5 @@
+on-open EXIT 0 14:41:48
+onr-open EXIT 0 14:48:00
+on-new EXIT 0 14:54:34
+onr-new EXIT 0 15:00:46
+DONE online 15:00:46
