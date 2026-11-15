@@ -174,7 +174,8 @@ describe("the dock, over the tab bar (A's player, note 60)", () => {
     expect(pageSource).toContain('useOwnPlayer(row.variants.flatMap((v) => [v.audio.src, recordingTail(v.audio.src) ?? ""]));');
     const store = fs.readFileSync("lib/player/pagePlayer.ts", "utf8");
     // Before the frame is painted, and given back as the page goes.
-    expect(store).toMatch(/useIsoLayoutEffect\(\(\) => \{\s*set\(key \? key\.split\("\\n"\) : NONE\);\s*return \(\) => set\(NONE\);\s*\}, \[key\]\);/);
+    // From build 98 note 14 the page also writes its class there (lib/player/pagePlayer.ts, HOSTS_CLASS).
+    expect(store).toMatch(/useIsoLayoutEffect\(\(\) => \{\s*const next = key \? key\.split\("\\n"\) : NONE;\s*set\(next\);[\s\S]*?return \(\) => \{\s*set\(NONE\);[\s\S]*?\}, \[key\]\);/);
   });
 });
 
@@ -257,6 +258,6 @@ describe("Back (note 58)", () => {
     expect(pageSource).not.toMatch(/router\.(push|replace)\(/);
     expect(pageSource).toContain("openChantDoor(next);");
     const store = fs.readFileSync("lib/player/pagePlayer.ts", "utf8");
-    expect(store).toContain("return () => set(NONE);");
+    expect(store).toMatch(/return \(\) => \{\s*set\(NONE\);/);
   });
 });
