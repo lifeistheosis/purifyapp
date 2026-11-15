@@ -54,12 +54,12 @@ export function ChapterDiscussions({ book, bookName, chapter }: { book: string; 
     const el = slot.current;
     if (!waiting || !el) return;
     // Read in a frame, at once and after every scroll (an IntersectionObserver misses a jump that carries the
-    // place from above the screen to below it). A quarter of a screen to spare covers a frame of a fling.
+    // place from above the screen to below it).
     let frame = 0;
     const check = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        if (el.getBoundingClientRect().top >= window.innerHeight * 1.25) setPlaced(ref);
+        if (el.getBoundingClientRect().top >= window.innerHeight) setPlaced(ref);
       });
     };
     check();
