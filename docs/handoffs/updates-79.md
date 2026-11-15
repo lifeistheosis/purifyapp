@@ -4,18 +4,18 @@ Written 2026-11-15 by Updates 79 (session_01VuYTwe4qYEZSvijyyHnbaJ), a checks ch
 
 ## Commits
 
-- **a18d206e**: `scripts/gate/ambience-sheet.mjs`. `PREVIEW_ONLY=390[,800,...]` runs the Plus preview alone at those widths. The runner now says when checkMock ran against the preview's minute (from Try it) and when the lock's words came. On a fail it reads the failing line's box against the window's own clip.
-- **this baton's commit**: `docs/handoffs/updates-79-runners/feed79.mjs` (steps 3, 4 and 9) and this file.
+- **dfb0dd63** (a18d206e before the rebase): `scripts/gate/ambience-sheet.mjs`. `PREVIEW_ONLY=390[,800,...]` runs the Plus preview alone at those widths. The runner now says when checkMock ran against the preview's minute (from Try it) and when the lock's words came. On a fail it reads the failing line's box against the window's own clip.
+- **bd104909** and the baton's last commit: `docs/handoffs/updates-79-runners/feed79.mjs` (steps 3, 4 and 9) and this file.
 
 ## The steps
 
 | Step | Result | Measure |
 |---|---|---|
 | 1 | **PASS** | `npm run test:unit`, alone: exit 0 after 175s. Files 1207 passed, 1 skipped (1208). Tests 15,226 passed, 9 skipped (15,235). |
-| 2 | **PASS** | `node scripts/gate/export.mjs`, cut from **a18d206e8** (the app is f637f7b8's): exit 0 after 115s, **206.0 MB on disk in 7,372 files, 75.3 MB packed** (ceilings 240 and 85). The key was checked to be the anon role, and is in the log nowhere. |
+| 2 | **PASS** | `node scripts/gate/export.mjs`, cut from **a18d206e8** (dfb0dd63 after the rebase; the app is f637f7b8's): exit 0 after 115s, **206.0 MB on disk in 7,372 files, 75.3 MB packed** (ceilings 240 and 85). The key was checked to be the anon role, and is in the log nowhere. |
 | 3 | **FAULT** (2 moves) | See below. |
 | 4 | **PASS** | See below. |
-| 5 | STEP5 | STEP5DETAIL |
+| 5 | **PASS twice; the moving fail is the runner's timing** | See below. |
 | 6 | not started | the budget |
 | 7 | code answered; walks not run | See below. |
 | 8 | not started | the budget |
@@ -45,7 +45,19 @@ Written 2026-11-15 by Updates 79 (session_01VuYTwe4qYEZSvijyyHnbaJ), a checks ch
 
 ### Step 5: the ambience preview at 390
 
-STEP5BODY
+`SELLS_PLUS=1 PREVIEW_ONLY=390 node scripts/gate/ambience-sheet.mjs <shots>`, twice: **exit 0 after 607s and 606s**. checkMock passes the Plus preview at 390 in English and in Arabic on 21 palettes and looks, both times. The strip passed too (six photographs painted, 108px), and the sea under the finger moved 0.7px. No fail came, so there was no failing line to read against the window's clip.
+
+**The timing explains the fail that moved.** In all four runs, checkMock on the preview ran from about 3s to **275 to 317s** after Try it, and the preview's minute (`TRY_MINUTE_MS`, 60s) ended inside the run, at **60.0s** every time.
+- Before 60s, checkMock measures the live page. After it, the page under the lock's words, veiled and allowed (`data-mock-allow`, `TryKit.tsx:61`; the runs list those allowances).
+- So whichever palette is being measured at 60s can be read across the change: its words gathered before the veil and its pixels taken after it, or the lock's words caught in their 700ms fade (`.plus-try-rest`).
+- That fits both earlier fails and their moving: Updates 51 caught the lock's own words (2.92 and 2.29:1, the fade, on Councils in English); Updates 76 caught a page verse (John 1:14, 2.87:1, under the veil, on Candlelight in Arabic).
+- It was not caught in the act here: two runs, no fail.
+
+**Not an app fault.** A reader never sees words under 4.5:1 at rest: the live page passes, and the veiled page is deliberately allowed.
+
+**Not the checker measuring hidden words either.** The window scrolls (`overflow-y-auto`, `TryKit.tsx:59`), so checkMock measures John 1:14 where a reader scrolls it, in the window's middle (`seenOf`, `scripts/mock-check.mjs:377`). That is what a reader can see.
+
+**The gap is the runner's.** The preview branch of `scripts/gate/ambience-sheet.mjs` calls checkMock across the moment the minute ends. Next step: measure the live page inside the minute (a few palettes) and the rest after it (wait past 61s), or pin the minute while measuring.
 
 ### Step 7: the keyboard sheets
 
