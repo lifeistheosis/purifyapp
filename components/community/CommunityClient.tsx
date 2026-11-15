@@ -818,7 +818,11 @@ function CommunityScreen({
                 so a kind filters on the device and asks nothing of the server.
                 Following and Ask a Priest ask: each is its own list. */}
             {result === undefined ? (
-              <div aria-hidden className="flex h-11 items-end gap-6 border-b border-paper/[0.08] pb-3">
+              // As tall as the tabs that take its place (FeedTabs: a tab's
+              // min-h-11 and the 1px line under the row), so the sign-in under
+              // it does not step down a pixel as the posts arrive (1.9,
+              // Updates 77).
+              <div aria-hidden className="flex h-[calc(2.75rem+1px)] items-end gap-6 border-b border-paper/[0.08] pb-3">
                 {[28, 84, 76].map((w) => (
                   <Skeleton key={w} weight="faint" className="h-3.5 shrink-0" style={{ width: w }} />
                 ))}
@@ -912,6 +916,7 @@ function CommunityScreen({
                   onChanged={reload}
                   onDeleted={markDeleted}
                   focus={focus && focus.postId === linked.id ? focus : null}
+                  whole
                 />
                 <button
                   type="button"
@@ -1001,6 +1006,7 @@ function CommunityScreen({
                       onChanged={reload}
                       onDeleted={markDeleted}
                       focus={focus && focus.postId === p.id ? focus : null}
+                      whole={i < FIRST_SCREEN_POSTS || focus?.postId === p.id}
                     />
                   </Fragment>
                 ))
@@ -1270,6 +1276,7 @@ function PostCardInner({
   onChanged,
   onDeleted,
   focus = null,
+  whole = false,
 }: {
   post: CommunityPost;
   me: Me;
@@ -1293,6 +1300,12 @@ function PostCardInner({
   onDeleted?: (postId: string) => void;
   /** A notification asking for this post. Null for every other card. */
   focus?: PostFocus | null;
+  /**
+   * Drawn whole from its first frame: a post the first screen shows, or the
+   * one a notification takes the reader to (FIRST_SCREEN_POSTS, below). The
+   * rest may wait until they come near.
+   */
+  whole?: boolean;
 }) {
   const { t, tn } = useTranslate();
   // What the reader's last edit saved (build 95 note 10): the card shows it at
@@ -1853,6 +1866,7 @@ function PostCardInner({
       // and a reader who came back an hour later would think nothing had been
       // written since. The label over it says the position is deliberate.
       className={cn(
+        "community-post -mx-3 scroll-mt-24 rounded-2xl px-3 py-4",
         // content-visibility: a card off screen is not laid out or painted
         // until it comes near, which is most of what scrolling a long feed
         // costs. The intrinsic size keeps the scrollbar honest meanwhile.
@@ -1863,7 +1877,14 @@ function PostCardInner({
         // who is scrolling up changes size, and a browser that does not
         // anchor its scroll lets the screen jump by the difference. There
         // every post is drawn.
-        "community-post -mx-3 scroll-mt-24 rounded-2xl px-3 py-4 [contain-intrinsic-size:auto_320px] supports-[overflow-anchor:auto]:[content-visibility:auto]",
+        //
+        // Never on a post the first screen shows (`whole`, 1.9, Updates 77).
+        // A post that may wait is laid out first at the 320px and its own
+        // height comes after, so the posts under it rose into place as the
+        // feed opened (Gate 3b, 2026-11-15: the second post 81px, 3 of 3).
+        // Off the screen the browser anchors the scroll, so a placeholder
+        // there changes size unseen.
+        !whole && "[contain-intrinsic-size:auto_320px] supports-[overflow-anchor:auto]:[content-visibility:auto]",
         lit === "post" && "notify-lit",
       )}
     >
@@ -2494,6 +2515,15 @@ function PostCardInner({
  * reaction and handlers did not change is not rendered again.
  */
 const PostCard = memo(PostCardInner);
+
+/**
+ * How many posts at the head of the feed are drawn whole from their first
+ * frame (1.9, Updates 77): enough for the first screen of a phone, and of a
+ * tall window when the posts are short. Every post after them waits until it
+ * comes near (content-visibility, on PostCard), which is where a long feed
+ * saves its work, and a placeholder there changes size off the screen.
+ */
+const FIRST_SCREEN_POSTS = 8;
 
 /**
  * A post with what the reader's last edit saved, until the feed brings that
