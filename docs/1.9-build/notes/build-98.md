@@ -112,6 +112,8 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 
 **Done (Updates 98b, 2026-11-15, `579e30eeb`), the words; the walk past the first version open.** Cause, proved in Chromium against purifyapp.net from https://localhost: the main web's 404 carries `Cross-Origin-Resource-Policy: same-origin`, so the no-cors HEAD to the Bible's own address was refused as no signal is. The question is now asked of the website's icon (`REACH_PATH`, `cross-origin` on every version of the website). store.test.ts fails on 78c5297e1. The branch's web build run here answers all seven 200 with `Access-Control-Allow-Origin: *`; `scripts/gate/bible-downloads-local.mjs` downloaded the World English Bible, read it offline and removed it; the other six wait on the walk (docs/handoffs/updates-98b.md, open 3). Only after the merge: purifyapp.net probed, one download on his phone.
 
+**Done (Updates 98d, 2026-11-15, `6cdb318ca`, `d5f37f21`), the walk; the walk's download check open.** Through the one sheet (note 7), on the gate export of 6cdb318ca against the branch's web build run here: all seven versions downloaded (504 requests, all 200) and each read offline in its own words (John 1:3 unlike the English). The walk counts four downloads as missing because a finished download chooses the Bible and closes the sheet before it looks for the row's options; the offline reads prove them (docs/handoffs/updates-98d.md, open 2). Only after the merge: purifyapp.net probed, one download on his phone.
+
 ## Note 7: the version chosen in the books sheet
 
 **His words (2026-11-15, about 21:30 UTC),** with a screenshot of the books sheet at 4:24 on his clock ("Luke 10" and its cross; Search the Bible; The New Testament, the Gospels with Luke open on its 24 chapters and 10 lit, then Acts and the Pauline Epistles; Today's readings, Reading plans and Your journal at its foot): "incorporate the change Bible version with this screen".
@@ -125,6 +127,8 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 - One sheet for where and what you read: the books sheet carries the version being read at its head, by the chapter ("Luke 10", then "King James Version" with its small chevron). A tap turns the same sheet to the versions (the same `TranslationList` rows, downloads with them), and a choice keeps the reader's verse (`lib/bible/keepPlace.ts`) and turns the sheet back to the books.
 - The line under the chapter's title opens this same sheet on its versions, so there is one sheet, not two.
 - Drawn from the app's own parts, stills from the export through checkMock, each choice with its reason, for his yes; then built, with a test that fails on 78c5297e1 (the books sheet offers the version).
+
+**Done (Updates 98d, 2026-11-15, `6cdb318ca`), one choice path open.** The version being read at the books sheet's head by the chapter, with its small chevron; a tap turns the same sheet to the versions and back; the line under the title opens this sheet on its versions, so there is one sheet. booksSheetVersion.test.ts fails on 78c5297e1. `scripts/gate/books-version.mjs`: every tap passes at 390, 800, 1032 and in Arabic, verse 20 kept, checkMock with pixels passes on the five palettes, the two earned and the fourteen looks. Open: the World English Bible downloaded from the books view left "KJV" at the head and the chapter in the KJV (docs/handoffs/updates-98d.md, open 1). Stills under docs/1.9-build/notes/build-98/.
 
 ## Note 8: Now Playing opens smoothly
 
@@ -161,6 +165,8 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 - A test that fails on 78c5297e1: the cover's and the title's boxes stay where they are as the line appears and goes, at 360, 390 and 412, and in Arabic.
 
 **Done in part (Updates 98b, 2026-11-15, `579e30eeb`).** The line keeps one line of room always, says each state in one line without the title, fades on the house curve. savedLine.test.ts fails on 78c5297e1. `scripts/gate/saved-line.mjs` on build 98's export: the title moved 37 to 56 px; on mine nothing moved at 360, 390 and 412. Open: the Wi-Fi wait and the saved words overflow 360 in twelve languages (docs/handoffs/updates-98b.md, open 1), and the walk's Arabic pass (open 2).
+
+**Done (Updates 98d, 2026-11-15, `6cdb318ca`).** Waiting for Wi-Fi, one choice beside the words (Use mobile data), as the Words view offers it; Georgian's, Greek's and Ukrainian's words made shorter in their own keys. savedLine.test.ts fails on 78c5297e1. `saved-line.mjs`, measuring each state as drawn: every language fits at 360, the widest 288 of 301 px; the Arabic pass seeds the Arabic version and nothing moves.
 
 ## Note 10: the prayer campaigns are still not there
 

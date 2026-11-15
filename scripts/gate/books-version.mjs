@@ -69,7 +69,8 @@ for (const [w, h, lang] of [[390, 844, "en"], [800, 1280, "en"], [1032, 1366, "e
     say(r.failures.length === 0, `${w} ${lang}: ${what} on the five palettes, the two earned and the fourteen looks${r.failures.length ? `: ${r.failures.slice(0, 4).map((f) => `${f.check} [${f.palette}] ${f.what}: ${f.detail}`.slice(0, 200)).join("; ")}` : ""}`);
   };
   const closeLabel = JSON.parse(fs.readFileSync(path.join(ROOT, `lib/i18n/messages/${lang}.json`), "utf8"))["common.close"];
-  const close = () => page.locator(`[data-books-check="1"] button[aria-label="${closeLabel}"]`).first();
+  // The header's close, the last so named: the first is the scrim behind the panel, as wide as the screen.
+  const close = () => page.locator(`[data-books-check="1"] button[aria-label="${closeLabel}"]`).last();
 
   await go(page, "/bible/luke/10/", { timeout: 60000 });
   await page.waitForTimeout(2000);
