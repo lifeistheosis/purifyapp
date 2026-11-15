@@ -276,7 +276,7 @@ async function run(spec) {
       const readied = await page.evaluate(() => performance.getEntriesByType("resource").map((e) => new URL(e.name).pathname).filter((n) => n.endsWith("/index.txt")));
       console.log(`${spec}: index.txt read before the first tap: ${JSON.stringify(readied)}`);
       const rows = [];
-      for (const target of ["/bible", "/prayers/", "/prayers/morning/", "/prayers/evening/", "/prayers/", "/discover/", "/saints/", "/account/", "/settings/"]) {
+      for (const target of ["/bible", "/prayers/", "/prayers/evening/", "/prayers/", "/prayers/morning/", "/discover/", "/saints/", "/account/", "/settings/"]) {
         await page.evaluate(walkWatch, { ms: 3500 });
         const href = await tapTo(page, target);
         await page.waitForFunction(() => window.__ww?.done, null, { timeout: 60000 }).catch(() => {});
