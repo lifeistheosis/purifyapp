@@ -46,18 +46,20 @@ import { Play } from "@/components/ui/icons/Play";
 import { Timer } from "@/components/ui/icons/Timer";
 import { useAmbience } from "@/lib/ambience/player";
 import { cn } from "@/lib/cn";
+import { textDir } from "@/lib/i18n/textDir";
 import { openNowPlaying } from "@/lib/player/sheet";
 import { minutesLeft, useSleepTimer } from "@/lib/player/sleep";
 import { nextSpeed, saveSpeed, speedText } from "@/lib/player/speed";
 import { playingOf } from "@/lib/player/steps";
 import { pause, play, setRate, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
-import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
-import { spokenOf } from "@/lib/listen/speech/spoken";
-import { readingOfSrc } from "@/lib/readAloud/chapters";
-import { listenToChapter } from "@/lib/readAloud/play";
 import { noteFootMoved } from "@/lib/ui/scrollAway";
 
-type Target = { slug: string; chapter: number } | null;
+/**
+ * A step through the text from the dock's row: a link (a chapter of the
+ * Bible) or a turn of the page's own parts (a work's chapter, a council's
+ * section, a study's part). None at either end.
+ */
+export type DockStep = { href: string } | { onGo: () => void } | null;
 
 /** The class on <html> while the dock stands at the reader's foot (app/globals.css). */
 export const DOCK_CLASS = "has-reader-dock";
@@ -65,12 +67,20 @@ export const DOCK_CLASS = "has-reader-dock";
 const CARD_PX = 112;
 const CHAPTER_ROW_PX = 32;
 
+/**
+ * The dock for every text read aloud on a phone and a tablet (1.9, build 98
+ * note 2): the Bible's chapter (MobileChapterPill), a work's chapter and a
+ * council's section (components/saints/MobileWorkPill.tsx), a life, a study's
+ * part and an event (components/reading/TextPill.tsx). The row under the
+ * player is the text's own: its arrows where it has parts to turn, and its
+ * name, a chapter's with its number; where the name opens the text's
+ * contents (onPick) it stands at the top while the card is drawn in, as the
+ * chapter does.
+ */
 export function ReaderDock({
-  slug,
-  chapter,
-  bookName,
-  listen = true,
-  bible = null,
+  name,
+  number,
+  nameLang,
   prev,
   next,
   prevLabel,
@@ -78,29 +88,32 @@ export function ReaderDock({
   pickLabel,
   covered,
   onPick,
+  listenHere,
+  onListen,
 }: {
-  slug: string;
-  chapter: number;
-  /** The book's name in the reader's language. */
-  bookName: string;
-  /**
-   * Whether Listen may read this page: the pill's own rule (MobileChapterPill),
-   * the English where it has its recording, every chapter where the device can
-   * speak, never a licensed translation's.
-   */
-  listen?: boolean;
-  /** The downloaded Bible the page shows the chapter in: Listen reads it in the phone's voice, never the English over it (1.9). */
-  bible?: DownloadableBible | null;
-  prev: Target;
-  next: Target;
+  /** The text's name in the row: a book's in the reader's language, a part's, a life's. */
+  name: string;
+  /** A chapter's number, after its book's name. */
+  number?: number;
+  /** The name's language where it is not the reader's (an English part name). */
+  nameLang?: string;
+  prev: DockStep;
+  next: DockStep;
   prevLabel: string;
   nextLabel: string;
-  /** "Pick a chapter, currently John 1". */
-  pickLabel: string;
+  /** "Pick a chapter, currently John 1". With onPick. */
+  pickLabel?: string;
   /** Something stands over the reader (lib/ui/overlay.ts): the dock steps aside, as the pill does. */
   covered: boolean;
-  /** Opens the books sheet. */
-  onPick: () => void;
+  /** Opens the text's contents (the books sheet, a work's contents). A text with none shows its name alone. */
+  onPick?: () => void;
+  /**
+   * Listen in Speed's place: the text shown may be read aloud and is not the
+   * one loaded (the pill's own rule, decided by the pill that holds the dock).
+   */
+  listenHere: boolean;
+  /** Starts this text's reading. */
+  onListen: () => Promise<unknown> | void;
 }) {
   const { t, locale } = useTranslate();
   const audio = usePersistentAudio();
@@ -164,21 +177,10 @@ export function ReaderDock({
   }, []);
 
   const played = audio.duration > 0 ? Math.min(1, Math.max(0, audio.currentTime / audio.duration)) : 0;
-  const name = audio.title ?? t("prayers.nowPlaying");
+  const trackName = audio.title ?? t("prayers.nowPlaying");
   const openLabel = `${t("prayers.nowPlaying")}: ${audio.title ?? ""}`;
   const toggle = () => (audio.playing ? pause() : play());
   const toggleLabel = audio.playing ? t("prayers.pause") : t("prayers.play");
-  // This chapter's reading, where it has one that is not the one loaded. By
-  // the chapter the loaded recording reads, not by its address: the address
-  // changes when the chapter is saved to the phone while it plays (the
-  // week's readings can save today's on opening, lib/readAloud/week.ts), and
-  // the dock then offered Listen for the chapter already playing.
-  const loaded = readingOfSrc(audio.src);
-  const said = spokenOf(audio.src);
-  const hereLoaded =
-    (!bible && loaded?.book === slug && loaded.chapter === chapter) ||
-    (said?.kind === "bible" && said.book === slug && said.chapter === chapter && said.bible === (bible?.id ?? null));
-  const listenHere = listen && !hereLoaded;
   // Speed is a chapter read aloud's alone, as in Now Playing (lib/player/speed.ts).
   const speedShown = playingOf(audio.src)?.kind === "chapter";
   const speed = speedText(audio.rate, locale);
@@ -193,7 +195,7 @@ export function ReaderDock({
 
   const listenNow = async () => {
     setBusy(true);
-    await listenToChapter({ book: slug, chapter, title: `${bookName} ${chapter}`, t, bible });
+    await onListen();
     setBusy(false);
   };
 
@@ -245,7 +247,7 @@ export function ReaderDock({
                 >
                   <CoverArt src={audio.art} fallback={audio.artFallback} size={46} className="size-[46px] shrink-0 rounded-[11px]" />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-sans text-[15px] font-semibold leading-tight text-paper">{name}</span>
+                    <span className="block truncate font-sans text-[15px] font-semibold leading-tight text-paper">{trackName}</span>
                     <span aria-hidden className="mt-2 block h-[3px] overflow-hidden rounded-full bg-paper/15">
                       <span
                         className="block h-full origin-left rounded-full bg-paper rtl:origin-right"
@@ -274,18 +276,25 @@ export function ReaderDock({
                   grows with it (--reader-dock-card-h, measured below). */}
               <div ref={chapterRowRef} className="mt-1.5 flex min-h-8 shrink-0 flex-wrap items-center justify-between gap-x-2 font-sans text-[14px]">
                 <span className="flex min-w-0 max-w-full items-center">
-                  <DockArrow target={prev} label={prevLabel} back />
-                  <button
-                    type="button"
-                    aria-haspopup="dialog"
-                    onClick={onPick}
-                    aria-label={pickLabel}
-                    className="tap-press hit-44 flex min-h-8 min-w-0 items-center px-1 text-start font-semibold leading-tight text-paper"
-                  >
-                    <span className="min-w-0 [overflow-wrap:anywhere]">{bookName}</span>
-                    <span className="ms-1 shrink-0 tabular-nums">{chapter}</span>
-                  </button>
-                  <DockArrow target={next} label={nextLabel} back={false} />
+                  {prev || next ? <DockArrow target={prev} label={prevLabel} back /> : null}
+                  {onPick ? (
+                    <button
+                      type="button"
+                      aria-haspopup="dialog"
+                      onClick={onPick}
+                      aria-label={pickLabel}
+                      className="tap-press hit-44 flex min-h-8 min-w-0 items-center px-1 text-start font-semibold leading-tight text-paper"
+                    >
+                      <span lang={nameLang} dir={textDir(nameLang)} className="min-w-0 [overflow-wrap:anywhere]">{name}</span>
+                      {number !== undefined ? <span className="ms-1 shrink-0 tabular-nums">{number}</span> : null}
+                    </button>
+                  ) : (
+                    // A text with no parts to turn: its name alone, in the chapter's place.
+                    <span lang={nameLang} dir={textDir(nameLang)} className="flex min-h-8 min-w-0 items-center px-1 text-start font-semibold leading-tight text-paper [overflow-wrap:anywhere]">
+                      {name}
+                    </span>
+                  )}
+                  {prev || next ? <DockArrow target={next} label={nextLabel} back={false} /> : null}
                 </span>
                 <span className="ms-auto flex shrink-0 items-center gap-2">
                 {listenHere ? (
@@ -368,6 +377,7 @@ export function ReaderDock({
       {/* The chapter at the top while the reader reads on, between the
           plates: a tap opens the books sheet. Reader chrome, so focus mode
           puts it away with the plates. */}
+      {onPick ? (
       <div
         data-reader-chrome
         data-dock-title
@@ -385,20 +395,21 @@ export function ReaderDock({
             className="reader-dock-title tap-press hit-44 pointer-events-auto flex min-h-10 min-w-0 items-center gap-1.5 rounded-pill px-3.5 py-1 text-center font-sans text-[15px] font-semibold leading-tight"
           >
             {/* Shown whole: a long name takes a second line (the gate's confirm run, 2026-11-12). */}
-            <span className="min-w-0 [overflow-wrap:anywhere]">{bookName}</span>
-            <span className="shrink-0 tabular-nums">{chapter}</span>
+            <span lang={nameLang} dir={textDir(nameLang)} className="min-w-0 [overflow-wrap:anywhere]">{name}</span>
+            {number !== undefined ? <span className="shrink-0 tabular-nums">{number}</span> : null}
             <ChevronDown size={14} className="shrink-0 text-paper/60" />
           </button>
         </div>
       </div>
+      ) : null}
 
       <SleepTimerSheet open={sleepOpen} onClose={() => setSleepOpen(false)} />
     </>
   );
 }
 
-/** A step back or forward through the canon, in the dock's second row. */
-function DockArrow({ target, label, back }: { target: Target; label: string; back: boolean }) {
+/** A step back or forward through the text, in the dock's second row: the canon's chapters, a work's, a council's sections, a study's parts. */
+function DockArrow({ target, label, back }: { target: DockStep; label: string; back: boolean }) {
   const glyph = <ChevronLeft size={18} className={back ? "rtl:-scale-x-100" : "-scale-x-100 rtl:scale-x-100"} />;
   if (!target) {
     return (
@@ -407,12 +418,16 @@ function DockArrow({ target, label, back }: { target: Target; label: string; bac
       </span>
     );
   }
+  const className = "hit-44 inline-flex size-8 shrink-0 items-center justify-center text-paper/85 hover:text-paper";
+  if ("onGo" in target) {
+    return (
+      <button type="button" onClick={target.onGo} aria-label={label} className={className}>
+        {glyph}
+      </button>
+    );
+  }
   return (
-    <Link
-      href={`/bible/${target.slug}/${target.chapter}`}
-      aria-label={label}
-      className="hit-44 inline-flex size-8 shrink-0 items-center justify-center text-paper/85 hover:text-paper"
-    >
+    <Link href={target.href} aria-label={label} className={className}>
       {glyph}
     </Link>
   );

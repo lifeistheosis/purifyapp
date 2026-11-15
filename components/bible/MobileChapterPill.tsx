@@ -11,7 +11,7 @@ import { ReadAloudPillButton } from "./ReadAloud";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { cn } from "@/lib/cn";
-import { useHasReadAloud } from "@/lib/readAloud/chapters";
+import { readingOfSrc, useHasReadAloud } from "@/lib/readAloud/chapters";
 import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
 import { useCanSpeak } from "@/lib/listen/speech/voices";
 import { useOverlayOpen } from "@/lib/ui/overlay";
@@ -19,11 +19,13 @@ import { EVERYTHING, useOwnPlayer } from "@/lib/player/pagePlayer";
 import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { useIsNative } from "@/lib/platform/native";
 import { ReaderDock } from "./ReaderDock";
+import { spokenOf } from "@/lib/listen/speech/spoken";
+import { listenToChapter } from "@/lib/readAloud/play";
 
 /** Where the pill stands: a phone's width on the web (md:hidden), and every width in the apps (native-md-flex). */
 const PHONE = "(max-width: 767.98px)";
-const HOSTS_EVERYTHING: readonly string[] = [EVERYTHING];
-const NOTHING: readonly string[] = [];
+export const HOSTS_EVERYTHING: readonly string[] = [EVERYTHING];
+export const NOTHING: readonly string[] = [];
 
 function subscribePhone(onChange: () => void): () => void {
   const query = window.matchMedia(PHONE);
@@ -36,7 +38,7 @@ function subscribePhone(onChange: () => void): () => void {
  * on the web at a phone's width. The computer's reader keeps its toolbar and
  * the mini player.
  */
-function useDockShows(): boolean {
+export function useDockShows(): boolean {
   const native = useIsNative();
   const phone = useSyncExternalStore(subscribePhone, () => window.matchMedia(PHONE).matches, () => false);
   return native || phone;
@@ -163,6 +165,18 @@ export function MobileChapterPill({
   useOwnPlayer(dockShows ? HOSTS_EVERYTHING : NOTHING);
   const { src } = usePersistentAudio();
   const docked = dockShows && Boolean(src);
+  // This chapter's reading, where it has one that is not the one loaded: the
+  // dock offers Listen in Speed's place. By the chapter the loaded recording
+  // reads, not by its address: the address changes when the chapter is saved
+  // to the phone while it plays (the week's readings can save today's on
+  // opening, lib/readAloud/week.ts), and the dock then offered Listen for the
+  // chapter already playing.
+  const loaded = readingOfSrc(src);
+  const said = spokenOf(src);
+  const hereLoaded =
+    (!bible && loaded?.book === slug && loaded.chapter === chapter) ||
+    (said?.kind === "bible" && said.book === slug && said.chapter === chapter && said.bible === (bible?.id ?? null));
+  const listenHere = reads && !hereLoaded;
   // How the name fits (the doc above): 0 as drawn, 1 with Listen's word given
   // way and the name on up to two lines, 2 with the controls on a row of their
   // own. Measured before the pill is painted, again for each name, chapter and
@@ -244,18 +258,17 @@ export function MobileChapterPill({
     <>
       {docked ? (
         <ReaderDock
-          slug={slug}
-          chapter={chapter}
-          bookName={bookName}
-          listen={reads}
-          bible={bible}
-          prev={prev}
-          next={next}
+          name={bookName}
+          number={chapter}
+          prev={prev ? { href: `/bible/${prev.slug}/${prev.chapter}` } : null}
+          next={next ? { href: `/bible/${next.slug}/${next.chapter}` } : null}
           prevLabel={prevLabel}
           nextLabel={nextLabel}
           pickLabel={pickLabel}
           covered={covered}
           onPick={() => setSheetOpen(true)}
+          listenHere={listenHere}
+          onListen={() => listenToChapter({ book: slug, chapter, title: `${bookName} ${chapter}`, t, bible })}
         />
       ) : (
         <div

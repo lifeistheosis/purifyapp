@@ -37,6 +37,7 @@ import { EventThread } from "./EventThread";
 import { InEnglishNote } from "./InEnglishNote";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { ListenHere } from "@/components/reading/ListenHere";
+import { TextPill } from "@/components/reading/TextPill";
 import { listenId } from "@/lib/listen/texts";
 import { MarkHost } from "@/components/reading/MarkHost";
 import { ReadingMarks } from "@/components/reading/SelectionToolsLazy";
@@ -321,6 +322,8 @@ export function EventArticle({
       <Part id={PART_IDS.happened} titleKey="study.history.whatHappened">
         {/* The account read aloud, where it has a recording (1.9, lib/listen/recordings.ts). */}
         <ListenHere id={listenId("history", meta.slug)} title={meta.title} by="Purify" className="mb-5" />
+        {/* A phone and a tablet listen from the foot pill, as the Bible does (build 98 note 2). */}
+        <TextPill nameKey="study.history.whatHappened" screen />
         <div className="space-y-5">
           <Blocks blocks={body.context} at={{ ...here, sectionN: 1 }} />
           <Blocks blocks={body.narrative} at={{ ...here, sectionN: 2 }} />

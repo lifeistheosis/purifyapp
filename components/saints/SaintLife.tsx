@@ -13,6 +13,7 @@ import { DisciplesSection } from "./DisciplesSection";
 import { GreatFeastsSection } from "./GreatFeastsSection";
 import { SaintLifeIn, SaintShortBio, SaintTitlesIn } from "./SaintInReadersLanguage";
 import { ListenHere } from "@/components/reading/ListenHere";
+import { TextPill } from "@/components/reading/TextPill";
 import { listenId } from "@/lib/listen/texts";
 import { ReadingMarks } from "@/components/reading/SelectionToolsLazy";
 import { LifeSection } from "./LifeSection";
@@ -119,6 +120,8 @@ export function SaintLife({
       <div className="mt-10">
         {/* The life read aloud, where it has a recording (1.9, lib/listen/recordings.ts). */}
         <ListenHere id={listenId("life", saint.slug)} title={`The life of ${saint.name}`} by="Purify" className="mb-5" />
+        {/* A phone and a tablet listen from the foot pill, as the Bible does (build 98 note 2). */}
+        <TextPill nameKey="saints.tab.life" screen />
         {/* Any words of the life, selected and marked (1.9). */}
         <ReadingMarks />
         <SaintLifeIn slug={saint.slug} name={saint.name} quotes={(LIFE_QUOTES[saint.slug] ?? []).map((q) => ({ words: q.words, shown: shownCite(q.cite) }))}>

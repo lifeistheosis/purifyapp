@@ -38,8 +38,10 @@ const CSS = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
 
 describe("the reader's dock, a book's name", () => {
   it("is never cut short in either picker", () => {
-    expect(DOCK).not.toMatch(/<span className="[^"]*\btruncate\b[^"]*">\{bookName\}<\/span>/);
-    expect(DOCK.match(/<span className="min-w-0 \[overflow-wrap:anywhere\]">\{bookName\}<\/span>/g)).toHaveLength(2);
+    // The dock serves every text read aloud since build 98 note 2: the book's name is its `name`.
+    expect(DOCK).not.toMatch(/<span [^>]*className="[^"]*\btruncate\b[^"]*">\{name\}<\/span>/);
+    expect(DOCK.match(/<span lang=\{nameLang\} dir=\{textDir\(nameLang\)\} className="min-w-0 \[overflow-wrap:anywhere\]">\{name\}<\/span>/g)).toHaveLength(2);
+    expect(read("components/bible/MobileChapterPill.tsx")).toMatch(/<ReaderDock\s+name=\{bookName\}/);
     // A title of three lines hangs down from the bar's top, never up past it into the status bar.
     expect(DOCK).toContain('<div className="flex h-[52px] min-w-0 max-w-[calc(100%-8rem)] items-center-safe">');
   });

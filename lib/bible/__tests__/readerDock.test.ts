@@ -85,14 +85,17 @@ describe("the dock", () => {
   });
 
   it("offers Listen in Speed's place where this chapter has a reading that is not the one loaded", () => {
-    // The pill's own rule (its reads): the English with its recording, every chapter where the device can speak.
-    expect(DOCK).toContain("const listenHere = listen && !hereLoaded;");
+    // The pill's own rule (its reads): the English with its recording, every
+    // chapter where the device can speak. Decided by the pill that holds the
+    // dock since the dock serves every text read aloud (build 98 note 2).
+    expect(PILL).toContain("const listenHere = reads && !hereLoaded;");
     // Known by the chapter the loaded recording reads, whichever address it
     // has: streamed, or saved to the phone while it played.
-    expect(DOCK).toContain("const loaded = readingOfSrc(audio.src);");
-    expect(DOCK).toMatch(/const hereLoaded =\s*\(!bible && loaded\?\.book === slug && loaded\.chapter === chapter\) \|\|/);
+    expect(PILL).toContain("const loaded = readingOfSrc(src);");
+    expect(PILL).toMatch(/const hereLoaded =\s*\(!bible && loaded\?\.book === slug && loaded\.chapter === chapter\) \|\|/);
     // Read in the reader's voice for the chapter, in the Bible the page shows it in (1.9, build 95 note 25).
-    expect(DOCK).toContain("await listenToChapter({ book: slug, chapter, title: `${bookName} ${chapter}`, t, bible });");
+    expect(PILL).toContain("onListen={() => listenToChapter({ book: slug, chapter, title: `${bookName} ${chapter}`, t, bible })}");
+    expect(DOCK).toContain("await onListen();");
   });
 
   // Updates 15's finding (2026-11-13): with something playing, the dock offered
@@ -102,8 +105,9 @@ describe("the dock", () => {
   // page starting an English voice.
   it("keeps the pill's rule for Listen: none over a page the English reading does not read", () => {
     // From the voices (1.9, build 95 note 25): a downloaded Bible's page is read in the phone's voice, never the English over it.
-    expect(PILL).toMatch(/<ReaderDock\s+slug=\{slug\}\s+chapter=\{chapter\}\s+bookName=\{bookName\}\s+listen=\{reads\}\s+bible=\{bible\}/);
-    expect(DOCK).toMatch(/export function ReaderDock\(\{\s*slug,\s*chapter,\s*bookName,\s*listen = true,/);
+    expect(PILL).toMatch(/<ReaderDock\s+name=\{bookName\}\s+number=\{chapter\}/);
+    expect(PILL).toContain("listenHere={listenHere}");
+    expect(PILL).toMatch(/const reads = listen && \(bible \? speaks : recorded \|\| speaks\);/);
     expect(DOCK).toMatch(/\{listenHere \? \(\s*<button/);
   });
 

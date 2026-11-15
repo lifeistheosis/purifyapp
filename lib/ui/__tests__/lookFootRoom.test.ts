@@ -105,7 +105,8 @@ describe("the room under a page on a look with a foot", () => {
       }
     }
     const block = phone.slice(0, end);
-    expect(block.match(/padding-bottom:[^;]*var\(--foot-clear\)/g)).toHaveLength(3);
+    // Four since build 98 note 2: a text's own pill keeps its room there too (components/reading/TextPill.tsx).
+    expect(block.match(/padding-bottom:[^;]*var\(--foot-clear\)/g)).toHaveLength(4);
     // Nothing outside it gives a page room for a foot: from 768px the foot stands down, and so does the room.
     expect(css.replace(block, "")).not.toMatch(/padding-bottom:[^;]*var\(--foot-clear\)/);
     const wide = css.slice(css.indexOf("@media (min-width: 768px) {\n html[data-look]:not([data-look=\"nightsky\"]) body::before,"));

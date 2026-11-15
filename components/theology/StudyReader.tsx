@@ -8,6 +8,7 @@ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { partFromHash, partHash, readIdOf, withPart, withRead, type ReadKind } from "@/lib/theology/path";
 import { updatePathProgress } from "@/lib/theology/usePathProgress";
 import { useScrollAway } from "@/lib/ui/scrollAway";
+import { TextPill } from "@/components/reading/TextPill";
 import { textDir } from "@/lib/i18n/textDir";
 import { movePage } from "@/lib/ui/inPageMove";
 
@@ -174,6 +175,15 @@ export function StudyReader({
             </section>
           );
         })}
+
+        {/* A phone and a tablet listen from the foot pill, as the Bible does (build 98
+            note 2): the part shown, its arrows turning the parts as the bar above does. */}
+        <TextPill
+          name={t("paths.part", { n: part, total })}
+          part={part}
+          prev={part > 1 ? { onGo: () => showPart(part - 1), name: t("paths.part", { n: part - 1, total }) } : null}
+          next={part < total ? { onGo: () => showPart(part + 1), name: t("paths.part", { n: part + 1, total }) } : null}
+        />
 
         {/* Up next: the next part, or after the last what the path brings next. */}
         <div data-reader-next="" className="theology-tray mt-10 flex items-center gap-3 rounded-[22px] px-3.5 py-[13px]">

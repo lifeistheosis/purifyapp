@@ -23,6 +23,8 @@ import { lineBoxes, type Box } from "@/lib/marks/dom";
 import { captionLines, lineAt } from "@/lib/player/captions";
 import { currentTimeNow, getAudioSnapshot, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { goToReadingPlace, inReadingZone, visibleBand } from "@/lib/ui/readingPlace";
+import { cn } from "@/lib/cn";
+import { registerListen, type ListenOnPage } from "@/lib/listen/onPage";
 
 /** After the reader scrolls, the reading lets them look for this long (the Bible's own, components/bible/ReadAloud.tsx). */
 const HANDS_OFF_MS = 4000;
@@ -54,22 +56,18 @@ const HANDS_OFF_MS = 4000;
  */
 export function ListenHere({ id, title, by, art, className }: { id: string; title: string; by: string; art?: string | null; className?: string }) {
   const { t } = useTranslate();
-  const recorded = useHasListen(id);
-  const speaks = useCanSpeak();
-  const available = recorded || speaks;
-  const audio = usePersistentAudio();
-  const said = spokenOf(audio.src);
-  const spokenHere = said?.kind === "text" && said.id === id;
-  const loaded = listenOfSrc(audio.src)?.id === id || spokenHere;
-  const playing = loaded && audio.playing;
-  const [busy, setBusy] = useState(false);
+  const listen = useListenText({ id, title, by, art });
+  const { loaded, playing, busy, tap, spokenHere, src } = listen;
   const router = useRouter();
 
-  // The recording ended at its last sentence: on into the next section or
-  // part, if it has a recording, as a chapter rolls on into the next
-  // (components/bible/ReadAloud.tsx). The page opens that part, so the reader
-  // sees what is read.
-  const ended = loaded && !spokenHere && !audio.playing && audio.duration > 0 && audio.currentTime >= audio.duration - 0.3;
+  // What Listen reads here, for the foot pill on a phone and a tablet
+  // (lib/listen/onPage.ts, build 98 note 2): there Listen stands in the pill,
+  // beside the sound, as a chapter's does, and not in the page.
+  useEffect(() => registerListen({ id, title, by, art }), [id, title, by, art]);
+
+  // A recording read to its end goes on into the next part, as a chapter's
+  // reading does: the next part's recording starts, then its page opens.
+  const ended = loaded && !spokenHere && !playing && listen.duration > 0 && listen.currentTime >= listen.duration - 0.3;
   useEffect(() => {
     if (!ended) return;
     const { next } = stepsOf(id);
@@ -80,9 +78,49 @@ export function ListenHere({ id, title, by, art, className }: { id: string; titl
     });
   }, [ended, id, router]);
 
-  if (!available) return null;
+  if (!listen.available) return null;
+
+  let mark = <Headphones size={16} className="shrink-0" />;
+  if (playing) mark = <Pause size={15} className="shrink-0" />;
+  else if (loaded) mark = <Play size={15} className="shrink-0" />;
+
+  return (
+    <>
+      {/* The word on it says what a tap does, so it carries no pressed state.
+          On a computer only: a phone and a tablet listen from the foot pill
+          (MobileWorkPill, TextPill), where the pill stands (md:hidden
+          native-md-flex), so no Listen button stands in the page there. */}
+      <ReaderPill onClick={tap} className={cn("hidden md:inline-flex native-md-hidden", className)} data-listen-here={id}>
+        {mark}
+        <span className={busy ? "motion-safe:animate-pulse" : undefined}>{playing ? t("readAloud.pause") : t("readAloud.listen")}</span>
+      </ReaderPill>
+      {playing ? spokenHere ? <SpokenFollow src={src} /> : <ListenFollow id={id} /> : null}
+    </>
+  );
+}
+
+/**
+ * Listen on a text, for the page's button on a computer and the foot pill's
+ * on a phone and a tablet (MobileWorkPill, TextPill, ReaderDock): whether it
+ * may read (its recording, else the phone's voice), whether it is the one
+ * loaded and playing, and the tap, which plays and pauses what is loaded or
+ * starts it: the recording, the phone's voice over the page's words, or the
+ * Voice sheet where the phone has none for the language.
+ */
+export function useListenText(text: ListenOnPage | null) {
+  const id = text?.id ?? "";
+  const recorded = useHasListen(text?.id ?? null);
+  const speaks = useCanSpeak();
+  const available = Boolean(text) && (recorded || speaks);
+  const audio = usePersistentAudio();
+  const said = spokenOf(audio.src);
+  const spokenHere = Boolean(text) && said?.kind === "text" && said.id === id;
+  const loaded = Boolean(text) && (listenOfSrc(audio.src)?.id === id || spokenHere);
+  const playing = loaded && audio.playing;
+  const [busy, setBusy] = useState(false);
 
   const tap = async () => {
+    if (!text) return;
     if (loaded) {
       if (playing) pause();
       else play();
@@ -91,32 +129,45 @@ export function ListenHere({ id, title, by, art, className }: { id: string; titl
     setBusy(true);
     const ref = parseListenId(id);
     const page = ref ? textOnPage(ref) : null;
+    // The page's own language: the phone's voice reads the words shown.
     const lang = page?.lang ?? "en";
     const use = await voiceFor(voiceLang(lang), recorded);
-    if (use.kind === "heart") await startListening(id, { title, by, art });
+    if (use.kind === "heart") await startListening(id, { title: text.title, by: text.by, art: text.art });
     else if (use.kind === "none") openVoiceSheet({ none: { lang: voiceLang(lang) } });
     else if (page?.pieces.length) {
       const src = spokenTextSrc(id, lang);
-      const ok = await speakText({ src, pieces: page.pieces.map((p) => ({ text: p.text })), lang: voiceLang(lang), voice: use.voice, title, artist: by, art: art ?? undefined });
+      const ok = await speakText({ src, pieces: page.pieces.map((p) => ({ text: p.text })), lang: voiceLang(lang), voice: use.voice, title: text.title, artist: text.by, art: text.art ?? undefined });
       if (ok) rememberAnchors(src, page.pieces.map((p) => p.anchor));
     }
     setBusy(false);
   };
 
-  // Headphones before it has begun, the pause bars while it plays, a play mark once paused.
-  let mark = <Headphones size={16} className="shrink-0" />;
-  if (playing) mark = <Pause size={15} className="shrink-0" />;
-  else if (loaded) mark = <Play size={15} className="shrink-0" />;
+  return { available, loaded, playing, busy, tap, spokenHere, src: audio.src, duration: audio.duration, currentTime: audio.currentTime };
+}
 
+/**
+ * Listen in a text's foot pill, beside the sound (MobileWorkPill, TextPill):
+ * the Bible's own pill button (components/bible/ReadAloud.tsx,
+ * ReadAloudPillButton), white and softly lit, Pause while it plays.
+ */
+export function ListenPillButton({ text }: { text: ListenOnPage | null }) {
+  const { t } = useTranslate();
+  const { available, playing, busy, tap } = useListenText(text);
+  if (!available) return null;
+  const word = playing ? t("readAloud.pause") : t("readAloud.listen");
   return (
-    <>
-      {/* The word on it says what a tap does, so it carries no pressed state. */}
-      <ReaderPill onClick={tap} className={className} data-listen-here={id}>
-        {mark}
-        <span className={busy ? "motion-safe:animate-pulse" : undefined}>{playing ? t("readAloud.pause") : t("readAloud.listen")}</span>
-      </ReaderPill>
-      {playing ? spokenHere ? <SpokenFollow src={audio.src} /> : <ListenFollow id={id} /> : null}
-    </>
+    <button
+      type="button"
+      data-listen-pill={text?.id}
+      onClick={tap}
+      aria-label={word}
+      className="reader-lit tap-press hit-44 ms-1 inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-pill bg-paper px-3 font-sans text-ui font-semibold text-night focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper min-[390px]:px-4"
+    >
+      {playing ? <Pause size={14} className="shrink-0" /> : <Play size={14} className={cn("shrink-0", busy && "motion-safe:animate-pulse")} />}
+      <span aria-hidden className="max-[390px]:hidden">
+        {word}
+      </span>
+    </button>
   );
 }
 

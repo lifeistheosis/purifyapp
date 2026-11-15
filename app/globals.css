@@ -1166,6 +1166,16 @@ html.reader-focus.has-reader-dock {
  --reader-dock-room: 0px;
  --now-playing-h: 64px;
 }
+/* A text's own pill (components/reading/TextPill.tsx: a life, a study's
+   part, an event, build 98 note 2) stands at the foot of a page that keeps
+   the tab bar's room only (.safe-pb): while it stands, the page keeps the
+   pill's room too, and the card's while it plays, as a reader's page does
+   (.safe-pb-reader), so neither covers the page's last lines. On a look
+   with a foot, the same within its room (the phone's block, "a look with a
+   foot", below). */
+html.is-native.has-text-pill .safe-pb {
+ padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + var(--reader-dock-room, 0px) + 68px);
+}
 :where([data-motion="reduce"]) .reader-dock,
 :where([data-motion="reduce"]) .reader-dock-card,
 :where([data-motion="reduce"]) .reader-dock-pill,
@@ -13564,6 +13574,9 @@ html[data-look]:not([data-look="nightsky"], [data-look="linen"]):where([data-mot
  }
  html.is-native[data-look]:not([data-look="nightsky"], [data-look="linen"]) .safe-pb-reader {
   padding-bottom: max(calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + var(--reader-dock-room, 0px) + var(--reader-pill-extra, 0px) + 68px), calc(var(--inset-bottom) + var(--foot-clear)));
+ }
+ html.is-native.has-text-pill[data-look]:not([data-look="nightsky"], [data-look="linen"]) .safe-pb {
+  padding-bottom: max(calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + var(--reader-dock-room, 0px) + 68px), calc(var(--inset-bottom) + var(--foot-clear)));
  }
  html[data-look]:not([data-look="nightsky"], [data-look="linen"]) body > .min-h-screen:not(:has(.safe-pb)) {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--foot-clear));

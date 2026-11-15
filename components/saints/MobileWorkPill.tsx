@@ -14,6 +14,13 @@ import { openWorkContents } from "@/lib/saints/workNow";
 import { useOverlayOpen } from "@/lib/ui/overlay";
 import { KEPT_AT, blockAt, gliding, placeIn, visibleBand } from "@/lib/ui/readingPlace";
 
+import { HOSTS_EVERYTHING, NOTHING, useDockShows } from "@/components/bible/MobileChapterPill";
+import { ReaderDock } from "@/components/bible/ReaderDock";
+import { ListenPillButton, useListenText } from "@/components/reading/ListenHere";
+import { listenFor, useListenOnPage } from "@/lib/listen/onPage";
+import { useOwnPlayer } from "@/lib/player/pagePlayer";
+import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+
 import { usePartWords } from "./partWords";
 import { WORK_HEAD_ID } from "./WorkHead";
 import { textDir } from "@/lib/i18n/textDir";
@@ -89,6 +96,18 @@ export function MobileWorkPill({
   const { t } = useTranslate();
   const { pill, sayPill } = usePartWords();
   const covered = useOverlayOpen();
+  // Listen, as a chapter of the Bible listens (build 98 note 2): in the pill
+  // beside the sound, reading the part shown (lib/listen/onPage.ts: a council
+  // holds every section's), and no Listen in the page on a phone. While
+  // anything is loaded the pill is the reader's dock, one card for the
+  // player and the work's own row, and the mini player steps aside, as on
+  // the Bible (MobileChapterPill): one bar at the foot, never two.
+  const text = listenFor(useListenOnPage(), head.n);
+  const listen = useListenText(text);
+  const dockShows = useDockShows();
+  useOwnPlayer(dockShows ? HOSTS_EVERYTHING : NOTHING);
+  const { src } = usePersistentAudio();
+  const docked = dockShows && Boolean(src);
   // Every name shown whole, never cut at its end (the arbiter, 2026-11-11, on
   // checkMock's cut rule; a phone of 320 has 96px for it). The names start as
   // the work keeps them and step down, for the whole work at once, until none
@@ -140,6 +159,26 @@ export function MobileWorkPill({
   }, []);
   // 44 to the touch: h-10 drew 42.5px at the reader's text size (checkMock, 2026-11-10).
   const arrow = "h-11 w-11 shrink-0 inline-flex items-center justify-center";
+  const prevLabel = prev ? t("bible.previousTargetAria", { book: pill(prev), chapter: "" }).trim() : t("bible.noPreviousChapter");
+  const nextLabel = next ? t("bible.nextTargetAria", { book: pill(next), chapter: "" }).trim() : t("bible.noNextChapter");
+  const pickLabel = t("bible.pickChapterCurrentAria", { book: pill(head), chapter: "" }).trim();
+  if (docked) {
+    return (
+      <ReaderDock
+        name={pill(head)}
+        nameLang={"text" in head.pill.name ? "en" : undefined}
+        prev={prev ? { onGo: () => onGo(prev.n) } : null}
+        next={next ? { onGo: () => onGo(next.n) } : null}
+        prevLabel={prevLabel}
+        nextLabel={nextLabel}
+        pickLabel={pickLabel}
+        covered={covered}
+        onPick={openWorkContents}
+        listenHere={listen.available && !listen.loaded}
+        onListen={listen.tap}
+      />
+    );
+  }
   return (
     <div
       aria-label={t("bible.chapterSwitcher")}
@@ -174,7 +213,7 @@ export function MobileWorkPill({
           type="button"
           disabled={!prev}
           onClick={() => prev && onGo(prev.n)}
-          aria-label={prev ? t("bible.previousTargetAria", { book: pill(prev), chapter: "" }).trim() : t("bible.noPreviousChapter")}
+          aria-label={prevLabel}
           className={cn(arrow, prev ? "text-paper/85 hover:text-paper" : "text-paper/25")}
         >
           <ChevronLeft size={20} className="rtl:-scale-x-100" />
@@ -183,7 +222,7 @@ export function MobileWorkPill({
           type="button"
           aria-haspopup="dialog"
           onClick={openWorkContents}
-          aria-label={t("bible.pickChapterCurrentAria", { book: pill(head), chapter: "" }).trim()}
+          aria-label={pickLabel}
           data-pill-name=""
           className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
         >
@@ -206,13 +245,14 @@ export function MobileWorkPill({
           type="button"
           disabled={!next}
           onClick={() => next && onGo(next.n)}
-          aria-label={next ? t("bible.nextTargetAria", { book: pill(next), chapter: "" }).trim() : t("bible.noNextChapter")}
+          aria-label={nextLabel}
           className={cn(arrow, next ? "text-paper/85 hover:text-paper" : "text-paper/25")}
         >
           <ChevronLeft size={20} className="-scale-x-100 rtl:scale-x-100" />
         </button>
         <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />
         <AmbienceButton variant="pill" />
+        <ListenPillButton text={text} />
       </div>
     </div>
   );

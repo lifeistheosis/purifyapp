@@ -32,8 +32,10 @@ describe("the chapter playing", () => {
     expect(hook).toContain("const loaded = spoken || (!bible && reading?.book === book && reading.chapter === chapter);");
     expect(hook).not.toMatch(/audio\.src\.endsWith/);
 
-    const dock = read("components/bible/ReaderDock.tsx");
-    expect(dock).toContain("const loaded = readingOfSrc(audio.src);");
-    expect(dock).not.toMatch(/audio\.src\.endsWith\(readAloudSrc/);
+    // The dock's Listen is decided by the pill that holds it since build 98 note 2.
+    const pill = read("components/bible/MobileChapterPill.tsx");
+    expect(pill).toContain("const loaded = readingOfSrc(src);");
+    expect(pill).not.toMatch(/src\.endsWith\(readAloudSrc/);
+    expect(read("components/bible/ReaderDock.tsx")).not.toMatch(/audio\.src\.endsWith\(readAloudSrc/);
   });
 });

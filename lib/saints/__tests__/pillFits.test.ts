@@ -148,7 +148,9 @@ describe("the pill", () => {
   });
 
   it("says the full names to a screen reader, whatever it shows", () => {
-    expect(src).toContain('aria-label={t("bible.pickChapterCurrentAria", { book: pill(head), chapter: "" }).trim()}');
+    // Shared by the pill and the dock it becomes while anything plays (build 98 note 2).
+    expect(src).toContain('const pickLabel = t("bible.pickChapterCurrentAria", { book: pill(head), chapter: "" }).trim();');
+    expect(src).toContain("aria-label={pickLabel}");
     expect(src).toContain('t("bible.previousTargetAria", { book: pill(prev), chapter: "" })');
     expect(src).toContain('t("bible.nextTargetAria", { book: pill(next), chapter: "" })');
   });
