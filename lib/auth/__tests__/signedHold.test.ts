@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { ResolvedAuth } from "@/lib/supabase/resolveUser";
 
-import { HOLD_MS, forgetHold, holdStep, type HoldEnv } from "../signedHold";
+import { HOLD_MS, forgetHold, holdStep, signedOutAtOnce, type HoldEnv } from "../signedHold";
 
 // Gate 3c groups 1 and 2: a signed page met by a reader who is not signed in
 // drew an empty waiting screen for 18 to 24 frames, then switched again to
@@ -151,5 +151,35 @@ describe("every signed page that waits before sending a reader on uses the rule"
     const exported = page.slice(page.indexOf("if (IS_STATIC_EXPORT)"), page.indexOf("const supabase"));
     expect(exported).toMatch(/<AccountAuthGate to="\/signin">/);
     expect(exported).not.toMatch(/redirect\(/);
+  });
+});
+
+// /set-password/'s blank (Updates 83, 1 of 8; Updates 90, 1 of 2; Gate 4, 1 of 3; mended by Updates 92). With no
+// session kept on the device the hold asked the session read, and on a cold client that read could outlast
+// HOLD_MS: the bound passed first, the gate drew its waiting line, and its own read sent the reader on 22 frames
+// later. The read can only say what the device keeps, so a device that keeps none is signed out at once.
+describe("a device with no session kept is signed out at once (Updates 92)", () => {
+  it("goes on before any bound passes, however slow the bound", async () => {
+    const path = "/set-password-at-once";
+    const env: HoldEnv = { now: () => 0, here: () => "/settings", wait: () => new Promise(() => {}) };
+    const leave = vi.fn();
+    const first = holdStep(path, signedOutAtOnce, leave, env);
+    expect("wait" in first).toBe(true);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(leave).toHaveBeenCalledTimes(1);
+    expect(leave).toHaveBeenCalledWith("push");
+    // Still holding the page being left while the router takes the reader on: never the waiting line.
+    expect("wait" in holdStep(path, signedOutAtOnce, leave, env)).toBe(true);
+    expect(leave).toHaveBeenCalledTimes(1);
+  });
+
+  it("asks the session read nothing while it holds, so a cold client's slow read cannot pass the bound", () => {
+    const src = fs.readFileSync(path.join(process.cwd(), "lib/auth/signedHold.ts"), "utf8");
+    const hook = /export function useSignedHold[\s\S]*?\n\}/.exec(src)?.[0] ?? "";
+    expect(hook).toContain("holdStep(path, signedOutAtOnce,");
+    expect(hook).not.toMatch(/resolveUser/);
+    // A device with a session kept is never held: it arrives as before.
+    expect(hook).toContain("readLocalSessionUser()) return undefined;");
   });
 });

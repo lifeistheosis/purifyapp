@@ -99,6 +99,9 @@ describe("the words that wear it, at the ink they were measured at", () => {
     // on Light and 4.2:1 on Candlelight, "What the Orthodox believe" 4.0:1 on Light, a name of two lines
     // climbing above the fade's dark foot (round 2's before export, 2026-11-13).
     { file: "components/onboarding/LookingFor.tsx", what: ["an answer's name"], at: [100] },
+    // First focus on Settings, a card's name over its picture: "Daily quiet" in Arabic climbed above the wash's dark
+    // foot at 800 and 1032 and read 4.29:1 on Candlelight with no halo (Gate 4b's fault D, mended by Updates 92).
+    { file: "components/settings/FirstFocus.tsx", what: ["a card's name"], at: [100] },
   ];
 
   for (const { file, what, at } of WORN) {
@@ -113,6 +116,23 @@ describe("the words that wear it, at the ink they were measured at", () => {
       });
     });
   }
+
+  // Gate 4b's fault A (mended by Updates 92): "Private on this device" read 4.50:1 on Light and 4.58:1 on
+  // Candlelight in Arabic, whose thin strokes the three layers cover only in part. It wears the close halo: the
+  // house's three layers and a second at 1px, no wider, on every palette and in an old WebView.
+  it("lays the close halo under You's line on where things are kept", () => {
+    expect(read("components/you/YouIdentity.tsx")).toContain('className="words-halo words-halo-close mb-2.5 font-sans text-caption text-paper"');
+    for (const selector of [".words-halo.words-halo-close", 'html[data-reading-mode="parchment"] .words-halo.words-halo-close']) {
+      const values = [...rule(CSS, selector).matchAll(/text-shadow:\s*([^;]+);/g)].map((m) => m[1].replace(/\s+/g, " ").trim());
+      expect(values, selector).toHaveLength(2);
+      for (const value of values) {
+        const blurs = [...value.matchAll(/(?:^|, )0 0 (\d+)px /g)].map((m) => Number(m[1]));
+        expect(blurs, `${selector}: ${value}`).toEqual([1, 1, 3, 6]);
+        expect(value).not.toMatch(/rgb\(0 0 0|#000\b/);
+      }
+      expect(values[1]).not.toMatch(/rgb\(/);
+    }
+  });
 
   it("leaves no older shadow of its own on You's words", () => {
     expect(CSS).not.toContain(".you-hero-ink");

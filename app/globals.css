@@ -1933,6 +1933,30 @@ html[data-reading-mode="parchment"] .words-halo {
   0 0 3px color-mix(in srgb, var(--color-night) 90%, transparent),
   0 0 6px color-mix(in srgb, var(--color-night) 80%, transparent);
 }
+/* The same halo, closer at the letters, for small words whose strokes are
+   thin (1.9, Gate 4b's fault A, mended by Updates 92). Under a stroke a
+   pixel wide the three layers cover about three quarters of the ground, and
+   the picture shows through the rest: You's "Private on this device" read
+   4.50:1 on Light and 4.58:1 on Candlelight in Arabic, whose strokes are the
+   thinner, over the ladder's dark rungs. A second 1px layer lays the ground
+   under the letters almost whole and reaches no further than the first, so
+   the line looks as it did. lib/ui/__tests__/wordsOnPictures.test.ts holds it. */
+.words-halo.words-halo-close {
+ text-shadow: 0 0 1px rgb(16 16 19 / 0.95), 0 0 1px rgb(16 16 19 / 0.95), 0 0 3px rgb(16 16 19 / 0.9), 0 0 6px rgb(16 16 19 / 0.8);
+ text-shadow:
+  0 0 1px color-mix(in srgb, var(--color-night) 95%, transparent),
+  0 0 1px color-mix(in srgb, var(--color-night) 95%, transparent),
+  0 0 3px color-mix(in srgb, var(--color-night) 90%, transparent),
+  0 0 6px color-mix(in srgb, var(--color-night) 80%, transparent);
+}
+html[data-reading-mode="parchment"] .words-halo.words-halo-close {
+ text-shadow: 0 0 1px rgb(241 232 212 / 0.95), 0 0 1px rgb(241 232 212 / 0.95), 0 0 3px rgb(241 232 212 / 0.9), 0 0 6px rgb(241 232 212 / 0.8);
+ text-shadow:
+  0 0 1px color-mix(in srgb, var(--color-night) 95%, transparent),
+  0 0 1px color-mix(in srgb, var(--color-night) 95%, transparent),
+  0 0 3px color-mix(in srgb, var(--color-night) 90%, transparent),
+  0 0 6px color-mix(in srgb, var(--color-night) 80%, transparent);
+}
 
 /* The bar over the picture: clear, its round buttons on plates, until the
    picture has gone up under it, or the words standing on it have reached it

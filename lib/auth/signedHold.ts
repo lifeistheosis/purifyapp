@@ -4,7 +4,7 @@ import { use, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
-import { resolveUser, type ResolvedAuth } from "@/lib/supabase/resolveUser";
+import type { ResolvedAuth } from "@/lib/supabase/resolveUser";
 
 /**
  * The one rule for a signed page met by a reader who is not signed in (1.9,
@@ -122,6 +122,22 @@ export function forgetHold(path: string): void {
   if (hold && !hold.leaving) holds.delete(path);
 }
 
+/**
+ * The answer for a device with no session kept on it: signed out, at once
+ * (1.9, Updates 92). The hold asked the session read here, and on a cold
+ * client (the Supabase client built, its lock taken, the stored session
+ * looked for, all on a main thread busy with the switch) that read can take
+ * longer than HOLD_MS. Then the bound passed first, the page drew its waiting
+ * line, and its own read sent the reader on a moment later: the blank of 22
+ * frames on the switch into /set-password/ (Updates 83, 1 of 8; Updates 90,
+ * 1 of 2; Gate 4, 1 of 3). The read can only say what the device keeps, and
+ * this device keeps no session, so it is signed out, as YouMobile and the
+ * shop's signed pages already know it (lib/shop/signedOutAtOnce.ts). Nothing
+ * waits on the read, so the bound cannot pass first. A device with a session
+ * kept is never held and arrives as before.
+ */
+export const signedOutAtOnce = (): Promise<ResolvedAuth> => Promise.resolve({ state: "signed-out" });
+
 const noSubscribe = () => () => {};
 
 /**
@@ -134,7 +150,7 @@ export function useSignedHold(path: string, to: string, enabled: () => boolean):
   const router = useRouter();
   const hydrated = useSyncExternalStore(noSubscribe, () => true, () => false);
   if (!hydrated || !enabled() || readLocalSessionUser()) return undefined;
-  const step = holdStep(path, () => resolveUser(), (how) => (how === "push" ? router.push(to) : router.replace(to)));
+  const step = holdStep(path, signedOutAtOnce, (how) => (how === "push" ? router.push(to) : router.replace(to)));
   if ("wait" in step) use(step.wait);
   return "answer" in step ? step.answer : null;
 }
