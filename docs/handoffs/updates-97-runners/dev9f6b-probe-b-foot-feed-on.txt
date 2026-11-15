@@ -1,0 +1,12 @@
+(node:25584) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+page.evaluate: Execution context was destroyed, most likely because of a navigation.
+    at /home/user/purifyapp/docs/handoffs/updates-97-runners/probe97.mjs:75:36 {
+  name: 'Error'
+}
+
+Node.js v22.23.4

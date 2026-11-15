@@ -1,0 +1,40 @@
+(node:26207) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+/history/alaska-mission/ -> Matthew 28:19-20 (on, feed, export) at 2026-11-15T14:23:39.706Z
+1917 F {"path":"/history/alaska-mission/","sy":0,"sh":10499,"column":"21,72 348x10273","plate":"21,72 348x494"}
+1984 F {"path":"/history/alaska-mission/","sy":9277,"sh":10499,"column":"21,-9205 348x10273","plate":"21,-9205 348x494"}
+2517   - div "" from body.min-h-full.flex.flex-col "(function(){try{var t=localSto"
+2517   - div.route-fade "{"@context":"https://schema.or" from main.flex-1.safe-pt.safe-pb "v 1 of 20Matthew28ListenAll bo"
+2517   + div.route-fade "v 1 of 20Matthew28ListenAll bo" in main.flex-1.safe-pt.safe-pb "v 1 of 20Matthew28ListenAll bo"
+2517   - svg "" from span.relative.inline-flex ""
+2517   + svg "" in span.relative.inline-flex ""
+2517   - svg "" from span.relative.inline-flex ""
+2517   + svg "" in span.relative.inline-flex ""
+2601 F {"path":"/bible/matthew/28/","sy":3211,"sh":4055,"keep":"21,81 348x523"}
+2651 F {"path":"/bible/matthew/28/","sy":3209,"sh":4055,"keep":"21,83 348x523"}
+2667 F {"path":"/bible/matthew/28/","sy":3201,"sh":4055,"keep":"21,91 348x523"}
+2684 F {"path":"/bible/matthew/28/","sy":3185,"sh":4055,"keep":"21,107 348x523"}
+2701 F {"path":"/bible/matthew/28/","sy":3159,"sh":4055,"keep":"21,133 348x523"}
+2717 F {"path":"/bible/matthew/28/","sy":3115,"sh":4055,"keep":"21,177 348x523"}
+2734 F {"path":"/bible/matthew/28/","sy":3044,"sh":4055,"keep":"21,248 348x523"}
+2751 F {"path":"/bible/matthew/28/","sy":2932,"sh":4055,"keep":"21,360 348x523"}
+2767 F {"path":"/bible/matthew/28/","sy":2795,"sh":4055,"keep":"21,497 348x523"}
+2784 F {"path":"/bible/matthew/28/","sy":2677,"sh":4055,"keep":"21,615 348x523"}
+2801 F {"path":"/bible/matthew/28/","sy":2587,"sh":4055,"keep":"21,705 348x523"}
+2817 F {"path":"/bible/matthew/28/","sy":2517,"sh":4055,"keep":"21,775 348x523"}
+2834 F {"path":"/bible/matthew/28/","sy":2462,"sh":4055,"keep":"21,830 348x523"}
+2851 F {"path":"/bible/matthew/28/","sy":2416,"sh":4055,"keep":"21,876 348x523"}
+2867 F {"path":"/bible/matthew/28/","sy":2379,"sh":4055,"keep":"21,913 348x523"}
+2884 F {"path":"/bible/matthew/28/","sy":2347,"sh":4055,"keep":"21,945 348x523"}
+2901 F {"path":"/bible/matthew/28/","sy":2319,"sh":4055,"keep":"21,973 348x523"}
+2917 F {"path":"/bible/matthew/28/","sy":2296,"sh":4055,"keep":"21,996 348x523"}
+2917   - div "" from div.min-w-0.mx-auto.w-full "Matthew Chapter 28KJVRead with"
+2917   + section.mt-10.rounded-2xl.border "Discussed in Community1 conver" in div.min-w-0.mx-auto.w-full "Matthew Chapter 28KJVRead with"
+2934 F {"path":"/bible/matthew/28/","sy":2276,"sh":4408,"keep":"21,1368 348x523","disc":"21,912 348x310"}
+2951 F {"path":"/bible/matthew/28/","sy":2258,"sh":4408,"keep":"21,1386 348x523","disc":"21,930 348x310"}
+2967 F {"path":"/bible/matthew/28/","sy":2173,"sh":4408,"keep":"21,1471 348x523","disc":"21,1015 348x310"}
+2984   + div "" in body.min-h-full.flex.flex-col "(function(){try{var t=localSto"
+3001   shift 0.0009 div.flex.h-14.min-w-0 "Matthew28Listen" 646 -> 650 (x 0 -> 0)
+3001   shift 0.0009 div.md:hidden.native-md-flex.fixed "v 19 of 20Matthew28Listen" 650 -> 650 (x 0 -> 0)
+3101   shift 0.0024 div.flex.h-14.min-w-0 "Matthew28Listen" 640 -> 650 (x 0 -> 0)
+3101   shift 0.0024 div.md:hidden.native-md-flex.fixed "v 19 of 20Matthew28Listen" 650 -> 650 (x 0 -> 0)
