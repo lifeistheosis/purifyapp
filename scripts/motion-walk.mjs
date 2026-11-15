@@ -42,6 +42,8 @@
 //   switches, scripts/lib/store-switches.mjs), then, once for each reader:
 //   [SELLS_PLUS=1] NODE_USE_ENV_PROXY=1 node scripts/motion-walk.mjs [out dir] [--only /a/,/b/]
 //     [--workers 2] [--max 30] [--json file] [--shots dir] [--online] [--reduced] [--size 390x844]
+//     [--controls '"Terms"|1 reply']   (only the controls whose name holds one of these,
+//     split on |: a gate measuring named findings again; Gate 3c, 2026-11-15)
 //   node scripts/motion-walk.mjs --self-test [out dir]   (the four checks' own self-tests, in turn)
 //
 // Two workers by default: the screencast sends a frame for every frame that
@@ -79,6 +81,7 @@ const has = (name) => {
   return at >= 0;
 };
 const ONLY = flag("--only")?.split(",") ?? null;
+const CONTROLS = flag("--controls")?.split("|").filter(Boolean) ?? null;
 const WORKERS = Math.max(1, Number(flag("--workers") ?? 2));
 const REDUCED = has("--reduced");
 const MODE = REDUCED ? "reduce" : "on";
@@ -335,6 +338,12 @@ async function walkScreen(ctx, at, kept) {
     const inChrome = await page.evaluate((sel) => [...document.querySelectorAll("[data-tapwalk]")].sort((a, b) => Number(a.dataset.tapwalk) - Number(b.dataset.tapwalk)).map((el) => Boolean(el.closest(sel))), CHROME);
     for (const c of marked.controls) {
       const row = { name: c.name, verdict: "pass", fails: [], meetings: [], cuts: [], passing: [] };
+      if (CONTROLS && !CONTROLS.some((t) => c.name.includes(t))) {
+        row.verdict = "skipped";
+        row.why = "not named by --controls";
+        result.controls.push(row);
+        continue;
+      }
       try {
         if (inChrome[c.i]) {
           const n = chromeSeen.get(c.name) ?? 0;
