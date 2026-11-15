@@ -1,0 +1,7 @@
+g-open-en-390 EXIT 0 16:04:32 written: docs/handoffs/gate-5-walks/g-open-en-390.json
+g-open-ar-390 EXIT 0 16:04:57 written: docs/handoffs/gate-5-walks/g-open-ar-390.json
+g-open-en-800 EXIT 0 16:05:21 written: docs/handoffs/gate-5-walks/g-open-en-800.json
+g-open-ar-800 EXIT 0 16:05:46 written: docs/handoffs/gate-5-walks/g-open-ar-800.json
+g-open-en-1032 EXIT 0 16:06:10 written: docs/handoffs/gate-5-walks/g-open-en-1032.json
+g-open-ar-1032 EXIT 0 16:06:35 written: docs/handoffs/gate-5-walks/g-open-ar-1032.json
+DONE guard walk 16:06:35
