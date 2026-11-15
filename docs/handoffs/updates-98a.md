@@ -30,6 +30,12 @@ The plan, held to the Bible's own components:
 4. A text with no pill (a life, an event; a study's part unless it has parts to turn): a new `TextPill` drawn from `MobileChapterPill`'s pill (the name in the chapter's place, a hairline, the sound, Listen) that becomes the dock while loaded. Those pages then keep the reader's room at their foot (`pb-24 safe-pb-reader`, as `CouncilReader` does), or the pill covers their last lines.
 5. Tests that fail on 78c5297e1: none of the five texts draws Listen in the page on a phone; with something playing each shows one bar, the dock. Then the stills for his yes (a work and a life at rest and playing, the dock on a council, one in Arabic) with `docs/1.9-build/redesign/tools/shots.mjs`, each through `checkMock` with pixels, before any build goes to him.
 
+### Note 14, what is left
+
+1. The end of the change: run `node scripts/motion-walk.mjs <export> --loaded track --shots <dir>` and look at the strips of Today to Bible and Bible to Today. If the dock snaps as the change ends, suspect its own transitions on mount (`.reader-dock` width and height in `app/globals.css`, "The reader's dock") or the cover crop of the two pictures (`::view-transition-old/new(foot-player)`), not the name itself. If the strip is smooth, the box check's threshold is too tight for a morph's sparse screencast frames and wants the judge's two-measure rule.
+2. The sound pass: in `loadedTour`, wait for the Bible's pill before looking for its sound button, and count `[data-reader-pill]` as the foot's surface for `--loaded sound` (on the Bible with only a sound, the pill is the surface by design). Then compare with build 98's 56px jump into the Bible.
+3. checkMock with pixels on the Bible with the dock and on Prayers with the mini player (390, 800, 1032; five palettes, fourteen looks, Arabic). The still pictures should not change: the bar was already absent under the dock, and a transition name draws nothing at rest.
+
 ### Seen on the way
 
 - On build 98, Discover to Bible with a track loaded: the dock's "1×" (Speed) jumped 52px sideways in one frame about 1.1 to 1.4s after the tap (twice in three runs): something in the dock's chapter row changed width after the dock arrived. In `ReaderDock.tsx` (the row's left group or the timer). See the note for whether it repeats on the fix.
