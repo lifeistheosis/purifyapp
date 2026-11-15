@@ -14,10 +14,11 @@
 // withhold it.
 
 import { use, useEffect, useSyncExternalStore, type ReactNode } from "react";
-import { useSelectedLayoutSegments } from "next/navigation";
+import { usePathname, useSelectedLayoutSegments } from "next/navigation";
 
 import {
   armLanguageDeadline,
+  frontDoorAwaitsScreen,
   languageSettled,
   languageSettledPromise,
   subscribeLanguageSettled,
@@ -31,15 +32,31 @@ function notOnTheServer(): boolean {
 }
 
 export function LaunchLanguageGate({ children }: { children: ReactNode }) {
-  const settled = useSyncExternalStore(
+  const pathname = usePathname();
+  const drawn = useSyncExternalStore(
     subscribeLanguageSettled,
-    languageSettled,
+    () => todayMayDraw(pathname),
     notOnTheServer,
   );
   useEffect(() => {
     armLanguageDeadline();
   }, []);
-  return settled ? <>{children}</> : null;
+  return drawn ? <>{children}</> : null;
+}
+
+/**
+ * Today is drawn once the language is settled, and not while the front door
+ * waits for another screen (Updates 87; lib/i18n/launchLanguage.ts,
+ * frontDoorAwaitsScreen). Then the language settling changes nothing here: no
+ * Today drawn under the slate only to be replaced, and no update of this gate
+ * landing on the held screen's way. If that screen never comes, the router
+ * brings the front door under its own address (NativeBridge), and Today is drawn.
+ */
+export function todayMayDraw(pathname: string | null | undefined): boolean {
+  return (
+    languageSettled() &&
+    !frontDoorAwaitsScreen(isNativeClient(), document.querySelector(FRONT_DOOR_MARK) !== null, pathname)
+  );
 }
 
 /**

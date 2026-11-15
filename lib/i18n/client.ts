@@ -44,6 +44,13 @@ const CATALOG_IMPORTS: Record<
  * like the server-side getMessages() so missing keys fall back.
  */
 export async function loadClientCatalog(code: LocaleCode): Promise<Messages> {
+  // The catalog asked for ahead (readyLanguageAhead below), taken once: a later
+  // ask after a failure is a fresh try, as it always was.
+  if (ahead && ahead.code === code) {
+    const early = ahead.catalog;
+    ahead = null;
+    return early;
+  }
   const en = (await import("./messages/en.json")).default as Messages;
   if (code === "en") return { ...en };
   try {
@@ -117,6 +124,43 @@ export async function facesReady(messages: Messages, ms: number = FACES_WAIT_MS)
     }),
   ]);
   if (timer) clearTimeout(timer);
+}
+
+// THE LANGUAGE ASKED FOR AS SOON AS THE APP'S CODE RUNS (Updates 87, 1.9).
+//
+// In the apps, a screen opened straight away is held until the reader's language
+// is on the screen (components/i18n/LaunchLanguageGate.tsx). Its catalog and faces
+// were asked for only once the first screen had been brought to life and the
+// device had been asked what it remembers (LocaleBootstrap), so the wait began
+// late. But the language pre-paint (./languagePrepaint.ts) has already decided,
+// before the first paint, as LocaleBootstrap decides, and put it on <html>. So
+// both are asked for here, when the app's code first runs. Nothing is decided or
+// drawn here: LocaleBootstrap still decides, and loadClientLanguage still waits
+// for the faces, now mostly already loaded. A guess the device then overrules
+// costs one catalog file read for nothing.
+
+let ahead: { code: LocaleCode; catalog: Promise<Messages> } | null = null;
+
+/** Ask for the language the pre-paint put on <html>, in the apps, once. Never throws. */
+export function readyLanguageAhead(native: () => boolean): void {
+  try {
+    if (typeof document === "undefined" || ahead || !native()) return;
+    const code = document.documentElement.lang;
+    if (!code || code === "en" || !Object.prototype.hasOwnProperty.call(CATALOG_IMPORTS, code)) return;
+    const asked = code as Exclude<LocaleCode, "en">;
+    const catalog = (async () => {
+      const en = (await import("./messages/en.json")).default as Messages;
+      try {
+        return { ...en, ...((await CATALOG_IMPORTS[asked]()).default as Messages) };
+      } catch {
+        return { ...en };
+      }
+    })();
+    ahead = { code: asked, catalog };
+    void catalog.then((messages) => facesReady(messages)).catch(() => {});
+  } catch {
+    // Nothing here may stop the app: LocaleBootstrap asks for it in its own time.
+  }
 }
 
 /**

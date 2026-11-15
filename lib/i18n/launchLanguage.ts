@@ -52,6 +52,22 @@ export function launchLanguage(
   return negotiateFromLanguages(deviceLanguages) ?? built;
 }
 
+/**
+ * In the apps, whether the front door's document came up under another screen's
+ * address (Updates 87). That is a screen opened straight away, a notification or
+ * a link or a reload: the router is bringing it (components/native/NativeBridge.tsx,
+ * a refresh, or the front door's own address when the refresh brings nothing,
+ * lib/nav/entry.ts), and it waits for the reader's language
+ * (components/i18n/LaunchLanguageGate.tsx). Today is not drawn under it: measured
+ * on the export (docs/handoffs/updates-87.md), Today was drawn under the slate at
+ * the moment the language settled, a 0.6s task with its own fetches on the screen's
+ * way, and the held screen then waited seconds for some other update to start it.
+ */
+export function frontDoorAwaitsScreen(native: boolean, frontDoor: boolean, pathname: string | null | undefined): boolean {
+  if (!native || !frontDoor || !pathname) return false;
+  return (pathname.replace(/\/+$/, "") || "/") !== "/";
+}
+
 let settled = false;
 let deadline: ReturnType<typeof setTimeout> | undefined;
 const listeners = new Set<() => void>();

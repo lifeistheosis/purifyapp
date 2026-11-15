@@ -12,7 +12,7 @@ import {
   type ReactNode,
 } from "react";
 import { getLocale, type LocaleCode } from "@/lib/i18n/locales";
-import { loadClientLanguage } from "@/lib/i18n/client";
+import { loadClientLanguage, readyLanguageAhead } from "@/lib/i18n/client";
 import { languageSettled, subscribeLanguageSettled } from "@/lib/i18n/launchLanguage";
 import { APPLIED_LANGUAGE_KEY } from "@/lib/i18n/languagePrepaint";
 import { isNativeClient } from "@/lib/platform/native";
@@ -21,6 +21,11 @@ import { interpolate, resolvePluralKey } from "@/lib/i18n/plural";
 import enCatalog from "@/lib/i18n/messages/en.json";
 
 type Messages = Record<string, string>;
+
+// In the apps, the reader's language is asked for when this code first runs,
+// from the language pre-paint's decision, before the first screen is brought to
+// life (Updates 87; lib/i18n/client.ts, readyLanguageAhead).
+if (typeof window !== "undefined") readyLanguageAhead(isNativeClient);
 
 /** Stable identity for the no-provider case, so useTranslate's memo below
  * does not invalidate on every call against a fresh `{}`. */
