@@ -96,4 +96,4 @@ With the three app files stashed and the tests kept, 8 of 10 cases fail:
 
 ## Budget
 
-get_session read 91,664 at the start and never moved. My own count was about 150,000 at the end. Nothing new was started past it except this baton and the report.
+get_session read 91,664 from the start until the baton, then 267,362 at the end (it runs far ahead, as the brief says). My own count was about 155,000 at the end. Nothing new was started past 150,000 except this baton and the report.
