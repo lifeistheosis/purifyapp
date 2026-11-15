@@ -67,4 +67,4 @@ Every run walked 1 of 1 screens with 0 errors; no other finding. **The blank is 
 
 ## Budget
 
-get_session read 103,424 at every call from the first hour on (it stopped moving, as the brief warned). My own count passed 150,000 while the checklist ran and was about 195,000 at the end. After 150,000 I ran only the plan's own steps (the push, the one export, the self-test, the walk and checkMock), all in the background.
+get_session read 103,424 from the first hour until the end (it stopped moving, as the brief warned), then 246,204 at the last read. My own count passed 150,000 while the checklist ran and was about 195,000 at the end. After 150,000 I ran only the plan's own steps (the push, the one export, the self-test, the walk and checkMock), all in the background.
