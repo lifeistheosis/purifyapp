@@ -1,0 +1,8 @@
+The Plus stills are of a reader who is not signed in, so the dock at the foot says "Sign in to continue". The price, the terms and the button are as the code has them; nothing about them was changed.
+The Voice sheet is drawn on stand-ins: only Heart has recordings and a real sample today. Emma, Michael and Fenrir have no audio in the app yet, so their samples and downloads are shown as states and fetch nothing, and no size is shown. Heart says "Included" because its recordings stream.
+The journal's Quote uses the library search Updates 98c built this week. Scripture and a quote of your own are for everyone; a passage from the rest of the library wears the Plus mark for a reader without Plus, and a tap opens Plus.
+A note written on a verse or on a Father's words, opened from the Bible or from a work, still opens the old sheet. The page replaces the sheet everywhere the journal itself opens it.
+The plus standing above the keys is built for Android. The stills' browser has no keyboard, so the keyboard still is the screen above the keys at that height; the freeze you reported is native and only a phone shows it (Updates 98c's mend).
+On You, a new reader no longer sees "What will you learn?" until something is kept: the one invitation is the only empty thing on the page.
+The Plus button in the header still opens the upgrade sheet with its old rows. This round redraws the Plus page only.
+The present screens were taken from the branch as it stood when the round began (116907367). The proposed screens stand on the branch after Updates 98a, 98b, 98c and 98f pushed (a96345f91).

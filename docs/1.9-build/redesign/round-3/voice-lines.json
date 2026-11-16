@@ -1,0 +1,164 @@
+{
+ "before": [
+  {
+   "name": "voice",
+   "to": "/bible/john/1",
+   "set": {
+    "purify:secondchance.done": "1"
+   },
+   "wait": 2500,
+   "steps": [
+    {
+     "tap": "[data-read-aloud-play]",
+     "then": 2500
+    },
+    {
+     "tap": "[data-reader-dock] .reader-dock-card button",
+     "then": 1500
+    },
+    {
+     "tap": "[role=dialog] button[aria-haspopup=dialog]",
+     "then": 1200
+    },
+    {
+     "tap": "[class*='space-y-2.5'] > button[aria-haspopup=dialog] ~ button[aria-haspopup=dialog]",
+     "then": 1500
+    }
+   ],
+   "clock": "2026-11-13T08:30:00"
+  }
+ ],
+ "after": [
+  {
+   "name": "voice",
+   "to": "/bible/john/1",
+   "selector": "[role=dialog]:has([data-voice-row])",
+   "set": {
+    "purify:secondchance.done": "1"
+   },
+   "wait": 2500,
+   "steps": [
+    {
+     "eval": "window.Capacitor={...(window.Capacitor||{}),getPlatform:()=>'android'};window.dispatchEvent(new CustomEvent('purify:entitlements-changed'))"
+    },
+    {
+     "tap": "[data-read-aloud-play]",
+     "then": 2500
+    },
+    {
+     "tap": "[data-reader-dock] .reader-dock-card button",
+     "then": 1500
+    },
+    {
+     "tap": "[role=dialog] button[aria-haspopup=dialog]",
+     "then": 1200
+    },
+    {
+     "tap": "[data-more-row=voice]",
+     "then": 1500
+    }
+   ],
+   "clock": "2026-11-13T08:30:00"
+  },
+  {
+   "name": "voice-plus",
+   "to": "/bible/john/1",
+   "selector": "[role=dialog]:has([data-voice-row])",
+   "set": {
+    "purify:secondchance.done": "1",
+    "purify:listen.voice": "{\"en\":\"emma\"}",
+    "purify:listen.voicesKept": "{\"emma\":{\"state\":\"kept\"},\"michael\":{\"state\":\"coming\",\"share\":0.42}}"
+   },
+   "wait": 2500,
+   "steps": [
+    {
+     "tap": "[data-read-aloud-play]",
+     "then": 2500
+    },
+    {
+     "tap": "[data-reader-dock] .reader-dock-card button",
+     "then": 1500
+    },
+    {
+     "tap": "[role=dialog] button[aria-haspopup=dialog]",
+     "then": 1200
+    },
+    {
+     "tap": "[data-more-row=voice]",
+     "then": 1500
+    }
+   ],
+   "clock": "2026-11-13T08:30:00"
+  },
+  {
+   "name": "voice-sample",
+   "to": "/bible/john/1",
+   "selector": "[role=dialog]:has([data-voice-row])",
+   "set": {
+    "purify:secondchance.done": "1"
+   },
+   "wait": 2500,
+   "steps": [
+    {
+     "eval": "window.Capacitor={...(window.Capacitor||{}),getPlatform:()=>'android'};window.dispatchEvent(new CustomEvent('purify:entitlements-changed'))"
+    },
+    {
+     "tap": "[data-read-aloud-play]",
+     "then": 2500
+    },
+    {
+     "tap": "[data-reader-dock] .reader-dock-card button",
+     "then": 1500
+    },
+    {
+     "tap": "[role=dialog] button[aria-haspopup=dialog]",
+     "then": 1200
+    },
+    {
+     "tap": "[data-more-row=voice]",
+     "then": 1500
+    },
+    {
+     "eval": "HTMLMediaElement.prototype.play=function(){return Promise.resolve()};Object.defineProperty(HTMLMediaElement.prototype,'currentTime',{configurable:true,get(){return 8},set(){}})"
+    },
+    {
+     "tap": "[data-voice-row=emma] button",
+     "then": 700
+    }
+   ],
+   "clock": "2026-11-13T08:30:00"
+  },
+  {
+   "name": "voice-plus-arabic",
+   "to": "/bible/john/1",
+   "lang": "ar",
+   "selector": "[role=dialog]:has([data-voice-row])",
+   "set": {
+    "purify:secondchance.done": "1",
+    "CapacitorStorage.purify_locale": "ar",
+    "purify:listen.voice": "{\"en\":\"emma\"}",
+    "purify:listen.voicesKept": "{\"emma\":{\"state\":\"kept\"},\"michael\":{\"state\":\"coming\",\"share\":0.42}}"
+   },
+   "wait": 3000,
+   "steps": [
+    {
+     "tap": "[data-read-aloud-play]",
+     "then": 2500
+    },
+    {
+     "tap": "[data-reader-dock] .reader-dock-card button",
+     "then": 1500
+    },
+    {
+     "tap": "[role=dialog] button[aria-haspopup=dialog]",
+     "then": 1200
+    },
+    {
+     "tap": "[data-more-row=voice]",
+     "then": 1500
+    }
+   ],
+   "clock": "2026-11-13T08:30:00"
+  }
+ ]
+}

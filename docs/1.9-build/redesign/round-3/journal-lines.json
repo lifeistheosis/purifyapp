@@ -1,0 +1,109 @@
+{
+ "before": [
+  {
+   "name": "journal",
+   "to": "/journal",
+   "clock": "2026-11-15T16:13:00",
+   "wait": 5000,
+   "set": {
+    "purify:secondchance.done": "1"
+   },
+   "steps": [
+    {
+     "tap": "[data-journal-today] li button",
+     "then": 2500
+    }
+   ]
+  }
+ ],
+ "after": [
+  {
+   "name": "journal",
+   "to": "/journal",
+   "clock": "2026-11-15T16:13:00",
+   "wait": 5000,
+   "set": {
+    "purify:secondchance.done": "1"
+   },
+   "steps": [
+    {
+     "tap": "[data-journal-today] li button",
+     "then": 2500
+    }
+   ]
+  },
+  {
+   "name": "journal-written",
+   "to": "/journal/write",
+   "clock": "2026-11-15T16:13:00",
+   "wait": 5000,
+   "set": {
+    "purify:secondchance.done": "1",
+    "purify:journal.draft": "{\"kind\":\"reflection\",\"body\":\"# A quiet morning\\n\\n[[cover arsenius-the-great.jpg]]\\n\\nA quiet morning. I read slowly today.\\n\\n[[library /bible/john/1#v5]]\\n> And the light shineth in darkness; and the darkness comprehended it not.\\n> ~ John 1:5\",\"source\":{\"type\":\"reading\",\"kind\":\"epistle\",\"book\":\"ephesians\",\"chapter\":2,\"from\":14,\"to\":22,\"label\":\"Epistle · Ephesians 2:14-22\"}}"
+   },
+   "full": true
+  },
+  {
+   "name": "journal-sheet",
+   "to": "/journal/write",
+   "clock": "2026-11-15T16:13:00",
+   "wait": 5000,
+   "set": {
+    "purify:secondchance.done": "1",
+    "purify:journal.draft": "{\"kind\":\"reflection\",\"body\":\"# A quiet morning\\n\\n[[cover arsenius-the-great.jpg]]\\n\\nA quiet morning. I read slowly today.\\n\\n[[library /bible/john/1#v5]]\\n> And the light shineth in darkness; and the darkness comprehended it not.\\n> ~ John 1:5\",\"source\":{\"type\":\"reading\",\"kind\":\"epistle\",\"book\":\"ephesians\",\"chapter\":2,\"from\":14,\"to\":22,\"label\":\"Epistle · Ephesians 2:14-22\"}}"
+   },
+   "steps": [
+    {
+     "tap": "[data-journal-add]",
+     "then": 1500
+    }
+   ]
+  },
+  {
+   "name": "journal-quote",
+   "to": "/journal/write",
+   "clock": "2026-11-15T16:13:00",
+   "wait": 5000,
+   "set": {
+    "purify:secondchance.done": "1",
+    "purify:journal.draft": "{\"kind\":\"reflection\",\"body\":\"# A quiet morning\\n\\n[[cover arsenius-the-great.jpg]]\\n\\nA quiet morning. I read slowly today.\\n\\n[[library /bible/john/1#v5]]\\n> And the light shineth in darkness; and the darkness comprehended it not.\\n> ~ John 1:5\",\"source\":{\"type\":\"reading\",\"kind\":\"epistle\",\"book\":\"ephesians\",\"chapter\":2,\"from\":14,\"to\":22,\"label\":\"Epistle · Ephesians 2:14-22\"}}"
+   },
+   "steps": [
+    {
+     "tap": "[data-journal-add]",
+     "then": 1500
+    },
+    {
+     "tap": "[data-write-sheet='menu'] li:nth-child(2) button",
+     "then": 1500
+    },
+    {
+     "eval": "(()=>{const i=document.querySelector('[data-quote-library] input');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(i,\"Chrysostom\");i.dispatchEvent(new Event('input',{bubbles:true}));})()"
+    },
+    {
+     "wait": 1200
+    }
+   ]
+  },
+  {
+   "name": "journal-keys",
+   "to": "/journal/write",
+   "clock": "2026-11-15T16:13:00",
+   "wait": 5000,
+   "height": 508,
+   "set": {
+    "purify:secondchance.done": "1",
+    "purify:journal.draft": "{\"kind\":\"reflection\",\"body\":\"\",\"source\":{\"type\":\"reading\",\"kind\":\"epistle\",\"book\":\"ephesians\",\"chapter\":2,\"from\":14,\"to\":22,\"label\":\"Epistle · Ephesians 2:14-22\"}}"
+   },
+   "steps": [
+    {
+     "tap": "[data-journal-composer] [data-page-text] textarea",
+     "then": 600
+    },
+    {
+     "eval": "document.documentElement.setAttribute('data-keyboard','up')"
+    }
+   ]
+  }
+ ]
+}

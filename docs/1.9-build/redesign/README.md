@@ -8,7 +8,7 @@ Build 95 note 25 (his word, 2026-11-13 about 08:13 UTC: "I want everything fixed
 |---|---|---|---|
 | 1 | Today, and the four house rules | https://claude.ai/artifact/7i93tDncctM4SU3qeqPjb4 | his yes to all five, 2026-11-13 20:47 UTC; pushed by Updates 33, 2026-11-14 (`7f19d566` to `e1dfd24b`, with ten faults its export found, each mended; the record under note 25 in `docs/1.9-build/notes/build-95.md`) |
 | 2 | The first launch, Prayers, Discover | https://claude.ai/artifact/NhoSL95Kip76jng4gemM6z | his no to all three (2026-11-13 by 22:05 UTC: "no to all 3"); kept as the record, for the Vault; nothing applied |
-| 3 | The Bible's opening, You, Plus | | not begun |
+| 3 | The journal's page, the chants door, You and Profile, the Bible's opening, Plus, a plan's page, the Voice sheet | https://claude.ai/artifact/RUdzkvpzsGNLqGpEqMMr51 | drawn 2026-11-16, seven screens, stills only; waits for his yes or no a screen at a time; nothing applied (`round-3/README.md`, `round-3/held.patch`) |
 | 4 | Saints, Community, the shop | | not begun |
 | 5 | The account's pages, Sign in, Theology, the doctrine lists, the near-empty screens | | not begun |
 
