@@ -33,6 +33,7 @@ import { useCallback, useEffect, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { useKeptSweep } from "@/lib/ui/keptSweep";
 import { scrollBehavior } from "@/lib/ui/motion";
+import { withinRow } from "@/lib/ui/railRange";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { useScrollTicks } from "@/lib/ui/scrollTicks";
 
@@ -127,10 +128,14 @@ export function ScrollRail({
     const row = el.getBoundingClientRect();
     const item = target.getBoundingClientRect();
     const delta = item.left + item.width / 2 - (row.left + row.width / 2);
-    if (Math.abs(delta) > 1) {
+    // A place inside the row's range, not a distance: right to left, a
+    // distance that ran into the start left the row a pixel past it
+    // (lib/ui/railRange.ts).
+    const left = withinRow(el.scrollLeft + delta, el, getComputedStyle(el).direction === "rtl");
+    if (Math.abs(left - el.scrollLeft) >= 1) {
       // Gliding follows the motion switch (lib/ui/motion.ts), like every
       // other scroll the app starts.
-      el.scrollBy({ left: delta, behavior: settled.current ? scrollBehavior() : ("instant" as ScrollBehavior) });
+      el.scrollTo({ left, behavior: settled.current ? scrollBehavior() : ("instant" as ScrollBehavior) });
     }
     settled.current = true;
     measure();
@@ -140,7 +145,8 @@ export function ScrollRail({
     const el = track.current;
     if (!el) return;
     const rtl = getComputedStyle(el).direction === "rtl";
-    el.scrollBy({ left: dir * (rtl ? -1 : 1) * Math.round(el.clientWidth * 0.7), behavior: scrollBehavior() });
+    const left = withinRow(el.scrollLeft + dir * (rtl ? -1 : 1) * Math.round(el.clientWidth * 0.7), el, rtl);
+    el.scrollTo({ left, behavior: scrollBehavior() });
   };
 
   return (
