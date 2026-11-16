@@ -6,7 +6,8 @@
 //   node scripts/gate/listen-walk.mjs <export> --carry [--reduce]   (the dock's cover tapped: Now Playing carries it up; never with motion reduced)
 //   --trace <dir>: a Chrome trace of the Listen tap and of the dock's turn, each from the tap, for
 //   scripts/gate/trace-frames.mjs (Updates 98k: the work's 117ms task while its page glides to the reading)
-//   (--why adds what made each restyle: scripts/gate/trace-restyles.mjs reads it; Updates 98l)
+//   (--why adds what made each restyle: scripts/gate/trace-restyles.mjs reads it; --roots prints every write on
+//   <html> and <body>; --block-class a,b never adds those classes to <html>, to bisect a restyle; Updates 98l)
 //
 // His words (2026-11-15): "make the listen system the same as the Bible listening system (UI/ux)
 // one so there isn't a floating button". On a life, an event, a study's part, a Father's work and
@@ -53,6 +54,8 @@ const WHY = has("--why");
 // --roots: every class and inline style written on <html> and <body> in each judged moment, in order, from the tap
 // (what every element inherits changes there; a MutationObserver, which forces no style).
 const ROOTS = has("--roots");
+// --block-class a,b: a diagnosis: these classes are never added to <html>, to find which one restyles every element.
+const BLOCK = flag("--block-class")?.split(",") ?? null;
 const ONLY = flag("--only")?.split(",") ?? null;
 const CHECK = has("--check");
 const COMPUTER = has("--computer");
@@ -152,6 +155,14 @@ for (const text of TEXTS) {
     } catch {}
   }, [LANG, REDUCE]);
   await ctx.addInitScript(fakeVoice);
+  if (BLOCK)
+    await ctx.addInitScript((names) => {
+      const add = DOMTokenList.prototype.add;
+      DOMTokenList.prototype.add = function (...tokens) {
+        const root = document.documentElement;
+        return add.apply(this, root && this === root.classList ? tokens.filter((t) => !names.includes(t)) : tokens);
+      };
+    }, BLOCK);
   if (ROOTS)
     await ctx.addInitScript(() => {
       window.__roots = [];
