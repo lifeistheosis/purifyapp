@@ -99,9 +99,12 @@ if (ONLINE) argv.splice(argv.indexOf("--online"), 1);
 // Blush, Roses, Lavender, Olive and Stone; the dark looks read like the dark palettes). --light.
 const LIGHT = argv.includes("--light");
 if (LIGHT) argv.splice(argv.indexOf("--light"), 1);
-const SEVEN = ["Desert", "Jordan", "Blush", "Roses", "Lavender", "Olive", "Stone"];
+// The light looks are those worn on the parchment ground, read from the registry: the list was written by name, and
+// when Desert left the registry (Linen is the seventh now) the light walk refused to start (Gate 6b, 2026-11-16).
+// Seven are still asked for, and any other count is said.
+const SEVEN = THEMES.filter(([, mode]) => mode === "parchment").map(([label]) => label);
 const LIGHT_LOOKS = THEMES.filter(([label]) => SEVEN.includes(label));
-if (LIGHT && LIGHT_LOOKS.length !== SEVEN.length) throw new Error(`--light: mock-check's looks lack ${SEVEN.filter((l) => !LIGHT_LOOKS.some(([x]) => x === l)).join(", ")}`);
+if (LIGHT && SEVEN.length !== 7) throw new Error(`--light: the registry has ${SEVEN.length} light looks (${SEVEN.join(", ")}), not seven`);
 // Every palette and look at once, all 21 (Updates 92, 2026-11-15: the brief asked checkMock on all 21). --every.
 const EVERY_ONE = argv.includes("--every");
 if (EVERY_ONE) argv.splice(argv.indexOf("--every"), 1);
