@@ -22,15 +22,10 @@ import { Pause } from "@/components/ui/icons/Pause";
 import { Play } from "@/components/ui/icons/Play";
 import { nextChapter } from "@/lib/bible/books";
 import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
-import { anchorsOf } from "@/lib/listen/speech/pageText";
-import { onSpokenEnd } from "@/lib/listen/speech/speak";
-import { spokenBibleSrc, spokenOf } from "@/lib/listen/speech/spoken";
-import { useCanSpeak } from "@/lib/listen/speech/voices";
-import { captionLines, lineAt } from "@/lib/player/captions";
 import { hasReadAloud, readAloudManifest, readingOfSrc, useHasReadAloud, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 import { listenToChapter } from "@/lib/readAloud/play";
 import { askToListenAt, readingCame, takeListenAsk } from "@/lib/readAloud/rollOn";
-import { currentTimeNow, getAudioSnapshot, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+import { currentTimeNow, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { cn } from "@/lib/cn";
 import { goToReadingPlace, inReadingZone, visibleBand } from "@/lib/ui/readingPlace";
 
@@ -46,28 +41,26 @@ const HANDS_OFF_MS = 4000;
  * plays (the week's readings can save today's on opening,
  * lib/readAloud/week.ts), and by address the page then lost it, Listen
  * offered again, the verse no longer following the voice, and no rolling on
- * into the next chapter. The phone's voice (1.9, build 95 note 25) by its
- * spoken address, which names the Bible too (lib/listen/speech/spoken.ts).
+ * into the next chapter. Never a chapter shown in a downloaded Bible: Heart
+ * reads the English.
  */
 function useThisChapter(book: string, chapter: number, bible: string | null = null) {
   const audio = usePersistentAudio();
   const reading = readingOfSrc(audio.src);
-  const said = spokenOf(audio.src);
-  const spoken = said?.kind === "bible" && said.book === book && said.chapter === chapter && said.bible === bible;
-  const loaded = spoken || (!bible && reading?.book === book && reading.chapter === chapter);
-  return { audio, loaded, spoken, playing: loaded && audio.playing };
+  const loaded = !bible && reading?.book === book && reading.chapter === chapter;
+  return { audio, loaded, playing: loaded && audio.playing };
 }
 
 /**
- * Whether a chapter can be listened to (1.9, build 95 note 25): the English
- * where it has its recording, and every chapter, in the English or a Bible the
- * reader downloaded, where the device can speak (the phone's voices, free for
- * every reader, his "all recs" of 2026-11-13).
+ * Whether a chapter can be listened to: the English where Heart's recording
+ * of it is (lib/readAloud/chapters.ts, the New Testament today), the only
+ * voice since his word of 2026-11-16 (about 22:35 UTC: "only leave one the
+ * standard prerecorded voices"). Never over a downloaded Bible, which Heart
+ * does not read.
  */
 function useListens(book: string, chapter: number, bible: DownloadableBible | null): boolean {
   const recorded = useHasReadAloud(book, chapter);
-  const speaks = useCanSpeak();
-  return bible ? speaks : recorded || speaks;
+  return !bible && recorded;
 }
 
 /**
@@ -140,7 +133,7 @@ export function ReadAloudPillButton({
   chapter: number;
   title: string;
   wordGivesWay?: boolean;
-  /** The downloaded Bible the page shows the chapter in: the phone's voice reads it (1.9). */
+  /** The downloaded Bible the page shows the chapter in: no Listen over it, since Heart reads the English. */
   bible?: DownloadableBible | null;
 }) {
   const { t } = useTranslate();
@@ -201,7 +194,7 @@ export function ReadAloudFollow({ book, chapter, bible = null }: { book: string;
   const { t } = useTranslate();
   const router = useRouter();
   const bibleId = bible?.id ?? null;
-  const { audio, loaded, spoken, playing } = useThisChapter(book, chapter, bibleId);
+  const { audio, loaded, playing } = useThisChapter(book, chapter, bibleId);
   const manifest = useRef<ReadAloudManifest | null>(null);
   const lastHand = useRef(0);
   // The website's list can name this chapter after the screen opened (in the apps): the effects below run again then.
@@ -215,11 +208,9 @@ export function ReadAloudFollow({ book, chapter, bible = null }: { book: string;
     void listenToChapter({ book, chapter, title: `${t(`bible.books.${book}`)} ${chapter}`, t, bible }).finally(() => readingCame(book, chapter));
   }, [book, chapter, t, available, bible]);
 
-  // The reading ended at its last verse: on into the next chapter, if it has
-  // one. A recording, where the next has one; the phone's voice, always, read
-  // in the Bible the reader reads (told by the voice's own end, since its clock
-  // does not stop exactly at its length).
-  const ended = loaded && !spoken && !audio.playing && audio.duration > 0 && audio.currentTime >= audio.duration - 0.3;
+  // The reading ended at its last verse: on into the next chapter, where the
+  // next has its recording.
+  const ended = loaded && !audio.playing && audio.duration > 0 && audio.currentTime >= audio.duration - 0.3;
   useEffect(() => {
     if (!ended) return;
     const next = nextChapter(book, chapter);
@@ -227,16 +218,6 @@ export function ReadAloudFollow({ book, chapter, bible = null }: { book: string;
     if (!askToListenAt(next.slug, next.chapter)) return;
     router.push(`/bible/${next.slug}/${next.chapter}`);
   }, [ended, book, chapter, router]);
-  useEffect(
-    () =>
-      onSpokenEnd((src) => {
-        if (src !== spokenBibleSrc(book, chapter, bibleId)) return;
-        const next = nextChapter(book, chapter);
-        if (!next || !askToListenAt(next.slug, next.chapter)) return;
-        router.push(`/bible/${next.slug}/${next.chapter}`);
-      }),
-    [book, chapter, bibleId, router],
-  );
 
   useEffect(() => {
     if (!recorded) return;
@@ -281,19 +262,10 @@ export function ReadAloudFollow({ book, chapter, bible = null }: { book: string;
       }
     };
     const loop = () => {
-      if (spoken) {
-        // The phone's voice: the verse it is on, by the player's own lines,
-        // lit where it stands on the page (a downloaded Bible's places are its own).
-        const s = getAudioSnapshot();
-        const at = s.captions?.length ? lineAt(captionLines(s.captions, s.duration), currentTimeNow()) : -1;
-        const place = at >= 0 ? (anchorsOf(s.src)?.[at] ?? (typeof s.captions?.[at]?.n === "number" ? `v${s.captions[at].n}` : undefined)) : undefined;
-        light(place ? document.getElementById(place) : null);
-      } else {
-        const m = manifest.current;
-        if (m) {
-          const n = verseAt(m, currentTimeNow());
-          light(n ? document.getElementById(`v${n}`) : null);
-        }
+      const m = manifest.current;
+      if (m) {
+        const n = verseAt(m, currentTimeNow());
+        light(n ? document.getElementById(`v${n}`) : null);
       }
       raf = requestAnimationFrame(loop);
     };
@@ -302,7 +274,7 @@ export function ReadAloudFollow({ book, chapter, bible = null }: { book: string;
       cancelAnimationFrame(raf);
       light(null);
     };
-  }, [playing, spoken]);
+  }, [playing]);
 
   return null;
 }

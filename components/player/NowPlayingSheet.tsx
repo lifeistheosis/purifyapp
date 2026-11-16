@@ -11,8 +11,6 @@ import { Book } from "@/components/ui/icons/Book";
 import { More } from "@/components/ui/icons/More";
 import { Timer } from "@/components/ui/icons/Timer";
 import { useAmbienceLeaving, useAmbienceSheet } from "@/lib/ambience/sheet";
-import { openVoiceSheet, useVoiceSheet } from "@/lib/listen/speech/sheet";
-import { playerOpenForGone, useVoiceShown } from "@/lib/listen/speech/speak";
 import { cn } from "@/lib/cn";
 import { BACKDROP_FILTER, bakesBackdrop, paintBackdrop, readBackdrop, type Backdrop } from "@/lib/player/backdrop";
 import { WORDS_BUILT_CLOSED, WORDS_SPANNED_NEAR, buildsLongWords, captionWordCount, verseOf } from "@/lib/player/captions";
@@ -29,7 +27,6 @@ import { AmbienceButton } from "./AmbienceButton";
 import { CoverArt } from "./CoverArt";
 import { LiveCaptions } from "./LiveCaptions";
 import { PlayerMoreSheet } from "./PlayerMore";
-import { useVoiceRowValue } from "./VoiceSheet";
 import { PlayerTransport } from "./PlayerSteps";
 import { SleepTimerSheet } from "./SleepTimerSheet";
 import { SaveOffline, SaveOfflineNote } from "./SaveOffline";
@@ -128,20 +125,11 @@ export function NowPlayingSheet() {
   const [moreMenu, setMoreMenu] = useState(false);
   const sleep = useSleepTimer();
   const ambienceSheet = useAmbienceSheet();
-  const voiceSheet = useVoiceSheet();
   // A sheet stands over the player: Escape is that sheet's.
-  const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer) || (voiceSheet.open && voiceSheet.overPlayer);
+  const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer);
   // The ambience closed over the player is still on the screen while its close
   // runs: the words wait for it to go (build 97 note 10, Updates 67).
   const ambienceLeaving = useAmbienceLeaving() && ambienceSheet.overPlayer;
-  // The voice reading, for the ••• sheet's Voice row (1.9, build 95 note 25).
-  const voiceName = useVoiceRowValue(audio.src, open);
-  // A voice the reader chose had gone and another reads: said here once, the
-  // next time the player is open, and let go when it closes after.
-  const { gone } = useVoiceShown();
-  useEffect(() => {
-    playerOpenForGone(open);
-  }, [open, gone]);
   const hasWords = Boolean(audio.captions && audio.captions.length > 0);
   const words = hasWords && view === "words";
   // A long text's words (a Father's work, a saint's life) are built once the
@@ -627,11 +615,6 @@ export function NowPlayingSheet() {
           <div inert={!up} className="contents">
             <SaveOfflineNote src={audio.src} className="mt-2" />
           </div>
-          {gone && voiceName ? (
-            <p role="status" className="mt-2 font-sans text-detail leading-[1.45] text-paper/75">
-              {t("player.voice.gone", { name: voiceName })}
-            </p>
-          ) : null}
           <PositionBar current={audio.currentTime} duration={audio.duration} onSeek={(at) => seek(at)} className="mt-2" />
           <PlayerTransport audio={audio} className="mt-3" />
 
@@ -713,8 +696,6 @@ export function NowPlayingSheet() {
             src={audio.src}
             share={shareHref(playing)}
             onSleep={() => setSleepMenu(true)}
-            voice={voiceName}
-            onVoice={() => openVoiceSheet({ overPlayer: true })}
           />
 
           {/* The sleep timer, as a sheet over the player: the one timer for

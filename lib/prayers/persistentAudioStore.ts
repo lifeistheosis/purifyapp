@@ -2,8 +2,6 @@
 
 import { useSyncExternalStore } from "react";
 
-import type { SpeechHost, SpeechSession } from "@/lib/listen/speech/session";
-
 /**
  * Persistent in-memory audio player. Keeps a single `HTMLAudioElement`
  * alive at module scope (outside React) so playback survives route
@@ -97,15 +95,6 @@ export type AudioSnapshot = {
 };
 
 let audioEl: HTMLAudioElement | null = null;
-/**
- * A text the phone's own voice is speaking (1.9, build 95 note 25), the
- * player's second way of making sound: while it is set, every control below
- * (play, pause, a seek, 15 seconds back and forward, the speed, the volume,
- * the lock screen's buttons) goes to the voice, and the voice tells the
- * player where it is, as a recording's element does. lib/listen/speech/
- * session.ts. A recording loaded after it stops it, and it stops a recording.
- */
-let spoken: SpeechSession | null = null;
 const subscribers = new Set<() => void>();
 let snapshot: AudioSnapshot = {
   src: null,
@@ -251,10 +240,9 @@ function onError(a: HTMLAudioElement): void {
 }
 
 /**
- * The end of what was playing, a recording's or a spoken text's: a sleep
- * timer set to the end wins over any loop, then the repeats left (and, for
- * a spoken text, Loop for ever, which a recording's element does by itself),
- * then it stops at the start.
+ * The end of what was playing: a sleep timer set to the end wins over any
+ * loop, then the repeats left (Loop for ever the recording's element does by
+ * itself), then it stops at the start.
  */
 function trackEnded(restart: () => void): void {
   if (snapshot.sleep.kind === "end") {
@@ -262,10 +250,6 @@ function trackEnded(restart: () => void): void {
     repeatsLeft = 0;
     wanted = false;
     update({ playing: false, currentTime: 0, sleep: { kind: "off" } });
-    return;
-  }
-  if (spoken && snapshot.loopMode === "inf") {
-    restart();
     return;
   }
   if (repeatsLeft > 0) {
@@ -319,8 +303,7 @@ function ensureElement(): HTMLAudioElement {
   // navigated to another page or backgrounded the tab.
   if ("mediaSession" in navigator) {
     try {
-      // Through the player's own play and pause, so a voice the phone is
-      // speaking answers them as a recording does.
+      // Through the player's own play and pause, as its buttons are.
       navigator.mediaSession.setActionHandler("play", () => play());
       navigator.mediaSession.setActionHandler("pause", () => pause());
       navigator.mediaSession.setActionHandler("stop", () => stop());
@@ -364,10 +347,6 @@ export function setTrack(
   } = {},
 ): void {
   const a = ensureElement();
-  if (spoken) {
-    spoken.stop();
-    spoken = null;
-  }
   const sameSrc = a.src.endsWith(src) || a.src === src;
   if (!sameSrc) {
     const rate = clampRate(opts.rate ?? 1);
@@ -427,91 +406,6 @@ export function setTrack(
   }
 }
 
-/**
- * Load a text for the phone's voice to speak (1.9, build 95 note 25): the
- * spoken counterpart of setTrack. `start` makes the session with the host it
- * reports to; `captions` and `duration` are its timeline's
- * (lib/listen/speech/timeline.ts). A recording playing stops, and the track
- * starts paused at its beginning, as a new recording does.
- */
-export function setSpokenTrack(
-  src: string,
-  start: (host: SpeechHost) => SpeechSession,
-  opts: {
-    title?: string;
-    artist?: string;
-    art?: string;
-    artFallback?: string;
-    artSize?: string;
-    captions: CaptionSource;
-    duration: number;
-    rtl?: boolean;
-    rate?: number;
-  },
-): void {
-  const a = ensureElement();
-  wanted = false;
-  retries = 0;
-  asks += 1;
-  clearRetry();
-  a.pause();
-  a.removeAttribute("src");
-  a.load();
-  spoken?.stop();
-  let mine: SpeechSession | null = null;
-  const host: SpeechHost = {
-    // Only the session now playing speaks for the player.
-    state: (patch) => {
-      if (mine && spoken !== mine) return;
-      update(patch);
-    },
-    ended: (restart) => {
-      if (mine && spoken !== mine) return;
-      trackEnded(restart);
-    },
-    remote: (action, seconds) => {
-      if (mine && spoken !== mine) return;
-      if (action === "play") play();
-      else if (action === "pause") pause();
-      else if (action === "toggle") toggle();
-      else skipBy(seconds ?? 15);
-    },
-  };
-  mine = start(host);
-  spoken = mine;
-  update({
-    failed: false,
-    src,
-    title: opts.title ?? null,
-    artist: opts.artist ?? null,
-    art: opts.art ?? null,
-    artFallback: opts.artFallback ?? null,
-    captions: opts.captions,
-    rtl: opts.rtl ?? false,
-    rate: clampRate(opts.rate ?? 1),
-    playing: false,
-    currentTime: 0,
-    duration: opts.duration,
-  });
-  if ("mediaSession" in navigator && (opts.title || opts.artist)) {
-    try {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: opts.title ?? "",
-        artist: opts.artist ?? "",
-        album: "Purify",
-        ...(opts.art ? { artwork: [{ src: new URL(opts.art, window.location.href).href, sizes: opts.artSize ?? "512x512", type: pictureType(opts.art) }] } : {}),
-      });
-    } catch {
-      /* MediaMetadata unsupported on some browsers */
-    }
-  }
-}
-
-/** Whether the player is speaking a text with the phone's voice, rather than playing a recording. */
-export function isSpoken(): boolean {
-  return spoken !== null;
-}
-
 /** The picture's type from its name, for the lock screen. */
 function pictureType(src: string): string {
   if (/\.png(\?|$)/i.test(src)) return "image/png";
@@ -529,7 +423,6 @@ export function currentSrc(): string | null {
  *  smoothly, where the snapshot only moves on timeupdate (four times a
  *  second). For the live captions' word-by-word light. */
 export function currentTimeNow(): number {
-  if (spoken) return spoken.now();
   return audioEl ? audioEl.currentTime : snapshot.currentTime;
 }
 
@@ -547,19 +440,12 @@ function applyRate(a: HTMLAudioElement, rate: number): void {
 /** Playback speed, for reading aloud (1 is as recorded). */
 export function setRate(rate: number): void {
   const r = clampRate(rate);
-  if (spoken) spoken.setRate(r);
-  else if (audioEl) applyRate(audioEl, r);
+  if (audioEl) applyRate(audioEl, r);
   update({ rate: r });
 }
 
 /** Back or forward by so many seconds, inside the track. */
 export function skipBy(seconds: number): void {
-  if (spoken) {
-    // To the word the moment falls on, so about as far as a recording moves
-    // (lib/listen/speech/session.ts, Updates 98o).
-    spoken.seek(Math.max(0, Math.min(snapshot.duration, spoken.now() + seconds)));
-    return;
-  }
   const a = ensureElement();
   const end = Number.isFinite(a.duration) && a.duration > 0 ? a.duration : snapshot.duration;
   const t = Math.max(0, Math.min(end || 0, a.currentTime + seconds));
@@ -574,11 +460,6 @@ export function setSleep(next: SleepTimer): void {
 }
 
 export function play(): void {
-  if (spoken) {
-    wanted = true;
-    spoken.play();
-    return;
-  }
   const a = ensureElement();
   tryPlay(a);
 }
@@ -586,29 +467,16 @@ export function play(): void {
 export function pause(): void {
   wanted = false;
   clearRetry();
-  if (spoken) {
-    spoken.pause();
-    return;
-  }
   if (audioEl) audioEl.pause();
 }
 
 export function toggle(): void {
-  if (spoken) {
-    if (snapshot.playing) pause();
-    else play();
-    return;
-  }
   const a = ensureElement();
   if (a.paused) tryPlay(a);
   else pause();
 }
 
 export function seek(t: number): void {
-  if (spoken) {
-    spoken.seek(t);
-    return;
-  }
   const a = ensureElement();
   a.currentTime = t;
   update({ currentTime: t });
@@ -618,7 +486,6 @@ export function setVolume(v: number): void {
   const a = ensureElement();
   const clamped = Math.max(0, Math.min(1, v));
   a.volume = clamped;
-  spoken?.setVolume(clamped);
   update({ volume: clamped });
 }
 
@@ -632,10 +499,7 @@ export function setLoopMode(mode: LoopMode): void {
 export function stop(): void {
   wanted = false;
   clearRetry();
-  if (spoken) {
-    spoken.pause();
-    spoken.seek(0);
-  } else if (audioEl) {
+  if (audioEl) {
     audioEl.pause();
     audioEl.currentTime = 0;
   }
@@ -655,10 +519,6 @@ export function unload(): void {
   wanted = false;
   retries = 0;
   clearRetry();
-  if (spoken) {
-    spoken.stop();
-    spoken = null;
-  }
   if (audioEl) {
     audioEl.pause();
     audioEl.removeAttribute("src");

@@ -193,11 +193,11 @@ export function ChapterScreen({
           slug={slug}
           chapter={chapter}
           totalVerses={verses}
-          // Listen reads the words the page shows (1.9, build 95 note 25): the
-          // English, or a downloaded Bible's in the phone's voice. Not over a
+          // Listen plays Heart's recording of the English where it has one
+          // (his word of 2026-11-16: the one prerecorded voice). Not over a
           // licensed translation, whose words are not ours to have read aloud,
-          // nor a page whose verses stand in another chapter (as the
-          // computer's toolbar has it).
+          // nor a downloaded Bible, nor a page whose verses stand in another
+          // chapter (as the computer's toolbar has it).
           listen={listens}
           bible={downloaded?.bible ?? null}
           textKey={downloaded ? `${downloaded.bible.id}:${downloaded.text.state}` : undefined}

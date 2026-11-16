@@ -25,7 +25,7 @@
 // the start of each line, on the right), in the Naskh the serif stack carries.
 
 import Link from "next/link";
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { BIBLE_START_SIZE, FONT_CLASSES, SIZE_CLASSES, useReaderPrefs } from "@/components/reader/ReaderPrefs";
@@ -38,7 +38,6 @@ import { useCandlelightWorn } from "@/components/theme/useWornPalette";
 import { cn } from "@/lib/cn";
 import { textDir } from "@/lib/i18n/textDir";
 import { useReadingLine } from "@/lib/reader/useReadingLine";
-import { chapterKey, setPageVerses } from "@/lib/listen/speech/pageText";
 
 export function DownloadedChapter({
   bible,
@@ -59,26 +58,7 @@ export function DownloadedChapter({
   const candle = useCandlelightWorn();
   useReadingLine(candle);
   const greek = bible.textLang === "grc";
-  // The words Listen reads in the phone's voice (1.9, build 95 note 25): this
-  // Bible's own, in its own numbering, each verse where it stands on the page.
   const page = text.state === "ready" ? text.page : null;
-  useEffect(() => {
-    if (!page || page.elsewhere) return;
-    const at = chapterKey(book, chapter, bible.id);
-    setPageVerses(
-      at,
-      page.sections.flatMap((section) =>
-        section.verses
-          .filter(([, words]) => words.trim())
-          .map(([label, words]) => ({
-            text: words,
-            ...(section.chapter === chapter && typeof label === "number" ? { n: label } : {}),
-            anchor: verseAnchor(section.chapter, chapter, label),
-          })),
-      ),
-    );
-    return () => setPageVerses(at, null);
-  }, [page, book, chapter, bible.id]);
 
   if (text.state === "loading") {
     return (

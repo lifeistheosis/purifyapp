@@ -13,13 +13,11 @@ import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { cn } from "@/lib/cn";
 import { readingOfSrc, useHasReadAloud } from "@/lib/readAloud/chapters";
 import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
-import { useCanSpeak } from "@/lib/listen/speech/voices";
 import { useOverlayOpen } from "@/lib/ui/overlay";
 import { EVERYTHING, useOwnPlayer } from "@/lib/player/pagePlayer";
 import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { useIsNative } from "@/lib/platform/native";
 import { ReaderDock } from "./ReaderDock";
-import { spokenOf } from "@/lib/listen/speech/spoken";
 import { listenToChapter } from "@/lib/readAloud/play";
 import { useReadingComing } from "@/lib/readAloud/rollOn";
 
@@ -144,7 +142,7 @@ export function MobileChapterPill({
   totalVerses: number;
   /** Whether Listen may read this page: not a licensed translation's (1.9). The pill and the dock both keep it. */
   listen?: boolean;
-  /** The downloaded Bible the page shows the chapter in, read by the phone's voice (1.9), or null for the English. */
+  /** The downloaded Bible the page shows the chapter in, or null for the English: no Listen over it, since Heart reads the English. */
   bible?: DownloadableBible | null;
   /** What the chapter is shown in, when not the English: the running line looks at the verses again when it changes. */
   textKey?: string;
@@ -156,11 +154,11 @@ export function MobileChapterPill({
   const next = nextChapter(slug, chapter);
   const [sheetOpen, setSheetOpen] = useState(false);
   const covered = useOverlayOpen();
-  // Listen: the English where it has its recording, and every chapter, in the
-  // English or a downloaded Bible, where the device can speak (1.9, build 95 note 25).
+  // Listen: the English where Heart's recording of it is (the New Testament
+  // today), the only voice since his word of 2026-11-16; never over a
+  // downloaded Bible, which Heart does not read.
   const recorded = useHasReadAloud(slug, chapter);
-  const speaks = useCanSpeak();
-  const reads = listen && (bible ? speaks : recorded || speaks);
+  const reads = listen && !bible && recorded;
   // The dock: the player and the chapter in one card while anything is loaded.
   const dockShows = useDockShows();
   useOwnPlayer(dockShows ? HOSTS_EVERYTHING : NOTHING);
@@ -173,16 +171,12 @@ export function MobileChapterPill({
   // opening, lib/readAloud/week.ts), and the dock then offered Listen for the
   // chapter already playing.
   const loaded = readingOfSrc(src);
-  const said = spokenOf(src);
   // A reading on its way to this chapter (a chapter that ended rolling on, the
   // player's next and previous) counts as loaded: the page comes a moment
   // before its reading does, and the dock offered Listen for that moment, then
   // Speed (lib/readAloud/rollOn.ts, readingComing).
   const coming = useReadingComing(slug, chapter);
-  const hereLoaded =
-    coming ||
-    (!bible && loaded?.book === slug && loaded.chapter === chapter) ||
-    (said?.kind === "bible" && said.book === slug && said.chapter === chapter && said.bible === (bible?.id ?? null));
+  const hereLoaded = coming || (!bible && loaded?.book === slug && loaded.chapter === chapter);
   const listenHere = reads && !hereLoaded;
   // How the name fits (the doc above): 0 as drawn, 1 with Listen's word given
   // way and the name on up to two lines, 2 with the controls on a row of their

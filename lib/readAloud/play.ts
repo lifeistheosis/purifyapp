@@ -1,10 +1,6 @@
 "use client";
 
 import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
-import { chapterKey, rememberAnchors, whenPageVerses } from "@/lib/listen/speech/pageText";
-import { openVoiceSheet } from "@/lib/listen/speech/sheet";
-import { speakText, voiceFor } from "@/lib/listen/speech/speak";
-import { spokenBibleSrc, voiceLang } from "@/lib/listen/speech/spoken";
 import { play, seek, setLoopMode, setTrack } from "@/lib/prayers/persistentAudioStore";
 import { readSpeed } from "@/lib/player/speed";
 
@@ -56,15 +52,15 @@ export async function startReading(book: string, chapter: number, title: string,
 }
 
 /**
- * Listen on a chapter (1.9, build 95 note 25, his "all recs" of 2026-11-13:
- * the phone's voices read the whole Bible, free for every reader). The voice
- * the reader chose for the chapter's language reads it: Heart, its recording,
- * where the English has one and no other voice is chosen; else the phone's
- * voice, reading the very words on the page, in the English or the Bible the
- * reader downloaded, the Old Testament too. Where the phone has no voice for
- * the language and there is no recording, the Voice sheet says so and where
- * one is added. What it did: "heart", "phone", "none", or "failed" (the page's
- * words were not at hand, or the device cannot speak after all).
+ * Listen on a chapter: Heart's recording, the only voice (his word of
+ * 2026-11-16, about 22:35 UTC: "remove locally LLM voices ... only leave one
+ * the standard prerecorded voices"). Only where the English has its
+ * recording (lib/readAloud/chapters.ts: the New Testament today), and never
+ * over a chapter shown in a downloaded Bible, which Heart does not read: the
+ * English over a Russian page would be another text than the one shown
+ * (Updates 15's finding of 2026-11-13). The phone's own voices, which read
+ * every chapter in any Bible from build 95 note 25, are gone. False where
+ * there is nothing to play, and the page offers no Listen there.
  */
 export async function listenToChapter(o: {
   book: string;
@@ -73,36 +69,8 @@ export async function listenToChapter(o: {
   t: (key: string) => string;
   /** The downloaded Bible the page shows the chapter in, or null for the English. */
   bible: DownloadableBible | null;
-}): Promise<"heart" | "phone" | "none" | "failed"> {
-  const recorded = !o.bible && hasReadAloud(o.book, o.chapter);
-  const lang = o.bible ? voiceLang(o.bible.textLang) : "en";
-  const use = await voiceFor(lang, recorded);
-  if (use.kind === "heart") {
-    await startReading(o.book, o.chapter, o.title, o.t);
-    return "heart";
-  }
-  if (use.kind === "none") {
-    openVoiceSheet({ none: { lang } });
-    return "none";
-  }
-  // The page's own words: a page opening as a reading rolls on into it hands them over a moment later.
-  const verses = await whenPageVerses(chapterKey(o.book, o.chapter, o.bible?.id ?? null), 8000);
-  if (!verses?.length) return "failed";
-  const cover = readAloudCover(o.book);
-  const src = spokenBibleSrc(o.book, o.chapter, o.bible?.id ?? null);
-  const ok = await speakText({
-    src,
-    pieces: verses.map((v) => ({ text: v.text, ...(typeof v.n === "number" ? { n: v.n } : {}) })),
-    lang,
-    voice: use.voice,
-    title: o.title,
-    artist: coverName(cover, o.t) ?? o.t("readAloud.by"),
-    art: cover.src,
-    artFallback: cover.fallback,
-    artSize: cover.size ?? undefined,
-    rtl: o.bible?.dir === "rtl",
-  });
-  if (!ok) return "failed";
-  rememberAnchors(src, verses.map((v) => v.anchor));
-  return "phone";
+}): Promise<boolean> {
+  if (o.bible || !hasReadAloud(o.book, o.chapter)) return false;
+  await startReading(o.book, o.chapter, o.title, o.t);
+  return true;
 }
