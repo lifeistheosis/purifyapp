@@ -15,13 +15,23 @@
 // so it stays a leaf. If you add a third fasting-presentation map, fold it
 // into one of these two rather than starting a fourth.
 
+//
+// Each dot takes its fast's own colour token, the --fast-* triplet that
+// fastMeta.tsx, the calendar and /fasting/ draw with (app/globals.css). The
+// tokens follow the palette: Light darkens them to hold contrast on its
+// ground. The dots were fixed colours (bg-sage, bg-emerald-400) that stayed
+// the same on every palette, and wine and oil wore the silver "gold" token
+// where the calendar shows grape purple (Gate 6b, 2026-11-16, checkMock's
+// palette rule on /prayers/today/). lib/calendar/__tests__/fastDot.test.ts
+// holds every kind to its token.
+
 import type { FastKind } from "./orthodox";
 
 export const FAST_DOT: Record<FastKind, string> = {
-  strict: "bg-crimson",
-  "wine-oil": "bg-gold",
-  fish: "bg-sage",
-  fast: "bg-paper/40",
-  "fast-free": "bg-emerald-400",
-  normal: "bg-paper/30",
+  strict: "bg-[rgb(var(--fast-strict))]",
+  "wine-oil": "bg-[rgb(var(--fast-wine-oil))]",
+  fish: "bg-[rgb(var(--fast-fish))]",
+  fast: "bg-[rgb(var(--fast-fast))]",
+  "fast-free": "bg-[rgb(var(--fast-free))]",
+  normal: "bg-[rgb(var(--fast-normal))]",
 };
