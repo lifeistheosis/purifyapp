@@ -171,7 +171,8 @@ for (const text of TEXTS) {
       if (reduce) localStorage.setItem("purify.motion", "off");
     } catch {}
   }, [LANG, REDUCE]);
-  await ctx.addInitScript(fakeVoice);
+  // The transport walk's voice ends each verse as a phone's does, so Play near a verse's end reads on into the next.
+  await ctx.addInitScript(fakeVoice, TRANSPORT ? { endsWithWords: true } : undefined);
   // The player's own audio element is never in the document: kept here, so the walk can say whether a recording sounds.
   await ctx.addInitScript(() => {
     const Made = window.Audio;

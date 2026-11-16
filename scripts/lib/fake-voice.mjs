@@ -8,8 +8,13 @@
  * are English: with the Arabic voice alone, Listen opened the Voice sheet over an English text,
  * Updates 98g's Arabic walk). An utterance starts at once, says a word every 300ms and ends after a
  * minute, so Listen plays as a phone's voice would.
+ *
+ * `{ endsWithWords: true }` (the transport walk, Updates 98o): an utterance ends once its words are
+ * said, as a phone's does, and the next verse begins. Held a minute, a verse's last word was said
+ * again every 300ms, so Play taken up near a verse's end stood still on it, and the clock with it.
  */
-export function fakeVoice() {
+export function fakeVoice(o) {
+  const endsWithWords = !!o?.endsWithWords;
   const lang = navigator.language || "en-US";
   const voices = [{ voiceURI: "walk-voice", name: "Walk", lang, localService: true, default: true }];
   if (!/^en\b/i.test(lang)) voices.push({ voiceURI: "walk-voice-en", name: "Walk (English)", lang: "en-US", localService: true, default: false });
@@ -32,14 +37,15 @@ export function fakeVoice() {
     if (!u || synth.paused) return;
     synth.speaking = true;
     timers.push(setTimeout(() => u.onstart?.({}), 30));
-    for (let i = 1; i < 200; i++) timers.push(setTimeout(() => u.onboundary?.({ name: "word", charIndex: Math.min(i * 6, Math.max(0, u.text.length - 1)), charLength: 5 }), 30 + i * 300));
+    const said = endsWithWords ? Math.max(0, Math.ceil(u.text.length / 6) - 1) : 199;
+    for (let i = 1; i <= said; i++) timers.push(setTimeout(() => u.onboundary?.({ name: "word", charIndex: Math.min(i * 6, Math.max(0, u.text.length - 1)), charLength: 5 }), 30 + i * 300));
     timers.push(
       setTimeout(() => {
         queue.shift();
         u.onend?.({});
         synth.speaking = queue.length > 0;
         next();
-      }, 60000),
+      }, endsWithWords ? 30 + (said + 1) * 300 : 60000),
     );
   };
   Object.assign(synth, {
