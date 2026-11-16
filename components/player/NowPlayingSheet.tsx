@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { startTransition, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { Reference } from "@/components/bible/Reference";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -15,7 +15,7 @@ import { openVoiceSheet, useVoiceSheet } from "@/lib/listen/speech/sheet";
 import { playerOpenForGone, useVoiceShown } from "@/lib/listen/speech/speak";
 import { cn } from "@/lib/cn";
 import { BACKDROP_FILTER, bakesBackdrop, paintBackdrop, readBackdrop, type Backdrop } from "@/lib/player/backdrop";
-import { verseOf } from "@/lib/player/captions";
+import { WORDS_BUILT_CLOSED, captionWordCount, verseOf } from "@/lib/player/captions";
 import { takeCarry } from "@/lib/player/carry";
 import { useSungLines } from "@/lib/player/clock";
 import { closeNowPlaying, primeNowPlayingView, setPlayerView, useNowPlayingSheet, type PlayerView } from "@/lib/player/sheet";
@@ -144,6 +144,18 @@ export function NowPlayingSheet() {
   }, [open, gone]);
   const hasWords = Boolean(audio.captions && audio.captions.length > 0);
   const words = hasWords && view === "words";
+  // A long text's words (a Father's work, a saint's life) are built once the
+  // player is up and its slide has ended, and kept for that text after; a
+  // chapter's and a chant's still stand built while closed (note 8). Built
+  // closed, a work's were made and styled in its Listen tap and in each turn
+  // of its parts: 28,657 elements, a 454ms task (Updates 98m, build 98 note 2).
+  const longWords = useMemo(() => captionWordCount(audio.captions) > WORDS_BUILT_CLOSED, [audio.captions]);
+  const [wordsFor, setWordsFor] = useState<typeof audio.captions>(null);
+  useEffect(() => {
+    if (!longWords || !up || !settled || wordsFor === audio.captions) return;
+    startTransition(() => setWordsFor(audio.captions));
+  }, [longWords, up, settled, wordsFor, audio.captions]);
+  const wordsBuilt = !longWords || wordsFor === audio.captions;
   // The one clock that lights the words and counts the verses
   // (lib/player/clock.ts), running while the player is open.
   const sung = useSungLines(audio.captions, audio.duration, open && hasWords);
@@ -566,25 +578,27 @@ export function NowPlayingSheet() {
                   </div>
                   <SaveOffline src={audio.src} className="-me-2.5" />
                 </div>
-                <LiveCaptions
-                  source={audio.captions!}
-                  lines={sung.lines}
-                  timed={sung.timed}
-                  current={sung.current}
-                  live
-                  // Under a sheet over the player (the ambience, its ••• sheet) the
-                  // lit words rest: each frame's glow restyled the line behind the
-                  // sheet and held its rise to 36 frames in 1.5s on a phone's CPU
-                  // (build 97 note 10, scripts/ambience-open-walk.mjs). Uncovered,
-                  // they ease to the line being read, as on coming back from Cover;
-                  // the ambience uncovers them once its close has run, not as it
-                  // starts, or the glow held its fall to 26 frames (Updates 67).
-                  active={up && words && !covered && !ambienceLeaving}
-                  look="player"
-                  rtl={audio.rtl}
-                  onSeek={seek}
-                  className="-mx-1 mt-2 min-h-0 flex-1 px-1"
-                />
+                {wordsBuilt ? (
+                  <LiveCaptions
+                    source={audio.captions!}
+                    lines={sung.lines}
+                    timed={sung.timed}
+                    current={sung.current}
+                    live
+                    // Under a sheet over the player (the ambience, its ••• sheet) the
+                    // lit words rest: each frame's glow restyled the line behind the
+                    // sheet and held its rise to 36 frames in 1.5s on a phone's CPU
+                    // (build 97 note 10, scripts/ambience-open-walk.mjs). Uncovered,
+                    // they ease to the line being read, as on coming back from Cover;
+                    // the ambience uncovers them once its close has run, not as it
+                    // starts, or the glow held its fall to 26 frames (Updates 67).
+                    active={up && words && !covered && !ambienceLeaving}
+                    look="player"
+                    rtl={audio.rtl}
+                    onSeek={seek}
+                    className="-mx-1 mt-2 min-h-0 flex-1 px-1"
+                  />
+                ) : null}
               </div>
             ) : null}
           </div>

@@ -65,6 +65,24 @@ export function wordsOf(text: string): string[] {
   return text.split(/\s+/).filter(Boolean);
 }
 
+/**
+ * The most words Now Playing builds while it stands closed (Updates 98m,
+ * build 98 note 2). Its words view draws every word a span (LiveCaptions),
+ * and built closed (note 8) it was made and styled in the tap that loaded the
+ * text: the Four Discourses' first, 28,657 elements, a 454ms task in a work's
+ * Listen tap. A chapter's words (Psalm 119, the longest, about 2,500) and a
+ * chant's stay built closed, so the player still opens on them at once; a
+ * longer text's are built once the player is up and its slide has ended.
+ */
+export const WORDS_BUILT_CLOSED = 3000;
+
+/** How many words a text's lines hold, as the words view draws them. */
+export function captionWordCount(source: CaptionSource | null | undefined): number {
+  let n = 0;
+  for (const line of source ?? []) n += wordsOf(line.text).length;
+  return n;
+}
+
 export function captionLines(source: CaptionSource, duration = 0): CaptionLine[] {
   const timed = source.filter((l): l is CaptionSource[number] & { time: number } => typeof l.time === "number");
   return timed.map((line, i) => {

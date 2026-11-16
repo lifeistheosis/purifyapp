@@ -104,6 +104,10 @@ const SELF_TEST = has("--self-test");
 // ways, with a track loaded in the player, or with a sound playing alone. --cpu slows the page as a
 // phone is for Now Playing's timings (4 by default).
 const LOADED = flag("--loaded");
+// --end-at <ms> (with --loaded track): a diagnosis (Updates 98m): before each switch the track is moved
+// on so that it ends this long after the tap, as the stand-in recording (the bell) once ended by chance
+// in You to Prayers' recording; what the foot does when a track ends and rolls on, seen on every switch.
+const END_AT = Number(flag("--end-at") ?? 0);
 const CPU = Math.max(1, Number(flag("--cpu") ?? 4));
 // --now-playing (with --loaded track): Now Playing's timings alone, the twenty switches left out, for
 // a quick measure before and after a change to it. --trace <dir>: a Chrome trace of its opening and of
@@ -730,10 +734,36 @@ async function loadedTour() {
   });
   await pinMotion(ctx, MODE);
   await installGate(ctx);
+  if (END_AT)
+    await ctx.addInitScript(() => {
+      // The player's audio need not be in the document: each one played is kept here.
+      const play = HTMLMediaElement.prototype.play;
+      window.__media = new Set();
+      HTMLMediaElement.prototype.play = function (...args) {
+        window.__media.add(this);
+        return play.apply(this, args);
+      };
+    });
   if (SELLS_PLUS) await asAndroidShell(ctx);
   await serveLikeTheShell(ctx, OUT, {});
   const bell = fs.readFileSync(path.join(OUT, "audio/ambience/bell.mp3"));
-  await ctx.route("https://audio.purifyapp.net/**/*.mp3", (r) => r.fulfill({ status: 200, contentType: "audio/mpeg", body: bell }));
+  // Served by byte ranges, as the recordings' host serves them, so the track can be moved (Updates 98m).
+  await ctx.route("https://audio.purifyapp.net/**/*.mp3", (r) => {
+    const m = /bytes=(\d+)-(\d*)/.exec(r.request().headers()["range"] ?? "");
+    if (!m) return r.fulfill({ status: 200, contentType: "audio/mpeg", headers: { "accept-ranges": "bytes" }, body: bell });
+    const start = Number(m[1]);
+    const end = m[2] ? Number(m[2]) : bell.length - 1;
+    return r.fulfill({ status: 206, contentType: "audio/mpeg", headers: { "accept-ranges": "bytes", "content-range": `bytes ${start}-${end}/${bell.length}` }, body: bell.subarray(start, end + 1) });
+  });
+  if (!END_AT)
+    await ctx.addInitScript(() => {
+      const play = HTMLMediaElement.prototype.play;
+      window.__media = new Set();
+      HTMLMediaElement.prototype.play = function (...args) {
+        window.__media.add(this);
+        return play.apply(this, args);
+      };
+    });
   const page = await ctx.newPage();
   const cdp = await ctx.newCDPSession(page);
   const tabs = ["Today", "Bible", "Discover", "Prayers", "You"];
@@ -844,12 +874,31 @@ async function loadedTour() {
           };
           requestAnimationFrame(loop);
         }, FOOT);
+        // The stand-in recording is the bell, 60s, and twenty switches take two minutes: its end, the
+        // mini player's Pause turning to Play and its ring from lit to grey in one frame, fell in a
+        // switch's recording by chance and was judged a cut (Updates 98m: You to Prayers at 1987ms,
+        // 98l's run). The track is moved back to its start, outside any recording, before it can end in
+        // one; --end-at makes it end in every one, to see that change on purpose.
+        const moved = await page.evaluate((ms) => {
+          const media = [...window.__media].filter((m) => m.duration > 0);
+          const track = media.find((m) => !m.paused) ?? (ms ? media.at(-1) : null);
+          if (!track) return false;
+          // To end `ms` after the tap: the 600ms waited here, and the track played on again if it ended.
+          if (ms) {
+            track.currentTime = Math.max(0, track.duration - (ms + 600) / 1000);
+            if (track.paused) track.play().catch(() => {});
+          } else if (track.duration - track.currentTime < 15) track.currentTime = 1;
+          else return false;
+          return true;
+        }, END_AT);
+        if (moved) await sleep(END_AT ? 600 : 500);
         const rec = await recordFrames(page, cdp, () => tapTab(b), RECORD);
         const r = { v: await judged(rec, `/loaded-${LOADED}/`, `${tabs[a]}-${tabs[b]}`) };
         await sleep(600);
         const foot = await footCut(rec, boxBefore, await footBox());
         // --shots: the foot's band in every frame from the tap, side by side (their times in the report).
-        if (SHOTS && foot) foot.strip = await footStrip(rec, boxBefore, await footBox(), path.join(SHOTS, `foot-${LOADED}-${MODE}-${tabs[a]}-${tabs[b]}.png`)).catch(() => null);
+        // A late cut (Updates 98m: You to Prayers at 1987ms) is shown with the frames around it.
+        if (SHOTS && foot) foot.strip = await footStrip(rec, boxBefore, await footBox(), path.join(SHOTS, `foot-${LOADED}-${MODE}-${tabs[a]}-${tabs[b]}.png`), foot.ms > 850 ? foot.ms : null).catch(() => null);
         const counts = await page.evaluate(() => {
           window.__footOn = false;
           return window.__foot;
@@ -995,11 +1044,13 @@ async function footCut(rec, a, b) {
   };
 }
 
-/** The foot's band (the boxes before and after, and 120px over them) in every frame from the tap to 900ms, side by side, full size. */
-async function footStrip(rec, a, b, file) {
+/** The foot's band (the boxes before and after, and 120px over them) in every frame from the tap to 900ms, side by side, full size;
+ *  with `around` (ms from the tap), the frames from 300ms before it to 200ms after it instead. */
+async function footStrip(rec, a, b, file, around = null) {
   const top = Math.max(0, Math.min(a?.top ?? HEIGHT, b?.top ?? HEIGHT) - 120);
   const bottom = Math.min(HEIGHT, Math.max(a?.bottom ?? 0, b?.bottom ?? 0) + 70);
-  const after = rec.frames.filter((f) => f.t >= rec.tapped - 50 && f.t <= rec.tapped + 900).sort((x, y) => x.t - y.t);
+  const [from, to] = around === null ? [-50, 900] : [around - 300, around + 200];
+  const after = rec.frames.filter((f) => f.t >= rec.tapped + from && f.t <= rec.tapped + to).sort((x, y) => x.t - y.t);
   if (!after.length) return null;
   const tiles = await Promise.all(
     after.map(async (f) => {
