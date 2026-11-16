@@ -5,8 +5,9 @@
 // 800 and 1032 and in Arabic, each view held to checkMock with pixels on the five palettes, the two earned by
 // reading and the fourteen looks. At 390 the World English Bible is downloaded from the branch's own web build
 // running here (as scripts/gate/bible-downloads-local.mjs answers it) and chosen from verse 20 of Luke 10.
-// Run from the repository's root; writes nothing.
-//   node scripts/gate/books-version.mjs [export folder, default out/] [web, default http://localhost:3000]
+// Run from the repository's root; writes nothing, unless --stills=<folder> asks for the books with the version at
+// their head and the versions turned to, at 390 and in Arabic, as a phone draws them (twice the pixels).
+//   node scripts/gate/books-version.mjs [export folder, default out/] [web, default http://localhost:3000] [--stills=<folder>]
 import fs from "node:fs";
 import path from "node:path";
 
@@ -18,8 +19,11 @@ import { EVERY, checkMock } from "../mock-check.mjs";
 
 const OWN = "/opt/pw-browsers/chromium";
 const ROOT = new URL("../..", import.meta.url).pathname;
-const OUT = path.resolve(process.argv[2] ?? path.join(ROOT, "out"));
-const WEB = process.argv[3] ?? "http://localhost:3000";
+const args = process.argv.slice(2);
+const plain = args.filter((a) => !a.startsWith("--"));
+const OUT = path.resolve(plain[0] ?? path.join(ROOT, "out"));
+const WEB = plain[1] ?? "http://localhost:3000";
+const STILLS = args.find((a) => a.startsWith("--stills="))?.slice(9) ?? null;
 const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
 let faults = 0;
 const say = (ok, what) => {
@@ -28,7 +32,13 @@ const say = (ok, what) => {
 };
 
 for (const [w, h, lang] of [[390, 844, "en"], [800, 1280, "en"], [1032, 1366, "en"], [390, 844, "ar"]]) {
-  const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: w < 700, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
+  const still = STILLS && w === 390;
+  const shoot = async (name) => {
+    if (!still) return;
+    fs.mkdirSync(STILLS, { recursive: true });
+    await page.screenshot({ path: path.join(STILLS, `${name}-390${lang === "en" ? "" : `-${lang}`}.png`) });
+  };
+  const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: still ? 2 : 1, colorScheme: "dark", isMobile: w < 700, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
   await pinMotion(ctx, "on");
   await ctx.addInitScript((lang) => {
     try {
@@ -78,12 +88,14 @@ for (const [w, h, lang] of [[390, 844, "en"], [800, 1280, "en"], [1032, 1366, "e
   await tap(page.locator("[data-title-books]").filter({ visible: true }).first());
   let s = await state();
   say(s.open && s.books && !!s.label && s.expanded === "false", `${w} ${lang}: the books sheet opens with "${s.title}" and the version "${s.label}" at its head`);
+  await shoot("books-sheet-version");
   await held("the books with the version at their head");
   // The version tapped: the same sheet turns to the versions.
   await tap(page.locator('[data-books-check="1"] [data-books-version]'));
   s = await state();
   // From their top, as from the title line: the books' scroll left in place hid the first rows (Updates 98i).
   say(s.open && s.versions && !s.books && s.rows >= 2 && s.expanded === "true" && s.top === 0, `${w} ${lang}: a tap on the version turns the sheet to the versions (${s.rows} rows) from their top (scrolled ${s.top}px), the chevron turned`);
+  await shoot("books-sheet-versions");
   await held("the versions");
   // And back.
   await tap(page.locator('[data-books-check="1"] [data-books-version]'));

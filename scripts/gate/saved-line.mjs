@@ -8,7 +8,9 @@
 // line held to checkMock with pixels on the five palettes, the two earned and the fourteen looks. Run from the
 // repository's root; writes nothing, unless --stills=<folder> asks for Now Playing with the line at 390 and in
 // Arabic, as a phone draws it (twice the pixels).
-//   node scripts/gate/saved-line.mjs [export folder, default out/] [--stills=<folder>]
+// --at=<sizes> walks only those (390, 800, 390-ar, ...), so the long checkMock passes can run side by side: the
+// Words view photographs every line of the chant's words on each look.
+//   node scripts/gate/saved-line.mjs [export folder, default out/] [--stills=<folder>] [--at=360,412]
 import fs from "node:fs";
 import path from "node:path";
 
@@ -23,6 +25,7 @@ const ROOT = new URL("../..", import.meta.url).pathname;
 const args = process.argv.slice(2);
 const OUT = path.resolve(args.find((a) => !a.startsWith("--")) ?? path.join(ROOT, "out"));
 const STILLS = args.find((a) => a.startsWith("--stills="))?.slice(9) ?? null;
+const AT = args.find((a) => a.startsWith("--at="))?.slice(5).split(",") ?? null;
 // The version the chant's page plays in the app's language: the Arabic in Arabic, else the English.
 const version = (lang) => (lang === "ar" ? "ar" : "en");
 const srcOf = (lang) => `/audio/chants/prayer-rope-anthem/${version(lang)}.mp3`;
@@ -70,6 +73,7 @@ function boxes() {
 
 let faults = 0;
 for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"], [800, 1280, "en"], [1032, 1366, "en"], [390, 844, "ar"]]) {
+  if (AT && !AT.includes(lang === "en" ? String(w) : `${w}-${lang}`)) continue;
   const still = STILLS && w === 390;
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: still ? 2 : 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
   await pinMotion(ctx, "on");
