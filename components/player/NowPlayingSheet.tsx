@@ -15,7 +15,7 @@ import { openVoiceSheet, useVoiceSheet } from "@/lib/listen/speech/sheet";
 import { playerOpenForGone, useVoiceShown } from "@/lib/listen/speech/speak";
 import { cn } from "@/lib/cn";
 import { BACKDROP_FILTER, bakesBackdrop, paintBackdrop, readBackdrop, type Backdrop } from "@/lib/player/backdrop";
-import { WORDS_BUILT_CLOSED, captionWordCount, verseOf } from "@/lib/player/captions";
+import { WORDS_BUILT_CLOSED, WORDS_SPANNED_NEAR, buildsLongWords, captionWordCount, verseOf } from "@/lib/player/captions";
 import { takeCarry } from "@/lib/player/carry";
 import { useSungLines } from "@/lib/player/clock";
 import { closeNowPlaying, primeNowPlayingView, setPlayerView, useNowPlayingSheet, type PlayerView } from "@/lib/player/sheet";
@@ -145,16 +145,20 @@ export function NowPlayingSheet() {
   const hasWords = Boolean(audio.captions && audio.captions.length > 0);
   const words = hasWords && view === "words";
   // A long text's words (a Father's work, a saint's life) are built once the
-  // player is up and its slide has ended, and kept for that text after; a
-  // chapter's and a chant's still stand built while closed (note 8). Built
-  // closed, a work's were made and styled in its Listen tap and in each turn
-  // of its parts: 28,657 elements, a 454ms task (Updates 98m, build 98 note 2).
+  // player is up, its slide has ended and the Words view is shown, and kept
+  // for that text after; a chapter's and a chant's still stand built while
+  // closed (note 8). Built closed, a work's were made and styled in its Listen
+  // tap and in each turn of its parts: 28,657 elements, a 454ms task (Updates
+  // 98m, build 98 note 2). Built on Cover, the view most open on, they cost
+  // the first open a 258ms task for words not shown, and every open, close and
+  // switch after it 120 to 230ms (CPU 1x, Updates 98n); now only the lines
+  // near the one being read are drawn a word a span (WORDS_SPANNED_NEAR).
   const longWords = useMemo(() => captionWordCount(audio.captions) > WORDS_BUILT_CLOSED, [audio.captions]);
   const [wordsFor, setWordsFor] = useState<typeof audio.captions>(null);
   useEffect(() => {
-    if (!longWords || !up || !settled || wordsFor === audio.captions) return;
+    if (!longWords || !buildsLongWords({ up, settled, words }) || wordsFor === audio.captions) return;
     startTransition(() => setWordsFor(audio.captions));
-  }, [longWords, up, settled, wordsFor, audio.captions]);
+  }, [longWords, up, settled, words, wordsFor, audio.captions]);
   const wordsBuilt = !longWords || wordsFor === audio.captions;
   // The one clock that lights the words and counts the verses
   // (lib/player/clock.ts), running while the player is open.
@@ -595,6 +599,7 @@ export function NowPlayingSheet() {
                     active={up && words && !covered && !ambienceLeaving}
                     look="player"
                     rtl={audio.rtl}
+                    spanNear={longWords ? WORDS_SPANNED_NEAR : undefined}
                     onSeek={seek}
                     className="-mx-1 mt-2 min-h-0 flex-1 px-1"
                   />

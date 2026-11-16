@@ -76,6 +76,26 @@ export function wordsOf(text: string): string[] {
  */
 export const WORDS_BUILT_CLOSED = 3000;
 
+/**
+ * A long text's words in Now Playing are a span each only near the line being
+ * read: from the line before it to this many after (Updates 98n, build 98
+ * note 2). Only that line lights word by word and has its sung word followed;
+ * every other line is styled whole by its row, so a span there was never
+ * touched. Drawn as one text, the Four Discourses' first part is about a
+ * tenth of the 28,568 elements it was, and the clock's next line is already
+ * spanned when it begins.
+ */
+export const WORDS_SPANNED_NEAR = 4;
+
+/**
+ * When Now Playing builds a long text's words: up, its slide ended, and the
+ * Words view shown (Updates 98n). Not while it stands closed (Updates 98m),
+ * nor on Cover, the view most open on, where they are not seen.
+ */
+export function buildsLongWords(sheet: { up: boolean; settled: boolean; words: boolean }): boolean {
+  return sheet.up && sheet.settled && sheet.words;
+}
+
 /** How many words a text's lines hold, as the words view draws them. */
 export function captionWordCount(source: CaptionSource | null | undefined): number {
   let n = 0;

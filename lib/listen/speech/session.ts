@@ -42,7 +42,8 @@ export type SpeechSession = {
   timeline(): SpeechTimeline;
   play(): void;
   pause(): void;
-  seek(time: number): void;
+  /** To the start of the piece `time` falls in; `ahead` (15 seconds forward): never back of where it stands. */
+  seek(time: number, ahead?: boolean): void;
   now(): number;
   setRate(rate: number): void;
   setVolume(volume: number): void;
@@ -255,11 +256,21 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
       o.host.state({ playing: false, currentTime: now() });
       void o.engine.nowPlaying({ title: o.title ?? "", artist: o.artist ?? "", duration: timeline.duration, elapsed: now(), playing: false });
     },
-    seek(time: number) {
+    seek(time: number, ahead = false) {
       if (!pieces.length) return;
+      // Forward goes forward (Updates 98n, build 98 note 2): 15 seconds on
+      // inside a long paragraph fell in that paragraph, whose start is behind
+      // the reader, so Forward 15 went back to it (Arabic John 10 from 3.9s to
+      // 0.7s on the export). There it goes on to the next piece's start, and
+      // on the last piece, with nowhere ahead, the reading goes on as it is.
+      let to = pieceAt(timeline, time);
+      if (ahead && (timeline.starts[to] ?? 0) <= now()) {
+        if (to + 1 >= pieces.length) return;
+        to += 1;
+      }
       const was = speaking;
       if (was) halt();
-      index = pieceAt(timeline, time);
+      index = to;
       fromChar = 0;
       o.host.state({ currentTime: timeline.starts[index] });
       if (was) speak();

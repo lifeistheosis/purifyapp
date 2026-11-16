@@ -4,6 +4,10 @@
 //   node scripts/gate/listen-walk.mjs <export> [--size 390x844] [--lang ar] [--check] [--shots dir] [--only life,work]
 //   node scripts/gate/listen-walk.mjs <export> --computer    (the computer as it was: Listen in the page, the mini player)
 //   node scripts/gate/listen-walk.mjs <export> --carry [--reduce]   (the dock's cover tapped: Now Playing carries it up; never with motion reduced)
+//   node scripts/gate/listen-walk.mjs <export> --only work --words [--cpu 4] [--trace dir]   (Now Playing on a long text: opened
+//   on Cover from the dock, then Words, then put away and opened again, each judged and counted; Updates 98n, build 98 note 2)
+//   node scripts/gate/listen-walk.mjs <export> --only bible --transport [--lang ar]   (Now Playing's transport row tapped as a
+//   reader taps it, each button said to do what it names, read from the player's own recording; Updates 98n)
 //   --trace <dir>: a Chrome trace of the Listen tap and of the dock's turn, each from the tap, for
 //   scripts/gate/trace-frames.mjs (Updates 98k: the work's 117ms task while its page glides to the reading)
 //   (--why adds what made each restyle: scripts/gate/trace-restyles.mjs reads it; --roots prints every write on
@@ -61,6 +65,14 @@ const CHECK = has("--check");
 const COMPUTER = has("--computer");
 const CARRY = has("--carry");
 const REDUCE = has("--reduce");
+// --words: Now Playing's views on a long text (Updates 98n): how many elements its words are, and when they are built.
+const WORDS = has("--words");
+const CPU = Number(flag("--cpu") ?? 1);
+// --slow <rate>: every animation at this rate (DevTools' own playback rate), a diagnosis: a transition the container's
+// software compositor draws too few frames of at a large size is caught at more of its steps (Updates 98n).
+const SLOW = Number(flag("--slow") ?? 1);
+// --transport: Now Playing's row tapped, button by button (Updates 98n; 98l set its order in Arabic and did not tap it).
+const TRANSPORT = has("--transport");
 const DESKTOP_UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
 const OUT = path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}`);
@@ -74,7 +86,7 @@ const TEXTS = [
   { key: "work", to: "/saints/athanasius-the-great/four-discourses-against-the-arians/", turns: true },
   { key: "council", to: "/councils/first-nicaea/the-twenty-canons/", turns: true, fallback: "/councils/first-nicaea/the-symbol-of-the-faith/" },
   // A chapter, for --carry: the texts above have no cover picture (the plate is drawn), so nothing can fly from them.
-  ...(CARRY ? [{ key: "bible", to: "/bible/john/10/" }] : []),
+  ...(CARRY || TRANSPORT ? [{ key: "bible", to: "/bible/john/10/" }] : []),
 ].filter((t) => !ONLY || ONLY.includes(t.key));
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -182,6 +194,11 @@ for (const text of TEXTS) {
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e).slice(0, 200)));
   const cdp = await ctx.newCDPSession(page);
+  if (CPU > 1) await cdp.send("Emulation.setCPUThrottlingRate", { rate: CPU });
+  if (SLOW !== 1) {
+    await cdp.send("Animation.enable");
+    await cdp.send("Animation.setPlaybackRate", { playbackRate: SLOW });
+  }
   const r = { key: text.key, to: text.to, fails: [], steps: {} };
   const fail = (what) => {
     r.fails.push(what);
@@ -250,7 +267,7 @@ for (const text of TEXTS) {
     const rest = await state(page);
     r.steps.rest = rest;
     if (rest.pill !== 1) fail(`at rest ${rest.pill} pills`);
-    if (rest.listenInPill !== 1 && !CARRY) fail("at rest no Listen in the pill");
+    if (rest.listenInPill !== 1 && !CARRY && !TRANSPORT) fail("at rest no Listen in the pill");
     if (rest.listenInPage) fail(`at rest ${rest.listenInPage} Listen in the page`);
     if (rest.foot.length !== 1) fail(`at rest the foot shows ${rest.foot.join(" and ") || "nothing"}`);
     await shot("rest");
@@ -293,6 +310,121 @@ for (const text of TEXTS) {
       if (!REDUCE && !carried) fail("Now Playing did not carry the dock's cover");
       const scale = /scale\(([\d.]+)/.exec(seen.find((v) => v.first)?.first ?? "")?.[1];
       if (!REDUCE && scale) r.steps.carry.scale = Number(scale);
+      throw Object.assign(new Error("done"), { done: true });
+    }
+    if (WORDS) {
+      // Now Playing on a long text (build 98 note 2, Updates 98n): its words are built only when the Words
+      // view is shown, and a line's words are spans only near the line being read, so neither the opening
+      // on Cover nor the switch to Words carries a long task. Each moment judged frame by frame (and traced
+      // with --trace); the sheet's elements counted after each.
+      const listenAt = await centreOf(page, box("[data-reader-pill] [data-listen-pill]"));
+      if (!listenAt) throw new Error("no Listen in the pill to tap");
+      await tapAt(cdp, listenAt.x, listenAt.y);
+      await sleep(2500);
+      const count = () =>
+        page.evaluate(() => {
+          const root = document.querySelector("[data-now-playing]");
+          const words = document.getElementById("player-view-panel-words");
+          return {
+            sheet: root?.querySelectorAll("*").length ?? 0,
+            words: words?.querySelectorAll("*").length ?? 0,
+            lines: words?.querySelectorAll("li[data-sung]").length ?? 0,
+            up: root?.getAttribute("aria-modal") === "true",
+            view: document.querySelector('#player-view-tab-words[aria-selected="true"]') ? "words" : "cover",
+          };
+        });
+      const tapSel = async (sel, what) => {
+        const at = await centreOf(page, box(sel));
+        if (!at) throw new Error(`no ${what} to tap`);
+        return tapAt(cdp, at.x, at.y);
+      };
+      r.steps.words = { closed: await count() };
+      const moment = async (name, sel, what) => {
+        await judge(name, () => tapSel(sel, what));
+        await sleep(1500);
+        const after = await count();
+        r.steps.words[name] = after;
+        return after;
+      };
+      const opened = await moment("open", "[data-reader-dock] .reader-dock-card button", "cover on the dock");
+      if (!opened.up) fail("Now Playing did not open from the dock");
+      if (opened.view !== "cover") fail(`Now Playing opened on ${opened.view}, not Cover`);
+      if (opened.lines) fail(`a long text's words were built on Cover (${opened.words} elements)`);
+      const shown = await moment("words", "#player-view-tab-words", "Words in the switch");
+      if (shown.view !== "words") fail("Words did not show");
+      if (!shown.lines) fail("Words shows no lines");
+      await moment("close", '[data-now-playing] button[aria-label="Close"]', "Close");
+      await moment("reopen", "[data-reader-dock] .reader-dock-card button", "cover on the dock");
+      throw Object.assign(new Error("done"), { done: true });
+    }
+    if (TRANSPORT) {
+      // Listen, then Now Playing from the dock's cover, then each button of its transport row tapped as a
+      // reader taps it, read from the recording itself: where it stands, whether it plays, which it is.
+      // The Bible's pill draws its Listen with the word alone: found by the app's own word for it.
+      const word = JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${LANG}.json`), "utf8"))["readAloud.listen"];
+      const listenAt =
+        (await centreOf(page, box("[data-reader-pill] [data-listen-pill]"))) ??
+        (await page.evaluate((w) => {
+          const b = [...document.querySelectorAll("[data-reader-pill] button")].find((e) => e.textContent?.trim() === w)?.getBoundingClientRect();
+          return b ? { x: b.left + b.width / 2, y: b.top + b.height / 2 } : null;
+        }, word));
+      if (!listenAt) throw new Error("no Listen in the pill to tap");
+      await tapAt(cdp, listenAt.x, listenAt.y);
+      await sleep(2500);
+      const openAt = await centreOf(page, box("[data-reader-dock] .reader-dock-card button"));
+      if (!openAt) throw new Error("no cover on the dock to tap");
+      await tapAt(cdp, openAt.x, openAt.y);
+      await sleep(1500);
+      // The player as it stands, a recording or the voice alike: its own position slider, what its toggle offers
+      // (Play while paused), and whether a recording or the voice sounds.
+      const playWord = JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${LANG}.json`), "utf8"))["prayers.play"];
+      const heard = () =>
+        page.evaluate((playWord) => {
+          const root = document.querySelector("[data-now-playing]");
+          const slider = root?.querySelector("[role='slider']");
+          const offers = [...(root?.querySelectorAll("div[dir='ltr'] > button") ?? [])].map((b) => b.getAttribute("aria-label")).find((l) => l === playWord) ? "play" : "pause";
+          const a = [...document.querySelectorAll("audio")].find((e) => !e.paused);
+          const voice = !!(window.speechSynthesis?.speaking && !window.speechSynthesis.paused);
+          return { t: Math.round(Number(slider?.getAttribute("aria-valuenow") ?? NaN) * 10) / 10, paused: offers === "play", sounding: !!a || voice, src: root?.querySelector("h2")?.textContent?.trim() ?? null, title: root?.querySelector("h2")?.textContent?.trim() ?? null };
+        }, playWord);
+      const row = () =>
+        page.evaluate(() => {
+          const rows = [...document.querySelectorAll("[data-now-playing] div[dir='ltr']")].filter((d) => d.querySelectorAll(":scope > button").length >= 3);
+          const el = rows[0];
+          return el
+            ? { dir: getComputedStyle(el).direction, buttons: [...el.querySelectorAll(":scope > button")].map((b) => { const r = b.getBoundingClientRect(); return { label: b.getAttribute("aria-label"), x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) }; }).sort((a, b) => a.x - b.x) }
+            : null;
+        });
+      const first = await row();
+      if (!first || first.buttons.length < 3) throw new Error("no transport row in Now Playing");
+      r.steps.transport = { lang: LANG, page: await page.evaluate(() => document.documentElement.dir), order: first.buttons.map((b) => b.label), taps: [] };
+      const at = (i) => first.buttons[i];
+      const n = first.buttons.length;
+      // previous? back 15, play or pause, forward 15, next?: by place, the toggle the middle one.
+      const mid = first.buttons.findIndex((b, i) => i > 0 && i < n - 1 && first.buttons[i - 1] && first.buttons[i + 1] && Math.abs(b.x - (first.buttons[0].x + first.buttons[n - 1].x) / 2) < 30);
+      if (mid < 1) throw new Error(`no middle button in the row (${first.buttons.map((b) => b.label).join(", ")})`);
+      const tap = async (i, name, check) => {
+        const was = await heard();
+        await tapAt(cdp, at(i).x, at(i).y);
+        await sleep(900);
+        const now = await heard();
+        await sleep(700);
+        const later = await heard();
+        const ok = check(was, now, later);
+        r.steps.transport.taps.push({ name, label: at(i).label, was, now, later, ok });
+        if (!ok) fail(`transport: ${name} (${at(i).label}) did not do what it names`);
+      };
+      // Forward first, so back 15 has 15 seconds to go back.
+      // A recording moves by 15 seconds; the voice by whole verses or paragraphs, to the start of the one the
+      // moment falls in (lib/listen/speech/session.ts), so each is held only to its way and the same text.
+      await tap(mid + 1, "forward 15", (a, b) => !b.paused && b.src === a.src && b.t > a.t + 1 && b.t - a.t <= 17 + 60);
+      await tap(mid - 1, "back 15", (a, b) => !b.paused && b.src === a.src && b.t < a.t - 1);
+      // Paused, where it stands holds; playing, it goes on.
+      await tap(mid, "pause", (a, b, c) => !a.paused && b.paused && c.t === b.t);
+      await tap(mid, "play", (a, b, c) => a.paused && !b.paused && c.t > b.t);
+      if (mid + 2 < n) await tap(mid + 2, "next", (a, b) => b.src !== a.src && b.title !== a.title);
+      else fail("transport: no next");
+      if (mid - 2 >= 0) await tap(mid - 2, "previous", (a, b) => b.src !== a.src || b.t < 3);
       throw Object.assign(new Error("done"), { done: true });
     }
     if (CHECK) {
@@ -357,12 +489,24 @@ for (const text of TEXTS) {
     await page.evaluate(() => window.scrollTo(0, 0));
     await sleep(900);
     const atRestWidth = (await state(page)).dockWidth;
-    await scrollBy(page, cdp, 700);
+    // Read on, short of the part's very end: there, held a moment, the next part opens at its top, where the
+    // controls always show (components/saints/KeepReading.tsx, lib/ui/scrollAway.ts TOP_PX). After the turn a
+    // council at 1032 stands on Canon I, a short canon whose room under the screen is about 700px, so a drag of
+    // 700 reached its end in some runs and opened Canon II: the "intermittent" dock that did not draw in
+    // (Updates 98m's runs; seen with --slow, Updates 98n). Every other text keeps its 700.
+    const room = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
+    const reach = Math.min(700, room - 160);
+    const where = () => page.evaluate(() => ({ hash: location.hash, y: Math.round(scrollY) }));
+    const from = await where();
+    if (reach < 200) fail(`too short to read on (${room}px under the screen)`);
+    await scrollBy(page, cdp, reach);
     const down = await state(page);
+    const downAt = await where();
     await shot("away");
     await scrollBy(page, cdp, -260);
     const up = await state(page);
-    r.steps.scroll = { atRestWidth, away: down.away, awayWidth: down.dockWidth, tabBarAway: down.tabBarShown, back: !up.away, backWidth: up.dockWidth, tabBarBack: up.tabBarShown, screen: down.screen };
+    r.steps.scroll = { atRestWidth, room, reach, from, down: downAt, away: down.away, awayWidth: down.dockWidth, tabBarAway: down.tabBarShown, back: !up.away, backWidth: up.dockWidth, tabBarBack: up.tabBarShown, screen: down.screen };
+    if (downAt.hash !== from.hash) fail(`reading on opened another part (${from.hash || "the first"} to ${downAt.hash})`);
     if (!down.screen) fail("not a reader's screen");
     if (!down.away) fail("a scroll down did not draw the dock in");
     if (down.dockWidth !== null && atRestWidth !== null && down.dockWidth >= atRestWidth) fail("the dock did not draw in");
@@ -376,7 +520,7 @@ for (const text of TEXTS) {
   if (r.fails.length) failed += 1;
   results.push(r);
   console.log(`${r.fails.length ? "FAIL" : "ok  "} ${text.key} ${r.to}${r.fails.length ? `: ${r.fails.join("; ")}` : ""}`);
-  console.log(`     ${JSON.stringify({ rest: r.steps.rest && { foot: r.steps.rest.foot, listenInPill: r.steps.rest.listenInPill, listenInPage: r.steps.rest.listenInPage }, playing: r.steps.playing && { foot: r.steps.playing.foot, slot: r.steps.playing.dockSlot, name: r.steps.playing.dockName }, afterListen: r.steps.afterListen, carry: r.steps.carry, pausePlay: r.steps.pausePlay, turn: r.steps.turn, scroll: r.steps.scroll, listenMotion: r.steps["listen:motion"], turnMotion: r.steps["turn:motion"], errors: r.errors })}`);
+  console.log(`     ${JSON.stringify({ rest: r.steps.rest && { foot: r.steps.rest.foot, listenInPill: r.steps.rest.listenInPill, listenInPage: r.steps.rest.listenInPage }, playing: r.steps.playing && { foot: r.steps.playing.foot, slot: r.steps.playing.dockSlot, name: r.steps.playing.dockName }, afterListen: r.steps.afterListen, carry: r.steps.carry, pausePlay: r.steps.pausePlay, turn: r.steps.turn, scroll: r.steps.scroll, listenMotion: r.steps["listen:motion"], turnMotion: r.steps["turn:motion"], transport: r.steps.transport, words: r.steps.words && { ...r.steps.words, motion: Object.fromEntries(["open", "words", "close", "reopen"].map((m) => [m, r.steps[`${m}:motion`]])) }, errors: r.errors })}`);
   await ctx.close();
 }
 await browser.close();

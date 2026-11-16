@@ -79,12 +79,13 @@ let store: Store;
 let session: typeof import("@/lib/listen/speech/session");
 let ms = 0;
 
-async function load(p: ReturnType<typeof phone>, opts: { rate?: number } = {}) {
-  const t = speechTimeline(VERSES, DEFAULT_PACE);
+async function load(p: ReturnType<typeof phone>, opts: { rate?: number; pieces?: typeof VERSES } = {}) {
+  const pieces = opts.pieces ?? VERSES;
+  const t = speechTimeline(pieces, DEFAULT_PACE);
   store.setSpokenTrack(
     "speech:genesis/1",
     (host) =>
-      session.createSpeechSession({ engine: p.engine, pieces: VERSES, lang: "en", voice: "en-gb-x-gba-local", rate: opts.rate ?? 1, pace: DEFAULT_PACE, host, clock: () => ms }),
+      session.createSpeechSession({ engine: p.engine, pieces, lang: "en", voice: "en-gb-x-gba-local", rate: opts.rate ?? 1, pace: DEFAULT_PACE, host, clock: () => ms }),
     { title: "Genesis 1", captions: t.captions, duration: t.duration, rate: opts.rate ?? 1 },
   );
   return t;
@@ -194,6 +195,32 @@ describe("a text spoken by the phone's voice, in the one player", () => {
     p.say({ type: "start", token: p.last().token, index: 2 });
     store.skipBy(-15);
     expect(p.last()).toMatchObject({ from: 0, offset: 0 });
+  });
+
+  // Updates 98n, build 98 note 2: Now Playing's Forward 15, tapped in Arabic on the export, took John 10 read by
+  // the voice from 3.9s back to its start: 15 seconds on still fell in the first piece, whose start is behind.
+  it("goes forward with 15 seconds forward inside a long paragraph, never back to its start", async () => {
+    const p = phone();
+    const long = [{ text: Array(200).fill("word").join(" "), n: 1 }, { text: "And the next paragraph.", n: 2 }, { text: "The last.", n: 3 }];
+    const t = await load(p, { pieces: long });
+    store.play();
+    p.say({ type: "start", token: p.last().token, index: 0 });
+    ms += 5000;
+    const before = store.currentTimeNow();
+    expect(pieceOf(t, before + 15)).toBe(0);
+    store.skipBy(15);
+    expect(p.last()).toMatchObject({ from: 1, offset: 0 });
+    expect(store.getAudioSnapshot().currentTime).toBe(t.starts[1]);
+    // Back 15 still goes to the start of the piece the moment falls in.
+    store.skipBy(-15);
+    expect(p.last()).toMatchObject({ from: 0, offset: 0 });
+    // On the last piece, forward has nowhere to go: the reading goes on as it is.
+    store.seek(t.starts[2]);
+    p.say({ type: "start", token: p.last().token, index: 2 });
+    const asked = p.asks.length;
+    store.skipBy(15);
+    expect(p.asks.length).toBe(asked);
+    expect(store.getAudioSnapshot().playing).toBe(true);
   });
 
   it("takes a new speed at once, from where it is", async () => {

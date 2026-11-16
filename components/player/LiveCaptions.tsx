@@ -104,6 +104,7 @@ export const LiveCaptions = memo(function LiveCaptions({
   onSeek,
   english = "over",
   footer,
+  spanNear,
   className,
 }: {
   /** Every line, as it is drawn: timed or not, the words are the words. */
@@ -130,6 +131,13 @@ export const LiveCaptions = memo(function LiveCaptions({
   english?: "over" | "under";
   /** Under the last line, in the same box: where the words come from. */
   footer?: ReactNode;
+  /**
+   * A long text (a Father's work, a life): a line's words are a span each
+   * only from the line before the one being read to this many after it, where
+   * they light and are followed; every other line is its words as one text,
+   * drawn the same (Updates 98n, build 98 note 2). Unset: every word a span.
+   */
+  spanNear?: number;
   className?: string;
 }) {
   const boxRef = useRef<HTMLDivElement>(null);
@@ -140,6 +148,7 @@ export const LiveCaptions = memo(function LiveCaptions({
   const painted = useRef(-1);
   /** The waiting share of the line painted, read once as it begins. */
   const waiting = useRef(WAIT);
+  const waitRead = useRef(false);
   const pending = useRef<First | null>(null);
   const lastHand = useRef(-Infinity);
   const scrolling = useRef(0);
@@ -348,10 +357,17 @@ export const LiveCaptions = memo(function LiveCaptions({
       if (cur !== painted.current) {
         clear(painted.current);
         painted.current = cur;
-        waiting.current = waitAt(cur >= 0 ? (wordRefs.current[cur] ?? []).find(Boolean) : null);
+        waitRead.current = false;
       }
       if (cur < 0) return;
       const els = wordRefs.current[cur] ?? [];
+      // Read once as the line begins, from its first word; a long text's line
+      // reached by a seek gets its spans in the draw after, so read it then.
+      if (!waitRead.current) {
+        const first = els.find(Boolean);
+        waiting.current = waitAt(first);
+        waitRead.current = Boolean(first);
+      }
       const words = lines[cur].words;
       words.forEach((w, j) => {
         const el = els[j];
@@ -548,7 +564,14 @@ export const LiveCaptions = memo(function LiveCaptions({
           const ref = (j: number) => (el: HTMLSpanElement | null) => {
             (wordRefs.current[i] ??= [])[j] = el;
           };
-          const sung = (
+          // A long text's line far from the one being read: its words as one
+          // text, the same words and spaces the spans hold, so it lays out the
+          // same; nothing lights or follows a word there (a word over its sound
+          // is a stack of its own, always spanned).
+          const spanned = spanNear === undefined || sounds || (i >= Math.max(current, 0) - 1 && i <= Math.max(current, 0) + spanNear);
+          const sung = !spanned ? (
+            said.join(" ")
+          ) : (
             <>
               {said.map((word, j) =>
                 sounds ? (
