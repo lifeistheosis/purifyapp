@@ -13667,9 +13667,14 @@ html:is([data-look], [data-candle-season]) body::before {
    well or field, a label set over a line, a set piece that is dark by
    design, a cell of a grid whose lines are its own ground showing between
    the cells (a heresy's claim beside the Church's answer).
+   The tab bar is a bar that stays in place too, but pinned in the apps by
+   .tab-topbar, not by the sticky class, so it is named: until Updates 98p
+   the rule cleared it, and a tab scrolled on a look slid the page under its
+   name, the Plus pill, search and the bell (the pill's word read 2.10:1 on
+   Night sky). lib/nav/__tests__/tabBarOnALook.test.ts holds it.
    scripts/room-walk.mjs walks every screen of the export to hold this to
    what is really drawn. */
-html:is([data-look], [data-candle-season]) :is(main, body > .safe-pt) .bg-night:not(.sticky, .fixed, .absolute, .inline-block, .dark-island, [class*="rounded"], .gap-px > *),
+html:is([data-look], [data-candle-season]) :is(main, body > .safe-pt) .bg-night:not(.sticky, .tab-topbar, .fixed, .absolute, .inline-block, .dark-island, [class*="rounded"], .gap-px > *),
 html:is([data-look], [data-candle-season]) body > .bg-night.min-h-screen {
  background-color: transparent;
 }

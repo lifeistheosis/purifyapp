@@ -101,8 +101,19 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES, own 
       // A box that clips its words (a clamped line, a rounded tile) is scrolled by that too, though no reader
       // can scroll it: its hidden lines come up into it and the lines it showed go. Each such box is put
       // back as it was.
+      // A word in a bar pinned at the screen's top (a sticky or fixed box there) is measured where it stands:
+      // a scroll moves the page under that bar, not the bar, so it would measure another ground than the one
+      // asked about (Updates 98p: the tab bar's Plus pill, asked for at 900px of scroll, was photographed at
+      // 474px, and at 300px at the top, so two runs at two depths read two answers, neither where it said).
       await el
         .evaluate((node) => {
+          const r = node.getBoundingClientRect();
+          if (r.top >= 0 && r.left >= 0 && r.bottom <= innerHeight && r.right <= innerWidth) {
+            for (let n = node; n && n !== document.documentElement; n = n.parentElement) {
+              const p = getComputedStyle(n).position;
+              if ((p === "sticky" || p === "fixed") && n.getBoundingClientRect().top <= 1) return;
+            }
+          }
           const held = [];
           for (let n = node.parentElement; n; n = n.parentElement) {
             const cs = getComputedStyle(n);
