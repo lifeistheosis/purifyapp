@@ -25,6 +25,7 @@ Session session_01VuYTwc73BLRrRv2aMF7T3E, started by Arbiter 14 (session_01VuYTw
 
 ## Open
 
+- **One still fails, not in these screens' files:** the Prayers door in Arabic (`door-ar`), the header's Plus pill at 3.94 to 4.33:1 over the content under it on six of the fourteen looks (Jordan, Blush, Roses, Lavender, Olive, Stone). The other 20 stills pass on the five palettes and the fourteen looks; round 3 had checked the five palettes only. The header's Plus button is Round 3 apply A's (screen 5); routed to the arbiter.
 - **Not proved on an export: the fold fix.** One export a round; the export was cut before the walk found the jump. The gate's motion walk on the next export walks it, with motion on and reduced.
 - Profile's patron saint card is drawn from what the device keeps and stays disabled until the website's list of saints arrives, so with no network a tap on "Change" does nothing. Online it opens. Not changed: it is the design as drawn, and a choice saves to the server anyway.
 - Not walked: Arabic taps on You and Profile (their Arabic stills pass); a phone.
