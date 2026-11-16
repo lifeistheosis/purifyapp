@@ -39,15 +39,17 @@ Updates 98d left (docs/handoffs/updates-98d.md). Branch `ccr-07896cf2-bo0afd`.
 - `bible-downloads-local.mjs`: no faults. All seven downloaded (four seen by the sheet closing on them, three
   by their options), 504 requests to the local web, all 200 with `Access-Control-Allow-Origin: *`; each read
   offline in its own words (John 1:3 unlike the English); each removed and offered again.
-- `saved-line.mjs`: see the build-98 note 9 Done line for the sizes that finished.
+- `saved-line.mjs`, every size run (`--at=` side by side): no faults. Cover and Words views with the line showing pass
+  checkMock with pixels at 390, 800 and 1032 and in Arabic (`390-ar` the Cover, `390-ar-en` both views); nothing moved
+  at 360, 390, 412, 800, 1032 and in Arabic; every language at 360 fits, the widest 288 of 301 px. Stills:
+  `now-playing-saved-line-390.png` and `-390-ar.png`, reasons in `build-98/README-note-9.md`.
 
 ## Open, and exactly where
 
-1. Whatever note 9's Done line names as not finished (the long Words view passes).
-2. **Seen, not mine:** in Arabic, Now Playing's transport row reads forward 15, pause, back 15, next: the two
+1. **Seen, not mine:** in Arabic, Now Playing's transport row reads forward 15, pause, back 15, next: the two
    15-second buttons trade places with the page's direction while next stays at the right
    (`now-playing-saved-line-390-ar.png`). NowPlayingSheet.tsx is Updates 98h's.
-3. The Wi-Fi wait cannot be staged in Chromium (it needs a saving job waiting on a cellular network); its
+2. The Wi-Fi wait cannot be staged in Chromium (it needs a saving job waiting on a cellular network); its
    words, with every other state's, are measured as drawn in all 21 languages at 360 (the widest 288 of
    301 px).
-4. Only after the merge: purifyapp.net probed for each version, one download on his phone.
+3. Only after the merge: purifyapp.net probed for each version, one download on his phone.
