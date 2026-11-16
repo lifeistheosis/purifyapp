@@ -13,9 +13,11 @@ import {
 } from "react";
 
 import { DockNote, KeptHero, PlansDock, PlusFeatureRows, PlusReviews, ScribePicture } from "@/components/billing/KeptPaywall";
+import { PlusParts } from "@/components/billing/PlusParts";
 import { PlusTryHead, PlusTryPage, TRY_PREVIEW_IDS, bringRowBack, useTryRows } from "@/components/billing/PlusTry";
 import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
-import { PLUS_ROWS } from "@/lib/premium/plusRows";
+import { useDesktopApp } from "@/lib/desktop/useDesktopApp";
+import { PLUS_ROWS, rowLeads } from "@/lib/premium/plusRows";
 import { beginTry, endTrySound } from "@/lib/premium/plusTrySound";
 import { countBought, countLock } from "@/lib/analytics/lockCount";
 import { countPlusStep } from "@/lib/analytics/moreCount";
@@ -487,6 +489,12 @@ function UpgradeSheet({
   const { t } = useTranslate();
   const done = phase === "active";
   const list = useRef<HTMLDivElement>(null);
+  // A lock's own row leads, lit in the lock's words. Opened by the header's
+  // Plus button, or by anything else no row leads, the sheet shows the Plus
+  // page's own parts instead (round 3 of the fifteen screens), so both doors
+  // to Plus show the same.
+  const desktopApp = useDesktopApp();
+  const ledBy = rowLeads(feature, { desktopApp });
   const tryer = useTryRows(feature, done ? null : trying, onTry, () => {
     onLeaveTry();
     if (trying) bringRowBack(list, trying);
@@ -554,9 +562,14 @@ function UpgradeSheet({
 
               {/* The features working, in depth: the one this lock was for
                   first, lit, with what stays free beside it, each ending in
-                  Try it (r3-07 A). */}
+                  Try it (r3-07 A). With no lock leading, each part as it
+                  looks, as the Plus page shows them (PlusParts). */}
               <div ref={list}>
-                <PlusFeatureRows lead={feature} onTry={tryer.start} className="mt-4" />
+                {ledBy ? (
+                  <PlusFeatureRows lead={feature} onTry={tryer.start} className="mt-4" />
+                ) : (
+                  <PlusParts onTry={tryer.start} className="mt-4" />
+                )}
               </div>
 
               {/* What readers say: the stores' own reviews, word for word. */}

@@ -48,7 +48,7 @@ import { cn } from "@/lib/cn";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import type { LocaleCode } from "@/lib/i18n/locales";
 import { paywallReviews } from "@/lib/premium/paywallReviews";
-import { plusRowsLedBy, rowsHere } from "@/lib/premium/plusRows";
+import { plusRowsLedBy, rowLeads, rowsHere } from "@/lib/premium/plusRows";
 import { useDesktopApp } from "@/lib/desktop/useDesktopApp";
 import { LegalLink } from "@/components/legal/LegalLink";
 
@@ -272,7 +272,7 @@ export function PlusFeatureRows({
   const { t } = useTranslate();
   const desktopApp = useDesktopApp();
   const rows = rowsHere(plusRowsLedBy(lead), { desktopApp });
-  const ledBy = lead ? rows[0]?.feature === lead : false;
+  const ledBy = rowLeads(lead, { desktopApp });
   return (
     <div className={className}>
       <ul className="paywall-in flex flex-col gap-2.5" style={{ animationDelay: "280ms" }} aria-label={t("plus.sheet.title")}>

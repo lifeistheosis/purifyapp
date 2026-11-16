@@ -4,7 +4,7 @@
 // tapping the "Plus/Pro Activated" pill. Reads the real entitlement
 // (getClientPlan), explains the tier + its features + when it renews/ends,
 // and animates in (reveal-rise, reduced-motion safe). Free/signed-out users
-// are bounced to the /premium upsell.
+// are sent on to the Plus page (noPlan below: /pricing in the apps).
 //
 // Redrawn 2026-10-19 (1.7.2, the owner's pick B of three paywall directions;
 // the gold "Your plan" he sent was where it began): the paywall's scribe, in
@@ -23,6 +23,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FeatureShowcase, type ShowcaseItem } from "@/components/premium/FeatureShowcase";
 import { PREMIUM_CTA, PREMIUM_GHOST } from "@/components/premium/PremiumUI";
 import { deviceDateLocale } from "@/lib/i18n/deviceDates";
+import { isNativeClient } from "@/lib/platform/native";
 
 // How the plan came, and when it renews, in the reader's language (the Plus
 // page and Your plan in all twenty-one languages, 2026-11-10). The stores keep
@@ -78,12 +79,22 @@ const FREE: ClientPlan = {
   supporter: false,
 };
 
-/** Where a reader without Plus is sent from this screen. */
-const NO_PLAN = "/premium";
+/**
+ * Where a reader without Plus is sent from this screen: the page their Plus
+ * button opens (components/nav/MobilePremiumButton.tsx). In the apps that is
+ * /pricing, the one Plus page (round 3 of the fifteen screens): this screen
+ * was the only thing in the apps that still opened /premium, the older table
+ * of plans with its list of ticks. The website keeps /premium, where its own
+ * Plus button leads.
+ */
+function noPlan(): string {
+  return isNativeClient() ? "/pricing" : "/premium";
+}
 
 export function PlanScreen() {
   const { t } = useTranslate();
   const router = useRouter();
+  const NO_PLAN = noPlan();
   // A reader who is not signed in has no plan to show: the switch holds the
   // page they are leaving while the session is read and goes straight on to
   // the offer, never through the waiting line below (lib/auth/signedHold.ts;
@@ -115,7 +126,7 @@ export function PlanScreen() {
 
   useEffect(() => {
     if (plan && plan.tier === "free") router.replace(NO_PLAN);
-  }, [plan, router]);
+  }, [plan, router, NO_PLAN]);
 
   if (!plan || plan.tier === "free") {
     return (

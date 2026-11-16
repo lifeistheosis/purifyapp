@@ -113,8 +113,13 @@ describe("the feature posters", () => {
   it("gave way on the paywall to the features in depth (1.8, the owner's R2)", () => {
     // His locked design shows each feature with its working picture and what
     // it does as the reader scrolls, so nothing has to be opened to be read.
+    // From round 3 of the fifteen screens the page shows each part as it
+    // looks (components/billing/PlusParts.tsx); the sheet shows them too when
+    // no lock leads it, and keeps the rows where a lock's own row leads.
     const paywall = code("components/billing/PlusPaywall.tsx");
-    expect(paywall).toContain("<PlusFeatureRows");
+    expect(paywall).toContain("<PlusParts");
+    expect(code("components/billing/UpgradeModal.tsx")).toContain("<PlusFeatureRows");
+    expect(code("components/billing/UpgradeModal.tsx")).toContain("<PlusParts");
     expect(paywall).not.toContain("<FeatureShowcase");
   });
 });

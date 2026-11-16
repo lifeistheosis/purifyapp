@@ -108,6 +108,17 @@ export function plusRowsLedBy(lead: string | null | undefined): readonly PlusRow
   return [PLUS_ROWS[at], ...PLUS_ROWS.slice(0, at), ...PLUS_ROWS.slice(at + 1)];
 }
 
+/**
+ * Does a lock's own row lead the list, lit in the lock's words? Only when the
+ * sheet was opened by a lock with a row of its own that is shown here. The
+ * header's Plus button opens with "general", which leads nothing (1.9, round
+ * 3 of the fifteen screens: then the sheet shows the Plus page's own parts,
+ * components/billing/PlusParts.tsx, so both doors to Plus show the same).
+ */
+export function rowLeads(lead: string | null | undefined, here: { desktopApp: boolean }): boolean {
+  return !!lead && rowsHere(plusRowsLedBy(lead), here)[0]?.feature === lead;
+}
+
 /** Is this the name of a lock with a row of its own? */
 export function isPlusLock(name: string | null | undefined): name is PlusLock {
   return PLUS_ROWS.some((r) => r.feature !== null && r.feature === name);

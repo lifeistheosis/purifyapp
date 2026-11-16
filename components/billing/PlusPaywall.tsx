@@ -67,10 +67,10 @@ import {
   FeatureRow,
   KeptHero,
   PlansDock,
-  PlusFeatureRows,
   PlusReviews,
   type BuyPlace,
 } from "@/components/billing/KeptPaywall";
+import { PlusParts } from "@/components/billing/PlusParts";
 import { PlusTryHead, PlusTryPage, usePlusTry, type PlusTry } from "@/components/billing/PlusTry";
 import { PREMIUM_CTA, PREMIUM_GHOST } from "@/components/premium/PremiumUI";
 import { cn } from "@/lib/cn";
@@ -344,12 +344,14 @@ export function TierScreen({
         <TierSwitch tier={tier} onSwitch={onTier} />
       </div>
 
-      {/* The features working, in depth. Plus in the app's own words, each
-          ending in Try it; Pro with the terms of the EIKON Box under it, as
-          before; every word in the reader's language. Then what readers say,
-          before the plans. */}
+      {/* Each part of Plus as it looks (round 3 of the fifteen screens,
+          components/billing/PlusParts.tsx): a specimen of the part, its name
+          and its line in the app's own words, the whole piece the way to try
+          it. Pro keeps its rows, with the terms of the EIKON Box under them;
+          every word in the reader's language. Then what readers say, before
+          the plans. */}
       <section ref={list} className="mx-auto mt-4 w-full max-w-[520px] px-5">
-        {tier === "pro" ? <ProRows /> : <PlusFeatureRows onTry={tryer.start} />}
+        {tier === "pro" ? <ProRows /> : <PlusParts onTry={tryer.start} />}
         {tier === "plus" && place === "web" ? (
           <p className="mt-3 font-sans text-caption leading-[1.5] text-paper/45">{t("plus.promise.supporters")}</p>
         ) : null}
@@ -377,7 +379,7 @@ function SignedOutScreen() {
           {/* The same features the ready phase shows, and what readers say,
               so the screen sells the thing before asking for a sign-in. */}
           <section ref={list} className="mx-auto mt-5 w-full max-w-[520px] px-5">
-            <PlusFeatureRows onTry={tryer.start} />
+            <PlusParts onTry={tryer.start} />
             <PlusReviews className="mt-6" />
           </section>
         </>

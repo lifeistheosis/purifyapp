@@ -120,7 +120,9 @@ describe("the Plus page's rows", () => {
     expect(bare("components/billing/UpgradeModal.tsx")).toContain("<PlusFeatureRows lead={feature} onTry={tryer.start}");
     const screen = bare("components/billing/PlusPaywall.tsx");
     // The apps' screen and the website's /pricing (TierScreen), and the apps' screen signed out.
-    expect(screen.match(/<PlusFeatureRows onTry=\{tryer\.start\} \/>/g)).toHaveLength(2);
+    // From round 3 of the fifteen screens the page's rows are its parts, each
+    // shown as it looks, the whole piece the way to try it (lib/premium/__tests__/plusParts.test.ts).
+    expect(screen.match(/<PlusParts onTry=\{tryer\.start\} \/>/g)).toHaveLength(2);
     expect(bare("components/billing/WebPaywall.tsx")).toContain("<TierScreen");
   });
 
