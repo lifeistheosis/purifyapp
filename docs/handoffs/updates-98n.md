@@ -1,6 +1,6 @@
 # Updates 98n: hand-over
 
-Started by Arbiter 14 on 2026-11-16 from `docs/handoffs/updates-98m.md`. Code: `32f5443d` (the mends, their tests, the walk's new modes). Two exports, named as 98l and 98m named theirs: one of the head `dfe5fa8e` for the before traces and the diagnosis, one of `32f5443d` for every check and the after traces.
+Started by Arbiter 14 on 2026-11-16 from `docs/handoffs/updates-98m.md`. Code: `42def6ec` (the mends, their tests, the walk's new modes; cut for the export as `32f5443d`, before its rebase onto `fed40e3c`), `e6c5ab9f` (the walk's voice log). Two exports, named as 98l and 98m named theirs: one of the head `dfe5fa8e` for the before traces and the diagnosis, one of `32f5443d` for every check and the after traces.
 
 ## Done
 
@@ -14,7 +14,7 @@ Started by Arbiter 14 on 2026-11-16 from `docs/handoffs/updates-98m.md`. Code: `
 
 ## Checks
 
-So far, on the clean install: typecheck 0; eslint clean on every touched file; the player, listen, ambience, chants, prayers and ui test folders and the reader dock's tests 2,401 passed (231 files); `npm run build` exit 0; the export (`node scripts/gate/export.mjs --platform android`, from `32f5443d`) exit 0; `scripts/gate/player-looks.mjs` all passed (the dock, the mini player and Now Playing at 390, 800 and 1032, English and Arabic, 21 palettes and looks each). Running as this is written: the listen walks with checkMock at 390, 800, 1032 and in Arabic, the motion walk (`--loaded track`, `--loaded sound`, CPU 4x), the whole suite and `npm run lint`; their results follow in the next commit.
+On the clean install: typecheck 0; the whole unit suite 15,538 passed, 9 skipped, 0 failed (1,256 files, 1 skipped); `npm run lint` 0 errors (50 warnings); `npm run build` exit 0; the export (`node scripts/gate/export.mjs --platform android`, from `32f5443d`) exit 0; `scripts/gate/player-looks.mjs` all passed (the dock, the mini player and Now Playing at 390, 800 and 1032, English and Arabic, 21 palettes and looks each). `listen-walk.mjs --check`, checkMock with pixels on every palette and look: at 390 the council passes whole and the life, event, study and work fail only "checkMock playing"; at 800 (life, work), 1032 (work) and Arabic 390 (life, work) the same, "checkMock playing" only, which is the lyric light's contrast (his call); the council at 1032 passes whole (read on 498 of its 658px, the dock drew in, its turn passed this run). The motion walk on the export, CPU 4x: `--loaded track` 20 of 20, Now Playing's opening longest 33.4ms, none over 50ms, the slide 138 to 405ms after the tap; `--loaded sound` 19 of 20, then 20 of 20 (the one flag was not captured by my log filter and did not repeat). Tapped: Now Playing's views on a long text (Cover, Words, close, open again), the transport row in Arabic (Done 3), the dock's Listen, Pause and Play and the parts' turn (the listen walks).
 
 ## Open
 
