@@ -19,7 +19,7 @@ Started by Arbiter 14 on 2026-11-15 to finish Updates 98f's build 98 note 2 (one
    - *cut while playing*: the dock's track title ends in an ellipsis on a long name ("The life of St. Athanasius the G..."), as the mini player's does (`NowPlayingBar.tsx`, `block truncate`, Updates 98e's file); the full name is in the button's label. Room for it (two lines) would change the player row the owner picked.
    - *mirror while playing* (2 to 18 boxes): the reading marks' layers (`components/reading/MarksLayer.tsx`, MarkHost) placed with left, not start; they come only while reading.
    - *the dock drawn in at once on an event*: Listen's tap is a hand on the glass, so the page's own move to the paragraph being read inside the next 1.2s reads as the reader reading on (`lib/ui/scrollAway.ts`, HAND_MS). The Bible rarely meets it (its first verse is in view).
-2. Not run for want of tokens: see build-98.md's Done line for what was and was not run at 800, 1032, in Arabic and on the computer.
+2. **Not proved:** checkMock at 1032 and the computer check were still running at the line; in Arabic every text failed to play because `scripts/lib/fake-voice.mjs` offers one voice in the reader's language (Arabic) and the texts are English, so Listen opened the Voice sheet: give the stand-in an English voice too, rerun `node scripts/gate/listen-walk.mjs out --check --lang ar` and render the Arabic still (`note-2-life-playing-390-ar`, plan in the README).
 
 ## The probe
 
