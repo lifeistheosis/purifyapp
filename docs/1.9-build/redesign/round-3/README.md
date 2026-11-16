@@ -39,3 +39,7 @@ Cut both exports (`../tools/export.mjs`; the before from the working branch, the
 ## Applied
 
 His word at about 05:20 UTC on 2026-11-16: "finalize this build and it's drop kit and yes to all EXCEPT the Bible screen". Screens 2, 3 and 6 were applied by Round 3 apply B (session_01VuYTwc73BLRrRv2aMF7T3E), these screens' files only, byte-identical to the held branch's (the head had not moved in them), with only their own two sections of `app/globals.css`: `bf80d4cfd` the chants door, `088fb1d48` You and Profile, `5fab250a9` a plan's page, and `437ebc9be` the plan's sources folding open with the house's motion (the motion walk found the days under them jumping 28px at once). The account gate is safe as drawn: it lets in early exactly whom `resolveUser` lets in (`lib/auth/__tests__/accountGateKeptSession.test.ts`, a walk and a read-only probe). The record: `docs/handoffs/round-3-apply-b.md`. Screen 4 was his no; screen 7 goes in with the voice system.
+
+## Applied (2026-11-16, Round 3 apply A, at his yes "yes to all EXCEPT the Bible screen")
+
+Screen 1, the journal's page: 161d84b3 (with a verse's note on the page, opened from its verse with no Open back; a Father's words keep the old sheet), 0e75e05c (the verse-note walk). Screen 5, Plus: fed40e3c (the header's Plus button shows the same parts; a lock's row still leads its sheet). The hand-over: `docs/handoffs/round-3-apply-a.md`, with the checks and the one item left (the header's Plus pill in Arabic on six earned looks, scrolled).
