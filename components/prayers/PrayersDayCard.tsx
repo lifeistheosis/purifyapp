@@ -48,7 +48,7 @@ export function PrayersDayCard() {
             <span aria-hidden className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${FAST_DOT[day.fast.kind]}`} />
             <span>
               {t(`calendar.fast.${day.fast.ruleId}.label`)}
-              <span className="text-paper/30"> · </span>
+              <span aria-hidden> · </span>
               {day.pascha.daysAway > 0
                 ? tn("calendar.daysUntilPascha", day.pascha.daysAway)
                 : day.pascha.daysAway === 0
