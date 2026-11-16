@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Stills of the native export, as a phone's shell serves it, with checkMock.
 //
-//   node shots.mjs <export dir> <out dir> <plan.json> [--check] [--scale=2]
+//   node shots.mjs <export dir> <out dir> <plan.json> [--check [--looks]] [--scale=2]
 //
 // plan.json: [{ name, to, set?, width?, height?, lang?, full?, wait?, steps?, selector? }]
 //   set     localStorage values before the app starts (a new reader by default: questions done, nothing kept)
@@ -18,7 +18,9 @@ const [dir, outDir, planFile, ...flags] = process.argv.slice(2);
 const CHECK = flags.includes("--check");
 const SCALE = Number(flags.find((f) => f.startsWith("--scale="))?.split("=")[1] ?? 2);
 const repo = process.cwd();
-const { checkMock, printMockCheck } = await import(pathToFileURL(path.join(repo, "scripts/mock-check.mjs")));
+const { checkMock, printMockCheck, PALETTES, LOOKS } = await import(pathToFileURL(path.join(repo, "scripts/mock-check.mjs")));
+// --looks: the earned looks too, with the five palettes (as scripts/quote-library-walk.mjs measures them).
+const PALS = flags.includes("--looks") ? [...PALETTES, ...LOOKS] : undefined;
 const { NATIVE_UA, serveLikeTheShell, go } = await import(pathToFileURL(path.join(repo, "scripts/lib/shell-server.mjs")));
 const { fakeVoice } = await import(pathToFileURL(path.join(repo, "scripts/lib/fake-voice.mjs")));
 const { createRequire } = await import("node:module");
@@ -79,7 +81,7 @@ for (const shot of plan) {
       console.log(`  ${shot.name} measure: ${JSON.stringify(m)}`);
     }
     if (CHECK && shot.check !== false) {
-      const result = await checkMock(page, shot.selector ?? "body", { pixels: true });
+      const result = await checkMock(page, shot.selector ?? "body", PALS ? { pixels: true, palettes: PALS } : { pixels: true });
       const ok = printMockCheck(result, shot.name);
       if (!ok) failed += 1;
     }
