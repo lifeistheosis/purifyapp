@@ -1913,6 +1913,26 @@ const HYPHEN = `<div data-mock-fixture="hyphen" style="position:fixed;left:0;rig
   <div style="margin-top:12px;background-image:${PICTURE("8c8c8c")};padding:12px"><p style="margin:0;width:64px;color:#ffffff;font:600 11.5px/14px sans-serif">Thauma&shy;turgist</p></div>
 </div>`;
 
+/**
+ * Words in a sheet, under the plans held at its foot (Gate 6b, 2026-11-16: the Purify Plus sheet's first readers'
+ * quote read 1.00:1 on seven palettes, by the plans' own button, where its letters stand on 5.92:1 and more). Each
+ * sheet stands fixed over the whole screen with a scroller of its own and a bar sticky at its foot, a light pill at
+ * the bar's top; the words are light on a dark picture in three lines, the first clear of the bar and the others
+ * under it. In the first the words are in sight where the sheet opens, and are brought to the middle, clear of the
+ * bar, since they move with the sheet's scroller. In the second the bar reaches past the middle, so two lines stay
+ * under it there: they are left out, and the words are read on the line in sight. Both pass; read on the bar, 1.00:1.
+ */
+const SHEET = (name, spacer, dock) => `<div data-mock-fixture="${name}" style="position:fixed;inset:0;z-index:400;background:#101010">
+  <div style="height:100%;overflow-y:auto">
+    <div style="height:${spacer}"></div>
+    <div style="background-image:${PICTURE("101010")};padding:12px"><p style="margin:0;color:#ffffff;font:16px/20px sans-serif;white-space:nowrap">Words the plans<br>pass over, read on<br>their own picture</p></div>
+    <div style="height:60vh"></div>
+    <div style="position:sticky;bottom:0;height:${dock};box-sizing:border-box;padding-top:4px;background:#1c1c1f"><span style="display:block;height:44px;border-radius:999px;background:#ffffff"></span></div>
+  </div>
+</div>`;
+const SHEET_OPEN = SHEET("sheet-open", "calc(60vh - 32px)", "40vh");
+const SHEET_BAR = SHEET("sheet-bar", "120vh", "calc(50vh + 10px)");
+
 /** The Church's red, by its token, beside a red typed in that is not it. */
 const RED = `<div data-mock-fixture="red" style="padding:16px;display:flex;gap:12px">
   <button type="button" class="inline-flex min-h-11 items-center rounded-pill bg-crimson px-4 font-sans text-ui font-semibold text-white">Pray</button>
@@ -2073,6 +2093,19 @@ async function selfTest() {
       !hyphens.failures.some((f) => plain(f.what) === '"Wonderworker"') &&
       hyphens.failures.some((f) => f.check === "contrast" && plain(f.what) === '"Thaumaturgist"' && f.detail.includes("on the pixels under it"));
     await page.evaluate(() => document.querySelector("[data-mock-fixture=hyphen]")?.remove());
+    // Words in a sheet, under the plans held at its foot: brought to the middle when they move with the sheet's
+    // scroller, and read only on the lines no bar stands over (Gate 6b).
+    const sheetRead = [];
+    for (const [name, html] of [["sheet-open", SHEET_OPEN], ["sheet-bar", SHEET_BAR]]) {
+      await page.evaluate((h) => document.body.insertAdjacentHTML("beforeend", h), html);
+      await settle(page);
+      const r = await checkMock(page, `[data-mock-fixture=${name}]`, { palettes: [["Dark", null]], pixels: true });
+      printMockCheck(r, name === "sheet-open" ? "words in a sheet, in sight under the plans held at its foot" : "words in a sheet, two of their lines under a bar past the middle");
+      const look = r.looks.find((l) => l.text.startsWith("Words the plans"));
+      sheetRead.push(!r.failures.some((f) => f.check === "contrast") && look?.left === false && (look?.ratios?.Dark ?? 0) >= 4.5);
+      await page.evaluate((n) => document.querySelector(`[data-mock-fixture=${n}]`)?.remove(), name);
+    }
+    const sheetsRead = sheetRead.length === 2 && sheetRead.every(Boolean);
     // The Church's red and white on it are allowed by name; a red typed in that is not it still fails.
     await page.evaluate((html) => document.body.insertAdjacentHTML("beforeend", html), RED);
     await settle(page);
@@ -2233,11 +2266,11 @@ async function selfTest() {
       said("Words over a fade on a picture", "a picture is drawn across it (img)") &&
       said("Words over a picture, on plain colours", "a picture is drawn across it (img)") &&
       good.unmeasured.length === 3;
-    const ok = listsWhole && missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead && shapesOnce && pairRight && dirRight && backdropRead;
+    const ok = listsWhole && missed.length === 0 && good.failures.length === 0 && named && bothCut && fadesCaught && fadesRead && rowsRead && rowsCaught && picturesSaid && arabic.failures.length === 0 && lookSaid && pixelsRead && redRight && clockRight && motionRead && hyphenRead && sheetsRead && shapesOnce && pairRight && dirRight && backdropRead;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${listsWhole ? "" : "a palette of the registry is left out of the lists, or the old lists were not caught; "}${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}${shapesOnce ? "" : " an outline drawn many times was read more than once, or a sparkle drawn among them was not caught"}${pairRight ? "" : " a part that drew more while it was measured had its paints compared with their neighbours' on Light"}${dirRight ? "" : " a part that changed with the direction had its boxes compared by place, not each with itself"}${backdropRead ? "" : " a backdrop laid beside the words was not read as their ground, or was read through the paper laid over it"}`,
+        : `\nself-test FAILED: ${listsWhole ? "" : "a palette of the registry is left out of the lists, or the old lists were not caught; "}${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash or a cut allowed by name was not listed"}${bothCut ? "" : " a card's clamped first line was not caught"}${fadesCaught ? "" : " words that fail on a gradient were not caught by it"}${fadesRead ? "" : " words on a gradient were not measured"}${rowsRead && rowsCaught ? "" : " words scrolled out of their row were not read on the ground behind the row"}${picturesSaid ? "" : " words on a picture were not said, or others were said with them"}${arabic.failures.length ? " an Arabic page's bar, right both ways round, was failed" : ""}${lookSaid ? "" : " words on pictures were not said without the pixels pass"}${pixelsRead ? "" : " the pixels pass did not pass the light words, fail the grey ones and leave the words past the edge to the eye"}${redRight ? "" : " the Church's red was failed, or a red typed in was passed"}${clockRight ? "" : " a clock that ticked while it was measured was failed, or a bar that moved was not said"}${motionRead ? "" : " words over light that moves forever were not measured on a held frame and passed"}${hyphenRead ? "" : " words broken at a soft hyphen were not read a line at a time, or the faint ones passed"}${sheetsRead ? "" : " words in a sheet were read where a bar stands over them, or not brought clear of it"}${shapesOnce ? "" : " an outline drawn many times was read more than once, or a sparkle drawn among them was not caught"}${pairRight ? "" : " a part that drew more while it was measured had its paints compared with their neighbours' on Light"}${dirRight ? "" : " a part that changed with the direction had its boxes compared by place, not each with itself"}${backdropRead ? "" : " a backdrop laid beside the words was not read as their ground, or was read through the paper laid over it"}`,
     );
     return ok;
   } finally {

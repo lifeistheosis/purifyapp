@@ -105,13 +105,18 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES, own 
       // a scroll moves the page under that bar, not the bar, so it would measure another ground than the one
       // asked about (Updates 98p: the tab bar's Plus pill, asked for at 900px of scroll, was photographed at
       // 474px, and at 300px at the top, so two runs at two depths read two answers, neither where it said).
+      // A word that moves up and down with a scroller inside such a box is not pinned, and is brought to the
+      // middle like any other: a sheet stands in a box fixed over the whole screen, and its words move with the
+      // sheet's own scroller (Gate 6b, 2026-11-16: the Purify Plus sheet's first readers' quote was measured where
+      // the line before it had left it, three of its four lines under the plans held at the sheet's foot).
       await el
         .evaluate((node) => {
           const r = node.getBoundingClientRect();
           if (r.top >= 0 && r.left >= 0 && r.bottom <= innerHeight && r.right <= innerWidth) {
             for (let n = node; n && n !== document.documentElement; n = n.parentElement) {
-              const p = getComputedStyle(n).position;
-              if ((p === "sticky" || p === "fixed") && n.getBoundingClientRect().top <= 1) return;
+              const cs = getComputedStyle(n);
+              if (n !== node && /auto|scroll|overlay/.test(cs.overflowY) && n.scrollHeight > n.clientHeight) break;
+              if ((cs.position === "sticky" || cs.position === "fixed") && n.getBoundingClientRect().top <= 1) return;
             }
           }
           const held = [];
@@ -208,6 +213,31 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES, own 
           line.x = x;
           line.y = y;
         }
+        // A line under a bar held over the scroll (a sticky or fixed box that is not the words' own) is not on the
+        // screen there. Its letters change no pixel when hidden, so it was read on every pixel of its box, the bar's
+        // own: the Purify Plus sheet's plans, sticky at its foot, over three of the first readers' quote's four lines,
+        // read the plans' button, 1.00:1 on seven palettes, while the line above them read 5.92:1 and more (Gate 6b,
+        // 2026-11-16). The pixels drawn were counted for the whole word, so the one line in sight let the three
+        // under the bar be read. So a line is told covered by what stands over it, never by how faint it is: faint
+        // letters in sight are still read on every pixel of their box, and fail there. A word with every line
+        // covered has nothing to read, as ever. The words take pointer events for the test, and give them back.
+        const styled = [node, ...node.querySelectorAll("*")].map((e) => [e, e.getAttribute("style")]);
+        for (const [e] of styled) e.style.setProperty("pointer-events", "auto", "important");
+        const barOver = (x, y) => {
+          if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) return false;
+          const top = document.elementFromPoint(x, y);
+          if (!top || top === node || node.contains(top)) return false;
+          for (let n = top; n && n !== document.documentElement; n = n.parentElement) {
+            const p = getComputedStyle(n).position;
+            if (p === "sticky" || p === "fixed") return !n.contains(node);
+          }
+          return false;
+        };
+        for (const line of joined) line.covered = [0.1, 0.3, 0.5, 0.7, 0.9].every((f) => barOver(line.x + line.w * f, line.y + line.h / 2));
+        for (const [e, style] of styled) {
+          if (style === null) e.removeAttribute("style");
+          else e.setAttribute("style", style);
+        }
         const size = parseFloat(cs.fontSize);
         const weight = Number(cs.fontWeight) || 400;
         // The words' contrast allowance as it stands now, beside the photographs: a page can change
@@ -253,7 +283,7 @@ export async function wordsOnPicture(page, selector, { palettes = PALETTES, own 
           window.__wordsHeld = document.getAnimations().filter((a) => a.playState === "running" && a.effect?.getComputedTiming().iterations === Infinity);
           for (const a of window.__wordsHeld) a.pause();
         });
-        const clips = info.lines.map((line) => ({ x: line.x, y: line.y, width: Math.max(1, line.w), height: Math.max(1, line.h) }));
+        const clips = info.lines.filter((line) => !line.covered).map((line) => ({ x: line.x, y: line.y, width: Math.max(1, line.w), height: Math.max(1, line.h) }));
         // The same photograph twice, a moment apart, must be the same before it is trusted: up to two seconds for
         // a picture to finish arriving.
         let withWords = [];
