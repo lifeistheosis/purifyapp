@@ -80,19 +80,33 @@ describe("the mini player under Now Playing", () => {
     expect(read("components/prayers/NowPlayingBar.tsx")).toMatch(/const visible = \(Boolean\(src\) && !playsOnPage\(src, ownOnly\)\) \|\| soundOnly;/);
   });
 
-  it("is out of reach and out of hearing under the sheet, and back in reach when it closes", () => {
+  it("is out of hearing under the sheet, and back when it closes, with nothing that restyles the bar", () => {
     const shell = shellOf(bar(true));
     expect(shell).toContain("data-under-sheet");
-    expect(shell).toMatch(/inert=""/);
     expect(shell).toContain('aria-hidden="true"');
+    // inert set on the bar restyled all of it in the tap's frame (39 elements, 6ms at CPU 4x).
+    expect(shell).not.toContain("inert");
     const shut = shellOf(bar(false));
     expect(shut).not.toContain("data-under-sheet");
-    expect(shut).not.toContain("inert");
+    expect(shut).not.toContain("aria-hidden");
   });
 
   it("is unseen beside the wide screen's panel, by a rule on itself and never on <html>", () => {
     expect(css).toMatch(/@media \(min-width: 768px\) \{\s*\[data-mini-player\]\[data-under-sheet\] \{\s*visibility: hidden;/);
     expect(css).not.toMatch(/html[^{]*\.now-playing-open/);
+  });
+});
+
+describe("the sheet's own root at the tap", () => {
+  it("changes nothing that restyles every element in it: no inert, no pointer-events, only visibility", () => {
+    const root = sheet.slice(sheet.indexOf("<div\n      ref={rootRef}"), sheet.indexOf(">", sheet.indexOf("<div\n      ref={rootRef}")) + 1);
+    expect(root).toContain('!up && "now-playing-closed"');
+    expect(root).not.toContain("inert");
+    expect(root).not.toContain("pointer-events-none");
+    // Out of reach only while it slides down, set on the element itself (no second render).
+    expect(sheet).toMatch(/root\.inert = true;\s*const id = window\.setTimeout\(\(\) => \(root\.inert = false\), SLIDE_MS \+ 60\);/);
+    // The saved line, which shows itself, kept out of reach while the sheet stands closed.
+    expect(sheet).toMatch(/<div inert=\{!up\} className="contents">\s*<SaveOfflineNote/);
   });
 });
 

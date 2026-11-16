@@ -289,6 +289,33 @@ export function NowPlayingSheet() {
     return land;
   }, [up, words]);
 
+  // Out of reach while it slides down (inert hit-tests as nothing, so a tap
+  // goes to the page it uncovers), and once down out of sight, reach and
+  // hearing by the closed class's own visibility (app/globals.css). Nothing
+  // of that kind changes at the tap: inert or pointer-events set or taken
+  // away on the root restyles every element in the sheet, where visibility
+  // alone is the browser's quick kind (Updates 98h, a Chrome trace of the
+  // tap: 16ms of its 31 at a phone's speed). Set on the element itself, so
+  // the slide down costs no second render.
+  const wasUp = useRef(false);
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    if (up) {
+      wasUp.current = true;
+      return;
+    }
+    if (!wasUp.current) return;
+    wasUp.current = false;
+    if (still()) return;
+    root.inert = true;
+    const id = window.setTimeout(() => (root.inert = false), SLIDE_MS + 60);
+    return () => {
+      window.clearTimeout(id);
+      root.inert = false;
+    };
+  }, [up]);
+
   // Esc closes, unless a sheet stands over the player, and the page under it
   // does not scroll while it is open. The lock is the counted one every sheet
   // takes (lib/ui/overlay.ts), so a sheet over the player closing after it,
@@ -350,12 +377,11 @@ export function NowPlayingSheet() {
     <div
       ref={rootRef}
       data-now-playing=""
-      className={cn("fixed inset-0 z-[70]", !up && "now-playing-closed pointer-events-none")}
+      className={cn("fixed inset-0 z-[70]", !up && "now-playing-closed")}
       role={up ? "dialog" : undefined}
       aria-modal={up ? true : undefined}
       aria-label={up ? t("prayers.nowPlaying") : undefined}
       aria-hidden={up ? undefined : true}
-      inert={!up}
     >
       {/* On a computer the page stays in view, dimmed, beside the panel: the
           house's own dim, every sheet's (components/ui/Sheet.tsx), drawn from
@@ -554,8 +580,12 @@ export function NowPlayingSheet() {
             ) : null}
           </div>
 
-          {/* One block for both views: nothing here moves when they switch. */}
-          <SaveOfflineNote src={audio.src} className="mt-2" />
+          {/* One block for both views: nothing here moves when they switch. The
+              saved line sets its own visibility when it speaks, so while the
+              player stands closed its holder keeps it out of reach. */}
+          <div inert={!up} className="contents">
+            <SaveOfflineNote src={audio.src} className="mt-2" />
+          </div>
           {gone && voiceName ? (
             <p role="status" className="mt-2 font-sans text-detail leading-[1.45] text-paper/75">
               {t("player.voice.gone", { name: voiceName })}

@@ -76,7 +76,8 @@ describe("Now Playing stands built while anything is loaded", () => {
     expect(html).toContain("data-now-playing");
     expect(html).toContain("now-playing-closed");
     expect(html).toContain('aria-hidden="true"');
-    expect(html).toContain("inert");
+    // Out of reach by the closed class's visibility; inert on its root only while it slides down (Updates 98h).
+    expect(CSS).toMatch(/\.now-playing-closed \{\s*visibility: hidden;/);
     expect(html).not.toContain('role="dialog"');
     // The large cover is in it already, decoding before the tap.
     expect(html).toContain("/icons/saints/john.webp");
@@ -99,7 +100,8 @@ describe("Now Playing stands built while anything is loaded", () => {
 
 describe("the blurred picture behind it", () => {
   it("is drawn only once the slide has ended, and faded in where it stands", () => {
-    expect(SHEET).toMatch(/\{audio\.art && up && settled \? \(\s*<CoverArt[\s\S]{0,200}className="now-playing-backdrop /);
+    // The small blurred canvas (Updates 98h), or the cover under the filter where a canvas takes none: either only once settled.
+    expect(SHEET).toMatch(/\{audio\.art && up && settled \? \(\s*bakes \? \(\s*shownBackdrop \? \(\s*<canvas[\s\S]{0,120}className="now-playing-backdrop [\s\S]{0,200}<CoverArt[\s\S]{0,200}className="now-playing-backdrop /);
     expect(SHEET).toContain("if (e.target === e.currentTarget && up) setSettled(true);");
     expect(CSS).toMatch(/@keyframes now-playing-backdrop-in \{\s*from \{ opacity: 0; \}\s*to \{ opacity: 0\.3; \}/);
     expect(CSS).toMatch(/:where\(\[data-motion="reduce"\]\) \.now-playing-backdrop \{\s*animation: none;/);

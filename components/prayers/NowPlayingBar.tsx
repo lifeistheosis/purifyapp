@@ -334,10 +334,11 @@ function MiniPlayer({ card, pill, under = false }: { card: ReactNode; pill: Reac
       data-screen-edge="bottom"
       data-mini-player=""
       data-drawn={drawn ? "" : undefined}
-      // Under Now Playing: covered by it on a phone, out of reach and out of
-      // hearing; beside its panel on a wide screen, unseen (globals.css).
+      // Under Now Playing: covered by it on a phone and out of hearing;
+      // beside its panel on a wide screen, unseen (globals.css). Not inert:
+      // setting that restyles all of the bar in the tap's frame, and the
+      // sheet over it takes every tap.
       data-under-sheet={under ? "" : undefined}
-      inert={under || undefined}
       aria-hidden={under || undefined}
     >
       <div className="mx-auto max-w-md">

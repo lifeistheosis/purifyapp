@@ -187,7 +187,9 @@ describe("Now Playing's sung words, every line legible", () => {
     // At 30%, faded in once Now Playing is up and still (build 98 note 8, Updates 98e).
     expect(SHEET).toContain('className="now-playing-backdrop ');
     expect(readFileSync(join(process.cwd(), "app/globals.css"), "utf8")).toMatch(/\.now-playing-backdrop \{\s*opacity: 0\.3;/);
-    expect(SHEET).toContain('filter: "grayscale(1) blur(42px) brightness(0.5)"');
+    // The same filter, now blurred once into a small canvas where a canvas takes one (lib/player/backdrop.ts, Updates 98h).
+    expect(readFileSync(join(process.cwd(), "lib/player/backdrop.ts"), "utf8")).toContain('BACKDROP_FILTER = "grayscale(1) blur(42px) brightness(0.5)"');
+    expect(SHEET).toContain("style={{ filter: BACKDROP_FILTER }}");
     expect(SHEET).toContain("radial-gradient(900px 520px at 20% -8%, rgba(255,255,255,0.06), transparent 68%)");
     // Every palette a reader can wear: twenty-two since Galilee and Patmos came out of the looks (2026-11-13), twenty-one since Desert did.
     expect(PALETTES.length).toBeGreaterThanOrEqual(21);
