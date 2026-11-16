@@ -33,7 +33,6 @@ Also:
 - The day's prayer hours no longer fade, and every field's hint is easier to read.
 - Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.
 - Ambient sounds now play on iPhone, where they never played before, even with Purify Plus.
-- Every text read aloud listens as a chapter of the Bible does, from Listen at its foot.
 - Writing in your journal opens a page of its own, with one Done and everything else behind one plus.
 - Quote, in your journal, searches Purify's library: Scripture and your own words for everyone, and in Purify Plus the Fathers' works, the saints' lives, the prayers, the chants and the councils.
 - Sixteen reading modes, in Purify Plus: Candlelight, Monastery and fourteen looks in four families.
@@ -45,8 +44,8 @@ Also:
 
 - "every work has a cover": the covers pack for the reading room is not in yet
 - "Find a parish": the parish directory is not built
-- "phone voice": the voices are settled for 1.9 at his word (build 98 note 1: "1 (3 for premium) 4 5 6", 2026-11-15 about 22:52 UTC, and "v1.9", 23:53): Heart for every reader, and three more voices in Purify Plus, each recorded ahead and downloaded by choice. What the phone's own voices will do beside them is not settled, and the 1.9 note has no line for any choice of voice: no piece names one until the note does (the step step-voices-line)
-- "phone's voice": the same: the 1.9 note has no line for the phone's own voices
+- "phone voice": the phone's own voices are gone from the app, in every language and on every platform, at his word of 2026-11-16 about 22:35 UTC ("remove locally LLM voices ... only leave one the standard prerecorded voices"): Heart's recording is the only voice, and no piece names a voice made on the phone (step-voices-line)
+- "phone's voice": the same: the phone's own voices are gone from the app
 - "campaign": prayer campaigns are at testers from the merge, his account alone (lib/campaigns/flags.ts), and open for every reader only at R5c (OWNER-STEPS); until the step below brings their line into the 1.9 note, no piece names them (the arbiter, 2026-11-11 and 2026-11-12)
 - "Galilee": the sea look Galilee came out of the app at his word of 2026-11-13 ("remove the sea theme", then "Both"; 701ed3dc)
 - "Patmos": the sea look Patmos came out with Galilee (701ed3dc)
@@ -59,10 +58,10 @@ Also:
 - "17 looks": the same first count of looks, in figures
 - "fifteen looks": the count of looks after Galilee and Patmos came out and before Desert did: there are fourteen (62e5a337)
 - "15 looks": the same count of looks, in figures
-- "Fenrir": Emma, Michael and Fenrir, the three Plus voices, are in 1.9 at his word but not live: recorded on GitHub's runners once his secrets are in, then the Voice sheet (round 3 screen 7) and the signed route for Plus. No piece names them, or says they are coming, until their line is in the note (step-voices-line). Fenrir is the word held here because it is named with the other two every time, and "Emma" alone would catch lemma and dilemma
-- "Plus voices": the same: the three Plus voices are not live
-- "voices in Purify Plus": the same: the three Plus voices are not live
-- "choose your voice": the same: no choice of voice is in the note
+- "Fenrir": Emma, Michael and Fenrir, the three voices once planned for Purify Plus, are dropped at his word of 2026-11-16 about 22:35 UTC ("full drop"), with the Voice sheet (round 3 screen 7): no piece names them, or says they are coming (step-voices-line). Fenrir is the word held here because it is named with the other two every time, and "Emma" alone would catch lemma and dilemma
+- "Plus voices": the same: the three Plus voices are dropped
+- "voices in Purify Plus": the same: the three Plus voices are dropped
+- "choose your voice": the same: Heart is the one voice, and there is nothing to choose
 
 ## The notes
 
@@ -82,14 +81,14 @@ Waits on: round 3's screens 1, 2, 3, 5 and 6 applied by the two fixers (Round 3 
 Five lines of the note are written from round 3's designs as they were drawn (docs/1.9-build/redesign/round-3/README.md), at his yes of 2026-11-16 about 05:20 UTC: the journal's page of its own (screen 1), the chants door (screen 2), You and your profile as one place (screen 3), the Purify Plus page (screen 5) and a reading plan's page (screen 6). Before the note goes into the owner's queue, each line is read against its applied screen on the export the gate passes, and any word the screen does not bear out is changed in the note and in every piece that carries it: the App Store's text and Community's post carry the journal's page and You and your profile. Screen 4, the Bible's opening, is not in 1.9 (his no, the same word), and no line names it. One line more rests on what only a phone shows: "On Android, the page follows the keyboard as it rises and falls" (build 98 notes 4 and 12, Updates 98c, a native mend no browser can draw). His walk of the next test build on the release APK bears it out, or the line comes out of the note.
 ~~~
 
-### The voices join the note only when they are live
+### Heart is the one voice: a listening line names only what Heart has recorded
 
 `step-voices-line` · A step · Ours, on your word · Waits
 
-Waits on: Emma, Michael and Fenrir recorded on GitHub's runners once his secrets are in, then the Voice sheet (round 3 screen 7) and the signed route for Plus in a build he walks
+Waits on: Heart's recordings of the lives, the councils, theology, history, the Lives in their witnesses' words and the Old Testament: recorded on GitHub's runners once his four secrets are in (OWNER-STEPS V11 and V12), their timings committed, and the website deployed
 
 ~~~text
-Heart for every reader and Emma, Michael and Fenrir in Purify Plus are in 1.9 at his word (build 98 note 1, 2026-11-15 about 22:52 and 23:53 UTC), each recorded ahead and downloaded by choice, and the drop day moves for them. None of the three is live, and nothing of the choice is in the note. Only once they are recorded and served, and the Voice sheet and the signed route are in a build he has walked, does a line go into the 1.9 note, written from what that build does; then the never list's voice words come off and a point or an also may name them. Until then no piece names them, and none says they are on the way.
+At his word of 2026-11-16 about 22:35 UTC ("remove locally LLM voices and full drop ... only leave one the standard prerecorded voices"), Heart's recording is the only voice: the phone's own voices are gone in every language, and Emma, Michael and Fenrir, the three voices once planned for Purify Plus, are dropped, with the Voice sheet. Listen stands only where Heart's recording is: today the New Testament. The note's listening line says only that ("Listening: one card at rest and a small pill as you scroll, and your place kept in every book."). Only once Heart's recordings of the other texts are recorded and served does that line say they are read aloud, written from what the app then does, and a point or an also may carry it. No piece names a voice made on the phone, a choice of voices or a voice in Purify Plus.
 ~~~
 
 ### The seven Bibles answer on purifyapp.net
@@ -158,7 +157,7 @@ The Scriptures, the saints, the prayers and the calendar stay free.
 
 ### What's New in This Version, for the App Store
 
-`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 3487 of 4000 characters
+`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 3398 of 4000 characters
 
 > Plus has been sold on iPhone since 1.8 (the App Store lists its four subscriptions; OWNER-STEPS 87, found 2026-11-10), so this text marks what is in Purify Plus, as the Play text does: the study, the plans, the Florilegium and the Thread, Candlelight and ambience, and listening offline.
 
@@ -206,7 +205,6 @@ ALSO
 • Listening: one card at rest and a small pill as you scroll, and your place kept in every book.
 • Ambient sounds now play on iPhone, where they never played before, even with Purify Plus.
 • The day's prayer hours no longer fade, and every field's hint is easier to read.
-• Every text read aloud listens as a chapter of the Bible does, from Listen at its foot.
 • Writing in your journal opens a page of its own, with one Done and everything else behind one plus.
 • Quote, in your journal, searches Purify's library: Scripture and your own words for everyone, and in Purify Plus the Fathers' works, the saints' lives, the prayers, the chants and the councils.
 • Sixteen reading modes, in Purify Plus: Candlelight, Monastery and fourteen looks in four families.
@@ -276,7 +274,7 @@ Purify 1.9 is live on the web: a journal by the Church's day, every verse opened
 
 ### Purify's own post in Community
 
-`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2894 of 4000 characters
+`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2805 of 4000 characters
 
 ~~~text
 Purify 1.9 is here
@@ -296,7 +294,6 @@ Purify 1.9 keeps a journal with you by the Church's day, free for everyone, open
 🌿 The Florilegium and the Thread. In Purify Plus, your gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps.
 🕯️ Candlelight and ambience. In Purify Plus, Candlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once.
 🎨 Sixteen reading modes, in Purify Plus: Candlelight, Monastery and fourteen looks in four families.
-🎧 Every text read aloud listens as a chapter of the Bible does, from Listen at its foot.
 👤 You and your profile are one place: your name and your patron saint first, then the days you have kept.
 🎁 Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.
 
