@@ -3,10 +3,12 @@
 // What a reader would notice if this broke: on a look (or Candlelight in one
 // of the Church's fasts), scroll any tab and the page slides under a bar with
 // no ground at all, the tab's name, the Plus pill, search and the bell standing
-// on the page's own words and pictures. On the export, Prayers scrolled 900px,
-// the pill's word read 2.10 to 2.24:1 on the seven dark looks and 3.88 to
-// 4.37:1 on six light ones (Updates 98o), and 3.98 to 4.37:1 in Arabic at the
-// chants door (Round 3 apply A): what stood under the word was the page.
+// on the page's own words and pictures. On the export of ba889913, measured
+// where the pill stands, its word read 1.49 to 4.27:1 on all fourteen looks on
+// Today at 300px and 1.38 to 2.13:1 on the seven dark looks on Discover at
+// 300px, in English and Arabic (Updates 98p). Round 3 apply A's 3.98:1 and
+// Updates 98o's 2.10:1 were the same fault, read about 426px higher than they
+// said (the pixel pass scrolled the page under the pinned bar).
 //
 // Why: a look lets its room through the page's own sections, so the rule in
 // app/globals.css ("The page lets its room through") clears every bg-night
