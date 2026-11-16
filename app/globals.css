@@ -1281,6 +1281,15 @@ html.foot-handover::view-transition-old(foot-player) {
 [data-now-playing][data-carrying] [data-carry-to] img {
  visibility: hidden;
 }
+/* The mini player stays under Now Playing while it is open (Updates 98h): a
+   phone's sheet covers it; a wide screen's panel docks beside the dimmed
+   page, where it would show, so there it is unseen. On itself, never on
+   <html>, so opening restyles the bar alone and not the page. */
+@media (min-width: 768px) {
+ [data-mini-player][data-under-sheet] {
+  visibility: hidden;
+ }
+}
 :where([data-motion="reduce"]) .now-playing-closed {
  transition: none;
 }

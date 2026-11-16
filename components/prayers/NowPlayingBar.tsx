@@ -95,7 +95,13 @@ export function NowPlayingBar() {
   // pictures the dock and the bar as one surface changing form (build 98
   // note 14). A chant's page that plays its own recording still takes it.
   const ownOnly = hostsEverything(ownPlayer) ? ownPlayer.filter((p) => p !== EVERYTHING) : ownPlayer;
-  const visible = (Boolean(src) && !open && !playsOnPage(src, ownOnly)) || soundOnly;
+  // Now Playing open does not take the bar away either (build 98 note 8,
+  // Updates 98h): the bar leaving took the page's room at its foot with it
+  // (has-now-playing on <html>, whose --now-playing-h every element inherits),
+  // and giving it back on the close, and each restyled the whole page, 27 to
+  // 52ms of the tap's frame at a phone's speed and the most of the close's.
+  // It stays where it is, under the sheet, out of reach (`under`).
+  const visible = (Boolean(src) && !playsOnPage(src, ownOnly)) || soundOnly;
 
   // The lock screen and the notification's controls (1.8), in the apps only.
   // Here because this bar is mounted once for the whole app (RootFrame). The
@@ -174,6 +180,7 @@ export function NowPlayingBar() {
 
   return (
     <MiniPlayer
+      under={open}
       card={
         <>
           <button
@@ -247,7 +254,7 @@ const ROOM_GIVEN_BACK = 16;
  * (app/globals.css, "The mini player draws in"). Mounted while something
  * shows in it, so it opens as the card each time it appears.
  */
-function MiniPlayer({ card, pill }: { card: ReactNode; pill: ReactNode }) {
+function MiniPlayer({ card, pill, under = false }: { card: ReactNode; pill: ReactNode; under?: boolean }) {
   const [drawn, setDrawn] = useState(false);
   const shellRef = useRef<HTMLDivElement>(null);
   const surfaceRef = useRef<HTMLDivElement>(null);
@@ -327,6 +334,11 @@ function MiniPlayer({ card, pill }: { card: ReactNode; pill: ReactNode }) {
       data-screen-edge="bottom"
       data-mini-player=""
       data-drawn={drawn ? "" : undefined}
+      // Under Now Playing: covered by it on a phone, out of reach and out of
+      // hearing; beside its panel on a wide screen, unseen (globals.css).
+      data-under-sheet={under ? "" : undefined}
+      inert={under || undefined}
+      aria-hidden={under || undefined}
     >
       <div className="mx-auto max-w-md">
         <div

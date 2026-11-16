@@ -105,6 +105,11 @@ const SELF_TEST = has("--self-test");
 // phone is for Now Playing's timings (4 by default).
 const LOADED = flag("--loaded");
 const CPU = Math.max(1, Number(flag("--cpu") ?? 4));
+// --now-playing (with --loaded track): Now Playing's timings alone, the twenty switches left out, for
+// a quick measure before and after a change to it. --trace <dir>: a Chrome trace of its opening and of
+// its closing, each from the tap, for scripts/gate/trace-frames.mjs (Updates 98h, build 98 note 8).
+const NP_ONLY = has("--now-playing");
+const TRACE = flag("--trace");
 const OUT = path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}: run npm run build:android first`);
 
@@ -813,7 +818,7 @@ async function loadedTour() {
     await sleep(1500);
     report.setup = { foot: await footNow() };
     if (report.setup.foot.length !== 1) throw new Error(`after loading, the foot shows ${report.setup.foot.join(" and ") || "nothing"}`);
-    for (let a = 0; a < tabs.length; a++) {
+    for (let a = 0; a < (NP_ONLY ? 0 : tabs.length); a++) {
       for (let b = 0; b < tabs.length; b++) {
         if (a === b) continue;
         const back = async () => {
@@ -911,10 +916,22 @@ async function loadedTour() {
           trace: panel.filter((_, i) => i % 3 === 0).slice(0, 24).map((p) => `${p.t}:${p.top ?? "-"}${p.blur ? "b" : ""}`).join(" "),
         };
       };
+      // --trace: each of the two from the tap, in a Chrome trace of its own.
+      const traced = async (name, act) => {
+        if (!TRACE) return timed(act);
+        fs.mkdirSync(TRACE, { recursive: true });
+        await browser.startTracing(page, { path: path.join(TRACE, `now-playing-${name}.json`), categories: ["devtools.timeline", "disabled-by-default-devtools.timeline", "disabled-by-default-devtools.timeline.frame", "blink", "cc", "gpu", "viz", "v8.execute", "blink.user_timing", "latencyInfo"] });
+        await page.evaluate(() => performance.mark("tap"));
+        try {
+          return await timed(act);
+        } finally {
+          await browser.stopTracing();
+        }
+      };
       await cdp.send("Emulation.setCPUThrottlingRate", { rate: CPU });
-      const open = await timed(() => tapWhere(centre("[data-mini-player] button[aria-label^='Now playing']")));
+      const open = await traced("open", () => tapWhere(centre("[data-mini-player] button[aria-label^='Now playing']")));
       const openFoot = await page.evaluate(() => Boolean(document.querySelector("[role='dialog'][aria-modal='true']")));
-      const close = await timed(() => tapWhere(centre("[role='dialog'] button[aria-label='Close'], [role='dialog'] button[aria-label^='Close']")));
+      const close = await traced("close", () => tapWhere(centre("[role='dialog'] button[aria-label='Close'], [role='dialog'] button[aria-label^='Close']")));
       await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
       report.nowPlaying = { cpu: CPU, opened: openFoot, open, close };
       console.log(`  Now Playing at CPU ${CPU}x: open ${open.frames} frames, longest ${open.longest}ms, ${open.over50} over 50ms (first: ${open.first10.join(" ")}); the slide moving from ${open.movedAt}ms to ${open.lastMoving}ms after the tap, a blurred layer moving in ${open.blurMoving} frame(s); close ${close.frames} frames, longest ${close.longest}ms, ${close.over50} over 50ms, a blurred layer moving in ${close.blurMoving} frame(s)`);

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { Reference } from "@/components/bible/Reference";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -14,6 +14,7 @@ import { useAmbienceLeaving, useAmbienceSheet } from "@/lib/ambience/sheet";
 import { openVoiceSheet, useVoiceSheet } from "@/lib/listen/speech/sheet";
 import { playerOpenForGone, useVoiceShown } from "@/lib/listen/speech/speak";
 import { cn } from "@/lib/cn";
+import { BACKDROP_FILTER, bakesBackdrop, paintBackdrop, readBackdrop, type Backdrop } from "@/lib/player/backdrop";
 import { verseOf } from "@/lib/player/captions";
 import { takeCarry } from "@/lib/player/carry";
 import { useSungLines } from "@/lib/player/clock";
@@ -113,6 +114,11 @@ export function NowPlayingSheet() {
   // drawn only then, and taken away as soon as it goes down, so no blur ever
   // moves (a blurred layer in motion costs an Android phone its frames).
   const [settled, setSettled] = useState(false);
+  // That picture read small while the player stands closed, for the canvas it
+  // is blurred into when shown (lib/player/backdrop.ts), so its first draw is
+  // a small picture and no filter; kept with the art it was read from.
+  const [bakes] = useState(bakesBackdrop);
+  const [backdrop, setBackdrop] = useState<{ art: string; made: Backdrop } | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const coverRef = useRef<HTMLDivElement>(null);
@@ -179,6 +185,46 @@ export function NowPlayingSheet() {
     return () => clearTimeout(id);
   }, [up]);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  // The soft picture behind it all, read small from the cover while the
+  // player stands closed and the page is idle, and again whenever the cover's
+  // picture arrives or changes (a later load, or the plate after an error).
+  const art = audio.art;
+  useEffect(() => {
+    const holder = coverRef.current;
+    const slab = panelRef.current;
+    if (!ready || !art || !bakes || !holder || !slab) return;
+    let gone = false;
+    let wait = 0;
+    const idle = (cb: () => void) =>
+      typeof window.requestIdleCallback === "function" ? window.requestIdleCallback(cb, { timeout: 2000 }) : window.setTimeout(cb, 300);
+    const read = () => {
+      const img = holder.querySelector("img");
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+      if (wait) (window.cancelIdleCallback ?? window.clearTimeout)(wait);
+      wait = idle(() => {
+        wait = 0;
+        void readBackdrop(img, { width: slab.offsetWidth, height: slab.offsetHeight }).then((made) => {
+          if (gone || !made) return made?.bitmap.close();
+          setBackdrop((prev) => {
+            prev?.made.bitmap.close();
+            return { art, made };
+          });
+        });
+      });
+    };
+    read();
+    holder.addEventListener("load", read, true);
+    return () => {
+      gone = true;
+      holder.removeEventListener("load", read, true);
+      if (wait) (window.cancelIdleCallback ?? window.clearTimeout)(wait);
+    };
+  }, [ready, art, bakes]);
+  const shownBackdrop = backdrop && backdrop.art === art ? backdrop.made : null;
+  const paintRef = useCallback((canvas: HTMLCanvasElement | null) => {
+    if (canvas && shownBackdrop) paintBackdrop(canvas, shownBackdrop);
+  }, [shownBackdrop]);
 
   // The mini player's picture carried up into the cover's place as the
   // screen rises (note 8): the house's way, a card carrying its picture into
@@ -342,15 +388,28 @@ export function NowPlayingSheet() {
       >
         {/* The picture again, grey and soft, behind it all: drawn once the
             slide has ended and faded in where it stands, taken away as the
-            slide down starts, so the blur never moves (build 98 note 8). */}
+            slide down starts, so the blur never moves (build 98 note 8). Read
+            small before the tap and blurred into a small canvas, so drawing it
+            is no long frame (Updates 98h, lib/player/backdrop.ts); where a
+            canvas takes no filter, the cover under the filter, as before. */}
         {audio.art && up && settled ? (
-          <CoverArt
-            src={audio.art}
-            fallback={audio.artFallback}
-            size={440}
-            className="now-playing-backdrop pointer-events-none absolute -inset-16 h-[calc(100%+8rem)] w-[calc(100%+8rem)] max-w-none"
-            style={{ filter: "grayscale(1) blur(42px) brightness(0.5)" }}
-          />
+          bakes ? (
+            shownBackdrop ? (
+              <canvas
+                ref={paintRef}
+                aria-hidden
+                className="now-playing-backdrop pointer-events-none absolute -inset-16 h-[calc(100%+8rem)] w-[calc(100%+8rem)] max-w-none"
+              />
+            ) : null
+          ) : (
+            <CoverArt
+              src={audio.art}
+              fallback={audio.artFallback}
+              size={440}
+              className="now-playing-backdrop pointer-events-none absolute -inset-16 h-[calc(100%+8rem)] w-[calc(100%+8rem)] max-w-none"
+              style={{ filter: BACKDROP_FILTER }}
+            />
+          )
         ) : null}
         <div
           aria-hidden
