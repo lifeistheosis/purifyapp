@@ -14,6 +14,30 @@ changed nothing). Each line's commits are in the 1.9 record, not copied here:
 website, and in the apps with the store builds. A fault found before the drop
 goes into 1.9 and moves the date, never to a point release (CLAUDE.md).
 
+## Brought up to what 1.9 holds (Admin, 2026-11-16, at the arbiter's word of 05:23 UTC)
+
+The note is 63 lines now. In from the record: eight of the nine lines in
+`note-lines-drafted.md` and its change to the earned palettes' line (the
+arbiter's call of 2026-11-14 06:16: in, as drafted), and from build 98
+(`docs/1.9-build/notes/build-98.md`): every text read aloud listening as a
+chapter does (note 2), Quote searching the library (note 5), the version at
+the head of the books list (note 7), Now Playing's slide (note 8), the
+keyboard (notes 4 and 12, Android), a chant's words meeting the singing
+(note 13) and tab switches with the player (note 14). Notes 6 and 9 mend what
+is new in 1.9 and need no line. Five lines are written from round 3's designs
+as drawn (screens 1, 2, 3, 5 and 6) and are read against the applied screens
+before the note goes into his queue (the drop's `step-round3-check`); screen 4,
+the Bible's opening, is not in 1.9 (his no).
+
+Waits, and in no line: the voices (Heart for every reader, Emma, Michael and
+Fenrir in Purify Plus: in 1.9 at his word, not live until they are recorded
+on GitHub's runners once his secrets are in, then the Voice sheet and the
+signed route; the drop's `step-voices-line`); prayer campaigns (his account
+at the merge, every reader at his word; `step-campaigns-line`); the Bible
+versions' downloads (from the merge; `step-bibles-merge`). The drafted line on
+the phone's own voices stays out: the voices were settled otherwise on
+2026-11-15, and what the phone's voices do beside them is not.
+
 ### Gated off, and not in the note
 
 Each switch as it stands on the branch on 2026-11-11:

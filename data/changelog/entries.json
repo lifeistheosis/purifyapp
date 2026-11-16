@@ -19,7 +19,7 @@
       },
       {
         "category": "library",
-        "text": "Seven more Bibles to download from the translations list, each read in its own numbering: the Russian Synodal (1876), the Greek Septuagint with the Patriarchal text (1904), the Serbian of Karadžić and Daničić (1868), the Arabic Van Dyck (1865), the Spanish Reina-Valera (1909), the Portuguese Almeida (1911) and the World English Bible (British Edition, 2020). The Arabic, the Spanish and the Portuguese are Protestant translations, and are labelled so. The World English Bible is a modern English translation, with the deuterocanonical books."
+        "text": "Seven more Bibles to download from the translations list, each read in its own numbering: the Russian Synodal (1876), the Greek Septuagint with the Patriarchal text (1904), the Serbian of Karadžić and Daničić (1868), the Arabic Van Dyck (1865), the Spanish Reina-Valera (1909), the Portuguese Almeida (1911) and the World English Bible (British Edition, 2020). The Arabic, the Spanish and the Portuguese are Protestant translations, and are labelled so. The World English Bible is a modern English translation, with the deuterocanonical books. The books list names the Bible you are reading at its head, and a tap there opens the others."
       },
       {
         "category": "library",
@@ -35,7 +35,39 @@
       },
       {
         "category": "library",
-        "text": "Listening: one card at rest and a small pill as you scroll, and your place kept in every book."
+        "text": "Listening: one card at rest and a small pill as you scroll, and your place kept in every book. On a phone or a tablet, every text read aloud now listens as a chapter of the Bible does: Listen is in the bar at its foot, and while it plays the card wears the page's own picture."
+      },
+      {
+        "category": "library",
+        "text": "Writing in your journal opens a page of its own: the day and its reading, the kind of page, a title and your words, one Done, and everything else behind one plus."
+      },
+      {
+        "category": "library",
+        "text": "Quote, in your journal, now searches Purify's library. Find a verse or a passage and it is quoted word for word with its source, and Open takes you back to it. Scripture and your own words for everyone; the Fathers' works, the saints' lives, the prayers, the chants and the councils in Purify Plus."
+      },
+      {
+        "category": "library",
+        "text": "On Prayers, the door to the chants shows the chants' own covers."
+      },
+      {
+        "category": "library",
+        "text": "You and your profile are one place: your picture, your name and your patron saint first, then the days you have kept, and your Community card as others see it. Your account's details are under Account and security."
+      },
+      {
+        "category": "library",
+        "text": "A reading plan's page carries the plan's picture and each day's reading with its sources folded under it, and shows how far you have come once you have read a day."
+      },
+      {
+        "category": "library",
+        "text": "Discover: hold a section to move it, and set its sections in the order you want, with a light tap you feel at each step."
+      },
+      {
+        "category": "library",
+        "text": "Share every work of the Fathers, from its cover or from where you are reading, by a link that opens that place. Every Share in the app now opens your phone's own share sheet."
+      },
+      {
+        "category": "library",
+        "text": "While a Bible or a book downloads, the bell's Downloads and your phone's notifications show how far it has come and say when it is done; on iPhone, the notification comes when it is done. Purify asks first, in its own words, before your phone asks. A download pauses while you are out of Purify."
       },
       {
         "category": "saints",
@@ -52,6 +84,10 @@
       {
         "category": "saints",
         "text": "The history map puts each event where its own account says, Alaska and America among them."
+      },
+      {
+        "category": "saints",
+        "text": "Choosing a patron saint: one chooser wherever you choose one, the saints with their pictures, found and sorted by each saint's own name."
       },
       {
         "category": "perks",
@@ -99,7 +135,11 @@
       },
       {
         "category": "perks",
-        "text": "Earn two palettes by reading: Councils, for every council's page read to the end, and Cappadocian, for a work by each of the three Cappadocian Fathers. Both are Purify Plus palettes."
+        "text": "Sixteen reading modes, in Purify Plus: Candlelight, Monastery and fourteen looks in four families, Night, Land and sea, Garden and Sanctuary, each one calm page with a sign of its own. Holy Mountain shows a monastery under the mountain, from an engraving of 1887."
+      },
+      {
+        "category": "perks",
+        "text": "Earn two palettes by reading: Councils, for every council's page read to the end, and Cappadocian, for a work by each of the three Cappadocian Fathers. Their cards show how far you have come, a tap opens what is left to read, and each is revealed at the foot of the last page. Both are Purify Plus palettes."
       },
       {
         "category": "perks",
@@ -107,7 +147,15 @@
       },
       {
         "category": "perks",
+        "text": "Ambience: each sound now has its own photograph, the sea's taken at Simonopetra on Mount Athos."
+      },
+      {
+        "category": "perks",
         "text": "Listening offline, in Purify Plus: saved books marked in the list, a chant kept on your phone as a book is, each book's size shown before you save it, saving that waits for Wi-Fi and picks up after a lost signal, Settings, On this device, to see what is kept, and the week's readings kept offline by themselves."
+      },
+      {
+        "category": "perks",
+        "text": "The Purify Plus page shows what Plus adds as it looks in the app."
       },
       {
         "category": "shop",
@@ -156,6 +204,30 @@
       {
         "category": "fixes",
         "text": "Small things put right: Try it's names fit on two lines, cathedral bells has its own icon, and Discord status is offered only in the Windows app, where it works."
+      },
+      {
+        "category": "fixes",
+        "text": "Settings shows the reading modes in one row you scroll, and says what each setting does in clearer words."
+      },
+      {
+        "category": "fixes",
+        "text": "The Fast has a new look, and marking your first day no longer moves the page."
+      },
+      {
+        "category": "fixes",
+        "text": "Now Playing slides up smoothly when you open it."
+      },
+      {
+        "category": "fixes",
+        "text": "Switching tabs while something is in the player no longer stutters."
+      },
+      {
+        "category": "fixes",
+        "text": "A chant's words go to the line being sung when you press Play, move through it or choose another version."
+      },
+      {
+        "category": "fixes",
+        "text": "On Android, the page follows the keyboard as it rises and falls, so typing in Search, your journal or any field no longer jumps or stutters."
       },
       {
         "category": "fixes",

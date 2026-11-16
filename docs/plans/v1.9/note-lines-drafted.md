@@ -1,5 +1,7 @@
 # 1.9: note lines drafted for what shipped without one
 
+**In the note from 2026-11-16 (Admin, at the arbiter's word):** lines 2 to 9 and the earned palettes' change, as drafted but for small words (line 2 says "Holy Mountain shows a monastery under the mountain"; line 5 names the bell's Downloads first). Line 1 is not in: the voices were settled otherwise in build 98 note 1, and the never list still holds the phone's voices.
+
 Drafted by the SSM board on 2026-11-14, from the record of each note (`docs/1.9-build/notes/build-95.md`) and the code as it stands on `3d840869`. None of these is in the note. Each waits on the arbiter, and the note's wording on his yes in Admin, Patch notes, as every 1.9 line does. They go into `patch-note-1.9.json` as text, one item to a line, then `node scripts/release.mjs note 1.9`; never into the `patch_notes` table by hand.
 
 The drop names only what the note says (D1.1), so nothing below reaches a store text, a post or the board until its line is in the note.
