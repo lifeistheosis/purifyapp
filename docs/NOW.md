@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state. The log is `docs/1.9-build/HANDOFF.md`, his words are `docs/1.9-build/BRAINSTORM.md`, and how the chats run is `docs/OPERATIONS.md`.
 
-Updated 2026-11-16 22:21 UTC by Arbiter 14: BUILD 100 CUT AT HIS WORD before the gate's end (22:19, "just run the build now"): run 43968965984 (Android build, run 100) from 5cc6753c, app code b40e4192, the code Gate 6c is checking; published to the android-release page when it ends. Gate 6c keeps running, so its verdict covers build 100: by 22:05 item 2's guard walk at 390 was clean (5cc6753c: en 34 of 34, ar 33 of 34 measured, 0 failed), and still to run were /reading/ in Arabic again, the failing order, item 2 at 800 and 1032, the tap walks, the unit suite and part 3, then the light looks, motion on every screen, new6.sh, round 3's lines and the web build with the books sheet. Anything it fails is a note on build 100 and goes to one fixer.
+Updated 2026-11-16 22:28 UTC by Arbiter 14: BUILD 100 IS ON THE ANDROID-RELEASE PAGE, cut at his word before the gate's end (22:19, "just run the build now"): run 43968965984 succeeded at 22:25:37 from 5cc6753c (app code b40e4192); the page's assets uploaded 22:25:29 to 22:25:30 (app-release.apk 89,844,496 bytes), read before he was told; record docs/1.9-build/notes/build-100.md. Gate 6c keeps running on the same app code, so its verdict is build 100's; what it had not yet proved at the cut was named to him with the link. Anything it fails is a note on build 100 and goes to one fixer.
 
 ## 1.9 now
 
