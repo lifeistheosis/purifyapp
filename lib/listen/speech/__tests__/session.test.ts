@@ -185,21 +185,33 @@ describe("a text spoken by the phone's voice, in the one player", () => {
     expect(p.last()).toMatchObject({ from: 1, offset: 0 });
   });
 
-  it("goes to the start of the verse a seek or 15 seconds fall in", async () => {
+  it("goes to the word a seek falls on, and a tap on a line to its first word", async () => {
     const p = phone();
     const t = await load(p);
     store.play();
-    store.seek(t.starts[2] + 0.5);
-    expect(p.last()).toMatchObject({ from: 2, offset: 0 });
-    expect(store.getAudioSnapshot().currentTime).toBe(t.starts[2]);
-    p.say({ type: "start", token: p.last().token, index: 2 });
+    const at = t.starts[2] + 0.5;
+    const word = wordStarts(VERSES[2].text).filter((s) => timeAtChar(t, 2, s) <= at).pop()!;
+    expect(word).toBeGreaterThan(0);
+    store.seek(at);
+    expect(p.last()).toMatchObject({ from: 2, offset: word });
+    expect(store.getAudioSnapshot().currentTime).toBe(timeAtChar(t, 2, word));
+    store.seek(t.starts[1]);
+    expect(p.last()).toMatchObject({ from: 1, offset: 0 });
+    expect(store.getAudioSnapshot().currentTime).toBe(t.starts[1]);
+    // In the breath after a verse: the next verse's start.
+    store.seek(t.ends[0] - 0.1);
+    expect(p.last()).toMatchObject({ from: 1, offset: 0 });
+    // Back 15 with less than 15 seconds behind: the start.
+    p.say({ type: "start", token: p.last().token, index: 1 });
     store.skipBy(-15);
     expect(p.last()).toMatchObject({ from: 0, offset: 0 });
   });
 
-  // Updates 98n, build 98 note 2: Now Playing's Forward 15, tapped in Arabic on the export, took John 10 read by
-  // the voice from 3.9s back to its start: 15 seconds on still fell in the first piece, whose start is behind.
-  it("goes forward with 15 seconds forward inside a long paragraph, never back to its start", async () => {
+  // Build 98 note 2 (Updates 98n, then 98o): Now Playing's 15 seconds back and forward while the voice reads.
+  // To the start of the piece the moment fell in, 15 seconds on inside a long paragraph went back to that
+  // paragraph's start; 98n then sent it to the next piece, which skipped the rest of the paragraph, and back 15
+  // still went to the paragraph's start, however far that was. Now each moves about 15 seconds, as on a recording.
+  it("moves about 15 seconds forward and back inside a long paragraph, and the voice reads on from that word", async () => {
     const p = phone();
     const long = [{ text: Array(200).fill("word").join(" "), n: 1 }, { text: "And the next paragraph.", n: 2 }, { text: "The last.", n: 3 }];
     const t = await load(p, { pieces: long });
@@ -207,20 +219,34 @@ describe("a text spoken by the phone's voice, in the one player", () => {
     p.say({ type: "start", token: p.last().token, index: 0 });
     ms += 5000;
     const before = store.currentTimeNow();
-    expect(pieceOf(t, before + 15)).toBe(0);
+    expect(before).toBeCloseTo(5, 5);
     store.skipBy(15);
-    expect(p.last()).toMatchObject({ from: 1, offset: 0 });
-    expect(store.getAudioSnapshot().currentTime).toBe(t.starts[1]);
-    // Back 15 still goes to the start of the piece the moment falls in.
+    const ahead = p.last();
+    expect(ahead.from).toBe(0);
+    expect(ahead.offset).toBeGreaterThan(0);
+    const landed = store.getAudioSnapshot().currentTime;
+    expect(landed).toBe(timeAtChar(t, 0, ahead.offset));
+    expect(landed).toBeGreaterThan(before + 14.5);
+    expect(landed).toBeLessThanOrEqual(before + 15);
+    // The voice is asked to read on from that word, and the clock and the lit word follow what it says.
+    expect(store.getAudioSnapshot().playing).toBe(true);
+    const next = wordStarts(long[0].text).find((s) => s > ahead.offset)!;
+    p.say({ type: "word", token: ahead.token, index: 0, start: next, end: next + 4 });
+    expect(store.currentTimeNow()).toBe(timeAtChar(t, 0, next));
+    // Back 15 goes back about 15 seconds, not to the paragraph's start.
+    const from = store.currentTimeNow();
     store.skipBy(-15);
-    expect(p.last()).toMatchObject({ from: 0, offset: 0 });
-    // On the last piece, forward has nowhere to go: the reading goes on as it is.
+    const back = p.last();
+    expect(back.from).toBe(0);
+    expect(back.offset).toBeGreaterThan(0);
+    const after = store.getAudioSnapshot().currentTime;
+    expect(after).toBeGreaterThan(from - 15.5);
+    expect(after).toBeLessThanOrEqual(from - 15);
+    // Forward past the end: the last word, so the reading ends there as a recording does.
     store.seek(t.starts[2]);
     p.say({ type: "start", token: p.last().token, index: 2 });
-    const asked = p.asks.length;
     store.skipBy(15);
-    expect(p.asks.length).toBe(asked);
-    expect(store.getAudioSnapshot().playing).toBe(true);
+    expect(p.last()).toMatchObject({ from: 2, offset: wordStarts(long[2].text).pop() });
   });
 
   it("takes a new speed at once, from where it is", async () => {

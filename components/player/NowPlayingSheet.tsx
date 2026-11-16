@@ -161,8 +161,21 @@ export function NowPlayingSheet() {
   }, [longWords, up, settled, words, wordsFor, audio.captions]);
   const wordsBuilt = !longWords || wordsFor === audio.captions;
   // The one clock that lights the words and counts the verses
-  // (lib/player/clock.ts), running while the player is open.
-  const sung = useSungLines(audio.captions, audio.duration, open && hasWords);
+  // (lib/player/clock.ts), running while the player is open, and on while it
+  // slides away (Updates 98o, build 98 note 8). Stopped at the close's tap, it
+  // took every line to rest in the frame the slide began: the light went out,
+  // a long text's words a span went to the top, and the words stood up to
+  // 185px higher (the frame judge's "span 'that' jumped" on close, read before
+  // as two words paired). Now the words leave as they stand, and go to rest
+  // once the slide has ended and they are out of sight.
+  const [clockOpen, setClockOpen] = useState(open);
+  if (open && !clockOpen) setClockOpen(true);
+  useEffect(() => {
+    if (open || !clockOpen) return;
+    const id = window.setTimeout(() => setClockOpen(false), still() ? 0 : SLIDE_MS + 60);
+    return () => window.clearTimeout(id);
+  }, [open, clockOpen]);
+  const sung = useSungLines(audio.captions, audio.duration, clockOpen && hasWords);
 
   /* eslint-disable react-hooks/set-state-in-effect -- the sheet's own
      readiness and rest, driven by what is loaded and the store's open flag. */

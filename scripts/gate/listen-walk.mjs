@@ -6,8 +6,10 @@
 //   node scripts/gate/listen-walk.mjs <export> --carry [--reduce]   (the dock's cover tapped: Now Playing carries it up; never with motion reduced)
 //   node scripts/gate/listen-walk.mjs <export> --only work --words [--cpu 4] [--trace dir]   (Now Playing on a long text: opened
 //   on Cover from the dock, then Words, then put away and opened again, each judged and counted; Updates 98n, build 98 note 2)
-//   node scripts/gate/listen-walk.mjs <export> --only bible --transport [--lang ar]   (Now Playing's transport row tapped as a
-//   reader taps it, each button said to do what it names, read from the player's own recording; Updates 98n)
+//   node scripts/gate/listen-walk.mjs <export> --only bible --transport [--lang ar] [--voice]   (Now Playing's transport row tapped as
+//   a reader taps it, each button said to do what it names, read from the player itself; Updates 98n. Back and forward 15 are
+//   held to about 15 seconds, as a recording moves. --voice: the phone's voice chosen for the text's language, so the Bible
+//   is read by the voice and not by Heart's recording, which the walk stands in with the export's bell; Updates 98o)
 //   --trace <dir>: a Chrome trace of the Listen tap and of the dock's turn, each from the tap, for
 //   scripts/gate/trace-frames.mjs (Updates 98k: the work's 117ms task while its page glides to the reading)
 //   (--why adds what made each restyle: scripts/gate/trace-restyles.mjs reads it; --roots prints every write on
@@ -73,6 +75,9 @@ const CPU = Number(flag("--cpu") ?? 1);
 const SLOW = Number(flag("--slow") ?? 1);
 // --transport: Now Playing's row tapped, button by button (Updates 98n; 98l set its order in Arabic and did not tap it).
 const TRANSPORT = has("--transport");
+// --voice: the phone's voice chosen for English, the language of the texts read aloud (Updates 98o: without it John 10 is
+// Heart's recording, so 98n's transport walk, said to be of the voice, tapped a recording).
+const VOICE = has("--voice");
 const DESKTOP_UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
 const OUT = path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}`);
@@ -167,6 +172,23 @@ for (const text of TEXTS) {
     } catch {}
   }, [LANG, REDUCE]);
   await ctx.addInitScript(fakeVoice);
+  // The player's own audio element is never in the document: kept here, so the walk can say whether a recording sounds.
+  await ctx.addInitScript(() => {
+    const Made = window.Audio;
+    window.__media = [];
+    window.Audio = function Audio(...args) {
+      const a = new Made(...args);
+      window.__media.push(a);
+      return a;
+    };
+    window.Audio.prototype = Made.prototype;
+  });
+  if (VOICE)
+    await ctx.addInitScript((id) => {
+      try {
+        localStorage.setItem("purify:listen.voice", JSON.stringify({ en: id }));
+      } catch {}
+    }, LANG === "en" ? "walk-voice" : "walk-voice-en");
   if (BLOCK)
     await ctx.addInitScript((names) => {
       const add = DOMTokenList.prototype.add;
@@ -189,7 +211,16 @@ for (const text of TEXTS) {
   await installGate(ctx);
   await serveLikeTheShell(ctx, OUT, {});
   const bell = fs.readFileSync(path.join(OUT, "audio/ambience/bell.mp3"));
-  await ctx.route("https://audio.purifyapp.net/**/*.mp3", (r) => r.fulfill({ status: 200, contentType: "audio/mpeg", body: bell }));
+  // Served as the recordings' host serves it, a byte range at a time (Updates 98o): answered whole,
+  // with no range, the browser could not seek the recording, and a skip took it back to its start,
+  // which the transport walk read as the player's fault.
+  await ctx.route("https://audio.purifyapp.net/**/*.mp3", (r) => {
+    const m = /bytes=(\d+)-(\d*)/.exec(r.request().headers()["range"] ?? "");
+    if (!m) return r.fulfill({ status: 200, contentType: "audio/mpeg", headers: { "accept-ranges": "bytes" }, body: bell });
+    const from = Math.min(Number(m[1]), bell.length - 1);
+    const to = m[2] ? Math.min(Number(m[2]), bell.length - 1) : bell.length - 1;
+    return r.fulfill({ status: 206, contentType: "audio/mpeg", headers: { "accept-ranges": "bytes", "content-range": `bytes ${from}-${to}/${bell.length}` }, body: bell.subarray(from, to + 1) });
+  });
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e).slice(0, 200)));
@@ -233,7 +264,9 @@ for (const text of TEXTS) {
     const v = await judgeFrames(rec, { motion: "on" });
     // With --shots, each fail's frames side by side, to see what was drawn.
     if (SHOTS) for (const [n, f] of v.fails.entries()) if (f.frames) await stripOf(rec, f.frames, path.join(SHOTS, `${text.key}-${name}-${f.kind}-${n}-${WIDTH}.png`));
-    r.steps[`${name}:motion`] = v.fails.length ? v.fails.map((f) => `${f.kind}: ${f.detail}`) : "ok";
+    // A jump names the box that jumped, as the motion walk does (its classes and the boxes it stands in), to find it.
+    const where = (f) => (f.node ? ` [${[f.node.cls?.slice(0, 120), (f.node.trail ?? []).slice(0, 4).join(" < "), (f.node.marks ?? []).join(",")].filter(Boolean).join(" | ")}]` : "");
+    r.steps[`${name}:motion`] = v.fails.length ? v.fails.map((f) => `${f.kind}: ${f.detail}${where(f)}`) : "ok";
     if (v.fails.length) fail(`${name}: ${v.fails.map((f) => f.kind).join(", ")}`);
   };
   try {
@@ -383,9 +416,17 @@ for (const text of TEXTS) {
           const root = document.querySelector("[data-now-playing]");
           const slider = root?.querySelector("[role='slider']");
           const offers = [...(root?.querySelectorAll("div[dir='ltr'] > button") ?? [])].map((b) => b.getAttribute("aria-label")).find((l) => l === playWord) ? "play" : "pause";
-          const a = [...document.querySelectorAll("audio")].find((e) => !e.paused);
+          const a = [...document.querySelectorAll("audio"), ...(window.__media ?? [])].find((e) => !e.paused);
           const voice = !!(window.speechSynthesis?.speaking && !window.speechSynthesis.paused);
-          return { t: Math.round(Number(slider?.getAttribute("aria-valuenow") ?? NaN) * 10) / 10, paused: offers === "play", sounding: !!a || voice, src: root?.querySelector("h2")?.textContent?.trim() ?? null, title: root?.querySelector("h2")?.textContent?.trim() ?? null };
+          // What the page lights for the player, which follows its position: a chapter's verse
+          // (components/bible/ReadAloud.tsx), a text's paragraph (components/reading/ListenHere.tsx).
+          const litEl = document.querySelector("[data-read-now]");
+          const lit = litEl ? litEl.id || litEl.getAttribute("data-mk") : null;
+          // The dock's line under the name, the share played (components/bible/ReaderDock.tsx), and the slider's whole.
+          const bar = document.querySelector("[data-reader-dock] .reader-dock-card span.origin-left");
+          const dock = bar ? Math.round(Number(/scaleX\(([\d.e-]+)\)/.exec(bar.style.transform)?.[1] ?? NaN) * 1000) / 1000 : null;
+          const max = Number(slider?.getAttribute("aria-valuemax") ?? NaN);
+          return { t: Math.round(Number(slider?.getAttribute("aria-valuenow") ?? NaN) * 10) / 10, max, dock, paused: offers === "play", sounding: !!a || voice, by: voice ? "voice" : a ? "recording" : null, lit, src: root?.querySelector("h2")?.textContent?.trim() ?? null, title: root?.querySelector("h2")?.textContent?.trim() ?? null };
         }, playWord);
       const row = () =>
         page.evaluate(() => {
@@ -423,21 +464,32 @@ for (const text of TEXTS) {
         const now = await heard();
         await sleep(700);
         const later = await heard();
-        const ok = check(was, now, later);
         const said = await page.evaluate((t) => (window.__said ?? []).filter((x) => x[0] >= t).map((x) => x[1]), since);
+        const ok = check(was, now, later, said);
         r.steps.transport.taps.push({ name, label: at(i).label, was, now, later, said, ok });
         if (!ok) fail(`transport: ${name} (${at(i).label}) did not do what it names`);
       };
-      // Forward first, so back 15 has 15 seconds to go back.
-      // A recording moves by 15 seconds; the voice by whole verses or paragraphs, to the start of the one the
-      // moment falls in (lib/listen/speech/session.ts), so each is held only to its way and the same text.
-      await tap(mid + 1, "forward 15", (a, b) => !b.paused && b.src === a.src && b.t > a.t + 1 && b.t - a.t <= 17 + 60);
-      await tap(mid - 1, "back 15", (a, b) => !b.paused && b.src === a.src && b.t < a.t - 1);
+      // Forward first, so back 15 has 15 seconds to go back. Each moves about 15 seconds, a recording and the voice
+      // alike: the voice goes to the word the moment falls on and reads on from it (lib/listen/speech/session.ts,
+      // Updates 98o). Read 900ms after the tap, while it plays on: 15 seconds, less up to half a second to the word's
+      // start, and what was played since (the walk's voice says 20 letters a second, 1.4 seconds of the timeline a
+      // second). The voice must be asked to read on, and the verse lit on the page must follow it.
+      const VOICED = (a, b, said) => a.by !== "voice" || (said.length > 0 && b.by === "voice");
+      // The page's light goes with it: on a chapter, to a verse further on or further back (15 seconds is more than a
+      // verse of John 10); on a text, a long paragraph may hold both moments, so it is only held to be lit.
+      const verseOf = (id) => (/^v(\d+)$/.exec(id ?? "") ? Number(/^v(\d+)$/.exec(id)[1]) : null);
+      const LIT = (a, b, dir) => a.by !== "voice" || (!!b.lit && (verseOf(a.lit) === null || verseOf(b.lit) === null || Math.sign(verseOf(b.lit) - verseOf(a.lit)) === dir));
+      // The dock's line follows the same position (within a few hundredths of the whole).
+      const DOCKED = (b) => b.dock === null || !(b.max > 0) || Math.abs(b.dock - b.t / b.max) <= 0.03;
+      await tap(mid + 1, "forward 15", (a, b, c, said) => !b.paused && b.src === a.src && b.t - a.t >= 13.5 && b.t - a.t <= 17.5 && VOICED(a, b, said) && DOCKED(b) && LIT(a, b, 1));
+      await tap(mid - 1, "back 15", (a, b, c, said) => !b.paused && b.src === a.src && (a.t >= 16 ? b.t - a.t >= -16 && b.t - a.t <= -12 : b.t <= 2.5) && VOICED(a, b, said) && DOCKED(b) && LIT(a, b, -1));
       // Paused, where it stands holds; playing, it goes on.
       await tap(mid, "pause", (a, b, c) => !a.paused && b.paused && c.t === b.t);
       await tap(mid, "play", (a, b, c) => a.paused && !b.paused && c.t > b.t);
+      // Previous and next: a chapter's, always; a text's only where it has recordings to step through
+      // (components/player/PlayerSteps.tsx), so a text the voice reads has none, and none is asked of it.
       if (mid + 2 < n) await tap(mid + 2, "next", (a, b) => b.src !== a.src && b.title !== a.title);
-      else fail("transport: no next");
+      else if (text.key === "bible") fail("transport: no next");
       if (mid - 2 >= 0) await tap(mid - 2, "previous", (a, b) => b.src !== a.src || b.t < 3);
       throw Object.assign(new Error("done"), { done: true });
     }

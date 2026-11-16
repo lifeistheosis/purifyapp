@@ -3,7 +3,7 @@
 import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
 
 import type { SpeechEngine, SpeechEvent } from "./engine";
-import { learnPace, pieceAt, speechTimeline, timeAtChar, timeWhileSpeaking, type SpeechPiece, type SpeechTimeline } from "./timeline";
+import { learnPace, placeAt, speechTimeline, timeAtChar, timeWhileSpeaking, type SpeechPiece, type SpeechTimeline } from "./timeline";
 
 /**
  * One text spoken by the phone's voice, as the one player plays it (1.9,
@@ -17,8 +17,8 @@ import { learnPace, pieceAt, speechTimeline, timeAtChar, timeWhileSpeaking, type
  *
  * A pause stops the phone and keeps the word it was on; Play takes the
  * reading up at that word. A seek, and 15 seconds back or forward, go to the
- * start of the verse or paragraph the moment falls in. A new speed is taken
- * at the word being spoken.
+ * word the moment falls on, and the voice reads on from it. A new speed is
+ * taken at the word being spoken.
  *
  * A phone call, Siri or the assistant, or another app taking the sound pauses
  * the reading the same way, at its word (the plugin's "interruption"): the
@@ -42,8 +42,8 @@ export type SpeechSession = {
   timeline(): SpeechTimeline;
   play(): void;
   pause(): void;
-  /** To the start of the piece `time` falls in; `ahead` (15 seconds forward): never back of where it stands. */
-  seek(time: number, ahead?: boolean): void;
+  /** To the word `time` falls on (a line's start is its first word). */
+  seek(time: number): void;
   now(): number;
   setRate(rate: number): void;
   setVolume(volume: number): void;
@@ -256,23 +256,21 @@ export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
       o.host.state({ playing: false, currentTime: now() });
       void o.engine.nowPlaying({ title: o.title ?? "", artist: o.artist ?? "", duration: timeline.duration, elapsed: now(), playing: false });
     },
-    seek(time: number, ahead = false) {
+    seek(time: number) {
       if (!pieces.length) return;
-      // Forward goes forward (Updates 98n, build 98 note 2): 15 seconds on
-      // inside a long paragraph fell in that paragraph, whose start is behind
-      // the reader, so Forward 15 went back to it (Arabic John 10 from 3.9s to
-      // 0.7s on the export). There it goes on to the next piece's start, and
-      // on the last piece, with nowhere ahead, the reading goes on as it is.
-      let to = pieceAt(timeline, time);
-      if (ahead && (timeline.starts[to] ?? 0) <= now()) {
-        if (to + 1 >= pieces.length) return;
-        to += 1;
-      }
+      // To the word the moment falls on (Updates 98o, build 98 note 2), so 15
+      // seconds back or forward move about 15 seconds of the reading, as they
+      // move a recording. To the start of its piece, as it was, 15 seconds on
+      // inside a long paragraph went back to that paragraph's start, and back
+      // 15 went further back than 15 seconds; Updates 98n's mend sent forward
+      // to the next piece instead, which skipped the rest of the paragraph. A
+      // tap on a line still lands on its first word: a line starts a piece.
+      const to = placeAt(timeline, time);
       const was = speaking;
       if (was) halt();
-      index = to;
-      fromChar = 0;
-      o.host.state({ currentTime: timeline.starts[index] });
+      index = to.index;
+      fromChar = to.char;
+      o.host.state({ currentTime: now() });
       if (was) speak();
     },
     now,

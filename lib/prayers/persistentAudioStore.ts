@@ -555,9 +555,9 @@ export function setRate(rate: number): void {
 /** Back or forward by so many seconds, inside the track. */
 export function skipBy(seconds: number): void {
   if (spoken) {
-    // To the start of the verse or paragraph the moment falls in; forward
-    // never back (lib/listen/speech/session.ts, Updates 98n).
-    spoken.seek(Math.max(0, Math.min(snapshot.duration, spoken.now() + seconds)), seconds > 0);
+    // To the word the moment falls on, so about as far as a recording moves
+    // (lib/listen/speech/session.ts, Updates 98o).
+    spoken.seek(Math.max(0, Math.min(snapshot.duration, spoken.now() + seconds)));
     return;
   }
   const a = ensureElement();

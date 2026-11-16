@@ -104,6 +104,21 @@ export function pieceAt(t: SpeechTimeline, time: number): number {
 }
 
 /**
+ * The word a moment falls on, for a seek and 15 seconds back or forward
+ * (Updates 98o, build 98 note 2): its piece, and the first letter of the word
+ * it falls on, 0 at the piece's start. In the breath after a piece, the next
+ * piece's start; after the last piece's words, its last word, so the reading
+ * ends there as a recording does at its end.
+ */
+export function placeAt(t: SpeechTimeline, time: number): { index: number; char: number } {
+  const index = pieceAt(t, time);
+  if (index + 1 < t.starts.length && time >= t.starts[index] + t.spoken[index]) return { index: index + 1, char: 0 };
+  let char = 0;
+  for (const s of t.words[index] ?? []) if (timeAtChar(t, index, s) <= time) char = s;
+  return { index, char };
+}
+
+/**
  * Where the clock stands while piece `i` is spoken: from the word last
  * reported (or the piece's start), on at the reader's speed for the time
  * since, held short of the next word where words are reported, else short of
