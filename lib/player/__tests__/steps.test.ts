@@ -69,13 +69,12 @@ describe("previous and next, for the Bible read aloud", () => {
     expect(steps).toContain("chapterSteps(playing.book, playing.chapter, hasReadAloud)");
     expect(steps).toContain("void startReading(to.book, to.chapter,");
     expect(read("lib/readAloud/play.ts")).toContain("rate: readSpeed(),");
-    // Listen and the reading that rolls on use the same one: the reader's
-    // voice for the chapter, Heart through startReading (1.9, build 95 note 25).
+    // Listen and the reading that rolls on use the same one: Heart's
+    // recording through startReading, the only voice (his word of 2026-11-16).
     expect(read("components/bible/ReadAloud.tsx")).toContain('import { listenToChapter } from "@/lib/readAloud/play";');
-    expect(read("lib/readAloud/play.ts")).toMatch(/if \(use\.kind === "heart"\) \{\s*await startReading\(o\.book, o\.chapter, o\.title, o\.t\);/);
-    // A chapter the phone's voice reads steps to every chapter either side, by opening its page, which begins it.
-    expect(steps).toContain("chapterSteps(playing.book, playing.chapter, () => true)");
-    expect(steps).toContain("if (askToListenAt(to.book, to.chapter)) router.push(`/bible/${to.book}/${to.chapter}`);");
+    expect(read("lib/readAloud/play.ts")).toMatch(/if \(o\.bible \|\| !hasReadAloud\(o\.book, o\.chapter\)\) return false;\s*await startReading\(o\.book, o\.chapter, o\.title, o\.t\);/);
+    // No step to a chapter Heart has not read: the phone's voice that stepped to every chapter is gone.
+    expect(steps).not.toContain("() => true");
   });
 });
 

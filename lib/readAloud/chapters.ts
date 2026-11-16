@@ -24,8 +24,9 @@ import { savedSrc } from "./offline";
  * chapter read after an app was built still gets Listen. Both are written by
  * scripts/read-aloud-index.mjs from the files themselves.
  *
- * Free for every reader with one voice; Premium gets every voice (the
- * owner's word of 2026-10-15). The one voice is Kokoro's "Heart", John 1's.
+ * Free for every reader, in one voice: Kokoro's "Heart", John 1's, the only
+ * voice since his word of 2026-11-16 (about 22:35 UTC: "only leave one the
+ * standard prerecorded voices"; the Premium voices of 2026-10-15 are dropped).
  */
 export type ReadAloudVerse = { n: number; at: number; end: number; text?: string };
 export type ReadAloudManifest = { voice: string; seconds: number; verses: ReadAloudVerse[] };

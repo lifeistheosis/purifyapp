@@ -4,9 +4,8 @@ import { useSyncExternalStore } from "react";
 
 /**
  * A chapter's reading asked for on the page about to open (1.7, 1.9): a
- * reading that ended rolls on into the next chapter, and the player's previous
- * and next step to a chapter the phone's voice reads, which needs that page's
- * own words. The page reads the ask as it opens (components/bible/ReadAloud.tsx,
+ * reading that ended rolls on into the next chapter, where it has Heart's
+ * recording. The page reads the ask as it opens (components/bible/ReadAloud.tsx,
  * ReadAloudFollow) and begins.
  */
 const NEXT_KEY = "purify:readAloud.next";
@@ -62,7 +61,7 @@ export function takeListenAsk(book: string, chapter: number): boolean {
   return true;
 }
 
-/** The chapter's reading began, or could not (no voice, no words): it is no longer on its way. */
+/** The chapter's reading began, or could not: it is no longer on its way. */
 export function readingCame(book: string, chapter: number): void {
   if (coming !== `${book}/${chapter}`) return;
   coming = null;

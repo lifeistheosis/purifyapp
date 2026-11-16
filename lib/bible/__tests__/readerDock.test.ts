@@ -85,16 +85,16 @@ describe("the dock", () => {
   });
 
   it("offers Listen in Speed's place where this chapter has a reading that is not the one loaded", () => {
-    // The pill's own rule (its reads): the English with its recording, every
-    // chapter where the device can speak. Decided by the pill that holds the
-    // dock since the dock serves every text read aloud (build 98 note 2).
+    // The pill's own rule (its reads): the English where Heart's recording is,
+    // the only voice (his word of 2026-11-16). Decided by the pill that holds
+    // the dock since the dock serves every text read aloud (build 98 note 2).
     expect(PILL).toContain("const listenHere = reads && !hereLoaded;");
     // Known by the chapter the loaded recording reads, whichever address it
     // has: streamed, or saved to the phone while it played.
     expect(PILL).toContain("const loaded = readingOfSrc(src);");
     // A reading on its way to this chapter counts as loaded (lib/readAloud/rollOn.ts, rollOnComing.test.ts).
-    expect(PILL).toMatch(/const hereLoaded =\s*coming \|\|\s*\(!bible && loaded\?\.book === slug && loaded\.chapter === chapter\) \|\|/);
-    // Read in the reader's voice for the chapter, in the Bible the page shows it in (1.9, build 95 note 25).
+    expect(PILL).toContain("const hereLoaded = coming || (!bible && loaded?.book === slug && loaded.chapter === chapter);");
+    // Heart's recording, through the one way a chapter's reading starts.
     expect(PILL).toContain("onListen={() => listenToChapter({ book: slug, chapter, title: `${bookName} ${chapter}`, t, bible })}");
     expect(DOCK).toContain("await onListen();");
   });
@@ -105,10 +105,10 @@ describe("the dock", () => {
   // stands in for offers none. What a reader would notice: Listen on a Russian
   // page starting an English voice.
   it("keeps the pill's rule for Listen: none over a page the English reading does not read", () => {
-    // From the voices (1.9, build 95 note 25): a downloaded Bible's page is read in the phone's voice, never the English over it.
+    // A downloaded Bible's page has no Listen: Heart reads the English, never over another Bible's words (his word of 2026-11-16).
     expect(PILL).toMatch(/<ReaderDock\s+name=\{bookName\}\s+number=\{chapter\}/);
     expect(PILL).toContain("listenHere={listenHere}");
-    expect(PILL).toMatch(/const reads = listen && \(bible \? speaks : recorded \|\| speaks\);/);
+    expect(PILL).toContain("const reads = listen && !bible && recorded;");
     expect(DOCK).toMatch(/\{listenHere \? \(\s*<button/);
   });
 

@@ -63,15 +63,16 @@ describe("Listen on the pages", () => {
     expect(read("components/saints/WritingReader.tsx")).toContain('id={listenId("work", saint.slug, content.slug, sec.n)}');
   });
 
-  it("stands where the text has a recording or the device can speak it (1.9, build 95 note 25): no button that plays nothing", () => {
+  it("stands only where the text has Heart's recording: no button that plays nothing (his word of 2026-11-16)", () => {
     const here = read("components/reading/ListenHere.tsx");
     // One hook for the page's button and the foot pill's since build 98 note 2 (useListenText).
     expect(here).toContain("const recorded = useHasListen(text?.id ?? null);");
-    expect(here).toContain("const available = Boolean(text) && (recorded || speaks);");
+    expect(here).toContain("const available = Boolean(text) && recorded;");
     expect(here).toMatch(/if \(!listen\.available\) return null;/);
     expect(here).toMatch(/const \{ available, playing, busy, tap \} = useListenText\(text\);\s*if \(!available\) return null;/);
-    // With no voice for the page's language and no recording, a tap says so, and where a voice is added.
-    expect(here).toContain('else if (use.kind === "none") openVoiceSheet({ none: { lang: voiceLang(lang) } });');
+    // A tap starts the recording, and nothing else: no phone's voice, no Voice sheet.
+    expect(here).toContain("await startListening(id, { title: text.title, by: text.by, art: text.art });");
+    expect(here).not.toMatch(/speech|openVoiceSheet|voiceFor/);
     // The list a build carries starts empty and grows only from checked timings.
     expect(read("scripts/listen-index.mjs")).toContain("why = timingsFit(batch,");
     const carried = JSON.parse(read("data/listen/index.json")) as string[];

@@ -358,8 +358,8 @@ describe("the floating pill, with Listen", () => {
   });
 
   it("ends in Listen, after the sound button, only where the chapter has a reading", () => {
-    // The English where it has its recording, and every chapter, the English or a downloaded Bible, where the device can speak (1.9, build 95 note 25).
-    expect(pill).toContain("const reads = listen && (bible ? speaks : recorded || speaks);");
+    // The English where Heart's recording is, and never over a downloaded Bible: Heart is the only voice (his word of 2026-11-16).
+    expect(pill).toContain("const reads = listen && !bible && recorded;");
     // Its word gives way where the name needs the room (lib/bible/__tests__/dockNamesWhole.test.ts).
     expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} bible=\{bible\} \/> : null\}\s*<\/span>/);
     const read = code("components/bible/ReadAloud.tsx");

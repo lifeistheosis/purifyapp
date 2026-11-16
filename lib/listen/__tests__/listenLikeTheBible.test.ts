@@ -42,7 +42,7 @@ describe("one way to listen, the Bible's (build 98 note 2)", () => {
     // Where the pills stand (md:hidden native-md-flex) the page's button does not, and the other way round.
     expect(HERE).toContain('<ReaderPill onClick={tap} className={cn("hidden md:inline-flex native-md-hidden", className)}');
     // What it does stays in the page: the paragraph lit, the page following, the roll into the next part.
-    expect(HERE).toMatch(/\{playing \? spokenHere \? <SpokenFollow src=\{src\} \/> : <ListenFollow id=\{id\} \/> : null\}/);
+    expect(HERE).toContain("{playing ? <ListenFollow id={id} /> : null}");
     expect(HERE).toContain("void startListening(next).then((began) => {");
     // And says what it would read, for the pill.
     expect(HERE).toContain("useEffect(() => registerListen({ id, title, by, art }), [id, title, by, art]);");
