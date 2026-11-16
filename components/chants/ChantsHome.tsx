@@ -141,6 +141,8 @@ function Featured({ row, withVersions }: { row: ChantIndexRow; withVersions: boo
           cover={row.cover}
           languages={languagesOf(row.variants)}
           size="hero"
+          // The chants door's first cover lands here, where the two are one picture (build 98 note 3).
+          carryInto={row.cover?.src}
           className="w-full rounded-[14px] shadow-[0_24px_60px_-20px_rgba(0,0,0,0.7)]"
         />
       </Link>

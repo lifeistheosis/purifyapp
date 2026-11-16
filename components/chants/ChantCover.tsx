@@ -33,6 +33,8 @@ export function ChantCover({
   languages,
   size,
   picture,
+  carry,
+  carryInto,
   className,
 }: {
   cover?: { src: string; alt: string };
@@ -42,6 +44,15 @@ export function ChantCover({
   size: "hero" | "card" | "thumb";
   /** Where the icon is held in its box (an object-position class): a little above its middle unless told. */
   picture?: string;
+  /**
+   * The name the picture travels under into the page its link opens, and the
+   * name of the picture it takes as that page opens (lib/ui/routeMotion.ts,
+   * "A picture that leads to its own page"): the chants door's first cover
+   * into the library's first tile, where the two are one picture (build 98
+   * note 3). Only the picture travels, never the plate.
+   */
+  carry?: string;
+  carryInto?: string;
   /** The box's own classes, which win over its ground and its ring. */
   className?: string;
 }) {
@@ -57,7 +68,7 @@ export function ChantCover({
   if (cover && ready && !failed) {
     const src = chantMediaUrl(cover.src);
     return (
-      <div data-cover="img" className={cn(box, "bg-night-soft ring-1 ring-inset ring-paper/10", className)}>
+      <div data-cover="img" data-carry={carry} data-carry-into={carryInto} className={cn(box, "bg-night-soft ring-1 ring-inset ring-paper/10", className)}>
         <CoverPicture key={src} src={src} alt={cover.alt} eager={size === "hero"} picture={picture} onFail={fail} />
       </div>
     );

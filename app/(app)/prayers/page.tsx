@@ -16,7 +16,9 @@ import { Hands } from "@/components/ui/icons/Hands";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Lyre } from "@/components/ui/icons/Lyre";
 import { Orans } from "@/components/ui/icons/Orans";
-import { Play } from "@/components/ui/icons/Play";
+import { ChantsDoor } from "@/components/chants/ChantsDoor";
+import { chantIndex } from "@/lib/chants/registry.server";
+import { chantShelf } from "@/lib/chants/shelf";
 
 export const metadata = {
   title: "Prayer",
@@ -37,7 +39,7 @@ export const metadata = {
  *   Pray now       one row of four: the prayer to continue, then what fits
  *                  the hour, the season and the fast. It replaces the two
  *                  side-by-side rails whose left column stood empty.
- *   The heart      the Jesus Prayer beside the Prayer Rope Anthem.
+ *   The heart      the Jesus Prayer beside the chants door.
  *   Practices      five surfaces with their own screens. The last takes two
  *                  columns, so the grid ends on a full row at either width.
  *   The book       every rule by category, with the planned ones named in
@@ -56,6 +58,9 @@ const QUICK = [
 ] as const;
 
 export default function PrayersPage() {
+  // The covers on the chants door, read here on the server: the door is
+  // handed a few addresses, not the library (lib/chants/shelf.ts).
+  const chantCovers = chantShelf(chantIndex());
   const practices = [
     { href: "/prayers/today", icon: <Calendar size={24} />, title: <T k="prayers.tabs.today" />, body: <T k="prayers.also.todayDesc" /> },
     { href: "/prayers/hours", icon: <Lampada size={26} />, title: <T k="prayers.hours" />, body: <T k="prayers.also.hoursDesc" /> },
@@ -74,7 +79,7 @@ export default function PrayersPage() {
 
   return (
     <>
-      <PrayersMobile />
+      <PrayersMobile chantCovers={chantCovers} />
       <div className="hidden md:block native-md-hidden">
         <section className="relative overflow-hidden bg-night min-h-[calc(100dvh-72px)] md:px-8 md:py-16">
           {/* The front page hero's candle glow, in white, behind the heading. */}
@@ -151,26 +156,12 @@ export default function PrayersPage() {
                   </div>
                 </div>
 
-                {/* Chants (1.7), the whole library, where the Anthem's card was. */}
-                <Link href="/chants" className={CARD} style={CARD_BG}>
-                  <span
-                    aria-hidden
-                    className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-paper/[0.08] text-paper ring-1 ring-inset ring-paper/15 transition-transform duration-200 group-hover:scale-[1.04] motion-reduce:transition-none"
-                  >
-                    <Play size={19} centered />
-                  </span>
-                  {/* The words sit at the card's foot, the play button at
-                      its head, however tall the heart card beside it makes it. */}
-                  <p className="mt-auto pt-8 font-sans text-caption font-semibold text-paper/55">
-                    <T k="chants.door.kicker" />
-                  </p>
-                  <h3 className="mt-2 text-title-sm font-bold leading-tight text-paper">
-                    <T k="chants.title" />
-                  </h3>
-                  <p className="mt-2 font-sans text-detail leading-[1.55] text-paper/65">
-                    <T k="chants.door.sub" />
-                  </p>
-                </Link>
+                {/* Chants (1.7), the whole library, where the Anthem's card
+                    was: the same door a phone has, its covers on a shelf, in
+                    place of the disc with a play mark (build 98 note 3). The
+                    words sit at the card's foot, the shelf at its head,
+                    however tall the heart card beside it makes it. */}
+                <ChantsDoor covers={chantCovers} className="motion-safe:transition-transform motion-safe:duration-200 hover:-translate-y-0.5" />
               </div>
             </section>
 

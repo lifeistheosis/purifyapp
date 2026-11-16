@@ -170,7 +170,8 @@ describe("the rest of the page", () => {
     // Today's prayer went from a tile to a row of the daily rule (note 72),
     // which the book's own file holds.
     // All prayers' pieces (1.9, build 89 note 10) are their own file.
-    const page = [code(PAGE), code(BOOK), code("lib/prayers/book.ts"), code("components/prayers/PrayerPieces.tsx")].join("\n");
+    // The chants door (build 98 note 3) is its own file too.
+    const page = [code(PAGE), code(BOOK), code("lib/prayers/book.ts"), code("components/prayers/PrayerPieces.tsx"), code("components/chants/ChantsDoor.tsx")].join("\n");
     for (const href of [
       "/prayers/morning",
       "/prayers/evening",
@@ -184,7 +185,7 @@ describe("the rest of the page", () => {
     ]) {
       expect(page, href).toContain(`"${href}"`);
     }
-    for (const part of ['<PrayNow variant="mobile" />', "<PrayerBookContents hourNow={hourNow} />", "<FeatureBand"]) {
+    for (const part of ['<PrayNow variant="mobile" />', "<PrayerBookContents hourNow={hourNow} />", "<ChantsDoor"]) {
       expect(code(PAGE), part).toContain(part);
     }
   });

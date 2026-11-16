@@ -30,9 +30,13 @@ describe("Prayers in Arabic", () => {
   it("draws the play mark centred on its box, with no nudge to a side", () => {
     for (const file of [TILES, PAGE]) {
       const source = read(file);
-      expect(source, file).toMatch(/<Play size=\{\d+\} centered \/>/);
       expect(source, file).not.toContain("translate-x-[1px]");
       expect(source, file).not.toContain('d="M7 5.5v13l11-6.5L7 5.5z"');
     }
+    expect(read(TILES)).toMatch(/<Play size=\{\d+\} centered \/>/);
+    // The computer's chants door had a play mark on a disc until build 98
+    // note 3: the door opens the library and plays nothing, so it has none
+    // now, and nothing here is left to mirror (components/chants/ChantsDoor.tsx).
+    expect(read(PAGE)).not.toContain("<Play");
   });
 });

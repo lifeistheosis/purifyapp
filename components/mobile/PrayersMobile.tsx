@@ -11,7 +11,9 @@ import { useMounted } from "@/lib/useMounted";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
 import { PrayersHero } from "./PrayersHero";
-import { PictureTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
+import { PictureTile, SoftTileGrid } from "./SoftTiles";
+import { ChantsDoor } from "@/components/chants/ChantsDoor";
+import type { ShelfCover } from "@/lib/chants/shelf";
 import { PrayNow } from "@/components/prayers/PrayNow";
 import { PrayerBookContents } from "@/components/prayers/PrayerBookContents";
 import { PrayerPieces } from "@/components/prayers/PrayerPieces";
@@ -42,7 +44,7 @@ const LEARNING = serviceArt("learning");
  *   All prayers   the quick ways in, one row that scrolls sideways
  *   Pray now      the prayer to continue, then what fits the hour, the
  *                 season and the fast
- *   the heart     the Jesus Prayer, then the Chants band
+ *   the heart     the Jesus Prayer, then the chants door, its covers on a shelf
  *   Practices     four tiles in their icons, two across, the Hours lit
  *   the book      one prayer book, its chapters opening one at a time
  *
@@ -61,7 +63,7 @@ const LEARNING = serviceArt("learning");
  * under it, and the small labels that were the sections' names (each is a
  * Lora heading now).
  */
-export function PrayersMobile() {
+export function PrayersMobile({ chantCovers }: { /** The covers on the chants door, read by the page on the server (lib/chants/shelf.ts). */ chantCovers: readonly ShelfCover[] }) {
   // The reader's own hour, resolved on the device: a server render bakes the
   // build's hour into the apps' static export. Until the page wakes, no Hour
   // is lit and the Hours wear no icon yet.
@@ -132,16 +134,13 @@ export function PrayersMobile() {
             </Link>
           </div>
         </div>
-        {/* Chants (1.7): the play band leads to the whole library, the
-            Prayer Rope Anthem first among them. The owner, 2026-10-16:
-            chants needed an easier way in. */}
+        {/* Chants (1.7): the door to the whole library, the Prayer Rope
+            Anthem first among them. The owner, 2026-10-16: chants needed an
+            easier way in. From build 98 note 3 it shows what is inside, the
+            chants' own covers on a shelf, in place of the play band whose
+            disc promised playing (components/chants/ChantsDoor.tsx). */}
         <div className="mt-3">
-          <FeatureBand
-            href="/chants"
-            eyebrow={<T k="chants.door.kicker" />}
-            title={<T k="chants.title" />}
-            sub={<T k="chants.door.sub" />}
-          />
+          <ChantsDoor covers={chantCovers} />
         </div>
       </section>
 
