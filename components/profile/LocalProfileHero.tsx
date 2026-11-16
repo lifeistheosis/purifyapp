@@ -5,8 +5,7 @@ import { useLocalAccount, releaseLocal } from "@/lib/profile/localAccount";
 import { AccountChoice } from "./AccountChoice";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { InitialsAvatar } from "@/components/profile/InitialsAvatar";
-import { deviceDateLocale } from "@/lib/i18n/deviceDates";
+import { LINE_ON_PAGE, ReaderIdentity } from "@/components/profile/ReaderIdentity";
 
 /**
  * Mirrors `ProfileHero` for the device-only path. Shown on `/account`
@@ -17,11 +16,19 @@ import { deviceDateLocale } from "@/lib/i18n/deviceDates";
  * synchronized across devices. The old "Local profile / Public
  * account" naming is retired.
  *
+ * Since 1.9 (build 98 note 11) it wears the one piece a signed-in reader's
+ * You and Profile wear (components/profile/ReaderIdentity.tsx): the picture
+ * (their initials, a device keeps no picture without an account), the name
+ * in the reading serif, and under it the line that says where they read.
+ * Then the invitation to sign in, once: one line on what an account adds,
+ * and its button. The date the name was claimed went with the account's
+ * other facts off a reader's own face.
+ *
  * Surfaces:
- *  - the local display name + the date it was claimed,
- *  - an explicit "on this device" eyebrow so it's never confusing,
- *  - a "Sign in to sync across devices" affordance (flips the wrapper
- *    back into `AccountChoice` so the existing sign-in panel appears),
+ *  - the local display name, as the identity piece,
+ *  - an explicit "on this device" line so it's never confusing,
+ *  - a "Sign in" affordance (flips the wrapper back into `AccountChoice`
+ *    so the existing sign-in panel appears),
  *  - a quieter "Remove this name" affordance for cleanup.
  *
  * Stateless w/r/t Supabase, this whole component only reads
@@ -39,32 +46,15 @@ export function LocalProfileHero() {
     return <AccountChoice />;
   }
 
-  const created = (() => {
-    try {
-      return new Date(account.createdAt).toLocaleDateString(deviceDateLocale());
-    } catch {
-      return "";
-    }
-  })();
-
   return (
     <section className="mt-10 rounded-lg border border-paper/15 bg-paper/[0.03] p-6 md:p-7">
-      <p className="font-sans text-caption font-semibold text-paper/55 mb-3">
-        {t("ui.readingPrivatelyOnThisDevice")}
-      </p>
-      <div className="flex items-center gap-4">
-        <InitialsAvatar name={account.name} size={56} />
-        <div className="min-w-0">
-          <p className="font-sans text-title-sm font-bold text-paper leading-tight truncate">
-            {account.name}
-          </p>
-          {created ? (
-            <p className="mt-1 font-sans text-caption text-paper/55">
-              {t("ui.claimedLocallyOn")} {created}
-            </p>
-          ) : null}
-        </div>
-      </div>
+      <ReaderIdentity
+        name={account.name}
+        picture={null}
+        patron={null}
+        badges={[]}
+        under={<span className={LINE_ON_PAGE}>{t("ui.readingPrivatelyOnThisDevice")}</span>}
+      />
 
       <p className="mt-5 font-serif text-body text-paper/80 leading-[1.7]">
         {t("ui.syncLockedBody")}
@@ -74,7 +64,7 @@ export function LocalProfileHero() {
         <button
           type="button"
           onClick={() => setUpgrading(true)}
-          className="font-sans text-ui font-semibold rounded-pill px-5 py-3 bg-gold text-night hover:bg-gold-soft transition-colors"
+          className="font-sans text-ui font-semibold rounded-pill px-5 py-3 bg-paper text-night hover:bg-paper/90 transition-colors"
         >
           {t("profile.signInLink")}
         </button>
@@ -100,7 +90,7 @@ export function LocalProfileHero() {
         }}
       />
 
-      <p className="mt-5 font-sans text-caption text-paper/45 leading-[1.55]">
+      <p className="mt-5 font-sans text-caption text-paper/55 leading-[1.55]">
         {t("profile.signInKeeps")}
       </p>
     </section>

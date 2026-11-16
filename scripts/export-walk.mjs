@@ -2842,7 +2842,9 @@ await section(46, async () => {
             ? { href: a.getAttribute("href") ?? "", name: (a.querySelector(".font-heading")?.textContent ?? "").trim(), text: (a.textContent ?? "").replace(/\s+/g, " ").trim(), box: box(a) }
             : null;
         })(),
-        badges: [...document.querySelectorAll("[data-you-badges] li[role=img]")].map((li) => ({ label: li.getAttribute("aria-label") ?? "", color: getComputedStyle(li).color })),
+        badges: [...document.querySelectorAll("[data-you-badges] [role=img]")].map((li) => ({ label: li.getAttribute("aria-label") ?? "", color: getComputedStyle(li).color })),
+        // With no day kept, one invitation in the rope's place (round 3 of the fifteen screens).
+        invite: (hero?.querySelector("[data-rope-invite]")?.textContent ?? "").replace(/\s+/g, " ").trim(),
         rope: rope ? { box: box(rope), knots: rope.querySelectorAll("span.rounded-full").length, says: rope.getAttribute("aria-label") ?? "" } : null,
         // The old card's red: its classes, and the flame's own.
         red: /\b(?:text|bg|border|ring|from|to)-(?:streak|crimson)\b|streak-pulse|streak-flicker/.test(route.innerHTML),
@@ -2902,14 +2904,14 @@ await section(46, async () => {
       `signed out, Sign in stands on the picture where the name stands (${m.signIn ? `"${m.signIn.text}" at ${Math.round(m.signIn.box.top)}` : "none"})`,
     );
     must(m.who.includes(en["ui.privateOnThisDeviceNo"]), "with the line on where things are kept over it");
-    must(!!m.rope && m.rope.knots === 7 && !!m.picture && m.rope.box.top < m.picture.bottom + 40, `the prayer rope at the picture's foot, seven knots (${m.rope ? `${m.rope.knots} knots at ${Math.round(m.rope.box.top)}` : "no rope"})`);
+    must(!m.rope && m.invite === en["streak.start"], `no day kept yet, so one invitation stands at the picture's foot, and no rope of open knots ("${m.invite}"${m.rope ? `, and a rope of ${m.rope.knots} knots` : ""})`);
     must(!m.red, "and no red and no flame anywhere on the tab");
     must(!m.premium && m.pill === en["nav.premium"] && en["nav.premium"] === "Plus", `one name for the subscription: the pill says Plus and nothing says Premium (pill "${m.pill}")`);
     must(
       m.rows.every((h) => ["/journal", "/florilegium", "/prayers/personal", "/campaigns/mine", "/settings"].includes(bare(h))) && bare(m.rows[0]) === "/journal" && bare(m.rows[1]) === "/florilegium" && bare(m.rows.at(-1)) === "/settings",
       `the rows: the journal, the Florilegium, Your rule and Settings (${m.rows.map(bare).join(", ")})`,
     );
-    must(m.empty.includes(en["saved.emptyLine"]), "nothing kept yet, so the shelf is its one line");
+    must(m.empty === "", `nothing kept yet, and nothing empty is drawn under the invitation ("${m.empty}")`);
     must(m.img?.animation === "prayers-picture-in", `the picture fades in as the tab arrives (${m.img?.animation})`);
     await page.screenshot({ path: path.join(SHOTS, "you-ladder-signed-out.png") });
     // A new reader's tab is one screen on this phone: build 87's walk found

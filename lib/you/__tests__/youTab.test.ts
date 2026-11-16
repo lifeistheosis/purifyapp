@@ -35,14 +35,20 @@ const CARD = "components/you/PickUpCard.tsx";
 const VERSE = "components/you/KeptVerse.tsx";
 const SHELF = "components/you/KeptShelf.tsx";
 const ROWS = "components/you/YouRows.tsx";
+const LIFE = "components/you/LifeKept.tsx";
+/** The one piece You and Profile both wear (1.9, build 98 note 11). */
+const PIECE = "components/profile/ReaderIdentity.tsx";
 const CSS = "app/globals.css";
-const YOU_FILES = [PAGE, HERO, WHO, CARD, VERSE, SHELF, ROWS, "components/you/WeekLine.tsx"];
+const YOU_FILES = [PAGE, HERO, WHO, CARD, VERSE, SHELF, ROWS, LIFE, PIECE, "components/you/WeekLine.tsx"];
 
 describe("the head of You: the Ladder, and the reader on it", () => {
   it("is the section's own Ladder, under the one tab bar, with the reader and then the rope at its foot", () => {
     const page = code(PAGE);
     expect(page).toContain('header={<MobileHeader titleKey="nav.you" />} hero={hero}');
-    expect(page).toMatch(/<YouHero who=\{reader\}>\s*(?:\{\}\s*)?<StreakRope className="you-rope" \/>\s*<WeekLine className="mt-2\.5" feed=\{feed\} journal=\{journal\} \/>\s*<\/YouHero>/);
+    // Round 3 of the fifteen screens: the rope and the week's line are one piece on the page, and
+    // with no day kept one invitation stands in its place.
+    expect(page).toMatch(/<YouHero who=\{reader\}>\s*(?:\{\}\s*)?<LifeKept invite feed=\{feed\} journal=\{journal\} \/>\s*<\/YouHero>/);
+    expect(code(LIFE)).toMatch(/<StreakRope className="you-rope" invite=\{invite\}>\s*<WeekLine className="mt-1\.5" feed=\{feed\} journal=\{journal\} \/>\s*<\/StreakRope>/);
     // The plate it stood on, and the red flame card, are gone from the tab.
     for (const gone of ["<SectionMasthead", "<StreakCard", "eyebrow="]) expect(page, gone).not.toContain(gone);
     const hero = code(HERO);
@@ -56,11 +62,20 @@ describe("the head of You: the Ladder, and the reader on it", () => {
     expect(sectionMedia("you")?.src).toBe("/sections/you.v2.jpg");
   });
 
-  it("puts the reader's picture, name, way to their profile and badges on it, and Sign in in the name's place", () => {
+  it("puts the reader's picture, name, patron saint and badges on it, the whole the way to their profile, and Sign in in the name's place", () => {
     const who = code(WHO);
     expect(who).toContain('href="/account/profile" data-you-identity=""');
-    expect(who).toContain('<ReaderAvatar name={name} picture={me.state === "in" ? me.picture : null} size={66} />');
-    expect(who).toContain('t("profile.yourProfile")');
+    // The one piece Profile wears too (1.9, build 98 note 11), inside the link: one chevron, and
+    // "Your profile" said to a screen reader only, no longer a line under the name.
+    expect(who).toMatch(/<Link href="\/account\/profile" data-you-identity="" className="[^"]*">\s*<ReaderIdentity\b[\s\S]*?\/>\s*<span className="sr-only">\{t\("profile\.yourProfile"\)\}<\/span>\s*<\/Link>/);
+    expect(who).toContain('picture={me.state === "in" ? me.picture : null}');
+    expect(who).toContain("patron={card?.patronSaint ?? null}");
+    expect(who).toContain('carry="from"');
+    const piece = code(PIECE);
+    expect(piece).toContain("<ReaderAvatar name={name} picture={picture} size={66} />");
+    expect(piece).toContain("<ReaderBadges ids={badges} />");
+    // Only the badges earned: none draws no row, never empty rings.
+    expect(piece).toContain("if (ids.length === 0) return null;");
     expect(who).toContain("useMyBadges(id)");
     expect(who).toContain('href="/signin?next=/account"');
     expect(who).toContain('t("common.signIn")');
@@ -68,8 +83,8 @@ describe("the head of You: the Ladder, and the reader on it", () => {
     expect(who).toContain('t("ui.privateOnThisDeviceNo")');
     // The badges are the house greys: never a badge's own colour, and the Pro
     // cross's red ring is the ink.
-    expect(who).not.toContain("badgeTone");
-    expect(who).toContain('{ "--color-crimson": "var(--color-paper)" }');
+    expect(who + piece).not.toContain("badgeTone");
+    expect(piece).toContain('{ "--color-crimson": "var(--color-paper)" }');
   });
 
   it("shares the clear bar and its height with Prayers, and keeps the bar's name readable over the picture", () => {
@@ -138,10 +153,31 @@ describe("the day, under the Ladder", () => {
     expect(shelf).toContain('t("saved.emptyLine")');
   });
 
-  it("keeps the rows quiet: led by the plates Settings is made of, on the page's own ground", () => {
+  it("keeps the rows quiet: a name, one line, the chevron, on the page's own ground, with no icon tile", () => {
+    // Round 3 of the fifteen screens: fresh eyes, of this list, "puts an icon tile on every row".
+    // Until then each row was led by a glyph on the plate Settings is made of.
     const rows = code(ROWS);
-    expect(rows).toContain('import { Plate } from "@/components/settings/LitPanel";');
+    expect(rows).not.toMatch(/\bPlate\b|\bicon\b/);
+    expect(code(PAGE)).not.toMatch(/\bicon:|SettingsGlyph|<Glyph\b/);
     expect(rows).toContain("rounded-[18px] bg-paper/[0.03] ring-1 ring-inset ring-paper/[0.08]");
+  });
+
+  it("shows a new reader one invitation, and nothing empty under it (round 3)", () => {
+    const page = code(PAGE);
+    // With nowhere left off and no verse kept or chosen, neither card is drawn, nor the shelf's line.
+    expect(page).toContain("const nothingYet = pickUp.length === 0 && !chosen && !verseToday;");
+    expect(page).toContain("<PickUpCard rows={pickUp} />");
+    expect(page).toMatch(/<KeptVerse [^>]*quiet=\{nothingYet\} \/>/);
+    expect(page).toMatch(/<KeptShelf [^>]*quiet=\{nothingYet\} \/>/);
+    expect(code(VERSE)).toMatch(/if \(!item\) \{\s*if \(quiet\) return null;/);
+    expect(code(SHELF)).toMatch(/if \(rows\.length === 0 && !newestNote\) \{\s*if \(quiet\) return null;/);
+    // The invitation is the streak's own line, in the rope's place (lib/streak/__tests__/ropeRender.test.ts).
+    expect(code("components/today/StreakRow.tsx")).toContain("return invite ? <RopeInvite className={className} /> : null;");
+    // A new reader's first way in stays (round 3 apply B): the invitation is a link to the hour's prayer, a
+    // thumb's height. "What will you learn?" comes back with the first thing left off, kept or chosen.
+    expect(code("components/today/StreakRow.tsx")).toMatch(
+      /<Link href=\{keepDayLinks\(\)\.pray\} data-rope-invite="" className=\{cn\("tap-press flex min-h-11 /,
+    );
   });
 });
 

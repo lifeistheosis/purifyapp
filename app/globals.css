@@ -3489,22 +3489,32 @@ html[data-reading-mode="parchment"] .you-mark-lit {
  filter: none;
 }
 
-/* The prayer rope on the Ladder's foot (StreakRope, as Today's): a card of
-   the page's raised grey, a little see-through where the picture ends. No
-   blur: the Android WebView bleeds a picture through backdrop-filter and
-   drops frames while scrolling (MobileHeader). */
-.you-rope {
- border-color: rgb(255 255 255 / 0.07);
- border-color: color-mix(in srgb, var(--color-paper) 7%, transparent);
- background: rgb(30 30 33 / 0.8);
- background: linear-gradient(180deg, color-mix(in srgb, color-mix(in srgb, var(--color-paper) 6%, var(--color-night-soft)) 74%, transparent), color-mix(in srgb, var(--color-night-soft) 84%, transparent));
- box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 16px 30px -16px rgb(0 0 0 / 0.9);
+/* The life kept at the Ladder's foot (components/you/LifeKept.tsx): the
+   prayer rope and the week's line stand on the page itself, as Today's rope
+   does, with no card (round 3 of the fifteen screens). Until then the rope
+   was a card of the page's raised grey there, `.you-rope`; the name stays on
+   its button for the walks and dresses nothing.
+
+   The reader's name travels with their picture (build 98 note 11, You and
+   Profile as one design). A tap on the reader on You carries their picture
+   into the same piece at the top of Profile, and back (lib/ui/routeMotion.ts,
+   data-carry). While the picture wears the name on either page, the reader's
+   name beside it wears one of its own, so the browser moves the one name
+   into the place of the other on the picture's own time and curve, and it is
+   not seen to leave and come again. Where a browser has no such change, the
+   page simply changes. */
+.reader-who:has([data-reader-picture][style*="view-transition-name"]) .reader-name {
+ view-transition-name: reader-name;
 }
-html[data-reading-mode="parchment"] .you-rope {
- box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 12px 26px -16px rgb(70 52 20 / 0.45);
+::view-transition-group(reader-name) {
+ animation-duration: 320ms;
+ animation-timing-function: var(--ease-house);
 }
-html[data-reading-mode="black"] .you-rope {
- box-shadow: none;
+::view-transition-old(reader-name):only-child {
+ animation: route-leave var(--duration-route-exit) var(--ease-house) both;
+}
+::view-transition-new(reader-name):only-child {
+ animation: route-arrive var(--duration-route-enter) var(--ease-house) 40ms both;
 }
 
 /* Where you left off: one lit card (components/you/PickUpCard.tsx), lit

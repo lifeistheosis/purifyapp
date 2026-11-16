@@ -166,12 +166,15 @@ describe("every screen that writes a date the device's own way", () => {
     }
   });
 
-  it("in sixteen files", () => {
+  it("in fifteen files", () => {
     const using = sources.filter((path) => readFileSync(join(root, path), "utf8").includes("deviceDateLocale("));
-    // The sixteen screens, and the module itself. The You tab wrote "Member
+    // The fifteen screens, and the module itself. The You tab wrote "Member
     // since" its way until note 71 (r3-25 A), whose name on the Ladder has
-    // the way to the reader's profile under it instead.
-    expect(using.length).toBe(17);
+    // the way to the reader's profile under it instead. Sixteen until build
+    // 98 note 11: Profile's hero and the reader without an account each wrote
+    // a date of the account on the reader's own face; both went, and the
+    // account's facts write theirs in one place (components/profile/AccountFacts.tsx).
+    expect(using.length).toBe(16);
   });
 });
 

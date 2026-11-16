@@ -62,7 +62,20 @@ const CHANGE = "tap-press hit-44 inline-flex items-center font-sans text-caption
 
 export type KeptVerseRef = { book: string; chapter: number; verse: number; reference: string };
 
-export function KeptVerse({ verse, className }: { verse: KeptVerseRef | null; className?: string }) {
+export function KeptVerse({
+  verse,
+  quiet = false,
+  className,
+}: {
+  verse: KeptVerseRef | null;
+  /**
+   * With nothing kept and nothing chosen, draw nothing (round 3 of the
+   * fifteen screens): a reader with nowhere left off either meets one
+   * invitation on You, not three empty things in a row.
+   */
+  quiet?: boolean;
+  className?: string;
+}) {
   const { t } = useTranslate();
   const locked = usePlusFeatures() === false;
   const { chosen } = useLearning();
@@ -116,6 +129,7 @@ export function KeptVerse({ verse, className }: { verse: KeptVerseRef | null; cl
 
   // Nothing kept and nothing chosen: the way in, since a quote and the reader's own words need no kept verse.
   if (!item) {
+    if (quiet) return null;
     return (
       <section data-you-verse="empty" aria-labelledby="you-verse-title" className={className}>
         <div className="lm-card relative overflow-hidden rounded-[24px] border border-paper/10 bg-night-deep text-center">

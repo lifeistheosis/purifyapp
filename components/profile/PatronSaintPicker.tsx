@@ -9,12 +9,20 @@
 // saint's chooser now, each saint with his icon and feast in the house's
 // sheet, found by any part of his name ("egypt" finds St. Mary of Egypt) and
 // lettered by his own (components/profile/PatronChooser.tsx).
+//
+// On the reader's own page the saint is a picture card (build 98 note 11,
+// You and Profile as one design): his icon, his name, his feast, and Change.
+// It is drawn from what the device keeps of the reader's card
+// (lib/profile/myCard.ts) while the list is on its way, so it is there with
+// the page and does not arrive under the reader's eyes; the sheet opens once
+// the list has come.
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PatronChooser } from "@/components/profile/PatronChooser";
 import { apiFetch } from "@/lib/api/client";
+import { useMyCard } from "@/lib/profile/myCard";
 import { PATRON_ANCHOR, announcePatron } from "@/lib/profile/patronEvent";
 import { patronList, type Patron, type ServerPatron } from "@/lib/profile/patrons";
 import { prefersReducedMotion } from "@/lib/ui/motion";
@@ -92,12 +100,12 @@ export function usePatronChoice(): PatronChoice {
   return { state, patrons, value: slug, named, choose: (v) => void save(v), saved, error };
 }
 
-/** The chooser and the line that says it saved. */
-export function PatronSelect({ choice }: { choice: PatronChoice }) {
+/** The chooser and the line that says it saved. `card`: the saint as a picture card; `waiting`: the list has not come. */
+export function PatronSelect({ choice, card = false, waiting = false }: { choice: PatronChoice; card?: boolean; waiting?: boolean }) {
   const { t } = useTranslate();
   return (
     <>
-      <PatronChooser patrons={choice.patrons} value={choice.value} named={choice.named} onChoose={choice.choose} label={t("patron.title")} />
+      <PatronChooser patrons={choice.patrons} value={choice.value} named={choice.named} onChoose={choice.choose} label={t("patron.title")} card={card} waiting={waiting} />
       <p aria-live="polite" className="font-sans text-caption">
         {choice.saved ? <span className="mt-2 block text-paper/55">{t("patron.saved")}</span> : null}
         {choice.error ? <span className="mt-2 block text-red-300">{t("email.prefs.error")}</span> : null}
@@ -109,6 +117,7 @@ export function PatronSelect({ choice }: { choice: PatronChoice }) {
 export function PatronSaintPicker() {
   const { t } = useTranslate();
   const choice = usePatronChoice();
+  const card = useMyCard();
   const box = useRef<HTMLElement>(null);
 
   // Asked for by name (#patron, the My saint widget's tap with no saint
@@ -118,15 +127,21 @@ export function PatronSaintPicker() {
     box.current?.scrollIntoView({ block: "center", behavior: prefersReducedMotion() ? "auto" : "smooth" });
   }, [choice.state]);
 
-  if (choice.state !== "ready") return null;
+  // What the device already knows of the reader's saint (one chosen, or
+  // none), until the website has answered. Drawn for none too: the line
+  // under the reader's name that invites them to choose leads here.
+  const ready = choice.state === "ready";
+  if (choice.state === "signed-out" || (!ready && !card)) return null;
+  const kept = card?.patronSaint ?? null;
+  const shown: PatronChoice = ready ? choice : { ...choice, value: kept?.slug ?? "", named: kept?.name ?? null };
 
-  // Drawn as a row of Settings is (1.8): its name, one line on what it does,
-  // then the picker, in the rounded list every phone screen under You uses.
+  // The saint as a picture card on the page, and under it one quiet line on
+  // what choosing him does. Until 1.9 it was a row of a form: the choice's
+  // name, that line, then a field, all in one box.
   return (
-    <section id={PATRON_ANCHOR} ref={box} className="scroll-mt-24 rounded-2xl border border-paper/10 bg-paper/[0.03] px-4 py-4">
-      <p className="font-sans text-ui text-paper">{t("patron.title")}</p>
-      <p className="mb-3 mt-0.5 font-sans text-caption leading-[1.5] text-paper/55">{t("patron.hint")}</p>
-      <PatronSelect choice={choice} />
+    <section id={PATRON_ANCHOR} ref={box} className="scroll-mt-24">
+      <PatronSelect choice={shown} card waiting={!ready} />
+      <p className="mt-2.5 px-1 font-sans text-caption leading-[1.5] text-paper/55">{t("patron.hint")}</p>
     </section>
   );
 }

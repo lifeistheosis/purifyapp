@@ -52,8 +52,11 @@ export function KeptShelf({
   feed,
   journal,
   verseLabel,
+  quiet = false,
   className,
 }: {
+  /** With nothing kept, draw nothing, not the line on how to keep a verse (round 3 of the fifteen screens). */
+  quiet?: boolean;
   feed: readonly SavedItem[];
   journal: readonly JournalItem[];
   /** "John 3:16" in the reader's language. */
@@ -85,6 +88,7 @@ export function KeptShelf({
   );
 
   if (rows.length === 0 && !newestNote) {
+    if (quiet) return null;
     return (
       <section data-you-kept="" aria-labelledby="you-kept-title" className={className}>
         <div className="px-1">{heading}</div>

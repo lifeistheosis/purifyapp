@@ -1,5 +1,6 @@
 "use client";
 
+import { AccountFacts } from "@/components/profile/AccountFacts";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
@@ -95,6 +96,10 @@ export function SecurityTabClient() {
 
   return (
     <div className="flex flex-col gap-5">
+      {/* The account's facts: the address signed in with, since when, when
+          last, and the plan. They stood on Profile's face until 1.9 (build 98
+          note 11); Profile's last row opens this screen. */}
+      <AccountFacts />
       <ChangePasswordCard email={data.email} hasPassword={data.hasPassword} />
       <ChangeEmailCard currentEmail={data.email} pendingEmail={data.pendingEmail ?? null} />
       <OAuthConnectionsCard

@@ -19,7 +19,10 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
  * Profile has two ways in from 1.8: its row in Settings, and the reader's own
  * name at the top of the You tab. So its way back is the way the reader came
  * (lib/nav/goBack.ts), with Settings, its row, as the floor for a reader who
- * came from neither. The rest are reached from one row each and go back to it.
+ * came from neither. Security has two from 1.9 (build 98 note 11): its row in
+ * Settings, and the row at Profile's foot that holds the account's facts; so
+ * it goes back the way the reader came too. The rest are reached from one row
+ * each and go back to it.
  *
  * Longest path first: /account/profile/edit is a screen of its own under
  * /account/profile, and Sessions is reached from Security.
@@ -27,7 +30,7 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 const SCREENS: readonly { path: string; titleKey?: string; title?: string; back: string; came?: true }[] = [
   { path: "/account/profile/edit", titleKey: "profile.accountLinkTitle", back: "/account/profile" },
   { path: "/account/profile", titleKey: "account.tabs.profile", back: "/settings", came: true },
-  { path: "/account/security", titleKey: "account.tabs.security", back: "/settings" },
+  { path: "/account/security", titleKey: "account.tabs.security", back: "/settings", came: true },
   { path: "/account/notifications", titleKey: "settings.notifications", back: "/settings" },
   { path: "/account/data", titleKey: "account.tabs.data", back: "/settings" },
   { path: "/account/sessions", titleKey: "account.tabs.sessions", back: "/account/security" },

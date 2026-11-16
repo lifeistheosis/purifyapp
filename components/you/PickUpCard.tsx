@@ -18,6 +18,11 @@
 //   the plan       the next day not read of a plan begun (lib/plans/progress.ts)
 // A work opens where it was left: its reader resumes the section by itself.
 // The covers are lib/you/covers.ts.
+//
+// The places are read by `usePickUp`, apart from the card that draws them
+// (round 3 of the fifteen screens): the You tab has to know when there are
+// none, since with nowhere left off and no verse kept it draws neither card
+// (components/mobile/YouMobile.tsx).
 
 import Link from "next/link";
 import { useLayoutEffect, useMemo, useState } from "react";
@@ -51,7 +56,7 @@ const PLAN_NAME: Record<string, string> = {
   holyweek: "plans.holyweek.name",
 };
 
-type Row = Place & {
+export type PickUpRow = Place & {
   href: string;
   title: string;
   detail?: string;
@@ -64,7 +69,8 @@ type Row = Place & {
 /** A civil day "YYYY-MM-DD" as a moment: its noon, local. */
 const dayAt = (day: string) => Date.parse(`${day}T12:00:00`);
 
-export function PickUpCard({ className }: { className?: string }) {
+/** Where the reader left off, the most recent first, three at most; none before the device is read. */
+export function usePickUp(): PickUpRow[] {
   const { t } = useTranslate();
   const { sayPill } = usePartWords();
   const history = useReadingHistory();
@@ -81,11 +87,11 @@ export function PickUpCard({ className }: { className?: string }) {
     setLast(readLastRead());
   }, []);
 
-  const rows = useMemo<Row[]>(() => {
+  return useMemo<PickUpRow[]>(() => {
     if (last === undefined) return [];
     const books = localBookNames(t);
     const bookName = (slug: string) => books[slug] ?? t(`bible.books.${slug}`);
-    const out: Row[] = [];
+    const out: PickUpRow[] = [];
 
     if (last) {
       const verse = last.verse > 1 ? last.verse : 0;
@@ -150,7 +156,10 @@ export function PickUpCard({ className }: { className?: string }) {
 
     return latestFirst(out, 3);
   }, [last, history, progress, prayers, plans, t, sayPill]);
+}
 
+export function PickUpCard({ rows, className }: { rows: readonly PickUpRow[]; className?: string }) {
+  const { t } = useTranslate();
   if (rows.length === 0) return null;
   const [first, ...rest] = rows;
   const label = t("prayers.today.whereYouLeftOff");
@@ -165,10 +174,13 @@ export function PickUpCard({ className }: { className?: string }) {
         >
           <Cover subject={first.cover} width={58} height={74} className="rounded-[11px]" />
           <span className="min-w-0 flex-1">
-            <span aria-hidden className="block font-sans text-caption text-paper/55">
+            {/* At 60, not 55: on the card's lit corner the line read 4.33:1 on Monastery (checkMock, round 3). */}
+            <span aria-hidden className="block font-sans text-caption text-paper/60">
               {label}
             </span>
-            <span className="mt-[5px] block truncate font-heading text-[23px] font-bold leading-[1.15] text-paper">{first.title}</span>
+            {/* A place's name is read whole, on as many lines as it needs: cut to one line, "Morning prayers"
+                read "Morning Pray..." and a work "Homilies on the Gospel..." (checkMock's cut, round 3). */}
+            <span className="mt-[5px] block font-heading text-[23px] font-bold leading-[1.15] text-paper [overflow-wrap:anywhere]">{first.title}</span>
             {first.detail ? <span className="mt-0.5 block truncate font-sans text-caption text-paper/55">{first.detail}</span> : null}
             <span className="mt-[5px] block truncate font-sans text-detail text-paper/60">{first.note}</span>
             {first.far !== null ? (
@@ -192,7 +204,7 @@ export function PickUpCard({ className }: { className?: string }) {
             <span aria-hidden className="absolute inset-x-4 top-0 h-px bg-paper/[0.07]" />
             <Cover subject={r.cover} width={32} height={40} className="rounded-[7px]" />
             <span className="min-w-0 flex-1">
-              <span className="block truncate font-sans text-ui font-semibold leading-snug text-paper">{r.title}</span>
+              <span className="block font-sans text-ui font-semibold leading-snug text-paper [overflow-wrap:anywhere]">{r.title}</span>
               {r.detail ? <span className="mt-0.5 block truncate font-sans text-caption text-paper/55">{r.detail}</span> : null}
             </span>
             <span className="shrink-0 font-sans text-caption tabular-nums text-paper/50">{r.note}</span>

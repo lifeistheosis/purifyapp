@@ -81,6 +81,8 @@ const HOOKED = [
 
 /** Pictures drawn plainly, through the shared <img>: no bare picture left beside it. */
 const DRAWN = [
+  // 1.9, build 98 note 11: the patron saint's small picture under the reader's name, on You and Profile.
+  "components/profile/ReaderIdentity.tsx",
   "components/community/CampaignCard.tsx",
   "components/community/CommunityHead.tsx",
   "components/community/ComposePage.tsx",

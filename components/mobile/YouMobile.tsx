@@ -21,10 +21,12 @@
 //
 //   1. The Ladder of Divine Ascent under the clear bar, fading into the page
 //      as Prayers' Pantocrator does, and the reader standing on it: their
-//      picture, their name, the way to their profile and their badges; signed
-//      out, Sign in where the name stands (../you/YouHero, ../you/YouIdentity).
-//   2. The prayer rope from Today, where the red flame card was, and under it
-//      one quiet line of what this week held (StreakRope, ../you/WeekLine).
+//      picture, their name, their patron saint and their badges, the whole of
+//      it the way to their profile; signed out, Sign in where the name stands
+//      (../you/YouHero, ../you/YouIdentity).
+//   2. The life kept, one piece on the page: the prayer rope from Today and
+//      under its knots one quiet line of what this week held
+//      (../you/LifeKept); with no day kept yet, one invitation in its place.
 //   3. Where you left off: one lit card, the newest place large with its
 //      cover and how far in, the two after it small (../you/PickUpCard).
 //   4. A verse you kept, in the Light of Today's verse, with Learn by heart
@@ -36,28 +38,28 @@
 //      ONE door to Settings, which holds the account and everything else
 //      once. See the note at the list below.
 //
-// Each part is drawn only when there is something in it, so a new reader
-// meets the picture with Sign in, the rope to start, one line on how to keep
-// a verse, and the rows.
+// Each part is drawn only when there is something in it. Round 3 of the
+// fifteen screens (build 98 note 11) holds that to the end: fresh eyes found
+// that "after a strong picture, a new reader meets three empty things in a
+// row: '0 days' again, the same card as on Today, then 'What will you learn?'
+// and 'Bookmark a verse to keep it here'". So a new reader meets the picture
+// with Sign in, ONE invitation in words, and the rows; the verse to learn and
+// the shelf come once there is somewhere left off or something kept.
 //
 // The subscription is named once on this screen, by the pill in the bar,
 // which is its one door: the "Purify Premium" row is gone (refinement 3).
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { PlusLock } from "@/components/billing/PlusMark";
-import { Flower } from "@/components/ui/icons/Flower";
-import { Pen } from "@/components/ui/icons/Pen";
 import { Seal } from "@/components/ui/icons/Seal";
-import { SettingsGlyph as Glyph } from "./SettingsGlyph";
-import { StreakRope } from "@/components/today/StreakRow";
 import { KeptShelf } from "@/components/you/KeptShelf";
 import { KeptVerse } from "@/components/you/KeptVerse";
-import { PickUpCard } from "@/components/you/PickUpCard";
-import { WeekLine } from "@/components/you/WeekLine";
+import { LifeKept } from "@/components/you/LifeKept";
+import { PickUpCard, usePickUp } from "@/components/you/PickUpCard";
 import { YouHero } from "@/components/you/YouHero";
 import { YouRows, type YouRow } from "@/components/you/YouRows";
 import type { YouWho } from "@/components/you/YouIdentity";
@@ -75,6 +77,7 @@ import { useBookmarks } from "@/lib/bookmarks";
 import { useJournalRecords } from "@/lib/journal/entries";
 import { journalFeed } from "@/lib/journal/feed";
 import { readerName } from "@/lib/profile/myPicture";
+import { useLearning } from "@/lib/remember/useLearning";
 import { todayKey } from "@/lib/rhythm/dayKey";
 import { inFilter, savedFeed } from "@/lib/saved/feed";
 import { useSavedHighlights } from "@/lib/saved/highlights";
@@ -91,9 +94,23 @@ import { verseForDay } from "@/lib/you/you";
  * as signed out, which offers Sign in and loses nothing. Until 1.8 this tab
  * asked the network (getUser) every time it opened, and drew a loading
  * screen while it waited.
+ *
+ * Arriving from another screen of the app, a reader with a session is known
+ * as the tab is first drawn, not a frame after (1.9, build 98 note 11): there
+ * is no server render to disagree with then, and the reader's picture coming
+ * back from Profile has the place it left to land in, in the frame the tab
+ * arrives (lib/ui/routeMotion.ts, carryBack). Hydrating a page the server
+ * drew, it is adopted before the first paint, as it always was.
  */
+const noSubscribe = () => () => {};
+
 function useReader(): YouWho {
-  const [reader, setReader] = useState<YouWho>({ state: "unknown" });
+  // False on the server and on the hydrating render, true on every other.
+  const hydrated = useSyncExternalStore(noSubscribe, () => true, () => false);
+  const [reader, setReader] = useState<YouWho>(() => {
+    const local = hydrated ? readLocalSessionUser() : null;
+    return local ? { state: "in", id: local.id, name: readerName(local) } : { state: "unknown" };
+  });
   useLayoutEffect(() => {
     const local = readLocalSessionUser();
     if (local) {
@@ -174,6 +191,13 @@ export function YouMobile() {
     };
   }, []);
 
+  // Where the reader left off, and whether there is a verse to learn: with
+  // neither, neither card is drawn, nor the shelf's line on how to keep a
+  // verse. The invitation at the Ladder's foot is the one empty thing.
+  const pickUp = usePickUp();
+  const { chosen } = useLearning();
+  const nothingYet = pickUp.length === 0 && !chosen && !verseToday;
+
   const tier = usePremiumTier();
   // Without Plus (known, not guessed: null while the answer loads draws no mark).
   const plusLocked = usePlusFeatures() === false;
@@ -214,7 +238,6 @@ export function YouMobile() {
       label: t("ui.claimYourEikonBox"),
       href: "/account/eikon-box",
       hint: t("ui.thisMonthsBoxAndWhere"),
-      icon: <Glyph kind="box" />,
     });
   }
 
@@ -234,13 +257,11 @@ export function YouMobile() {
       label: t("journal.title"),
       href: "/journal",
       hint: t("you.journalHint"),
-      icon: <Pen size={15} />,
     },
     {
       label: t("community.yourFlorilegium"),
       href: "/florilegium",
       hint: t("study.florilegium.lead"),
-      icon: <Flower size={15} />,
       mark: plusLocked ? (
         <span data-you-row-plus="" className="inline-flex shrink-0 items-center text-paper/55">
           <PlusLock size={13} />
@@ -260,7 +281,6 @@ export function YouMobile() {
         intentions === 0
           ? t("prayers.mine.youHint")
           : tn("prayers.intentionCount", intentions),
-      icon: <Glyph kind="halo" />,
     },
     // These two used to exist only on the desktop dashboard's settings
     // list. That list no longer renders on a phone, so they live here now
@@ -271,7 +291,6 @@ export function YouMobile() {
             label: t("community.prayerCampaigns"),
             href: "/campaigns/mine",
             hint: t("ui.campaignsYouPrayWithThe"),
-            icon: <Glyph kind="halo" />,
           } satisfies YouRow,
         ]
       : []),
@@ -285,20 +304,18 @@ export function YouMobile() {
       // for and could not find: the palette lived behind a toolbar pill inside
       // the Bible reader, and this list is where a phone reader looks first.
       hint: t("ui.lightModeReadingTheCalendar"),
-      icon: <Glyph kind="sliders" />,
     },
   );
 
-  // The Ladder and the rope come at once: neither waits on who is here. The
-  // reader's name stands on the picture once the device has said, before the
-  // first paint when a session is on the device; until then its place is
+  // The Ladder and the life kept come at once: neither waits on who is here.
+  // The reader's name stands on the picture once the device has said, before
+  // the first paint when a session is on the device; until then its place is
   // kept, so nothing under it moves.
   const hero = (
     <YouHero who={reader}>
       {/* For everyone: a reader keeps a streak on this device before they
-          ever sign in. The week's line says what it held. */}
-      <StreakRope className="you-rope" />
-      <WeekLine className="mt-2.5" feed={feed} journal={journal} />
+          ever sign in. With no day kept yet, the one invitation. */}
+      <LifeKept invite feed={feed} journal={journal} />
     </YouHero>
   );
 
@@ -321,12 +338,13 @@ export function YouMobile() {
 
   return (
     <MobileShell header={<MobileHeader titleKey="nav.you" />} hero={hero}>
-      <PickUpCard />
+      <PickUpCard rows={pickUp} />
 
-      {/* What the reader is learning by heart: the one they chose, else the day's kept verse, else the way in (build 93 note 11). */}
-      <KeptVerse className="mt-6 first:mt-0" verse={verseToday} />
+      {/* What the reader is learning by heart: the one they chose, else the day's kept verse, else the way in
+          (build 93 note 11), which waits until there is somewhere left off (round 3). */}
+      <KeptVerse className="mt-6 first:mt-0" verse={verseToday} quiet={nothingYet} />
 
-      <KeptShelf className="mt-6 first:mt-0" feed={feed} journal={journal} verseLabel={verseLabel} />
+      <KeptShelf className="mt-6 first:mt-0" feed={feed} journal={journal} verseLabel={verseLabel} quiet={nothingYet} />
 
       {/* One quiet line, and only once there is something to say. No streak,
           no "today", no count of what was not done. */}
@@ -354,7 +372,7 @@ export function YouMobile() {
           and "Settings" to everyone else, over rows that were neither: one
           more name for this screen. The supporter mark's switch that sat
           under it is the account's, and is in Settings with the account. */}
-      <div className="mt-6" data-you-rows="">
+      <div className="mt-6 first:mt-0" data-you-rows="">
         <YouRows items={settings} />
       </div>
     </MobileShell>

@@ -26,6 +26,11 @@
 //
 // Choosing is one tap: the sheet closes, the row shows the saint, and the
 // place that holds the chooser saves or keeps it (`onChoose`).
+//
+// On the reader's own page the saint is a picture card, not a row of a form
+// (`card`, build 98 note 11): his icon larger, the place's name for the
+// choice as the small line, his name in the reading serif, his feast, and
+// Change as the way to the same sheet.
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
@@ -100,7 +105,13 @@ export function PatronChooser({
   onChoose,
   label,
   named,
+  card = false,
+  waiting = false,
 }: {
+  /** The saint as a picture card: the reader's own page. */
+  card?: boolean;
+  /** The list has not come yet (or cannot, with no signal): the saint is shown, and the sheet waits. */
+  waiting?: boolean;
   /** The saints to offer, in the list's order (lib/profile/patrons.ts, patronList). */
   patrons: readonly Patron[];
   /** The chosen saint's slug, or "" for none. */
@@ -204,12 +215,42 @@ export function PatronChooser({
         aria-haspopup="dialog"
         aria-expanded={open}
         data-patron-choose={value || "none"}
-        onClick={openSheet}
-        className="tap-press flex w-full items-center gap-3 rounded-[14px] border border-paper/10 bg-paper/[0.04] p-2 pe-3 text-start hover:border-paper/20"
+        aria-disabled={waiting || undefined}
+        onClick={waiting ? undefined : openSheet}
+        className={cn(
+          "tap-press flex w-full items-center border border-paper/10 bg-paper/[0.04] text-start hover:border-paper/20",
+          card ? "gap-4 rounded-[20px] p-3 pe-3.5" : "gap-3 rounded-[14px] p-2 pe-3",
+        )}
       >
-        {chosen ? <SaintIcon saint={{ name: chosen.name, iconUrl: chosen.icon ?? undefined }} size="xs" /> : <NonePlate />}
-        {chosen ? <Words name={chosen.name} feast={chosen.feast} /> : <Words name={t("patron.none")} feast={null} quiet />}
-        <ChevronRight size={15} aria-hidden className="shrink-0 text-paper/45 rtl:-scale-x-100" />
+        {chosen ? <SaintIcon saint={{ name: chosen.name, iconUrl: chosen.icon ?? undefined }} size={card ? "sm" : "xs"} /> : <NonePlate />}
+        {card ? (
+          <span className="min-w-0 flex-1">
+            <span className="block font-sans text-caption font-semibold text-paper/55">{label}</span>
+            {chosen ? (
+              <>
+                <span lang="en" dir="ltr" className="mt-1 block font-serif text-[19px] font-semibold leading-snug text-paper rtl:text-right">
+                  {chosen.name}
+                </span>
+                {chosen.feast ? (
+                  <span className="mt-1 block font-sans text-detail text-paper/60">
+                    {t("saints.feastLabel")} <FeastDays days={[chosen.feast]} />
+                  </span>
+                ) : null}
+                <span className="mt-2 inline-flex items-center gap-1 font-sans text-caption font-semibold text-paper/70">
+                  {t("learn.change")}
+                  <ChevronRight size={13} aria-hidden className="shrink-0 opacity-70 rtl:-scale-x-100" />
+                </span>
+              </>
+            ) : (
+              <span className="mt-1 block font-sans text-ui font-semibold leading-snug text-paper/80">{t("patron.none")}</span>
+            )}
+          </span>
+        ) : chosen ? (
+          <Words name={chosen.name} feast={chosen.feast} />
+        ) : (
+          <Words name={t("patron.none")} feast={null} quiet />
+        )}
+        {card && chosen ? null : <ChevronRight size={15} aria-hidden className="shrink-0 text-paper/45 rtl:-scale-x-100" />}
       </button>
 
       <Sheet

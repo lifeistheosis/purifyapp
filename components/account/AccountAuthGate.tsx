@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { forgetHold, useSignedHold } from "@/lib/auth/signedHold";
 import { isNativeClient } from "@/lib/platform/native";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { resolveUser } from "@/lib/supabase/resolveUser";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -32,8 +33,20 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * 24 frames of it on every switch into an account screen). A reader with a
  * session stored arrives as before.
  *
+ * A reader with a session stored is let in with the page itself, in the
+ * frame it arrives in (1.9, build 98 note 11): the session is read off the
+ * device as the gate is drawn, as resolveUser reads it first anyway. Until
+ * then the page's own parts came a frame or two after its address, behind
+ * this gate's waiting line, so a picture travelling into the page had
+ * nothing to land on: the reader's picture, carried from You into Profile
+ * (lib/ui/routeMotion.ts, carryIn), left with You and Profile came up
+ * without it. Not while the page is hydrated: the server drew the waiting
+ * line, and the first client render has to match it.
+ *
  * `to` is where a reader who is not signed in goes: sign in, coming back here.
  */
+const noSubscribe = () => () => {};
+
 export function AccountAuthGate({
   children,
   to,
@@ -85,7 +98,9 @@ export function AccountAuthGate({
     };
   }, [router, away, attempt]);
 
-  if (state === "in") return <>{children}</>;
+  // After hydration only (false on the server and on the hydrating render).
+  const hydrated = useSyncExternalStore(noSubscribe, () => true, () => false);
+  if (state === "in" || (state === "loading" && hydrated && readLocalSessionUser() !== null)) return <>{children}</>;
 
   if (state === "unresolved") {
     return (

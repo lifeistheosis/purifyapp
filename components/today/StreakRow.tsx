@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useState, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PrayerRope } from "@/components/streak/PrayerRope";
-import { StreakSheet } from "@/components/streak/StreakSheet";
+import { StreakSheet, keepDayLinks } from "@/components/streak/StreakSheet";
 import { cn } from "@/lib/cn";
 import { useStreakWaits } from "@/lib/onboarding/useDayOne";
 import { todayKey } from "@/lib/rhythm/dayKey";
@@ -47,13 +48,55 @@ export function StreakRow({ className }: { className?: string }) {
  * "the Ladder, then the day", where it took the place of the red flame card
  * (components/streak/StreakCard.tsx; refinement 4). Always drawn there: the
  * Day 1 card and the evening card are Today's, and You keeps the streak in
- * view whatever the hour. Its card is the You tab's to dress (`className`).
+ * view whatever the hour.
+ *
+ * Since round 3 of the fifteen screens (build 98 note 11) it stands on the
+ * page there too, without a box, as one piece with what the week held
+ * (`children`, components/you/LifeKept.tsx): the streak is said once on the
+ * screen. And with no day kept yet, `invite` puts one invitation in words in
+ * its place, the way to the hour's prayer: never "0 days", never seven open
+ * knots.
  */
-export function StreakRope({ className }: { className?: string }) {
+export function StreakRope({ className, invite = false, children }: { className?: string; invite?: boolean; children?: ReactNode }) {
   const view = useStreak();
   if (!view.ready) return <RopeHold className={className} />;
-  if (view.best === 0 && !view.keptToday) return null;
-  return <Rope view={view} card className={className} />;
+  if (view.best === 0 && !view.keptToday) return invite ? <RopeInvite className={className} /> : null;
+  return (
+    <Rope view={view} className={className}>
+      {children}
+    </Rope>
+  );
+}
+
+/** No day kept yet: the invitation, in the words the streak's sheet has always used, and the way to the hour's prayer. */
+function RopeInvite({ className }: { className?: string }) {
+  const { t } = useTranslate();
+  return (
+    <Link href={keepDayLinks().pray} data-rope-invite="" className={cn("tap-press flex min-h-11 w-full items-center gap-2.5 px-1 py-1 text-start", className)}>
+      <span className="min-w-0 flex-1 font-sans text-ui leading-snug text-paper/85">{t("streak.start")}</span>
+      <Chevron />
+    </Link>
+  );
+}
+
+/** The way on, turned for a page read right to left. */
+function Chevron() {
+  return (
+    <svg
+      aria-hidden
+      width={16}
+      height={16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="shrink-0 text-paper/55 rtl:-scale-x-100"
+    >
+      <path d="m9 6 6 6-6 6" />
+    </svg>
+  );
 }
 
 /** The rope's height before the streak is read, only on a device that holds a kept day. */
@@ -61,8 +104,8 @@ function RopeHold({ className }: { className?: string }) {
   return <div aria-hidden data-rope-hold="" className={cn("hidden h-[92px] [html[data-kept]_&]:block", className)} />;
 }
 
-/** "N days" and its line over this week's knots; a tap opens the streak's sheet. */
-function Rope({ view, card = false, className }: { view: StreakView; card?: boolean; className?: string }) {
+/** "N days" and its line over this week's knots; a tap opens the streak's sheet. `children` stand under the knots, part of the piece. */
+function Rope({ view, className, children }: { view: StreakView; className?: string; children?: ReactNode }) {
   const { t, tn } = useTranslate();
   const [open, setOpen] = useState(false);
   const line = view.keptToday ? t("streak.rope.kept") : t("streak.rope.keep");
@@ -74,15 +117,9 @@ function Rope({ view, card = false, className }: { view: StreakView; card?: bool
         onClick={() => setOpen(true)}
         aria-label={`${tn("streak.count", view.current)}. ${line}`}
         aria-haspopup="dialog"
-        className={cn(
-          "tap-press flex w-full flex-col gap-[9px] text-start",
-          // Today's rope stands on the page, without a box (1.9, the fifteen
-          // screens); You's keeps its card until You is drawn (round 3).
-          card
-            ? "rounded-[17px] border border-paper/12 bg-paper/[0.035] px-3.5 pb-2.5 pt-3 transition-colors hover:bg-paper/[0.06]"
-            : "px-1 pb-1 pt-2",
-          className,
-        )}
+        // The rope stands on the page, without a box: on Today since round 1
+        // of the fifteen screens, on You since round 3.
+        className={cn("tap-press flex w-full flex-col gap-[9px] px-1 pb-1 pt-2 text-start", className)}
       >
         <span className="flex w-full items-center gap-2.5">
           <span
@@ -98,23 +135,11 @@ function Rope({ view, card = false, className }: { view: StreakView; card?: bool
           <span aria-hidden className="min-w-0 flex-1 font-sans text-detail leading-snug text-paper/70">
             {line}
           </span>
-          <svg
-            aria-hidden
-            width={16}
-            height={16}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2.2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="shrink-0 text-paper/55 rtl:-scale-x-100"
-          >
-            <path d="m9 6 6 6-6 6" />
-          </svg>
+          <Chevron />
         </span>
         <PrayerRope week={week} className="w-full" />
       </button>
+      {children}
       <StreakSheet open={open} onClose={() => setOpen(false)} />
     </>
   );

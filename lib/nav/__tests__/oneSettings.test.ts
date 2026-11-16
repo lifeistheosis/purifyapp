@@ -210,8 +210,10 @@ describe("the account's screens on a phone", () => {
     // the floor.
     expect(bar.includes(`{ path: "/account/profile", titleKey: "account.tabs.profile", back: "/settings", came: true }`)).toBe(true);
     expect(bar).toMatch(/if \(screen\.came\) return <MobileTopBar [^>]*\bback backFallback=\{screen\.back\}/);
+    // Security has two ways in from 1.9 (build 98 note 11): its row, and the row at Profile's
+    // foot that holds the account's facts. It goes back the way the reader came, as Profile does.
+    expect(bar.includes(`{ path: "/account/security", titleKey: "account.tabs.security", back: "/settings", came: true }`)).toBe(true);
     for (const [path, titleKey, back] of [
-      ["/account/security", "account.tabs.security", "/settings"],
       ["/account/notifications", "settings.notifications", "/settings"],
       ["/account/data", "account.tabs.data", "/settings"],
       ["/account/sessions", "account.tabs.sessions", "/account/security"],

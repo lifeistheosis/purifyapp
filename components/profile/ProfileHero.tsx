@@ -1,78 +1,62 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { Pen } from "@/components/ui/icons/Pen";
 import { ReaderAvatar } from "@/components/profile/ReaderAvatar";
-import { INDEX_LIST_LOOK } from "@/components/mobile/IndexRows";
+import { LINE_ON_PAGE, ReaderIdentity } from "@/components/profile/ReaderIdentity";
+import { useMyBadges } from "@/lib/profile/myBadges";
+import { useMyCard } from "@/lib/profile/myCard";
 import { useMyPicture } from "@/lib/profile/myPicture";
-import { dateLocale, deviceDateLocale } from "@/lib/i18n/deviceDates";
+import { PATRON_ANCHOR } from "@/lib/profile/patronEvent";
 
 /**
- * Who the reader is, at the top of their Profile: their picture, their name
- * (editable in place), the address they sign in with, and three facts.
+ * Who the reader is, at the top of their Profile: the one piece the You tab
+ * wears on its Ladder (components/profile/ReaderIdentity.tsx), their picture,
+ * their name, their patron saint and their badges, with Edit as its one quiet
+ * button. Edit opens what it always did: the name, in place.
  *
- * Redrawn for 1.8. It was a card of its own world: a violet glow and a drawn
- * wave behind the name, the name in the display serif the owner has asked to
- * keep off Purify, a plan pill in gold, and the facts as outlined pills. On
- * the phone it sat under a row of three tiles (Saved, Saints, Discover) and
- * over a strip of three large cards with arrows, the look the rest of the
- * app left in 1.7: "when you click profile, and then you scroll down, it
- * shows ... the old UI" (the owner, 2026-10-17). Now it is drawn as the
- * phone screens are: the picture and the name in Lora on the page itself,
- * and the facts in one rounded list, as Settings draws its rows.
+ * Redrawn for 1.9 (build 98 note 11; the owner, 2026-11-15: "can your revamp
+ * the your profile screen"). It was the picture large and centred, the name,
+ * and under the name the address the reader signs in with, then three facts
+ * in a list (member since, last signed in, the plan): an account's record,
+ * on a screen people photograph and share. The address and the facts are the
+ * account's and are listed with it (components/profile/AccountFacts.tsx,
+ * behind the row at this screen's foot); nothing of them is drawn here. The
+ * plan shows as the supporter's mark by the name, and as nothing else.
+ *
+ * Before that, for 1.8, it had been drawn as the phone screens are, after
+ * years as a card of its own world: a violet glow and a drawn wave behind
+ * the name, a plan pill in gold, and the facts as outlined pills.
  *
  * Saves a new name to both places it is read from: auth's user_metadata (so
  * the app picks it up across sessions) and profiles.display_name (so other
  * surfaces read it through RLS).
  */
-
-/** "2 hours ago", "yesterday", or the date, in the reader's own language. */
-function relativeTime(iso: string, locale: string): string {
-  if (!iso) return "";
-  const then = new Date(iso).getTime();
-  if (!Number.isFinite(then)) return "";
-  const minutes = Math.max(0, Math.floor((Date.now() - then) / 60000));
-  try {
-    const rtf = new Intl.RelativeTimeFormat(dateLocale(locale), { numeric: "auto" });
-    if (minutes < 1) return rtf.format(0, "minute");
-    if (minutes < 60) return rtf.format(-minutes, "minute");
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return rtf.format(-hours, "hour");
-    const days = Math.floor(hours / 24);
-    if (days < 7) return rtf.format(-days, "day");
-  } catch {
-    /* the date, below */
-  }
-  // A date, as the profile writes dates: the device's own way (lib/i18n/deviceDates).
-  return new Date(iso).toLocaleDateString(deviceDateLocale(), {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
 export function ProfileHero({
-  email,
+  uid,
   initialDisplayName,
-  joinedAt,
-  lastSignedInAt,
 }: {
-  email: string;
+  /** Whose badges to show; null when the session gave no id. */
+  uid: string | null;
   initialDisplayName: string;
-  joinedAt: string;
-  lastSignedInAt?: string;
 }) {
-  const { t, locale } = useTranslate();
+  const { t } = useTranslate();
   const me = useMyPicture();
+  const badges = useMyBadges(uid);
+  // Asked for again on each visit: a reader comes back here from the card's editor.
+  const card = useMyCard({ fresh: true });
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(initialDisplayName);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const tier = usePremiumTier();
+  const picture = me.state === "in" ? me.picture : null;
 
   /**
    * Write the new name to BOTH places it is read from, and say so when
@@ -137,112 +121,102 @@ export function ProfileHero({
     setSaving(false);
   }
 
-  const memberSince = joinedAt
-    ? new Date(joinedAt).toLocaleDateString(deviceDateLocale(), {
-        month: "long",
-        year: "numeric",
-      })
-    : "";
-  const lastSeen = lastSignedInAt ? relativeTime(lastSignedInAt, locale) : "";
-  // A plan is named only when there is one: the free reader's screen does
-  // not say "Free" at them. Product names, as the Premium pill says them.
-  const plan = tier === "plus" ? t("profile.badge.plus") : tier === "pro" ? t("profile.badge.pro") : "";
-  const facts: [label: string, value: string][] = [
-    ...(memberSince ? ([[t("profile.memberSince"), memberSince]] as [string, string][]) : []),
-    ...(lastSeen ? ([[t("ui.lastSignedIn"), lastSeen]] as [string, string][]) : []),
-    ...(plan ? ([[t("ui.plan"), plan]] as [string, string][]) : []),
-  ];
-
-  return (
-    <header data-profile-hero="">
-      <div className="flex flex-col items-center text-center md:flex-row md:items-center md:gap-5 md:text-start">
-        {/* The reader's picture, the same one the You tab and Community show,
-            or their initials (InitialsAvatar: neutral, no ring, no glow). */}
-        <ReaderAvatar name={displayName} picture={me.state === "in" ? me.picture : null} size={80} />
-        <div className="mt-4 min-w-0 md:mt-0">
-          {editing ? (
-            <div className="flex flex-col items-center gap-3 md:items-start">
-              <input dir="auto"
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                aria-label={t("ui.editDisplayName")}
-                // The input only mounts when the reader taps Edit: focus
-                // follows their intent, it does not steal it.
-                // eslint-disable-next-line jsx-a11y/no-autofocus
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") void save();
-                  if (e.key === "Escape") {
-                    setDraft(displayName);
-                    setEditing(false);
-                    setError(null);
-                  }
-                }}
-                maxLength={60}
-                className="h-12 w-full min-w-0 max-w-[320px] rounded-pill border border-paper/30 bg-paper/[0.06] px-4 text-center font-heading text-lede text-paper focus:border-paper/60 focus:outline-none md:text-start"
-              />
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => void save()}
-                  disabled={saving}
-                  className="tap-press inline-flex h-11 items-center rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night disabled:opacity-60"
-                >
-                  {saving ? t("profile.saving") : t("common.save")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDraft(displayName);
-                    setEditing(false);
-                    setError(null);
-                  }}
-                  className="tap-press inline-flex h-11 items-center rounded-pill px-4 font-sans text-ui text-paper/65"
-                >
-                  {t("common.cancel")}
-                </button>
-              </div>
-              {error ? (
-                <p role="alert" className="max-w-[320px] font-sans text-caption leading-[1.45] text-crimson-soft">
-                  {error}
-                </p>
-              ) : null}
-            </div>
-          ) : (
-            <>
-              {/* The page's bar says Profile; this is whose. A heading of the
-                  page, set in Lora by the global rule. */}
-              <h2 className="break-words text-title leading-[1.1] tracking-[-0.01em] text-paper">{displayName}</h2>
-              {/* The whole address, wrapped and never cut: a reader checking
-                  WHICH account they are signed into needs all of it. */}
-              <p className="mt-1.5 break-all font-sans text-detail text-paper/60">{email}</p>
+  if (editing) {
+    return (
+      <header data-profile-hero="editing">
+        <div className="flex items-start gap-[15px]">
+          {/* The reader's picture, the same one the You tab and Community show,
+              or their initials (InitialsAvatar: neutral, no ring, no glow). */}
+          <ReaderAvatar name={displayName} picture={picture} size={66} />
+          <div className="flex min-w-0 flex-1 flex-col items-start gap-3">
+            <input
+              dir="auto"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              aria-label={t("ui.editDisplayName")}
+              // The input only mounts when the reader taps Edit: focus
+              // follows their intent, it does not steal it.
+              // eslint-disable-next-line jsx-a11y/no-autofocus
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void save();
+                if (e.key === "Escape") {
+                  setDraft(displayName);
+                  setEditing(false);
+                  setError(null);
+                }
+              }}
+              maxLength={60}
+              className="h-12 w-full min-w-0 max-w-[320px] rounded-pill border border-paper/30 bg-paper/[0.06] px-4 font-heading text-lede text-paper focus:border-paper/60 focus:outline-none"
+            />
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => void save()}
+                disabled={saving}
+                className="tap-press inline-flex h-11 items-center rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night disabled:opacity-60"
+              >
+                {saving ? t("profile.saving") : t("common.save")}
+              </button>
               <button
                 type="button"
                 onClick={() => {
                   setDraft(displayName);
-                  setEditing(true);
+                  setEditing(false);
+                  setError(null);
                 }}
-                aria-label={t("ui.editDisplayName")}
-                className="tap-press hit-44 mt-3 inline-flex h-9 items-center gap-1.5 rounded-pill border border-paper/20 px-3.5 font-sans text-caption font-semibold text-paper/80 motion-safe:transition-colors hover:border-paper/40"
+                className="tap-press inline-flex h-11 items-center rounded-pill px-4 font-sans text-ui text-paper/65"
               >
-                <Pen size={13} className="shrink-0 text-paper/55" />
-                {t("common.edit")}
+                {t("common.cancel")}
               </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {facts.length > 0 ? (
-        <dl className={`mt-7 ${INDEX_LIST_LOOK}`}>
-          {facts.map(([label, value], i) => (
-            <div key={label} className={`flex items-center justify-between gap-4 px-4 py-3.5${i ? " border-t border-paper/[0.06]" : ""}`}>
-              <dt className="font-sans text-ui text-paper/70">{label}</dt>
-              <dd className="text-end font-sans text-ui text-paper">{value}</dd>
             </div>
-          ))}
-        </dl>
-      ) : null}
+            {error ? (
+              <p role="alert" className="max-w-[320px] font-sans text-caption leading-[1.45] text-crimson-soft">
+                {error}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  return (
+    // The page's bar says Profile; this is whose.
+    <header data-profile-hero="">
+      <ReaderIdentity
+        name={displayName}
+        picture={picture}
+        patron={card?.patronSaint ?? null}
+        badges={badges}
+        tier={tier === "plus" || tier === "pro" ? tier : null}
+        carry="into"
+        // No patron saint chosen yet, and the website has said so: the way to
+        // choose one, here only (on You the line is simply not drawn). It
+        // brings the chooser below into view.
+        under={
+          card && !card.patronSaint ? (
+            <Link href={`#${PATRON_ANCHOR}`} data-reader-patron-invite="" className={`${LINE_ON_PAGE} hit-44 w-fit font-semibold`}>
+              {t("settings.discordFavoritePick")}
+              <ChevronLeft size={13} aria-hidden className="shrink-0 -scale-x-100 opacity-70 rtl:scale-x-100" />
+            </Link>
+          ) : null
+        }
+        end={
+          <button
+            type="button"
+            onClick={() => {
+              setDraft(displayName);
+              setEditing(true);
+            }}
+            aria-label={t("ui.editDisplayName")}
+            className="tap-press hit-44 inline-flex h-9 shrink-0 items-center gap-1.5 rounded-pill border border-paper/20 px-3.5 font-sans text-caption font-semibold text-paper/80 motion-safe:transition-colors hover:border-paper/40"
+          >
+            <Pen size={13} className="shrink-0 text-paper/55" />
+            {t("common.edit")}
+          </button>
+        }
+      />
     </header>
   );
 }

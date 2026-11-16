@@ -83,11 +83,11 @@ describe("the rope on Today, drawn", () => {
     expect(draw(StreakRow)).not.toBe("");
   });
 
-  it("stands on the page on Today, without a box; You keeps its card (1.9)", () => {
+  it("stands on the page, without a box, on Today and since round 3 on You (1.9)", () => {
     live.view = view({ best: 2 });
     live.dayOne = false;
     expect(draw(StreakRow)).not.toContain("rounded-[17px] border");
-    expect(draw(StreakRope)).toContain("rounded-[17px] border border-paper/12");
+    expect(draw(StreakRope)).not.toContain("rounded-[17px] border");
   });
 
   it("is not drawn at all while the Day 1 card shows, and comes back after", () => {
@@ -149,5 +149,19 @@ describe("the rope on You, drawn", () => {
     live.view = view({});
     live.dayOne = false;
     expect(draw(StreakRope)).toBe("");
+  });
+
+  it("gives its place to one invitation in words where You asks for it: no zero, no open knots (round 3)", () => {
+    live.view = view({});
+    live.dayOne = false;
+    const out = draw(StreakRope, { className: "you-rope", invite: true });
+    expect(out).toContain(en["streak.start"]);
+    expect(out).toMatch(/<a [^>]*href="\/prayers\/(?:morning|evening)"/);
+    expect(knots(out)).toBe(0);
+    expect(out).not.toMatch(/\b0 days\b/);
+    expect(out).not.toMatch(RED);
+    // From the first day kept it is the rope, invitation or not.
+    live.view = view({ current: 1, best: 1, keptToday: true });
+    expect(knots(draw(StreakRope, { invite: true }))).toBe(7);
   });
 });
