@@ -141,8 +141,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
         run: |
           fail=0
-          python3 scripts/voices/record.py record --plan plan/plan.json --shard ${{ matrix.shard }} --part 1/2 --threads 2 --out out --upload --minutes 270 & a=$!
-          python3 scripts/voices/record.py record --plan plan/plan.json --shard ${{ matrix.shard }} --part 2/2 --threads 2 --out out --upload --minutes 270 & b=$!
+          python3 scripts/voices/record.py record --plan plan/plan.json --shard ${{ matrix.shard }} --part 1/2 --threads 2 --out out --upload --minutes 240 & a=$!
+          python3 scripts/voices/record.py record --plan plan/plan.json --shard ${{ matrix.shard }} --part 2/2 --threads 2 --out out --upload --minutes 240 & b=$!
           wait $a || fail=1
           wait $b || fail=1
           exit $fail

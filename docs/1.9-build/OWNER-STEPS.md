@@ -1129,9 +1129,10 @@ stops with a plain message if it is served.
 ### V13. Then (nothing for you to do)
 
 At the arbiter's go, a chat starts the recording by one change to
-`scripts/voices/run.json` on the branch. GitHub records in 40 pieces, 20 at a
-time, about four to five hours in all at the speed the dry run measures. Each
-recording goes to the bucket as it is made.
+`scripts/voices/run.json` on the branch. GitHub records in 60 pieces, 20 at a
+time, about 8 hours in all (5 to 9, by the speed of the machines GitHub hands
+out: the dry run measured 2.8 to 5.3 times real time). Each recording goes to
+the bucket as it is made.
 Heart's recordings show Listen in the app once a chat commits their timings and the
 website next deploys; the Plus voices wait under `plus/` for the Voice sheet
 and the signed route.

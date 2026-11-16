@@ -2,8 +2,8 @@
  "run": 2,
  "mode": "full",
  "model": "kokoro-v1.0.fp16.onnx",
- "rtf": 6.0,
- "shardHours": 2.5,
+ "rtf": 3.3,
+ "shardHours": 3.0,
  "work": [
   { "voice": "af_heart", "groups": ["lives", "councils", "theology", "history", "lives-in-their-witnesses", "old-testament"] },
   { "voice": "bf_emma", "groups": ["new-testament", "lives", "councils", "theology", "history", "lives-in-their-witnesses", "old-testament"] },
