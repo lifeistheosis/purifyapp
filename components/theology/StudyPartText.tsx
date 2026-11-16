@@ -17,7 +17,7 @@ import { SaintNames } from "@/components/saints/SaintNames";
  * has; the last closes with what the councils said and who curated it. The
  * part's Fathers follow as a deck (app/(app)/theology/[topic]/read/page.tsx).
  */
-export function StudyPartText({ blocks, summary, study, part }: { blocks: EssayBlock[]; summary?: string; study: { slug: string; title: string }; part: number }) {
+export function StudyPartText({ blocks, summary, study, part }: { blocks: EssayBlock[]; summary?: string; study: { slug: string; title: string; art?: string | null }; part: number }) {
   // Any words of the study can be marked (1.9, components/reading/MarkHost.tsx).
   // The study is the editors' own, and a copy or a picture of its words says so.
   const host = (paragraphIdx: number, sectionN = part) => ({
@@ -30,7 +30,7 @@ export function StudyPartText({ blocks, summary, study, part }: { blocks: EssayB
   return (
     <div lang="en" dir="ltr" className="mt-3 space-y-5">
       {/* The part read aloud, where it has a recording (1.9, lib/listen/recordings.ts). */}
-      <ListenHere id={listenId("theology", study.slug, undefined, part)} title={study.title} by="Purify" />
+      <ListenHere id={listenId("theology", study.slug, undefined, part)} title={study.title} by="Purify" art={study.art ?? null} />
       {summary ? (
         // The summary stands before the first part: part 0.
         <MarkHost {...host(0, 0)}>

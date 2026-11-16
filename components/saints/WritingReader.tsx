@@ -1,6 +1,7 @@
 "use client";
 
 import { ListenHere } from "@/components/reading/ListenHere";
+import { listenTitle } from "@/lib/listen/texts";
 import { SelectionToolsLazy } from "@/components/reading/SelectionToolsLazy";
 import { listenId } from "@/lib/listen/texts";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
@@ -203,7 +204,7 @@ export function WritingReader({
  <section key={sec.n} id={`s${sec.n}`} data-chapter={sec.n} className="mx-auto w-full max-w-[680px] scroll-mt-24">
  <WorkHead head={head} />
  <div className="page-open-after">
- <SectionParagraphs saint={saint} content={content} sec={sec} cites={cites} />
+ <SectionParagraphs saint={saint} content={content} sec={sec} cites={cites} art={about?.header.card.cover?.src ?? null} />
  </div>
  {sec.notes?.length ? (
  <aside aria-label={t("saints.notesOn", { title: sec.title })} className="mt-10 border-t border-paper/10 pt-6">
@@ -330,11 +331,14 @@ function SectionParagraphs({
  content,
  sec,
  cites,
+ art,
 }: {
  saint: Saint;
  content: WritingContent;
  sec: Section;
  cites: Cites;
+ /** The book's cover picture, which the dock and Now Playing wear while it is read aloud; null for the plate. */
+ art: string | null;
 }) {
   const { t } = useTranslate();
  // A paragraph marked or unmarked by a double tap is offered back for a
@@ -372,8 +376,9 @@ function SectionParagraphs({
  section names, else the saint whose page it is. */}
  <ListenHere
  id={listenId("work", saint.slug, content.slug, sec.n)}
- title={sec.title && sec.title !== content.title ? `${content.title}. ${sec.title}` : content.title}
+ title={listenTitle(content.title, sec.title, content.sections.length)}
  by={sec.voiceAuthor ?? saint.name}
+ art={art}
  className="mb-6"
  />
  {sec.framing && (

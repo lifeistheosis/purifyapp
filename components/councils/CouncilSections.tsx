@@ -1,6 +1,8 @@
 import { T } from "@/components/i18n/T";
 import { ListenHere } from "@/components/reading/ListenHere";
-import { listenId } from "@/lib/listen/texts";
+import { listenId, listenTitle } from "@/lib/listen/texts";
+import { councilPicture } from "@/lib/councils/page";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { MarkHost } from "@/components/reading/MarkHost";
 import { SaintNames } from "@/components/saints/SaintNames";
 import type { CouncilDocumentContent } from "@/lib/councils/load";
@@ -27,6 +29,8 @@ import { textDir } from "@/lib/i18n/textDir";
 export function CouncilSections({ content, lang, council }: { content: CouncilDocumentContent; lang?: string; council: { slug: string; name: string } }) {
   const last = content.sections[content.sections.length - 1];
   const text = lang ?? "en";
+  // The council's icon, the document's cover on its page, is what the dock and Now Playing wear while it plays (build 98 note 2).
+  const art = councilPicture(council.slug, IS_STATIC_EXPORT)?.src ?? null;
   return (
     <>
       {content.sections.map((s) => (
@@ -58,8 +62,9 @@ export function CouncilSections({ content, lang, council }: { content: CouncilDo
           {text === "en" ? (
             <ListenHere
               id={listenId("council", council.slug, content.slug, s.n)}
-              title={s.title && s.title !== content.title ? `${content.title}. ${s.title}` : content.title}
+              title={listenTitle(content.title, s.title, content.sections.length)}
               by={council.name}
+              art={art}
               className="mb-5"
             />
           ) : null}

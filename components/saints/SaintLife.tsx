@@ -15,6 +15,8 @@ import { SaintLifeIn, SaintShortBio, SaintTitlesIn } from "./SaintInReadersLangu
 import { ListenHere } from "@/components/reading/ListenHere";
 import { TextPill } from "@/components/reading/TextPill";
 import { listenId } from "@/lib/listen/texts";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
+import { heroSrc, saintHero } from "@/lib/saints/heroes";
 import { ReadingMarks } from "@/components/reading/SelectionToolsLazy";
 import { LifeSection } from "./LifeSection";
 import { QuotesSection } from "./QuotesSection";
@@ -48,7 +50,7 @@ export function SaintLife({
 }: {
   saint: Pick<
     Saint,
-    "slug" | "name" | "shortBio" | "entrySource" | "life" | "titles" | "greatFeasts" | "quotes" | "disciples" | "pronoun" | "featured" | "born" | "reposed" | "see" | "feastDays"
+    "slug" | "name" | "shortBio" | "entrySource" | "life" | "titles" | "greatFeasts" | "quotes" | "disciples" | "pronoun" | "featured" | "born" | "reposed" | "see" | "feastDays" | "iconUrl"
   >;
   events: HistoryEventMeta[];
   /** The account of his miracles (MiraclesSection), when there is one. */
@@ -119,7 +121,8 @@ export function SaintLife({
       ) : null}
       <div className="mt-10">
         {/* The life read aloud, where it has a recording (1.9, lib/listen/recordings.ts). */}
-        <ListenHere id={listenId("life", saint.slug)} title={`The life of ${saint.name}`} by="Purify" className="mb-5" />
+        {/* The saint's icon, the page's own picture, is what the dock and Now Playing wear while it plays (build 98 note 2). */}
+        <ListenHere id={listenId("life", saint.slug)} title={`The life of ${saint.name}`} by="Purify" art={lifeArt(saint)} className="mb-5" />
         {/* A phone and a tablet listen from the foot pill, as the Bible does (build 98 note 2). */}
         <TextPill nameKey="saints.tab.life" screen />
         {/* Any words of the life, selected and marked (1.9). */}
@@ -158,4 +161,15 @@ export function SaintLife({
       <ViewInHistory events={events} title={<T k="saints.eventsDuringLife" />} />
     </div>
   );
+}
+
+/**
+ * The saint's picture for his life read aloud: his icon, the app's own, as
+ * his page shows it (the wide hero comes over it where there is one, and
+ * stands in for an icon that is not there); null for the plate.
+ */
+function lifeArt(saint: Pick<Saint, "slug" | "iconUrl">): string | null {
+  if (saint.iconUrl) return saint.iconUrl;
+  const hero = saintHero(saint.slug);
+  return hero ? heroSrc(hero, IS_STATIC_EXPORT) : null;
 }

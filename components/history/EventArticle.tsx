@@ -22,7 +22,8 @@ import { T } from "@/components/i18n/T";
 import type { HistoryEventMeta } from "@/lib/history/events";
 import { certaintyKey, eraKey } from "@/lib/history/labels";
 import type { EventPerson, HistoryEventBody, SourceCitation } from "@/lib/history/load";
-import type { EventPicture } from "@/lib/history/media";
+import { eventPicture, type EventPicture } from "@/lib/history/media";
+import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { scriptureHref } from "@/lib/history/scripture";
 import type { EssayBlock } from "@/lib/theology/load";
 import { SourceLine } from "@/components/citations/SourceLine";
@@ -321,7 +322,8 @@ export function EventArticle({
 
       <Part id={PART_IDS.happened} titleKey="study.history.whatHappened">
         {/* The account read aloud, where it has a recording (1.9, lib/listen/recordings.ts). */}
-        <ListenHere id={listenId("history", meta.slug)} title={meta.title} by="Purify" className="mb-5" />
+        {/* The event's own picture is what the dock and Now Playing wear while it plays (build 98 note 2). */}
+        <ListenHere id={listenId("history", meta.slug)} title={meta.title} by="Purify" art={eventPicture(meta, IS_STATIC_EXPORT)?.src ?? null} className="mb-5" />
         {/* A phone and a tablet listen from the foot pill, as the Bible does (build 98 note 2). */}
         <TextPill nameKey="study.history.whatHappened" screen />
         <div className="space-y-5">

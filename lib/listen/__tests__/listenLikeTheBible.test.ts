@@ -77,7 +77,9 @@ describe("one way to listen, the Bible's (build 98 note 2)", () => {
     // A study's parts turn from its pill.
     expect(read("components/theology/StudyReader.tsx")).toMatch(/prev=\{part > 1 \? \{ onGo: \(\) => showPart\(part - 1\)/);
     // A text with no parts: no arrows, its name in the chapter's place, and no title at the top while drawn in.
-    expect(DOCK).toContain("{prev || next ? <DockArrow target={next} label={nextLabel} back={false} /> : null}");
+    // (A work's dock draws its arrows always, as its pill at rest does: Updates 98k, dockFace.test.ts.)
+    expect(DOCK).toContain("turns = Boolean(prev || next),");
+    expect(DOCK).toContain("{turns ? <DockArrow target={next} label={nextLabel} back={false} /> : null}");
     expect(DOCK).toMatch(/\{onPick \? \(\s*<div\s*data-reader-chrome\s*data-dock-title/);
   });
 

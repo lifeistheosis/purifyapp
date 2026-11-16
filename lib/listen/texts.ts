@@ -184,3 +184,18 @@ export function timingsFit(batch: ListenBatch, timings: ListenTimings): string |
   if (!(timings.seconds >= last - 0.01)) return "the recording ends before its last sentence";
   return null;
 }
+
+/**
+ * The name a text is read aloud under, the title the dock, the mini player
+ * and Now Playing show: the text's name once, with its part where it has
+ * parts (build 98 note 2). A work of one section is its name alone: On the
+ * Incarnation read "On the Incarnation. On the Incarnation of the Word",
+ * its section being titled by the work's full name. A part whose title
+ * already begins with the work's name is that title alone.
+ */
+export function listenTitle(name: string, part: string | null | undefined, parts: number): string {
+  const own = (part ?? "").trim();
+  if (parts <= 1 || !own || own === name) return name;
+  if (own.toLocaleLowerCase().startsWith(name.toLocaleLowerCase())) return own;
+  return `${name}. ${own}`;
+}

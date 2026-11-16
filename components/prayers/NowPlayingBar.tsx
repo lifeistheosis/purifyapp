@@ -62,6 +62,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type Rea
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { AmbienceButton, AmbienceIcon } from "@/components/player/AmbienceButton";
+import { GlideName } from "@/components/player/GlideName";
 import { RingCover } from "@/components/player/RingCover";
 import { Pause } from "@/components/ui/icons/Pause";
 import { Play } from "@/components/ui/icons/Play";
@@ -192,7 +193,8 @@ export function NowPlayingBar() {
           >
             <RingCover art={art} fallback={artFallback} played={played} lit={playing} size="card" />
             <span className="min-w-0">
-              <span className="block truncate font-sans text-detail font-semibold text-paper">{name}</span>
+              {/* Whole: a long name glides along its line, as the dock's does (build 98 note 2). */}
+              <GlideName text={name} className="font-sans text-detail font-semibold text-paper" />
               {artist ? <span className="block truncate font-sans text-caption text-paper/55">{artist}</span> : null}
             </span>
           </button>

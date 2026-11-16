@@ -36,6 +36,7 @@ import { useLayoutEffect, useRef, useState, type MouseEvent } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { CoverArt } from "@/components/player/CoverArt";
+import { GlideName } from "@/components/player/GlideName";
 import { SleepTimerSheet } from "@/components/player/SleepTimerSheet";
 import { clock } from "@/components/player/Transport";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
@@ -53,10 +54,7 @@ import { minutesLeft, useSleepTimer } from "@/lib/player/sleep";
 import { nextSpeed, saveSpeed, speedText } from "@/lib/player/speed";
 import { playingOf } from "@/lib/player/steps";
 import { pause, play, setRate, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
-import { readsRtl } from "@/lib/marks/startEdge";
-import { useReducedMotion } from "@/lib/ui/motion";
-import { AWAY_ATTR, noteFootMoved } from "@/lib/ui/scrollAway";
-import { GLIDE_GAP_PX, titleGlide } from "@/lib/ui/titleGlide";
+import { noteFootMoved } from "@/lib/ui/scrollAway";
 
 /**
  * A step through the text from the dock's row: a link (a chapter of the
@@ -94,6 +92,7 @@ export function ReaderDock({
   onPick,
   listenHere,
   onListen,
+  turns = Boolean(prev || next),
 }: {
   /** The text's name in the row: a book's in the reader's language, a part's, a life's. */
   name: string;
@@ -118,6 +117,13 @@ export function ReaderDock({
   listenHere: boolean;
   /** Starts this text's reading. */
   onListen: () => Promise<unknown> | void;
+  /**
+   * The arrows stand in the row as they stand in the pill at rest: a work's
+   * pill always draws its two, dimmed at the ends (On the Incarnation, one
+   * section, "Part 1" between two dim arrows), so its dock does too. By
+   * default where there is a step either way.
+   */
+  turns?: boolean;
 }) {
   const { t, locale } = useTranslate();
   const audio = usePersistentAudio();
@@ -285,7 +291,7 @@ export function ReaderDock({
                   grows with it (--reader-dock-card-h, measured below). */}
               <div ref={chapterRowRef} className="mt-1.5 flex min-h-8 shrink-0 flex-wrap items-center justify-between gap-x-2 font-sans text-[14px]">
                 <span className="flex min-w-0 max-w-full items-center">
-                  {prev || next ? <DockArrow target={prev} label={prevLabel} back /> : null}
+                  {turns ? <DockArrow target={prev} label={prevLabel} back /> : null}
                   {onPick ? (
                     <button
                       type="button"
@@ -303,7 +309,7 @@ export function ReaderDock({
                       {name}
                     </span>
                   )}
-                  {prev || next ? <DockArrow target={next} label={nextLabel} back={false} /> : null}
+                  {turns ? <DockArrow target={next} label={nextLabel} back={false} /> : null}
                 </span>
                 <span className="ms-auto flex shrink-0 items-center gap-2">
                 {listenHere ? (
@@ -439,74 +445,5 @@ function DockArrow({ target, label, back }: { target: DockStep; label: string; b
     <Link href={target.href} aria-label={label} className={className}>
       {glyph}
     </Link>
-  );
-}
-
-/** Said to checkMock's cut rule: the name is read whole, by its glide. */
-const GLIDE_WHY = "a long track name glides slowly along its line to show itself whole (lib/ui/titleGlide.ts); with motion reduced it stands still, and is read whole in the button's label and in Now Playing";
-
-/**
- * The track's name on its one line, whole (build 98 note 2): a name longer
- * than the line glides slowly along it and begins again where it began, with
- * no jump (lib/ui/titleGlide.ts). Only the words move; the line, the cover
- * and the buttons stay. With motion reduced it stands still, ended by an
- * ellipsis as before. Measured again when its line changes size at rest; not
- * while the dock is drawn in, when the line is hidden and narrowing.
- */
-function GlideName({ text }: { text: string }) {
-  const reduced = useReducedMotion();
-  const lineRef = useRef<HTMLSpanElement>(null);
-
-  useLayoutEffect(() => {
-    const line = lineRef.current;
-    const run = line?.firstElementChild as HTMLElement | null;
-    const name = run?.firstElementChild as HTMLElement | null;
-    const copy = name?.nextElementSibling as HTMLElement | null;
-    if (reduced || !line || !run || !name || !copy) return;
-    let glide: Animation | null = null;
-    let was = "";
-    let wait = 0;
-    const place = () => {
-      if (document.body.hasAttribute(AWAY_ATTR) || document.documentElement.classList.contains("reader-focus") || !line.clientWidth) return;
-      const next = titleGlide(name.offsetWidth, line.clientWidth, readsRtl(line));
-      const key = next ? `${next.to}` : "";
-      if (key === was) return;
-      was = key;
-      glide?.cancel();
-      glide = null;
-      copy.hidden = !next;
-      if (next) glide = run.animate(next.keyframes, { duration: next.duration, iterations: Infinity });
-    };
-    place();
-    const sized = new ResizeObserver(() => {
-      window.clearTimeout(wait);
-      wait = window.setTimeout(place, 150);
-    });
-    sized.observe(line);
-    sized.observe(name);
-    return () => {
-      sized.disconnect();
-      window.clearTimeout(wait);
-      glide?.cancel();
-      copy.hidden = true;
-    };
-  }, [text, reduced]);
-
-  if (reduced) {
-    return (
-      <span data-mock-allow="cut" data-mock-why={GLIDE_WHY} className="block truncate font-sans text-[15px] font-semibold leading-tight text-paper">
-        {text}
-      </span>
-    );
-  }
-  return (
-    <span ref={lineRef} data-mock-allow="cut" data-mock-why={GLIDE_WHY} className="block overflow-hidden font-sans text-[15px] font-semibold leading-tight text-paper">
-      <span className="flex w-max">
-        <span className="whitespace-nowrap">{text}</span>
-        <span aria-hidden hidden className="whitespace-nowrap" style={{ paddingInlineStart: GLIDE_GAP_PX }}>
-          {text}
-        </span>
-      </span>
-    </span>
   );
 }

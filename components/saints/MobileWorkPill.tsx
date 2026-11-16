@@ -176,6 +176,8 @@ export function MobileWorkPill({
         onPick={openWorkContents}
         listenHere={listen.available && !listen.loaded}
         onListen={listen.tap}
+        // Its arrows as the pill at rest draws them: always, dimmed at the ends.
+        turns
       />
     );
   }

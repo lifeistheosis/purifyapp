@@ -63,7 +63,7 @@ export default async function StudyReadPage({ params }: { params: Promise<{ topi
 
   const panels = placed.parts.map((part, i) => (
     <div key={i}>
-      <StudyPartText blocks={part.blocks} summary={i === 0 ? body.summary : undefined} study={{ slug: topic, title: meta.title }} part={i + 1} />
+      <StudyPartText blocks={part.blocks} summary={i === 0 ? body.summary : undefined} study={{ slug: topic, title: meta.title, art: subject?.picture.src ?? null }} part={i + 1} />
       {i === last ? <StudyCouncils councils={body.councils ?? []} /> : null}
       <PassageDeck passages={[...part.passages, ...(i === last ? placed.end : [])].map((j) => passages[j])} />
       {i === last ? <StudyCurated body={body} /> : null}
