@@ -3,6 +3,7 @@
 //
 //   node scripts/gate/listen-walk.mjs <export> [--size 390x844] [--lang ar] [--check] [--shots dir] [--only life,work]
 //   node scripts/gate/listen-walk.mjs <export> --computer    (the computer as it was: Listen in the page, the mini player)
+//   node scripts/gate/listen-walk.mjs <export> --carry [--reduce]   (the dock's cover tapped: Now Playing carries it up; never with motion reduced)
 //
 // His words (2026-11-15): "make the listen system the same as the Bible listening system (UI/ux)
 // one so there isn't a floating button". On a life, an event, a study's part, a Father's work and
@@ -27,7 +28,7 @@ import { checkMock, EVERY, printMockCheck } from "../mock-check.mjs";
 import { fakeVoice } from "../lib/fake-voice.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 import { firstTouch, tapAt } from "../lib/tap.mjs";
-import { judgeFrames, recordFrames } from "./frames.mjs";
+import { judgeFrames, recordFrames, stripOf } from "./frames.mjs";
 import { installGate } from "./inpage.mjs";
 
 const argv = process.argv.slice(2);
@@ -46,6 +47,8 @@ const SHOTS = flag("--shots");
 const ONLY = flag("--only")?.split(",") ?? null;
 const CHECK = has("--check");
 const COMPUTER = has("--computer");
+const CARRY = has("--carry");
+const REDUCE = has("--reduce");
 const DESKTOP_UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
 const OUT = path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}`);
@@ -58,6 +61,8 @@ const TEXTS = [
   { key: "study", to: "/theology/essence-energies/read/", turns: true },
   { key: "work", to: "/saints/athanasius-the-great/four-discourses-against-the-arians/", turns: true },
   { key: "council", to: "/councils/first-nicaea/the-twenty-canons/", turns: true, fallback: "/councils/first-nicaea/the-symbol-of-the-faith/" },
+  // A chapter, for --carry: the texts above have no cover picture (the plate is drawn), so nothing can fly from them.
+  ...(CARRY ? [{ key: "bible", to: "/bible/john/10/" }] : []),
 ].filter((t) => !ONLY || ONLY.includes(t.key));
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -92,7 +97,10 @@ const state = (page) =>
       tabBarShown: bar && shown(bar) && barBox ? Math.max(0, Math.round(Math.min(innerHeight, barBox.bottom) - Math.max(0, barBox.top))) : 0,
       dockName: rowName?.textContent?.trim() ?? null,
       dockSlot: [...document.querySelectorAll("[data-reader-dock] .reader-dock-card .ms-auto button")].map((b) => b.textContent?.trim() || b.getAttribute("aria-label")),
-      playing: [...document.querySelectorAll("[data-reader-dock] .reader-dock-card button")].some((b) => /Pause/i.test(b.getAttribute("aria-label") ?? "")),
+      // The dock's word for it in English; in another language, whether the voice or the recording plays.
+      playing: /^en/.test(document.documentElement.lang || "en")
+        ? [...document.querySelectorAll("[data-reader-dock] .reader-dock-card button")].some((b) => /Pause/i.test(b.getAttribute("aria-label") ?? ""))
+        : !!(window.speechSynthesis?.speaking && !window.speechSynthesis.paused) || [...document.querySelectorAll("audio")].some((a) => !a.paused),
       toggleLabel: toggle?.getAttribute("aria-label") ?? null,
       dir: document.documentElement.dir,
     };
@@ -124,14 +132,16 @@ const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromi
 const results = [];
 let failed = 0;
 for (const text of TEXTS) {
-  const ctx = await browser.newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: !COMPUTER && WIDTH < 700, hasTouch: !COMPUTER, userAgent: COMPUTER ? DESKTOP_UA : NATIVE_UA, locale: LANG === "ar" ? "ar" : "en-US" });
-  await ctx.addInitScript((lang) => {
+  const ctx = await browser.newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: !COMPUTER && WIDTH < 700, hasTouch: !COMPUTER, userAgent: COMPUTER ? DESKTOP_UA : NATIVE_UA, locale: LANG === "ar" ? "ar" : "en-US", reducedMotion: REDUCE ? "reduce" : "no-preference" });
+  await ctx.addInitScript(([lang, reduce]) => {
     try {
       localStorage.setItem("purify:onboarded", "99");
       localStorage.setItem("purify:whatsNewSeen", "99");
       if (lang !== "en") localStorage.setItem("CapacitorStorage.purify_locale", lang);
+      // In the apps the OS setting is not Purify's (lib/ui/motionPreference.ts): motion off is its own switch.
+      if (reduce) localStorage.setItem("purify.motion", "off");
     } catch {}
-  }, LANG);
+  }, [LANG, REDUCE]);
   await ctx.addInitScript(fakeVoice);
   await installGate(ctx);
   await serveLikeTheShell(ctx, OUT, {});
@@ -151,6 +161,8 @@ for (const text of TEXTS) {
   const judge = async (name, act) => {
     const rec = await recordFrames(page, cdp, act, RECORD);
     const v = await judgeFrames(rec, { motion: "on" });
+    // With --shots, each fail's frames side by side, to see what was drawn.
+    if (SHOTS) for (const [n, f] of v.fails.entries()) if (f.frames) await stripOf(rec, f.frames, path.join(SHOTS, `${text.key}-${name}-${f.kind}-${n}-${WIDTH}.png`));
     r.steps[`${name}:motion`] = v.fails.length ? v.fails.map((f) => `${f.kind}: ${f.detail}`) : "ok";
     if (v.fails.length) fail(`${name}: ${v.fails.map((f) => f.kind).join(", ")}`);
   };
@@ -164,6 +176,9 @@ for (const text of TEXTS) {
     }
     if (COMPUTER) {
       // The computer as it was: Listen in the page under the title, no pill, and while it plays the mini player.
+      // On an event it stands under the picture, below the first screen: brought into view as a reader scrolls to it.
+      await page.evaluate(() => document.querySelector("[data-listen-here]")?.scrollIntoView({ block: "center" }));
+      await sleep(900);
       const before = await state(page);
       r.steps.rest = before;
       if (before.listenInPage !== 1) fail(`the computer shows ${before.listenInPage} Listen in the page`);
@@ -182,10 +197,51 @@ for (const text of TEXTS) {
     const rest = await state(page);
     r.steps.rest = rest;
     if (rest.pill !== 1) fail(`at rest ${rest.pill} pills`);
-    if (rest.listenInPill !== 1) fail("at rest no Listen in the pill");
+    if (rest.listenInPill !== 1 && !CARRY) fail("at rest no Listen in the pill");
     if (rest.listenInPage) fail(`at rest ${rest.listenInPage} Listen in the page`);
     if (rest.foot.length !== 1) fail(`at rest the foot shows ${rest.foot.join(" and ") || "nothing"}`);
     await shot("rest");
+    if (CARRY) {
+      // The dock's cover tapped, as a reader taps: Now Playing carries it up into its own cover
+      // (lib/player/carry.ts), as from the mini player; with motion reduced it rises with nothing flying.
+      const at =
+        (await centreOf(page, box("[data-reader-pill] [data-listen-pill]"))) ??
+        (await page.evaluate(() => {
+          const b = [...document.querySelectorAll("[data-reader-pill] button")].find((e) => /^Listen/.test(e.textContent?.trim() ?? ""))?.getBoundingClientRect();
+          return b ? { x: b.left + b.width / 2, y: b.top + b.height / 2 } : null;
+        }));
+      if (!at) throw new Error("no Listen in the pill to tap");
+      await tapAt(cdp, at.x, at.y);
+      await sleep(2500);
+      const cover = await page.evaluate(() => {
+        const b = document.querySelector("[data-reader-dock] .reader-dock-card button")?.querySelector("img")?.getBoundingClientRect();
+        return b ? { width: Math.round(b.width), left: Math.round(b.left), top: Math.round(b.top) } : null;
+      });
+      const open = await centreOf(page, box("[data-reader-dock] .reader-dock-card button"));
+      if (!cover || !open) throw new Error("no cover on the dock to tap");
+      await tapAt(cdp, open.x, open.y);
+      const seen = [];
+      for (const wait of [40, 120, 400, 900]) {
+        await sleep(wait - (seen.at(-1)?.t ?? 0));
+        seen.push({
+          t: wait,
+          ...(await page.evaluate(() => {
+            const root = document.querySelector("[data-now-playing]");
+            const flight = root?.querySelector(":scope div.fixed.origin-top-left[aria-hidden]");
+            const first = flight?.getAnimations()[0]?.effect?.getKeyframes()[0]?.transform ?? null;
+            return { carrying: !!root?.hasAttribute("data-carrying"), flying: !!flight && flight.style.display === "block", first, up: root?.getAttribute("aria-modal") === "true" };
+          })),
+        });
+      }
+      r.steps.carry = { reduce: REDUCE, cover, seen };
+      const carried = seen.some((v) => v.carrying || v.flying);
+      if (!seen.at(-1).up) fail("Now Playing did not open from the dock's cover");
+      if (REDUCE && carried) fail("the cover flew with motion reduced");
+      if (!REDUCE && !carried) fail("Now Playing did not carry the dock's cover");
+      const scale = /scale\(([\d.]+)/.exec(seen.find((v) => v.first)?.first ?? "")?.[1];
+      if (!REDUCE && scale) r.steps.carry.scale = Number(scale);
+      throw Object.assign(new Error("done"), { done: true });
+    }
     if (CHECK) {
       const c = await checkMock(page, "body", { pixels: true, palettes: EVERY });
       r.steps.restCheck = printMockCheck(c, `${text.key} at rest ${WIDTH}${LANG === "en" ? "" : ` ${LANG}`}`) ? "ok" : "FAILED";
@@ -267,7 +323,7 @@ for (const text of TEXTS) {
   if (r.fails.length) failed += 1;
   results.push(r);
   console.log(`${r.fails.length ? "FAIL" : "ok  "} ${text.key} ${r.to}${r.fails.length ? `: ${r.fails.join("; ")}` : ""}`);
-  console.log(`     ${JSON.stringify({ rest: r.steps.rest && { foot: r.steps.rest.foot, listenInPill: r.steps.rest.listenInPill, listenInPage: r.steps.rest.listenInPage }, playing: r.steps.playing && { foot: r.steps.playing.foot, slot: r.steps.playing.dockSlot, name: r.steps.playing.dockName }, afterListen: r.steps.afterListen, pausePlay: r.steps.pausePlay, turn: r.steps.turn, scroll: r.steps.scroll, listenMotion: r.steps["listen:motion"], turnMotion: r.steps["turn:motion"], errors: r.errors })}`);
+  console.log(`     ${JSON.stringify({ rest: r.steps.rest && { foot: r.steps.rest.foot, listenInPill: r.steps.rest.listenInPill, listenInPage: r.steps.rest.listenInPage }, playing: r.steps.playing && { foot: r.steps.playing.foot, slot: r.steps.playing.dockSlot, name: r.steps.playing.dockName }, afterListen: r.steps.afterListen, carry: r.steps.carry, pausePlay: r.steps.pausePlay, turn: r.steps.turn, scroll: r.steps.scroll, listenMotion: r.steps["listen:motion"], turnMotion: r.steps["turn:motion"], errors: r.errors })}`);
   await ctx.close();
 }
 await browser.close();
