@@ -25,10 +25,13 @@ case "$PART" in
       echo "selftest $t EXIT $? $(stamp) $(tail -1 "$D/selftest-$t.log" | cut -c1-160)"
     done ;;
   tap-new|tap-open)
+    # The whole list in one run passed two hours (stopped at 100 of 130, 10:33 UTC), so a chunk at a time:
+    # walks6.sh tap-new 1 .. 4 walks screens-N.txt (the export's 130 screens in order, 33 a chunk).
     reader=${PART#tap-}; env_=""; [ "$reader" = new ] && env_="SELLS_PLUS=1"
-    env $env_ NODE_USE_ENV_PROXY=1 node scripts/tap-walk.mjs out --workers 3 --max 1000 --online \
-      --json "$D/tap-$reader.json" > "$D/tap-$reader.log" 2>&1
-    echo "tap-$reader EXIT $? $(stamp) $(tail -1 "$D/tap-$reader.log" | cut -c1-200)"; gzip -f "$D/tap-$reader.json" ;;
+    n=${2:?chunk 1 to 4}; tag="tap-$reader-$n"
+    env $env_ NODE_USE_ENV_PROXY=1 node scripts/tap-walk.mjs out --workers 3 --max 1000 --online --only "$(cat "$D/screens-$n.txt")" \
+      --json "$D/$tag.json" > "$D/$tag.log" 2>&1
+    echo "$tag EXIT $? $(stamp) $(tail -1 "$D/$tag.log" | cut -c1-200)"; gzip -f "$D/$tag.json" ;;
   guard)
     for size in 390x844 800x1280 1032x1376; do
       for lang in en ar; do

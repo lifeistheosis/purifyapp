@@ -1,0 +1,47 @@
+# Gate 6: the key lines of the walk logs (*.log is ignored by git)
+selftest tap-walk: self-test: every case measured as it should be
+selftest guardrail-walk: self-test: the carried-picture check names what it should and nothing else
+selftest motion-walk: self-test: all four checks fail what they should and pass the rest
+selftest mock-check: self-test: every mistake caught, and the house's own parts pass
+
+## the whole tap walk, new reader, stopped by the two-hour limit
+130 screens on a phone, up to 1000 controls each, 3 at a time, reading the main web, with the app's motion on, as a reader's phone has it, as a new reader with no Plus (the page is the Android shell)
+  FAIL / button "Plus": sheet: dialog "Purify Plus": contrast [Dark, Light, Black, Candlelight, Monastery, Councils, Cappadocian]: "“Purify is an incredible app that honestly deser": 1.00:1 at its least on the pixels under it, needs 4.5:1
+  5 of 130
+  10 of 130
+  15 of 130
+  20 of 130
+  25 of 130
+  30 of 130
+  35 of 130
+  40 of 130
+  45 of 130
+  50 of 130
+  55 of 130
+  60 of 130
+  65 of 130
+  70 of 130
+  75 of 130
+  80 of 130
+  85 of 130
+  90 of 130
+  95 of 130
+  100 of 130
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+browserContext.newPage: Target page, context or browser has been closed
+Node.js v22.23.4
+
+## gate-tests.txt
+ Test Files  63 passed (63)
+      Tests  956 passed (956)
+
+## round3-probe (as it stood at the push)
+journal-write (note line 8) at /journal/write/: 12 words, 13 controls, 0 pictures (0 empty)
+prayers-door (note line 10) at /prayers/: 77 words, 40 controls, 14 pictures (0 empty)
+you (note line 11) at /account/: 19 words, 14 controls, 1 pictures (0 empty)
+profile (note line 11) at /signin/: 18 words, 12 controls, 0 pictures (0 empty)
+plan-new (note line 12) at /plans/gospels/: 30 words, 22 controls, 1 pictures (0 empty)
+plan-day-read (note line 12) at /plans/gospels/: 28 words, 22 controls, 1 pictures (0 empty)
+pricing (note line 37) at /pricing/: 86 words, 21 controls, 8 pictures (0 empty)

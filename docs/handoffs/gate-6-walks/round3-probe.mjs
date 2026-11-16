@@ -11,7 +11,7 @@ import { asAndroidShell } from "../../../scripts/lib/sells-plus.mjs";
 
 const [OUT = "out", DIR = "/tmp/round3"] = process.argv.slice(2);
 fs.mkdirSync(DIR, { recursive: true });
-const NEW = { "purify:secondchance.done": "1" };
+const NEW = { "purify:secondchance.done": "1", "purify:onboarded": "99", "purify:whatsNewSeen": "99" };
 const day = { "purify:plans": JSON.stringify({ gospels: { startedOn: "2026-11-14", done: { 0: "2026-11-14" }, at: Date.now() } }) };
 const screens = [
   { name: "journal-write", to: "/journal/write/", line: 8 },
@@ -22,7 +22,8 @@ const screens = [
   { name: "plan-day-read", to: "/plans/gospels/", line: 12, set: day },
   { name: "pricing", to: "/pricing/", line: 37, full: true },
 ];
-const browser = await chromium.launch();
+const OWN = "/opt/pw-browsers/chromium";
+const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
 const report = [];
 for (const s of screens) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, userAgent: NATIVE_UA });
