@@ -1,7 +1,9 @@
-# The voices, recorded on GitHub's own runners (Purify 1.9). His yes of
-# 2026-11-16, about 00:33 UTC: Heart for every reader, Emma, Michael and
-# Fenrir for Plus, recorded here for free (a public repository's standard
-# runners cost nothing) rather than on a rented computer.
+# Heart's recordings, made on GitHub's own runners (Purify 1.9). His yes of
+# 2026-11-16, about 00:33 UTC: recorded here for free (a public repository's
+# standard runners cost nothing) rather than on a rented computer. Heart is
+# the one voice since his word of the same day, about 22:35 UTC ("only leave
+# one the standard prerecorded voices"): the three Plus voices and their
+# private bucket are dropped.
 #
 # What it records is scripts/voices/run.json. A push to the 1.9 branch that
 # changes that file is the only push that starts it (the paths filter below),
@@ -9,24 +11,22 @@
 # this file is on the default branch it can also be started by hand
 # (workflow_dispatch), which runs the default branch's copy.
 #
-#   dry   one Bible chapter and one batch in each voice. Uploads nothing:
-#         the recordings stay as this run's artifacts, measured beside Heart's
+#   dry   a Bible chapter and a batch in Heart's voice. Uploads nothing: the
+#         recordings stay as this run's artifacts, measured beside Heart's
 #         New Testament in the summary (loudness, the pause between verses,
 #         the bitrate, the length, the longest silence, each runner's speed).
 #   full  the plan's shards (scripts/voices/record.py plan): whole waves of 20,
 #         each shard well under GitHub's 6 hours. Each recording goes to the
-#         bucket the moment it is made: Heart to the Bible's public bucket
-#         where the app reads it (read/, listen/), each Plus voice to its own
-#         folder (<voice>/) in a separate private bucket, timings beside each. A run again skips what the bucket already has.
-#         Heart's timings come back as the artifact voices-timings, for a chat
-#         to put in public/audio/ and commit, where the website serves them
-#         to the app (lib/readAloud/chapters.ts, lib/listen/recordings.ts).
+#         Bible's public bucket the moment it is made, where the app reads it
+#         (read/, listen/), timings beside each. A run again skips what the
+#         bucket already has. Heart's timings come back as the artifact
+#         voices-timings, for a chat to put in public/audio/ and commit, where
+#         the website serves them to the app (lib/readAloud/chapters.ts,
+#         lib/listen/recordings.ts).
 #
-# The five secrets (R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY,
-# R2_BUCKET, R2_PLUS_BUCKET) are handed only to the steps that write to the
-# buckets, only in a full run, and nothing here prints them. Before any Plus
-# voice goes up, the plan and each recorder prove the private bucket is another
-# bucket than the Bible's and is not served at audio.purifyapp.net.
+# The four secrets (R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY,
+# R2_BUCKET) are handed only to the step that writes to the bucket, only in a
+# full run, and nothing here prints them.
 # His steps: docs/1.9-build/OWNER-STEPS.md, "Voices on GitHub's runners".
 
 name: Voices (record)
@@ -66,15 +66,6 @@ jobs:
       - name: Plan the shards
         id: plan
         run: python3 scripts/voices/record.py plan --run scripts/voices/run.json --batches listen-batches --out plan/plan.json
-      - name: Prove the Plus voices' bucket is private
-        if: steps.plan.outputs.mode == 'full' && steps.plan.outputs.plus == 'true'
-        env:
-          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          R2_PLUS_BUCKET: ${{ secrets.R2_PLUS_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-        run: python3 scripts/voices/record.py probe
       - uses: actions/upload-artifact@v4
         with:
           name: voices-plan
@@ -139,7 +130,6 @@ jobs:
         env:
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          R2_PLUS_BUCKET: ${{ secrets.R2_PLUS_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
         run: |

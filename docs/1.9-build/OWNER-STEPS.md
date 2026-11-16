@@ -954,15 +954,22 @@ being read is washed. A text you have not recorded shows no Listen.
 Send the arbiter: the line `npm run listen:index` printed, and a yes or a no
 for V6.
 
-### V7. The six voice samples (3 minutes)
+### V7. The six voice samples (dropped)
 
-To choose the Plus voices by ear: the same 20 seconds (John 1:1 to 5) in six
+**Dropped, nothing to do:** your word of 2026-11-16 (about 22:35 UTC) keeps
+Heart, the one prerecorded voice, and drops the Plus voices. Kept for the
+record: to choose the Plus voices by ear: the same 20 seconds (John 1:1 to 5) in six
 voices. In your tool, the voices are named `am_michael`, `am_fenrir`,
 `af_bella`, `bm_george`, `bm_fable` and `bf_emma`. Make the six clips, listen,
 and tell the arbiter which you keep (two to four) and what each is called to
 readers. Nothing is uploaded for this.
 
-### V8. The on-phone voice: put the engine in your storage (about 15 minutes, once)
+### V8. The on-phone voice: put the engine in your storage (dropped)
+
+**Dropped, nothing to do:** your word of 2026-11-16 (about 22:35 UTC: "remove
+locally LLM voices") removes every voice made on the phone, and the script
+step 3 names is no longer in the repository. Heart is heard only from its
+recordings. Kept for the record:
 
 Your word, 2026-11-11: "phone voice in v1.9", and "yes engine, yes free
 Heart". The app fetches the engine only from your own storage
@@ -1059,54 +1066,46 @@ Send the arbiter: the lines it printed. Nothing is uploaded for this step.
 
 Your yes of 2026-11-16 (about 00:33 UTC): the voices are recorded on GitHub's
 own computers, free for this public repository, instead of your PC or a rented
-one. Heart for every reader (the lives, the councils, theology, history, the
-Lives in their witnesses' words, the Old Testament), and Emma, Michael and
-Fenrir for Plus (the New Testament and the same six). This replaces V1 to V4
-above; a chat does V5 and V6. Three steps are yours, about 15 minutes, once.
-No key, number or account id goes in a chat, a file or a message: only into
-the two pages named below.
+one. Since your word the same day (about 22:35 UTC: one prerecorded voice),
+that is Heart alone, for every reader: the lives, the councils, theology,
+history, the Lives in their witnesses' words, and the Old Testament. Emma,
+Michael and Fenrir are dropped, so there is no second bucket and no fifth
+secret. This replaces V1 to V4 above; a chat does V5 and V6. Two steps are
+yours, about 10 minutes, once. No key, number or account id goes in a chat, a
+file or a message: only into the two pages named below.
 
-Heart goes where the Bible's recordings are. The Plus voices go in a second
-bucket of their own that serves nothing to anyone: it has no address, so only
-the app's signed route will reach it. Storage is counted for your whole
-account, so a second bucket costs nothing more.
+### V10. No private bucket (nothing to do)
 
-### V10. A private bucket for the Plus voices (3 minutes)
+The second bucket was only for the Plus voices, which are dropped. Make
+nothing. If you already made `purify-voices-plus`, nothing uses it: delete it
+whenever you like (R2 object storage, the bucket, **Settings**, **Delete
+bucket**), or leave it empty.
 
-1. In the Cloudflare dashboard, open **R2 object storage** and select
-   **Create bucket**.
-2. Name it `purify-voices-plus` (small letters, numbers and hyphens only).
-   Leave the location on **Automatic** and the rest as it is. Create it.
-3. Open the new bucket's **Settings** tab and leave two things as they are:
-   **Public Development URL** shows an **Enable** button (that means it is
-   off), and **Custom Domains** has nothing added. A new bucket starts that
-   way; never enable either for this one.
+### V11. A key for the Bible's bucket, in Cloudflare (5 minutes)
 
-### V11. A key for the two buckets, in Cloudflare (5 minutes)
-
-1. Back on **R2 object storage**, under **Account Details**, select
-   **Manage** next to **API Tokens**.
+1. In the Cloudflare dashboard, open **R2 object storage**. Under **Account
+   Details**, select **Manage** next to **API Tokens**.
 2. Select **Create Account API token**. Name it `purify-voices-github`.
 3. Under **Permissions**, choose **Object Read & Write**.
-4. Apply it to **specific buckets only**, and pick exactly two: the bucket
-   that holds the Bible's recordings (the one behind audio.purifyapp.net) and
-   `purify-voices-plus`. Nothing else.
+4. Apply it to **specific buckets only**, and pick exactly one: the bucket
+   that holds the Bible's recordings (the one behind audio.purifyapp.net).
+   Nothing else.
 5. Select **Create Account API token**.
 6. The next page shows the **Access Key ID** and the **Secret Access Key**.
    The secret is shown only this once: keep the page open for V12.
-7. The buckets' address for programs (the S3 endpoint) is
+7. The bucket's address for programs (the S3 endpoint) is
    `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`, with your account id in
    place of `<ACCOUNT_ID>`. The account id is on the R2 object storage page,
-   under Account Details. If you copy a bucket's **S3 API** address from its
+   under Account Details. If you copy the bucket's **S3 API** address from its
    **Settings** instead, leave off the bucket's name at its end.
 
-### V12. The five secrets, in GitHub (5 minutes)
+### V12. The four secrets, in GitHub (5 minutes)
 
 1. Open github.com/lifeistheosis/purifyapp and select **Settings**.
 2. In the sidebar's **Security** section, select **Secrets and variables**,
    then **Actions**.
 3. On the **Secrets** tab, select **New repository secret**, type the
-   **Name**, paste the **Secret**, and select **Add secret**. Five times:
+   **Name**, paste the **Secret**, and select **Add secret**. Four times:
 
    | Name | Secret |
    |---|---|
@@ -1114,30 +1113,31 @@ account, so a second bucket costs nothing more.
    | `R2_ACCESS_KEY_ID` | the Access Key ID |
    | `R2_SECRET_ACCESS_KEY` | the Secret Access Key |
    | `R2_BUCKET` | the name of the Bible's bucket |
-   | `R2_PLUS_BUCKET` | `purify-voices-plus` |
 
 4. Tell the arbiter "secrets in". Names only, never a value.
+
+If you had already added a fifth, `R2_PLUS_BUCKET`, nothing reads it now:
+delete it on the same page (its row, **Remove**). If your key from V11 was
+made for two buckets, it still works; to keep it to the one, edit it in
+Cloudflare and leave only the Bible's bucket ticked.
 
 ### V13. Then (nothing for you to do)
 
 At the arbiter's go, a chat starts the recording by one change to
-`scripts/voices/run.json` on the branch. GitHub records in 60 pieces, 20 at a
-time, about 8 hours in all (5 to 9, by the speed of the machines GitHub hands
-out: the dry run measured 2.8 to 5.3 times real time). Each recording goes to
-the bucket as it is made.
-Heart's recordings show Listen in the app once a chat commits their timings and the
-website next deploys; the Plus voices wait in `purify-voices-plus` for the
-Voice sheet and the signed route. Before any Plus voice goes up, the recording
-checks that the two secrets name two different buckets, that Heart's John 1
-is in the Bible's and not in the private one, and that a test file in the
-private one is not served at audio.purifyapp.net; if any check fails it stops
-and uploads nothing to it.
+`scripts/voices/run.json` on the branch. GitHub records Heart's 2,447
+recordings (113.9 hours of sound: the Old Testament's 1,102 chapters and
+1,345 readings of the lives, the councils, theology, history and the Lives in
+their witnesses' words) in 12 pieces at once, about 3 hours in all (2 to 4,
+by the speed of the machines GitHub hands out: the dry run measured 2.8 to
+5.3 times real time). Each recording goes to the Bible's bucket as it is
+made. Heart's recordings show Listen in the app once a chat commits their
+timings and the website next deploys; the New Testament already has its
+recordings and is never recorded again.
 
 **Cost:** GitHub's runners are free for a public repository. The bucket grows
-by about 9 GB (505 hours of sound at Heart's 18 MB an hour), to about 9.5 GB in
-the two buckets together: inside R2's free 10 GB for the account, then $0.015 a
-GB a month; the uploads are inside its
-free monthly writes.
+by about 2 GB (114 hours of sound at Heart's 18 MB an hour), to about 2.5 GB:
+inside R2's free 10 GB for the account; the uploads are inside its free
+monthly writes.
 
 **To stop it:** on GitHub, **Actions**, **Voices (record)**, the run,
 **Cancel workflow**. What is in the bucket stays, and the next run skips it.

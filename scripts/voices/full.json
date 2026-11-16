@@ -5,9 +5,6 @@
  "rtf": 3.3,
  "shardHours": 3.0,
  "work": [
-  { "voice": "af_heart", "groups": ["lives", "councils", "theology", "history", "lives-in-their-witnesses", "old-testament"] },
-  { "voice": "bf_emma", "groups": ["new-testament", "lives", "councils", "theology", "history", "lives-in-their-witnesses", "old-testament"] },
-  { "voice": "am_michael", "groups": ["new-testament", "lives", "councils", "theology", "history", "lives-in-their-witnesses", "old-testament"] },
-  { "voice": "am_fenrir", "groups": ["new-testament", "lives", "councils", "theology", "history", "lives-in-their-witnesses", "old-testament"] }
+  { "voice": "af_heart", "groups": ["lives", "councils", "theology", "history", "lives-in-their-witnesses", "old-testament"] }
  ]
 }

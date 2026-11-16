@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-# The voices recorder (Purify 1.9): Heart for every reader, and Emma, Michael
-# and Fenrir for Plus, recorded ahead from the repository alone on GitHub's own
-# runners (.github/workflows/voices-record.yml; his yes of 2026-11-16, about
-# 00:33 UTC). His steps are docs/1.9-build/OWNER-STEPS.md, "Voices on GitHub's
-# runners".
+# The voices recorder (Purify 1.9): Heart, the one voice, for every reader,
+# recorded ahead from the repository alone on GitHub's own runners
+# (.github/workflows/voices-record.yml; his yes of 2026-11-16, about 00:33
+# UTC). Heart alone since his word of 2026-11-16, about 22:35 UTC ("only leave
+# one the standard prerecorded voices"): the three voices once planned for
+# Purify Plus are dropped, and with them their private bucket. His steps are
+# docs/1.9-build/OWNER-STEPS.md, "Voices on GitHub's runners".
 #
 #   plan    the work a run file names, packed into shards
 #             record.py plan --run scripts/voices/run.json --batches listen-batches --out plan/plan.json
@@ -12,7 +14,6 @@
 #             record.py record --voice af_heart --chapter genesis/1 --batch listen-batches/history/pentecost.json --out out
 #   report  measures what was recorded, beside Heart's New Testament
 #             record.py report --out out
-#   probe   proves the Plus voices' bucket is private, before any goes up
 #   where   the bucket and key a recording goes to
 #
 # What a recording is, each part measured on Heart's New Testament where the
@@ -44,7 +45,6 @@ import os
 import re
 import subprocess
 import sys
-import tempfile
 import time
 import unicodedata
 import wave
@@ -68,14 +68,10 @@ MAX_PARALLEL = 20
 MAX_SHARDS = 256
 PUBLIC_BASE = "https://audio.purifyapp.net"
 
-# Kokoro's names. Heart is every reader's and public, beside the Bible's
-# recordings; the Plus voices are private, one place each under plus/
-# (docs/1.9-build/notes/voices-fable.md, "Plus, decided by the server").
+# Kokoro's name for Heart, the one voice: every reader's and public, beside the
+# Bible's recordings. No other voice is recorded (his word of 2026-11-16).
 VOICES = {
-    "af_heart": {"lang": "en-us", "plus": False},
-    "bf_emma": {"lang": "en-gb", "plus": True},
-    "am_michael": {"lang": "en-us", "plus": True},
-    "am_fenrir": {"lang": "en-us", "plus": True},
+    "af_heart": {"lang": "en-us"},
 }
 NEW_TESTAMENT = "new-testament"
 OLD_TESTAMENT = "old-testament"
@@ -302,22 +298,15 @@ def finish(audio, path, kind_of_file):
 
 
 def place(item):
-    """Where the recording is written here, without its extension: Heart's as the app reads
-    them (lib/readAloud/chapters.ts, lib/listen/recordings.ts), a Plus voice's under plus/."""
-    voice = item["voice"]
-    base = f"plus/{voice}/" if VOICES[voice]["plus"] else ""
-    return f"{base}{'read' if item['kind'] == 'chapter' else 'listen'}/{item['id']}"
+    """Where the recording is written here, without its extension: as the app reads Heart's
+    (lib/readAloud/chapters.ts, lib/listen/recordings.ts)."""
+    return f"{'read' if item['kind'] == 'chapter' else 'listen'}/{item['id']}"
 
 
 def target(item):
-    """The bucket a recording goes to and its key there, without its extension. Heart: the
-    Bible's public bucket (R2_BUCKET), behind audio.purifyapp.net. A Plus voice: its own
-    folder in a separate private bucket (R2_PLUS_BUCKET), with no address of its own, so
-    nothing in it is served to anyone (the arbiter's call, 2026-11-16)."""
-    local = place(item)
-    if VOICES[item["voice"]]["plus"]:
-        return "R2_PLUS_BUCKET", local[len("plus/") :]
-    return "R2_BUCKET", local
+    """The bucket a recording goes to and its key there, without its extension: the Bible's
+    public bucket (R2_BUCKET), behind audio.purifyapp.net, where the app reads it."""
+    return "R2_BUCKET", place(item)
 
 
 def guard(item, mode):
@@ -337,8 +326,8 @@ def need(name):
 
 
 def aws(which, *args, quiet=True):
-    """The aws command against one of the two buckets, named by its secret; "{bucket}" in an
-    argument is its name."""
+    """The aws command against the bucket named by its secret; "{bucket}" in an argument is
+    its name."""
     name, endpoint = need(which), need("R2_ENDPOINT")
     need("AWS_ACCESS_KEY_ID")
     need("AWS_SECRET_ACCESS_KEY")
@@ -353,45 +342,9 @@ def in_bucket(which, key):
 
 def put(path, which, key):
     kind = "audio/mpeg" if path.suffix == ".mp3" else "application/json"
-    cache = "private, max-age=86400" if which == "R2_PLUS_BUCKET" else "public, max-age=86400"
-    done = aws(which, "s3", "cp", str(path), f"s3://{{bucket}}/{key}", "--content-type", kind, "--cache-control", cache, "--only-show-errors", quiet=False)
+    done = aws(which, "s3", "cp", str(path), f"s3://{{bucket}}/{key}", "--content-type", kind, "--cache-control", "public, max-age=86400", "--only-show-errors", quiet=False)
     if done.returncode != 0:
         raise SystemExit(f"Upload failed: {key}")
-
-
-def http_status(url):
-    """The status a public address answers, asked as an app or a browser asks (curl; a
-    library's own name is turned away by the site's bot rules, which would read as private)."""
-    got = subprocess.run(["curl", "-s", "-o", os.devnull, "-r", "0-0", "-w", "%{http_code}", "--max-time", "30", url], capture_output=True, text=True)
-    return int(got.stdout or 0)
-
-
-def probe(run_id):
-    """Before any Plus voice goes up: the private bucket is another bucket than the Bible's
-    (another name, and Heart's John 1 is not in it while it is in the Bible's), and a file
-    put in it is not served at audio.purifyapp.net while Heart's John 1 is. A bucket's r2.dev
-    address cannot be asked for with an object key: that one is his step V10 (off, as a new
-    bucket starts) and is not proved here."""
-    if need("R2_PLUS_BUCKET") == need("R2_BUCKET"):
-        raise SystemExit("R2_PLUS_BUCKET names the Bible's public bucket: the Plus voices would be free to anyone.")
-    if not in_bucket("R2_BUCKET", "read/john/1.mp3"):
-        raise SystemExit("Heart's John 1 is not in R2_BUCKET, so it is not the Bible's bucket: nothing goes up.")
-    if in_bucket("R2_PLUS_BUCKET", "read/john/1.mp3"):
-        raise SystemExit("Heart's John 1 is in R2_PLUS_BUCKET, so it is the Bible's public bucket: the Plus voices would be free to anyone.")
-    control = http_status(f"{PUBLIC_BASE}/read/john/1.mp3")
-    if control not in (200, 206):
-        raise SystemExit(f"Heart's John 1 answered {control} at {PUBLIC_BASE}: the probe cannot tell private from unreachable, so nothing private goes up.")
-    key = f"_probe/{run_id}.txt"
-    with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as f:
-        f.write("not public\n")
-    put(Path(f.name), "R2_PLUS_BUCKET", key)
-    try:
-        status = http_status(f"{PUBLIC_BASE}/{key}")
-    finally:
-        aws("R2_PLUS_BUCKET", "s3", "rm", f"s3://{{bucket}}/{key}", "--only-show-errors")
-    if status not in (401, 403, 404):
-        raise SystemExit(f"A file in the private bucket answered {status} at {PUBLIC_BASE}: the Plus voices would be free to anyone.")
-    print(f"The private bucket is another bucket, and its file answered {status} at {PUBLIC_BASE} while Heart's John 1 answered {control}: private.")
 
 
 # --- Plan -------------------------------------------------------------------------
@@ -412,7 +365,7 @@ def make_plan(run, batches_dir):
     for work in run["work"]:
         voice = work["voice"]
         if voice not in VOICES:
-            raise SystemExit(f"Not one of the four voices: {voice!r}")
+            raise SystemExit(f"Heart (af_heart) is the only voice recorded, not {voice!r} (his word of 2026-11-16)")
         for group in work.get("groups", []):
             if group in (NEW_TESTAMENT, OLD_TESTAMENT):
                 testament = "NT" if group == NEW_TESTAMENT else "OT"
@@ -468,7 +421,6 @@ def make_plan(run, batches_dir):
         "mode": mode,
         "model": run.get("model", DEFAULT_MODEL),
         "rtf": rtf,
-        "plus": any(VOICES[i["voice"]]["plus"] for i in items),
         "voices": per_voice,
         "hoursOfSound": round(sum(i["minutes"] for i in items) / 60, 1),
         "runnerHours": round(sum(s["hours"] for s in out), 1),
@@ -488,7 +440,7 @@ def cmd_plan(a):
     if os.environ.get("GITHUB_OUTPUT"):
         with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
             f.write(f"shards={json.dumps([s['shard'] for s in plan['shards']])}\n")
-            f.write(f"mode={plan['mode']}\nplus={'true' if plan['plus'] else 'false'}\nmodel={plan['model']}\n")
+            f.write(f"mode={plan['mode']}\nmodel={plan['model']}\n")
 
 
 # --- Record -----------------------------------------------------------------------
@@ -543,10 +495,6 @@ def cmd_record(a):
     out.mkdir(parents=True, exist_ok=True)
     tag = f"{a.shard or 0}-{a.part.replace('/', 'of')}"
     report = out / f"report-{tag}.jsonl"
-    # The plan proves it once for the run; each recorder proves it again before its own
-    # first Plus upload, however it was started.
-    if upload and any(VOICES[i["voice"]]["plus"] for i in items):
-        probe(f"{os.environ.get('GITHUB_RUN_ID', 'local')}-{tag}")
     left, done, kept = [], 0, 0
     for item in items:
         if deadline and time.time() > deadline:
@@ -673,8 +621,6 @@ def cmd_report(a):
             continue
         timings = json.loads(mp3.with_suffix(".json").read_text(encoding="utf-8"))
         parts = mp3.relative_to(out).with_suffix("").as_posix().split("/")
-        if parts[0] == "plus":
-            parts = parts[2:]
         kind, rid = parts[0], "/".join(parts[1:])
         read =sum(words(v["text"]) for v in timings["verses"]) if kind == "read" else None
         row = describe(mp3, timings, read)
@@ -742,8 +688,6 @@ def main():
     wh.add_argument("--voice", choices=sorted(VOICES), required=True)
     wh.add_argument("--chapter")
     wh.add_argument("--batch")
-    pr = sub.add_parser("probe")
-    pr.add_argument("--run-id", default=os.environ.get("GITHUB_RUN_ID", "local"))
     a = p.parse_args()
     if a.cmd == "plan":
         cmd_plan(a)
@@ -753,12 +697,10 @@ def main():
         cmd_record(a)
     elif a.cmd == "report":
         cmd_report(a)
-    elif a.cmd == "where":
+    else:
         item = {"voice": a.voice, "kind": "chapter" if a.chapter else "batch", "id": a.chapter or a.batch}
         which, key = target(item)
         print(json.dumps({"bucket": which, "key": key, "local": place(item)}))
-    else:
-        probe(a.run_id)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,22 @@
 # Hand-over: the Voices recorder (2026-11-16)
 
+**Changed at his word of 2026-11-16, about 22:35 UTC** ("remove locally LLM
+voices and full drop ... (only leave one the standard prerecorded voices)"),
+by Updates 98r: **Heart is the only voice.** Emma, Michael and Fenrir are
+dropped, and with them the private bucket, its secret `R2_PLUS_BUCKET` and the
+probe. `scripts/voices/full.json` is Heart's 2,447 recordings alone (113.9 h:
+the Old Testament and batches 1 to 5; planned 2026-11-16 as 12 shards, the
+longest 2.88 h at 3.3x, about 2.9 h end to end), `record.py` records and
+plans Heart alone and refuses any other voice, the workflow hands the
+recorders four secrets (`R2_ENDPOINT`, `R2_ACCESS_KEY_ID`,
+`R2_SECRET_ACCESS_KEY`, `R2_BUCKET`), and his steps are OWNER-STEPS V10 to
+V13 as rewritten (V10 nothing, V11 a key for the one bucket, V12 four
+secrets). `scripts/voices/run.json` was not touched and still holds the dry
+run of four voices, which `plan` now refuses: the go copies `full.json` over
+it, as step 1 below says. What follows is the hand-over as it was written;
+where it names the Plus voices, the private bucket or five secrets, read the
+above.
+
 Started 00:34 UTC by Arbiter 14 at his yes (about 00:33) to record the voices
 on GitHub's free runners. Stopped at its step 5: the dry run and his steps are
 done; **the full recording waits for the arbiter's go**, given once his
