@@ -10,7 +10,7 @@
 // Arabic, as a phone draws it (twice the pixels).
 // --at=<sizes> walks only those (390, 800, 390-ar, ...), so the long checkMock passes can run side by side: the
 // Words view photographs every line of the chant's words on each look.
-//   node scripts/gate/saved-line.mjs [export folder, default out/] [--stills=<folder>] [--at=360,412]
+//   node scripts/gate/saved-line.mjs [export folder, default out/] [--stills=<folder>] [--at=360,412,390-ar-en]
 import fs from "node:fs";
 import path from "node:path";
 
@@ -27,8 +27,11 @@ const OUT = path.resolve(args.find((a) => !a.startsWith("--")) ?? path.join(ROOT
 const STILLS = args.find((a) => a.startsWith("--stills="))?.slice(9) ?? null;
 const AT = args.find((a) => a.startsWith("--at="))?.slice(5).split(",") ?? null;
 // The version the chant's page plays in the app's language: the Arabic in Arabic, else the English.
-const version = (lang) => (lang === "ar" ? "ar" : "en");
-const srcOf = (lang) => `/audio/chants/prayer-rope-anthem/${version(lang)}.mp3`;
+// The Arabic recording's words are not shown (data/chants/prayer-rope-anthem.json, its wordsSource), so it has
+// no Words view: "390-ar-en" walks the Arabic interface with the English recording chosen on the chant's page.
+const version = (lang, rec) => rec ?? (lang === "ar" ? "ar" : "en");
+const srcOf = (lang, rec) => `/audio/chants/prayer-rope-anthem/${version(lang, rec)}.mp3`;
+const labelOf = (id) => JSON.parse(fs.readFileSync(path.join(ROOT, "data/chants/prayer-rope-anthem.json"), "utf8")).variants.find((v) => v.id === id)?.label;
 const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN, args: ["--autoplay-policy=no-user-gesture-required"] } : {});
 console.log(`Now Playing's saved line, on ${path.relative(ROOT, OUT) || OUT}`);
 
@@ -72,12 +75,12 @@ function boxes() {
 }
 
 let faults = 0;
-for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"], [800, 1280, "en"], [1032, 1366, "en"], [390, 844, "ar"]]) {
-  if (AT && !AT.includes(lang === "en" ? String(w) : `${w}-${lang}`)) continue;
-  const still = STILLS && w === 390;
+for (const [w, h, lang, rec] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"], [800, 1280, "en"], [1032, 1366, "en"], [390, 844, "ar"], [390, 844, "ar", "en"]]) {
+  if (AT && !AT.includes(lang === "en" ? String(w) : `${w}-${lang}${rec ? `-${rec}` : ""}`)) continue;
+  const still = STILLS && w === 390 && !rec;
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: still ? 2 : 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on") });
   await pinMotion(ctx, "on");
-  const src = srcOf(lang);
+  const src = srcOf(lang, rec);
   const bytes = fs.statSync(path.join(ROOT, "public", src)).size;
   await ctx.addInitScript(([src, lang, v, bytes]) => {
     try {
@@ -101,7 +104,7 @@ for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"]
       }
       tx.objectStore("FileStorage").put({ path: `${folder}/${v}.mp3`, folder, type: "file", size: bytes, ctime: Date.now(), mtime: Date.now(), content: "" });
     };
-  }, [src, lang, version(lang), bytes]);
+  }, [src, lang, version(lang, rec), bytes]);
   await serveLikeTheShell(ctx, OUT, {});
   await answerWebsite(ctx);
   const page = await ctx.newPage();
@@ -117,7 +120,20 @@ for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"]
   await go(page, "/chants/prayer-rope-anthem/", { timeout: 60000 });
   await page.waitForSelector('[data-chant-control="dock"]', { timeout: 30000 });
   await page.waitForTimeout(1200);
-  await tap(page.locator('[data-chant-control="dock"] button[aria-label]').filter({ has: page.locator("svg") }).nth(1));
+  if (rec) {
+    // The version's own play, behind the page's Versions door (role tab), as a reader reaches it.
+    await tap(page.locator('[role="tab"][aria-controls="chant-panel-versions"]').filter({ visible: true }).first());
+    await page.waitForTimeout(900);
+    const play = page.locator(`#chant-panel-versions button[aria-label$=": ${labelOf(rec)}"]`).first();
+    await play.scrollIntoViewIfNeeded({ timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(400);
+    const at = await play.boundingBox().catch(() => null);
+    if (!at) console.log(`--    ${w} ${lang}: no play for the ${rec} recording; the page's labels: ${(await page.evaluate(() => [...document.querySelectorAll("button[aria-label]")].map((x) => x.getAttribute("aria-label")).join(" | "))).slice(0, 600)}`);
+    await tap(play);
+    await page.waitForTimeout(1500);
+    console.log(`--    ${w} ${lang}: the ${rec} recording's play tapped at ${at ? Math.round(at.y) : "none"}; now: ${await play.getAttribute("aria-label").catch(() => "gone")}`);
+  }
+  else await tap(page.locator('[data-chant-control="dock"] button[aria-label]').filter({ has: page.locator("svg") }).nth(1));
   await page.waitForTimeout(1500);
   await go(page, "/prayers/", { timeout: 30000 });
   await page.waitForTimeout(1500);
@@ -147,8 +163,12 @@ for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"]
       if (view === "Words") {
         const tab = page.locator('[data-line-check="1"] #player-view-tab-words');
         if (!(await tab.count())) {
+          if (lang === "ar" && !rec) {
+            console.log(`--    ${w} ${lang}: no Words view, as this recording's words are not shown; walked with the English recording (390-ar-en)`);
+            break;
+          }
           faults += 1;
-          console.log(`FAULT ${w} ${lang}: no Words view to hold to checkMock`);
+          console.log(`FAULT ${w} ${lang}${rec ? ` (${rec} recording)` : ""}: no Words view to hold to checkMock`);
           break;
         }
         await tap(tab);
@@ -157,7 +177,7 @@ for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"]
       const speaks = await page.locator('[data-line-check="1"] [data-saved-line="speaks"]').count();
       const r = await checkMock(page, '[data-line-check="1"]', { pixels: true, palettes: EVERY });
       if (r.failures.length || !speaks) faults += 1;
-      console.log(`${r.failures.length || !speaks ? "FAULT" : "ok   "} ${w} ${lang}: Now Playing's ${view} view with the line ${speaks ? "showing" : "NOT SHOWING"} on the five palettes, the two earned and the fourteen looks${r.failures.length ? `: ${r.failures.slice(0, 4).map((f) => `${f.check} [${f.palette}] ${f.what}: ${f.detail}`.slice(0, 200)).join("; ")}` : ""}`);
+      console.log(`${r.failures.length || !speaks ? "FAULT" : "ok   "} ${w} ${lang}${rec ? ` (${rec} recording)` : ""}: Now Playing's ${view} view with the line ${speaks ? "showing" : "NOT SHOWING"} on the five palettes, the two earned and the fourteen looks${r.failures.length ? `: ${r.failures.slice(0, 4).map((f) => `${f.check} [${f.palette}] ${f.what}: ${f.detail}`.slice(0, 200)).join("; ")}` : ""}`);
     }
     const cover = page.locator('[data-line-check="1"] #player-view-tab-cover');
     if (await cover.count()) {
@@ -172,7 +192,7 @@ for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"]
   const fault = moved > 0.5 || !b.shown || b.lineH > 24 || b.cut || c.shown;
   if (fault) faults += 1;
   console.log(
-    `${fault ? "FAULT" : "ok   "} ${w} ${lang}: the line ${b.shown ? `came ("${b.words}", ${b.lineH}px tall${b.cut ? ", CUT SHORT" : ""})` : "DID NOT COME"} and ${c.shown ? "DID NOT GO" : "went"}; ` +
+    `${fault ? "FAULT" : "ok   "} ${w} ${lang}${rec ? ` (${rec} recording)` : ""}: the line ${b.shown ? `came ("${b.words}", ${b.lineH}px tall${b.cut ? ", CUT SHORT" : ""})` : "DID NOT COME"} and ${c.shown ? "DID NOT GO" : "went"}; ` +
       `title at ${a.title} / ${b.title} / ${c.title}, cover at ${a.cover} / ${b.cover} / ${c.cover} (height ${a.coverH} / ${b.coverH}): ${moved > 0.5 ? `MOVED ${Math.round(moved)}px` : "nothing moved"}`,
   );
   if (w === 360 && lang === "en" && !fault) {
