@@ -4,7 +4,7 @@
 // title tapped (the line comes: saved, with Remove) and tapped again (it goes). Asked each time: did the
 // cover's box or the title's move at all, and is the line one line? At 360, 390 and 412, and in Arabic.
 // Then every language's words for every state of the line measured in the line's own font against the
-// line's width at 360: each must fit on its one line. At 390, 800 and 1032 and in Arabic, Now Playing with the
+// line's width at 360: each must fit on its one line. At 390, 800 and 1032 and in Arabic, Now Playing's Cover and Words views with the
 // line held to checkMock with pixels on the five palettes, the two earned and the fourteen looks. Run from the
 // repository's root; writes nothing, unless --stills=<folder> asks for Now Playing with the line at 390 and in
 // Arabic, as a phone draws it (twice the pixels).
@@ -138,9 +138,28 @@ for (const [w, h, lang] of [[360, 780, "en"], [390, 844, "en"], [412, 915, "en"]
   }
   if ([390, 800, 1032].includes(w)) {
     await page.evaluate(() => [...document.querySelectorAll('[role="dialog"]')].find((d) => d.querySelector("h2"))?.setAttribute("data-line-check", "1"));
-    const r = await checkMock(page, '[data-line-check="1"]', { pixels: true, palettes: EVERY });
-    if (r.failures.length) faults += 1;
-    console.log(`${r.failures.length ? "FAULT" : "ok   "} ${w} ${lang}: Now Playing with the line on the five palettes, the two earned and the fourteen looks${r.failures.length ? `: ${r.failures.slice(0, 4).map((f) => `${f.check} [${f.palette}] ${f.what}: ${f.detail}`.slice(0, 200)).join("; ")}` : ""}`);
+    // Both views with the line showing: Cover, then Words (the line is the sheet's, under both), then back.
+    for (const view of ["Cover", "Words"]) {
+      if (view === "Words") {
+        const tab = page.locator('[data-line-check="1"] #player-view-tab-words');
+        if (!(await tab.count())) {
+          faults += 1;
+          console.log(`FAULT ${w} ${lang}: no Words view to hold to checkMock`);
+          break;
+        }
+        await tap(tab);
+        await page.waitForTimeout(900);
+      }
+      const speaks = await page.locator('[data-line-check="1"] [data-saved-line="speaks"]').count();
+      const r = await checkMock(page, '[data-line-check="1"]', { pixels: true, palettes: EVERY });
+      if (r.failures.length || !speaks) faults += 1;
+      console.log(`${r.failures.length || !speaks ? "FAULT" : "ok   "} ${w} ${lang}: Now Playing's ${view} view with the line ${speaks ? "showing" : "NOT SHOWING"} on the five palettes, the two earned and the fourteen looks${r.failures.length ? `: ${r.failures.slice(0, 4).map((f) => `${f.check} [${f.palette}] ${f.what}: ${f.detail}`.slice(0, 200)).join("; ")}` : ""}`);
+    }
+    const cover = page.locator('[data-line-check="1"] #player-view-tab-cover');
+    if (await cover.count()) {
+      await tap(cover);
+      await page.waitForTimeout(900);
+    }
   }
   await tap(mark);
   await page.waitForTimeout(700);

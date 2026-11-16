@@ -62,7 +62,7 @@ for (const [w, h, lang] of [[390, 844, "en"], [800, 1280, "en"], [1032, 1366, "e
       const d = [...document.querySelectorAll('[role="dialog"]')].find((x) => x.getBoundingClientRect().height > 0);
       if (d) d.setAttribute("data-books-check", "1");
       const v = d?.querySelector("[data-books-version]");
-      return { open: !!d, books: !!d?.querySelector("[data-books-sheet]"), versions: !!d?.querySelector("[data-books-versions]"), rows: d?.querySelectorAll("[data-books-versions] button").length ?? 0, label: v?.textContent.trim() ?? null, expanded: v?.getAttribute("aria-expanded") ?? null, title: d?.querySelector("p")?.textContent.trim() ?? null };
+      return { open: !!d, books: !!d?.querySelector("[data-books-sheet]"), versions: !!d?.querySelector("[data-books-versions]"), rows: d?.querySelectorAll("[data-books-versions] button").length ?? 0, top: d?.querySelector("[data-books-versions]")?.parentElement?.scrollTop ?? null, label: v?.textContent.trim() ?? null, expanded: v?.getAttribute("aria-expanded") ?? null, title: d?.querySelector("p")?.textContent.trim() ?? null };
     });
   const held = async (what) => {
     const r = await checkMock(page, '[data-books-check="1"]', { pixels: true, palettes: EVERY });
@@ -82,7 +82,8 @@ for (const [w, h, lang] of [[390, 844, "en"], [800, 1280, "en"], [1032, 1366, "e
   // The version tapped: the same sheet turns to the versions.
   await tap(page.locator('[data-books-check="1"] [data-books-version]'));
   s = await state();
-  say(s.open && s.versions && !s.books && s.rows >= 2 && s.expanded === "true", `${w} ${lang}: a tap on the version turns the sheet to the versions (${s.rows} rows), the chevron turned`);
+  // From their top, as from the title line: the books' scroll left in place hid the first rows (Updates 98i).
+  say(s.open && s.versions && !s.books && s.rows >= 2 && s.expanded === "true" && s.top === 0, `${w} ${lang}: a tap on the version turns the sheet to the versions (${s.rows} rows) from their top (scrolled ${s.top}px), the chevron turned`);
   await held("the versions");
   // And back.
   await tap(page.locator('[data-books-check="1"] [data-books-version]'));
@@ -107,13 +108,16 @@ for (const [w, h, lang] of [[390, 844, "en"], [800, 1280, "en"], [1032, 1366, "e
     await tap(page.locator("[data-reader-pill] button[aria-haspopup='dialog']").filter({ visible: true }).first());
     await tap(page.locator('[data-books-check="1"] [data-books-version], [role=dialog] [data-books-version]').first());
     const web = page.locator('[role=dialog] [data-books-versions] button[aria-label^="Download World English Bible"]').first();
+    // Tapped where a reader meets it, not scrolled to first: the row must be in the sheet's view.
+    const at = await web.boundingBox().catch(() => null);
+    say(!!at && at.y >= 0 && at.y + at.height <= 844, `390 en: the World English Bible's row in view as the versions are turned to (its top at ${at ? Math.round(at.y) : "none"})`);
     await tap(web);
     const t0 = Date.now();
     do {
       await page.waitForTimeout(600);
       s = await state();
     } while (Date.now() - t0 < 60000 && !(s.books && s.label === "WEB"));
-    say(s.open && s.books && s.label === "WEB", `390 en: the World English Bible downloaded and chosen in the sheet, which turns back to the books with "${s.label}" at its head`);
+    say(s.open && s.books && s.label === "WEB", `390 en: the World English Bible downloaded and chosen in the sheet: ${s.books ? "it turns back to the books" : s.open ? "the sheet STILL ON THE VERSIONS" : "the sheet CLOSED"}, "${s.label}" at its head`);
     await tap(close());
     await page.waitForTimeout(2500);
     const after = await page.evaluate(() => {

@@ -241,8 +241,14 @@ function VersionHead({ book, view, onTurn }: { book: string; view: BooksView; on
 function SheetVersions({ book, turned, onChosen }: { book: string; turned: boolean; onChosen: () => void }) {
   const configured = configuredTranslations();
   const { testament, list, current, choose, shown, chooseBible } = useTranslationChoice(book, configured);
+  // Turned to from the books, the scroller is where the books left it, part
+  // way down: the versions start at their top, as they do opened from the
+  // title line. Once, as they are drawn: a download redraws them.
+  const fromTop = useCallback((el: HTMLDivElement | null) => {
+    if (el?.parentElement) el.parentElement.scrollTop = 0;
+  }, []);
   return (
-    <div id={VERSIONS_ID} data-books-versions="" className={cn("pt-3", turned && TURN)}>
+    <div ref={fromTop} id={VERSIONS_ID} data-books-versions="" className={cn("pt-3", turned && TURN)}>
       <TranslationList
         testament={testament}
         list={list}

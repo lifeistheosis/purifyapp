@@ -72,3 +72,15 @@ describe("the version chosen in the books sheet (build 98 note 7)", () => {
     expect(booksViewOf(new Event(BOOKS_OPEN_EVENT))).toBe("books");
   });
 });
+
+// Build 98 note 7, the choice from the books (Updates 98i, 2026-11-16): the
+// versions were drawn in the scroller the books had left part way down (499px
+// at 390 with Luke open), so the English rows, the World English Bible among
+// them, stood above the sheet's top and a finger met nothing there. A reader
+// turning from the books met another list than one coming from the title line.
+describe("the versions turned to from the books start where they start from the title line", () => {
+  it("start at their top, once as they are drawn, not on every redraw a download makes", () => {
+    expect(versions).toMatch(/const fromTop = useCallback\(\(el: HTMLDivElement \| null\) => \{\s*if \(el\?\.parentElement\) el\.parentElement\.scrollTop = 0;\s*\}, \[\]\);/);
+    expect(versions).toContain('<div ref={fromTop} id={VERSIONS_ID} data-books-versions=""');
+  });
+});

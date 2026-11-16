@@ -105,6 +105,8 @@ await page.waitForTimeout(2000);
 const english = await page.evaluate(() => document.getElementById("v3")?.textContent.trim() ?? "");
 await openTranslations();
 const downloaded = [];
+// The Bibles a download was seen to choose, so the next is told from the last.
+const chosen = [];
 for (let n = 0; n < 12; n++) {
   // A row's tap downloads its Bible and then reads on in it, which closes the sheet as any choice does:
   // the versions opened afresh for each.
@@ -124,12 +126,37 @@ for (let n = 0; n < 12; n++) {
   await tapRow(() => page.locator(`[role=dialog] button[aria-label="${label}"]`).filter({ visible: true }).first());
   const manage = page.locator(`[role=dialog] button[aria-label="${en["bible.downloads.manageAria"].replace("{name}", name)}"]`);
   const failed = page.locator("[role=dialog]", { hasText: /Could not download|Not available to download/ });
+  // A finished download reads on in its Bible, and a choice closes the sheet opened from the title line (with
+  // "Switch to ..." after it for another language): done is the row's options in the sheet, or the sheet
+  // closed on a Bible newly chosen and listed on the phone (the store's own keys).
+  const closedOn = () =>
+    page.evaluate((seen) => {
+      const open = [...document.querySelectorAll("[role=dialog]")].some((d) => d.getBoundingClientRect().height > 0 && d.querySelector("[data-books-versions]"));
+      if (open) return null;
+      try {
+        const id = localStorage.getItem("purify.bible.download");
+        const saved = JSON.parse(localStorage.getItem("purify:bibles.saved") || "{}");
+        return id && !seen.includes(id) && saved[id] ? id : null;
+      } catch {
+        return null;
+      }
+    }, chosen);
   const t0 = Date.now();
-  while (Date.now() - t0 < 90000 && !(await manage.count()) && !(await failed.count())) await page.waitForTimeout(500);
-  const ok = (await manage.count()) > 0;
+  let how = null;
+  while (Date.now() - t0 < 90000 && !how && !(await failed.count())) {
+    if (await manage.count()) how = "its options in the sheet";
+    else {
+      const id = await closedOn();
+      if (id) {
+        chosen.push(id);
+        how = `the sheet closed on it, chosen (${id})`;
+      } else await page.waitForTimeout(500);
+    }
+  }
+  const ok = !!how;
   downloaded.push(name);
   if (!ok) faults += 1;
-  console.log(`${ok ? "ok   " : "FAULT"} downloaded ${name}${ok ? ` in ${Math.round((Date.now() - t0) / 100) / 10} s` : ` (${(await failed.count()) ? "the sheet said it failed" : "not on the phone after 90 s"}; the sheet offers: ${await offered()})`}`);
+  console.log(`${ok ? "ok   " : "FAULT"} downloaded ${name}${ok ? ` in ${Math.round((Date.now() - t0) / 100) / 10} s: ${how}` : ` (${(await failed.count()) ? "the sheet said it failed" : "not on the phone after 90 s"}; the sheet offers: ${await offered()})`}`);
 }
 if (downloaded.length < 7) {
   faults += 1;
