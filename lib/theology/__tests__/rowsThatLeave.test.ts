@@ -54,6 +54,10 @@ describe("a row that opens a page keeps still as it is pressed with motion reduc
       "button components/fasting/FastingTrackerClient.tsx",
       "button components/journal/JournalClient.tsx",
       "button components/legal/LegalContents.tsx",
+      // The writing page's one sheet (1.9, Fable round 3): its rows change the
+      // sheet's own content or lay something on the page under it.
+      "const components/journal/LibraryQuote.tsx",
+      "const components/journal/WriteSheet.tsx",
     ]);
   });
 });

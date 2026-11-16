@@ -368,12 +368,16 @@ describe("the journal's own screen goes through the rule", () => {
   });
 
   it("Done keeps by the same rules, and an empty page does not wait", () => {
-    const done = client.slice(client.indexOf("const done = () =>"), client.indexOf("// ── Taking away"));
+    // Done and the way back are the writing page's (1.9, Fable round 3: components/journal/JournalWritePage.tsx).
+    const page = read("components/journal/JournalWritePage.tsx");
+    const done = page.slice(page.indexOf("const done = () =>"), page.indexOf("const cover ="));
     expect(done).toContain("keepDone(draft);");
     expect(done).not.toMatch(/addRecord|updateRecord/);
-    const close = client.slice(client.indexOf("const close = () =>"), client.indexOf("const done = () =>"));
-    expect(close).toContain("const keep = draftWaits(draft);");
-    expect(close).not.toContain("draft.body.trim().length > 0");
+    const back = page.slice(page.indexOf("const back = () =>"), page.indexOf("const done = () =>"));
+    expect(back).toContain("if (!draftWaits(draft)) clearDraft();");
+    expect(back).not.toContain("draft.body.trim().length > 0");
+    // Left by the phone's own Back, the same rule holds.
+    expect(page).toContain("if (kept && !draftWaits(kept)) clearDraft();");
     expect(client).toContain("setWaitingDraft(!!kept && draftWaits(kept));");
     // Write goes on only with what waits (or a question not yet answered): never with an old entry that was only read.
     expect(client).toContain("begin(kept && (draftWaits(kept) || (!kept.editing && kept.prompt)) ? kept : BLANK);");
@@ -386,7 +390,9 @@ describe("the journal's own screen goes through the rule", () => {
   });
 
   it("a gathering's ask for one of its pages opens that page, through the same rule", () => {
-    expect(client).toMatch(/const id = takeJournalPage\(\);\s*const asked = id \? readRecords\(\)\.find\(\(r\) => r\.id === id && !r\.deletedAt\) : undefined;[\s\S]*?if \(asked\) openRecord\(asked\);/);
-    expect(client).toContain("const openRecord = useCallback((r: JournalRecord) => begin(");
+    expect(client).toMatch(/const id = takeJournalPage\(\);\s*const asked = id \? readRecords\(\)\.find\(\(r\) => r\.id === id && !r\.deletedAt\) : undefined;[\s\S]*?if \(asked\) openRecord\(asked, true\);/);
+    expect(client).toContain("(r: JournalRecord, over = false) => begin(");
+    // And the writing page, asked for a kept page itself, opens it through the same rule.
+    expect(read("components/journal/JournalWritePage.tsx")).toContain("if (asked) return openKeeping({");
   });
 });

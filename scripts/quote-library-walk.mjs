@@ -2,8 +2,9 @@
 // linking real works from purify". The editor's Quote searches Purify's library (components/journal/
 // LibraryQuote.tsx, lib/journal/libraryQuote.ts).
 //
-// On the export, as the Android shell serves it: the journal, Write, then the Quote tool tapped as a reader taps
-// (a touch), "Incarnation" typed, St Athanasius's On the Incarnation opened to its passages, "became man" found
+// On the export, as the Android shell serves it: the journal, Write, then on the writing page (Fable round 3:
+// the writing is a page of its own, with one control and one sheet) the control and the sheet's Quote row tapped
+// as a reader taps (a touch), "Incarnation" typed, St Athanasius's On the Incarnation opened to its passages, "became man" found
 // in them, and the first passage tapped. It must land as a library quote: the passage's words, the Father and
 // the work named, "Quoted from Purify's library", and Open leading to the work's section inside the app. Then
 // "Words of your own" lays an empty quote of one's own, with no library mark.
@@ -47,7 +48,11 @@ async function phone(width, height, lang) {
 async function tap(page, selector) {
   const el = page.locator(`${selector} >> visible=true`).first();
   await el.waitFor({ timeout: 20000 });
-  await el.scrollIntoViewIfNeeded();
+  // Brought into view only when its head is not on the screen: a passage is shown whole and may be taller than
+  // the screen, and in the writing page's sheet the sheet itself scrolls, so a scroll made for a tall passage
+  // whose first lines already show would move the lines the finger is about to touch.
+  const seen = await el.boundingBox();
+  if (!seen || seen.y < 0 || seen.y + Math.min(seen.height, 44) > (page.viewportSize()?.height ?? 0)) await el.scrollIntoViewIfNeeded();
   const box = await el.boundingBox();
   if (!box) throw new Error(`${selector} is not on the screen`);
   await page.touchscreen.tap(box.x + box.width / 2, box.y + Math.min(box.height / 2, 22));
@@ -66,9 +71,10 @@ for (const [w, h] of [[390, 844], [800, 1280], [1032, 1376]].filter(([w]) => !on
     await go(page, "/journal/");
     await page.waitForTimeout(1500);
     await tap(page, "[data-journal-write]");
-    await page.waitForSelector("[data-page-toolbar] [role=toolbar]", { timeout: 20000 });
+    await page.waitForSelector("[data-journal-add]", { timeout: 20000 });
     await page.waitForTimeout(900);
-    await tap(page, "[data-page-toolbar] [role=toolbar] button:nth-child(2)");
+    await tap(page, "[data-journal-add]");
+    await tap(page, "[data-write-sheet='menu'] li:nth-child(2) button");
     await page.waitForSelector("[data-quote-library] input", { timeout: 10000 });
     await type(page, "[data-quote-library] input", "Incarnation");
     const work = '[data-quote-page^="/saints/athanasius-the-great/on-the-incarnation"]';
@@ -95,16 +101,20 @@ for (const [w, h] of [[390, 844], [800, 1280], [1032, 1376]].filter(([w]) => !on
       const laid = await page.evaluate(() => {
         const fig = [...document.querySelectorAll("[data-page-library]")].pop();
         const a = fig?.querySelector("[data-page-library-source]");
-        return { text: fig?.querySelector("blockquote, p")?.textContent?.trim() ?? fig?.textContent ?? "", cite: a?.textContent?.trim() ?? "", href: a?.getAttribute("href") ?? "", all: fig?.textContent ?? "" };
+        // On the writing page the name stands on a line of its own, and Open is the way back.
+        const named = fig?.querySelector("[data-page-library-cite]") ?? a;
+        return { text: fig?.querySelector("blockquote, p")?.textContent?.trim() ?? fig?.textContent ?? "", cite: named?.textContent?.trim() ?? "", href: a?.getAttribute("href") ?? "", all: fig?.textContent ?? "" };
       });
       say(laid.all.includes(words.slice(0, 60)), `${label}: the passage laid word for word ("${words.slice(0, 50)}...")`);
       say(/Athanasius|أثناسيوس/.test(laid.cite) && /Incarnation|التجسد/.test(laid.cite), `${label}: cited "${laid.cite}"`);
       say(/^\/saints\/athanasius-the-great\/on-the-incarnation\/?#s\d+$/.test(laid.href), `${label}: Open leads to ${laid.href}`);
-      const r3 = await checkMock(page, dialog, { pixels: true, palettes });
+      // The quote is laid on the page itself, and the sheet has gone.
+      const r3 = await checkMock(page, "[data-journal-write]", { pixels: true, palettes });
       say(printMockCheck(r3, `the page with the library quote laid, ${label}`), "checkMock above");
       // Words of one's own, the second choice: an empty quote of one's own, never the library's mark.
       const libraryBefore = await page.locator("[data-page-library]").count();
-      await tap(page, "[data-page-toolbar] [role=toolbar] button:nth-child(2)");
+      await tap(page, "[data-journal-add]");
+      await tap(page, "[data-write-sheet='menu'] li:nth-child(2) button");
       await tap(page, "[data-quote-own]");
       await page.waitForTimeout(600);
       const own = await page.evaluate(() => document.activeElement?.closest("[data-page-library]") === null && document.activeElement?.tagName === "TEXTAREA");

@@ -30,7 +30,6 @@ import {
  type ContextMenuGroup,
 } from "./VerseContextMenu";
 import { VerseFocus, type StudyRow } from "./VerseFocus";
-import { VerseNoteSheet } from "./VerseNoteSheet";
 import { FlorilegiumPickerSheet } from "@/components/florilegium/FlorilegiumPickerSheet";
 import { HighlightPicker } from "./HighlightPicker";
 import { HighlightNamesSheet } from "./HighlightNamesSheet";
@@ -60,6 +59,7 @@ import {
  type TapAt,
 } from "@/lib/bible/verseGesture";
 import { lastPageScrollAt, watchPageScroll } from "@/lib/ui/pageScroll";
+import { openVerseNote } from "@/lib/journal/openVerseNote";
 
 /**
  * The mobile commentary marker is a superscript verse number plus a 5px dot,
@@ -352,8 +352,9 @@ export function VerseRow({
  s: string;
  occ: number;
  } | null>(null);
- // The verse's note, written in the journal's sheet (VerseNoteSheet, 1.9).
- const [noteOpen, setNoteOpen] = useState(false);
+ // The verse's note, written on the journal's page (1.9, round 3's apply;
+ // lib/journal/openVerseNote.ts). Back or Done returns here.
+ const openNote = () => openVerseNote(router, { book, chapter, verse: verse.n, label: reference(), note: ann.note });
  const [copied, setCopied] = useState(false);
  // The verse's words on the page: the focus's card rises from them.
  const wordsRef = useRef<HTMLParagraphElement | null>(null);
@@ -1066,7 +1067,7 @@ export function VerseRow({
  title={t("bible.yourNote")}
  onClick={(e) => {
  e.stopPropagation();
- setNoteOpen(true);
+ openNote();
  }}
  className="hit-44 relative ms-1.5 inline-grid h-[26px] w-[26px] place-items-center rounded-full bg-paper/[0.12] align-[-3px] text-paper/85"
  >
@@ -1236,7 +1237,7 @@ export function VerseRow({
  },
  {
  label: ann.note ? t("bible.editNote") : t("bible.addNote"),
- onClick: () => setNoteOpen(true),
+ onClick: () => openNote(),
  },
  ];
  // Each colour by what it means to the reader, its disc before it and
@@ -1341,7 +1342,6 @@ export function VerseRow({
  "hidden md:pointer-fine:flex native-md-hidden items-center gap-1 shrink-0 -mt-1 transition-opacity duration-150 " +
  (ann.highlighted ||
  ann.note ||
- noteOpen ||
  showSwatches ||
  isVerseBookmarked ||
  (ann.highlightedWords && ann.highlightedWords.length > 0)
@@ -1468,9 +1468,8 @@ export function VerseRow({
  </button>
  <button
  type="button"
- onClick={() => setNoteOpen(true)}
+ onClick={() => openNote()}
  aria-label={ann.note ? t("bible.editNote") : t("bible.addNote")}
- aria-pressed={noteOpen}
  title={ann.note ? t("bible.editNote") : t("bible.addNote")}
  // A 44px touch box round the 28px pen (a tablet's browser touches this
  // row too); the row's gap leaves the star beside it its own (1.9).
@@ -1485,19 +1484,6 @@ export function VerseRow({
  </button>
  </div>
  </div>
-
- {/* The verse's note, in the journal's sheet (1.9, build 88 note 3): on a
-   phone as tall as the keyboard leaves, on a computer the centred panel. */}
- <VerseNoteSheet
- open={noteOpen}
- book={book}
- chapter={chapter}
- verse={verse.n}
- label={reference()}
- note={ann.note}
- onSave={(body) => ann.setNote(body)}
- onClose={() => setNoteOpen(false)}
- />
 
  {/* The verse's door for a screen reader and a keyboard (build 90 note
    10): a lone tap opens nothing now, and the hold that opens the window
@@ -1533,7 +1519,7 @@ export function VerseRow({
  onCopy={() => void copyVerseForPaste()}
  onNote={() => {
  setShowTools(false);
- setNoteOpen(true);
+ openNote();
  }}
  onWord={greekAvailable ? (idx, el) => void openEnglishWord(idx, el) : undefined}
  study={studyRows()}

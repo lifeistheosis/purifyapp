@@ -105,7 +105,8 @@ describe("the places that offer it", () => {
   });
 
   it("the journal opens on the page the quote went to", () => {
-    expect(client).toMatch(/if \(!mounted \|\| !takeJournalOpen\(\)\) return;[\s\S]*?begin\(kept\);/);
+    // The page is written on a page of its own (1.9, Fable round 3): the journal, passed through, gives way to it.
+    expect(client).toMatch(/if \(!mounted \|\| !takeJournalOpen\(\)\) return;[\s\S]*?begin\(kept, true\);/);
   });
 
   it("a library quote's card: the words never edited, the library's mark, and the way back", () => {

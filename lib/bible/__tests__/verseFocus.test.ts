@@ -17,7 +17,7 @@ const code = (rel: string) => read(rel).replace(/\/\*[\s\S]*?\*\//g, "").replace
 
 const FOCUS = code("components/bible/VerseFocus.tsx");
 const ROW = code("components/bible/VerseRow.tsx");
-const NOTE = code("components/bible/VerseNoteSheet.tsx");
+const NOTE = code("lib/journal/openVerseNote.ts");
 const COMPOSER = code("components/journal/JournalComposer.tsx");
 const CSS = read("app/globals.css");
 
@@ -106,8 +106,12 @@ describe("the verse row", () => {
     expect(ROW).toMatch(/ref=\{wordsRef\}\s*data-own-press=""/);
   });
 
-  it("writes a note in the journal's sheet, with no box under the verse and no computer's keyboard hints", () => {
-    expect(ROW).toContain("<VerseNoteSheet");
+  it("writes a note on the journal's page, with no box under the verse and no computer's keyboard hints", () => {
+    // Round 3's apply: the journal's own page, as every page of the journal (lib/journal/openVerseNote.ts).
+    expect(ROW).not.toContain("VerseNoteSheet");
+    expect(ROW).toContain("const openNote = () => openVerseNote(router, { book, chapter, verse: verse.n, label: reference(), note: ann.note });");
+    expect(ROW.match(/openNote\(\)/g)).toHaveLength(4);
+    expect(ROW).not.toContain("setNoteOpen");
     expect(ROW).not.toContain("bible.noteSaveHint");
     expect(ROW).not.toContain("bible.escToClose");
     expect(ROW).not.toContain("<textarea");
@@ -119,16 +123,16 @@ describe("the verse row", () => {
   });
 });
 
-describe("the note's sheet", () => {
-  it("is the journal's composer in its note form, with no Open back to the verse it was opened from", () => {
-    expect(NOTE).toContain("<JournalComposer");
-    expect(NOTE).toContain("openLink={false}");
-    expect(NOTE).toContain("editing: noteKey(book, chapter, verse)");
+describe("the note's way in", () => {
+  it("is the journal's page in its note form, with no Open back to the verse it was opened from", () => {
+    expect(NOTE).toContain("writeDraft(openKeeping(verseNoteDraft(");
+    expect(NOTE).toContain("router.push(WRITE_FROM_VERSE_HREF);");
+    expect(read("components/journal/JournalWritePage.tsx")).toContain("openLink={!fromVerse}");
   });
 
-  it("keeps what was typed and closed, for that verse", () => {
+  it("carries onto the page what the old sheet kept typed and closed for that verse, once", () => {
     expect(NOTE).toContain("purify:note-draft:${book}:${chapter}:${verse}");
-    expect(NOTE).toContain("window.localStorage.setItem(draftKey, body)");
+    expect(NOTE).toContain("window.localStorage.removeItem(key);");
   });
 
   it("draws no square frame round its field: the sheet is the field, and its caret shows where typing goes", () => {

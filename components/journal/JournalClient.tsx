@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
@@ -10,14 +11,13 @@ import { Pen } from "@/components/ui/icons/Pen";
 import { PurifyMark } from "@/components/ui/PurifyMark";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { JournalComposer } from "@/components/journal/JournalComposer";
 import { JournalFeed } from "@/components/journal/JournalFeed";
 import { JournalPrompts } from "@/components/journal/JournalPrompts";
 import { TodayPage } from "@/components/journal/TodayPage";
+import { useSourceLabel } from "@/components/journal/useSourceLabel";
 import { WriteButton } from "@/components/journal/WriteButton";
 import { UndoBar } from "@/components/ui/UndoBar";
 import { readVerseAnnotation, writeVerseAnnotation } from "@/lib/bible/annotations";
-import { localBookNames } from "@/lib/bible/books";
 import { fromThisDay, useJournal } from "@/lib/bible/journal";
 import { useFlorilegia } from "@/lib/florilegium/florilegium";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
@@ -36,10 +36,10 @@ import {
   type JournalRecord,
   type JournalSource,
 } from "@/lib/journal/entries";
-import { READING_KIND_KEY, verseSpan } from "@/lib/journal/churchDay";
 import { takeJournalPage } from "@/lib/journal/gatheringActions";
 import { gatheringOf } from "@/lib/journal/gatherings";
-import { draftWaits, keepDone, keepWaiting, openKeeping } from "@/lib/journal/keepDraft";
+import { draftWaits, keepWaiting, openKeeping } from "@/lib/journal/keepDraft";
+import { WRITE_HREF } from "@/lib/journal/openWriting";
 import { parsePage } from "@/lib/journal/page";
 import { takeJournalOpen } from "@/lib/journal/quoteInJournal";
 import { emptyPromptKey, journalFeed, noteKey, planPrompts, type JournalItem, type PlanQuestion } from "@/lib/journal/feed";
@@ -49,7 +49,6 @@ import { dayLabel, getPlan } from "@/lib/plans/plans";
 import { usePlans } from "@/lib/plans/progress";
 import { useIsNative } from "@/lib/platform/native";
 import { printPart } from "@/lib/ui/printPart";
-import { softTick } from "@/lib/ui/softTick";
 import { useUndo } from "@/lib/ui/useUndo";
 import { useMounted } from "@/lib/useMounted";
 
@@ -61,8 +60,9 @@ const BLANK: JournalDraft = { kind: "reflection", body: "" };
  *
  * Its own entries (lib/journal/entries.ts) and the notes written on verses
  * (lib/bible/journal.ts), in one list by day (components/journal/
- * JournalFeed.tsx). One Write button always in reach, which opens a sheet as
- * tall as the screen (components/journal/JournalComposer.tsx). A reading
+ * JournalFeed.tsx). One Write button always in reach, which opens the page
+ * the journal is written on (components/journal/JournalWritePage.tsx; a
+ * sheet as tall as the screen until 1.9's Fable round 3). A reading
  * plan's questions wait at the top until answered or put aside; an empty
  * journal offers one gentle prompt rather than a blank page.
  *
@@ -75,6 +75,7 @@ const BLANK: JournalDraft = { kind: "reflection", body: "" };
  */
 export function JournalClient() {
   const { t, locale } = useTranslate();
+  const router = useRouter();
   const native = useIsNative();
   const mounted = useMounted();
   const locked = usePlusFeatures() === false;
@@ -103,19 +104,7 @@ export function JournalClient() {
   // list says so and leads to it.
   const { florilegia } = useFlorilegia();
   const gatherings = useMemo(() => florilegia.map((f) => ({ id: f.id, name: f.title, lines: f.items.length })), [florilegia]);
-  const books = useMemo(() => localBookNames(t), [t]);
-  const bookName = useCallback((slug: string) => books[slug] ?? t(`bible.books.${slug}`), [books, t]);
-  const sourceLabel = useCallback(
-    (s: JournalSource) => {
-      if (s.type === "verse") return `${bookName(s.book)} ${s.chapter}:${s.verse}`;
-      if (s.type === "chapter") return `${bookName(s.book)} ${s.chapter}`;
-      if (s.type === "reading") return `${t(READING_KIND_KEY[s.kind])} · ${bookName(s.book)} ${s.chapter}:${verseSpan(s.from, s.to)}`;
-      const plan = getPlan(s.planId);
-      const day = plan?.days[s.day];
-      return day ? t("plans.continueDay", { day: s.day + 1, reading: dayLabel(day, bookName) }) : s.label;
-    },
-    [bookName, t],
-  );
+  const { sourceLabel, bookName } = useSourceLabel();
 
   const waiting = useMemo(
     () => (guide ? planPrompts(plans, records, dismissed, (planId, day) => dayGuide(guide.own, guide.en, planId, day)?.questions ?? null) : null),
@@ -128,8 +117,6 @@ export function JournalClient() {
   const remembered = useMemo(() => fromThisDay(notes, now).slice(0, 2), [notes, now]);
 
   // ── Writing ──────────────────────────────────────────────────────────
-  const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState<JournalDraft>(BLANK);
   const [waitingDraft, setWaitingDraft] = useState(false);
   useEffect(() => {
     const kept = readDraft();
@@ -142,12 +129,21 @@ export function JournalClient() {
   // (lib/journal/waiting.ts). Until 2026-11-11 the page opened here took the
   // waiting one's place: half a thought, closed, was lost to the next entry
   // tapped (the journal's fact 17).
-  const begin = useCallback((next: JournalDraft) => {
-    const page = openKeeping(next);
-    setDraft(page);
-    writeDraft(page);
-    setOpen(true);
-  }, []);
+  //
+  // The page is written on a page of its own (1.9, Fable round 3): it is
+  // written into the kept draft, which that page reads, and the journal goes
+  // there. `over`: the journal was only passed through on the way (a quote
+  // laid from a prayer, a gathering's page), so the writing page takes its
+  // place and the way back leads to where the reader was.
+  const begin = useCallback(
+    (next: JournalDraft, over = false) => {
+      const page = openKeeping(next);
+      writeDraft(page);
+      if (over) router.replace(WRITE_HREF);
+      else router.push(WRITE_HREF);
+    },
+    [router],
+  );
 
   // Write goes on with the page that waits, or with a question put to the
   // reader and not yet answered; with neither, a new page.
@@ -163,12 +159,13 @@ export function JournalClient() {
     if (!mounted || !takeJournalOpen()) return;
     const kept = readDraft();
     if (!kept) return;
-    /* eslint-disable-next-line react-hooks/set-state-in-effect -- the ask
-       is on the device, read once after the first paint. */
-    begin(kept);
+    begin(kept, true);
   }, [mounted, begin]);
 
-  const openRecord = useCallback((r: JournalRecord) => begin({ kind: r.kind, body: r.body, prompt: r.prompt, source: r.source, editing: r.id }), [begin]);
+  const openRecord = useCallback(
+    (r: JournalRecord, over = false) => begin({ kind: r.kind, body: r.body, prompt: r.prompt, source: r.source, editing: r.id }, over),
+    [begin],
+  );
 
   // One of a gathering's pages, asked for from the gathering (components/
   // florilegium/GatheringPages.tsx): the journal opens on it.
@@ -176,9 +173,7 @@ export function JournalClient() {
     if (!mounted) return;
     const id = takeJournalPage();
     const asked = id ? readRecords().find((r) => r.id === id && !r.deletedAt) : undefined;
-    /* eslint-disable-next-line react-hooks/set-state-in-effect -- the ask
-       is on the device, read once after the first paint. */
-    if (asked) openRecord(asked);
+    if (asked) openRecord(asked, true);
   }, [mounted, openRecord]);
 
   const answer = (q: PlanQuestion) => {
@@ -199,32 +194,6 @@ export function JournalClient() {
       return;
     }
     if (item.record) openRecord(item.record);
-  };
-
-  const change = (next: JournalDraft) => {
-    setDraft(next);
-    writeDraft(next);
-  };
-
-  // What waits is what is not kept yet (lib/journal/waiting.ts, `waits`). A
-  // page with nothing on it does not: one that only names its notebook (begun
-  // from a gathering and closed) is no page yet. Nor does a kept entry opened
-  // to be read and left as it was: Write begins a new page after it.
-  const close = () => {
-    setOpen(false);
-    const keep = draftWaits(draft);
-    if (!keep) clearDraft();
-    setWaitingDraft(keep);
-  };
-
-  // Done's rules are lib/journal/waiting.ts (`keeping`), the same ones a page
-  // that waits is kept by.
-  const done = () => {
-    keepDone(draft);
-    clearDraft();
-    setWaitingDraft(false);
-    setOpen(false);
-    if (draft.body.trim()) softTick();
   };
 
   // ── Taking away, with Undo ───────────────────────────────────────────
@@ -398,7 +367,6 @@ export function JournalClient() {
       </div>
 
       {mounted && !entry ? <WriteButton placement="foot" onClick={write} draft={waitingDraft} /> : null}
-      <JournalComposer open={open} draft={draft} onChange={change} onClose={close} onDone={done} sourceLabel={sourceLabel} notebooks={notebooks} />
       <UndoBar entry={entry} onUndo={undo} />
     </>
   );

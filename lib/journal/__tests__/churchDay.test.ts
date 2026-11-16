@@ -114,8 +114,11 @@ describe("the journal is headed by the Church's day", () => {
   });
 
   it("a page begun from a reading names it, and opens it in the Bible", () => {
-    expect(client).toContain('s.type === "reading"');
-    expect(client).toContain("READING_KIND_KEY[s.kind]");
+    // Said one way for the list and for the page being written (1.9, Fable round 3).
+    const label = read("components/journal/useSourceLabel.ts");
+    expect(label).toContain('s.type === "reading"');
+    expect(label).toContain("READING_KIND_KEY[s.kind]");
+    expect(client).toContain("const { sourceLabel, bookName } = useSourceLabel();");
     expect(composer).toContain('source?.type === "reading"');
     expect(composer).toContain("`/bible/${source.book}/${source.chapter}#v${source.from}`");
   });

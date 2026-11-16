@@ -217,6 +217,8 @@ const RULES: readonly (readonly [string, ScreenKey])[] = [
   ["/account/**", "account-settings"],
   ["/saved", "saved"],
   ["/journal", "journal"],
+  // The page the journal is written on (1.9, Fable round 3): the journal's own.
+  ["/journal/write", "journal"],
   ["/settings", "settings"],
   // The reading modes' own page (1.9): every palette on its shelf. Settings' own.
   ["/settings/reading-mode", "settings"],

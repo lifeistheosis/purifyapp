@@ -83,7 +83,24 @@ export function useVerseCardLabel() {
   return (b: Pick<VerseCardBlock, "book" | "chapter" | "from" | "to">) => `${books[b.book] ?? t(`bible.books.${b.book}`)} ${b.chapter}:${verseSpan(b.from, b.to)}`;
 }
 
-export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeholder: string }) {
+export function PageBlocks({
+  editor,
+  placeholder,
+  onPage = false,
+  onProps,
+}: {
+  editor: PageEditor;
+  placeholder: string;
+  /**
+   * Drawn on the writing page (components/journal/JournalWritePage.tsx, 1.9,
+   * Fable round 3) and not in the sheet: the page draws the cover itself, as
+   * a band at its head, and a library quote lies on the page's own ground,
+   * its words in italics, with no card round it.
+   */
+  onPage?: boolean;
+  /** The notebook and tags line was tapped: the page opens them in its one sheet. */
+  onProps?: () => void;
+}) {
   const { t } = useTranslate();
   const label = useVerseCardLabel();
   const { page } = editor;
@@ -104,7 +121,7 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
           pictures are icons, whose faces stand high in the frame, so the cut
           is taken from there. Until build 95 it was a flat strip from edge to
           edge of the sheet, 160px, cut through the middle of the icon. */}
-      {cover ? (
+      {cover && !onPage ? (
         <figure data-page-cover="" className="mb-4">
           {/* eslint-disable-next-line @next/next/no-img-element -- a file the apps carry; the export has no image server */}
           <img src={cover.src} alt={cover.alt} className="block h-44 w-full rounded-[18px] object-cover object-[50%_22%]" />
@@ -144,6 +161,7 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
           onPointerDown={(e) => e.preventDefault()}
           onClick={() => {
             if (locked) upgrade.open("journal");
+            else if (onProps) onProps();
             else editor.setPanel(editor.panel === "props" ? null : "props");
           }}
           className="tap-press flex min-h-11 w-full min-w-0 items-center gap-2 text-start font-sans text-caption text-paper/70 hover:text-paper"
@@ -175,7 +193,12 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
             );
           }
           if (b.type === "verse") return <VerseCard key={`${i}-verse`} index={i} block={b} label={label(b)} noticed={editor.noticed === i} onRemove={() => editor.remove(i)} />;
-          if (b.type === "library") return <LibraryCard key={`${i}-library`} index={i} block={b} onRemove={() => editor.remove(i)} />;
+          if (b.type === "library")
+            return onPage ? (
+              <PageLibraryQuote key={`${i}-library`} index={i} block={b} onRemove={() => editor.remove(i)} />
+            ) : (
+              <LibraryCard key={`${i}-library`} index={i} block={b} onRemove={() => editor.remove(i)} />
+            );
           if (b.type === "heading")
             return <HeadingBlock key={`${i}-heading`} index={i} text={b.text} look={cn(font, align)} onText={(text) => editor.setBlock(i, { text })} onRemove={() => editor.remove(i)} />;
           if (b.type === "check") return <CheckBlock key={`${i}-check`} index={i} items={b.items} onItems={(items) => (items.length ? editor.setBlock(i, { items }) : editor.remove(i))} />;
@@ -1034,7 +1057,7 @@ function Tool({ icon, label, pressed, onClick }: { icon: ReactNode; label: strin
 }
 
 /** Find a verse as the Bible's search does ("John 3:16", "Jn 3:16-18", in the reader's own language), and lay its card. */
-function VerseFinder({ onPick }: { onPick: (block: PageBlock) => void }) {
+export function VerseFinder({ onPick, bare = false }: { onPick: (block: PageBlock) => void; /** In the writing page's sheet, which has its own margins. */ bare?: boolean }) {
   const { t } = useTranslate();
   const label = useVerseCardLabel();
   const books = useMemo(() => localBookNames(t), [t]);
@@ -1064,7 +1087,7 @@ function VerseFinder({ onPick }: { onPick: (block: PageBlock) => void }) {
   }, [q, books]);
 
   return (
-    <div data-page-verse-finder="" className="px-3 pt-2">
+    <div data-page-verse-finder="" className={bare ? undefined : "px-3 pt-2"}>
       <SearchField value={q} onChange={setQ} inputRef={input} placeholder={t("journal.page.versePlaceholder")} onSubmit={() => (found[0] ? onPick(found[0]) : undefined)} />
       {found.length > 0 ? (
         <ul className="mt-1">
@@ -1084,5 +1107,52 @@ function VerseFinder({ onPick }: { onPick: (block: PageBlock) => void }) {
         </ul>
       ) : null}
     </div>
+  );
+}
+
+// ── The writing page's own (components/journal/JournalWritePage.tsx) ──────
+
+/**
+ * A quote from Purify's library on the writing page (1.9, Fable round 3): on
+ * the page's own ground, with no card round it. The words as the page they
+ * are from has them, in italics and never edited here; under them the name
+ * they are cited by, behind the library's quill; then the small line only
+ * these wear, with Open back to their page. Set in from the margin as
+ * everything brought onto the page is (BLOCK_INSET): an indent, never a rule.
+ */
+function PageLibraryQuote({ index, block, onRemove }: { index: number; block: Extract<PageBlock, { type: "library" }>; onRemove: () => void }) {
+  const { t } = useTranslate();
+  return (
+    <figure data-page-block={index} data-page-library="" className="relative pe-12">
+      <blockquote
+        dir="auto"
+        data-mock-allow="emdash"
+        data-mock-why="the source's own words, as its edition prints them"
+        className={cn("whitespace-pre-line font-serif text-body italic leading-[1.7] text-paper/90", BLOCK_INSET)}
+      >
+        {block.text}
+      </blockquote>
+      <figcaption className="mt-2">
+        {block.cite ? (
+          <p className="flex min-w-0 items-start gap-2 font-sans text-detail font-semibold leading-[1.4] text-paper/85">
+            <Quill size={15} aria-hidden className="mt-[2px] shrink-0 text-paper/70" />
+            <span dir="auto" data-page-library-cite="" className="min-w-0">
+              {block.cite}
+            </span>
+          </p>
+        ) : null}
+        <p className={cn("flex min-w-0 items-center gap-3 font-sans text-caption text-paper/60", BLOCK_INSET)}>
+          <span className="min-w-0">{t("journal.page.fromLibrary")}</span>
+          <Link
+            href={block.href}
+            data-page-library-source=""
+            className="ms-auto inline-flex min-h-11 shrink-0 items-center px-3 font-semibold text-paper/75 underline underline-offset-4 hover:text-paper"
+          >
+            {t("journal.composer.open")}
+          </Link>
+        </p>
+      </figcaption>
+      <RemoveButton high onClick={onRemove} label={t("common.remove")} />
+    </figure>
   );
 }

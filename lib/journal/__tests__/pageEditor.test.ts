@@ -118,7 +118,8 @@ describe("notebooks and tags (Plus, step 2b)", () => {
     // give it one is in More (writingSheet.test.ts, "no door to Plus under
     // Title": build 93 note 8).
     const line = blocks.slice(blocks.indexOf('data-page-props=""'), blocks.indexOf('data-page-props=""') + 900);
-    expect(line).toMatch(/if \(locked\) upgrade\.open\("journal"\);\s*else editor\.setPanel/);
+    // On the writing page the line opens the page's one sheet at Notebook (onProps); in the sheet, its panel.
+    expect(line).toMatch(/if \(locked\) upgrade\.open\("journal"\);\s*else if \(onProps\) onProps\(\);\s*else editor\.setPanel/);
     expect(line).toContain("{locked ? <PlusMark");
     expect(line).toContain("min-h-11");
     expect(blocks).toContain('label={editor.page.notebook || t("journal.page.addToNotebook")}');

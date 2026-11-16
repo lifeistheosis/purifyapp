@@ -173,6 +173,9 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/reading\/paths\/[^/]+$/,
   /^\/fathers-on$/,
   /^\/fathers-on\/[^/]+$/,
+  // The journal's writing page (1.9, Fable round 3): its own bar, with the
+  // way back, the day and Done (components/journal/JournalWritePage.tsx).
+  /^\/journal\/write$/,
   // The Ecumenical Councils (1.8, the owner's pick of r3-03): the councils,
   // a council's page (its bar clear over its icon, as a saint's is) and a
   // document, which is a book in the room's reader; and the councils'

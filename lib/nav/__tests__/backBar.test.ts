@@ -45,7 +45,7 @@ const APP = path.join(process.cwd(), "app", "(app)");
  * the gathering's own, which only the device knows. The last tests of this
  * block hold each to drawing a MobileTopBar on every path.
  */
-const MOUNTS = /<(MobileTopBar|AccountTopBar|GatheringBar)[\s/>]/;
+const MOUNTS = /<(MobileTopBar|AccountTopBar|GatheringBar|JournalWritePage)[\s/>]/;
 const STANDS_FOR_THE_BAR = "AccountTopBar.tsx";
 const STAND_FOR_THE_BAR = new Set([STANDS_FOR_THE_BAR, "GatheringBar.tsx"]);
 
@@ -194,6 +194,25 @@ describe("NativeBackBar exclusions vs the tree", () => {
     const named = [...source.matchAll(/path: "([^"]+)"/g)].map((m) => m[1]);
     expect(named.length).toBeGreaterThanOrEqual(6);
     for (const route of named) expect(shouldShowBack(route), route).toBe(false);
+  });
+
+  it("the journal's writing page draws its own bar on every path", () => {
+    // The scan counts <JournalWritePage /> as a bar (1.9, Fable round 3). Its
+    // head is its own: the way back, the day and Done, with no search in it,
+    // so it is not a MobileTopBar. It is drawn before the page being written
+    // is read and after, and its way back has a floor.
+    const source = read(path.join(process.cwd(), "components", "journal", "JournalWritePage.tsx"))
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/^\s*\/\/.*$/gm, "");
+    expect(source).toContain("return first ? <Writing first={first} /> : <Head />;");
+    const writing = source.slice(source.indexOf("function Writing("));
+    expect(writing).toMatch(/return \(\s*<>\s*<Head onBack=\{back\} onDone=\{done\}/);
+    const head = source.slice(source.indexOf("function Head("), source.indexOf("function Writing("));
+    expect(head).toContain("data-mobile-topbar");
+    expect(head).toContain("goBack(router, JOURNAL_HREF)");
+    expect(head).toContain('aria-label={t("nav.back")}');
+    expect(shouldShowBack("/journal/write")).toBe(false);
+    expect(shouldShowBack("/journal/write/")).toBe(false);
   });
 
   it("the gathering's bar draws it on every path too", () => {

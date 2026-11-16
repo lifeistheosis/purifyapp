@@ -101,7 +101,6 @@ describe("a note on words of a text", () => {
 
   it("is written in the house's own sheet, the one a verse's note is written in", () => {
     expect(sheet).toContain("<JournalComposer");
-    expect(read("components/bible/VerseNoteSheet.tsx")).toContain("<JournalComposer");
     for (const code of [row, tools]) expect(code).toContain("<WordsNoteSheet");
   });
 

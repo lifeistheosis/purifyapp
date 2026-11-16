@@ -7,8 +7,10 @@
 // moves, and once the keyboard is up the field stands where the sheet's own rule put it
 // (lib/ui/sheetKeyboard.ts); on the old code the WebView's scroll moved it 200px more on a page with a cover.
 //
-//   NATIVE=1 COVER=1 node scripts/keyboard-sheet-walk.mjs http://localhost:3000 journal step 300
-//   NATIVE=1 node scripts/keyboard-sheet-walk.mjs http://localhost:3000 journal step 300   (no cover)
+//   NATIVE=1 node scripts/keyboard-sheet-walk.mjs out journal frames 300   (the journal's own page from Fable
+//     round 3: Write opens it, the keys follow 98c's mend frame by frame; COVER=1 is the old sheet's toolbar
+//     and no longer applies: a cover is laid from the page's one sheet)
+//   NATIVE=1 node scripts/keyboard-sheet-walk.mjs http://localhost:3000 journal step 300
 //   NATIVE=1 node scripts/keyboard-sheet-walk.mjs http://localhost:3000 living step 300    (For the living:
 //     a `keyboard` sheet taller than what the keyboard leaves: its edge stays while the field shows; until
 //     build 97 it rose from 110.6 to the cap at 12.8 in one frame. KB_AFTER=900 brings the keyboard after
@@ -140,6 +142,8 @@ await page.evaluate((sel) => {
       pad: panel ? getComputedStyle(panel).paddingBottom : null,
       scrimH: scrim?.style.height ?? null, scrimO: scrim?.style.opacity ?? null,
       kbFlag: document.documentElement.getAttribute("data-keyboard"),
+      // The journal's page (Fable round 3): its one control, the plus, stands just above the keys.
+      add: (() => { const a = document.querySelector("[data-journal-add]")?.getBoundingClientRect(); return a ? r(a.bottom) : null; })(),
       focus: document.activeElement === f,
       docScroll: Math.round(document.scrollingElement.scrollTop),
     });
@@ -259,8 +263,17 @@ const edgeStill = frames.slice(Math.max(0, lastBefore)).every((f) => f.rest === 
 const scrimWrites = await page.evaluate(() => window.__scrimWrites ?? []);
 const blinks = scrimWrites.filter((h) => h === "0px").length;
 console.log(`${blinks ? "FAIL" : "ok  "} the scrim's strip: ${scrimWrites.length} writes, ${blinks} of them 0px`);
-const ok = !blinks && (finger ? finger.after - finger.before >= 100 : Boolean(atKb) && edgeStill && end.fieldRest === atKb.fieldRest);
+let ok = !blinks && (finger ? finger.after - finger.before >= 100 : Boolean(atKb) && edgeStill && end.fieldRest === atKb.fieldRest);
 if (finger) console.log(`${ok ? "ok  " : "FAIL"} a finger drawn up the body after the keyboard came: scrolled ${finger.before} -> ${finger.after}`);
 console.log(`${ok ? "ok  " : "FAIL"} ${WHICH}${process.env.COVER ? " with a cover" : ""}: field ${frames.find((f) => f.focus)?.fieldTop} at the tap, ${atKb?.fieldTop} as the keyboard comes, ${end.fieldTop} at rest (body scrolled ${end.st}); edge ${frames[lastBefore]?.rest} before the keyboard, ${end.edge} at rest${edgeStill ? "" : ", moved"}`);
+// From Fable round 3 Write opens the journal's own page, not a sheet: no edge to hold, so the page is
+// held to its own rule. With the keys up its plus stands 12px above them (app/globals.css, .journal-add)
+// and the line being typed in shows above them.
+if (WHICH === "journal" && end.edge === null) {
+  const addOk = end.add !== null && Math.abs(end.ih - 12 - end.add) < 1.5;
+  const fieldOk = end.fieldTop !== null && end.fieldTop + 20 <= end.ih;
+  console.log(`${addOk && fieldOk ? "ok  " : "FAIL"} the journal's page: the plus's foot at ${end.add} over the keys' top at ${end.ih}, the words' first line at ${end.fieldTop}`);
+  ok = ok && addOk && fieldOk;
+}
 await browser.close();
 process.exit(ok ? 0 : 1);

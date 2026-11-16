@@ -209,8 +209,8 @@ export function JournalComposer({
   );
 }
 
-/** What the entry is about, above the words. */
-function SourceCard({
+/** What the entry is about, above the words. The writing page shows it too (components/journal/JournalWritePage.tsx). */
+export function SourceCard({
   source,
   prompt,
   sourceLabel,

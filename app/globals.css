@@ -15318,3 +15318,42 @@ html[data-reading-mode="parchment"] .gift-check {
   inset 0 0 0 1px rgb(0 0 0 / 0.5),
   0 1px 0 color-mix(in srgb, var(--color-paper) 7%, transparent);
 }
+
+
+/* The journal's writing page (1.9, Fable round 3; components/journal/
+   JournalWritePage.tsx). A page for writing only: it holds the screen
+   (lib/ui/overlay.ts), so the tab bar has stepped aside, and its one control,
+   the round button with the plus, stands at the foot's start side over the
+   safe area. With the keyboard up it stands alone just above the keys: in the
+   apps the web view is as tall as what the keyboard leaves, so the foot of
+   the screen is the top of the keys ("The reader's own keyboard", above). It
+   is not one of the bars that step away (.now-playing-lift,
+   data-screen-edge, data-foot-bar) on purpose: it is the one thing that
+   stays. On a computer it stands beside the page's column. */
+.journal-add {
+ position: fixed;
+ z-index: 40;
+ inset-inline-start: max(1rem, calc((100vw - 720px) / 2 - 4.5rem));
+ bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
+}
+html[data-keyboard="up"] .journal-add {
+ bottom: 0.75rem;
+}
+/* Behind its own sheet it goes with the rest of the foot, and comes back as
+   the sheet leaves ("What stands behind a sheet", above). */
+body[data-sheet-up] .journal-add {
+ visibility: hidden;
+}
+/* The control never lies over the words: the page keeps room at its foot as
+   tall as the control (2.75rem), its gap from the foot (0.75rem) and as much
+   again and a little over it, so the last line written scrolls clear. */
+.journal-write-room {
+ padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2.75rem + 0.75rem + 1.75rem);
+}
+/* On the website at a computer's width the header stands over the page's own
+   bar, which stays under it as the page scrolls. */
+@media (min-width: 768px) {
+ html:not(.is-native) .journal-write-head {
+  top: 72px;
+ }
+}
