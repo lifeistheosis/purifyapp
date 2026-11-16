@@ -19,18 +19,23 @@ PART=${1:?part}
 stamp() { date -u +%H:%M:%S; }
 CATS=$(ls -d out/shop/category/*/ 2>/dev/null | sed 's#^out##' | grep -v '/all/$' | grep -v '/\[' | tr '\n' ',')
 ITEM2="/prayers/today/,/prayers/,/fasting/,/shop/,/shop/category/all/,${CATS}/shop/icons/byzantine-three-beam-wall-cross/,/shop/cart/,/shop/orders/,/saints/abraham-of-smolensk/,/reading/,/reading/collections/anger/,/reading/councils/,/reading/councils/ancyra-314/,/reading/paths/,/reading/paths/nativity/,/councils/ancyra-314/,/chants/,/chants/paschal-canon/,/account/,/plan/"
+# At 800 and 1032 (two runs at 390 with all 21 took 2 hours): the same kinds of screen, one of each rail, and three
+# category pages (the current chip first, in the middle, last), so each size and language is one run under an hour.
+WIDE="/prayers/today/,/prayers/,/fasting/,/shop/,/shop/category/all/,/shop/category/apparel/,/shop/category/sets/,/shop/icons/byzantine-three-beam-wall-cross/,/shop/cart/,/shop/orders/,/saints/abraham-of-smolensk/,/reading/,/reading/paths/nativity/,/councils/ancyra-314/,/chants/,/chants/paschal-canon/,/account/,/plan/"
 case "$PART" in
   list) echo "$ITEM2" ;;
   guard)
+    # walks6c.sh guard <390|800|1032> [en|ar] [screens, default ITEM2 at 390 and WIDE above it]
     size=${2:?390, 800 or 1032}; case "$size" in 390) wh=390x844;; 800) wh=800x1280;; 1032) wh=1032x1376;; esac
-    for lang in en ar; do
-      tag="c-$lang-$size"; langs=(); [ "$lang" != en ] && langs=(--lang "$lang")
+    list=${4:-}; [ -z "$list" ] && { [ "$size" = 390 ] && list=$ITEM2 || list=$WIDE; }
+    for lang in ${3:-en ar}; do
+      tag="c-$lang-$size${5:+-$5}"; langs=(); [ "$lang" != en ] && langs=(--lang "$lang")
       SELLS_PLUS=1 NODE_USE_ENV_PROXY=1 node scripts/guardrail-walk.mjs out --workers 3 --online --every --size "$wh" "${langs[@]}" \
-        --only "$ITEM2" --looks "$S/looks-$tag" --json "$D/$tag.json" > "$D/$tag.log" 2>&1
+        --only "$list" --looks "$S/looks-$tag" --json "$D/$tag.json" > "$D/$tag.log" 2>&1
       echo "$tag EXIT $? $(stamp) $(tail -1 "$D/$tag.log" | cut -c1-160)"; gzip -f "$D/$tag.json"
     done ;;
   tap)
-    for lang in en ar; do
+    for lang in ${2:-en ar}; do
       tag="c-tap-$lang"; langs=(); [ "$lang" != en ] && langs=(--lang "$lang")
       SELLS_PLUS=1 NODE_USE_ENV_PROXY=1 node scripts/tap-walk.mjs out --workers 3 --max 1000 --online "${langs[@]}" --only "$ITEM2" \
         --json "$D/$tag.json" > "$D/$tag.log" 2>&1
