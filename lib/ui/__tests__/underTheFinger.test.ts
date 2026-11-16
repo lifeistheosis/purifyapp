@@ -137,7 +137,8 @@ describe("a page that changes above the finger", () => {
     expect(page).toContain("const hold = useHeldPlace();");
     // Everything over the days is told, at the mark, to stay as tall as it is.
     expect(page).toContain("const { ref: head, keep: keepHead } = useNoShrink<HTMLDivElement>();");
-    expect(page).toMatch(/<div ref=\{head\}>\s*\{mounted && finished \? \(/);
+    // (From the fifteen screens' round 3 the plan's words, or its count and bar, lead that part: PlanState.)
+    expect(page).toMatch(/<div ref=\{head\}>\s*<PlanState [^>]*\/>\s*\{mounted && finished \? \(/);
     expect(page.indexOf("<div ref={head}>")).toBeLessThan(page.indexOf("<PlanPath "));
   });
 

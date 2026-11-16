@@ -66,6 +66,7 @@ const NAME_FIRST: Record<string, string> = {
   "app/(app)/chants/[slug]/page.tsx": "the chant's name opens the words on its cover (components/chants/ChantPage.tsx)",
   "app/(app)/prayers/personal/page.tsx": "Your rule's heading is the head's first line (components/prayers/mine/RuleHead.tsx)",
   "app/(app)/campaigns/detail/page.tsx": "the campaign's title opens the head (components/campaigns/CampaignPage.tsx)",
+  "app/(app)/plans/[id]/page.tsx": "the plan's name is the only words on its picture (components/plans/PlanHead.tsx; the fifteen screens' round 3)",
 };
 
 /** Where each named first words are drawn, and how the test finds the id there. */

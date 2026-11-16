@@ -50,7 +50,7 @@ describe("words over pictures, mended", () => {
     const src = read("components/plans/PlansClient.tsx");
     // The picture is a box of its own above the words, taking the room they leave.
     expect(src).toMatch(
-      /<span aria-hidden className="relative -mx-3 -mt-3 mb-1 block min-h-0 flex-1" data-plan-tile-picture="">\s*<CoverArt[\s\S]{0,200}?className="plan-tile-picture absolute inset-0 h-full w-full"\s*\/>\s*<\/span>\s*<span className="relative block font-sans text-ui font-semibold leading-tight text-paper">/,
+      /<span aria-hidden className="relative -mx-3 -mt-3 mb-1 block min-h-0 flex-1" data-plan-tile-picture="" data-carry=\{cover\.src\}>\s*<CoverArt[\s\S]{0,200}?className="plan-tile-picture absolute inset-0 h-full w-full"\s*\/>\s*<\/span>\s*<span className="relative block font-sans text-ui font-semibold leading-tight text-paper">/,
     );
     // And it is the tile's only picture: nothing else is laid under the words.
     expect(src.match(/className="plan-tile-picture /g)).toHaveLength(1);

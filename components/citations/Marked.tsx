@@ -75,6 +75,7 @@ export function SourceList({
   lang,
   heading: Heading = "h2",
   compact = false,
+  labelledBy,
   className,
 }: {
   id: string;
@@ -84,17 +85,25 @@ export function SourceList({
   heading?: "h2" | "h3";
   /** Each number with its line alone, the words left where they stand (a short text, as a plan's day). */
   compact?: boolean;
+  /**
+   * The id of what already names the list where it stands: the line that
+   * opens it (a plan's day, 1.9). The list then draws no heading of its own,
+   * and `id` is the list's.
+   */
+  labelledBy?: string;
   className?: string;
 }) {
   if (!sources.length) return null;
   return (
-    <section aria-labelledby={id} className={className}>
+    <section id={labelledBy ? id : undefined} aria-labelledby={labelledBy ?? id} className={className}>
       {/* A sans label: the heading rule in globals.css sets Lora on every
           heading, so the face is set here. */}
-      <Heading id={id} className="font-sans text-caption text-paper/55" style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}>
-        <T k="cite.sources" />
-      </Heading>
-      <ol className={compact ? "mt-2 space-y-1.5" : "mt-4 space-y-5"}>
+      {labelledBy ? null : (
+        <Heading id={id} className="font-sans text-caption text-paper/55" style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}>
+          <T k="cite.sources" />
+        </Heading>
+      )}
+      <ol className={labelledBy ? "space-y-1.5" : compact ? "mt-2 space-y-1.5" : "mt-4 space-y-5"}>
         {sources.map((s) =>
           compact ? (
             <li key={s.n} id={`${idPrefix}${s.n}`} className="flex scroll-mt-24 items-baseline gap-2">

@@ -3,16 +3,23 @@
 // A plan's days as a path (1.7, the owner's note 22: "the days as a path you
 // can see, done ones filled, today lit, the next few waiting").
 //
-// The window that matters: the last two days read, today with a ring and
-// its word, and the next four a step back. Each day is a row: a 44px circle
-// (a check once read, its number until then; a tap on it marks the day read
-// or not, as the list always allowed) and its passage, which opens the
-// chapter. "Every day of the plan" opens the rest, grouped by book. No line
-// between the circles and nothing drawn: the rows are the path.
+// The window that matters: the last two days read, today, and the next four
+// a step back. From 1.9 (build 97 note 7, the fifteen screens' round 3) each
+// day says what it holds: its passage is the day's words, in the serif, and
+// its number the small part over them ("Day 4"), where it was a numbered
+// circle beside a line. The words open the chapter. Before them is the day's
+// mark, 44px to the touch: the check once the day is read, a lit ring on
+// today, a faint ring on a day to come; a tap on it marks the day read or
+// not, as the list always allowed. Today stands on a plate of its own with
+// its word. "Every day of the plan" opens the rest, grouped by book. No line
+// between the marks and nothing drawn: the rows are the path.
+//
+// The count of days read and its bar stand under the plan's name, from the
+// first day read (components/plans/PlanClient.tsx, PlanState).
 //
 // Motion, with the motion switch on: the window's rows rise as they scroll
 // into view, the scroll driving them (.path-rise, globals.css), and the day
-// just read fills its circle when the finish lands (.path-fill). The long
+// just read fills its mark when the finish lands (.path-fill). The long
 // list does not move: a scroll-driven animation per row is what made the
 // shop's grid stutter on Android (globals.css, the note above .eikon-drift).
 
@@ -43,17 +50,16 @@ export function PlanPath({
   progress: PlanProgress | undefined;
   /** The first day not yet read, or null when the plan is finished. */
   today: number | null;
-  /** The day finished a moment ago, whose circle fills as it lands. */
+  /** The day finished a moment ago, whose mark fills as it lands. */
   justRead: number | null;
   bookName: (slug: string) => string;
-  /** `pressed` is the circle the finger is on, so the page can keep it where it is (lib/ui/useHeldPlace.ts). */
+  /** `pressed` is the mark the finger is on, so the page can keep it where it is (lib/ui/useHeldPlace.ts). */
   onToggle: (index: number, read: boolean, pressed: Element) => void;
 }) {
   const { t } = useTranslate();
   const [all, setAll] = useState(false);
   const listId = useId();
   const done = (i: number) => Boolean(progress?.done[String(i)]);
-  const read = Object.keys(progress?.done ?? {}).length;
 
   // The window: two read before today, today, four after (or the last days).
   const anchor = today ?? plan.days.length - 1;
@@ -83,45 +89,48 @@ export function PlanPath({
     const isToday = i === today;
     const isRead = done(i);
     return (
-      <li key={i} className={cn("flex items-center gap-3 py-1.5", rise && "path-rise", !isRead && !isToday && "text-paper/55")}>
+      <li
+        key={i}
+        data-plan-day={isToday ? "today" : isRead ? "read" : "ahead"}
+        className={cn("flex items-center gap-1.5 rounded-[18px] py-1 pe-3", rise && "path-rise", isToday && "bg-night-soft ring-1 ring-inset ring-paper/10")}
+      >
         <button
           type="button"
           onClick={(e) => onToggle(i, !isRead, e.currentTarget)}
           aria-pressed={isRead}
           aria-label={t(isRead ? "plans.markUnread" : "plans.markDayRead", { day: i + 1 })}
-          className={cn(
-            "tap-press grid h-11 w-11 shrink-0 place-items-center rounded-full border motion-safe:transition-colors",
-            isRead ? "border-paper bg-paper text-night" : isToday ? "border-paper text-paper ring-2 ring-paper/25 ring-offset-2 ring-offset-night" : "border-paper/20 text-paper/50 hover:border-paper/45",
-            isRead && i === justRead && "path-fill",
-          )}
+          className="tap-press grid h-11 w-11 shrink-0 place-items-center rounded-full"
         >
-          {isRead ? <Check size={18} strokeWidth={2} /> : <span className="font-sans text-caption font-semibold tabular-nums">{i + 1}</span>}
+          <span
+            aria-hidden
+            className={cn(
+              "grid h-7 w-7 place-items-center rounded-full border motion-safe:transition-colors",
+              isRead ? "border-paper/30 bg-paper/15 text-paper" : isToday ? "border-paper text-paper" : "border-paper/25",
+              isRead && i === justRead && "path-fill",
+            )}
+          >
+            {isRead ? <Check size={15} strokeWidth={2.2} /> : isToday ? <span className="block h-2 w-2 rounded-full bg-paper" /> : null}
+          </span>
         </button>
-        <Link href={hrefOfReading(plan.days[i][0])} className="flex min-h-11 min-w-0 flex-1 items-center gap-2">
-          <span className={cn("min-w-0 truncate font-sans text-ui", isToday ? "font-semibold text-paper" : isRead ? "text-paper/60" : "")}>
+        <Link href={hrefOfReading(plan.days[i][0])} className="flex min-h-14 min-w-0 flex-1 flex-col justify-center py-1.5">
+          <span className={cn("flex items-baseline gap-2 font-sans text-caption", isToday ? "font-semibold text-paper/70" : "text-paper/55")}>
+            {t("paths.day", { n: i + 1 })}
+            {isToday ? <span>{t("plans.today")}</span> : null}
+          </span>
+          <span className={cn("mt-0.5 font-serif text-body font-semibold leading-snug [overflow-wrap:anywhere]", isToday ? "text-paper" : isRead ? "text-paper/70" : "text-paper/80")}>
             {dayLabel(plan.days[i], bookName)}
           </span>
-          {isToday ? <span className="shrink-0 font-sans text-caption font-semibold text-paper/70">{t("plans.today")}</span> : null}
         </Link>
       </li>
     );
   };
 
   return (
-    <section aria-labelledby="plan-path" data-plan-path="" className="mt-10">
-      <div className="flex items-baseline justify-between gap-3">
-        <p id="plan-path" role="heading" aria-level={2} className="font-sans text-ui font-semibold text-paper">
-          {t("plans.path.title")}
-        </p>
-        {/* No zero as a first sight (round 1's rule, build 97 note 7): the count and its bar from the first day read. */}
-        {read > 0 ? <p className="font-sans text-caption tabular-nums text-paper/55">{t("plans.progress", { read, total: plan.days.length })}</p> : null}
-      </div>
-      {read > 0 ? (
-        <div aria-hidden className="mt-3 h-1 overflow-hidden rounded-full bg-paper/10">
-          <div className="h-full rounded-full bg-paper/80" style={{ width: `${Math.round((read / plan.days.length) * 100)}%` }} />
-        </div>
-      ) : null}
-      <ol className="mt-3">{near.map((i) => row(i, true))}</ol>
+    <section aria-labelledby="plan-path" data-plan-path="" className="mt-9">
+      <p id="plan-path" role="heading" aria-level={2} className="font-sans text-ui font-semibold text-paper">
+        {t("plans.path.title")}
+      </p>
+      <ol className="mt-2 -ms-2 space-y-1">{near.map((i) => row(i, true))}</ol>
 
       <button
         type="button"
@@ -138,7 +147,7 @@ export function PlanPath({
           {groups.map((g) => (
             <div key={`${g.book}-${g.days[0]}`} className="mt-4 first:mt-0">
               {groups.length > 1 ? <p className="font-sans text-caption font-semibold text-paper/55">{bookName(g.book)}</p> : null}
-              <ol className="mt-1">{g.days.map((i) => row(i, false))}</ol>
+              <ol className="mt-1 -ms-2 space-y-1">{g.days.map((i) => row(i, false))}</ol>
             </div>
           ))}
         </div>

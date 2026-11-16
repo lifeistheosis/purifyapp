@@ -64,3 +64,69 @@ describe("a plan's tile", () => {
     expect(PAGE).toContain('{locked ? <span className={PREMIUM_CHIP}>{t("study.purifyPlus")}</span> : null}');
   });
 });
+
+// A plan's own page (1.9, the fifteen screens' round 3; the owner's note 7 of
+// build 97 with The four Gospels' page: "we need a better plans design").
+describe("a plan's own page", () => {
+  const HEAD = read("components/plans/PlanHead.tsx");
+  const CARD = read("components/plans/PlanTodayCard.tsx");
+  const DAYS = read("components/plans/PlanPath.tsx");
+  const SHELL = read("app/(app)/plans/[id]/page.tsx");
+
+  it("is led by the picture its tile wears, under the clear bar, the plan's name over its foot", () => {
+    // The tile's own rule, word for word, so the two never part.
+    expect(HEAD).toContain(
+      "const cover = plan.season ? { src: SEASON_PICTURES[plan.season], fallback: SEASON_PICTURES[plan.season] } : readAloudCover(plan.cover ?? plan.days[0][0].book);",
+    );
+    expect(HEAD).toContain("useCoversVersion();");
+    expect(HEAD).toMatch(/className="plan-head-picture under-topbar relative -mx-5 overflow-hidden/);
+    expect(HEAD).toMatch(/<h1 id="plan-title" className="plan-head-title [^"]*font-serif /);
+    expect(SHELL).toContain('revealTitleOn="plan-title" overlay />');
+    expect(SHELL).toContain("<PlanHead id={id} />");
+    // One name on the page: the shell draws none of its own.
+    expect(SHELL).not.toMatch(/<h1\b/);
+  });
+
+  it("carries the tile's picture in, and back out, with its name pictured apart over it", () => {
+    expect(PAGE).toContain('data-plan-tile-picture="" data-carry={cover.src}>');
+    expect(PAGE).toContain("<span aria-hidden data-carry={plan.season ? SEASON_PICTURES[plan.season] : SEASON_PICTURES.nativity}");
+    expect(HEAD).toContain("data-carry-into={cover.src}");
+    expect(CSS).toMatch(/\.plan-head:has\(> \.plan-head-picture\[style\*="view-transition-name"\]\) > \.plan-head-words \{\s*view-transition-name: plan-words;/);
+  });
+
+  it("shades the picture with the page's own ground and nothing else: no rays, no stripe, no fixed colour but the old WebView's", () => {
+    const rule = CSS.slice(CSS.indexOf(".plan-head-shade {"), CSS.indexOf("}", CSS.indexOf(".plan-head-shade {")));
+    expect(rule).toContain("var(--color-night) 100%");
+    expect(rule).not.toMatch(/conic|radial|repeating/);
+    expect(HEAD).not.toMatch(/border-(s|e|l|r|inline-start)-\d|bg-gradient/);
+  });
+
+  it("makes the day one card for reading: its small line, the passage large in the serif, one Begin", () => {
+    expect(CARD).toMatch(/<p className="font-sans text-caption font-semibold text-paper\/55">\{t\("plans\.dayOf", \{ day: dayNumber, total \}\)\}<\/p>\s*<h2 id="plan-today" className="[^"]*font-serif text-heading /);
+    expect(CARD.match(/bg-paper /g)).toHaveLength(1);
+    expect(CARD).toContain('data-plan-begin=""');
+  });
+
+  it("keeps every source, folded under the card behind one quiet line, which a number in the intro opens", () => {
+    const card = CARD.slice(CARD.indexOf("<section aria-labelledby=\"plan-today\""), CARD.indexOf("</section>"));
+    expect(card).not.toContain("<SourceList");
+    expect(CARD).toMatch(/aria-expanded=\{sourcesOpen\}[\s\S]{0,400}\{t\("cite\.sources"\)\}/);
+    expect(CARD).toMatch(/\{sourcesOpen \? \(\s*<SourceList id="plan-sources-list" labelledBy="plan-sources" idPrefix=\{PLAN_SOURCE\} sources=\{sources\}/);
+    expect(CARD).toContain("const [sourcesOpen, setSourcesOpen] = useState(false);");
+    expect(CARD).toMatch(/closest\?\.\(`a\[href\^="#\$\{PLAN_SOURCE\}"\]`\)\) flushSync\(\(\) => setSourcesOpen\(true\)\);/);
+  });
+
+  it("lets each day say what it holds: its passage as its words, its number the small part, the check once read", () => {
+    expect(DAYS).toContain('{t("paths.day", { n: i + 1 })}');
+    expect(DAYS).toContain("{dayLabel(plan.days[i], bookName)}");
+    expect(DAYS).toMatch(/\{isRead \? <Check size=\{15\} strokeWidth=\{2\.2\} \/> : isToday \? <span className="block h-2 w-2 rounded-full bg-paper" \/> : null\}/);
+    expect(DAYS).toContain('import { Check } from "@/components/ui/icons/Check";');
+    // No number in a circle, and no filled white disc beside the page's one Begin.
+    expect(DAYS).not.toMatch(/tabular-nums">\{i \+ 1\}/);
+    expect(DAYS).not.toMatch(/bg-paper text-night/);
+    // The window is as it was: two behind, today, four ahead, the rest folded by book.
+    expect(DAYS).toContain("const BEHIND = 2;");
+    expect(DAYS).toContain("const AHEAD = 4;");
+    expect(DAYS).toContain('{t("plans.allDays")}');
+  });
+});

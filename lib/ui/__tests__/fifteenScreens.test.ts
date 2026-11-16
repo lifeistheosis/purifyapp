@@ -106,13 +106,21 @@ describe("No zero as a first sight", () => {
 
   it("shows a plan's days read, and its bar, only from the first day read (build 97 note 7)", () => {
     // His screenshot of The four Gospels: "0 of 89 days read" over an empty bar.
+    // From round 3 the count and its bar stand under the plan's name (PlanState, in the
+    // plan's page), and until a day is read the plan is said in words in their place: its
+    // length and its own line. The days' own part draws no count.
+    const page = read("components/plans/PlanClient.tsx");
+    const state = page.slice(page.indexOf("function PlanState("));
+    expect(state).toMatch(/\{read > 0 \? \(\s*<>\s*<p[^>]*>\{t\("plans\.progress", \{ read, total \}\)\}<\/p>\s*<div aria-hidden className="mt-3 h-1 /);
+    expect(state).toMatch(/\) : \(\s*<p[^>]*>\s*\{tn\("plans\.days", total\)\} · \{t\(`plans\.\$\{id\}\.body`\)\}\s*<\/p>\s*\)\}/);
+    expect(page.match(/t\("plans\.progress"/g)).toHaveLength(1);
+    // A plan begun with no day read yet is not at one: the count is of days read.
+    expect(page).toContain("<PlanState id={id} total={plan.days.length} read={progress ? Object.keys(progress.done).length : 0} />");
     const path = read("components/plans/PlanPath.tsx");
-    expect(path).toMatch(/\{read > 0 \? <p[^>]*>\{t\("plans\.progress", \{ read, total: plan\.days\.length \}\)\}<\/p> : null\}/);
-    expect(path.match(/t\("plans\.progress"/g)).toHaveLength(1);
+    expect(path).not.toMatch(/plans\.progress|Math\.round/);
     // The bar, here and on the plans list's Continue card, is the same count drawn.
     const bars = (src: string) => [...src.matchAll(/style=\{\{ width: `\$\{Math\.round\(\(read \/ /g)].length;
-    expect(bars(path)).toBe(1);
-    expect(path).toMatch(/\{read > 0 \? \(\s*<div aria-hidden className="mt-3 h-1 /);
+    expect(bars(page)).toBe(1);
     const list = read("components/plans/PlansClient.tsx");
     expect(bars(list)).toBe(1);
     expect(list).toMatch(/\{read > 0 \? \(\s*<span aria-hidden className="mt-4 block h-1 /);

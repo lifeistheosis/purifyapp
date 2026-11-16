@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { PlanClient } from "@/components/plans/PlanClient";
-import { T } from "@/components/i18n/T";
+import { PlanHead } from "@/components/plans/PlanHead";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { dayMinutes } from "@/lib/plans/minutes";
 import { READING_PLANS, getPlan } from "@/lib/plans/plans";
@@ -19,8 +19,11 @@ export function generateStaticParams() {
 export const metadata = { title: "Reading plan" };
 
 /* One reading plan (1.7, the owner's note 22): the phone's bar, which goes up
-   to the plans, the plan's name and what it is, then the client's day card,
-   finish and path (components/plans/PlanClient.tsx). Each day's minutes are
+   to the plans, then the plan's picture with its name over its foot
+   (components/plans/PlanHead.tsx; 1.9, build 97 note 7, the fifteen screens'
+   round 3), under the bar, which starts clear over it, then the client's
+   line of what the plan is, day card, finish and path
+   (components/plans/PlanClient.tsx). Each day's minutes are
    counted here at build (lib/plans/minutes.ts) and handed over as numbers,
    and the plan's own words go with them (lib/plans/words.ts), so the day's
    card is whole in the page's first frame (the owner's note 42 of build 80). */
@@ -30,17 +33,10 @@ export default async function PlanPage({ params }: { params: Params }) {
   if (!plan) notFound();
   return (
     <>
-      <MobileTopBar titleKey={`plans.${id}.name`} back backFallback="/plans" revealTitleOn="plan-title" />
-      <section className="min-h-screen bg-night px-5 pt-8 md:px-8 md:pt-14" aria-labelledby="plan-title">
+      <MobileTopBar titleKey={`plans.${id}.name`} back backFallback="/plans" revealTitleOn="plan-title" overlay />
+      <section className="min-h-screen bg-night px-5 md:px-8 md:pt-14" aria-labelledby="plan-title">
         <div className="mx-auto w-full max-w-[760px]">
-          <header>
-            <h1 id="plan-title" className="text-title font-bold leading-[1.12] tracking-[-0.01em] text-paper md:text-heading">
-              <T k={`plans.${id}.name`} />
-            </h1>
-            <p className="mt-2 max-w-[60ch] font-sans text-detail leading-[1.6] text-paper/55">
-              <T k={`plans.${id}.body`} />
-            </p>
-          </header>
+          <PlanHead id={id} />
           <PlanClient id={id} minutes={dayMinutes(plan)} words={planWords(id)} />
         </div>
       </section>

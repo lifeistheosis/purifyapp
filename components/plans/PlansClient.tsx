@@ -135,7 +135,9 @@ export function PlansClient({ minutes }: { minutes: Record<string, number> }) {
                         tile's ground just before them, so the words always stand on
                         the ground: a long name rose into the picture and read 2.46:1
                         on Light (the gate's words over pictures, 2026-11-11). */}
-                    <span aria-hidden className="relative -mx-3 -mt-3 mb-1 block min-h-0 flex-1" data-plan-tile-picture="">
+                    {/* It travels into the head of the plan's own page, and back out of it
+                        (1.9, build 97 note 7; lib/ui/routeMotion.ts, data-carry). */}
+                    <span aria-hidden className="relative -mx-3 -mt-3 mb-1 block min-h-0 flex-1" data-plan-tile-picture="" data-carry={cover.src}>
                       <CoverArt
                         src={cover.src}
                         fallback={cover.fallback}
@@ -239,12 +241,15 @@ function SeasonCard({
   return (
     <section aria-labelledby="plans-season" data-plans-season="" data-tour="plans" className={cn("overflow-hidden rounded-[22px] bg-night-soft ring-1 ring-inset ring-paper/10", !first && "mt-4")}>
       <Link href={`/plans/${plan.id}`} className="tap-press block">
-        <CoverArt
-          src={plan.season ? SEASON_PICTURES[plan.season] : SEASON_PICTURES.nativity}
-          fallback={plan.season ? SEASON_PICTURES[plan.season] : SEASON_PICTURES.nativity}
-          size={420}
-          className="block h-36 w-full object-cover object-[50%_30%]"
-        />
+        {/* The picture in a frame of its own: what travels into the head of the plan's page (1.9; data-carry). */}
+        <span aria-hidden data-carry={plan.season ? SEASON_PICTURES[plan.season] : SEASON_PICTURES.nativity} className="block h-36 overflow-hidden">
+          <CoverArt
+            src={plan.season ? SEASON_PICTURES[plan.season] : SEASON_PICTURES.nativity}
+            fallback={plan.season ? SEASON_PICTURES[plan.season] : SEASON_PICTURES.nativity}
+            size={420}
+            className="block h-36 w-full object-cover object-[50%_30%]"
+          />
+        </span>
         <div className="p-5">
           {date ? (
             <p className="font-sans text-caption font-semibold text-paper/55">{t("plans.season.begins", { date })}</p>

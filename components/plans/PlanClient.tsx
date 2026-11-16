@@ -21,7 +21,10 @@ import { useMounted } from "@/lib/useMounted";
 
 /**
  * One reading plan's page (1.7, the owner's note 22: "a session, not a
- * link"). In order:
+ * link"). Under the plan's picture and name (components/plans/PlanHead.tsx),
+ * in order:
+ *  - what the plan is in words, or from the first day read the count and its
+ *    bar (PlanState, below; 1.9);
  *  - the finish of the day just read, when the plan bar's Done brought the
  *    reader here (components/plans/PlanFinish.tsx);
  *  - otherwise the day's card: which day, the passage, its intro, how long,
@@ -31,7 +34,7 @@ import { useMounted } from "@/lib/useMounted";
  *  - Start over, which asks twice.
  *
  * Plus is shown, never hidden: every reader sees the whole plan; without
- * Plus, Begin and the day circles carry or lead to the upgrade sheet named
+ * Plus, Begin and the days' marks carry or lead to the upgrade sheet named
  * for the plans. Progress is kept on this device (lib/plans/progress.ts).
  *
  * The page arrives whole (the owner's note 42 of build 80, "there's a frame
@@ -121,6 +124,7 @@ export function PlanClient({ id, minutes, words }: { id: string; minutes: number
           John that put the third day on the screen's foot, half risen
           (.path-rise), where the guardrail walk reads it as 2.46:1. */}
       <div ref={head}>
+        <PlanState id={id} total={plan.days.length} read={progress ? Object.keys(progress.done).length : 0} />
         {mounted && finished ? (
           <PlanFinish
             plan={plan}
@@ -137,6 +141,7 @@ export function PlanClient({ id, minutes, words }: { id: string; minutes: number
           />
         ) : next !== null ? (
           <PlanTodayCard
+            key={next}
             dayNumber={next + 1}
             total={plan.days.length}
             reference={dayLabel(plan.days[next], bookName)}
@@ -147,7 +152,7 @@ export function PlanClient({ id, minutes, words }: { id: string; minutes: number
             onBegin={() => begin(next)}
           />
         ) : (
-          <section className="mt-8 rounded-[22px] bg-night-soft p-5 ring-1 ring-inset ring-paper/10 md:p-7">
+          <section className="mt-5 rounded-[22px] bg-night-soft p-5 ring-1 ring-inset ring-paper/10 md:p-7">
             <p className="font-serif text-title-sm text-paper">{t("plans.finished")}</p>
           </section>
         )}
@@ -182,6 +187,34 @@ export function PlanClient({ id, minutes, words }: { id: string; minutes: number
           </button>
         </p>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * What stands under the plan's name (1.9, build 97 note 7; round 1's rule, no
+ * zero as a first sight): until a day is read, what the plan is in words, its
+ * length and its own line; from the first day read, the count and its bar.
+ * His screenshot of The four Gospels had "0 of 89 days read" over an empty
+ * bar. One least height for both, so the card under it stands where it stood
+ * when the first day is marked.
+ */
+function PlanState({ id, total, read }: { id: string; total: number; read: number }) {
+  const { t, tn } = useTranslate();
+  return (
+    <div data-plan-state={read > 0 ? "count" : "words"} className="min-h-11">
+      {read > 0 ? (
+        <>
+          <p className="font-sans text-caption font-semibold tabular-nums text-paper/55">{t("plans.progress", { read, total })}</p>
+          <div aria-hidden className="mt-3 h-1 overflow-hidden rounded-full bg-paper/10">
+            <div className="h-full rounded-full bg-paper/80" style={{ width: `${Math.round((read / total) * 100)}%` }} />
+          </div>
+        </>
+      ) : (
+        <p className="max-w-[60ch] font-sans text-detail leading-[1.6] text-paper/70">
+          {tn("plans.days", total)} · {t(`plans.${id}.body`)}
+        </p>
+      )}
     </div>
   );
 }
