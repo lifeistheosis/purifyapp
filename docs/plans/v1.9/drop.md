@@ -106,6 +106,8 @@ The seven Bibles are in the 1.9 apps, and each downloads from the website. After
 
 `note-1.9` · The note in the app · Admin, Patch notes · Yours · Not filed yet
 
+Waits on: your eye on item 0's new wording (Gate 6b, 2026-11-16). Quote in journal is free on Scripture and Plus on the rest of the library (lib/journal/libraryQuote.ts quoteNeedsPlus), so the line now reads: quote Scripture into it with Quote in journal. Free for everyone. In Purify Plus, quote the prayers, the saints' lives, the Fathers' works and the chants too. It said: quote anything in Purify into it with Quote in journal. Free for everyone.
+
 ~~~text
 Accept it in Admin, Patch notes. Until the notes are accepted, What's New shows the release before this one, and there is no release email to send.
 ~~~
