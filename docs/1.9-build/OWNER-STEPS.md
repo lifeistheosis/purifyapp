@@ -1055,6 +1055,97 @@ Send the arbiter: the lines it printed. Nothing is uploaded for this step.
 
 ---
 
+## Voices on GitHub's runners
+
+Your yes of 2026-11-16 (about 00:33 UTC): the voices are recorded on GitHub's
+own computers, free for this public repository, instead of your PC or a rented
+one. Heart for every reader (the lives, the councils, theology, history, the
+Lives in their witnesses' words, the Old Testament), and Emma, Michael and
+Fenrir for Plus (the New Testament and the same six). This replaces V1 to V4
+above; a chat does V5 and V6. Three steps are yours, about 15 minutes, once.
+No key, number or account id goes in a chat, a file or a message: only into
+the two pages named below.
+
+### V10. A key for the bucket, in Cloudflare (5 minutes)
+
+1. In the Cloudflare dashboard, open **R2 object storage**.
+2. Under **Account Details**, select **Manage** next to **API Tokens**.
+3. Select **Create Account API token**. Name it `purify-voices-github`.
+4. Under **Permissions**, choose **Object Read & Write**.
+5. Apply it to **specific buckets only**, and pick one: the bucket that holds
+   the Bible's recordings (the one behind audio.purifyapp.net). Nothing else.
+6. Select **Create Account API token**.
+7. The next page shows the **Access Key ID** and the **Secret Access Key**.
+   The secret is shown only this once: keep the page open for V12.
+8. The bucket's address for programs (its S3 endpoint) is
+   `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`, with your account id in
+   place of `<ACCOUNT_ID>`. The account id is on the R2 object storage page,
+   under Account Details. If you copy the bucket's **S3 API** address from its
+   **Settings** instead, leave off the bucket's name at its end.
+
+### V11. Keep the Plus voices private (5 minutes)
+
+A bucket behind its own address (audio.purifyapp.net) hands every file in it
+to anyone; Cloudflare's page says to restrict it with its security rules. One
+rule keeps everything under `plus/` from being served there, so the Plus voices
+can only be reached through the signed route the app will use. Free on your
+plan (5 rules).
+
+1. In the Cloudflare dashboard, open the **purifyapp.net** site, then
+   **Security rules**.
+2. Select **Create rule**, then **Custom rules**.
+3. **Rule name:** `Plus voices private`.
+4. **When incoming requests match:** Field **Hostname**, Operator **equals**,
+   Value `audio.purifyapp.net`; **And** Field **URI Path**, Operator
+   **starts with**, Value `/plus/`. (Or **Edit expression** and paste:
+   `(http.host eq "audio.purifyapp.net" and starts_with(http.request.uri.path, "/plus/"))`.)
+5. **Then take action:** **Block**.
+6. Select **Deploy**.
+7. In R2, open the bucket, then **Settings**: its **Public Development URL**
+   (r2.dev) should read disabled. Cloudflare asks for that when a rule
+   guards the bucket, since r2.dev does not pass through the rule.
+
+You do not have to test it: before any Plus voice goes up, the recording
+writes a test file under `plus/`, asks for it at audio.purifyapp.net, and
+stops with a plain message if it is served.
+
+### V12. The four secrets, in GitHub (5 minutes)
+
+1. Open github.com/lifeistheosis/purifyapp and select **Settings**.
+2. In the sidebar's **Security** section, select **Secrets and variables**,
+   then **Actions**.
+3. On the **Secrets** tab, select **New repository secret**, type the
+   **Name**, paste the **Secret**, and select **Add secret**. Four times:
+
+   | Name | Secret |
+   |---|---|
+   | `R2_ENDPOINT` | the S3 endpoint from V10 step 8 |
+   | `R2_ACCESS_KEY_ID` | the Access Key ID |
+   | `R2_SECRET_ACCESS_KEY` | the Secret Access Key |
+   | `R2_BUCKET` | the bucket's name |
+
+4. Tell the arbiter "secrets in". Names only, never a value.
+
+### V13. Then (nothing for you to do)
+
+At the arbiter's go, a chat starts the recording by one change to
+`scripts/voices/run.json` on the branch. GitHub records in 40 pieces, 20 at a
+time, about four to five hours in all at the speed the dry run measures. Each
+recording goes to the bucket as it is made.
+Heart's recordings show Listen in the app once a chat commits their timings and the
+website next deploys; the Plus voices wait under `plus/` for the Voice sheet
+and the signed route.
+
+**Cost:** GitHub's runners are free for a public repository. The bucket grows
+by about 9 GB (505 hours of sound at Heart's 18 MB an hour), to about 9.5 GB:
+inside R2's free 10 GB, then $0.015 a GB a month; the uploads are inside its
+free monthly writes.
+
+**To stop it:** on GitHub, **Actions**, **Voices (record)**, the run,
+**Cancel workflow**. What is in the bucket stays, and the next run skips it.
+
+---
+
 ## The test web: on Render's free size now, the $7 size at payday
 
 **Not used for 1.9** (your word, 2026-11-11: "I won't make the test web just

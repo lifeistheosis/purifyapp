@@ -1,0 +1,15 @@
+# The voices recorder's packages (scripts/voices/record.py), pinned to the set
+# measured against Heart's New Testament on 2026-11-16.
+kokoro-onnx==0.6.1
+onnxruntime==1.32.0
+numpy==2.5.5
+phonemizer==3.6.0
+espeakng-loader==0.2.4
+attrs==26.1.0
+cloudpickle==3.1.2
+dlinfo==2.0.0
+flatbuffers==25.12.19
+joblib==1.6.0
+packaging==26.3
+protobuf==7.36.2
+typing_extensions==4.16.0

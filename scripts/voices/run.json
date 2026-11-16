@@ -1,0 +1,13 @@
+{
+ "run": 1,
+ "mode": "dry",
+ "model": "kokoro-v1.0.fp16.onnx",
+ "rtf": 6.0,
+ "shardHours": 4.0,
+ "work": [
+  { "voice": "af_heart", "chapters": ["john/1"], "batches": ["history/pentecost"] },
+  { "voice": "bf_emma", "chapters": ["john/1"], "batches": ["history/pentecost"] },
+  { "voice": "am_michael", "chapters": ["john/1"], "batches": ["history/pentecost"] },
+  { "voice": "am_fenrir", "chapters": ["john/1"], "batches": ["history/pentecost"] }
+ ]
+}

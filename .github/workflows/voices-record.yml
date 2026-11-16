@@ -1,0 +1,208 @@
+# The voices, recorded on GitHub's own runners (Purify 1.9). His yes of
+# 2026-11-16, about 00:33 UTC: Heart for every reader, Emma, Michael and
+# Fenrir for Plus, recorded here for free (a public repository's standard
+# runners cost nothing) rather than on a rented computer.
+#
+# What it records is scripts/voices/run.json. A push to the 1.9 branch that
+# changes that file is the only push that starts it (the paths filter below),
+# so an ordinary push never does, and it never runs on a pull request. Once
+# this file is on the default branch it can also be started by hand
+# (workflow_dispatch), which runs the default branch's copy.
+#
+#   dry   one Bible chapter and one batch in each voice. Uploads nothing:
+#         the recordings stay as this run's artifacts, measured beside Heart's
+#         New Testament in the summary (loudness, the pause between verses,
+#         the bitrate, the length, the longest silence, each runner's speed).
+#   full  the plan's shards (scripts/voices/record.py plan): whole waves of 20,
+#         each shard well under GitHub's 6 hours. Each recording goes to the
+#         bucket the moment it is made: Heart where the app reads it (read/,
+#         listen/), each Plus voice in its own private place (plus/<voice>/),
+#         its timings beside it. A run again skips what the bucket already has.
+#         Heart's timings come back as the artifact voices-timings, for a chat
+#         to put in public/audio/ and commit, where the website serves them
+#         to the app (lib/readAloud/chapters.ts, lib/listen/recordings.ts).
+#
+# The bucket's four secrets (R2_ENDPOINT, R2_ACCESS_KEY_ID,
+# R2_SECRET_ACCESS_KEY, R2_BUCKET) are handed only to the steps that write to
+# it, only in a full run, and nothing here prints them. Before any Plus voice
+# goes up, the plan proves plus/ is not public at audio.purifyapp.net.
+# His steps: docs/1.9-build/OWNER-STEPS.md, "Voices on GitHub's runners".
+
+name: Voices (record)
+
+on:
+  push:
+    branches: [ccr-07896cf2-bo0afd]
+    paths: [scripts/voices/run.json]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: voices-record
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      shards: ${{ steps.plan.outputs.shards }}
+      mode: ${{ steps.plan.outputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Write the batches from the texts as they stand
+        run: npm run listen:batches
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Plan the shards
+        id: plan
+        run: python3 scripts/voices/record.py plan --run scripts/voices/run.json --batches listen-batches --out plan/plan.json
+      - name: Prove the Plus voices' place is not public
+        if: steps.plan.outputs.mode == 'full' && steps.plan.outputs.plus == 'true'
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: python3 scripts/voices/record.py probe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: voices-plan
+          path: |
+            plan/
+            listen-batches/
+          retention-days: 30
+
+  record:
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        shard: ${{ fromJSON(needs.plan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/voices
+            data/bible
+      - uses: actions/download-artifact@v4
+        with:
+          name: voices-plan
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: scripts/voices/requirements.txt
+      - run: pip install -r scripts/voices/requirements.txt
+      - name: ffmpeg
+        run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg)
+      - uses: actions/cache@v4
+        id: models
+        with:
+          path: ~/.cache/purify-voices
+          key: voices-models-${{ hashFiles('scripts/voices/models.sha256') }}
+      - name: Fetch the model
+        if: steps.models.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/.cache/purify-voices
+          for f in $(awk '{print $2}' scripts/voices/models.sha256); do
+            curl -sSfL --retry 4 -o ~/.cache/purify-voices/"$f" "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/$f"
+          done
+      - name: Check the model
+        run: cd ~/.cache/purify-voices && sha256sum -c "$GITHUB_WORKSPACE/scripts/voices/models.sha256"
+      # Two recorders of two threads each: 1.27 times the sound of one recorder
+      # on the runner's four cores (measured 2026-11-16).
+      - name: Record (dry, nothing uploaded)
+        if: needs.plan.outputs.mode == 'dry'
+        run: |
+          fail=0
+          python3 scripts/voices/record.py record --plan plan/plan.json --shard ${{ matrix.shard }} --part 1/2 --threads 2 --out out & a=$!
+          python3 scripts/voices/record.py record --plan plan/plan.json --shard ${{ matrix.shard }} --part 2/2 --threads 2 --out out & b=$!
+          wait $a || fail=1
+          wait $b || fail=1
+          exit $fail
+      - name: Record and upload (full)
+        if: needs.plan.outputs.mode == 'full'
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          fail=0
+          python3 scripts/voices/record.py record --plan plan/plan.json --shard ${{ matrix.shard }} --part 1/2 --threads 2 --out out --upload --minutes 270 & a=$!
+          python3 scripts/voices/record.py record --plan plan/plan.json --shard ${{ matrix.shard }} --part 2/2 --threads 2 --out out --upload --minutes 270 & b=$!
+          wait $a || fail=1
+          wait $b || fail=1
+          exit $fail
+      # A public repository's artifacts can be fetched by any GitHub account, so
+      # sound is kept only from a dry run, and only for 3 days; a full run keeps
+      # timings and reports alone, its sound being in the bucket.
+      - name: Keep the dry run's recordings (3 days)
+        if: always() && needs.plan.outputs.mode == 'dry'
+        uses: actions/upload-artifact@v4
+        with:
+          name: voices-out-${{ matrix.shard }}
+          path: out/
+          if-no-files-found: ignore
+          retention-days: 3
+      - name: Keep the timings and reports
+        if: always() && needs.plan.outputs.mode == 'full'
+        uses: actions/upload-artifact@v4
+        with:
+          name: voices-out-${{ matrix.shard }}
+          path: |
+            out/**/*.json
+            out/**/*.jsonl
+          if-no-files-found: ignore
+          retention-days: 30
+
+  summary:
+    needs: [plan, record]
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/voices
+            data/bible
+            public/audio/read
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: voices-out-*
+          merge-multiple: true
+          path: out
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: scripts/voices/requirements.txt
+      - run: pip install -r scripts/voices/requirements.txt
+      - name: ffmpeg
+        run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg)
+      - name: Measure (dry, beside Heart's John 1)
+        if: needs.plan.outputs.mode == 'dry'
+        run: python3 scripts/voices/record.py report --out out --heart john/1
+      - name: Report (full)
+        if: needs.plan.outputs.mode == 'full'
+        run: python3 scripts/voices/record.py report --out out
+      - name: The timings, for a chat to commit
+        if: needs.plan.outputs.mode == 'full'
+        uses: actions/upload-artifact@v4
+        with:
+          name: voices-timings
+          path: out/**/*.json
+          retention-days: 90
