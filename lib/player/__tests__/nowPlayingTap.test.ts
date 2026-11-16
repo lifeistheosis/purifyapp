@@ -124,6 +124,8 @@ describe("the soft picture behind Now Playing", () => {
     expect(sheet).toMatch(/requestIdleCallback/);
     // Still drawn only once the slide has ended, and taken away as it goes down: no blur moves.
     expect(sheet).toMatch(/\{audio\.art && up && settled \? \(/);
+    // With motion reduced there is no slide, and it comes two frames after the tap's, not in it.
+    expect(sheet).toMatch(/if \(still\(\)\) \{[\s\S]{0,500}second = requestAnimationFrame\(\(\) => setSettled\(true\)\);/);
   });
 
   it("is cropped as the cover's box crops it, at an eighth of its size, the blur scaled with it", () => {

@@ -177,8 +177,17 @@ export function NowPlayingSheet() {
       return;
     }
     if (still()) {
-      setSettled(true);
-      return;
+      // No slide to wait for: the soft picture comes two frames after the
+      // sheet, so drawing it is not in the tap's frame (Updates 98h: the two
+      // in one frame made a 66.7ms one at a phone's speed).
+      let second = 0;
+      const first = requestAnimationFrame(() => {
+        second = requestAnimationFrame(() => setSettled(true));
+      });
+      return () => {
+        cancelAnimationFrame(first);
+        cancelAnimationFrame(second);
+      };
     }
     // The panel's own transitionend settles it; this, if that never comes.
     const id = setTimeout(() => setSettled(true), SLIDE_MS + 240);
