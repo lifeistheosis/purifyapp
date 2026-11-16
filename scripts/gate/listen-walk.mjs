@@ -199,6 +199,9 @@ for (const text of TEXTS) {
     const playing = await state(page);
     r.steps.playing = playing;
     r.steps.afterListen = { away: playing.away, scrollY: await page.evaluate(() => Math.round(scrollY)) };
+    // The page's own move to the paragraph being read is not the reader reading on (lib/ui/scrollAway.ts,
+    // notePageMoved): the dock stays at rest after Listen until the reader scrolls.
+    if (playing.away) fail(`Listen drew the dock in before the reader read on (the page moved itself to ${r.steps.afterListen.scrollY})`);
     if (playing.dock !== 1) fail("playing: no dock");
     if (playing.mini) fail("playing: the mini player shows");
     if (playing.pill) fail("playing: the pill still shows");

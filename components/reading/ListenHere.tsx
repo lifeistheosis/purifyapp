@@ -20,6 +20,7 @@ import { useCanSpeak } from "@/lib/listen/speech/voices";
 import { hostKeyOf, listenHref, parseListenId, type ListenRef, type ListenTimings } from "@/lib/listen/texts";
 import { sentenceSpans } from "@/lib/marks/anchor";
 import { lineBoxes, type Box } from "@/lib/marks/dom";
+import { fromStart, readsRtl } from "@/lib/marks/startEdge";
 import { captionLines, lineAt } from "@/lib/player/captions";
 import { currentTimeNow, getAudioSnapshot, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { goToReadingPlace, inReadingZone, visibleBand } from "@/lib/ui/readingPlace";
@@ -199,6 +200,20 @@ function textOnPage(ref: ListenRef): { pieces: { text: string; anchor: string }[
   return { pieces, lang: lang || document.documentElement.lang || "en" };
 }
 
+/** A line of the sentence being read, with how far it stands from the page's start edge. */
+type Washed = Box & { start: number };
+
+/**
+ * The sentence's lines, each placed from the page's start edge (inset-inline-start), so the wash
+ * turns round with the page in Arabic as the words do (lib/marks/startEdge.ts).
+ */
+function washOf(lines: Box[]): Washed[] {
+  if (!lines.length) return [];
+  const width = document.documentElement.clientWidth;
+  const rtl = readsRtl(document.body);
+  return lines.map((b) => ({ ...b, start: fromStart(b, width, rtl) }));
+}
+
 /**
  * Lights the paragraph the phone's voice is reading, washes its sentence, and
  * keeps it at the reading place, as ListenFollow does for a recording: the
@@ -207,7 +222,7 @@ function textOnPage(ref: ListenRef): { pieces: { text: string; anchor: string }[
  */
 function SpokenFollow({ src }: { src: string | null }) {
   const lastHand = useRef(0);
-  const [wash, setWash] = useState<Box[]>([]);
+  const [wash, setWash] = useState<Washed[]>([]);
 
   useEffect(() => {
     const hand = () => {
@@ -271,7 +286,7 @@ function SpokenFollow({ src }: { src: string | null }) {
       const key = span && i >= 0 ? `${i}:${span.s}:${window.innerWidth}` : "";
       if (key !== at) {
         at = key;
-        setWash(span && textEl ? lineBoxes(textEl, span) : []);
+        setWash(span && textEl ? washOf(lineBoxes(textEl, span)) : []);
       }
       raf = requestAnimationFrame(loop);
     };
@@ -284,9 +299,9 @@ function SpokenFollow({ src }: { src: string | null }) {
 
   if (typeof document === "undefined" || !wash.length) return null;
   return createPortal(
-    <div aria-hidden className="pointer-events-none absolute left-0 top-0 z-[5] h-0 w-0">
+    <div aria-hidden className="pointer-events-none absolute start-0 top-0 z-[5] h-0 w-0">
       {wash.map((b, i) => (
-        <div key={i} className="verse-ghost absolute rounded-[5px]" style={{ left: b.left - 3, top: b.top, width: b.right - b.left + 6, height: b.bottom - b.top }} />
+        <div key={i} className="verse-ghost absolute rounded-[5px]" style={{ insetInlineStart: b.start - 3, top: b.top, width: b.right - b.left + 6, height: b.bottom - b.top }} />
       ))}
     </div>,
     document.body,
@@ -297,7 +312,7 @@ function SpokenFollow({ src }: { src: string | null }) {
 function ListenFollow({ id }: { id: string }) {
   const timings = useRef<ListenTimings | null>(null);
   const lastHand = useRef(0);
-  const [wash, setWash] = useState<Box[]>([]);
+  const [wash, setWash] = useState<Washed[]>([]);
 
   useEffect(() => {
     let alive = true;
@@ -348,7 +363,7 @@ function ListenFollow({ id }: { id: string }) {
       light(here?.host ?? null);
       if (key !== at) {
         at = key;
-        setWash(here?.span ? lineBoxes(here.textEl, here.span) : []);
+        setWash(here?.span ? washOf(lineBoxes(here.textEl, here.span)) : []);
       }
       raf = requestAnimationFrame(loop);
     };
@@ -361,9 +376,9 @@ function ListenFollow({ id }: { id: string }) {
 
   if (typeof document === "undefined" || !wash.length) return null;
   return createPortal(
-    <div aria-hidden className="pointer-events-none absolute left-0 top-0 z-[5] h-0 w-0">
+    <div aria-hidden className="pointer-events-none absolute start-0 top-0 z-[5] h-0 w-0">
       {wash.map((b, i) => (
-        <div key={i} className="verse-ghost absolute rounded-[5px]" style={{ left: b.left - 3, top: b.top, width: b.right - b.left + 6, height: b.bottom - b.top }} />
+        <div key={i} className="verse-ghost absolute rounded-[5px]" style={{ insetInlineStart: b.start - 3, top: b.top, width: b.right - b.left + 6, height: b.bottom - b.top }} />
       ))}
     </div>,
     document.body,

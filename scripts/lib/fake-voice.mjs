@@ -3,11 +3,16 @@
 // Added to a context as an init script (ctx.addInitScript(fakeVoice)), before the page asks
 // for its voices (lib/listen/speech/engine.ts keeps the first speechSynthesis it meets).
 /**
- * A phone's voice for the walk: one local voice, and an utterance that starts at once, says a word
- * every 300ms and ends after a minute, so Listen plays as a phone's voice would.
+ * A phone's voice for the walk: a local voice in the reader's language, and an English one beside
+ * it when that is another (a phone in Arabic still has its English voice, and the texts read aloud
+ * are English: with the Arabic voice alone, Listen opened the Voice sheet over an English text,
+ * Updates 98g's Arabic walk). An utterance starts at once, says a word every 300ms and ends after a
+ * minute, so Listen plays as a phone's voice would.
  */
 export function fakeVoice() {
-  const voice = { voiceURI: "walk-voice", name: "Walk", lang: navigator.language || "en-US", localService: true, default: true };
+  const lang = navigator.language || "en-US";
+  const voices = [{ voiceURI: "walk-voice", name: "Walk", lang, localService: true, default: true }];
+  if (!/^en\b/i.test(lang)) voices.push({ voiceURI: "walk-voice-en", name: "Walk (English)", lang: "en-US", localService: true, default: false });
   let timers = [];
   class Utterance {
     constructor(text) {
@@ -41,7 +46,7 @@ export function fakeVoice() {
     speaking: false,
     paused: false,
     pending: false,
-    getVoices: () => [voice],
+    getVoices: () => voices,
     speak(u) {
       queue.push(u);
       if (queue.length === 1) next();

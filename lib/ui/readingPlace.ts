@@ -45,6 +45,7 @@
  */
 
 import { prefersReducedMotion } from "./motion";
+import { notePageMoved } from "./scrollAway";
 
 /** A stretch of the screen, in CSS pixels from the top of the window. */
 export type Span = { top: number; bottom: number };
@@ -286,6 +287,8 @@ export function goToReadingPlace(
   const top = Math.min(end, Math.max(0, window.scrollY + shift));
   const glides = smooth && !prefersReducedMotion();
   glide = glides && Math.abs(window.scrollY - top) > 1 ? { top, until: performance.now() + GLIDE_MS } : null;
+  // The page's own move, never the reader's, even just after a tap (lib/ui/scrollAway.ts).
+  notePageMoved();
   window.scrollTo({ top, behavior: glides ? "smooth" : "auto" });
   return top;
 }

@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { highlightVars } from "@/lib/bible/highlightColors";
 import { placeMarks, wholeSpan } from "@/lib/marks/anchor";
 import { MARK_HOST, lineBoxes, textOf, type Box } from "@/lib/marks/dom";
+import { fromStart, readsRtl } from "@/lib/marks/startEdge";
 import { parsePlace, readAt } from "@/lib/marks/place";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -28,7 +29,8 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 type Painted = {
   host: HTMLElement;
   key: string;
-  washes: { box: Box; color?: string; id: string }[];
+  /** Each wash with how far it stands from the paragraph's start edge, so it turns round with the page in Arabic. */
+  washes: { box: Box; start: number; color?: string; id: string }[];
   notes: { id: string; words?: string; note: string }[];
 };
 
@@ -47,14 +49,16 @@ function measure(): Painted[] {
     const ox = origin.left + window.scrollX;
     const oy = origin.top + window.scrollY;
     const local = (b: Box): Box => ({ left: b.left - ox, right: b.right - ox, top: b.top - oy, bottom: b.bottom - oy });
+    const rtl = readsRtl(host);
+    const start = (b: Box) => fromStart(b, origin.width, rtl);
     const washes: Painted["washes"] = [];
     const notes: Painted["notes"] = [];
     if (value.highlighted) {
-      for (const b of lineBoxes(found.el, wholeSpan(found.text))) washes.push({ box: local(b), color: value.color ?? "yellow", id: "all" });
+      for (const b of lineBoxes(found.el, wholeSpan(found.text))) washes.push({ box: local(b), start: start(local(b)), color: value.color ?? "yellow", id: "all" });
     }
     if (value.note) notes.push({ id: "all", note: value.note });
     for (const p of placeMarks(found.text, value.marks)) {
-      for (const b of lineBoxes(found.el, p)) washes.push({ box: local(b), color: p.mark.color, id: p.mark.id });
+      for (const b of lineBoxes(found.el, p)) washes.push({ box: local(b), start: start(local(b)), color: p.mark.color, id: p.mark.id });
       if (p.mark.note) notes.push({ id: p.mark.id, words: p.mark.q, note: p.mark.note });
     }
     out.push({ host, key: host.dataset.mk ?? "", washes, notes });
@@ -115,7 +119,7 @@ export function MarksLayer() {
                     <div
                       key={`${w.id}-${i}`}
                       data-hl-color={w.color}
-                      style={{ ...(w.color ? (highlightVars(w.color) as React.CSSProperties) : {}), left: w.box.left - 3, top: w.box.top, width: w.box.right - w.box.left + 6, height: w.box.bottom - w.box.top }}
+                      style={{ ...(w.color ? (highlightVars(w.color) as React.CSSProperties) : {}), insetInlineStart: w.start - 3, top: w.box.top, width: w.box.right - w.box.left + 6, height: w.box.bottom - w.box.top }}
                       className={w.color ? "absolute rounded-[4px] bg-[var(--hl-verse)]" : "absolute border-b border-paper/40"}
                     />
                   ))}

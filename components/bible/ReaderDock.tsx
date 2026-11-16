@@ -31,7 +31,7 @@
 // controls, so the two never disagree about whether the reader is away.
 
 import Link from "next/link";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, type MouseEvent } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { AmbienceButton } from "@/components/player/AmbienceButton";
@@ -47,12 +47,16 @@ import { Timer } from "@/components/ui/icons/Timer";
 import { useAmbience } from "@/lib/ambience/player";
 import { cn } from "@/lib/cn";
 import { textDir } from "@/lib/i18n/textDir";
+import { noteCarryFrom } from "@/lib/player/carry";
 import { openNowPlaying } from "@/lib/player/sheet";
 import { minutesLeft, useSleepTimer } from "@/lib/player/sleep";
 import { nextSpeed, saveSpeed, speedText } from "@/lib/player/speed";
 import { playingOf } from "@/lib/player/steps";
 import { pause, play, setRate, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
-import { noteFootMoved } from "@/lib/ui/scrollAway";
+import { readsRtl } from "@/lib/marks/startEdge";
+import { useReducedMotion } from "@/lib/ui/motion";
+import { AWAY_ATTR, noteFootMoved } from "@/lib/ui/scrollAway";
+import { GLIDE_GAP_PX, titleGlide } from "@/lib/ui/titleGlide";
 
 /**
  * A step through the text from the dock's row: a link (a chapter of the
@@ -179,6 +183,11 @@ export function ReaderDock({
   const played = audio.duration > 0 ? Math.min(1, Math.max(0, audio.currentTime / audio.duration)) : 0;
   const trackName = audio.title ?? t("prayers.nowPlaying");
   const openLabel = `${t("prayers.nowPlaying")}: ${audio.title ?? ""}`;
+  // Now Playing carries the tapped cover up into its own (lib/player/carry.ts), as from the mini player.
+  const openFromCover = (e: MouseEvent<HTMLElement>) => {
+    noteCarryFrom(e.currentTarget.querySelector("img"));
+    openNowPlaying();
+  };
   const toggle = () => (audio.playing ? pause() : play());
   const toggleLabel = audio.playing ? t("prayers.pause") : t("prayers.play");
   // Speed is a chapter read aloud's alone, as in Now Playing (lib/player/speed.ts).
@@ -241,13 +250,13 @@ export function ReaderDock({
               <div className="flex h-[46px] shrink-0 items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => openNowPlaying()}
+                  onClick={openFromCover}
                   aria-label={openLabel}
                   className="tap-press flex h-full min-w-0 flex-1 items-center gap-3 text-start"
                 >
                   <CoverArt src={audio.art} fallback={audio.artFallback} size={46} className="size-[46px] shrink-0 rounded-[11px]" />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-sans text-[15px] font-semibold leading-tight text-paper">{trackName}</span>
+                    <GlideName text={trackName} />
                     <span aria-hidden className="mt-2 block h-[3px] overflow-hidden rounded-full bg-paper/15">
                       <span
                         className="block h-full origin-left rounded-full bg-paper rtl:origin-right"
@@ -351,7 +360,7 @@ export function ReaderDock({
             >
               <button
                 type="button"
-                onClick={() => openNowPlaying()}
+                onClick={openFromCover}
                 aria-label={openLabel}
                 className="tap-press hit-44 shrink-0 rounded-full"
               >
@@ -430,5 +439,74 @@ function DockArrow({ target, label, back }: { target: DockStep; label: string; b
     <Link href={target.href} aria-label={label} className={className}>
       {glyph}
     </Link>
+  );
+}
+
+/** Said to checkMock's cut rule: the name is read whole, by its glide. */
+const GLIDE_WHY = "a long track name glides slowly along its line to show itself whole (lib/ui/titleGlide.ts); with motion reduced it stands still, and is read whole in the button's label and in Now Playing";
+
+/**
+ * The track's name on its one line, whole (build 98 note 2): a name longer
+ * than the line glides slowly along it and begins again where it began, with
+ * no jump (lib/ui/titleGlide.ts). Only the words move; the line, the cover
+ * and the buttons stay. With motion reduced it stands still, ended by an
+ * ellipsis as before. Measured again when its line changes size at rest; not
+ * while the dock is drawn in, when the line is hidden and narrowing.
+ */
+function GlideName({ text }: { text: string }) {
+  const reduced = useReducedMotion();
+  const lineRef = useRef<HTMLSpanElement>(null);
+
+  useLayoutEffect(() => {
+    const line = lineRef.current;
+    const run = line?.firstElementChild as HTMLElement | null;
+    const name = run?.firstElementChild as HTMLElement | null;
+    const copy = name?.nextElementSibling as HTMLElement | null;
+    if (reduced || !line || !run || !name || !copy) return;
+    let glide: Animation | null = null;
+    let was = "";
+    let wait = 0;
+    const place = () => {
+      if (document.body.hasAttribute(AWAY_ATTR) || document.documentElement.classList.contains("reader-focus") || !line.clientWidth) return;
+      const next = titleGlide(name.offsetWidth, line.clientWidth, readsRtl(line));
+      const key = next ? `${next.to}` : "";
+      if (key === was) return;
+      was = key;
+      glide?.cancel();
+      glide = null;
+      copy.hidden = !next;
+      if (next) glide = run.animate(next.keyframes, { duration: next.duration, iterations: Infinity });
+    };
+    place();
+    const sized = new ResizeObserver(() => {
+      window.clearTimeout(wait);
+      wait = window.setTimeout(place, 150);
+    });
+    sized.observe(line);
+    sized.observe(name);
+    return () => {
+      sized.disconnect();
+      window.clearTimeout(wait);
+      glide?.cancel();
+      copy.hidden = true;
+    };
+  }, [text, reduced]);
+
+  if (reduced) {
+    return (
+      <span data-mock-allow="cut" data-mock-why={GLIDE_WHY} className="block truncate font-sans text-[15px] font-semibold leading-tight text-paper">
+        {text}
+      </span>
+    );
+  }
+  return (
+    <span ref={lineRef} data-mock-allow="cut" data-mock-why={GLIDE_WHY} className="block overflow-hidden font-sans text-[15px] font-semibold leading-tight text-paper">
+      <span className="flex w-max">
+        <span className="whitespace-nowrap">{text}</span>
+        <span aria-hidden hidden className="whitespace-nowrap" style={{ paddingInlineStart: GLIDE_GAP_PX }}>
+          {text}
+        </span>
+      </span>
+    </span>
   );
 }

@@ -36,7 +36,9 @@ import { useEffect } from "react";
  *    (a verse landed on from a link, a place given back on the way back, the
  *    reading kept in view while it is read aloud, the page moved back to its
  *    new end when the room at its foot shrinks) leaves the controls as they
- *    were, except at the top.
+ *    were, except at the top. A hand counts only when it moved after the
+ *    page last moved itself (notePageMoved), so the tap on Listen does not
+ *    lend the page's glide to the reading the reader's hand.
  *
  * The mini player steps aside by the same rule, on every page (1.8, the
  * owner's pick B of r3-05, "the small pill": components/prayers/
@@ -86,6 +88,22 @@ const HANDS = ["touchstart", "touchmove", "wheel", "pointerdown", "keydown"] as 
 /** Until when every scroll is the page's own, whoever's hand is on the glass. */
 let footSettlesAt = -Infinity;
 
+/** When the page last moved itself (notePageMoved). */
+let pageMovedAt = -Infinity;
+
+/**
+ * Says the page is moving itself (lib/ui/readingPlace.ts, goToReadingPlace):
+ * to the paragraph being read aloud, a verse a link landed on, a place given
+ * back. A scroll counts as the reader's only when their hand moved after it.
+ * Listen's tap is a hand on the glass, and the page's glide to the paragraph
+ * being read, inside HAND_MS of it, read as the reader reading on: on an
+ * event the dock drew in the moment Listen was tapped (build 98 note 2,
+ * Updates 98g's walk). Now it stays at rest until the reader reads on.
+ */
+export function notePageMoved(): void {
+  pageMovedAt = performance.now();
+}
+
 /**
  * Says the room the page keeps at its foot has just changed: the mini player
  * came, went, drew in or came back (app/globals.css, --now-playing-h). Where
@@ -107,7 +125,7 @@ export function watchScrollAway(onChange: (away: boolean) => void): () => void {
   const check = () => {
     raf = 0;
     const now = performance.now();
-    const byHand = now - hand <= HAND_MS && now >= footSettlesAt;
+    const byHand = now - hand <= HAND_MS && hand > pageMovedAt && now >= footSettlesAt;
     const next = stepAway(state, window.scrollY, byHand);
     if (next.away !== state.away) onChange(next.away);
     state = next;
