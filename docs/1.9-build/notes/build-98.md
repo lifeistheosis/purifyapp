@@ -284,3 +284,13 @@ Brainstorm mode is on (his word, 2026-11-15 about 20:54 UTC): notes and plans on
 - **Asked of him:** note 1, the voices (rec: Heart for English, the phone's voice for the other 18 languages, the Voice sheet out of 1.9).
 - **No build change:** note 10, campaigns, which appear for his account when the merge is live.
 - **Then:** his yes on the stills; a fixer applies them; the pre-build gate on one export; the next test build to the android-release page (number 100 or later: CI run 99 was 98c's unpublished compile check, 23:07), its number named to him, with campaigns and the Bible downloads named on their own lines as waiting for the merge.
+
+
+## His yes on the designs, and finalize (2026-11-16, about 05:20 UTC)
+
+**His words:** "finalize this build and it's drop kit and yes to all EXCEPT the Bible screen but the Bible selectors is fine. I like the Bible UI but the customizable Bible chapter select tab can be changed that design specifically is fine".
+
+- Round 3 (`docs/1.9-build/redesign/round-3/`): screens 1, 2, 3, 5, 6 and 7 yes; screen 4 (the Bible's opening: ChapterScreen.tsx, ReaderMoreSheet.tsx, lib/bible/commentaryHint.ts, the chapter's loading.tsx and its part of globals.css) no. Applied from held.patch by two fixers: screens 1 and 5; screens 2, 3 and 6. Screen 7 with the voice system, since Emma, Michael and Fenrir exist in the app only once recorded and served.
+- Built and approved with it: the books sheet with the version at its head (note 7), the listen bar on every text (note 2), Quote searching the library (note 5).
+- The drop kit (`docs/plans/v1.9/`) finished by an Admin chat, true to what is live: nothing that is dark or not yet built.
+- Then the pre-build gate on one export and test build 100 to the android-release page. The voices (his secrets, the recording, the voice system) follow, then the final build; the iPhone build waits for his word that the build is finished.
