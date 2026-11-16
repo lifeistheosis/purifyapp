@@ -111,9 +111,22 @@ describe("a plan's own page", () => {
     const card = CARD.slice(CARD.indexOf("<section aria-labelledby=\"plan-today\""), CARD.indexOf("</section>"));
     expect(card).not.toContain("<SourceList");
     expect(CARD).toMatch(/aria-expanded=\{sourcesOpen\}[\s\S]{0,400}\{t\("cite\.sources"\)\}/);
-    expect(CARD).toMatch(/\{sourcesOpen \? \(\s*<SourceList id="plan-sources-list" labelledBy="plan-sources" idPrefix=\{PLAN_SOURCE\} sources=\{sources\}/);
+    // It folds open as the prayer book's pages do, so the days under it move with it rather than jump (the
+    // motion walk, round 3 apply B: 28px in one frame); shut, it is inert. A number in the intro opens it at
+    // once (data-snap), so the jump to the line lands where the line stands.
+    expect(CARD).toMatch(
+      /<div inert=\{!sourcesOpen\} data-open=\{sourcesOpen \|\| undefined\} data-snap=\{sourcesSnap \|\| undefined\} className="book-fold">\s*<div>\s*<div className="book-page">\s*<SourceList id="plan-sources-list" labelledBy="plan-sources" idPrefix=\{PLAN_SOURCE\} sources=\{sources\}/,
+    );
+    expect(CARD).not.toMatch(/\{sourcesOpen \? \(\s*<SourceList/);
     expect(CARD).toContain("const [sourcesOpen, setSourcesOpen] = useState(false);");
-    expect(CARD).toMatch(/closest\?\.\(`a\[href\^="#\$\{PLAN_SOURCE\}"\]`\)\) flushSync\(\(\) => setSourcesOpen\(true\)\);/);
+    expect(CARD).toMatch(/closest\?\.\(`a\[href\^="#\$\{PLAN_SOURCE\}"\]`\)\) flushSync\(\(\) => \{\s*setSourcesSnap\(true\);\s*setSourcesOpen\(true\);\s*\}\);/);
+    expect(CARD).toMatch(/onClick=\{\(\) => \{\s*setSourcesSnap\(false\);\s*setSourcesOpen\(\(v\) => !v\);\s*\}\}/);
+    // The house's fold, and its still path.
+    const css = fs.readFileSync(path.join(process.cwd(), "app/globals.css"), "utf8");
+    expect(css).toMatch(/\.book-fold \{\s*display: grid;\s*grid-template-rows: 0fr;\s*transition: grid-template-rows 240ms var\(--ease-house\);/);
+    expect(css).toContain(':where([data-motion="reduce"]) .book-fold,');
+    // With motion reduced the fold is the cut that path allows, and the days under it are named as moving with it.
+    expect(DAYS).toMatch(/data-plan-path=""[\s\S]{0,400}data-mock-allow="jump"\s*data-mock-why="the sources above fold open at once with motion reduced/);
   });
 
   it("lets each day say what it holds: its passage as its words, its number the small part, the check once read", () => {

@@ -101,6 +101,11 @@ describe("the account gate lets in with the page only whom the session read lets
     expect(gate).toContain("useSyncExternalStore(noSubscribe, () => true, () => false)");
     // Sent on: the line that says so, never the page.
     expect(gate).toMatch(/state === "out"\s*\?\s*t\("ui\.redirectingToSignIn"\)/);
+    // A card kept on the device (lib/profile/myCard.ts) is drawn only for the reader it was kept for:
+    // after one reader signs out, the next never meets the first one's card.
+    const card = read("lib/profile/myCard.ts");
+    expect(card).toContain("kept = read && read.uid === uid ? read : null;");
+    expect(card).toContain("if (kept && kept.uid !== uid) emit(null);");
     // The same read resolveUser makes first, so the early way in is never the wider one.
     expect(read("lib/supabase/resolveUser.ts")).toMatch(
       /const local = readLocalSessionUser\(\);\s*if \(local\) return \{ state: "signed-in", user: local \};/,

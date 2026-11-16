@@ -126,7 +126,16 @@ export function PlanPath({
   };
 
   return (
-    <section aria-labelledby="plan-path" data-plan-path="" className="mt-9">
+    <section
+      aria-labelledby="plan-path"
+      data-plan-path=""
+      // With motion reduced the sources above fold open at once, the cut that path allows, and these days move
+      // with that change; with motion on the fold pictures it (.book-fold). Named so to the gate's jump rule,
+      // which honours it only with motion reduced (scripts/gate/frames.mjs).
+      data-mock-allow="jump"
+      data-mock-why="the sources above fold open at once with motion reduced; with motion on they fold open and the days move with them"
+      className="mt-9"
+    >
       <p id="plan-path" role="heading" aria-level={2} className="font-sans text-ui font-semibold text-paper">
         {t("plans.path.title")}
       </p>

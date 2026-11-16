@@ -50,6 +50,11 @@ export function PlanTodayCard({
 }) {
   const { t } = useTranslate();
   const [sourcesOpen, setSourcesOpen] = useState(false);
+  // Opened by a number in the intro, the list opens at once (data-snap), so the
+  // browser's jump to the line lands where the line stands; opened by its own
+  // line, it folds open as the prayer book's pages do, and the days under it
+  // move with it (the motion walk, round 3 apply B: they jumped 28px at once).
+  const [sourcesSnap, setSourcesSnap] = useState(false);
   const sources = guide?.introSources ?? [];
   return (
     <>
@@ -64,7 +69,10 @@ export function PlanTodayCard({
             // A number in the intro leads to its line, which is folded under
             // the card: it is opened before the browser goes to it.
             onClickCapture={(e) => {
-              if (!sourcesOpen && (e.target as Element).closest?.(`a[href^="#${PLAN_SOURCE}"]`)) flushSync(() => setSourcesOpen(true));
+              if (!sourcesOpen && (e.target as Element).closest?.(`a[href^="#${PLAN_SOURCE}"]`)) flushSync(() => {
+                  setSourcesSnap(true);
+                  setSourcesOpen(true);
+                });
             }}
           >
             {marked(guide.intro, guide.introSources, PLAN_SOURCE)}
@@ -103,15 +111,23 @@ export function PlanTodayCard({
             id="plan-sources"
             aria-expanded={sourcesOpen}
             aria-controls="plan-sources-list"
-            onClick={() => setSourcesOpen((v) => !v)}
+            onClick={() => {
+              setSourcesSnap(false);
+              setSourcesOpen((v) => !v);
+            }}
             className="tap-press inline-flex min-h-11 items-center gap-1.5 font-sans text-caption font-semibold text-paper/55 hover:text-paper"
           >
             {t("cite.sources")}
             <ChevronDown size={14} className={cn("motion-safe:transition-transform", sourcesOpen && "rotate-180")} />
           </button>
-          {sourcesOpen ? (
-            <SourceList id="plan-sources-list" labelledBy="plan-sources" idPrefix={PLAN_SOURCE} sources={sources} lang="en" heading="h3" compact className="pb-2" />
-          ) : null}
+          {/* Shut, the list is inert: not read out, not reached by Tab (.book-fold in app/globals.css). */}
+          <div inert={!sourcesOpen} data-open={sourcesOpen || undefined} data-snap={sourcesSnap || undefined} className="book-fold">
+            <div>
+              <div className="book-page">
+                <SourceList id="plan-sources-list" labelledBy="plan-sources" idPrefix={PLAN_SOURCE} sources={sources} lang="en" heading="h3" compact className="pb-2" />
+              </div>
+            </div>
+          </div>
         </div>
       ) : null}
     </>
