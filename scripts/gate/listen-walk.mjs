@@ -403,15 +403,29 @@ for (const text of TEXTS) {
       // previous? back 15, play or pause, forward 15, next?: by place, the toggle the middle one.
       const mid = first.buttons.findIndex((b, i) => i > 0 && i < n - 1 && first.buttons[i - 1] && first.buttons[i + 1] && Math.abs(b.x - (first.buttons[0].x + first.buttons[n - 1].x) / 2) < 30);
       if (mid < 1) throw new Error(`no middle button in the row (${first.buttons.map((b) => b.label).join(", ")})`);
+      // What the voice is asked to say, from the tap: the piece a skip lands on, read from the voice itself.
+      await page.evaluate(() => {
+        const s = window.speechSynthesis;
+        if (!s || s.__logged) return;
+        const speak = s.speak.bind(s);
+        window.__said = [];
+        s.speak = (u) => {
+          window.__said.push([Math.round(performance.now()), (u.text ?? "").slice(0, 24)]);
+          return speak(u);
+        };
+        s.__logged = true;
+      });
       const tap = async (i, name, check) => {
         const was = await heard();
+        const since = await page.evaluate(() => performance.now());
         await tapAt(cdp, at(i).x, at(i).y);
         await sleep(900);
         const now = await heard();
         await sleep(700);
         const later = await heard();
         const ok = check(was, now, later);
-        r.steps.transport.taps.push({ name, label: at(i).label, was, now, later, ok });
+        const said = await page.evaluate((t) => (window.__said ?? []).filter((x) => x[0] >= t).map((x) => x[1]), since);
+        r.steps.transport.taps.push({ name, label: at(i).label, was, now, later, said, ok });
         if (!ok) fail(`transport: ${name} (${at(i).label}) did not do what it names`);
       };
       // Forward first, so back 15 has 15 seconds to go back.
