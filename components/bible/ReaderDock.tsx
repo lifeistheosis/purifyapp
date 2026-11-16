@@ -68,6 +68,10 @@ export const DOCK_CLASS = "has-reader-dock";
 /** The card at rest, its two rows (globals.css, .reader-dock), and its chapter's row on one line. */
 const CARD_PX = 112;
 const CHAPTER_ROW_PX = 32;
+/** The card's height when a long name makes it taller (globals.css, registered as not inherited). */
+const CARD_H = "--reader-dock-card-h";
+/** The page's foot, which keeps the card's room: a reader's page, and a page with a text's own pill. */
+const FOOT_ROOM = ".safe-pb-reader, html.has-text-pill .safe-pb";
 
 /**
  * The dock for every text read aloud on a phone and a tablet (1.9, build 98
@@ -153,23 +157,35 @@ export function ReaderDock({
   // The card's height: its two rows at rest (CARD_PX), and as much again as
   // the chapter's row grows past its one line (its own min-height, which is
   // in rem and follows the app's type size: 34px at 17) when a long name
-  // sends its controls down a line. On the root, since the page keeps the
-  // card's room at its foot (globals.css, --reader-dock-room).
+  // sends its controls down a line. Written only then, and only on the two
+  // that read it: the card, and the page's foot, which keeps the card's room
+  // (globals.css, --reader-dock-room). Never on <html>: a value there is
+  // every element's, and writing it restyled the whole page as the dock
+  // arrived (Updates 98l, a work's Listen tap).
   useLayoutEffect(() => {
     const row = chapterRowRef.current;
-    if (!row) return;
-    const root = document.documentElement;
+    const surface = surfaceRef.current;
+    if (!row || !surface) return;
+    let held: HTMLElement[] = [];
     const measure = () => {
       const oneLine = parseFloat(getComputedStyle(row).minHeight) || CHAPTER_ROW_PX;
-      root.style.setProperty("--reader-dock-card-h", `${Math.ceil(CARD_PX + Math.max(0, row.getBoundingClientRect().height - oneLine - 0.5))}px`);
+      const px = Math.ceil(CARD_PX + Math.max(0, row.getBoundingClientRect().height - oneLine - 0.5));
+      const want = px === CARD_PX ? [] : [surface, ...document.querySelectorAll<HTMLElement>(FOOT_ROOM)];
+      for (const el of held) if (!want.includes(el)) el.style.removeProperty(CARD_H);
+      for (const el of want) if (el.style.getPropertyValue(CARD_H) !== `${px}px`) el.style.setProperty(CARD_H, `${px}px`);
+      held = want;
+    };
+    const clear = () => {
+      for (const el of held) el.style.removeProperty(CARD_H);
+      held = [];
     };
     measure();
-    if (typeof ResizeObserver === "undefined") return () => root.style.removeProperty("--reader-dock-card-h");
+    if (typeof ResizeObserver === "undefined") return clear;
     const observer = new ResizeObserver(measure);
     observer.observe(row);
     return () => {
       observer.disconnect();
-      root.style.removeProperty("--reader-dock-card-h");
+      clear();
     };
   }, []);
 

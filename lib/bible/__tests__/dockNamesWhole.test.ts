@@ -52,7 +52,9 @@ describe("the reader's dock, a book's name", () => {
   });
 
   it("grows the card with its row, and the page's room at its foot with the card", () => {
-    expect(DOCK).toContain('root.style.setProperty("--reader-dock-card-h"');
+    // On the card and the page's foot, never <html> (Updates 98l), and only when the row has grown.
+    expect(DOCK).toContain('const CARD_H = "--reader-dock-card-h";');
+    expect(DOCK).toContain("el.style.setProperty(CARD_H, `${px}px`)");
     // Past the row's own one line, in rem as the app's type size makes it (34px at 17, where 32 grew every card by 2).
     expect(DOCK).toContain("const oneLine = parseFloat(getComputedStyle(row).minHeight) || CHAPTER_ROW_PX;");
     expect(CSS.match(/\n\.reader-dock \{([^}]*)\}/)?.[1]).toContain("height: var(--reader-dock-card-h, 112px);");

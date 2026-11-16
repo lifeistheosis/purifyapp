@@ -6,6 +6,7 @@
 //   node scripts/gate/listen-walk.mjs <export> --carry [--reduce]   (the dock's cover tapped: Now Playing carries it up; never with motion reduced)
 //   --trace <dir>: a Chrome trace of the Listen tap and of the dock's turn, each from the tap, for
 //   scripts/gate/trace-frames.mjs (Updates 98k: the work's 117ms task while its page glides to the reading)
+//   (--why adds what made each restyle: scripts/gate/trace-restyles.mjs reads it; Updates 98l)
 //
 // His words (2026-11-15): "make the listen system the same as the Bible listening system (UI/ux)
 // one so there isn't a floating button". On a life, an event, a study's part, a Father's work and
@@ -47,6 +48,11 @@ const [WIDTH, HEIGHT] = (flag("--size") ?? (argv.includes("--computer") ? "1280x
 const LANG = flag("--lang") ?? "en";
 const SHOTS = flag("--shots");
 const TRACE = flag("--trace");
+// --why: with --trace, what made each restyle (the invalidation tracking DevTools draws), at a cost to the times.
+const WHY = has("--why");
+// --roots: every class and inline style written on <html> and <body> in each judged moment, in order, from the tap
+// (what every element inherits changes there; a MutationObserver, which forces no style).
+const ROOTS = has("--roots");
 const ONLY = flag("--only")?.split(",") ?? null;
 const CHECK = has("--check");
 const COMPUTER = has("--computer");
@@ -146,6 +152,17 @@ for (const text of TEXTS) {
     } catch {}
   }, [LANG, REDUCE]);
   await ctx.addInitScript(fakeVoice);
+  if (ROOTS)
+    await ctx.addInitScript(() => {
+      window.__roots = [];
+      // The document is empty when this runs: both roots are watched once the page is parsed.
+      document.addEventListener("DOMContentLoaded", () => {
+        for (const el of [document.documentElement, document.body])
+          new MutationObserver((list) => {
+            for (const m of list) window.__roots.push([performance.now(), el.nodeName, m.attributeName, m.oldValue ?? "", el.getAttribute(m.attributeName) ?? ""]);
+          }).observe(el, { attributes: true, attributeOldValue: true });
+      });
+    });
   await installGate(ctx);
   await serveLikeTheShell(ctx, OUT, {});
   const bell = fs.readFileSync(path.join(OUT, "audio/ambience/bell.mp3"));
@@ -166,12 +183,25 @@ for (const text of TEXTS) {
     const traced = TRACE
       ? async () => {
           fs.mkdirSync(TRACE, { recursive: true });
-          await browser.startTracing(page, { path: path.join(TRACE, `${text.key}-${name}-${WIDTH}${LANG === "en" ? "" : `-${LANG}`}.json`), categories: ["devtools.timeline", "disabled-by-default-devtools.timeline", "disabled-by-default-devtools.timeline.frame", "blink", "cc", "gpu", "viz", "v8.execute", "blink.user_timing", "latencyInfo"] });
+          await browser.startTracing(page, { path: path.join(TRACE, `${text.key}-${name}-${WIDTH}${LANG === "en" ? "" : `-${LANG}`}.json`), categories: ["devtools.timeline", "disabled-by-default-devtools.timeline", "disabled-by-default-devtools.timeline.frame", "blink", "cc", "gpu", "viz", "v8.execute", "blink.user_timing", "latencyInfo", ...(WHY ? ["disabled-by-default-devtools.timeline.invalidationTracking"] : [])] });
           await page.evaluate(() => performance.mark("tap"));
           return act();
         }
       : act;
+    const since = ROOTS ? await page.evaluate(() => performance.now()) : 0;
     const rec = await recordFrames(page, cdp, traced, RECORD).finally(() => (TRACE ? browser.stopTracing() : null));
+    if (ROOTS) {
+      const writes = await page.evaluate((t) => window.__roots.filter((w) => w[0] >= t), since);
+      const now = await page.evaluate(() => ({ classes: document.documentElement.className, room: getComputedStyle(document.documentElement).getPropertyValue("--now-playing-h") }));
+      console.log(`  ${text.key} ${name}: ${writes.length} writes on <html> and <body>; after: ${now.classes.split(" ").filter((c) => !c.includes("_")).join(" ")}, --now-playing-h ${now.room}`);
+      for (const [at, node, attr, was, now] of writes) {
+        if (attr === "class") {
+          const a = new Set(was.split(/\s+/).filter(Boolean));
+          const b = new Set(now.split(/\s+/).filter(Boolean));
+          console.log(`    ${Math.round(at - since)}ms ${node} class ${[...b].filter((c) => !a.has(c)).map((c) => `+${c}`).concat([...a].filter((c) => !b.has(c)).map((c) => `-${c}`)).join(" ")}`);
+        } else console.log(`    ${Math.round(at - since)}ms ${node} ${attr}: ${was.slice(-160)} -> ${now.slice(-160)}`);
+      }
+    }
     const v = await judgeFrames(rec, { motion: "on" });
     // With --shots, each fail's frames side by side, to see what was drawn.
     if (SHOTS) for (const [n, f] of v.fails.entries()) if (f.frames) await stripOf(rec, f.frames, path.join(SHOTS, `${text.key}-${name}-${f.kind}-${n}-${WIDTH}.png`));

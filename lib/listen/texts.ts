@@ -185,17 +185,48 @@ export function timingsFit(batch: ListenBatch, timings: ListenTimings): string |
   return null;
 }
 
+/** A name as two are compared: in lower case, without a leading "On" or article ("On the Twenty Canons" is "twenty canons"). */
+function bareName(text: string): string {
+  return text
+    .toLocaleLowerCase()
+    .trim()
+    .replace(/^(?:on|über)\s+/u, "")
+    .replace(/^(?:the|an?|das|die|der|den|dem|des)\s+/u, "");
+}
+
+/** Whether `whole` holds `piece` as whole words, from its start when `atStart`. */
+function holdsWords(whole: string, piece: string, atStart = false): boolean {
+  if (!piece) return false;
+  const word = /[\p{L}\p{N}]/u;
+  for (let at = whole.indexOf(piece); at >= 0; at = atStart ? -1 : whole.indexOf(piece, at + 1)) {
+    if (atStart && at !== 0) return false;
+    const before = at > 0 ? whole[at - 1] : "";
+    const after = whole[at + piece.length] ?? "";
+    if (!word.test(before) && !word.test(after)) return true;
+  }
+  return false;
+}
+
 /**
  * The name a text is read aloud under, the title the dock, the mini player
  * and Now Playing show: the text's name once, with its part where it has
  * parts (build 98 note 2). A work of one section is its name alone: On the
  * Incarnation read "On the Incarnation. On the Incarnation of the Word",
  * its section being titled by the work's full name. A part whose title
- * already begins with the work's name is that title alone.
+ * already begins with the work's name, or names it after "On" and an
+ * article, is that title alone: a council's first section read "The Twenty
+ * Canons. On the Twenty Canons" (Updates 98l). A part whose title is a piece
+ * of the work's name ("The Synodal Letter" of The Synodal Letter and the
+ * Twenty-Five Canons, "On the Canons" of The Twenty Canons) is the name
+ * alone.
  */
 export function listenTitle(name: string, part: string | null | undefined, parts: number): string {
   const own = (part ?? "").trim();
   if (parts <= 1 || !own || own === name) return name;
   if (own.toLocaleLowerCase().startsWith(name.toLocaleLowerCase())) return own;
+  const work = bareName(name);
+  const mine = bareName(own);
+  if (holdsWords(mine, work, true)) return own;
+  if (holdsWords(work, mine)) return name;
   return `${name}. ${own}`;
 }

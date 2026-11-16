@@ -1158,12 +1158,34 @@ body[data-reader-away] [data-dock-title] {
    reader's foot for as long as it stands there, so the page never moves
    under the reader as it draws in and comes back. In focus mode it is the
    pill alone, at the foot, and what floats over the foot (the way out of
-   focus, Copy) stands clear of it as it would of the mini player. */
-html.has-reader-dock {
+   focus, Copy) stands clear of it as it would of the mini player.
+
+   The room is kept on the page's foot itself, never on <html> (Updates 98l,
+   build 98 note 2). A value set on <html> is every element's: the dock's
+   arrival set two there, so a work's Listen tap restyled the whole page,
+   29,000 elements, twice, in one 682ms task. Both are registered as not
+   inherited, so the room set on the foot, or the card's height written on
+   the card and the foot (ReaderDock.tsx, only when a long name makes it
+   taller), restyles those elements alone. */
+@property --reader-dock-room {
+ syntax: "<length>";
+ inherits: false;
+ initial-value: 0px;
+}
+@property --reader-dock-card-h {
+ syntax: "<length>";
+ inherits: false;
+ initial-value: 112px;
+}
+html.has-reader-dock .safe-pb-reader,
+html.has-reader-dock.has-text-pill .safe-pb {
  --reader-dock-room: calc(var(--reader-dock-card-h, 112px) - 56px);
 }
-html.reader-focus.has-reader-dock {
+html.reader-focus.has-reader-dock .safe-pb-reader,
+html.reader-focus.has-reader-dock.has-text-pill .safe-pb {
  --reader-dock-room: 0px;
+}
+html.reader-focus.has-reader-dock {
  --now-playing-h: 64px;
 }
 /* A text's own pill (components/reading/TextPill.tsx: a life, a study's

@@ -139,14 +139,15 @@ describe("the dock's drawing (app/globals.css)", () => {
 
   it("keeps the card's room at the reader's foot: the card's height (112px at rest) less the pill's 56px", () => {
     expect(PILL).toContain('"flex h-14 min-w-0');
-    expect(rule("html.has-reader-dock")).toContain("--reader-dock-room: calc(var(--reader-dock-card-h, 112px) - 56px);");
+    // On the page's foot itself, not <html> (Updates 98l: a value on <html> restyled every element as the dock arrived).
+    expect(rule("html.has-reader-dock .safe-pb-reader,\nhtml.has-reader-dock.has-text-pill .safe-pb")).toContain("--reader-dock-room: calc(var(--reader-dock-card-h, 112px) - 56px);");
     expect(rule("html.is-native .safe-pb-reader")).toContain("var(--reader-dock-room, 0px)");
   });
 
   it("lifts the way out of focus over the pill, as it would over the mini player", () => {
     const focus = rule("html.reader-focus.has-reader-dock");
     expect(focus).toContain("--now-playing-h: 64px;");
-    expect(focus).toContain("--reader-dock-room: 0px;");
+    expect(rule("html.reader-focus.has-reader-dock .safe-pb-reader,\nhtml.reader-focus.has-reader-dock.has-text-pill .safe-pb")).toContain("--reader-dock-room: 0px;");
   });
 
   it("does not move for a reader who asked for less motion", () => {

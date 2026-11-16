@@ -78,6 +78,13 @@ export type Step = { label: string; go: () => void } | null;
  * nowhere to go is not drawn, and its place is kept, so Play and the others
  * never move between one track and the next.
  */
+/** The transport row stays in its order in Arabic, as checkMock's mirror pass is told by name and reason. */
+const TIME_ROW = {
+  "data-transport": "",
+  "data-mock-allow": "mirror",
+  "data-mock-why": "media controls name the direction of time, not of reading: back 15, play, forward 15 and next keep their order in every language",
+} as const;
+
 export function Transport({
   playing,
   onToggle,
@@ -147,9 +154,18 @@ export function Transport({
       </button>
     </>
   );
-  if (!steps) return <div className={cn("flex items-center justify-center gap-10", className)}>{middle}</div>;
+  // The row names the direction of time, not of reading, so it keeps its
+  // order in every language: back 15, Play, forward 15, next (build 98, from
+  // Updates 98i's Arabic still). It followed the page in Arabic, and read
+  // forward 15, Pause, back 15 from the right with next on the left.
+  if (!steps)
+    return (
+      <div dir="ltr" {...TIME_ROW} className={cn("flex items-center justify-center gap-10", className)}>
+        {middle}
+      </div>
+    );
   return (
-    <div className={cn("flex items-center justify-between", className)}>
+    <div dir="ltr" {...TIME_ROW} className={cn("flex items-center justify-between", className)}>
       <StepButton step={steps.previous} back />
       {middle}
       <StepButton step={steps.next} />
@@ -176,10 +192,13 @@ function StepButton({ step, back = false }: { step: Step; back?: boolean }) {
   );
 }
 
-/** Previous and next as round 8 A draws them: a triangle against a bar. */
+/**
+ * Previous and next as round 8 A draws them: a triangle against a bar. Next
+ * points on in time in every language, as its row keeps its order (Transport).
+ */
 export function StepGlyph({ back = false }: { back?: boolean }) {
   return (
-    <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden className="rtl:-scale-x-100">
+    <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       {back ? (
         <>
           <path d="M19 20L9 12l10-8z" />

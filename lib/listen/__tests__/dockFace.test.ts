@@ -48,23 +48,63 @@ describe("a text's name, read aloud", () => {
     expect(listenTitle("Letters", "", 9)).toBe("Letters");
   });
 
-  it("never names a work twice, in any work of the library", () => {
-    const root = path.join(process.cwd(), "data/saints");
-    let checked = 0;
-    for (const saint of fs.readdirSync(root, { withFileTypes: true })) {
-      if (!saint.isDirectory()) continue;
-      for (const file of fs.readdirSync(path.join(root, saint.name))) {
-        if (!file.endsWith(".json")) continue;
-        const w = work(`${saint.name}/${file.replace(/\.json$/, "")}`);
-        if (!w.title || !Array.isArray(w.sections)) continue;
+  it("is a council's part's own title where it names the document after \"On\", and the name alone where the part is a piece of it", () => {
+    const council = (key: string) =>
+      JSON.parse(read(`data/councils/${key}.json`)) as { title: string; sections: { n: number; title: string }[] };
+    const canons = council("first-nicaea/the-twenty-canons");
+    expect(canons.sections[0].title).toBe("On the Twenty Canons");
+    // Read "The Twenty Canons. On the Twenty Canons" (Updates 98k's walk).
+    expect(listenTitle(canons.title, canons.sections[0].title, canons.sections.length)).toBe("On the Twenty Canons");
+    expect(listenTitle(canons.title, canons.sections[1].title, canons.sections.length)).toBe("The Twenty Canons. Canon I");
+    const sardica = council("sardica/the-twenty-canons");
+    expect(listenTitle(sardica.title, sardica.sections[0].title, sardica.sections.length)).toBe("The Twenty Canons");
+    const antioch = council("antioch-341/the-synodal-letter-and-canons");
+    expect(listenTitle(antioch.title, antioch.sections[0].title, antioch.sections.length)).toBe("The Synodal Letter and the Twenty-Five Canons");
+    const creed = council("first-nicaea/i18n/de/the-symbol-of-the-faith");
+    expect(listenTitle(creed.title, creed.sections[0].title, creed.sections.length)).toBe("Über das Glaubensbekenntnis");
+  });
+
+  it("never names a work or a council's document twice, in the whole library and its translations", () => {
+    // Compared as a reader hears them: in lower case, without a leading "On" and article.
+    const bare = (t: string) =>
+      t.toLocaleLowerCase().trim().replace(/^(?:on|über)\s+/u, "").replace(/^(?:the|an?|das|die|der|den|dem|des)\s+/u, "");
+    const words = (whole: string, piece: string) => new RegExp(`(^|[^\\p{L}\\p{N}])${piece.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}($|[^\\p{L}\\p{N}])`, "u").test(whole);
+    const files = (root: string) => {
+      const out: string[] = [];
+      const walk = (dir: string) => {
+        for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+          if (e.isDirectory()) walk(path.join(dir, e.name));
+          else if (e.name.endsWith(".json")) out.push(path.join(dir, e.name));
+        }
+      };
+      walk(path.join(process.cwd(), root));
+      return out;
+    };
+    const checked = { works: 0, councils: 0 };
+    for (const [kind, root] of [["works", "data/saints"], ["councils", "data/councils"]] as const) {
+      for (const file of files(root)) {
+        let w: { title?: string; sections?: { n: number; title: string }[] };
+        try {
+          w = JSON.parse(fs.readFileSync(file, "utf8"));
+        } catch {
+          continue;
+        }
+        if (!w || !w.title || !Array.isArray(w.sections)) continue;
+        const where = path.relative(process.cwd(), file);
         for (const s of w.sections) {
           const title = listenTitle(w.title, s.title, w.sections.length);
-          expect(title.split(w.title).length - 1, `${saint.name}/${file} §${s.n}: ${title}`).toBeLessThanOrEqual(1);
-          checked++;
+          expect(title.split(w.title).length - 1, `${where} §${s.n}: ${title}`).toBeLessThanOrEqual(1);
+          if (title === `${w.title}. ${(s.title ?? "").trim()}`) {
+            // Joined, so the part names neither the work again nor a piece of its name.
+            expect(words(bare(s.title), bare(w.title)) && bare(s.title).startsWith(bare(w.title)), `${where} §${s.n}: ${title}`).toBe(false);
+            expect(words(bare(w.title), bare(s.title)), `${where} §${s.n}: ${title}`).toBe(false);
+          }
+          checked[kind]++;
         }
       }
     }
-    expect(checked).toBeGreaterThan(1000);
+    expect(checked.works).toBeGreaterThan(1000);
+    expect(checked.councils).toBeGreaterThan(300);
   });
 
   it("is what the work's and the council's pages hand to Listen", () => {
