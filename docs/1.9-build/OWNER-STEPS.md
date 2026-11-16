@@ -1066,63 +1066,55 @@ above; a chat does V5 and V6. Three steps are yours, about 15 minutes, once.
 No key, number or account id goes in a chat, a file or a message: only into
 the two pages named below.
 
-### V10. A key for the bucket, in Cloudflare (5 minutes)
+Heart goes where the Bible's recordings are. The Plus voices go in a second
+bucket of their own that serves nothing to anyone: it has no address, so only
+the app's signed route will reach it. Storage is counted for your whole
+account, so a second bucket costs nothing more.
 
-1. In the Cloudflare dashboard, open **R2 object storage**.
-2. Under **Account Details**, select **Manage** next to **API Tokens**.
-3. Select **Create Account API token**. Name it `purify-voices-github`.
-4. Under **Permissions**, choose **Object Read & Write**.
-5. Apply it to **specific buckets only**, and pick one: the bucket that holds
-   the Bible's recordings (the one behind audio.purifyapp.net). Nothing else.
-6. Select **Create Account API token**.
-7. The next page shows the **Access Key ID** and the **Secret Access Key**.
+### V10. A private bucket for the Plus voices (3 minutes)
+
+1. In the Cloudflare dashboard, open **R2 object storage** and select
+   **Create bucket**.
+2. Name it `purify-voices-plus` (small letters, numbers and hyphens only).
+   Leave the location on **Automatic** and the rest as it is. Create it.
+3. Open the new bucket's **Settings** tab and leave two things as they are:
+   **Public Development URL** shows an **Enable** button (that means it is
+   off), and **Custom Domains** has nothing added. A new bucket starts that
+   way; never enable either for this one.
+
+### V11. A key for the two buckets, in Cloudflare (5 minutes)
+
+1. Back on **R2 object storage**, under **Account Details**, select
+   **Manage** next to **API Tokens**.
+2. Select **Create Account API token**. Name it `purify-voices-github`.
+3. Under **Permissions**, choose **Object Read & Write**.
+4. Apply it to **specific buckets only**, and pick exactly two: the bucket
+   that holds the Bible's recordings (the one behind audio.purifyapp.net) and
+   `purify-voices-plus`. Nothing else.
+5. Select **Create Account API token**.
+6. The next page shows the **Access Key ID** and the **Secret Access Key**.
    The secret is shown only this once: keep the page open for V12.
-8. The bucket's address for programs (its S3 endpoint) is
+7. The buckets' address for programs (the S3 endpoint) is
    `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`, with your account id in
    place of `<ACCOUNT_ID>`. The account id is on the R2 object storage page,
-   under Account Details. If you copy the bucket's **S3 API** address from its
+   under Account Details. If you copy a bucket's **S3 API** address from its
    **Settings** instead, leave off the bucket's name at its end.
 
-### V11. Keep the Plus voices private (5 minutes)
-
-A bucket behind its own address (audio.purifyapp.net) hands every file in it
-to anyone; Cloudflare's page says to restrict it with its security rules. One
-rule keeps everything under `plus/` from being served there, so the Plus voices
-can only be reached through the signed route the app will use. Free on your
-plan (5 rules).
-
-1. In the Cloudflare dashboard, open the **purifyapp.net** site, then
-   **Security rules**.
-2. Select **Create rule**, then **Custom rules**.
-3. **Rule name:** `Plus voices private`.
-4. **When incoming requests match:** Field **Hostname**, Operator **equals**,
-   Value `audio.purifyapp.net`; **And** Field **URI Path**, Operator
-   **starts with**, Value `/plus/`. (Or **Edit expression** and paste:
-   `(http.host eq "audio.purifyapp.net" and starts_with(http.request.uri.path, "/plus/"))`.)
-5. **Then take action:** **Block**.
-6. Select **Deploy**.
-7. In R2, open the bucket, then **Settings**: its **Public Development URL**
-   (r2.dev) should read disabled. Cloudflare asks for that when a rule
-   guards the bucket, since r2.dev does not pass through the rule.
-
-You do not have to test it: before any Plus voice goes up, the recording
-writes a test file under `plus/`, asks for it at audio.purifyapp.net, and
-stops with a plain message if it is served.
-
-### V12. The four secrets, in GitHub (5 minutes)
+### V12. The five secrets, in GitHub (5 minutes)
 
 1. Open github.com/lifeistheosis/purifyapp and select **Settings**.
 2. In the sidebar's **Security** section, select **Secrets and variables**,
    then **Actions**.
 3. On the **Secrets** tab, select **New repository secret**, type the
-   **Name**, paste the **Secret**, and select **Add secret**. Four times:
+   **Name**, paste the **Secret**, and select **Add secret**. Five times:
 
    | Name | Secret |
    |---|---|
-   | `R2_ENDPOINT` | the S3 endpoint from V10 step 8 |
+   | `R2_ENDPOINT` | the S3 endpoint from V11 step 7 |
    | `R2_ACCESS_KEY_ID` | the Access Key ID |
    | `R2_SECRET_ACCESS_KEY` | the Secret Access Key |
-   | `R2_BUCKET` | the bucket's name |
+   | `R2_BUCKET` | the name of the Bible's bucket |
+   | `R2_PLUS_BUCKET` | `purify-voices-plus` |
 
 4. Tell the arbiter "secrets in". Names only, never a value.
 
@@ -1134,12 +1126,17 @@ time, about 8 hours in all (5 to 9, by the speed of the machines GitHub hands
 out: the dry run measured 2.8 to 5.3 times real time). Each recording goes to
 the bucket as it is made.
 Heart's recordings show Listen in the app once a chat commits their timings and the
-website next deploys; the Plus voices wait under `plus/` for the Voice sheet
-and the signed route.
+website next deploys; the Plus voices wait in `purify-voices-plus` for the
+Voice sheet and the signed route. Before any Plus voice goes up, the recording
+checks that the two secrets name two different buckets, that Heart's John 1
+is in the Bible's and not in the private one, and that a test file in the
+private one is not served at audio.purifyapp.net; if any check fails it stops
+and uploads nothing to it.
 
 **Cost:** GitHub's runners are free for a public repository. The bucket grows
-by about 9 GB (505 hours of sound at Heart's 18 MB an hour), to about 9.5 GB:
-inside R2's free 10 GB, then $0.015 a GB a month; the uploads are inside its
+by about 9 GB (505 hours of sound at Heart's 18 MB an hour), to about 9.5 GB in
+the two buckets together: inside R2's free 10 GB for the account, then $0.015 a
+GB a month; the uploads are inside its
 free monthly writes.
 
 **To stop it:** on GitHub, **Actions**, **Voices (record)**, the run,

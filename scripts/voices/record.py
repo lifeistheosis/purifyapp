@@ -12,7 +12,8 @@
 #             record.py record --voice af_heart --chapter genesis/1 --batch listen-batches/history/pentecost.json --out out
 #   report  measures what was recorded, beside Heart's New Testament
 #             record.py report --out out
-#   probe   proves the Plus voices' place in the bucket is not public
+#   probe   proves the Plus voices' bucket is private, before any goes up
+#   where   the bucket and key a recording goes to
 #
 # What a recording is, each part measured on Heart's New Testament where the
 # app plays it (audio.purifyapp.net/read/, 2026-11-16):
@@ -301,11 +302,22 @@ def finish(audio, path, kind_of_file):
 
 
 def place(item):
-    """The recording's key in the bucket, without its extension. Heart's as the app reads them
-    (lib/readAloud/chapters.ts, lib/listen/recordings.ts); a Plus voice's in its own private place."""
+    """Where the recording is written here, without its extension: Heart's as the app reads
+    them (lib/readAloud/chapters.ts, lib/listen/recordings.ts), a Plus voice's under plus/."""
     voice = item["voice"]
     base = f"plus/{voice}/" if VOICES[voice]["plus"] else ""
     return f"{base}{'read' if item['kind'] == 'chapter' else 'listen'}/{item['id']}"
+
+
+def target(item):
+    """The bucket a recording goes to and its key there, without its extension. Heart: the
+    Bible's public bucket (R2_BUCKET), behind audio.purifyapp.net. A Plus voice: its own
+    folder in a separate private bucket (R2_PLUS_BUCKET), with no address of its own, so
+    nothing in it is served to anyone (the arbiter's call, 2026-11-16)."""
+    local = place(item)
+    if VOICES[item["voice"]]["plus"]:
+        return "R2_PLUS_BUCKET", local[len("plus/") :]
+    return "R2_BUCKET", local
 
 
 def guard(item, mode):
@@ -315,59 +327,71 @@ def guard(item, mode):
         raise SystemExit(f"Heart's New Testament is already recorded ({item['id']}); it is never recorded again for the bucket.")
 
 
-# --- The bucket -----------------------------------------------------------------
+# --- The buckets ----------------------------------------------------------------
 
 
-def bucket():
-    for name in ("R2_ENDPOINT", "R2_BUCKET", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"):
-        if not os.environ.get(name):
-            raise SystemExit(f"{name} is not set (an Actions secret: docs/1.9-build/OWNER-STEPS.md, V12)")
-    return os.environ["R2_BUCKET"], os.environ["R2_ENDPOINT"]
+def need(name):
+    if not os.environ.get(name):
+        raise SystemExit(f"{name} is not set (an Actions secret: docs/1.9-build/OWNER-STEPS.md, V12)")
+    return os.environ[name]
 
 
-def aws(*args, quiet=True):
-    name, endpoint = bucket()
+def aws(which, *args, quiet=True):
+    """The aws command against one of the two buckets, named by its secret; "{bucket}" in an
+    argument is its name."""
+    name, endpoint = need(which), need("R2_ENDPOINT")
+    need("AWS_ACCESS_KEY_ID")
+    need("AWS_SECRET_ACCESS_KEY")
     env = dict(os.environ, AWS_DEFAULT_REGION="auto", AWS_REQUEST_CHECKSUM_CALCULATION="when_required", AWS_RESPONSE_CHECKSUM_VALIDATION="when_required")
     cmd = ["aws", *[a.replace("{bucket}", name) for a in args], "--endpoint-url", endpoint, "--region", "auto"]
     return subprocess.run(cmd, env=env, capture_output=quiet)
 
 
-def in_bucket(key):
-    return aws("s3api", "head-object", "--bucket", "{bucket}", "--key", key).returncode == 0
+def in_bucket(which, key):
+    return aws(which, "s3api", "head-object", "--bucket", "{bucket}", "--key", key).returncode == 0
 
 
-def put(path, key, plus):
+def put(path, which, key):
     kind = "audio/mpeg" if path.suffix == ".mp3" else "application/json"
-    cache = "private, max-age=86400" if plus else "public, max-age=86400"
-    done = aws("s3", "cp", str(path), f"s3://{{bucket}}/{key}", "--content-type", kind, "--cache-control", cache, "--only-show-errors", quiet=False)
+    cache = "private, max-age=86400" if which == "R2_PLUS_BUCKET" else "public, max-age=86400"
+    done = aws(which, "s3", "cp", str(path), f"s3://{{bucket}}/{key}", "--content-type", kind, "--cache-control", cache, "--only-show-errors", quiet=False)
     if done.returncode != 0:
         raise SystemExit(f"Upload failed: {key}")
 
 
 def http_status(url):
-    """The status the public address answers, asked as an app or a browser asks (curl; a
+    """The status a public address answers, asked as an app or a browser asks (curl; a
     library's own name is turned away by the site's bot rules, which would read as private)."""
     got = subprocess.run(["curl", "-s", "-o", os.devnull, "-r", "0-0", "-w", "%{http_code}", "--max-time", "30", url], capture_output=True, text=True)
     return int(got.stdout or 0)
 
 
 def probe(run_id):
-    """Writes a small file under plus/, asks for it at the public address, and removes it. The
-    Plus voices go up only when a public recording of Heart's answers and that file does not."""
+    """Before any Plus voice goes up: the private bucket is another bucket than the Bible's
+    (another name, and Heart's John 1 is not in it while it is in the Bible's), and a file
+    put in it is not served at audio.purifyapp.net while Heart's John 1 is. A bucket's r2.dev
+    address cannot be asked for with an object key: that one is his step V10 (off, as a new
+    bucket starts) and is not proved here."""
+    if need("R2_PLUS_BUCKET") == need("R2_BUCKET"):
+        raise SystemExit("R2_PLUS_BUCKET names the Bible's public bucket: the Plus voices would be free to anyone.")
+    if not in_bucket("R2_BUCKET", "read/john/1.mp3"):
+        raise SystemExit("Heart's John 1 is not in R2_BUCKET, so it is not the Bible's bucket: nothing goes up.")
+    if in_bucket("R2_PLUS_BUCKET", "read/john/1.mp3"):
+        raise SystemExit("Heart's John 1 is in R2_PLUS_BUCKET, so it is the Bible's public bucket: the Plus voices would be free to anyone.")
     control = http_status(f"{PUBLIC_BASE}/read/john/1.mp3")
     if control not in (200, 206):
         raise SystemExit(f"Heart's John 1 answered {control} at {PUBLIC_BASE}: the probe cannot tell private from unreachable, so nothing private goes up.")
-    key = f"plus/_probe/{run_id}.txt"
+    key = f"_probe/{run_id}.txt"
     with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as f:
         f.write("not public\n")
-    put(Path(f.name), key, True)
+    put(Path(f.name), "R2_PLUS_BUCKET", key)
     try:
         status = http_status(f"{PUBLIC_BASE}/{key}")
     finally:
-        aws("s3", "rm", f"s3://{{bucket}}/{key}", "--only-show-errors")
+        aws("R2_PLUS_BUCKET", "s3", "rm", f"s3://{{bucket}}/{key}", "--only-show-errors")
     if status not in (401, 403, 404):
-        raise SystemExit(f"{PUBLIC_BASE}/plus/ answered {status}: the Plus voices would be free to anyone. The rule in docs/1.9-build/OWNER-STEPS.md, V11, comes first.")
-    print(f"plus/ at {PUBLIC_BASE} answered {status} while Heart's John 1 answered {control}: private.")
+        raise SystemExit(f"A file in the private bucket answered {status} at {PUBLIC_BASE}: the Plus voices would be free to anyone.")
+    print(f"The private bucket is another bucket, and its file answered {status} at {PUBLIC_BASE} while Heart's John 1 answered {control}: private.")
 
 
 # --- Plan -------------------------------------------------------------------------
@@ -528,16 +552,16 @@ def cmd_record(a):
         if deadline and time.time() > deadline:
             left.append(item)
             continue
-        key = place(item)
-        if upload and in_bucket(f"{key}.mp3") and in_bucket(f"{key}.json"):
+        local = place(item)
+        which, key = target(item)
+        if upload and in_bucket(which, f"{key}.mp3") and in_bucket(which, f"{key}.json"):
             kept += 1
             continue
         row = record_item(voice_engine, item, out, kind_of_file, a.batches)
         if upload:
-            plus = VOICES[item["voice"]]["plus"]
-            put(out / f"{key}.mp3", f"{key}.mp3", plus)
-            put(out / f"{key}.json", f"{key}.json", plus)
-            (out / f"{key}.mp3").unlink()
+            put(out / f"{local}.mp3", which, f"{key}.mp3")
+            put(out / f"{local}.json", which, f"{key}.json")
+            (out / f"{local}.mp3").unlink()
             row["uploaded"] = True
         with report.open("a", encoding="utf-8") as f:
             f.write(json.dumps(row) + "\n")
@@ -714,6 +738,10 @@ def main():
     rp = sub.add_parser("report")
     rp.add_argument("--out", required=True)
     rp.add_argument("--heart", help="a New Testament chapter of Heart's to measure beside, as john/1")
+    wh = sub.add_parser("where")
+    wh.add_argument("--voice", choices=sorted(VOICES), required=True)
+    wh.add_argument("--chapter")
+    wh.add_argument("--batch")
     pr = sub.add_parser("probe")
     pr.add_argument("--run-id", default=os.environ.get("GITHUB_RUN_ID", "local"))
     a = p.parse_args()
@@ -725,6 +753,10 @@ def main():
         cmd_record(a)
     elif a.cmd == "report":
         cmd_report(a)
+    elif a.cmd == "where":
+        item = {"voice": a.voice, "kind": "chapter" if a.chapter else "batch", "id": a.chapter or a.batch}
+        which, key = target(item)
+        print(json.dumps({"bucket": which, "key": key, "local": place(item)}))
     else:
         probe(a.run_id)
 

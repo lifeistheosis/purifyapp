@@ -2,8 +2,11 @@
 
 Started 00:34 UTC by Arbiter 14 at his yes (about 00:33) to record the voices
 on GitHub's free runners. Stopped at its step 5: the dry run and his steps are
-done; **the full recording waits for the arbiter's go**, given once his four
-Actions secrets and the V11 rule are in place.
+done; **the full recording waits for the arbiter's go**, given once his
+private bucket (V10), key (V11) and five Actions secrets (V12) are in place.
+The arbiter's call at 01:37: the Plus voices go in a separate private bucket
+(`R2_PLUS_BUCKET`, `<voice>/read/...` and `<voice>/listen/...`), not behind a
+rule on the public one; Heart stays in the Bible's bucket (`R2_BUCKET`).
 
 ## What is built (d531607b, and the commit that adds this file)
 
@@ -21,7 +24,8 @@ Actions secrets and the V11 rule are in place.
   model and the voices file, checked on every runner).
 - `lib/voices/__tests__/recorder.test.ts`: shapes, counts, pauses, lengths,
   the app's own `timingsFit`, Heart's NT guard, the plan.
-- `docs/1.9-build/OWNER-STEPS.md`, "Voices on GitHub's runners", V10 to V13.
+- `docs/1.9-build/OWNER-STEPS.md`, "Voices on GitHub's runners", V10 to V13
+  (V10 the private bucket, V11 the key for both, V12 five secrets).
 
 ## Matched to Heart's New Testament, by measurement
 
@@ -76,13 +80,18 @@ slowest recorder; a recorder starts nothing after 240 min, under the job's
    `scripts/voices/full.json` over `scripts/voices/run.json` (it says
    `"run": 2, "mode": "full"`), commit, `git pull --rebase`, push. That push
    is the start.
-2. The plan job proves `plus/` is not public (V11) before any Plus voice
-   goes up, and every recorder proves it again; a 200 stops the run.
+2. Before any Plus voice goes up, the plan job and every recorder prove the
+   private bucket is private as far as an S3 key can tell: another name than
+   the Bible's, Heart's John 1 in the Bible's bucket and not in it, and a test
+   file in it not served at audio.purifyapp.net. Its r2.dev address cannot be
+   asked for with an object key: that rests on V10 (off, as a new bucket
+   starts).
 3. When it ends: download the artifact `voices-timings`; copy Heart's
    `read/**.json` into `public/audio/read/` and `listen/**.json` into
    `public/audio/listen/`, run `node scripts/read-aloud-index.mjs` and
    `npm run listen:index`, commit and push. The Plus voices' timings are in
-   the bucket beside their mp3s, and in the same artifact.
+   the private bucket beside their mp3s, and in the same artifact (under
+   `plus/<voice>/`, the private bucket's `<voice>/`).
 4. A shard that ran out of time leaves `left-*.json` and fails the summary;
    push run.json again with `"run"` raised and the bucket's recordings are
    skipped.
@@ -90,8 +99,11 @@ slowest recorder; a recorder starts nothing after 240 min, under the job's
 ## Not proved, and why
 
 - No upload has run: the secrets are not in place (by design until the go).
-  The upload, the skip of what the bucket has, and the probe are written and
-  read, not run against the bucket.
+  The upload, the skip of what the buckets have, and the probe are written and
+  read, not run against a bucket.
+- Whether the private bucket has an r2.dev address on cannot be read with an
+  Object Read & Write key; it would take a token that can read bucket
+  settings, which the five secrets do not include.
 - The fp32 model's speed on the runners was not measured. On this container
   fp16 was faster (5.1x against 4.5x), but runners without fast half
   precision may favour fp32; the samples he chose from were fp32. A switch

@@ -121,6 +121,15 @@ describe.skipIf(!python)("the voices recorder's formats", () => {
     expect(dry.stderr).toContain("uploads nothing");
   });
 
+  it("sends Heart to the Bible's public bucket and each Plus voice to its own folder of the private one", () => {
+    const where = (...args: string[]) => JSON.parse(record("where", ...args).stdout) as { bucket: string; key: string };
+    expect(where("--voice", "af_heart", "--chapter", "genesis/1")).toMatchObject({ bucket: "R2_BUCKET", key: "read/genesis/1" });
+    expect(where("--voice", "af_heart", "--batch", "history/pentecost")).toMatchObject({ bucket: "R2_BUCKET", key: "listen/history/pentecost" });
+    expect(where("--voice", "bf_emma", "--chapter", "john/1")).toMatchObject({ bucket: "R2_PLUS_BUCKET", key: "bf_emma/read/john/1" });
+    expect(where("--voice", "am_michael", "--batch", "life/xenia-of-petersburg")).toMatchObject({ bucket: "R2_PLUS_BUCKET", key: "am_michael/listen/life/xenia-of-petersburg" });
+    expect(where("--voice", "am_fenrir", "--chapter", "genesis/1")).toMatchObject({ bucket: "R2_PLUS_BUCKET", key: "am_fenrir/read/genesis/1" });
+  });
+
   it("plans every recording once, in shards under their hours, in whole waves of 20", () => {
     const runFile = path.join(tmp, "run-full.json");
     fs.writeFileSync(

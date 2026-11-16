@@ -15,17 +15,18 @@
 #         the bitrate, the length, the longest silence, each runner's speed).
 #   full  the plan's shards (scripts/voices/record.py plan): whole waves of 20,
 #         each shard well under GitHub's 6 hours. Each recording goes to the
-#         bucket the moment it is made: Heart where the app reads it (read/,
-#         listen/), each Plus voice in its own private place (plus/<voice>/),
-#         its timings beside it. A run again skips what the bucket already has.
+#         bucket the moment it is made: Heart to the Bible's public bucket
+#         where the app reads it (read/, listen/), each Plus voice to its own
+#         folder (<voice>/) in a separate private bucket, timings beside each. A run again skips what the bucket already has.
 #         Heart's timings come back as the artifact voices-timings, for a chat
 #         to put in public/audio/ and commit, where the website serves them
 #         to the app (lib/readAloud/chapters.ts, lib/listen/recordings.ts).
 #
-# The bucket's four secrets (R2_ENDPOINT, R2_ACCESS_KEY_ID,
-# R2_SECRET_ACCESS_KEY, R2_BUCKET) are handed only to the steps that write to
-# it, only in a full run, and nothing here prints them. Before any Plus voice
-# goes up, the plan proves plus/ is not public at audio.purifyapp.net.
+# The five secrets (R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY,
+# R2_BUCKET, R2_PLUS_BUCKET) are handed only to the steps that write to the
+# buckets, only in a full run, and nothing here prints them. Before any Plus
+# voice goes up, the plan and each recorder prove the private bucket is another
+# bucket than the Bible's and is not served at audio.purifyapp.net.
 # His steps: docs/1.9-build/OWNER-STEPS.md, "Voices on GitHub's runners".
 
 name: Voices (record)
@@ -65,11 +66,12 @@ jobs:
       - name: Plan the shards
         id: plan
         run: python3 scripts/voices/record.py plan --run scripts/voices/run.json --batches listen-batches --out plan/plan.json
-      - name: Prove the Plus voices' place is not public
+      - name: Prove the Plus voices' bucket is private
         if: steps.plan.outputs.mode == 'full' && steps.plan.outputs.plus == 'true'
         env:
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_PLUS_BUCKET: ${{ secrets.R2_PLUS_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
         run: python3 scripts/voices/record.py probe
@@ -137,6 +139,7 @@ jobs:
         env:
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_PLUS_BUCKET: ${{ secrets.R2_PLUS_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
         run: |
