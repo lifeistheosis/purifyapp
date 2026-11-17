@@ -4,14 +4,15 @@ Started 06:46 UTC by Arbiter 14 (session_01VuYTwdsjnmK235qQJH2FGJ) on Gate 6c's 
 
 ## Commits
 
-After `git pull --rebase` onto `d66d08f1` (upstream's four commits were docs only):
+Pushed at the arbiter's word (09:21 UTC) after `git pull --rebase` onto `f9cf975c` (what came in was docs only), as `f9cf975c..1761a879`:
 
-- `152b76ae` Settings' space choices grow their rows as a change inside the page; the dictionary's words wait for their definitions.
-- `9a37bb25` The reader's controls take no touch while they step away (the Nicaea document's "The council's page").
-- `e74945ed` litPanels test: the focus card's writes, in the same order, inside the move (the old pattern pinned the handler's shape).
-- `767d7aae` and this file: the hand-over.
+- `2c1fda8b` Settings' space choices grow their rows as a change inside the page; the dictionary's words wait for their definitions.
+- `83eb5851` The reader's controls take no touch while they step away (the Nicaea document's "The council's page").
+- `a8d9cde0` litPanels test: the focus card's writes, in the same order, inside the move (the old pattern pinned the handler's shape).
+- `ba1d4377`, `1761a879` and this line: the hand-over.
 
-App code is committed and **not pushed** (the arbiter's word: no app code until it says); the docs wait with it, since they sit on top.
+The checks below ran on the same tree before the rebases (the code as `1e9c3db9`, then `9a37bb25`); the rebases brought in docs only.
+
 
 ## Mended
 
