@@ -10,9 +10,9 @@
 Both reproduced on a dev server with the walk's own seeds, first touch, reach and tap (`scripts/lib/tap.mjs`): Back 542 before, 467 after (the row's own title grows after the visit, from the stand-in seed's label to the reading page's; its top is unmoved); Share 433 to 445 before, holds at 433 after.
 
 ## Commits (pushed at the arbiter's word, 09:52)
-- `35e1e4ea` the two mends and `lib/you/__tests__/youBack.test.ts` (fails on the old code, 6 of 7; it also holds the You tab's files to no `sr-only` line with room of its own).
-- `b919b4ba` `scripts/guardrail-walk.mjs` takes `--store` (as the tap walk does), so checkMock with pixels can hold You with days kept, which a new reader never draws; `docs/handoffs/updates-98v-walks/chain98v.sh`, the checks on one export, restartable.
-- `31317ac6` the chain reads the export's page as `out/account/index.txt` (the export writes one shell `index.html`).
+- `fbd9b1e5` the two mends and `lib/you/__tests__/youBack.test.ts` (fails on the old code, 6 of 7; it also holds the You tab's files to no `sr-only` line with room of its own).
+- `1de9c5e4` `scripts/guardrail-walk.mjs` takes `--store` (as the tap walk does), so checkMock with pixels can hold You with days kept, which a new reader never draws; `docs/handoffs/updates-98v-walks/chain98v.sh`, the checks on one export, restartable.
+- `d77c2456` the chain reads the export's page as `out/account/index.txt` (the export writes one shell `index.html`).
 
 ## Checks
 - typecheck exit 0; unit suite 1,258 files, 15,510 passed, 9 skipped, exit 0; eslint 0 on the changed files; `npm run build` exit 0; one export by `node scripts/gate/export.mjs` exit 0 (the key printed, saved and committed nowhere).
