@@ -4,11 +4,14 @@ Started 06:46 UTC by Arbiter 14 (session_01VuYTwdsjnmK235qQJH2FGJ) on Gate 6c's 
 
 ## Commits
 
-- `1021c827` Settings' space choices grow their rows as a change inside the page; the dictionary's words wait for their definitions.
-- `1e9c3db9` The reader's controls take no touch while they step away (the Nicaea document's "The council's page").
-- This hand-over.
+After `git pull --rebase` onto `d66d08f1` (upstream's four commits were docs only):
 
-App code is committed and **not pushed** (the arbiter's word: no app code until it says).
+- `152b76ae` Settings' space choices grow their rows as a change inside the page; the dictionary's words wait for their definitions.
+- `9a37bb25` The reader's controls take no touch while they step away (the Nicaea document's "The council's page").
+- `e74945ed` litPanels test: the focus card's writes, in the same order, inside the move (the old pattern pinned the handler's shape).
+- `767d7aae` and this file: the hand-over.
+
+App code is committed and **not pushed** (the arbiter's word: no app code until it says); the docs wait with it, since they sit on top.
 
 ## Mended
 
@@ -50,7 +53,18 @@ The arbiter's ruling for this round: a move the reader asked for (a contents lin
 
 ## Checks
 
-RESULTS_PENDING
+Two exports, both by `node scripts/gate/export.mjs` (exit 0, `export size: 207.5 MB on disk in 7,367 files, 75.8 MB packed`, the key the main web's anon role, printed and written nowhere): the first with the Settings and dictionary mends, on which the Nicaea cause was found; the second with the stylesheet rule too, on which everything below ran (the rule checked in its built CSS). Head walked: `1e9c3db9` (now `9a37bb25`).
+
+- Tests that fail on the old code: `lib/settings/__tests__/spaceChoicesMove.test.ts` 3 of 3 fail on the old Settings, `lib/search/__tests__/dictionaryWords.test.ts` 2 of 2 on the old search, `lib/ui/__tests__/awayTakesNoTouch.test.ts` 2 of 3 on the old stylesheet (its third holds the leave as it was); all pass on the new.
+- `npm run typecheck`: exit 0.
+- `npm run test:unit` on the rebased head: `Test Files 1260 passed | 1 skipped (1261)`, `Tests 15511 passed | 9 skipped (15520)`. (The first run, before `e74945ed`: 1 failed, `litPanels.test.ts` "writes the one answer as the intent", whose pattern pinned the handler's old shape.)
+- `npx eslint` on the changed code files: exit 0.
+- `npm run build`: exit 0, `✓ Compiled successfully in 48s`, `✓ Generating static pages using 2 workers (6527/6527)`.
+- The motion walk as `walks6.sh` runs it (`SELLS_PLUS=1 NODE_USE_ENV_PROXY=1 node scripts/motion-walk.mjs out --workers 2 --online --cpu 4 [--reduced]`) on the three touched screens, two more readers the stylesheet rule reaches (`/bible/john/1/`, `/saints/athanasius-the-great/against-the-heathen/`) and the nine screens of the ruled rows:
+  - Motion on: `14 of 14 screens walked, 251 controls tapped`. `/settings/: 30 tapped, 0 failed, 0 unsure` (28 rows before), `/dictionary/` 30 and 0, the Nicaea document 13 and 0; every ruled screen 0, but the three Chants filters (64, 63 and 191px, as ruled). One more: `/bible/john/1/` a community post on the chapter (`a "B bogomilrusanov42 · 1mo John chapter 1"`, went to /community/), `blank: 7 frames ... for 211ms, from 1628ms after the tap`: the Community page arriving from the main web; Gate 6c walked another chapter of that route, so it is in no row; outside these files and not touched by these mends.
+  - Reduced: `14 of 14 screens walked, 72 controls tapped`. `/dictionary/: 6 tapped, 0 failed` (the 84px late shove gone). The ruled rows fail as ruled, each with Gate 6c's numbers to within a few ms (Settings 26px, Dismiss 178px twice, Privacy 561px, Ancyra 270px, Calendar 27 and 56px, Fasting 67px twice, First Liturgy 77px twice, Sign up 27px), and 98t's Chants "Play" (misplaced, 0,844 then 0,0, 151ms). Two more of the Ancyra kind on the readers walked for the rule, a pager's Next turned at once: the Nicaea document's "Next: Salutation" and Athanasius's "Next: Part II", 270px each (356 to 86) at 112 and 117ms (Gate 6c walked one document of each route).
+- checkMock with pixels, all 21 palettes and looks (`SELLS_PLUS=1 node scripts/guardrail-walk.mjs out --online --every --size <W>x<H> [--lang ar] --only <the five>`): `5 screens measured, 5 with nothing failed` at 390x844, 800x1280 and 1032x1376, in English and in Arabic (six runs).
+- The tap walk as a new reader (`SELLS_PLUS=1 node scripts/tap-walk.mjs out --max 80 [--lang ar] --only <the five>`): English `5 screens, 176 controls tapped, 0 failed`, Arabic `5 screens, 176 controls tapped, 0 failed`; both `sheets, menus and dialogs the taps opened: 17 distinct ... 0 failed`. "The council's page" passes in both.
 
 ## Not proved
 
