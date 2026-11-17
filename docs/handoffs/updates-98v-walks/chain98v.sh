@@ -32,7 +32,7 @@ grep -q "^OK unit" "$W/chain.txt" || { echo "unit $(tail -1 "$W/../unit.log") $(
 
 step web npm run build
 step export node scripts/gate/export.mjs
-[ -f out/account/index.html ] || { echo "no export: stopping $(stamp)"; exit 1; }
+[ -f out/account/index.txt ] || { echo "no export: stopping $(stamp)"; exit 1; }
 
 # The tap walk, as Gate 6c's `new6.sh you` ran it: with days kept (no network: a stand-in session), and a new reader.
 step tap-you-kept node scripts/tap-walk.mjs out --max 1000 --only /account/,/account/profile/ "${KEPT[@]}" --json "$W/tap-you-kept.json"
