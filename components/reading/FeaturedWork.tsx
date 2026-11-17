@@ -34,16 +34,22 @@ import styles from "./room.module.css";
  * never move and no other book flashes in its place first.
  *
  * ONE ARRIVAL (1.8, the owner's note 13 of build 80: "Opening the reading
- * room while its pictures load breaks the immersion"). The stage then goes on
- * waiting, unseen in the page's own colour, until its poster's picture is in
- * (or cannot come, or is slower than the cover's HOLD_MS), and fades in whole:
- * the poster with its picture, the words, the light. The picture behind it is
- * the poster's own (its AVIF first, the same file the poster loads, so it is
+ * room while its pictures load breaks the immersion"). The picture is waited
+ * for before the room is shown, not after: the backdrop is an image React
+ * waits for while it switches pages (no onLoad prop; react-dom holds the page
+ * the reader is on, live, for up to 800ms from the tap until it has loaded
+ * and decoded), so the room opens with the day's book in it. Until 1.9 the
+ * stage waited instead in the room already shown, unseen in the page's own
+ * colour, for up to the cover's HOLD_MS: the room opened with a hole where
+ * its book would be, 601ms of it on the gate's walk at CPU 4x (Gate 6c,
+ * 2026-11-17). A picture slower than React's wait now fades in over its
+ * poster's plate, as every cover's does. The picture behind it is the
+ * poster's own (its AVIF first, the same file the poster loads, so it is
  * asked for once) and fades up to its dim once it has loaded, never popping
- * in. The size the stage keeps while it waits is the size of what arrives in
- * it, a poster, a line of facts, two lines of blurb and Read on a phone, and
- * the poster with its padding from a tablet's width up, so nothing under it
- * moves when it comes.
+ * in. The size the stage keeps until the day is known is the size of what
+ * arrives in it, a poster, a line of facts, two lines of blurb and Read on a
+ * phone, and the poster with its padding from a tablet's width up, so nothing
+ * under it moves when it comes.
  */
 export function FeaturedWork({
   card,
@@ -67,8 +73,6 @@ export function FeaturedWork({
   // The backdrop that has loaded, and the one whose AVIF failed, now asked for as JPEG.
   const [lit, setLit] = useState<string | null>(null);
   const [artJpeg, setArtJpeg] = useState<string | null>(null);
-  // The book whose poster can be seen: until then the stage waits unseen.
-  const [ready, setReady] = useState<string | null>(null);
   useStageDepth(stage, Boolean(card));
 
   const author = card?.author ?? t("reading.work.anonymous");
@@ -82,14 +86,14 @@ export function FeaturedWork({
     : [];
   const art = card?.cover && gone !== card.cover.src ? card.cover : null;
   const artAvif = art && artJpeg !== art.src ? avifFor(art.src) : null;
-  const held = !card || ready !== card.key;
+  const held = !card;
 
   return (
     <section
       ref={stage}
       aria-labelledby={card ? "featured-title" : undefined}
       data-featured={card ? card.key : "pending"}
-      // Unseen until the poster can be seen (room.module.css, .hero[data-held]).
+      // Unseen until the day is known (room.module.css, .hero[data-held]).
       data-held={held ? "" : undefined}
       className={cn(styles.hero, "relative -mx-5 mt-1 md:mx-0 md:mt-8 md:rounded-[16px]")}
     >
@@ -99,15 +103,24 @@ export function FeaturedWork({
             {artAvif ? <source type="image/avif" srcSet={artAvif} /> : null}
             <img
               key={artJpeg === art.src ? `${art.src}#jpeg` : art.src}
+              // Lit once it has loaded and is decoded too, so it never paints
+              // in bands (build 85, note 52, the rule of lib/ui/useArrivingImage.ts).
+              // Listened for on the element, never with an onLoad prop: an
+              // image with no onLoad is one React waits for before it shows a
+              // page it is switching to (react-dom's suspensey images, up to
+              // 800ms from the tap), so the room opens with its picture in (ONE
+              // ARRIVAL, above).
+              ref={(img) => {
+                if (!img) return;
+                const done = () => setLit(art.src);
+                const light = () => void img.decode().then(done, done);
+                if (img.complete && img.naturalWidth > 0) light();
+                img.addEventListener("load", light);
+                return () => img.removeEventListener("load", light);
+              }}
               src={art.src}
               alt=""
               decoding="async"
-              onLoad={(e) => {
-                // Lit once it is decoded too, so it never paints in bands
-                // (build 85, note 52, the rule of lib/ui/useArrivingImage.ts).
-                const done = () => setLit(art.src);
-                e.currentTarget.decode().then(done, done);
-              }}
               onError={(e) => {
                 if (artAvif && e.currentTarget.currentSrc.endsWith(".avif")) setArtJpeg(art.src);
                 else setGone(art.src);
@@ -135,8 +148,6 @@ export function FeaturedWork({
                   focusY={card.cover?.focusY}
                   size="hero"
                   priority
-                  hold="parent"
-                  onArrive={() => setReady(card.key)}
                   className={cn("w-[200px] md:w-[220px]", styles.posterShadow)}
                 />
               </Link>

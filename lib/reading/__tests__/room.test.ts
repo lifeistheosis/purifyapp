@@ -147,16 +147,36 @@ describe("the room's pictures (1.8, the owner's note 13 of build 80)", () => {
     expect(cover).toMatch(/setTimeout\(\(\) => setBare\(src\), HOLD_MS\)/);
   });
 
-  it("hold every cover the room draws: the rows, the search's grid, the day's book", () => {
+  it("hold every cover the rows and the search's grid draw", () => {
     expect(code("components/reading/CoverRow.tsx")).toMatch(/<WorkCover\b[^>]*\beager=\{near\}\s+hold="self"/);
     // The grid's first screen is asked for at once, so it waits HOLD_MS at most.
     expect(code("components/reading/ReadingSearch.tsx")).toMatch(/<WorkCover\b[^>]*size="grid" eager=\{i < FIRST_SCREEN\} hold="self"/);
-    expect(stage).toMatch(/<WorkCover\b[^>]*\bpriority\s+hold="parent"\s+onArrive=\{\(\) => setReady\(card\.key\)\}/);
   });
 
-  it("keep the day's stage unseen at its full size until its poster can be seen, then bring it in whole", () => {
+  // Gate 6c (the motion walk at CPU 4x, 2026-11-17): the stage waited for its
+  // book's picture in the room already shown, and Discover's Reading door
+  // opened onto a hole where the book would be, 37 frames over 601ms (300ms
+  // with motion reduced). The picture is waited for before the room is shown:
+  // the backdrop, the poster's own file, is an image React waits for while it
+  // switches pages (no onLoad prop), and once shown the stage waits for nothing.
+  it("wait for the day's book before the room is shown, never in it", () => {
+    const backdrop = /<img\b[^>]*?key=\{artJpeg === art\.src[\s\S]*?\/>/.exec(stage)?.[0] ?? "";
+    expect(backdrop).not.toBe("");
+    expect(backdrop).not.toMatch(/\bonLoad=/);
+    expect(backdrop).not.toMatch(/loading="lazy"/);
+    // Lit on its own load, decoded first, listened for on the element.
+    expect(backdrop).toMatch(/ref=\{\(img\) => \{/);
+    expect(backdrop).toMatch(/img\.addEventListener\("load", light\)/);
+    expect(backdrop).toMatch(/img\.decode\(\)\.then\(done, done\)/);
+    // The poster is not held: a picture slower than React's wait fades in over its plate.
+    expect(stage).toMatch(/<WorkCover\b[^>]*\bsize="hero"\s+priority\s+className=/);
+    expect(stage).not.toMatch(/hold="parent"/);
+    expect(stage).not.toMatch(/setReady/);
+  });
+
+  it("keep the day's stage unseen at its full size until the day is known, then bring it in whole", () => {
     expect(stage).toContain('data-held={held ? "" : undefined}');
-    expect(stage).toContain("const held = !card || ready !== card.key;");
+    expect(stage).toContain("const held = !card;");
     expect(stage).not.toMatch(/"invisible"/);
     expect(css).toMatch(/\.hero\[data-held\] \{\s*visibility: hidden;\s*opacity: 0;\s*\}/);
     // The size it keeps is the size of what arrives, so the rows never move.

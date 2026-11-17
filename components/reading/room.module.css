@@ -27,9 +27,11 @@
  *
  * One arrival, fired once, because the owner asked for it by name (1.8, his
  * note 13 of build 80: the room's pictures popped in, "they fade in"): the
- * stage waits unseen in the page's own colour until its book's picture is in,
+ * stage waits unseen in the page's own colour until the reader's day is known,
  * then fades in whole, and the picture behind the poster fades up to its dim
- * once it has loaded. Opacity only, and on the same switch.
+ * once it has loaded. The book's picture itself is waited for before the room
+ * is shown (components/reading/FeaturedWork.tsx, ONE ARRIVAL), never in it.
+ * Opacity only, and on the same switch.
  */
 
 /* The day's book: a stage the width of the screen on a phone, lit from above.
@@ -42,9 +44,9 @@
   overflow: clip;
 }
 
-/* Waiting for the day's book, or for its poster's picture: there at its full
-   size, so the rows under it never move, and unseen, so the page's own colour
-   is all that shows until the stage arrives whole. */
+/* Waiting for the day's book: there at its full size, so the rows under it
+   never move, and unseen, so the page's own colour is all that shows until the
+   stage arrives whole. */
 .hero[data-held] {
   visibility: hidden;
   opacity: 0;

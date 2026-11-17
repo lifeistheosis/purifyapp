@@ -52,8 +52,8 @@ const ASK_FOR_MS = 15000;
 /**
  * The picker: the same library as Chants (the owner, 2026-10-16), each
  * chant with the versions that may play under a prayer, a preview of each,
- * and "Play while I pray". It reads the library's index the first time it
- * opens (app/chants-index.json, in the apps' bundle). A version that cannot
+ * and "Play while I pray". It reads the library's index as the prayer opens
+ * (app/chants-index.json, in the apps' bundle), so it opens whole. A version that cannot
  * play now says why where its preview would be.
  */
 export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -63,14 +63,23 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
   const availabilityFor = useChantAvailability();
   const prefs = useWordsPrefs();
   const [index, setIndex] = useState<ChantIndexRow[] | null>(null);
+  // A read of the index that came back with nothing: the sheet then opens
+  // with what it has, so a tap is still answered.
+  const [missed, setMissed] = useState(false);
   const [chosen, setChosen] = useState<string>("");
   const { playingId, progress, start, stop } = usePreview();
 
+  // Read as the prayer opens, not at the tap, and the sheet rises only once
+  // its chants are in it: read at the tap, the sheet rose with none and grew
+  // 251px as they came, its top drawn at 520 and then at 269 (Gate 6c, the
+  // motion walk at CPU 4x, 2026-11-17). Opening reads it again after a miss.
   useEffect(() => {
-    if (!open || index) return;
+    if (index) return;
     let alive = true;
     void loadChantIndex().then((rows) => {
-      if (alive && rows) setIndex(rows);
+      if (!alive) return;
+      if (rows) setIndex(rows);
+      else setMissed(true);
     });
     return () => {
       alive = false;
@@ -86,6 +95,7 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
 
   const close = () => {
     stop();
+    setMissed(false);
     onClose();
   };
 
@@ -105,7 +115,7 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
   };
 
   return (
-    <Sheet open={open} onClose={close} title={t("chant.button")} openFull desktop>
+    <Sheet open={open && (index !== null || missed)} onClose={close} title={t("chant.button")} openFull desktop>
       <p className="font-sans text-detail leading-snug text-paper/65">{t("chant.sheet.body")}</p>
 
       <div role="radiogroup" aria-label={t("chant.button")} className="mt-4 space-y-2">
