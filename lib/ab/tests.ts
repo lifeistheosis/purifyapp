@@ -93,13 +93,12 @@ export type AbTest = {
  * week; finishing the questions, accounts and Plus must not get clearly
  * worse. A reader who is signed in already is in neither version.
  *
- * ITS DAYS ARE SET AGAIN IN THE RELEASE COMMIT: the first day the day of
- * release, the last twelve weeks on. The days below are the test builds'
- * (his word of 2026-11-10, to try everything "as if it was public release"):
- * they begin on the day the roads were lit on the branch, so a test build
- * runs the test as a release will. A test build talks to the test web, so
- * none of its rows reach the main web. lib/ab/__tests__/tests.test.ts
- * refuses lit roads with days that are not twelve weeks apart.
+ * ITS DAYS WERE SET AGAIN IN THE RELEASE COMMIT (roads on, 1.9's release
+ * day, 2026-11-17): the first day the day of release, the last twelve weeks
+ * on. Until then they were the test builds' (his word of 2026-11-10, to try
+ * everything "as if it was public release"), beginning on the day the roads
+ * were lit on the branch. lib/ab/__tests__/tests.test.ts refuses lit roads
+ * with days that are not twelve weeks apart.
  */
 export const ACCOUNT_PLACE: AbTest = {
   id: "account-place",
@@ -107,8 +106,8 @@ export const ACCOUNT_PLACE: AbTest = {
   asks: "Where should a new reader be offered an account: a card on Today after their first step, or the last of the welcome questions?",
   arms: ["card", "end"],
   share: 1,
-  begins: "2026-11-10",
-  ends: "2027-02-02",
+  begins: "2026-11-17",
+  ends: "2027-02-09",
   gate: "roads",
   judge: "back_week2",
   guards: ["finished", "account", "plus_bought"],
@@ -134,11 +133,11 @@ export const ACCOUNT_PLACE: AbTest = {
  * in which case Purify stays as it is.
  *
  * ON since 2026-11-10, his "yes Plus card" on the stills: its gate,
- * PLUS_INTRO_LIVE (lib/onboarding/flags.ts), is true. The days below are the
- * test builds', twelve weeks from that day; ITS DAYS ARE SET AGAIN IN THE
- * RELEASE COMMIT, the first the day of release, as the first test's are. It
- * never runs together with the Plus sheet's order test (`apart`), since both
- * read the same buyers.
+ * PLUS_INTRO_LIVE (lib/onboarding/flags.ts), is true. Its days were set
+ * again in the release commit, as the first test's were: the first the day
+ * of release (2026-11-17), the last twelve weeks on. It never runs together
+ * with the Plus sheet's order test (`apart`), since both read the same
+ * buyers.
  */
 export const PLUS_INTRODUCED: AbTest = {
   id: "plus-introduced",
@@ -146,8 +145,8 @@ export const PLUS_INTRODUCED: AbTest = {
   asks: "Should a new reader meet Plus only as the locks they come upon, or also once, on a calm card on Today after their first week?",
   arms: ["locks", "card"],
   share: 1,
-  begins: "2026-11-10",
-  ends: "2027-02-02",
+  begins: "2026-11-17",
+  ends: "2027-02-09",
   gate: "plusIntro",
   apart: ["plus-sheet-order"],
   judge: "plus_bought",
@@ -180,8 +179,8 @@ export const PLUS_INTRODUCED: AbTest = {
  * ON since 2026-11-10, his "yes to all suggested": its gate, PLUS_ORDER_LIVE
  * (lib/onboarding/flags.ts), is true. It begins the day after the Plus
  * card's last day and runs twelve weeks, never across the card's days
- * (`apart`): both read the same buyers. ITS DAYS ARE SET AGAIN IN THE
- * RELEASE COMMIT, to follow the card's new last day.
+ * (`apart`): both read the same buyers. Its days were set again in the
+ * release commit (2026-11-17), to follow the card's new last day.
  */
 export const PLUS_SHEET_ORDER: AbTest = {
   id: "plus-sheet-order",
@@ -190,8 +189,8 @@ export const PLUS_SHEET_ORDER: AbTest = {
   arms: ["list", "working"],
   share: 1,
   // The day after the Plus card's last, and twelve weeks on.
-  begins: "2027-02-03",
-  ends: "2027-04-28",
+  begins: "2027-02-10",
+  ends: "2027-05-05",
   gate: "plusOrder",
   apart: ["plus-introduced"],
   judge: "plus_pay",

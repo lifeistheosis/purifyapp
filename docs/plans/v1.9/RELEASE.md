@@ -217,7 +217,7 @@ in the owner's words.
 
 ## If it goes wrong
 
-Way back: a63d37c7a7cbd29cd368989d81b521fd55197319 Push: a test to the admin's own devices (Releases, Records, Notifications sent)
+Way back: c7cdc638cf9d3db40045ad95e4501d20f0448c35 Every page names itself: its own canonical, og:url and title on X
 
 The line above is the commit on `origin/main` that this push replaces.
 `node scripts/release.mjs back` writes it before the push and again after
