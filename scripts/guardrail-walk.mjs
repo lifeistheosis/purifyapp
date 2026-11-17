@@ -37,6 +37,8 @@
 //   NODE_USE_ENV_PROXY=1 node scripts/guardrail-walk.mjs [out dir] [--only /path,/path] [--workers 3] [--json file] [--online] [--looks dir]
 //   (add --size 800x1280 or --size 1032x1376 to walk at a tablet's size; a phone, 390 by 844, unless named)
 //   (add --lang ar to walk as a reader who chose Arabic, as the tap walk's --lang does)
+//   (add --store key=value, as many as named, to walk as a reader who keeps them, as the tap walk's --store
+//   does: You with days kept, docs/1.9-build/redesign/round-3/you-lines.json, Updates 98v)
 //   node scripts/guardrail-walk.mjs --self-test    (the carried-picture check's own proof)
 //
 // And what is asked of the website (the arbiter, 2026-11-11 16:59 UTC): a
@@ -85,6 +87,14 @@ const LOOKS = flag("--looks");
 // The reader's language (Gate 4b, 2026-11-15: part 2 in Arabic at the three sizes, where mirroring
 // is judged), set as the tap walk's --lang sets it: the locale, the cookie and the key the app keeps.
 const LANG = flag("--lang");
+// What the reader keeps before the walk, as the tap walk's --store sets it (Updates 98v, 2026-11-17: You
+// with days kept, whose parts a new reader never draws, held to checkMock as a new reader's You is).
+const STORE = [];
+for (let at = argv.indexOf("--store"); at >= 0; at = argv.indexOf("--store")) {
+  const [k, ...v] = (argv.splice(at, 2)[1] ?? "").split("=");
+  if (!k || !v.length) throw new Error("--store takes key=value");
+  STORE.push([k, v.join("=")]);
+}
 // The screen's size (the arbiter, 2026-11-12 16:02 UTC): a phone unless --size names another, as a
 // 10-inch Android tablet (800x1280) or the largest iPad (1032x1376) are, held to the same rules and
 // walked as a phone is (touch, a mobile viewport). The store pictures chat found faults at tablet
@@ -255,13 +265,14 @@ const queue = [...list];
 async function phone() {
   const ctx = await (await liveBrowser()).newContext({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, ...motionOptions("on"), ...(LANG ? { locale: LANG } : {}) });
   await pinMotion(ctx, "on");
-  await ctx.addInitScript((lang) => {
+  await ctx.addInitScript(({ lang, store }) => {
     try {
       localStorage.setItem("purify:onboarded", "99");
       localStorage.setItem("purify:whatsNewSeen", "99");
       if (lang) localStorage.setItem("CapacitorStorage.purify_locale", lang);
+      for (const [k, v] of store) localStorage.setItem(k, v);
     } catch {}
-  }, LANG);
+  }, { lang: LANG, store: STORE });
   if (LANG) await ctx.addCookies([{ name: "purify_locale", value: LANG, url: "https://localhost" }]);
   if (SELLS_PLUS) await asAndroidShell(ctx);
   await serveLikeTheShell(ctx, OUT, {});
