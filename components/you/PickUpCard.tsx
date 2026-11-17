@@ -23,9 +23,17 @@
 // (round 3 of the fifteen screens): the You tab has to know when there are
 // none, since with nowhere left off and no verse kept it draws neither card
 // (components/mobile/YouMobile.tsx).
+//
+// Back finds them where the reader left them (Gate 6c, 2026-11-17). Opening a
+// place makes it the newest, so the tab drawn again by Back put it on the
+// large card and moved the others under the reader's thumb, and the walk met
+// the row it had tapped 84px lower. Coming back by Back, the same places keep
+// the order last drawn (lib/you/you.ts, inOrderShown), so lib/ui/returnPlace.ts
+// finds the tapped row between the same two neighbours and puts it back under
+// the thumb. Any other visit draws the newest first.
 
 import Link from "next/link";
-import { useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CoverArt } from "@/components/player/CoverArt";
@@ -39,8 +47,9 @@ import { useRecentPrayers } from "@/lib/prayers/storage";
 import { useReadingHistory } from "@/lib/reading/history";
 import { useReadingProgress } from "@/lib/reading/progress";
 import { saintNameOf } from "@/lib/saved/passages";
+import { cameBack } from "@/lib/ui/scrollReset";
 import { coverOf, type CoverSubject } from "@/lib/you/covers";
-import { howFar, latestFirst, type Place } from "@/lib/you/you";
+import { howFar, inOrderShown, latestFirst, type Place } from "@/lib/you/you";
 import { useCoversVersion } from "@/lib/readAloud/useCovers";
 
 /** Each plan's name, a closed map of literal keys for the key test. */
@@ -69,6 +78,9 @@ export type PickUpRow = Place & {
 /** A civil day "YYYY-MM-DD" as a moment: its noon, local. */
 const dayAt = (day: string) => Date.parse(`${day}T12:00:00`);
 
+/** The keys of the places last drawn, in their order: what Back puts back. */
+let drawnLast: string[] | null = null;
+
 /** Where the reader left off, the most recent first, three at most; none before the device is read. */
 export function usePickUp(): PickUpRow[] {
   const { t } = useTranslate();
@@ -77,18 +89,20 @@ export function usePickUp(): PickUpRow[] {
   const progress = useReadingProgress();
   const prayers = useRecentPrayers();
   const plans = usePlans();
-  const [last, setLast] = useState<LastRead | null | undefined>(undefined);
+  const [seen, setSeen] = useState<{ last: LastRead | null; back: boolean } | undefined>(undefined);
 
   // Before the first paint, so the card arrives with the rest of the screen
   // rather than a frame after it (the You tab draws this only on the device).
   useLayoutEffect(() => {
     /* eslint-disable-next-line react-hooks/set-state-in-effect -- the
-       last-read pointer lives in localStorage, read after mount. */
-    setLast(readLastRead());
+       last-read pointer lives in localStorage, read after mount, and whether
+       Back brought the reader is known once the route has committed. */
+    setSeen({ last: readLastRead(), back: cameBack() });
   }, []);
 
-  return useMemo<PickUpRow[]>(() => {
-    if (last === undefined) return [];
+  const rows = useMemo<PickUpRow[]>(() => {
+    if (seen === undefined) return [];
+    const { last } = seen;
     const books = localBookNames(t);
     const bookName = (slug: string) => books[slug] ?? t(`bible.books.${slug}`);
     const out: PickUpRow[] = [];
@@ -154,8 +168,15 @@ export function usePickUp(): PickUpRow[] {
       });
     }
 
-    return latestFirst(out, 3);
-  }, [last, history, progress, prayers, plans, t, sayPill]);
+    const newest = latestFirst(out, 3);
+    return seen.back ? inOrderShown(newest, drawnLast) : newest;
+  }, [seen, history, progress, prayers, plans, t, sayPill]);
+
+  useEffect(() => {
+    if (rows.length) drawnLast = rows.map((r) => r.key);
+  }, [rows]);
+
+  return rows;
 }
 
 export function PickUpCard({ rows, className }: { rows: readonly PickUpRow[]; className?: string }) {

@@ -232,7 +232,10 @@ export function KeptVerse({
               </>
             ) : null}
           </div>
-          <p role="status" className={cn("px-4 pb-3 font-sans text-caption text-paper/60", !said && "sr-only")}>
+          {/* Its room only while it says something. Hidden with its padding, it stood 12px out of the card's foot,
+              so the card could be scrolled inside: brought into view, Share rose 12px in it, and fell back under
+              the finger when the line appeared (Gate 6c, 2026-11-17). */}
+          <p role="status" className={cn("font-sans text-caption text-paper/60", said ? "px-4 pb-3" : "sr-only")}>
             {said ?? ""}
           </p>
         </div>

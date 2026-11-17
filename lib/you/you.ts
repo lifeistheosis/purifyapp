@@ -108,3 +108,20 @@ export function latestFirst<T extends Place>(places: readonly T[], n: number): T
     .sort((a, b) => (Number.isFinite(b.at) ? b.at : -1) - (Number.isFinite(a.at) ? a.at : -1))
     .slice(0, Math.max(0, n));
 }
+
+/**
+ * The places in the order they were last drawn (`shown`, their keys), when
+ * they are the same places; any other set, or none drawn yet, as given.
+ *
+ * For Back (Gate 6c, 2026-11-17): a reader who opened the second place of
+ * Where you left off and came back met it moved to the large card on top,
+ * since opening it made it the newest, and the row they had tapped 84px below
+ * their thumb. Coming back by Back, the same places keep the order the reader
+ * left; the newest leads again on the next visit.
+ */
+export function inOrderShown<T extends Place>(places: readonly T[], shown: readonly string[] | null): T[] {
+  if (!shown || shown.length !== places.length) return [...places];
+  const at = new Map(shown.map((key, i) => [key, i]));
+  if (at.size !== places.length || places.some((p) => !at.has(p.key))) return [...places];
+  return [...places].sort((a, b) => (at.get(a.key) ?? 0) - (at.get(b.key) ?? 0));
+}
