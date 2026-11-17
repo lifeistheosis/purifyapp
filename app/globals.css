@@ -960,6 +960,20 @@ body[data-reader-screen][data-reader-away] [data-tab-bar] {
 body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row] {
  transform: translateY(-8px);
 }
+/* Leaving, they take no touch. A control that steps away is still drawn for
+   the length of its leave (visibility goes at its end), and a finger landing
+   in that time met it: on a council document's last line the pill, fading
+   down over "The council's page" (the pill at 680 to 752, the link at 736 to
+   757), took the tap and nothing happened (Gate 6c's tap walk, 2 of 2). Its
+   controls set their own pointer-events, so each is let go. */
+body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row],
+body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row] *,
+body[data-reader-away] [data-reader-pill],
+body[data-reader-away] [data-reader-pill] *,
+body[data-reader-screen][data-reader-away] [data-tab-bar],
+body[data-reader-screen][data-reader-away] [data-tab-bar] * {
+ pointer-events: none;
+}
 body[data-reader-away] [data-reader-pill],
 body[data-reader-screen][data-reader-away] [data-tab-bar] {
  transform: translateY(12px);
