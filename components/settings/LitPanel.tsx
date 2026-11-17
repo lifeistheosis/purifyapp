@@ -14,7 +14,7 @@
 // panels", on the page's tokens, so every palette carries it.
 
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties, ReactNode, Ref } from "react";
 
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
@@ -68,6 +68,7 @@ export function Row({
   sub,
   href,
   children,
+  rowRef,
 }: {
   icon?: ReactNode;
   label: ReactNode;
@@ -76,6 +77,8 @@ export function Row({
   sub?: ReactNode;
   href?: string;
   children?: ReactNode;
+  /** The row's own box, for a choice in it that changes the row's height (it grows as a change inside the page). */
+  rowRef?: Ref<HTMLDivElement>;
 }) {
   const head = (
     <>
@@ -87,7 +90,7 @@ export function Row({
     </>
   );
   return (
-    <div className="set-row">
+    <div ref={rowRef} className="set-row">
       {href ? (
         <Link href={href} className="set-lab set-link">
           {head}

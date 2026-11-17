@@ -55,7 +55,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -128,6 +128,7 @@ import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
 import { READING_THEMES } from "@/lib/reader/readingModes";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
+import { movePage } from "@/lib/ui/inPageMove";
 
 import { FirstFocus, useOnboardedAgain } from "./FirstFocus";
 import { ButtonRow, LinkRow, Plate, Row, Section, Switch, Track } from "./LitPanel";
@@ -367,9 +368,18 @@ function SpaceSection() {
   const { t } = useTranslate();
   const { level, intent, fasting } = useSpace();
   const again = useOnboardedAgain();
+  // A choice here can change its row's height: the line under Familiarity,
+  // and the Day 1 under the focus cards, come with a new reader's first
+  // answer, and a level's line can run to two. The row grows as a change
+  // inside the page and what stands below glides down (lib/ui/inPageMove.ts);
+  // made at once it was an instant cut, everything under it dropping 26 to
+  // 48px in a frame (Gate 6c's motion walk, CPU 4x). Still under reduced motion.
+  const levelRow = useRef<HTMLDivElement>(null);
+  const focusRow = useRef<HTMLDivElement>(null);
   return (
     <Section id="space" title={t("settings.space")} hint={t("settings.spaceHint")}>
       <Row
+        rowRef={levelRow}
         icon={<HaloedHead size={18} />}
         label={t("settings.level")}
         sub={level ? t(`onboard.level.${level}Sub`) : null}
@@ -377,11 +387,16 @@ function SpaceSection() {
         <Track
           value={level}
           options={LEVELS.map((l) => ({ value: l, label: t(`onboard.level.${l}`) }))}
-          onChange={(l) => {
-            writeLevel(l);
-            writeDepth(depthFor(l));
-            refreshDayOne();
-          }}
+          onChange={(l) =>
+            movePage(
+              () => {
+                writeLevel(l);
+                writeDepth(depthFor(l));
+                refreshDayOne();
+              },
+              { grows: [levelRow.current] },
+            )
+          }
           label={t("settings.level")}
         />
       </Row>
@@ -395,18 +410,23 @@ function SpaceSection() {
           label={t("settings.fasting")}
         />
       </Row>
-      <Row icon={<Compass size={17} strokeWidth={1.7} />} label={t("settings.focus")}>
+      <Row rowRef={focusRow} icon={<Compass size={17} strokeWidth={1.7} />} label={t("settings.focus")}>
         <FirstFocus
           intent={intent}
           level={level}
           again={again}
           label={t("settings.focus")}
-          onPick={(i) => {
-            writeIntent(i);
-            writeFocus([focusFor(i)]);
-            refreshDayOne();
-            void saveSpaceToAccount();
-          }}
+          onPick={(i) =>
+            movePage(
+              () => {
+                writeIntent(i);
+                writeFocus([focusFor(i)]);
+                refreshDayOne();
+                void saveSpaceToAccount();
+              },
+              { grows: [focusRow.current] },
+            )
+          }
         />
       </Row>
     </Section>

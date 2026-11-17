@@ -343,7 +343,8 @@ export function CommandPalette() {
   useEffect(() => {
     if (!open || !wantsDefinitions || definitions) return;
     let alive = true;
-    void loadDefinitions().then((d) => alive && d && setDefinitions(d));
+    // None, if they could not be read: the words are listed without them.
+    void loadDefinitions().then((d) => alive && setDefinitions(d ?? []));
     return () => {
       alive = false;
     };
@@ -632,7 +633,12 @@ export function CommandPalette() {
     // empty (the owner's note 83). Nothing here moves as the keyboard comes
     // and goes; the field alone rides it.
     const hint = DOOR_HINT[turn.door];
-    const whole = turn.kind ? behind(rows, turn.door, turn.kind) : [];
+    // The dictionary's words are listed once their definitions have come, never
+    // before: each word's line came a moment after the list and grew the rows
+    // over the one under the eye (84px at 295ms, Gate 6c's reduced walk from the
+    // dictionary's Find a word). They come as the list's other parts do.
+    const definitionsComing = wantsDefinitions && !definitions;
+    const whole = turn.kind && !definitionsComing ? behind(rows, turn.door, turn.kind) : [];
     // The place's own day, under the recent words (r3-31 B): its room is
     // held at its full height until the calendar is here.
     const daySlots = DAY_SLOTS[turn.door] ?? 0;
