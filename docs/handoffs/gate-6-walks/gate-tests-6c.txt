@@ -1,0 +1,9 @@
+
+ RUN  v4.1.7 /home/user/purifyapp
+
+
+ Test Files  63 passed (63)
+      Tests  956 passed (956)
+   Start at  02:59:54
+   Duration  13.92s (transform 9.43s, setup 0ms, import 23.45s, tests 9.71s, environment 6ms)
+
