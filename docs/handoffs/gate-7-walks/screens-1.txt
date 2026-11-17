@@ -1,0 +1,1 @@
+/,/about/,/account/,/account/data/,/account/developer/,/account/eikon-box/,/account/export/,/account/notifications/,/account/profile/,/account/profile/edit/,/account/security/,/account/sessions/,/apologetics/,/apologetics/atheism/,/bible/,/bible/1-chronicles/1/,/bible/multi/

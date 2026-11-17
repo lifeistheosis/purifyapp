@@ -1,0 +1,1 @@
+/calendar/,/campaigns/,/campaigns/detail/,/campaigns/mine/,/campaigns/new/,/campaigns/rules/,/catechism/,/catechism/collections/,/catechism/collections/none/,/chants/,/chants/paschal-canon/,/community/,/community/moderate/,/councils/,/councils/ancyra-314/,/councils/ancyra-314/the-twenty-five-canons/,/credits/

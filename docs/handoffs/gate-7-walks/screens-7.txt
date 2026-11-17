@@ -1,0 +1,1 @@
+/shop/orders/detail/,/shop/policies/,/shop/request/,/shop/requests/,/shop/sell/,/shop/sell/application/,/shop/stores/,/shop/support/,/signin/,/signout/,/signup/,/start/,/start/first-liturgy/,/support/,/terms/,/theology/,/theology/comma-johanneum/
