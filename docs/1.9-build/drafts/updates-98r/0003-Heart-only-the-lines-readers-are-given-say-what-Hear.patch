@@ -1,0 +1,1096 @@
+From 004cc0447925c1d078aadf4e6fb2cdc489c574e5 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Mon, 16 Nov 2026 23:13:37 +0000
+Subject: [PATCH 3/3] Heart only: the lines readers are given say what Heart
+ does
+
+The 1.9 note's listening line (and its copies in entries.json and
+patches.json) no longer says every text is read aloud: Heart has
+recorded none beside the Bible yet. The drop loses that also line and
+its two copies (the App Store's text, Community's post); its voices step
+and its never list say the phone's voices are gone and the Plus voices
+dropped. The FAQ says the New Testament is read aloud, not every
+chapter of the Bible, in 21 languages. The Voice sheet's ten strings
+are gone from the 21 catalogs. Round 3's record says screen 7 is
+dropped; held.patch stays. heartOnlyLines.test.ts holds all of it.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VuYTwaMDRMVE18BeTfEz4w
+---
+ data/changelog/entries.json                   |   2 +-
+ data/changelog/patches.json                   |   2 +-
+ docs/1.9-build/redesign/round-3/README.md     |   6 +-
+ docs/plans/v1.9/drop.json                     |  29 ++---
+ docs/plans/v1.9/drop.md                       |  25 ++--
+ docs/plans/v1.9/patch-note-1.9.json           |   2 +-
+ lib/i18n/messages/ar.json                     |  14 +--
+ lib/i18n/messages/bg.json                     |  14 +--
+ lib/i18n/messages/de.json                     |  14 +--
+ lib/i18n/messages/el.json                     |  14 +--
+ lib/i18n/messages/en.json                     |  14 +--
+ lib/i18n/messages/es.json                     |  14 +--
+ lib/i18n/messages/fil.json                    |  14 +--
+ lib/i18n/messages/fr.json                     |  14 +--
+ lib/i18n/messages/hu.json                     |  14 +--
+ lib/i18n/messages/id.json                     |  14 +--
+ lib/i18n/messages/it.json                     |  14 +--
+ lib/i18n/messages/ka.json                     |  14 +--
+ lib/i18n/messages/ne.json                     |  14 +--
+ lib/i18n/messages/pl.json                     |  14 +--
+ lib/i18n/messages/pt.json                     |  14 +--
+ lib/i18n/messages/ro.json                     |  14 +--
+ lib/i18n/messages/ru.json                     |  14 +--
+ lib/i18n/messages/sr.json                     |  14 +--
+ lib/i18n/messages/tr.json                     |  14 +--
+ lib/i18n/messages/uk.json                     |  14 +--
+ lib/i18n/messages/ur.json                     |  14 +--
+ lib/whatsNew/__tests__/heartOnlyLines.test.ts | 109 ++++++++++++++++++
+ 28 files changed, 181 insertions(+), 288 deletions(-)
+ create mode 100644 lib/whatsNew/__tests__/heartOnlyLines.test.ts
+
+diff --git a/data/changelog/entries.json b/data/changelog/entries.json
+index 7e3cc140d..d0dd90368 100644
+--- a/data/changelog/entries.json
++++ b/data/changelog/entries.json
+@@ -35,7 +35,7 @@
+       },
+       {
+         "category": "library",
+-        "text": "Listening: one card at rest and a small pill as you scroll, and your place kept in every book. On a phone or a tablet, every text read aloud now listens as a chapter of the Bible does: Listen is in the bar at its foot, and while it plays the card wears the page's own picture."
++        "text": "Listening: one card at rest and a small pill as you scroll, and your place kept in every book."
+       },
+       {
+         "category": "library",
+diff --git a/data/changelog/patches.json b/data/changelog/patches.json
+index d8258f773..4cee83eaa 100644
+--- a/data/changelog/patches.json
++++ b/data/changelog/patches.json
+@@ -32,7 +32,7 @@
+       },
+       {
+         "heading": "Listening, Candlelight and the rest",
+-        "body": "Listening keeps one card at rest and a small pill as you scroll, and keeps your place in every book, and on a phone or a tablet every text read aloud listens as a chapter of the Bible does, from Listen in the bar at its foot. In Purify Plus, saved books are marked, a chant can be kept on your phone as a book is, each book's size shows before you save it, saving waits for Wi-Fi and picks up after a lost signal, and the week's readings are kept offline by themselves; Candlelight lights the lines you are reading and can come on at Vespers; sixteen reading modes, Candlelight, Monastery and fourteen looks in four families; ambience plays two sounds at once, each with its own photograph; and two palettes are earned by reading, Councils and Cappadocian. Ambient sounds now play on iPhone, where they never played before. Every field's hint is easier to read, the day's prayer hours no longer fade, the shop's photos load as you browse, the words under the player's buttons fit in every language, and a handful of small things were put right."
++        "body": "Listening keeps one card at rest and a small pill as you scroll, and keeps your place in every book. In Purify Plus, saved books are marked, a chant can be kept on your phone as a book is, each book's size shows before you save it, saving waits for Wi-Fi and picks up after a lost signal, and the week's readings are kept offline by themselves; Candlelight lights the lines you are reading and can come on at Vespers; sixteen reading modes, Candlelight, Monastery and fourteen looks in four families; ambience plays two sounds at once, each with its own photograph; and two palettes are earned by reading, Councils and Cappadocian. Ambient sounds now play on iPhone, where they never played before. Every field's hint is easier to read, the day's prayer hours no longer fade, the shop's photos load as you browse, the words under the player's buttons fit in every language, and a handful of small things were put right."
+       }
+     ]
+   },
+diff --git a/docs/1.9-build/redesign/round-3/README.md b/docs/1.9-build/redesign/round-3/README.md
+index 47cc63e50..64c067254 100644
+--- a/docs/1.9-build/redesign/round-3/README.md
++++ b/docs/1.9-build/redesign/round-3/README.md
+@@ -38,8 +38,12 @@ Cut both exports (`../tools/export.mjs`; the before from the working branch, the
+ 
+ ## Applied
+ 
+-His word at about 05:20 UTC on 2026-11-16: "finalize this build and it's drop kit and yes to all EXCEPT the Bible screen". Screens 2, 3 and 6 were applied by Round 3 apply B (session_01VuYTwc73BLRrRv2aMF7T3E), these screens' files only, byte-identical to the held branch's (the head had not moved in them), with only their own two sections of `app/globals.css`: `bf80d4cfd` the chants door, `088fb1d48` You and Profile, `5fab250a9` a plan's page, and `437ebc9be` the plan's sources folding open with the house's motion (the motion walk found the days under them jumping 28px at once). The account gate is safe as drawn: it lets in early exactly whom `resolveUser` lets in (`lib/auth/__tests__/accountGateKeptSession.test.ts`, a walk and a read-only probe). The record: `docs/handoffs/round-3-apply-b.md`. Screen 4 was his no; screen 7 goes in with the voice system.
++His word at about 05:20 UTC on 2026-11-16: "finalize this build and it's drop kit and yes to all EXCEPT the Bible screen". Screens 2, 3 and 6 were applied by Round 3 apply B (session_01VuYTwc73BLRrRv2aMF7T3E), these screens' files only, byte-identical to the held branch's (the head had not moved in them), with only their own two sections of `app/globals.css`: `bf80d4cfd` the chants door, `088fb1d48` You and Profile, `5fab250a9` a plan's page, and `437ebc9be` the plan's sources folding open with the house's motion (the motion walk found the days under them jumping 28px at once). The account gate is safe as drawn: it lets in early exactly whom `resolveUser` lets in (`lib/auth/__tests__/accountGateKeptSession.test.ts`, a walk and a read-only probe). The record: `docs/handoffs/round-3-apply-b.md`. Screen 4 was his no; screen 7 goes in with the voice system (since dropped: see the end of this page).
+ 
+ ## Applied (2026-11-16, Round 3 apply A, at his yes "yes to all EXCEPT the Bible screen")
+ 
+ Screen 1, the journal's page: 161d84b3 (with a verse's note on the page, opened from its verse with no Open back; a Father's words keep the old sheet), 0e75e05c (the verse-note walk). Screen 5, Plus: fed40e3c (the header's Plus button shows the same parts; a lock's row still leads its sheet). The hand-over: `docs/handoffs/round-3-apply-a.md`, with the checks and the one item left (the header's Plus pill in Arabic on six earned looks, scrolled).
++
++## Screen 7 dropped (2026-11-16)
++
++His word at about 22:35 UTC on 2026-11-16: "remove locally LLM voices and full drop and turn on campaigns etc (only leave one the standard prerecorded voices)". Heart's recording is the only voice: the phone's own voices are gone and Emma, Michael and Fenrir are dropped, so there is no voice to choose and no Voice sheet. Screen 7, the Voice sheet's redesign, is dropped and will not be applied; the sheet itself and every door to it (the player's Voice row, Now Playing, the root frame's mount) came out of the app with Updates 98r. `held.patch` stays here as it is, screen 7 in it (the Vault rule: nothing made is deleted), with `voice-lines.json` and its stills.
+diff --git a/docs/plans/v1.9/drop.json b/docs/plans/v1.9/drop.json
+index e70ddc78f..d6964603d 100644
+--- a/docs/plans/v1.9/drop.json
++++ b/docs/plans/v1.9/drop.json
+@@ -52,11 +52,11 @@
+     },
+     {
+       "word": "phone voice",
+-      "why": "the voices are settled for 1.9 at his word (build 98 note 1: \"1 (3 for premium) 4 5 6\", 2026-11-15 about 22:52 UTC, and \"v1.9\", 23:53): Heart for every reader, and three more voices in Purify Plus, each recorded ahead and downloaded by choice. What the phone's own voices will do beside them is not settled, and the 1.9 note has no line for any choice of voice: no piece names one until the note does (the step step-voices-line)"
++      "why": "the phone's own voices are gone from the app, in every language and on every platform, at his word of 2026-11-16 about 22:35 UTC (\"remove locally LLM voices ... only leave one the standard prerecorded voices\"): Heart's recording is the only voice, and no piece names a voice made on the phone (step-voices-line)"
+     },
+     {
+       "word": "phone's voice",
+-      "why": "the same: the 1.9 note has no line for the phone's own voices"
++      "why": "the same: the phone's own voices are gone from the app"
+     },
+     {
+       "word": "campaign",
+@@ -108,19 +108,19 @@
+     },
+     {
+       "word": "Fenrir",
+-      "why": "Emma, Michael and Fenrir, the three Plus voices, are in 1.9 at his word but not live: recorded on GitHub's runners once his secrets are in, then the Voice sheet (round 3 screen 7) and the signed route for Plus. No piece names them, or says they are coming, until their line is in the note (step-voices-line). Fenrir is the word held here because it is named with the other two every time, and \"Emma\" alone would catch lemma and dilemma"
++      "why": "Emma, Michael and Fenrir, the three voices once planned for Purify Plus, are dropped at his word of 2026-11-16 about 22:35 UTC (\"full drop\"), with the Voice sheet (round 3 screen 7): no piece names them, or says they are coming (step-voices-line). Fenrir is the word held here because it is named with the other two every time, and \"Emma\" alone would catch lemma and dilemma"
+     },
+     {
+       "word": "Plus voices",
+-      "why": "the same: the three Plus voices are not live"
++      "why": "the same: the three Plus voices are dropped"
+     },
+     {
+       "word": "voices in Purify Plus",
+-      "why": "the same: the three Plus voices are not live"
++      "why": "the same: the three Plus voices are dropped"
+     },
+     {
+       "word": "choose your voice",
+-      "why": "the same: no choice of voice is in the note"
++      "why": "the same: Heart is the one voice, and there is nothing to choose"
+     }
+   ],
+   "figures": [
+@@ -381,13 +381,6 @@
+         "has": "Ambient sounds now play on iPhone, where they never played before, even with Purify Plus."
+       }
+     },
+-    {
+-      "text": "Every text read aloud listens as a chapter of the Bible does, from Listen at its foot.",
+-      "from": {
+-        "version": "1.9",
+-        "has": "every text read aloud now listens as a chapter of the Bible does"
+-      }
+-    },
+     {
+       "text": "Writing in your journal opens a page of its own, with one Done and everything else behind one plus.",
+       "from": {
+@@ -445,10 +438,10 @@
+       "id": "step-voices-line",
+       "channel": "step",
+       "moment": "ready",
+-      "title": "The voices join the note only when they are live",
++      "title": "Heart is the one voice: a listening line names only what Heart has recorded",
+       "who": "us",
+-      "waits": "Emma, Michael and Fenrir recorded on GitHub's runners once his secrets are in, then the Voice sheet (round 3 screen 7) and the signed route for Plus in a build he walks",
+-      "text": "Heart for every reader and Emma, Michael and Fenrir in Purify Plus are in 1.9 at his word (build 98 note 1, 2026-11-15 about 22:52 and 23:53 UTC), each recorded ahead and downloaded by choice, and the drop day moves for them. None of the three is live, and nothing of the choice is in the note. Only once they are recorded and served, and the Voice sheet and the signed route are in a build he has walked, does a line go into the 1.9 note, written from what that build does; then the never list's voice words come off and a point or an also may name them. Until then no piece names them, and none says they are on the way."
++      "waits": "Heart's recordings of the lives, the councils, theology, history, the Lives in their witnesses' words and the Old Testament: recorded on GitHub's runners once his four secrets are in (OWNER-STEPS V11 and V12), their timings committed, and the website deployed",
++      "text": "At his word of 2026-11-16 about 22:35 UTC (\"remove locally LLM voices and full drop ... only leave one the standard prerecorded voices\"), Heart's recording is the only voice: the phone's own voices are gone in every language, and Emma, Michael and Fenrir, the three voices once planned for Purify Plus, are dropped, with the Voice sheet. Listen stands only where Heart's recording is: today the New Testament. The note's listening line says only that (\"Listening: one card at rest and a small pill as you scroll, and your place kept in every book.\"). Only once Heart's recordings of the other texts are recorded and served does that line say they are read aloud, written from what the app then does, and a point or an also may carry it. No piece names a voice made on the phone, a choice of voices or a voice in Purify Plus."
+     },
+     {
+       "id": "step-bibles-merge",
+@@ -495,7 +488,7 @@
+       "channel": "appstore",
+       "moment": "submit",
+       "title": "What's New in This Version, for the App Store",
+-      "text": "Purify 1.9: Keep a journal by the Church's day, and go deeper into every verse.\n\nPurify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings seven more Bibles to download.\n\nYOUR JOURNAL, BY THE CHURCH'S DAY\nToday's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.\n\nEVERY VERSE, OPENED\nHold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.\n\nSEVEN MORE BIBLES\nThe Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.\n\nSTUDY A VERSE\nCross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps. In Purify Plus.\n\nNEW READING PLANS\nJohn in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day. In Purify Plus.\n\nTHE CREED BY COUNCIL\nThe Symbol of Faith article by article, with the words the Council of Constantinople added lit.\n\nCHURCH HISTORY ON TODAY\nOn the days an event of Orthodox History fell, it is on Today under the saint of the day.\n\nTHE FLORILEGIUM AND THE THREAD\nYour gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps. In Purify Plus.\n\nCANDLELIGHT AND AMBIENCE\nCandlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once. In Purify Plus.\n\nREMEMBER THE VERSE ON YOUR HOME SCREEN\nA widget keeps your verse on your home screen, the same for every reader.\n\nALSO\n• Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.\n• Listening offline, in Purify Plus: each book's size shown before you save it, and saving that waits for Wi-Fi and picks up after a lost signal.\n• Psalms 113 to 115 are divided as the Septuagint divides them, and your notes, highlights and saved verses move with their verses.\n• The plans page keeps your place and puts the season's plan at the top.\n• Orthodox History shows its great events as large cards, and every picture for every reader.\n• Listening: one card at rest and a small pill as you scroll, and your place kept in every book.\n• Ambient sounds now play on iPhone, where they never played before, even with Purify Plus.\n• The day's prayer hours no longer fade, and every field's hint is easier to read.\n• Every text read aloud listens as a chapter of the Bible does, from Listen at its foot.\n• Writing in your journal opens a page of its own, with one Done and everything else behind one plus.\n• Quote, in your journal, searches Purify's library: Scripture and your own words for everyone, and in Purify Plus the Fathers' works, the saints' lives, the prayers, the chants and the councils.\n• Sixteen reading modes, in Purify Plus: Candlelight, Monastery and fourteen looks in four families.\n• You and your profile are one place: your name and your patron saint first, then the days you have kept.\n• Hold a section of Discover to move it, and set its sections in the order you want.\n• Share every work of the Fathers by a link that opens the place you are reading.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.",
++      "text": "Purify 1.9: Keep a journal by the Church's day, and go deeper into every verse.\n\nPurify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings seven more Bibles to download.\n\nYOUR JOURNAL, BY THE CHURCH'S DAY\nToday's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.\n\nEVERY VERSE, OPENED\nHold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.\n\nSEVEN MORE BIBLES\nThe Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.\n\nSTUDY A VERSE\nCross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps. In Purify Plus.\n\nNEW READING PLANS\nJohn in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day. In Purify Plus.\n\nTHE CREED BY COUNCIL\nThe Symbol of Faith article by article, with the words the Council of Constantinople added lit.\n\nCHURCH HISTORY ON TODAY\nOn the days an event of Orthodox History fell, it is on Today under the saint of the day.\n\nTHE FLORILEGIUM AND THE THREAD\nYour gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps. In Purify Plus.\n\nCANDLELIGHT AND AMBIENCE\nCandlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once. In Purify Plus.\n\nREMEMBER THE VERSE ON YOUR HOME SCREEN\nA widget keeps your verse on your home screen, the same for every reader.\n\nALSO\n• Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.\n• Listening offline, in Purify Plus: each book's size shown before you save it, and saving that waits for Wi-Fi and picks up after a lost signal.\n• Psalms 113 to 115 are divided as the Septuagint divides them, and your notes, highlights and saved verses move with their verses.\n• The plans page keeps your place and puts the season's plan at the top.\n• Orthodox History shows its great events as large cards, and every picture for every reader.\n• Listening: one card at rest and a small pill as you scroll, and your place kept in every book.\n• Ambient sounds now play on iPhone, where they never played before, even with Purify Plus.\n• The day's prayer hours no longer fade, and every field's hint is easier to read.\n• Writing in your journal opens a page of its own, with one Done and everything else behind one plus.\n• Quote, in your journal, searches Purify's library: Scripture and your own words for everyone, and in Purify Plus the Fathers' works, the saints' lives, the prayers, the chants and the councils.\n• Sixteen reading modes, in Purify Plus: Candlelight, Monastery and fourteen looks in four families.\n• You and your profile are one place: your name and your patron saint first, then the days you have kept.\n• Hold a section of Discover to move it, and set its sections in the order you want.\n• Share every work of the Fathers by a link that opens the place you are reading.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.",
+       "tuned": true,
+       "note": "Plus has been sold on iPhone since 1.8 (the App Store lists its four subscriptions; OWNER-STEPS 87, found 2026-11-10), so this text marks what is in Purify Plus, as the Play text does: the study, the plans, the Florilegium and the Thread, Candlelight and ambience, and listening offline."
+     },
+@@ -541,7 +534,7 @@
+       "moment": "web",
+       "title": "Purify's own post in Community",
+       "subject": "Purify 1.9 is here",
+-      "text": "Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings seven more Bibles to download.\n\n📓 Your journal, by the Church's day. Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.\n🔗 Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.\n✍️ Writing in your journal opens a page of its own, with one Done and everything else behind one plus.\n📚 Quote, in your journal, searches Purify's library: Scripture and your own words for everyone, and in Purify Plus the Fathers' works, the saints' lives, the prayers, the chants and the councils.\n📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.\n🌍 Seven more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.\n🔎 Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.\n🗓️ New reading plans, in Purify Plus. John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.\n☦️ The Creed by council. The Symbol of Faith article by article, with the words the Council of Constantinople added lit.\n📜 Church history on Today. On the days an event of Orthodox History fell, it is on Today under the saint of the day.\n🌿 The Florilegium and the Thread. In Purify Plus, your gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps.\n🕯️ Candlelight and ambience. In Purify Plus, Candlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once.\n🎨 Sixteen reading modes, in Purify Plus: Candlelight, Monastery and fourteen looks in four families.\n🎧 Every text read aloud listens as a chapter of the Bible does, from Listen at its foot.\n👤 You and your profile are one place: your name and your patron saint first, then the days you have kept.\n🎁 Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.\n\nThe iPhone, iPad and Android apps get 1.9 once the stores approve the new builds.\n📱 Remember the verse on your home screen. A widget keeps your verse on your home screen, the same for every reader.\n\nTell us what you find, and what breaks. We read everything."
++      "text": "Purify 1.9 keeps a journal with you by the Church's day, free for everyone, opens every verse to its Greek, and brings seven more Bibles to download.\n\n📓 Your journal, by the Church's day. Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.\n🔗 Share a journal page as a copy at a link of its own: three a month for everyone, without limit in Purify Plus, and Stop sharing takes the copy down at once.\n✍️ Writing in your journal opens a page of its own, with one Done and everything else behind one plus.\n📚 Quote, in your journal, searches Purify's library: Scripture and your own words for everyone, and in Purify Plus the Fathers' works, the saints' lives, the prayers, the chants and the councils.\n📖 Every verse, opened. Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.\n🌍 Seven more Bibles. The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: the Arabic Van Dyck, Spanish Reina-Valera and Portuguese Almeida.\n🔎 Study a verse, in Purify Plus. Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.\n🗓️ New reading plans, in Purify Plus. John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.\n☦️ The Creed by council. The Symbol of Faith article by article, with the words the Council of Constantinople added lit.\n📜 Church history on Today. On the days an event of Orthodox History fell, it is on Today under the saint of the day.\n🌿 The Florilegium and the Thread. In Purify Plus, your gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps.\n🕯️ Candlelight and ambience. In Purify Plus, Candlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once.\n🎨 Sixteen reading modes, in Purify Plus: Candlelight, Monastery and fourteen looks in four families.\n👤 You and your profile are one place: your name and your patron saint first, then the days you have kept.\n🎁 Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.\n\nThe Scriptures, the saints, the prayers and the calendar stay free.\n\nThe iPhone, iPad and Android apps get 1.9 once the stores approve the new builds.\n📱 Remember the verse on your home screen. A widget keeps your verse on your home screen, the same for every reader.\n\nTell us what you find, and what breaks. We read everything."
+     },
+     {
+       "id": "step-profile-status",
+diff --git a/docs/plans/v1.9/drop.md b/docs/plans/v1.9/drop.md
+index bfaaec802..e0a719b67 100644
+--- a/docs/plans/v1.9/drop.md
++++ b/docs/plans/v1.9/drop.md
+@@ -33,7 +33,6 @@ Also:
+ - The day's prayer hours no longer fade, and every field's hint is easier to read.
+ - Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.
+ - Ambient sounds now play on iPhone, where they never played before, even with Purify Plus.
+-- Every text read aloud listens as a chapter of the Bible does, from Listen at its foot.
+ - Writing in your journal opens a page of its own, with one Done and everything else behind one plus.
+ - Quote, in your journal, searches Purify's library: Scripture and your own words for everyone, and in Purify Plus the Fathers' works, the saints' lives, the prayers, the chants and the councils.
+ - Sixteen reading modes, in Purify Plus: Candlelight, Monastery and fourteen looks in four families.
+@@ -45,8 +44,8 @@ Also:
+ 
+ - "every work has a cover": the covers pack for the reading room is not in yet
+ - "Find a parish": the parish directory is not built
+-- "phone voice": the voices are settled for 1.9 at his word (build 98 note 1: "1 (3 for premium) 4 5 6", 2026-11-15 about 22:52 UTC, and "v1.9", 23:53): Heart for every reader, and three more voices in Purify Plus, each recorded ahead and downloaded by choice. What the phone's own voices will do beside them is not settled, and the 1.9 note has no line for any choice of voice: no piece names one until the note does (the step step-voices-line)
+-- "phone's voice": the same: the 1.9 note has no line for the phone's own voices
++- "phone voice": the phone's own voices are gone from the app, in every language and on every platform, at his word of 2026-11-16 about 22:35 UTC ("remove locally LLM voices ... only leave one the standard prerecorded voices"): Heart's recording is the only voice, and no piece names a voice made on the phone (step-voices-line)
++- "phone's voice": the same: the phone's own voices are gone from the app
+ - "campaign": prayer campaigns are at testers from the merge, his account alone (lib/campaigns/flags.ts), and open for every reader only at R5c (OWNER-STEPS); until the step below brings their line into the 1.9 note, no piece names them (the arbiter, 2026-11-11 and 2026-11-12)
+ - "Galilee": the sea look Galilee came out of the app at his word of 2026-11-13 ("remove the sea theme", then "Both"; 701ed3dc)
+ - "Patmos": the sea look Patmos came out with Galilee (701ed3dc)
+@@ -59,10 +58,10 @@ Also:
+ - "17 looks": the same first count of looks, in figures
+ - "fifteen looks": the count of looks after Galilee and Patmos came out and before Desert did: there are fourteen (62e5a337)
+ - "15 looks": the same count of looks, in figures
+-- "Fenrir": Emma, Michael and Fenrir, the three Plus voices, are in 1.9 at his word but not live: recorded on GitHub's runners once his secrets are in, then the Voice sheet (round 3 screen 7) and the signed route for Plus. No piece names them, or says they are coming, until their line is in the note (step-voices-line). Fenrir is the word held here because it is named with the other two every time, and "Emma" alone would catch lemma and dilemma
+-- "Plus voices": the same: the three Plus voices are not live
+-- "voices in Purify Plus": the same: the three Plus voices are not live
+-- "choose your voice": the same: no choice of voice is in the note
++- "Fenrir": Emma, Michael and Fenrir, the three voices once planned for Purify Plus, are dropped at his word of 2026-11-16 about 22:35 UTC ("full drop"), with the Voice sheet (round 3 screen 7): no piece names them, or says they are coming (step-voices-line). Fenrir is the word held here because it is named with the other two every time, and "Emma" alone would catch lemma and dilemma
++- "Plus voices": the same: the three Plus voices are dropped
++- "voices in Purify Plus": the same: the three Plus voices are dropped
++- "choose your voice": the same: Heart is the one voice, and there is nothing to choose
+ 
+ ## The notes
+ 
+@@ -82,14 +81,14 @@ Waits on: round 3's screens 1, 2, 3, 5 and 6 applied by the two fixers (Round 3
+ Five lines of the note are written from round 3's designs as they were drawn (docs/1.9-build/redesign/round-3/README.md), at his yes of 2026-11-16 about 05:20 UTC: the journal's page of its own (screen 1), the chants door (screen 2), You and your profile as one place (screen 3), the Purify Plus page (screen 5) and a reading plan's page (screen 6). Before the note goes into the owner's queue, each line is read against its applied screen on the export the gate passes, and any word the screen does not bear out is changed in the note and in every piece that carries it: the App Store's text and Community's post carry the journal's page and You and your profile. Screen 4, the Bible's opening, is not in 1.9 (his no, the same word), and no line names it. One line more rests on what only a phone shows: "On Android, the page follows the keyboard as it rises and falls" (build 98 notes 4 and 12, Updates 98c, a native mend no browser can draw). His walk of the next test build on the release APK bears it out, or the line comes out of the note.
+ ~~~
+ 
+-### The voices join the note only when they are live
++### Heart is the one voice: a listening line names only what Heart has recorded
+ 
+ `step-voices-line` · A step · Ours, on your word · Waits
+ 
+-Waits on: Emma, Michael and Fenrir recorded on GitHub's runners once his secrets are in, then the Voice sheet (round 3 screen 7) and the signed route for Plus in a build he walks
++Waits on: Heart's recordings of the lives, the councils, theology, history, the Lives in their witnesses' words and the Old Testament: recorded on GitHub's runners once his four secrets are in (OWNER-STEPS V11 and V12), their timings committed, and the website deployed
+ 
+ ~~~text
+-Heart for every reader and Emma, Michael and Fenrir in Purify Plus are in 1.9 at his word (build 98 note 1, 2026-11-15 about 22:52 and 23:53 UTC), each recorded ahead and downloaded by choice, and the drop day moves for them. None of the three is live, and nothing of the choice is in the note. Only once they are recorded and served, and the Voice sheet and the signed route are in a build he has walked, does a line go into the 1.9 note, written from what that build does; then the never list's voice words come off and a point or an also may name them. Until then no piece names them, and none says they are on the way.
++At his word of 2026-11-16 about 22:35 UTC ("remove locally LLM voices and full drop ... only leave one the standard prerecorded voices"), Heart's recording is the only voice: the phone's own voices are gone in every language, and Emma, Michael and Fenrir, the three voices once planned for Purify Plus, are dropped, with the Voice sheet. Listen stands only where Heart's recording is: today the New Testament. The note's listening line says only that ("Listening: one card at rest and a small pill as you scroll, and your place kept in every book."). Only once Heart's recordings of the other texts are recorded and served does that line say they are read aloud, written from what the app then does, and a point or an also may carry it. No piece names a voice made on the phone, a choice of voices or a voice in Purify Plus.
+ ~~~
+ 
+ ### The seven Bibles answer on purifyapp.net
+@@ -158,7 +157,7 @@ The Scriptures, the saints, the prayers and the calendar stay free.
+ 
+ ### What's New in This Version, for the App Store
+ 
+-`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 3487 of 4000 characters
++`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 3398 of 4000 characters
+ 
+ > Plus has been sold on iPhone since 1.8 (the App Store lists its four subscriptions; OWNER-STEPS 87, found 2026-11-10), so this text marks what is in Purify Plus, as the Play text does: the study, the plans, the Florilegium and the Thread, Candlelight and ambience, and listening offline.
+ 
+@@ -206,7 +205,6 @@ ALSO
+ • Listening: one card at rest and a small pill as you scroll, and your place kept in every book.
+ • Ambient sounds now play on iPhone, where they never played before, even with Purify Plus.
+ • The day's prayer hours no longer fade, and every field's hint is easier to read.
+-• Every text read aloud listens as a chapter of the Bible does, from Listen at its foot.
+ • Writing in your journal opens a page of its own, with one Done and everything else behind one plus.
+ • Quote, in your journal, searches Purify's library: Scripture and your own words for everyone, and in Purify Plus the Fathers' works, the saints' lives, the prayers, the chants and the councils.
+ • Sixteen reading modes, in Purify Plus: Candlelight, Monastery and fourteen looks in four families.
+@@ -276,7 +274,7 @@ Purify 1.9 is live on the web: a journal by the Church's day, every verse opened
+ 
+ ### Purify's own post in Community
+ 
+-`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2894 of 4000 characters
++`community-post` · Purify's own post in Community · Community, signed in as Purify · Ready · 2805 of 4000 characters
+ 
+ ~~~text
+ Purify 1.9 is here
+@@ -296,7 +294,6 @@ Purify 1.9 keeps a journal with you by the Church's day, free for everyone, open
+ 🌿 The Florilegium and the Thread. In Purify Plus, your gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps.
+ 🕯️ Candlelight and ambience. In Purify Plus, Candlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once.
+ 🎨 Sixteen reading modes, in Purify Plus: Candlelight, Monastery and fourteen looks in four families.
+-🎧 Every text read aloud listens as a chapter of the Bible does, from Listen at its foot.
+ 👤 You and your profile are one place: your name and your patron saint first, then the days you have kept.
+ 🎁 Every EIKON order now comes with a month of Purify Plus: once it is delivered, claim it at purifyapp.net/gift with your order number and ZIP code. If you already have Plus, you can claim it once yours ends.
+ 
+diff --git a/docs/plans/v1.9/patch-note-1.9.json b/docs/plans/v1.9/patch-note-1.9.json
+index dd163b923..0f5c70626 100644
+--- a/docs/plans/v1.9/patch-note-1.9.json
++++ b/docs/plans/v1.9/patch-note-1.9.json
+@@ -12,7 +12,7 @@
+     { "category": "library", "text": "Psalms 113 to 115 are divided as the Septuagint divides them, like the rest of the Psalter. Your notes, highlights, saved and gathered verses, and the verse cards in your journal move with their verses." },
+     { "category": "library", "text": "A Remember the verse widget for your home screen, the same for every reader." },
+     { "category": "library", "text": "Learn by heart: choose what you learn, a verse, a quote from the Fathers or your own words, and change it whenever you like." },
+-    { "category": "library", "text": "Listening: one card at rest and a small pill as you scroll, and your place kept in every book. On a phone or a tablet, every text read aloud now listens as a chapter of the Bible does: Listen is in the bar at its foot, and while it plays the card wears the page's own picture." },
++    { "category": "library", "text": "Listening: one card at rest and a small pill as you scroll, and your place kept in every book." },
+     { "category": "library", "text": "Writing in your journal opens a page of its own: the day and its reading, the kind of page, a title and your words, one Done, and everything else behind one plus." },
+     { "category": "library", "text": "Quote, in your journal, now searches Purify's library. Find a verse or a passage and it is quoted word for word with its source, and Open takes you back to it. Scripture and your own words for everyone; the Fathers' works, the saints' lives, the prayers, the chants and the councils in Purify Plus." },
+     { "category": "library", "text": "On Prayers, the door to the chants shows the chants' own covers." },
+diff --git a/lib/i18n/messages/ar.json b/lib/i18n/messages/ar.json
+index 6a28de7e2..7cfaf20ed 100644
+--- a/lib/i18n/messages/ar.json
++++ b/lib/i18n/messages/ar.json
+@@ -5257,16 +5257,6 @@
+   "player.option.sleep": "مؤقّت الإيقاف",
+   "player.option.read": "اقرأ",
+   "player.read": "اقرأ",
+-  "player.voice": "الصوت",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "صوت القراءة في Purify",
+-  "player.voice.numbered": "الصوت {n}",
+-  "player.voice.hear": "استمع",
+-  "player.voice.hearName": "استمع إلى {name}",
+-  "player.voice.gone": "الصوت الذي اخترته لم يعد على هذا الهاتف، لذلك يقرأ {name}.",
+-  "player.voice.none": "لا يوجد على هذا الهاتف صوت للغة {language} بعد.",
+-  "player.voice.noneHow": "يمكن إضافة صوت من إعدادات النطق في الهاتف.",
+-  "player.voice.phoneNote": "أصوات هاتفك نفسه تقرأ بلا اتصال.",
+   "chant.button": "الصلاة مع الترتيل",
+   "chant.ask.title": "هل تصلّي مع الترتيل؟",
+   "chant.ask.body": "يُعزف بهدوء أثناء صلاتك.",
+@@ -5793,9 +5783,9 @@
+   "mod.care.ask": "رسالة قصيرة خاصة من Purify تصل إلى صندوق الوارد لهذا الكاتب، وفيها أين يجد المساعدة. لا تقتبس شيئًا مما كتبه.",
+   "mod.care.sent": "أُرسلت رسالة العناية.",
+   "campaigns.notOpen": "حملات الصلاة غير مفتوحة بعد.",
+-  "faq.free.a1": "المكتبة مجانية، بلا حساب وبلا إعلانات: الكتاب المقدس واليونانية بجانبه وكل إصحاح مقروءًا بصوت، والصلوات والأكاثستات، والقديسون، والتقويم، والمجامع، واللاهوت والتاريخ، والبحث. ومجانية كذلك تظليلاتك وملاحظاتك وإشاراتك المرجعية على هذا الجهاز، والكتابة في دفترك.",
++  "faq.free.a1": "المكتبة مجانية، بلا حساب وبلا إعلانات: الكتاب المقدس واليونانية بجانبه والعهد الجديد مقروءًا بصوت، والصلوات والأكاثستات، والقديسون، والتقويم، والمجامع، واللاهوت والتاريخ، والبحث. ومجانية كذلك تظليلاتك وملاحظاتك وإشاراتك المرجعية على هذا الجهاز، والكتابة في دفترك.",
+   "faq.free.a2": "Purify Plus اشتراك اختياري يضيف أدوات فوق ذلك، منها دراسة الكلمة، والشواهد المتقاطعة، وأنماط قراءة أكثر، والاستماع دون اتصال، وخطط القراءة، وقراءتك على كل جهاز.",
+-  "faq.roadmap.a": "الأربعة كلها موجودة. الأكاثستات في الصلوات، ويمكن أن يُقرأ لك كل إصحاح من الكتاب المقدس بصوت. تسجّل الدخول ببريدك الإلكتروني وكلمة مرور، أو عبر Google أو Apple. مع الحساب، تتبعك إلى كل جهاز الأيام التي صلّيت فيها قانونك والأسماء التي تحملها في صلاتك؛ ومع Purify Plus تتبعك تظليلاتك وملاحظاتك وإشاراتك المرجعية أيضًا. ويمكنك حذف الحساب، وكل الصفوف التي أنشأها على الخادم، من",
++  "faq.roadmap.a": "الأربعة كلها موجودة. الأكاثستات في الصلوات، ويمكن أن يُقرأ لك كل إصحاح من العهد الجديد بصوت. تسجّل الدخول ببريدك الإلكتروني وكلمة مرور، أو عبر Google أو Apple. مع الحساب، تتبعك إلى كل جهاز الأيام التي صلّيت فيها قانونك والأسماء التي تحملها في صلاتك؛ ومع Purify Plus تتبعك تظليلاتك وملاحظاتك وإشاراتك المرجعية أيضًا. ويمكنك حذف الحساب، وكل الصفوف التي أنشأها على الخادم، من",
+   "faq.data.noAccount": "تبقى تظليلاتك وملاحظاتك وإشاراتك المرجعية والأيام التي صلّيت فيها على جهازك، وليس لدينا نسخة منها. امسحها فتزول.",
+   "faq.data.account": "تُحفظ معه الأيام التي صلّيت فيها والأسماء التي تحملها، ومع Purify Plus تظليلاتك وملاحظاتك وإشاراتك المرجعية أيضًا، كلٌّ منها خلف قاعدة لا تسمح لأحد غيرك بقراءته. لا نجري عليها أي تحليلات، ولا نشاركها ولا نبيعها أبدًا. احذف حسابك من صفحة حسابك فيُحذف كل صف أنشأه.",
+   "faq.data.counts": "وفي الحالتين نحتفظ أيضًا بأعداد مجهولة الهوية للصفحات والشاشات التي تُفتح، لا تُربط بحسابك أبدًا. والتفاصيل كاملة، بذكر كل حقل وكل طرف ثالث بالاسم، مبسوطة في",
+diff --git a/lib/i18n/messages/bg.json b/lib/i18n/messages/bg.json
+index f9cb874cd..20725a9e7 100644
+--- a/lib/i18n/messages/bg.json
++++ b/lib/i18n/messages/bg.json
+@@ -4968,16 +4968,6 @@
+   "player.option.sleep": "Таймер",
+   "player.option.read": "Чети",
+   "player.read": "Чети",
+-  "player.voice": "Глас",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Гласът за четене на Purify",
+-  "player.voice.numbered": "Глас {n}",
+-  "player.voice.hear": "Чуйте",
+-  "player.voice.hearName": "Чуйте {name}",
+-  "player.voice.gone": "Избраният глас вече не е на този телефон, затова чете {name}.",
+-  "player.voice.none": "Този телефон още няма глас за {language}.",
+-  "player.voice.noneHow": "Глас може да се добави в настройките за реч на телефона.",
+-  "player.voice.phoneNote": "Гласовете на самия телефон четат без връзка.",
+   "chant.button": "Молитва с песнопение",
+   "chant.ask.title": "Молитва с песнопение?",
+   "chant.ask.body": "Звучи тихо, докато се молите.",
+@@ -5496,9 +5486,9 @@
+   "mod.care.ask": "Кратка лична бележка от Purify отива във входящата поща на този автор, с това къде да намери помощ. Не цитира нищо от написаното.",
+   "mod.care.sent": "Бележката за грижа е изпратена.",
+   "campaigns.notOpen": "Молитвените кампании още не са отворени.",
+-  "faq.free.a1": "Библиотеката е безплатна, без профил и без реклами: Писанието с гръцкия до него и всяка глава, прочетена на глас, молитвите и акатистите, светиите, календарът, съборите, богословието и историята, и търсенето. Безплатни са и вашите маркирания, бележки и отметки на това устройство, и писането в дневника ви.",
++  "faq.free.a1": "Библиотеката е безплатна, без профил и без реклами: Писанието с гръцкия до него и Новият Завет, прочетен на глас, молитвите и акатистите, светиите, календарът, съборите, богословието и историята, и търсенето. Безплатни са и вашите маркирания, бележки и отметки на това устройство, и писането в дневника ви.",
+   "faq.free.a2": "Purify Plus е абонамент по желание, който добавя инструменти отгоре, сред тях изучаване на думата, препратки, още режими за четене, слушане без мрежа, планове за четене и вашето четене на всяко устройство.",
+-  "faq.roadmap.a": "И четирите вече са тук. Акатистите са в Молитви, а всяка глава от Библията може да ви бъде прочетена на глас. Влизате с имейла си и парола или с Google или Apple. С профил дните, в които сте се молили по правилото си, и имената, които носите в молитва, ви следват на всяко устройство; с Purify Plus ги следват и вашите маркирания, бележки и отметки. Можете да изтриете профила си и всички сървърни записи, които той е създал, от",
++  "faq.roadmap.a": "И четирите вече са тук. Акатистите са в Молитви, а всяка глава от Новия Завет може да ви бъде прочетена на глас. Влизате с имейла си и парола или с Google или Apple. С профил дните, в които сте се молили по правилото си, и имената, които носите в молитва, ви следват на всяко устройство; с Purify Plus ги следват и вашите маркирания, бележки и отметки. Можете да изтриете профила си и всички сървърни записи, които той е създал, от",
+   "faq.data.noAccount": "вашите маркирания, бележки, отметки и дните, в които сте се молили, остават на устройството ви и ние нямаме копие. Изчистете ги и ги няма.",
+   "faq.data.account": "дните, в които сте се молили, и имената, които носите, се пазят с него, а с Purify Plus и вашите маркирания, бележки и отметки, всяко зад правило, което позволява само на вас да ги четете. Не правим анализи върху тях и никога не ги споделяме и не ги продаваме. Изтрийте профила си от страницата на профила и всеки създаден от него запис се изтрива.",
+   "faq.data.counts": "И в двата случая пазим и анонимни бройки на отворените страници и екрани, които никога не се свързват с профила ви. Пълните подробности, с всяко поле и всяка назована трета страна, са изложени на",
+diff --git a/lib/i18n/messages/de.json b/lib/i18n/messages/de.json
+index 55b4a41b9..cd51ce899 100644
+--- a/lib/i18n/messages/de.json
++++ b/lib/i18n/messages/de.json
+@@ -4968,16 +4968,6 @@
+   "player.option.sleep": "Timer",
+   "player.option.read": "Lesen",
+   "player.read": "Lesen",
+-  "player.voice": "Stimme",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Die Vorlesestimme von Purify",
+-  "player.voice.numbered": "Stimme {n}",
+-  "player.voice.hear": "Anhören",
+-  "player.voice.hearName": "{name} anhören",
+-  "player.voice.gone": "Die gewählte Stimme ist nicht mehr auf diesem Telefon, daher liest {name}.",
+-  "player.voice.none": "Dieses Telefon hat noch keine Stimme für {language}.",
+-  "player.voice.noneHow": "Eine Stimme lässt sich in den Spracheinstellungen des Telefons hinzufügen.",
+-  "player.voice.phoneNote": "Die eigenen Stimmen des Telefons lesen ohne Verbindung.",
+   "chant.button": "Mit Gesang beten",
+   "chant.ask.title": "Mit Gesang beten?",
+   "chant.ask.body": "Leise im Hintergrund, während Sie beten.",
+@@ -5496,9 +5486,9 @@
+   "mod.care.ask": "Eine kurze private Nachricht von Purify geht in den Posteingang dieses Verfassers, mit Hinweisen, wo es Hilfe gibt. Sie zitiert nichts von dem, was er geschrieben hat.",
+   "mod.care.sent": "Fürsorge-Nachricht gesendet.",
+   "campaigns.notOpen": "Gebetsaktionen sind noch nicht geöffnet.",
+-  "faq.free.a1": "Die Bibliothek ist kostenlos, ohne Konto und ohne Werbung: die Heilige Schrift mit dem Griechischen daneben, jedes Kapitel auch vorgelesen, die Gebete und Akathiste, die Heiligen, der Kalender, die Konzile, Theologie und Geschichte und die Suche. Ebenso deine Markierungen, Notizen und Lesezeichen auf diesem Gerät, und das Schreiben in deinem Tagebuch.",
++  "faq.free.a1": "Die Bibliothek ist kostenlos, ohne Konto und ohne Werbung: die Heilige Schrift mit dem Griechischen daneben, das Neue Testament auch vorgelesen, die Gebete und Akathiste, die Heiligen, der Kalender, die Konzile, Theologie und Geschichte und die Suche. Ebenso deine Markierungen, Notizen und Lesezeichen auf diesem Gerät, und das Schreiben in deinem Tagebuch.",
+   "faq.free.a2": "Purify Plus ist ein freiwilliges Abo, das Werkzeuge obendrauf legt, darunter die Wortstudie, Querverweise, mehr Lesemodi, Offline hören, Lesepläne und deine Lektüre auf jedem Gerät.",
+-  "faq.roadmap.a": "Alle vier sind da. Die Akathiste stehen unter Gebete, und jedes Kapitel der Bibel kann dir vorgelesen werden. Du meldest dich mit deiner E-Mail und einem Passwort an, oder mit Google oder Apple. Mit einem Konto folgen dir die Tage, an denen du deine Regel gebetet hast, und die Namen, die du im Gebet trägst, auf jedes Gerät; mit Purify Plus auch deine Markierungen, Notizen und Lesezeichen. Du kannst das Konto und alle serverseitigen Einträge, die es angelegt hat, löschen, auf deiner",
++  "faq.roadmap.a": "Alle vier sind da. Die Akathiste stehen unter Gebete, und jedes Kapitel des Neuen Testaments kann dir vorgelesen werden. Du meldest dich mit deiner E-Mail und einem Passwort an, oder mit Google oder Apple. Mit einem Konto folgen dir die Tage, an denen du deine Regel gebetet hast, und die Namen, die du im Gebet trägst, auf jedes Gerät; mit Purify Plus auch deine Markierungen, Notizen und Lesezeichen. Du kannst das Konto und alle serverseitigen Einträge, die es angelegt hat, löschen, auf deiner",
+   "faq.data.noAccount": "deine Markierungen, Notizen, Lesezeichen und die Tage, an denen du gebetet hast, bleiben auf deinem Gerät, und wir haben keine Kopie. Lösch sie, und sie sind weg.",
+   "faq.data.account": "die Tage, an denen du gebetet hast, und die Namen, die du trägst, werden mit ihm aufbewahrt, und mit Purify Plus auch deine Markierungen, Notizen und Lesezeichen, jedes hinter einer Regel, die nur dich sie lesen lässt. Wir werten sie nicht aus, und wir teilen oder verkaufen sie nie. Lösch dein Konto auf deiner Kontoseite, und jede Zeile, die es angelegt hat, wird gelöscht.",
+   "faq.data.counts": "In beiden Fällen führen wir außerdem anonyme Zählungen, welche Seiten und Ansichten geöffnet werden, nie mit deinem Konto verknüpft. Die vollständigen Angaben, mit jedem Feld und jedem genannten Dritten, stehen auf der",
+diff --git a/lib/i18n/messages/el.json b/lib/i18n/messages/el.json
+index d3c9ce6e4..888ade734 100644
+--- a/lib/i18n/messages/el.json
++++ b/lib/i18n/messages/el.json
+@@ -4968,16 +4968,6 @@
+   "player.option.sleep": "Ύπνος",
+   "player.option.read": "Ανάγνωση",
+   "player.read": "Ανάγνωση",
+-  "player.voice": "Φωνή",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Η φωνή ανάγνωσης του Purify",
+-  "player.voice.numbered": "Φωνή {n}",
+-  "player.voice.hear": "Ακρόαση",
+-  "player.voice.hearName": "Ακρόαση: {name}",
+-  "player.voice.gone": "Η φωνή που επιλέξατε δεν υπάρχει πια σε αυτό το τηλέφωνο, οπότε διαβάζει η {name}.",
+-  "player.voice.none": "Αυτό το τηλέφωνο δεν έχει ακόμη φωνή για τη γλώσσα: {language}.",
+-  "player.voice.noneHow": "Μπορείτε να προσθέσετε φωνή στις ρυθμίσεις ομιλίας του τηλεφώνου.",
+-  "player.voice.phoneNote": "Οι φωνές του ίδιου του τηλεφώνου διαβάζουν χωρίς σύνδεση.",
+   "chant.button": "Προσευχή με ψαλμωδία",
+   "chant.ask.title": "Προσευχή με ψαλμωδία;",
+   "chant.ask.body": "Ακούγεται απαλά όσο προσεύχεστε.",
+@@ -5496,9 +5486,9 @@
+   "mod.care.ask": "Ένα σύντομο ιδιωτικό σημείωμα από το Purify πηγαίνει στα εισερχόμενα αυτού του συντάκτη, με το πού να βρει βοήθεια. Δεν παραθέτει τίποτα από όσα έγραψε.",
+   "mod.care.sent": "Το σημείωμα φροντίδας στάλθηκε.",
+   "campaigns.notOpen": "Τα αιτήματα προσευχής δεν έχουν ανοίξει ακόμη.",
+-  "faq.free.a1": "Η βιβλιοθήκη είναι δωρεάν, χωρίς λογαριασμό και χωρίς διαφημίσεις: η Γραφή με το ελληνικό κείμενο δίπλα και κάθε κεφάλαιο διαβασμένο φωναχτά, οι προσευχές και οι Ακάθιστοι Ύμνοι, οι άγιοι, το ημερολόγιο, οι σύνοδοι, η θεολογία και η ιστορία, και η αναζήτηση. Δωρεάν είναι και οι επισημάνσεις, οι σημειώσεις και οι σελιδοδείκτες σας σε αυτή τη συσκευή, και το γράψιμο στο ημερολόγιό σας.",
++  "faq.free.a1": "Η βιβλιοθήκη είναι δωρεάν, χωρίς λογαριασμό και χωρίς διαφημίσεις: η Γραφή με το ελληνικό κείμενο δίπλα και η Καινή Διαθήκη διαβασμένη φωναχτά, οι προσευχές και οι Ακάθιστοι Ύμνοι, οι άγιοι, το ημερολόγιο, οι σύνοδοι, η θεολογία και η ιστορία, και η αναζήτηση. Δωρεάν είναι και οι επισημάνσεις, οι σημειώσεις και οι σελιδοδείκτες σας σε αυτή τη συσκευή, και το γράψιμο στο ημερολόγιό σας.",
+   "faq.free.a2": "Το Purify Plus είναι μια προαιρετική συνδρομή που προσθέτει εργαλεία από πάνω, ανάμεσά τους τη μελέτη λέξης, τις παραπομπές, περισσότερους τρόπους ανάγνωσης, την ακρόαση εκτός σύνδεσης, τα προγράμματα ανάγνωσης και τα αναγνώσματά σας σε κάθε συσκευή.",
+-  "faq.roadmap.a": "Και τα τέσσερα είναι εδώ. Οι Ακάθιστοι Ύμνοι βρίσκονται στις Προσευχές, και κάθε κεφάλαιο της Βίβλου μπορεί να σας διαβαστεί φωναχτά. Συνδέεστε με το email σας και έναν κωδικό, ή με Google ή Apple. Με λογαριασμό, οι μέρες που προσευχηθήκατε τον κανόνα σας και τα ονόματα που μνημονεύετε σας ακολουθούν σε κάθε συσκευή· με το Purify Plus, το ίδιο και οι επισημάνσεις, οι σημειώσεις και οι σελιδοδείκτες σας. Μπορείτε να διαγράψετε τον λογαριασμό, και όλες τις εγγραφές που δημιούργησε στον διακομιστή, από τη",
++  "faq.roadmap.a": "Και τα τέσσερα είναι εδώ. Οι Ακάθιστοι Ύμνοι βρίσκονται στις Προσευχές, και κάθε κεφάλαιο της Καινής Διαθήκης μπορεί να σας διαβαστεί φωναχτά. Συνδέεστε με το email σας και έναν κωδικό, ή με Google ή Apple. Με λογαριασμό, οι μέρες που προσευχηθήκατε τον κανόνα σας και τα ονόματα που μνημονεύετε σας ακολουθούν σε κάθε συσκευή· με το Purify Plus, το ίδιο και οι επισημάνσεις, οι σημειώσεις και οι σελιδοδείκτες σας. Μπορείτε να διαγράψετε τον λογαριασμό, και όλες τις εγγραφές που δημιούργησε στον διακομιστή, από τη",
+   "faq.data.noAccount": "οι επισημάνσεις, οι σημειώσεις, οι σελιδοδείκτες σας και οι μέρες που προσευχηθήκατε μένουν στη συσκευή σας, και εμείς δεν έχουμε αντίγραφο. Σβήστε τα και χάνονται.",
+   "faq.data.account": "οι μέρες που προσευχηθήκατε και τα ονόματα που μνημονεύετε φυλάγονται μαζί του, και με το Purify Plus και οι επισημάνσεις, οι σημειώσεις και οι σελιδοδείκτες σας, το καθένα πίσω από έναν κανόνα που επιτρέπει μόνο σε εσάς να τα διαβάζετε. Δεν κάνουμε αναλύσεις πάνω τους, και ποτέ δεν τα μοιραζόμαστε ούτε τα πουλάμε. Διαγράψτε τον λογαριασμό σας από τη σελίδα του λογαριασμού σας και κάθε εγγραφή που δημιούργησε διαγράφεται.",
+   "faq.data.counts": "Και στις δύο περιπτώσεις κρατάμε επίσης ανώνυμες μετρήσεις για το ποιες σελίδες και οθόνες ανοίγουν, που δεν συνδέονται ποτέ με τον λογαριασμό σας. Όλες οι λεπτομέρειες, με κάθε πεδίο και κάθε τρίτο μέρος κατονομασμένο, παρατίθενται στη",
+diff --git a/lib/i18n/messages/en.json b/lib/i18n/messages/en.json
+index c555f5a39..4918dd00a 100644
+--- a/lib/i18n/messages/en.json
++++ b/lib/i18n/messages/en.json
+@@ -4996,16 +4996,6 @@
+   "player.option.sleep": "Sleep timer",
+   "player.option.read": "Read",
+   "player.read": "Read",
+-  "player.voice": "Voice",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Purify's reading voice",
+-  "player.voice.numbered": "Voice {n}",
+-  "player.voice.hear": "Hear it",
+-  "player.voice.hearName": "Hear {name}",
+-  "player.voice.gone": "The voice you chose is no longer on this phone, so {name} reads.",
+-  "player.voice.none": "This phone has no voice for {language} yet.",
+-  "player.voice.noneHow": "One can be added in the phone's speech settings.",
+-  "player.voice.phoneNote": "Your phone's own voices read without a connection.",
+   "dictionary.eyebrow": "Words of the Church",
+   "dictionary.title": "Orthodox dictionary",
+   "dictionary.intro": "The words you will meet in church and in Purify, each said plainly in a sentence or two.",
+@@ -5513,9 +5503,9 @@
+   "mod.care.ask": "A short private note from Purify goes to this writer's inbox, with where to find help. It quotes nothing they wrote.",
+   "mod.care.sent": "Care note sent.",
+   "campaigns.notOpen": "Prayer campaigns are not open yet.",
+-  "faq.free.a1": "The library is free, with no account and no ads: the Scriptures with the Greek beside them and every chapter read aloud, the prayers and akathists, the saints, the calendar, the councils, theology and history, and search. So are your highlights, notes and bookmarks on this device, and writing in your journal.",
++  "faq.free.a1": "The library is free, with no account and no ads: the Scriptures with the Greek beside them and the New Testament read aloud, the prayers and akathists, the saints, the calendar, the councils, theology and history, and search. So are your highlights, notes and bookmarks on this device, and writing in your journal.",
+   "faq.free.a2": "Purify Plus is an optional subscription that adds tools on top, among them word study, cross-references, more reading modes, listening offline, reading plans and your reading on every device.",
+-  "faq.roadmap.a": "All four are here. The akathists are in Prayers, and every chapter of the Bible can be read aloud to you. You sign in with your email and a password, or with Google or Apple. With an account, the days you have prayed your rule and the names you carry follow you to every device; with Purify Plus, so do your highlights, notes and bookmarks. You can delete the account, and every row it created on our side, from your",
++  "faq.roadmap.a": "All four are here. The akathists are in Prayers, and every chapter of the New Testament can be read aloud to you. You sign in with your email and a password, or with Google or Apple. With an account, the days you have prayed your rule and the names you carry follow you to every device; with Purify Plus, so do your highlights, notes and bookmarks. You can delete the account, and every row it created on our side, from your",
+   "faq.data.noAccount": "your highlights, notes, bookmarks and the days you have prayed stay on your device, and we have no copy. Clear them and they are gone.",
+   "faq.data.account": "the days you have prayed and the names you carry are kept with it, and with Purify Plus your highlights, notes and bookmarks too, each behind a rule that lets only you read them. We do not run analytics on them, and we never share or sell them. Delete your account from your account page and every row it created is deleted.",
+   "faq.data.counts": "In both cases we also keep anonymous counts of which pages and screens are opened, never joined to your account. The full details, with every field and every third party named, are set out on the",
+diff --git a/lib/i18n/messages/es.json b/lib/i18n/messages/es.json
+index 8a179b2e4..34cbff8df 100644
+--- a/lib/i18n/messages/es.json
++++ b/lib/i18n/messages/es.json
+@@ -4978,16 +4978,6 @@
+   "player.option.sleep": "Dormir",
+   "player.option.read": "Leer",
+   "player.read": "Leer",
+-  "player.voice": "Voz",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "La voz de lectura de Purify",
+-  "player.voice.numbered": "Voz {n}",
+-  "player.voice.hear": "Escuchar",
+-  "player.voice.hearName": "Escuchar {name}",
+-  "player.voice.gone": "La voz elegida ya no está en este teléfono, así que lee {name}.",
+-  "player.voice.none": "Este teléfono aún no tiene una voz en {language}.",
+-  "player.voice.noneHow": "Se puede añadir una en los ajustes de voz del teléfono.",
+-  "player.voice.phoneNote": "Las voces del propio teléfono leen sin conexión.",
+   "chant.button": "Orar con canto",
+   "chant.ask.title": "¿Orar con canto?",
+   "chant.ask.body": "Suena suave mientras oras.",
+@@ -5506,9 +5496,9 @@
+   "mod.care.ask": "Una nota breve y privada de Purify llega a la bandeja de entrada de quien escribió, con dónde encontrar ayuda. No cita nada de lo que escribió.",
+   "mod.care.sent": "Nota de cuidado enviada.",
+   "campaigns.notOpen": "Las campañas de oración aún no están abiertas.",
+-  "faq.free.a1": "La biblioteca es gratuita, sin cuenta y sin anuncios: las Escrituras con el griego al lado y cada capítulo leído en voz alta, las oraciones y los acatistos, los santos, el calendario, los concilios, la teología y la historia, y la búsqueda. También lo son tus subrayados, notas y marcadores en este dispositivo, y escribir en tu diario.",
++  "faq.free.a1": "La biblioteca es gratuita, sin cuenta y sin anuncios: las Escrituras con el griego al lado y el Nuevo Testamento leído en voz alta, las oraciones y los acatistos, los santos, el calendario, los concilios, la teología y la historia, y la búsqueda. También lo son tus subrayados, notas y marcadores en este dispositivo, y escribir en tu diario.",
+   "faq.free.a2": "Purify Plus es una suscripción opcional que añade herramientas encima, entre ellas el estudio de la palabra, las referencias cruzadas, más modos de lectura, escuchar sin conexión, los planes de lectura y tu lectura en todos tus dispositivos.",
+-  "faq.roadmap.a": "Las cuatro cosas ya están aquí. Los acatistos están en Oraciones, y cada capítulo de la Biblia se te puede leer en voz alta. Inicias sesión con tu correo y una contraseña, o con Google o Apple. Con una cuenta, los días en que rezaste tu regla y los nombres que llevas en la oración te siguen a cada dispositivo; con Purify Plus, también tus subrayados, notas y marcadores. Puedes eliminar la cuenta, y todas las filas que creó en el servidor, desde tu",
++  "faq.roadmap.a": "Las cuatro cosas ya están aquí. Los acatistos están en Oraciones, y cada capítulo del Nuevo Testamento se te puede leer en voz alta. Inicias sesión con tu correo y una contraseña, o con Google o Apple. Con una cuenta, los días en que rezaste tu regla y los nombres que llevas en la oración te siguen a cada dispositivo; con Purify Plus, también tus subrayados, notas y marcadores. Puedes eliminar la cuenta, y todas las filas que creó en el servidor, desde tu",
+   "faq.data.noAccount": "tus subrayados, notas, marcadores y los días en que rezaste se quedan en tu dispositivo, y no tenemos copia. Bórralos y desaparecen.",
+   "faq.data.account": "los días en que rezaste y los nombres que llevas se guardan con ella, y con Purify Plus también tus subrayados, notas y marcadores, cada uno tras una regla que solo te deja leerlos a ti. No hacemos analítica con ellos, y nunca los compartimos ni los vendemos. Elimina tu cuenta desde tu página de cuenta y se borra cada fila que creó.",
+   "faq.data.counts": "En ambos casos también llevamos recuentos anónimos de qué páginas y pantallas se abren, nunca vinculados a tu cuenta. Todos los detalles, con cada campo y cada tercero nombrado, se exponen en la",
+diff --git a/lib/i18n/messages/fil.json b/lib/i18n/messages/fil.json
+index 3a2fbb515..fdf9ae504 100644
+--- a/lib/i18n/messages/fil.json
++++ b/lib/i18n/messages/fil.json
+@@ -4968,16 +4968,6 @@
+   "player.option.sleep": "Sleep timer",
+   "player.option.read": "Basahin",
+   "player.read": "Basahin",
+-  "player.voice": "Boses",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Ang boses na pambasa ng Purify",
+-  "player.voice.numbered": "Boses {n}",
+-  "player.voice.hear": "Pakinggan",
+-  "player.voice.hearName": "Pakinggan ang {name}",
+-  "player.voice.gone": "Wala na sa teleponong ito ang boses na pinili mo, kaya {name} ang nagbabasa.",
+-  "player.voice.none": "Wala pang boses para sa {language} ang teleponong ito.",
+-  "player.voice.noneHow": "Maaari itong idagdag sa mga setting ng pananalita ng telepono.",
+-  "player.voice.phoneNote": "Nagbabasa ang sariling mga boses ng telepono kahit walang koneksyon.",
+   "chant.button": "Manalangin nang may awit",
+   "chant.ask.title": "Manalangin nang may awit?",
+   "chant.ask.body": "Mahinang tumutugtog habang nananalangin ka.",
+@@ -5496,9 +5486,9 @@
+   "mod.care.ask": "Isang maikli at pribadong liham mula sa Purify ang mapupunta sa inbox ng sumulat, na may kung saan makakahanap ng tulong. Wala itong sinisipi sa isinulat niya.",
+   "mod.care.sent": "Naipadala ang liham ng pagmamalasakit.",
+   "campaigns.notOpen": "Hindi pa bukas ang mga kampanya ng panalangin.",
+-  "faq.free.a1": "Libre ang aklatan, walang account at walang ads: ang Kasulatan na may Griyego sa tabi at bawat kabanatang binabasa nang malakas, ang mga panalangin at mga akatista, ang mga santo, ang kalendaryo, ang mga konsilyo, ang teolohiya at kasaysayan, at ang paghahanap. Libre rin ang iyong mga highlight, tala at bookmark sa device na ito, at ang pagsusulat sa iyong journal.",
++  "faq.free.a1": "Libre ang aklatan, walang account at walang ads: ang Kasulatan na may Griyego sa tabi at ang Bagong Tipan na binabasa nang malakas, ang mga panalangin at mga akatista, ang mga santo, ang kalendaryo, ang mga konsilyo, ang teolohiya at kasaysayan, at ang paghahanap. Libre rin ang iyong mga highlight, tala at bookmark sa device na ito, at ang pagsusulat sa iyong journal.",
+   "faq.free.a2": "Ang Purify Plus ay opsyonal na subscription na nagdaragdag ng mga kasangkapan sa ibabaw, kabilang ang pag-aaral ng salita, mga kaugnay na talata, mas maraming mode ng pagbasa, pakikinig nang offline, mga plano sa pagbasa at ang iyong pagbabasa sa bawat device.",
+-  "faq.roadmap.a": "Narito na ang apat. Nasa Panalangin ang mga akatista, at maaaring basahin nang malakas para sa iyo ang bawat kabanata ng Biblia. Nagsa-sign in ka gamit ang iyong email at isang password, o sa Google o Apple. Kapag may account, sumusunod sa iyo sa bawat device ang mga araw na ipinanalangin mo ang iyong panuntunan at ang mga pangalang dala mo sa panalangin; sa Purify Plus, pati ang iyong mga highlight, tala at bookmark. Maaari mong burahin ang account, at lahat ng talang nalikha nito sa server, mula sa iyong",
++  "faq.roadmap.a": "Narito na ang apat. Nasa Panalangin ang mga akatista, at maaaring basahin nang malakas para sa iyo ang bawat kabanata ng Bagong Tipan. Nagsa-sign in ka gamit ang iyong email at isang password, o sa Google o Apple. Kapag may account, sumusunod sa iyo sa bawat device ang mga araw na ipinanalangin mo ang iyong panuntunan at ang mga pangalang dala mo sa panalangin; sa Purify Plus, pati ang iyong mga highlight, tala at bookmark. Maaari mong burahin ang account, at lahat ng talang nalikha nito sa server, mula sa iyong",
+   "faq.data.noAccount": "nananatili sa iyong device ang iyong mga highlight, tala, bookmark at ang mga araw na nanalangin ka, at wala kaming kopya. Burahin mo ang mga ito at mawawala na.",
+   "faq.data.account": "itinatago kasama nito ang mga araw na nanalangin ka at ang mga pangalang dala mo, at sa Purify Plus pati ang iyong mga highlight, tala at bookmark, bawat isa sa likod ng panuntunang ikaw lang ang pinapayagang bumasa. Hindi kami nagsasagawa ng analytics sa mga ito, at hindi namin kailanman ibinabahagi o ibinebenta ang mga ito. Burahin ang iyong account mula sa iyong pahina ng account at mabubura ang bawat talang nalikha nito.",
+   "faq.data.counts": "Sa parehong kaso, nagtatabi rin kami ng mga anonimong bilang kung aling mga pahina at screen ang binubuksan, na hindi kailanman ikinakabit sa iyong account. Ang buong detalye, kasama ang bawat field at bawat pinangalanang third party, ay nakalahad sa",
+diff --git a/lib/i18n/messages/fr.json b/lib/i18n/messages/fr.json
+index 36bb130ab..7896df72d 100644
+--- a/lib/i18n/messages/fr.json
++++ b/lib/i18n/messages/fr.json
+@@ -4996,16 +4996,6 @@
+   "player.option.sleep": "Minuterie de veille",
+   "player.option.read": "Lire",
+   "player.read": "Lire",
+-  "player.voice": "Voix",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "La voix de lecture de Purify",
+-  "player.voice.numbered": "Voix {n}",
+-  "player.voice.hear": "Écouter",
+-  "player.voice.hearName": "Écouter {name}",
+-  "player.voice.gone": "La voix choisie n'est plus sur ce téléphone : c'est {name} qui lit.",
+-  "player.voice.none": "Ce téléphone n'a pas encore de voix en {language}.",
+-  "player.voice.noneHow": "Une voix peut être ajoutée dans les réglages de synthèse vocale du téléphone.",
+-  "player.voice.phoneNote": "Les voix du téléphone lisent sans connexion.",
+   "chant.button": "Prier avec le chant",
+   "chant.ask.title": "Prier avec le chant ?",
+   "chant.ask.body": "En douceur, pendant que vous priez.",
+@@ -5524,9 +5514,9 @@
+   "mod.care.ask": "Un court message privé de Purify arrive dans la boîte de réception de cette personne, avec où trouver de l’aide. Il ne cite rien de ce qu’elle a écrit.",
+   "mod.care.sent": "Mot d’attention envoyé.",
+   "campaigns.notOpen": "Les campagnes de prière ne sont pas encore ouvertes.",
+-  "faq.free.a1": "La bibliothèque est gratuite, sans compte et sans publicité : les Écritures avec le grec à côté et chaque chapitre lu à voix haute, les prières et les acathistes, les saints, le calendrier, les conciles, la théologie et l’histoire, et la recherche. Le sont aussi vos surlignages, notes et signets sur cet appareil, et l’écriture dans votre journal.",
++  "faq.free.a1": "La bibliothèque est gratuite, sans compte et sans publicité : les Écritures avec le grec à côté et le Nouveau Testament lu à voix haute, les prières et les acathistes, les saints, le calendrier, les conciles, la théologie et l’histoire, et la recherche. Le sont aussi vos surlignages, notes et signets sur cet appareil, et l’écriture dans votre journal.",
+   "faq.free.a2": "Purify Plus est un abonnement facultatif qui ajoute des outils par-dessus, parmi lesquels l’étude du mot, les renvois, davantage de modes de lecture, l’écoute hors ligne, les plans de lecture et votre lecture sur tous vos appareils.",
+-  "faq.roadmap.a": "Les quatre sont là. Les acathistes sont dans Prières, et chaque chapitre de la Bible peut vous être lu à voix haute. Vous vous connectez avec votre e-mail et un mot de passe, ou avec Google ou Apple. Avec un compte, les jours où vous avez prié votre règle et les noms que vous portez dans la prière vous suivent sur chaque appareil ; avec Purify Plus, vos surlignages, notes et signets aussi. Vous pouvez supprimer le compte, ainsi que toutes les lignes créées côté serveur, depuis votre",
++  "faq.roadmap.a": "Les quatre sont là. Les acathistes sont dans Prières, et chaque chapitre du Nouveau Testament peut vous être lu à voix haute. Vous vous connectez avec votre e-mail et un mot de passe, ou avec Google ou Apple. Avec un compte, les jours où vous avez prié votre règle et les noms que vous portez dans la prière vous suivent sur chaque appareil ; avec Purify Plus, vos surlignages, notes et signets aussi. Vous pouvez supprimer le compte, ainsi que toutes les lignes créées côté serveur, depuis votre",
+   "faq.data.noAccount": "vos surlignages, notes, signets et les jours où vous avez prié restent sur votre appareil, et nous n’en avons aucune copie. Effacez-les et ils disparaissent.",
+   "faq.data.account": "les jours où vous avez prié et les noms que vous portez sont gardés avec lui, et avec Purify Plus vos surlignages, notes et signets aussi, chacun derrière une règle qui ne laisse que vous les lire. Nous n’en faisons aucune analyse, et nous ne les partageons ni ne les vendons jamais. Supprimez votre compte depuis votre page de compte et chaque ligne qu’il a créée est supprimée.",
+   "faq.data.counts": "Dans les deux cas, nous tenons aussi des décomptes anonymes des pages et des écrans ouverts, jamais reliés à votre compte. Le détail complet, avec chaque champ et chaque tiers nommé, est exposé sur la",
+diff --git a/lib/i18n/messages/hu.json b/lib/i18n/messages/hu.json
+index 68e5ace7f..32e910ee8 100644
+--- a/lib/i18n/messages/hu.json
++++ b/lib/i18n/messages/hu.json
+@@ -4968,16 +4968,6 @@
+   "player.option.sleep": "Elalvási időzítő",
+   "player.option.read": "Olvasás",
+   "player.read": "Olvasás",
+-  "player.voice": "Hang",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "A Purify felolvasó hangja",
+-  "player.voice.numbered": "{n}. hang",
+-  "player.voice.hear": "Meghallgatás",
+-  "player.voice.hearName": "{name} meghallgatása",
+-  "player.voice.gone": "A választott hang már nincs ezen a telefonon, ezért {name} olvas.",
+-  "player.voice.none": "Ezen a telefonon még nincs hang ehhez a nyelvhez: {language}.",
+-  "player.voice.noneHow": "Hangot a telefon beszédbeállításaiban lehet hozzáadni.",
+-  "player.voice.phoneNote": "A telefon saját hangjai kapcsolat nélkül is olvasnak.",
+   "chant.button": "Imádság énekkel",
+   "chant.ask.title": "Imádság énekkel?",
+   "chant.ask.body": "Halkan szól, amíg imádkozik.",
+@@ -5496,9 +5486,9 @@
+   "mod.care.ask": "Rövid, személyes üzenet érkezik a Purifytól az író postaládájába arról, hol találhat segítséget. Semmit sem idéz abból, amit írt.",
+   "mod.care.sent": "A gondoskodó üzenet elküldve.",
+   "campaigns.notOpen": "Az imakampányok még nem nyíltak meg.",
+-  "faq.free.a1": "A könyvtár ingyenes, fiók és reklám nélkül: a Szentírás a görög szöveggel mellette, minden fejezet felolvasva is, az imádságok és az akathisztoszok, a szentek, a naptár, a zsinatok, a teológia és a történelem, és a keresés. Ingyenesek a kiemeléseid, jegyzeteid és könyvjelzőid is ezen az eszközön, és az írás a naplódba.",
++  "faq.free.a1": "A könyvtár ingyenes, fiók és reklám nélkül: a Szentírás a görög szöveggel mellette, az Újszövetség felolvasva is, az imádságok és az akathisztoszok, a szentek, a naptár, a zsinatok, a teológia és a történelem, és a keresés. Ingyenesek a kiemeléseid, jegyzeteid és könyvjelzőid is ezen az eszközön, és az írás a naplódba.",
+   "faq.free.a2": "A Purify Plus egy nem kötelező előfizetés, amely eszközöket tesz hozzá, köztük a szótanulmányt, a kereszthivatkozásokat, több olvasási módot, az offline hallgatást, az olvasási terveket és az olvasásodat minden eszközön.",
+-  "faq.roadmap.a": "Mind a négy itt van. Az akathisztoszok az Imádságok között vannak, és a Biblia minden fejezetét felolvastathatod. E-mail-címeddel és jelszóval jelentkezel be, vagy Google-lel vagy Apple-lel. Fiókkal a napok, amikor elimádkoztad a szabályodat, és a nevek, akikért imádkozol, minden eszközre követnek; a Purify Plusszal a kiemeléseid, jegyzeteid és könyvjelzőid is. A fiókot és minden általa létrehozott kiszolgálóoldali sort törölheted a",
++  "faq.roadmap.a": "Mind a négy itt van. Az akathisztoszok az Imádságok között vannak, és az Újszövetség minden fejezetét felolvastathatod. E-mail-címeddel és jelszóval jelentkezel be, vagy Google-lel vagy Apple-lel. Fiókkal a napok, amikor elimádkoztad a szabályodat, és a nevek, akikért imádkozol, minden eszközre követnek; a Purify Plusszal a kiemeléseid, jegyzeteid és könyvjelzőid is. A fiókot és minden általa létrehozott kiszolgálóoldali sort törölheted a",
+   "faq.data.noAccount": "a kiemeléseid, jegyzeteid, könyvjelzőid és a napok, amikor imádkoztál, az eszközödön maradnak, és nekünk nincs róluk másolatunk. Töröld őket, és eltűnnek.",
+   "faq.data.account": "a napok, amikor imádkoztál, és a nevek, akikért imádkozol, vele együtt maradnak meg, a Purify Plusszal pedig a kiemeléseid, jegyzeteid és könyvjelzőid is, mindegyik olyan szabály mögött, amely csak neked engedi olvasni őket. Nem végzünk rajtuk elemzést, és soha nem osztjuk meg és nem adjuk el őket. Töröld a fiókodat a fiókoldaladon, és minden sor, amelyet létrehozott, törlődik.",
+   "faq.data.counts": "Mindkét esetben névtelen számlálást is vezetünk arról, mely oldalakat és képernyőket nyitják meg, amit soha nem kapcsolunk a fiókodhoz. A teljes részletezés, minden mezőt és minden harmadik felet megnevezve, itt olvasható:",
+diff --git a/lib/i18n/messages/id.json b/lib/i18n/messages/id.json
+index ebed68f00..87f0ee046 100644
+--- a/lib/i18n/messages/id.json
++++ b/lib/i18n/messages/id.json
+@@ -4965,16 +4965,6 @@
+   "player.option.sleep": "Pengatur waktu tidur",
+   "player.option.read": "Baca",
+   "player.read": "Baca",
+-  "player.voice": "Suara",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Suara pembaca Purify",
+-  "player.voice.numbered": "Suara {n}",
+-  "player.voice.hear": "Dengarkan",
+-  "player.voice.hearName": "Dengarkan {name}",
+-  "player.voice.gone": "Suara yang Anda pilih sudah tidak ada di ponsel ini, jadi {name} yang membaca.",
+-  "player.voice.none": "Ponsel ini belum memiliki suara untuk {language}.",
+-  "player.voice.noneHow": "Suara dapat ditambahkan di pengaturan ucapan ponsel.",
+-  "player.voice.phoneNote": "Suara bawaan ponsel membaca tanpa koneksi.",
+   "chant.button": "Berdoa dengan kidung",
+   "chant.ask.title": "Berdoa dengan kidung?",
+   "chant.ask.body": "Diputar lembut selama Anda berdoa.",
+@@ -5493,9 +5483,9 @@
+   "mod.care.ask": "Catatan singkat dan pribadi dari Purify masuk ke kotak masuk penulis ini, berisi tempat mencari pertolongan. Catatan ini tidak mengutip apa pun yang ditulisnya.",
+   "mod.care.sent": "Catatan kepedulian terkirim.",
+   "campaigns.notOpen": "Kampanye doa belum dibuka.",
+-  "faq.free.a1": "Perpustakaan ini gratis, tanpa akun dan tanpa iklan: Kitab Suci dengan teks Yunani di sampingnya dan setiap pasal dibacakan, doa-doa dan akathistos, para santo, kalender, konsili-konsili, teologi dan sejarah, serta pencarian. Gratis pula sorotan, catatan, dan penanda Anda di perangkat ini, serta menulis di jurnal Anda.",
++  "faq.free.a1": "Perpustakaan ini gratis, tanpa akun dan tanpa iklan: Kitab Suci dengan teks Yunani di sampingnya dan Perjanjian Baru yang dibacakan, doa-doa dan akathistos, para santo, kalender, konsili-konsili, teologi dan sejarah, serta pencarian. Gratis pula sorotan, catatan, dan penanda Anda di perangkat ini, serta menulis di jurnal Anda.",
+   "faq.free.a2": "Purify Plus adalah langganan opsional yang menambahkan alat di atasnya, di antaranya studi kata, referensi silang, lebih banyak mode baca, mendengarkan offline, rencana bacaan, dan bacaan Anda di setiap perangkat.",
+-  "faq.roadmap.a": "Keempatnya sudah ada. Akathistos ada di Doa, dan setiap pasal Alkitab dapat dibacakan untuk Anda. Anda masuk dengan email dan kata sandi, atau dengan Google atau Apple. Dengan akun, hari-hari Anda berdoa menurut aturan doa Anda dan nama-nama yang Anda bawa dalam doa mengikuti Anda ke setiap perangkat; dengan Purify Plus, sorotan, catatan, dan penanda Anda juga. Anda dapat menghapus akun, beserta semua baris data di server yang dibuatnya, dari",
++  "faq.roadmap.a": "Keempatnya sudah ada. Akathistos ada di Doa, dan setiap pasal Perjanjian Baru dapat dibacakan untuk Anda. Anda masuk dengan email dan kata sandi, atau dengan Google atau Apple. Dengan akun, hari-hari Anda berdoa menurut aturan doa Anda dan nama-nama yang Anda bawa dalam doa mengikuti Anda ke setiap perangkat; dengan Purify Plus, sorotan, catatan, dan penanda Anda juga. Anda dapat menghapus akun, beserta semua baris data di server yang dibuatnya, dari",
+   "faq.data.noAccount": "sorotan, catatan, penanda Anda, dan hari-hari Anda berdoa tetap di perangkat Anda, dan kami tidak punya salinannya. Hapus, dan semuanya hilang.",
+   "faq.data.account": "hari-hari Anda berdoa dan nama-nama yang Anda bawa disimpan bersamanya, dan dengan Purify Plus juga sorotan, catatan, dan penanda Anda, masing-masing di balik aturan yang hanya mengizinkan Anda membacanya. Kami tidak menjalankan analitik atasnya, dan kami tidak pernah membagikan atau menjualnya. Hapus akun Anda dari halaman akun Anda dan setiap baris yang dibuatnya ikut terhapus.",
+   "faq.data.counts": "Dalam kedua kasus, kami juga menyimpan hitungan anonim tentang halaman dan layar mana yang dibuka, yang tidak pernah dikaitkan dengan akun Anda. Rincian lengkapnya, dengan setiap kolom dan setiap pihak ketiga disebutkan namanya, dijabarkan di",
+diff --git a/lib/i18n/messages/it.json b/lib/i18n/messages/it.json
+index b8d5dc429..e6bbffc38 100644
+--- a/lib/i18n/messages/it.json
++++ b/lib/i18n/messages/it.json
+@@ -4973,16 +4973,6 @@
+   "player.option.sleep": "Timer",
+   "player.option.read": "Leggi",
+   "player.read": "Leggi",
+-  "player.voice": "Voce",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "La voce di lettura di Purify",
+-  "player.voice.numbered": "Voce {n}",
+-  "player.voice.hear": "Ascolta",
+-  "player.voice.hearName": "Ascolta {name}",
+-  "player.voice.gone": "La voce scelta non è più su questo telefono, quindi legge {name}.",
+-  "player.voice.none": "Su questo telefono non c'è ancora una voce in {language}.",
+-  "player.voice.noneHow": "Si può aggiungere nelle impostazioni della sintesi vocale del telefono.",
+-  "player.voice.phoneNote": "Le voci del telefono leggono senza connessione.",
+   "chant.button": "Pregare con il canto",
+   "chant.ask.title": "Pregare con il canto?",
+   "chant.ask.body": "Suona piano mentre preghi.",
+@@ -5501,9 +5491,9 @@
+   "mod.care.ask": "Una breve nota privata da Purify arriva nella posta in arrivo di chi ha scritto, con dove trovare aiuto. Non cita nulla di ciò che ha scritto.",
+   "mod.care.sent": "Nota di vicinanza inviata.",
+   "campaigns.notOpen": "Le campagne di preghiera non sono ancora aperte.",
+-  "faq.free.a1": "La biblioteca è gratuita, senza account e senza pubblicità: le Scritture con il greco a fianco e ogni capitolo letto ad alta voce, le preghiere e gli acatisti, i santi, il calendario, i concili, la teologia e la storia, e la ricerca. Lo sono anche le tue evidenziazioni, note e segnalibri su questo dispositivo, e lo scrivere nel tuo diario.",
++  "faq.free.a1": "La biblioteca è gratuita, senza account e senza pubblicità: le Scritture con il greco a fianco e il Nuovo Testamento letto ad alta voce, le preghiere e gli acatisti, i santi, il calendario, i concili, la teologia e la storia, e la ricerca. Lo sono anche le tue evidenziazioni, note e segnalibri su questo dispositivo, e lo scrivere nel tuo diario.",
+   "faq.free.a2": "Purify Plus è un abbonamento facoltativo che aggiunge strumenti in più, tra cui lo studio della parola, i rimandi, altre modalità di lettura, l’ascolto offline, i piani di lettura e le tue letture su ogni dispositivo.",
+-  "faq.roadmap.a": "Ci sono tutte e quattro. Gli acatisti sono in Preghiere, e ogni capitolo della Bibbia può esserti letto ad alta voce. Accedi con la tua email e una password, oppure con Google o Apple. Con un account, i giorni in cui hai pregato la tua regola e i nomi che porti nella preghiera ti seguono su ogni dispositivo; con Purify Plus, anche le tue evidenziazioni, note e segnalibri. Puoi eliminare l'account, e tutte le righe che ha creato sul server, dalla tua",
++  "faq.roadmap.a": "Ci sono tutte e quattro. Gli acatisti sono in Preghiere, e ogni capitolo del Nuovo Testamento può esserti letto ad alta voce. Accedi con la tua email e una password, oppure con Google o Apple. Con un account, i giorni in cui hai pregato la tua regola e i nomi che porti nella preghiera ti seguono su ogni dispositivo; con Purify Plus, anche le tue evidenziazioni, note e segnalibri. Puoi eliminare l'account, e tutte le righe che ha creato sul server, dalla tua",
+   "faq.data.noAccount": "le tue evidenziazioni, note, segnalibri e i giorni in cui hai pregato restano sul tuo dispositivo, e noi non ne abbiamo copia. Cancellali e spariscono.",
+   "faq.data.account": "i giorni in cui hai pregato e i nomi che porti sono custoditi con esso, e con Purify Plus anche le tue evidenziazioni, note e segnalibri, ciascuno dietro una regola che permette solo a te di leggerli. Non ne facciamo analisi, e non li condividiamo né li vendiamo mai. Elimina il tuo account dalla tua pagina account e ogni riga che ha creato viene eliminata.",
+   "faq.data.counts": "In entrambi i casi teniamo anche conteggi anonimi di quali pagine e schermate vengono aperte, mai collegati al tuo account. Tutti i dettagli, con ogni campo e ogni terza parte indicati per nome, sono esposti nella",
+diff --git a/lib/i18n/messages/ka.json b/lib/i18n/messages/ka.json
+index 148c78e3b..4952003fa 100644
+--- a/lib/i18n/messages/ka.json
++++ b/lib/i18n/messages/ka.json
+@@ -4968,16 +4968,6 @@
+   "player.option.sleep": "ძილის ტაიმერი",
+   "player.option.read": "წაკითხვა",
+   "player.read": "წაკითხვა",
+-  "player.voice": "ხმა",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Purify-ის კითხვის ხმა",
+-  "player.voice.numbered": "ხმა {n}",
+-  "player.voice.hear": "მოსმენა",
+-  "player.voice.hearName": "მოსმენა: {name}",
+-  "player.voice.gone": "თქვენ მიერ არჩეული ხმა ამ ტელეფონზე აღარ არის, ამიტომ კითხულობს {name}.",
+-  "player.voice.none": "ამ ტელეფონს ჯერ არ აქვს ხმა ამ ენისთვის: {language}.",
+-  "player.voice.noneHow": "ხმის დამატება შესაძლებელია ტელეფონის მეტყველების პარამეტრებში.",
+-  "player.voice.phoneNote": "ტელეფონის საკუთარი ხმები კავშირის გარეშეც კითხულობს.",
+   "chant.button": "ლოცვა გალობით",
+   "chant.ask.title": "ლოცვა გალობით?",
+   "chant.ask.body": "ჩუმად ჟღერს, სანამ ლოცულობთ.",
+@@ -5496,9 +5486,9 @@
+   "mod.care.ask": "Purify-ისგან მოკლე პირადი წერილი მივა ამ ავტორის შემოსულ წერილებში, სადაც წერია, სად იპოვოს დახმარება. მისი დაწერილიდან არაფერს იმეორებს.",
+   "mod.care.sent": "მზრუნველობის წერილი გაიგზავნა.",
+   "campaigns.notOpen": "ლოცვის კამპანიები ჯერ არ გახსნილა.",
+-  "faq.free.a1": "ბიბლიოთეკა უფასოა, ანგარიშისა და რეკლამის გარეშე: წმინდა წერილი ბერძნული ტექსტით გვერდით და ყოველი თავი ხმამაღლა წაკითხული, ლოცვები და აკათისტოები, წმინდანები, კალენდარი, კრებები, ღვთისმეტყველება და ისტორია, და ძიება. უფასოა ასევე თქვენი მონიშვნები, ჩანაწერები და სანიშნეები ამ მოწყობილობაზე, და დღიურში წერა.",
++  "faq.free.a1": "ბიბლიოთეკა უფასოა, ანგარიშისა და რეკლამის გარეშე: წმინდა წერილი ბერძნული ტექსტით გვერდით და ახალი აღთქმა ხმამაღლა წაკითხული, ლოცვები და აკათისტოები, წმინდანები, კალენდარი, კრებები, ღვთისმეტყველება და ისტორია, და ძიება. უფასოა ასევე თქვენი მონიშვნები, ჩანაწერები და სანიშნეები ამ მოწყობილობაზე, და დღიურში წერა.",
+   "faq.free.a2": "Purify Plus არის არასავალდებულო გამოწერა, რომელიც ზემოდან ხელსაწყოებს ამატებს, მათ შორის სიტყვის შესწავლას, ჯვარედინ მითითებებს, კითხვის მეტ რეჟიმს, ხაზგარეშე მოსმენას, კითხვის გეგმებს და თქვენს კითხვას ყველა მოწყობილობაზე.",
+-  "faq.roadmap.a": "ოთხივე უკვე აქ არის. აკათისტოები ლოცვებშია, და ბიბლიის ყოველი თავი შეიძლება ხმამაღლა წაგიკითხონ. შედიხართ თქვენი ელფოსტითა და პაროლით, ან Google-ით ან Apple-ით. ანგარიშით, დღეები, როცა თქვენი წესი ილოცეთ, და სახელები, რომლებსაც ლოცვაში ატარებთ, ყველა მოწყობილობაზე მოგყვებათ; Purify Plus-ით კი თქვენი მონიშვნები, ჩანაწერები და სანიშნეებიც. ანგარიშისა და მის მიერ შექმნილი ყველა სერვერული ჩანაწერის წაშლა შეგიძლიათ თქვენი",
++  "faq.roadmap.a": "ოთხივე უკვე აქ არის. აკათისტოები ლოცვებშია, და ახალი აღთქმის ყოველი თავი შეიძლება ხმამაღლა წაგიკითხონ. შედიხართ თქვენი ელფოსტითა და პაროლით, ან Google-ით ან Apple-ით. ანგარიშით, დღეები, როცა თქვენი წესი ილოცეთ, და სახელები, რომლებსაც ლოცვაში ატარებთ, ყველა მოწყობილობაზე მოგყვებათ; Purify Plus-ით კი თქვენი მონიშვნები, ჩანაწერები და სანიშნეებიც. ანგარიშისა და მის მიერ შექმნილი ყველა სერვერული ჩანაწერის წაშლა შეგიძლიათ თქვენი",
+   "faq.data.noAccount": "თქვენი მონიშვნები, ჩანაწერები, სანიშნეები და დღეები, როცა ილოცეთ, თქვენს მოწყობილობაზე რჩება, და ჩვენ მათი ასლი არ გვაქვს. წაშალეთ და აღარ იქნება.",
+   "faq.data.account": "დღეები, როცა ილოცეთ, და სახელები, რომლებსაც ატარებთ, მასთან ერთად ინახება, Purify Plus-ით კი თქვენი მონიშვნები, ჩანაწერები და სანიშნეებიც, თითოეული ისეთი წესის მიღმა, რომელიც მხოლოდ თქვენ გაძლევთ მათი წაკითხვის უფლებას. მათზე ანალიტიკას არ ვაწარმოებთ და არასოდეს ვუზიარებთ ან ვყიდით. წაშალეთ ანგარიში თქვენი ანგარიშის გვერდიდან და მის მიერ შექმნილი ყველა ჩანაწერი წაიშლება.",
+   "faq.data.counts": "ორივე შემთხვევაში ასევე ვინახავთ ანონიმურ დათვლას იმისა, რომელი გვერდები და ეკრანები იხსნება, რაც არასოდეს უკავშირდება თქვენს ანგარიშს. სრული დეტალები, ყოველი ველისა და ყოველი მესამე მხარის დასახელებით, გადმოცემულია",
+diff --git a/lib/i18n/messages/ne.json b/lib/i18n/messages/ne.json
+index 5da5caa56..a89b38dea 100644
+--- a/lib/i18n/messages/ne.json
++++ b/lib/i18n/messages/ne.json
+@@ -4968,16 +4968,6 @@
+   "player.option.sleep": "निद्रा टाइमर",
+   "player.option.read": "पढ्नुहोस्",
+   "player.read": "पढ्नुहोस्",
+-  "player.voice": "आवाज",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Purify को पढ्ने आवाज",
+-  "player.voice.numbered": "आवाज {n}",
+-  "player.voice.hear": "सुन्नुहोस्",
+-  "player.voice.hearName": "{name} सुन्नुहोस्",
+-  "player.voice.gone": "तपाईंले छान्नुभएको आवाज अब यो फोनमा छैन, त्यसैले {name} ले पढ्छ।",
+-  "player.voice.none": "यो फोनमा अझै {language} को आवाज छैन।",
+-  "player.voice.noneHow": "फोनको बोली सेटिङमा आवाज थप्न सकिन्छ।",
+-  "player.voice.phoneNote": "फोनका आफ्नै आवाजहरूले इन्टरनेट बिना पढ्छन्।",
+   "chant.button": "भजनसहित प्रार्थना",
+   "chant.ask.title": "भजनसहित प्रार्थना?",
+   "chant.ask.body": "तपाईं प्रार्थना गर्दा यो बिस्तारै बज्छ।",
+@@ -5496,9 +5486,9 @@
+   "mod.care.ask": "Purify बाट एउटा छोटो निजी सन्देश यी लेखकको इनबक्समा जान्छ, जसमा सहायता कहाँ पाइन्छ भन्ने हुन्छ। यसले उहाँले लेख्नुभएको केही पनि उद्धृत गर्दैन।",
+   "mod.care.sent": "हेरचाहको सन्देश पठाइयो।",
+   "campaigns.notOpen": "प्रार्थना अभियानहरू अझै खुलेका छैनन्।",
+-  "faq.free.a1": "पुस्तकालय निःशुल्क छ, खाता र विज्ञापनबिना: छेउमा ग्रीकसहितको धर्मशास्त्र र ठूलो स्वरमा पढिएको हरेक अध्याय, प्रार्थनाहरू र अकाथिस्टहरू, सन्तहरू, पात्रो, परिषद्हरू, धर्मविज्ञान र इतिहास, र खोज। यो उपकरणमा तपाईंका हाइलाइट, टिप्पणी र बुकमार्क, र आफ्नो दैनिकीमा लेख्नु पनि निःशुल्क छ।",
++  "faq.free.a1": "पुस्तकालय निःशुल्क छ, खाता र विज्ञापनबिना: छेउमा ग्रीकसहितको धर्मशास्त्र र ठूलो स्वरमा पढिएको नयाँ नियम, प्रार्थनाहरू र अकाथिस्टहरू, सन्तहरू, पात्रो, परिषद्हरू, धर्मविज्ञान र इतिहास, र खोज। यो उपकरणमा तपाईंका हाइलाइट, टिप्पणी र बुकमार्क, र आफ्नो दैनिकीमा लेख्नु पनि निःशुल्क छ।",
+   "faq.free.a2": "Purify Plus एक वैकल्पिक सदस्यता हो जसले माथिबाट उपकरणहरू थप्छ, जसमा शब्द अध्ययन, सम्बन्धित पदहरू, थप पढाइ मोडहरू, अफलाइन सुन्ने सुविधा, पढाइ योजनाहरू र हरेक उपकरणमा तपाईंको पठन पर्छन्।",
+-  "faq.roadmap.a": "चारवटै यहाँ छन्। अकाथिस्टहरू प्रार्थनाहरूमा छन्, र बाइबलको हरेक अध्याय तपाईंलाई ठूलो स्वरमा पढेर सुनाउन सकिन्छ। तपाईं आफ्नो इमेल र पासवर्डले, वा Google वा Apple बाट साइन इन गर्नुहुन्छ। खाता हुँदा, तपाईंले आफ्नो नियम प्रार्थना गरेका दिनहरू र प्रार्थनामा बोकेका नामहरू हरेक उपकरणमा तपाईंसँगै जान्छन्; Purify Plus सँग, तपाईंका हाइलाइट, टिप्पणी र बुकमार्क पनि। खाता, र त्यसले बनाएका सर्भरका सबै पंक्तिहरू, तपाईंले आफ्नो",
++  "faq.roadmap.a": "चारवटै यहाँ छन्। अकाथिस्टहरू प्रार्थनाहरूमा छन्, र नयाँ नियमको हरेक अध्याय तपाईंलाई ठूलो स्वरमा पढेर सुनाउन सकिन्छ। तपाईं आफ्नो इमेल र पासवर्डले, वा Google वा Apple बाट साइन इन गर्नुहुन्छ। खाता हुँदा, तपाईंले आफ्नो नियम प्रार्थना गरेका दिनहरू र प्रार्थनामा बोकेका नामहरू हरेक उपकरणमा तपाईंसँगै जान्छन्; Purify Plus सँग, तपाईंका हाइलाइट, टिप्पणी र बुकमार्क पनि। खाता, र त्यसले बनाएका सर्भरका सबै पंक्तिहरू, तपाईंले आफ्नो",
+   "faq.data.noAccount": "तपाईंका हाइलाइट, टिप्पणी, बुकमार्क र तपाईंले प्रार्थना गरेका दिनहरू तपाईंकै उपकरणमा रहन्छन्, र हामीसँग तिनको प्रतिलिपि हुँदैन। मेटाउनुहोस्, अनि ती हराउँछन्।",
+   "faq.data.account": "तपाईंले प्रार्थना गरेका दिनहरू र तपाईंले बोकेका नामहरू त्यससँगै राखिन्छन्, र Purify Plus सँग तपाईंका हाइलाइट, टिप्पणी र बुकमार्क पनि, प्रत्येक यस्तो नियमपछाडि जसले तपाईंलाई मात्र पढ्न दिन्छ। हामी तिनमा विश्लेषण चलाउँदैनौं, र तिनलाई कहिल्यै साझा गर्दैनौं वा बेच्दैनौं। आफ्नो खाता पृष्ठबाट खाता मेटाउनुहोस्, र त्यसले बनाएको हरेक पंक्ति मेटिन्छ।",
+   "faq.data.counts": "दुवै अवस्थामा हामी कुन पृष्ठ र स्क्रिन खोलिन्छन् भन्ने बेनामी गणना पनि राख्छौं, जुन तपाईंको खातासँग कहिल्यै जोडिँदैन। हरेक क्षेत्र र हरेक तेस्रो पक्षको नामसहितको पूरा विवरण यहाँ राखिएको छ:",
+diff --git a/lib/i18n/messages/pl.json b/lib/i18n/messages/pl.json
+index 7b7e5838a..d37f52dee 100644
+--- a/lib/i18n/messages/pl.json
++++ b/lib/i18n/messages/pl.json
+@@ -5126,16 +5126,6 @@
+   "player.option.sleep": "Wyłącznik czasowy",
+   "player.option.read": "Czytaj",
+   "player.read": "Czytaj",
+-  "player.voice": "Głos",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Głos lektora Purify",
+-  "player.voice.numbered": "Głos {n}",
+-  "player.voice.hear": "Posłuchaj",
+-  "player.voice.hearName": "Posłuchaj: {name}",
+-  "player.voice.gone": "Wybranego głosu nie ma już na tym telefonie, więc czyta {name}.",
+-  "player.voice.none": "Ten telefon nie ma jeszcze głosu dla języka: {language}.",
+-  "player.voice.noneHow": "Głos można dodać w ustawieniach mowy telefonu.",
+-  "player.voice.phoneNote": "Własne głosy telefonu czytają bez połączenia.",
+   "chant.button": "Modlitwa ze śpiewem",
+   "chant.ask.title": "Modlić się ze śpiewem?",
+   "chant.ask.body": "Gra cicho, gdy się modlisz.",
+@@ -5658,9 +5648,9 @@
+   "mod.care.ask": "Krótka prywatna wiadomość od Purify trafi do skrzynki odbiorczej tej osoby, z informacją, gdzie szukać pomocy. Nie cytuje niczego, co napisała.",
+   "mod.care.sent": "Wiadomość troski wysłana.",
+   "campaigns.notOpen": "Intencje modlitewne nie są jeszcze otwarte.",
+-  "faq.free.a1": "Biblioteka jest bezpłatna, bez konta i bez reklam: Pismo Święte z greckim tekstem obok i każdy rozdział czytany na głos, modlitwy i akatysty, święci, kalendarz, sobory, teologia i historia oraz wyszukiwanie. Bezpłatne są też twoje wyróżnienia, notatki i zakładki na tym urządzeniu oraz pisanie w dzienniku.",
++  "faq.free.a1": "Biblioteka jest bezpłatna, bez konta i bez reklam: Pismo Święte z greckim tekstem obok i Nowy Testament czytany na głos, modlitwy i akatysty, święci, kalendarz, sobory, teologia i historia oraz wyszukiwanie. Bezpłatne są też twoje wyróżnienia, notatki i zakładki na tym urządzeniu oraz pisanie w dzienniku.",
+   "faq.free.a2": "Purify Plus to opcjonalna subskrypcja, która dodaje narzędzia na wierzchu, wśród nich studium słowa, odsyłacze, więcej trybów czytania, słuchanie offline, plany czytania i twoją lekturę na każdym urządzeniu.",
+-  "faq.roadmap.a": "Wszystkie cztery już są. Akatysty znajdziesz w Modlitwach, a każdy rozdział Biblii może zostać ci przeczytany na głos. Logujesz się adresem e-mail i hasłem albo przez Google lub Apple. Z kontem dni, w które odmówiłeś swoją regułę, i imiona, które nosisz w modlitwie, idą za tobą na każde urządzenie; z Purify Plus także twoje wyróżnienia, notatki i zakładki. Konto i wszystkie utworzone przez nie wiersze po stronie serwera możesz usunąć na swojej",
++  "faq.roadmap.a": "Wszystkie cztery już są. Akatysty znajdziesz w Modlitwach, a każdy rozdział Nowego Testamentu może zostać ci przeczytany na głos. Logujesz się adresem e-mail i hasłem albo przez Google lub Apple. Z kontem dni, w które odmówiłeś swoją regułę, i imiona, które nosisz w modlitwie, idą za tobą na każde urządzenie; z Purify Plus także twoje wyróżnienia, notatki i zakładki. Konto i wszystkie utworzone przez nie wiersze po stronie serwera możesz usunąć na swojej",
+   "faq.data.noAccount": "twoje wyróżnienia, notatki, zakładki i dni, w które się modliłeś, zostają na twoim urządzeniu, a my nie mamy ich kopii. Wyczyść je i znikną.",
+   "faq.data.account": "dni, w które się modliłeś, i imiona, które nosisz, są przechowywane razem z nim, a z Purify Plus także twoje wyróżnienia, notatki i zakładki, każde za regułą, która pozwala czytać je tylko tobie. Nie prowadzimy na nich analityki i nigdy ich nie udostępniamy ani nie sprzedajemy. Usuń konto na stronie konta, a każdy utworzony przez nie wiersz zostanie usunięty.",
+   "faq.data.counts": "W obu przypadkach prowadzimy też anonimowe liczniki tego, które strony i ekrany są otwierane, nigdy niepowiązane z twoim kontem. Pełne szczegóły, z wymienieniem każdego pola i każdego podmiotu zewnętrznego, przedstawia",
+diff --git a/lib/i18n/messages/pt.json b/lib/i18n/messages/pt.json
+index d1e3b87c1..7323b7b9e 100644
+--- a/lib/i18n/messages/pt.json
++++ b/lib/i18n/messages/pt.json
+@@ -4973,16 +4973,6 @@
+   "player.option.sleep": "Dormir",
+   "player.option.read": "Ler",
+   "player.read": "Ler",
+-  "player.voice": "Voz",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "A voz de leitura do Purify",
+-  "player.voice.numbered": "Voz {n}",
+-  "player.voice.hear": "Ouvir",
+-  "player.voice.hearName": "Ouvir {name}",
+-  "player.voice.gone": "A voz escolhida não está mais neste telefone, então quem lê é {name}.",
+-  "player.voice.none": "Este telefone ainda não tem uma voz em {language}.",
+-  "player.voice.noneHow": "É possível adicionar uma nas configurações de voz do telefone.",
+-  "player.voice.phoneNote": "As vozes do próprio telefone leem sem conexão.",
+   "chant.button": "Orar com cântico",
+   "chant.ask.title": "Orar com cântico?",
+   "chant.ask.body": "Toca baixinho enquanto você ora.",
+@@ -5501,9 +5491,9 @@
+   "mod.care.ask": "Uma nota curta e privada do Purify vai para a caixa de entrada de quem escreveu, com onde encontrar ajuda. Ela não cita nada do que a pessoa escreveu.",
+   "mod.care.sent": "Nota de cuidado enviada.",
+   "campaigns.notOpen": "As campanhas de oração ainda não estão abertas.",
+-  "faq.free.a1": "A biblioteca é gratuita, sem conta e sem anúncios: as Escrituras com o grego ao lado e cada capítulo lido em voz alta, as orações e os acatistos, os santos, o calendário, os concílios, a teologia e a história, e a busca. Também são gratuitos seus destaques, notas e marcadores neste aparelho, e escrever no seu diário.",
++  "faq.free.a1": "A biblioteca é gratuita, sem conta e sem anúncios: as Escrituras com o grego ao lado e o Novo Testamento lido em voz alta, as orações e os acatistos, os santos, o calendário, os concílios, a teologia e a história, e a busca. Também são gratuitos seus destaques, notas e marcadores neste aparelho, e escrever no seu diário.",
+   "faq.free.a2": "O Purify Plus é uma assinatura opcional que acrescenta ferramentas por cima, entre elas o estudo da palavra, as referências cruzadas, mais modos de leitura, ouvir offline, os planos de leitura e sua leitura em todos os aparelhos.",
+-  "faq.roadmap.a": "As quatro coisas já estão aqui. Os acatistos estão em Orações, e cada capítulo da Bíblia pode ser lido em voz alta para você. Você entra com seu e-mail e uma senha, ou com Google ou Apple. Com uma conta, os dias em que você rezou sua regra e os nomes que você leva na oração o acompanham em cada aparelho; com o Purify Plus, também seus destaques, notas e marcadores. Você pode excluir a conta, e todas as linhas que ela criou no servidor, na sua",
++  "faq.roadmap.a": "As quatro coisas já estão aqui. Os acatistos estão em Orações, e cada capítulo do Novo Testamento pode ser lido em voz alta para você. Você entra com seu e-mail e uma senha, ou com Google ou Apple. Com uma conta, os dias em que você rezou sua regra e os nomes que você leva na oração o acompanham em cada aparelho; com o Purify Plus, também seus destaques, notas e marcadores. Você pode excluir a conta, e todas as linhas que ela criou no servidor, na sua",
+   "faq.data.noAccount": "seus destaques, notas, marcadores e os dias em que você rezou ficam no seu aparelho, e nós não temos cópia. Apague-os e eles somem.",
+   "faq.data.account": "os dias em que você rezou e os nomes que você leva são guardados com ela, e com o Purify Plus também seus destaques, notas e marcadores, cada um atrás de uma regra que só deixa você lê-los. Não fazemos análises com eles, e nunca os compartilhamos nem vendemos. Exclua sua conta na página da conta e cada linha que ela criou é excluída.",
+   "faq.data.counts": "Nos dois casos também mantemos contagens anônimas de quais páginas e telas são abertas, nunca ligadas à sua conta. Os detalhes completos, com cada campo e cada terceiro nomeado, estão expostos na",
+diff --git a/lib/i18n/messages/ro.json b/lib/i18n/messages/ro.json
+index 2e06ac150..bb0aae93b 100644
+--- a/lib/i18n/messages/ro.json
++++ b/lib/i18n/messages/ro.json
+@@ -5057,16 +5057,6 @@
+   "player.option.sleep": "Somn",
+   "player.option.read": "Citește",
+   "player.read": "Citește",
+-  "player.voice": "Voce",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Vocea de lectură Purify",
+-  "player.voice.numbered": "Vocea {n}",
+-  "player.voice.hear": "Ascultă",
+-  "player.voice.hearName": "Ascultă {name}",
+-  "player.voice.gone": "Vocea aleasă nu mai este pe acest telefon, așa că citește {name}.",
+-  "player.voice.none": "Acest telefon nu are încă o voce pentru limba: {language}.",
+-  "player.voice.noneHow": "O voce se poate adăuga din setările de vorbire ale telefonului.",
+-  "player.voice.phoneNote": "Vocile proprii ale telefonului citesc fără conexiune.",
+   "chant.button": "Rugăciune cu cântare",
+   "chant.ask.title": "Rugăciune cu cântare?",
+   "chant.ask.body": "Se aude încet cât vă rugați.",
+@@ -5587,9 +5577,9 @@
+   "mod.care.ask": "Un mesaj scurt și privat de la Purify ajunge în inboxul acestui autor, cu locul unde poate găsi ajutor. Nu citează nimic din ce a scris.",
+   "mod.care.sent": "Mesajul de grijă a fost trimis.",
+   "campaigns.notOpen": "Campaniile de rugăciune nu sunt încă deschise.",
+-  "faq.free.a1": "Biblioteca este gratuită, fără cont și fără reclame: Scriptura cu textul grecesc alături și fiecare capitol citit cu glas tare, rugăciunile și acatistele, sfinții, calendarul, sinoadele, teologia și istoria, și căutarea. Sunt gratuite și evidențierile, notițele și semnele tale de carte pe acest dispozitiv, și scrisul în jurnalul tău.",
++  "faq.free.a1": "Biblioteca este gratuită, fără cont și fără reclame: Scriptura cu textul grecesc alături și Noul Testament citit cu glas tare, rugăciunile și acatistele, sfinții, calendarul, sinoadele, teologia și istoria, și căutarea. Sunt gratuite și evidențierile, notițele și semnele tale de carte pe acest dispozitiv, și scrisul în jurnalul tău.",
+   "faq.free.a2": "Purify Plus este un abonament opțional care adaugă unelte pe deasupra, printre ele studiul cuvântului, trimiterile, mai multe moduri de citire, ascultarea offline, planurile de citire și lecturile tale pe fiecare dispozitiv.",
+-  "faq.roadmap.a": "Toate patru sunt aici. Acatistele sunt la Rugăciuni, iar fiecare capitol din Biblie îți poate fi citit cu glas tare. Te autentifici cu e-mailul tău și o parolă, sau cu Google ori Apple. Cu un cont, zilele în care ți-ai rugat pravila și numele pe care le porți în rugăciune te urmează pe fiecare dispozitiv; cu Purify Plus, și evidențierile, notițele și semnele tale de carte. Poți șterge contul, și toate rândurile de pe server pe care le-a făcut, din",
++  "faq.roadmap.a": "Toate patru sunt aici. Acatistele sunt la Rugăciuni, iar fiecare capitol din Noul Testament îți poate fi citit cu glas tare. Te autentifici cu e-mailul tău și o parolă, sau cu Google ori Apple. Cu un cont, zilele în care ți-ai rugat pravila și numele pe care le porți în rugăciune te urmează pe fiecare dispozitiv; cu Purify Plus, și evidențierile, notițele și semnele tale de carte. Poți șterge contul, și toate rândurile de pe server pe care le-a făcut, din",
+   "faq.data.noAccount": "evidențierile, notițele, semnele tale de carte și zilele în care te-ai rugat rămân pe dispozitivul tău, iar noi nu avem nicio copie. Șterge-le și au dispărut.",
+   "faq.data.account": "zilele în care te-ai rugat și numele pe care le porți sunt păstrate cu el, iar cu Purify Plus și evidențierile, notițele și semnele tale de carte, fiecare în spatele unei reguli care te lasă doar pe tine să le citești. Nu facem analize pe ele și nu le împărtășim și nu le vindem niciodată. Șterge-ți contul din pagina contului și fiecare rând pe care l-a făcut se șterge.",
+   "faq.data.counts": "În ambele cazuri ținem și numărători anonime ale paginilor și ecranelor deschise, niciodată legate de contul tău. Toate amănuntele, cu fiecare câmp și fiecare terț numit, sunt așezate pe",
+diff --git a/lib/i18n/messages/ru.json b/lib/i18n/messages/ru.json
+index db0d07a61..363205c12 100644
+--- a/lib/i18n/messages/ru.json
++++ b/lib/i18n/messages/ru.json
+@@ -5124,16 +5124,6 @@
+   "player.option.sleep": "Таймер сна",
+   "player.option.read": "Читать",
+   "player.read": "Читать",
+-  "player.voice": "Голос",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Голос чтения Purify",
+-  "player.voice.numbered": "Голос {n}",
+-  "player.voice.hear": "Послушать",
+-  "player.voice.hearName": "Послушать: {name}",
+-  "player.voice.gone": "Выбранного голоса больше нет на этом телефоне, поэтому читает {name}.",
+-  "player.voice.none": "На этом телефоне пока нет голоса для языка: {language}.",
+-  "player.voice.noneHow": "Голос можно добавить в настройках синтеза речи телефона.",
+-  "player.voice.phoneNote": "Голоса самого телефона читают без подключения к сети.",
+   "chant.button": "Молитва с пением",
+   "chant.ask.title": "Молиться с пением?",
+   "chant.ask.body": "Звучит тихо, пока вы молитесь.",
+@@ -5656,9 +5646,9 @@
+   "mod.care.ask": "Короткая личная записка от Purify придёт во входящие этого автора, с тем, где найти помощь. В ней не цитируется ничего из написанного.",
+   "mod.care.sent": "Записка заботы отправлена.",
+   "campaigns.notOpen": "Молитвенные просьбы ещё не открыты.",
+-  "faq.free.a1": "Библиотека бесплатна, без учётной записи и без рекламы: Писание с греческим текстом рядом и каждая глава, прочитанная вслух, молитвы и акафисты, святые, календарь, соборы, богословие и история, и поиск. Бесплатны и ваши выделения, заметки и закладки на этом устройстве, и записи в вашем дневнике.",
++  "faq.free.a1": "Библиотека бесплатна, без учётной записи и без рекламы: Писание с греческим текстом рядом и Новый Завет, прочитанный вслух, молитвы и акафисты, святые, календарь, соборы, богословие и история, и поиск. Бесплатны и ваши выделения, заметки и закладки на этом устройстве, и записи в вашем дневнике.",
+   "faq.free.a2": "Purify Plus: необязательная подписка, которая добавляет инструменты сверху, среди них изучение слова, перекрёстные ссылки, больше режимов чтения, прослушивание без сети, планы чтения и ваше чтение на всех устройствах.",
+-  "faq.roadmap.a": "Все четыре уже здесь. Акафисты находятся в разделе «Молитвы», и каждую главу Библии вам могут прочитать вслух. Вы входите по электронной почте и паролю или через Google или Apple. С учётной записью дни, когда вы молились по своему правилу, и имена, которые вы носите в молитве, следуют за вами на каждое устройство; с Purify Plus также ваши выделения, заметки и закладки. Вы можете удалить учётную запись и все созданные ею записи на сервере, перейдя на",
++  "faq.roadmap.a": "Все четыре уже здесь. Акафисты находятся в разделе «Молитвы», и каждую главу Нового Завета вам могут прочитать вслух. Вы входите по электронной почте и паролю или через Google или Apple. С учётной записью дни, когда вы молились по своему правилу, и имена, которые вы носите в молитве, следуют за вами на каждое устройство; с Purify Plus также ваши выделения, заметки и закладки. Вы можете удалить учётную запись и все созданные ею записи на сервере, перейдя на",
+   "faq.data.noAccount": "ваши выделения, заметки, закладки и дни, когда вы молились, остаются на вашем устройстве, и у нас нет их копии. Сотрите их, и их не станет.",
+   "faq.data.account": "дни, когда вы молились, и имена, которые вы носите, хранятся вместе с ней, а с Purify Plus также ваши выделения, заметки и закладки, каждое за правилом, которое позволяет читать их только вам. Мы не проводим по ним аналитику и никогда не передаём и не продаём их. Удалите учётную запись на странице учётной записи, и каждая созданная ею строка будет удалена.",
+   "faq.data.counts": "В обоих случаях мы также ведём анонимный подсчёт того, какие страницы и экраны открываются, никогда не связанный с вашей учётной записью. Полные сведения, с указанием каждого поля и каждой третьей стороны, изложены на",
+diff --git a/lib/i18n/messages/sr.json b/lib/i18n/messages/sr.json
+index 23aca6fa5..31e8cc6cf 100644
+--- a/lib/i18n/messages/sr.json
++++ b/lib/i18n/messages/sr.json
+@@ -5049,16 +5049,6 @@
+   "player.option.sleep": "Тајмер за спавање",
+   "player.option.read": "Читај",
+   "player.read": "Читај",
+-  "player.voice": "Глас",
+-  "player.voice.heart": "Харт",
+-  "player.voice.heartAbout": "Purify глас за читање",
+-  "player.voice.numbered": "Глас {n}",
+-  "player.voice.hear": "Послушај",
+-  "player.voice.hearName": "Послушај: {name}",
+-  "player.voice.gone": "Глас који сте изабрали више није на овом телефону, па чита {name}.",
+-  "player.voice.none": "Овај телефон још нема глас за језик: {language}.",
+-  "player.voice.noneHow": "Глас се може додати у подешавањима говора на телефону.",
+-  "player.voice.phoneNote": "Гласови самог телефона читају без везе.",
+   "chant.button": "Молитва уз појање",
+   "chant.ask.title": "Молитва уз појање?",
+   "chant.ask.body": "Тихо звучи док се молите.",
+@@ -5579,9 +5569,9 @@
+   "mod.care.ask": "Кратка лична порука од Purify-ја стиже у пријемно сандуче овог аутора, са тим где да нађе помоћ. Не наводи ништа од онога што је написао.",
+   "mod.care.sent": "Порука бриге је послата.",
+   "campaigns.notOpen": "Молитвене кампање још нису отворене.",
+-  "faq.free.a1": "Библиотека је бесплатна, без налога и без реклама: Свето писмо са грчким текстом поред и свака глава прочитана наглас, молитве и акатисти, светитељи, календар, сабори, богословље и историја, и претрага. Бесплатна су и ваша истицања, белешке и обележивачи на овом уређају, и писање у вашем дневнику.",
++  "faq.free.a1": "Библиотека је бесплатна, без налога и без реклама: Свето писмо са грчким текстом поред и Нови Завет прочитан наглас, молитве и акатисти, светитељи, календар, сабори, богословље и историја, и претрага. Бесплатна су и ваша истицања, белешке и обележивачи на овом уређају, и писање у вашем дневнику.",
+   "faq.free.a2": "Purify Plus је опциона претплата која додаје алате одозго, међу њима проучавање речи, упућивања, више режима читања, слушање ван мреже, планове читања и ваше читање на сваком уређају.",
+-  "faq.roadmap.a": "Сва четири су ту. Акатисти су у Молитвама, а свака глава Библије може вам бити прочитана наглас. Пријављујете се имејлом и лозинком, или преко Google или Apple. Са налогом, дани када сте се молили по свом правилу и имена која носите у молитви прате вас на сваки уређај; са Purify Plus и ваша истицања, белешке и обележивачи. Налог, и све редове које је он направио на серверу, можете обрисати са своје",
++  "faq.roadmap.a": "Сва четири су ту. Акатисти су у Молитвама, а свака глава Новог Завета може вам бити прочитана наглас. Пријављујете се имејлом и лозинком, или преко Google или Apple. Са налогом, дани када сте се молили по свом правилу и имена која носите у молитви прате вас на сваки уређај; са Purify Plus и ваша истицања, белешке и обележивачи. Налог, и све редове које је он направио на серверу, можете обрисати са своје",
+   "faq.data.noAccount": "ваша истицања, белешке, обележивачи и дани када сте се молили остају на вашем уређају, а ми немамо копију. Обришите их и нестају.",
+   "faq.data.account": "дани када сте се молили и имена која носите чувају се са њим, а са Purify Plus и ваша истицања, белешке и обележивачи, свако иза правила које само вама допушта да их читате. Не вршимо аналитику над њима и никада их не делимо нити продајемо. Обришите налог са странице налога и сваки ред који је направио биће обрисан.",
+   "faq.data.counts": "У оба случаја водимо и анонимна бројања тога које се странице и екрани отварају, никада повезана са вашим налогом. Потпуни детаљи, са именованим сваким пољем и сваком трећом страном, изложени су на",
+diff --git a/lib/i18n/messages/tr.json b/lib/i18n/messages/tr.json
+index bdf978d77..456b4a383 100644
+--- a/lib/i18n/messages/tr.json
++++ b/lib/i18n/messages/tr.json
+@@ -4968,16 +4968,6 @@
+   "player.option.sleep": "Uyku",
+   "player.option.read": "Oku",
+   "player.read": "Oku",
+-  "player.voice": "Ses",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Purify okuma sesi",
+-  "player.voice.numbered": "Ses {n}",
+-  "player.voice.hear": "Dinle",
+-  "player.voice.hearName": "Dinle: {name}",
+-  "player.voice.gone": "Seçtiğiniz ses artık bu telefonda yok, bu yüzden {name} okuyor.",
+-  "player.voice.none": "Bu telefonda henüz şu dil için ses yok: {language}.",
+-  "player.voice.noneHow": "Telefonun konuşma ayarlarından ses eklenebilir.",
+-  "player.voice.phoneNote": "Telefonun kendi sesleri bağlantı olmadan okur.",
+   "chant.button": "İlahiyle dua",
+   "chant.ask.title": "İlahiyle dua etmek ister misiniz?",
+   "chant.ask.body": "Siz dua ederken usulca çalar.",
+@@ -5496,9 +5486,9 @@
+   "mod.care.ask": "Purify'dan kısa ve özel bir not, yardımı nerede bulabileceğiyle birlikte bu yazarın gelen kutusuna gider. Yazdıklarından hiçbir şeyi alıntılamaz.",
+   "mod.care.sent": "Özen notu gönderildi.",
+   "campaigns.notOpen": "Dua kampanyaları henüz açık değil.",
+-  "faq.free.a1": "Kütüphane ücretsizdir, hesap ve reklam olmadan: yanında Yunanca metniyle Kutsal Yazılar ve sesli okunan her bölüm, dualar ve akatistler, azizler, takvim, konsiller, teoloji ve tarih, ve arama. Bu cihazdaki vurgularınız, notlarınız ve yer imleriniz ile günlüğünüze yazmak da ücretsizdir.",
++  "faq.free.a1": "Kütüphane ücretsizdir, hesap ve reklam olmadan: yanında Yunanca metniyle Kutsal Yazılar ve sesli okunan Yeni Ahit, dualar ve akatistler, azizler, takvim, konsiller, teoloji ve tarih, ve arama. Bu cihazdaki vurgularınız, notlarınız ve yer imleriniz ile günlüğünüze yazmak da ücretsizdir.",
+   "faq.free.a2": "Purify Plus, üstüne araçlar ekleyen isteğe bağlı bir aboneliktir; bunlar arasında kelime çalışması, çapraz göndermeler, daha fazla okuma modu, çevrimdışı dinleme, okuma planları ve her cihazda okumalarınız vardır.",
+-  "faq.roadmap.a": "Dördü de burada. Akatistler Dualar bölümündedir ve Kutsal Kitap'ın her bölümü size sesli okunabilir. E-postanız ve bir parolayla ya da Google veya Apple ile giriş yaparsınız. Bir hesapla, kuralınızı dua ettiğiniz günler ve duada taşıdığınız isimler her cihazda sizi takip eder; Purify Plus ile vurgularınız, notlarınız ve yer imleriniz de. Hesabı ve onun sunucu tarafında oluşturduğu bütün satırları",
++  "faq.roadmap.a": "Dördü de burada. Akatistler Dualar bölümündedir ve Yeni Ahit'in her bölümü size sesli okunabilir. E-postanız ve bir parolayla ya da Google veya Apple ile giriş yaparsınız. Bir hesapla, kuralınızı dua ettiğiniz günler ve duada taşıdığınız isimler her cihazda sizi takip eder; Purify Plus ile vurgularınız, notlarınız ve yer imleriniz de. Hesabı ve onun sunucu tarafında oluşturduğu bütün satırları",
+   "faq.data.noAccount": "vurgularınız, notlarınız, yer imleriniz ve dua ettiğiniz günler cihazınızda kalır ve bizde kopyası olmaz. Silin, gitsinler.",
+   "faq.data.account": "dua ettiğiniz günler ve taşıdığınız isimler onunla birlikte saklanır, Purify Plus ile vurgularınız, notlarınız ve yer imleriniz de; her biri yalnızca sizin okumanıza izin veren bir kuralın ardında. Bunlar üzerinde analiz yapmayız ve onları asla paylaşmaz ya da satmayız. Hesabınızı hesap sayfanızdan silin, oluşturduğu her satır silinir.",
+   "faq.data.counts": "Her iki durumda da hangi sayfaların ve ekranların açıldığına dair, hesabınıza asla bağlanmayan anonim sayımlar da tutarız. Her alanın ve adı geçen her üçüncü tarafın yer aldığı ayrıntıların tamamı şurada anlatılır:",
+diff --git a/lib/i18n/messages/uk.json b/lib/i18n/messages/uk.json
+index 9d28a9b85..9a40bf5c2 100644
+--- a/lib/i18n/messages/uk.json
++++ b/lib/i18n/messages/uk.json
+@@ -5123,16 +5123,6 @@
+   "player.option.sleep": "Таймер сну",
+   "player.option.read": "Читати",
+   "player.read": "Читати",
+-  "player.voice": "Голос",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Голос читання Purify",
+-  "player.voice.numbered": "Голос {n}",
+-  "player.voice.hear": "Послухати",
+-  "player.voice.hearName": "Послухати: {name}",
+-  "player.voice.gone": "Обраного голосу більше немає на цьому телефоні, тож читає {name}.",
+-  "player.voice.none": "На цьому телефоні ще немає голосу для мови: {language}.",
+-  "player.voice.noneHow": "Голос можна додати в налаштуваннях синтезу мовлення телефону.",
+-  "player.voice.phoneNote": "Голоси самого телефону читають без підключення.",
+   "chant.button": "Молитва зі співом",
+   "chant.ask.title": "Молитися зі співом?",
+   "chant.ask.body": "Звучить тихо, поки ви молитеся.",
+@@ -5655,9 +5645,9 @@
+   "mod.care.ask": "Коротка особиста записка від Purify надійде у вхідні цього автора, з тим, де знайти допомогу. У ній не цитується нічого з написаного.",
+   "mod.care.sent": "Записку турботи надіслано.",
+   "campaigns.notOpen": "Молитовні кампанії ще не відкриті.",
+-  "faq.free.a1": "Бібліотека безкоштовна, без облікового запису й без реклами: Писання з грецьким текстом поруч і кожен розділ, прочитаний вголос, молитви й акафісти, святі, календар, собори, богослов'я та історія, і пошук. Безкоштовні також ваші виділення, нотатки й закладки на цьому пристрої, і записи у вашому щоденнику.",
++  "faq.free.a1": "Бібліотека безкоштовна, без облікового запису й без реклами: Писання з грецьким текстом поруч і Новий Завіт, прочитаний вголос, молитви й акафісти, святі, календар, собори, богослов'я та історія, і пошук. Безкоштовні також ваші виділення, нотатки й закладки на цьому пристрої, і записи у вашому щоденнику.",
+   "faq.free.a2": "Purify Plus: необов'язкова підписка, яка додає інструменти згори, серед них вивчення слова, перехресні посилання, більше режимів читання, слухання без мережі, плани читання і ваше читання на кожному пристрої.",
+-  "faq.roadmap.a": "Усі чотири вже тут. Акафісти є в розділі «Молитви», і кожен розділ Біблії вам можуть прочитати вголос. Ви входите з електронною поштою й паролем або через Google чи Apple. З обліковим записом дні, коли ви молилися за своїм правилом, і імена, які ви носите в молитві, йдуть за вами на кожен пристрій; з Purify Plus також ваші виділення, нотатки й закладки. Ви можете видалити обліковий запис і всі створені ним записи на сервері на своїй",
++  "faq.roadmap.a": "Усі чотири вже тут. Акафісти є в розділі «Молитви», і кожен розділ Нового Завіту вам можуть прочитати вголос. Ви входите з електронною поштою й паролем або через Google чи Apple. З обліковим записом дні, коли ви молилися за своїм правилом, і імена, які ви носите в молитві, йдуть за вами на кожен пристрій; з Purify Plus також ваші виділення, нотатки й закладки. Ви можете видалити обліковий запис і всі створені ним записи на сервері на своїй",
+   "faq.data.noAccount": "ваші виділення, нотатки, закладки й дні, коли ви молилися, лишаються на вашому пристрої, і ми не маємо їхньої копії. Зітріть їх, і їх не стане.",
+   "faq.data.account": "дні, коли ви молилися, і імена, які ви носите, зберігаються разом із ним, а з Purify Plus також ваші виділення, нотатки й закладки, кожне за правилом, яке дозволяє читати їх лише вам. Ми не проводимо над ними аналітики й ніколи не передаємо і не продаємо їх. Видаліть обліковий запис на сторінці облікового запису, і кожен створений ним рядок буде видалено.",
+   "faq.data.counts": "В обох випадках ми також ведемо анонімний підрахунок того, які сторінки й екрани відкриваються, ніколи не пов'язаний із вашим обліковим записом. Повні відомості, з кожним полем і кожною названою третьою стороною, викладено на",
+diff --git a/lib/i18n/messages/ur.json b/lib/i18n/messages/ur.json
+index 20c3fa8fe..04fd4acc2 100644
+--- a/lib/i18n/messages/ur.json
++++ b/lib/i18n/messages/ur.json
+@@ -4968,16 +4968,6 @@
+   "player.option.sleep": "سلیپ ٹائمر",
+   "player.option.read": "پڑھیں",
+   "player.read": "پڑھیں",
+-  "player.voice": "آواز",
+-  "player.voice.heart": "Heart",
+-  "player.voice.heartAbout": "Purify کی پڑھنے والی آواز",
+-  "player.voice.numbered": "آواز {n}",
+-  "player.voice.hear": "سنیں",
+-  "player.voice.hearName": "{name} سنیں",
+-  "player.voice.gone": "آپ کی چنی ہوئی آواز اب اس فون پر نہیں ہے، اس لیے {name} پڑھتی ہے۔",
+-  "player.voice.none": "اس فون پر ابھی {language} کے لیے کوئی آواز نہیں ہے۔",
+-  "player.voice.noneHow": "فون کی اسپیچ سیٹنگز میں آواز شامل کی جا سکتی ہے۔",
+-  "player.voice.phoneNote": "فون کی اپنی آوازیں انٹرنیٹ کے بغیر پڑھتی ہیں۔",
+   "chant.button": "ترتیل کے ساتھ دعا",
+   "chant.ask.title": "ترتیل کے ساتھ دعا؟",
+   "chant.ask.body": "آپ کی دعا کے دوران یہ آہستہ بجتا ہے۔",
+@@ -5496,9 +5486,9 @@
+   "mod.care.ask": "Purify کی طرف سے ایک مختصر نجی پیغام اس لکھنے والے کے اِن باکس میں جاتا ہے، جس میں مدد ملنے کی جگہ درج ہے۔ یہ ان کی لکھی ہوئی کوئی بات نقل نہیں کرتا۔",
+   "mod.care.sent": "خیال کا پیغام بھیج دیا گیا۔",
+   "campaigns.notOpen": "دعائیہ مہمات ابھی کھلی نہیں ہیں۔",
+-  "faq.free.a1": "لائبریری مفت ہے، بغیر اکاؤنٹ اور بغیر اشتہارات کے: کلامِ مقدس ساتھ میں یونانی متن کے ساتھ اور ہر باب بلند آواز میں پڑھا ہوا، دعائیں اور اکاتھِست، مقدسین، کیلنڈر، کونسلیں، الٰہیات اور تاریخ، اور تلاش۔ اس آلے پر آپ کی ہائی لائٹس، نوٹس اور بک مارکس، اور اپنی ڈائری میں لکھنا بھی مفت ہے۔",
++  "faq.free.a1": "لائبریری مفت ہے، بغیر اکاؤنٹ اور بغیر اشتہارات کے: کلامِ مقدس ساتھ میں یونانی متن کے ساتھ اور عہدِ جدید بلند آواز میں پڑھا ہوا، دعائیں اور اکاتھِست، مقدسین، کیلنڈر، کونسلیں، الٰہیات اور تاریخ، اور تلاش۔ اس آلے پر آپ کی ہائی لائٹس، نوٹس اور بک مارکس، اور اپنی ڈائری میں لکھنا بھی مفت ہے۔",
+   "faq.free.a2": "Purify Plus ایک اختیاری سبسکرپشن ہے جو اوپر سے اوزار شامل کرتی ہے، جن میں لفظ کا مطالعہ، حوالہ جات، مطالعے کے مزید انداز، آف لائن سننا، مطالعے کے منصوبے اور ہر ڈیوائس پر آپ کا مطالعہ شامل ہیں۔",
+-  "faq.roadmap.a": "چاروں یہاں موجود ہیں۔ اکاتھِست دعاؤں میں ہیں، اور بائبل کا ہر باب آپ کو بلند آواز میں پڑھ کر سنایا جا سکتا ہے۔ آپ اپنی ای میل اور پاس ورڈ سے، یا Google یا Apple کے ذریعے سائن اِن کرتے ہیں۔ اکاؤنٹ کے ساتھ، وہ دن جب آپ نے اپنا ضابطہ دعا میں ادا کیا اور وہ نام جو آپ دعا میں ساتھ رکھتے ہیں، ہر آلے پر آپ کے ساتھ جاتے ہیں؛ Purify Plus کے ساتھ آپ کی ہائی لائٹس، نوٹس اور بک مارکس بھی۔ آپ اپنا اکاؤنٹ، اور سرور پر اُس کی بنائی ہوئی ہر قطار، اپنے",
++  "faq.roadmap.a": "چاروں یہاں موجود ہیں۔ اکاتھِست دعاؤں میں ہیں، اور عہدِ جدید کا ہر باب آپ کو بلند آواز میں پڑھ کر سنایا جا سکتا ہے۔ آپ اپنی ای میل اور پاس ورڈ سے، یا Google یا Apple کے ذریعے سائن اِن کرتے ہیں۔ اکاؤنٹ کے ساتھ، وہ دن جب آپ نے اپنا ضابطہ دعا میں ادا کیا اور وہ نام جو آپ دعا میں ساتھ رکھتے ہیں، ہر آلے پر آپ کے ساتھ جاتے ہیں؛ Purify Plus کے ساتھ آپ کی ہائی لائٹس، نوٹس اور بک مارکس بھی۔ آپ اپنا اکاؤنٹ، اور سرور پر اُس کی بنائی ہوئی ہر قطار، اپنے",
+   "faq.data.noAccount": "آپ کی ہائی لائٹس، نوٹس، بک مارکس اور وہ دن جب آپ نے دعا کی، آپ کے آلے پر ہی رہتے ہیں، اور ہمارے پاس ان کی کوئی نقل نہیں۔ انہیں مٹا دیں تو وہ ختم ہو جاتے ہیں۔",
+   "faq.data.account": "وہ دن جب آپ نے دعا کی اور وہ نام جو آپ ساتھ رکھتے ہیں، اسی کے ساتھ محفوظ رہتے ہیں، اور Purify Plus کے ساتھ آپ کی ہائی لائٹس، نوٹس اور بک مارکس بھی، ہر ایک ایسے اصول کے پیچھے جو صرف آپ کو انہیں پڑھنے دیتا ہے۔ ہم ان پر کوئی تجزیہ نہیں چلاتے، اور نہ کبھی انہیں شیئر کرتے ہیں نہ بیچتے ہیں۔ اپنے اکاؤنٹ کے صفحے سے اکاؤنٹ حذف کریں تو اس کی بنائی ہوئی ہر قطار حذف ہو جاتی ہے۔",
+   "faq.data.counts": "دونوں صورتوں میں ہم اس کی گمنام گنتی بھی رکھتے ہیں کہ کون سے صفحات اور اسکرینیں کھولی جاتی ہیں، جو کبھی آپ کے اکاؤنٹ سے نہیں جوڑی جاتی۔ مکمل تفصیل، ہر خانے اور ہر فریقِ ثالث کے نام کے ساتھ، درج ہے یہاں:",
+diff --git a/lib/whatsNew/__tests__/heartOnlyLines.test.ts b/lib/whatsNew/__tests__/heartOnlyLines.test.ts
+new file mode 100644
+index 000000000..beac20eae
+--- /dev/null
++++ b/lib/whatsNew/__tests__/heartOnlyLines.test.ts
+@@ -0,0 +1,109 @@
++// The words readers are given say what Heart does, and nothing of the voices
++// that are gone (his word of 2026-11-16, about 22:35 UTC: "remove locally LLM
++// voices and full drop ... (only leave one the standard prerecorded voices)").
++// The pre-build gate's part 4: no line promises what is not true.
++//
++// What it holds:
++//   the 1.9 note      (docs/plans/v1.9/patch-note-1.9.json, and the two copies
++//                     the apps carry, data/changelog/entries.json and
++//                     patches.json) names no phone's voice, no choice of
++//                     voices and no voice in Purify Plus; and while Heart has
++//                     recorded no text beside the Bible (data/listen/index.json
++//                     empty), it says no text beside the Bible is read aloud
++//   the drop          (docs/plans/v1.9/drop.json) names Emma, Michael and
++//                     Fenrir only to say they are dropped, and no piece it
++//                     sends says a text beside the Bible is read aloud while
++//                     none is
++//   the FAQ           says every chapter of the Bible is read aloud only once
++//                     Heart has read every one: today the New Testament
++//
++// What a reader would notice if this broke: a note that promises the saints'
++// lives read aloud with no Listen on any life, or a voice of their choosing
++// that the app does not have.
++
++import fs from "node:fs";
++import path from "node:path";
++
++import { describe, expect, it } from "vitest";
++
++import books from "@/data/bible/books.json";
++import entries from "@/data/changelog/entries.json";
++import patches from "@/data/changelog/patches.json";
++import carriedTexts from "@/data/listen/index.json";
++import carriedChapters from "@/data/readAloud/index.json";
++
++const ROOT = process.cwd();
++const json = <T>(rel: string) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8")) as T;
++
++/** The voices that are gone, as a line would name them. */
++const GONE = [/phone'?s? (?:own )?voices?/i, /\bchoose (?:a|your) voice\b/i, /\bvoice sheet\b/i, /\bvoices? in purify plus\b/i, /\bplus voices?\b/i, /\bfenrir\b/i, /\bemma\b/i];
++/** A line that says a text beside the Bible is read aloud. */
++const TEXTS_ALOUD = /every text read aloud|(?:lives|councils|theology|history|works)[^.]{0,80}read aloud/i;
++
++const noTextRecorded = (carriedTexts as string[]).length === 0;
++
++type NoteFile = { version: string; items: { text: string }[] };
++const note = json<NoteFile>("docs/plans/v1.9/patch-note-1.9.json");
++const entry = (entries as unknown as { version: string; items?: { text: string }[] }[]).find((e) => e.version === "1.9");
++const patch = (patches as unknown as { version: string; intro?: string; sections?: { heading: string; body: string }[] }[]).find((e) => e.version === "1.9");
++
++describe("the 1.9 note, and the copies the apps carry", () => {
++  const lines: [string, string][] = [
++    ...note.items.map((i, n) => [`patch-note-1.9.json item ${n}`, i.text] as [string, string]),
++    ...(entry?.items ?? []).map((i, n) => [`entries.json 1.9 item ${n}`, i.text] as [string, string]),
++    ...(patch?.sections ?? []).map((s) => [`patches.json 1.9 "${s.heading}"`, s.body] as [string, string]),
++    ["patches.json 1.9 intro", patch?.intro ?? ""],
++  ];
++
++  it("is found in all three places", () => {
++    expect(note.version).toBe("1.9");
++    expect(entry).toBeTruthy();
++    expect(patch).toBeTruthy();
++  });
++
++  it("names no phone's voice, no choice of voices and no voice in Purify Plus", () => {
++    const said = lines.flatMap(([where, text]) => GONE.filter((re) => re.test(text)).map((re) => `${where}: ${re.source}`));
++    expect(said).toEqual([]);
++  });
++
++  it.runIf(noTextRecorded)("says no text beside the Bible is read aloud while Heart has recorded none", () => {
++    expect(lines.filter(([, text]) => TEXTS_ALOUD.test(text)).map(([where]) => where)).toEqual([]);
++  });
++
++  it("keeps its listening line, word for word, in the copy the apps carry", () => {
++    const listening = note.items.find((i) => i.text.startsWith("Listening:"));
++    expect(listening?.text).toBe("Listening: one card at rest and a small pill as you scroll, and your place kept in every book.");
++    expect(entry?.items?.some((i) => i.text === listening?.text)).toBe(true);
++  });
++});
++
++describe("the drop for 1.9", () => {
++  type Drop = { pieces: { id: string; channel: string; text?: string; title?: string; waits?: string }[]; points: { text: string }[]; also: { text: string }[] };
++  const drop = json<Drop>("docs/plans/v1.9/drop.json");
++
++  it("names the three Plus voices only to say they are dropped, in every piece and step", () => {
++    const named = drop.pieces
++      .filter((p) => /\bfenrir\b|\bemma\b/i.test(`${p.title ?? ""} ${p.text ?? ""} ${p.waits ?? ""}`))
++      .filter((p) => !/\bdropped\b/i.test(p.text ?? ""))
++      .map((p) => p.id);
++    expect(named).toEqual([]);
++  });
++
++  it.runIf(noTextRecorded)("sends no line that says a text beside the Bible is read aloud while none is", () => {
++    const sent = [...drop.points.map((p) => p.text), ...drop.also.map((a) => a.text), ...drop.pieces.filter((p) => p.channel !== "step").map((p) => p.text ?? "")];
++    expect(sent.filter((t) => TEXTS_ALOUD.test(t))).toEqual([]);
++  });
++});
++
++describe("the FAQ", () => {
++  const recorded = new Set(carriedChapters as string[]);
++  const everyChapter = (books as { slug: string; chapters: number }[]).every((b) => Array.from({ length: b.chapters }, (_, i) => recorded.has(`${b.slug}/${i + 1}`)).every(Boolean));
++  const en = json<Record<string, string>>("lib/i18n/messages/en.json");
++
++  it.runIf(!everyChapter)("says only the New Testament is read aloud while the Old is not", () => {
++    for (const key of ["faq.free.a1", "faq.roadmap.a"]) {
++      expect(en[key], key).not.toMatch(/every chapter (?:of the Bible )?(?:can be )?read aloud/i);
++      expect(en[key], key).toContain("New Testament");
++    }
++  });
++});
+-- 
+2.43.0
+

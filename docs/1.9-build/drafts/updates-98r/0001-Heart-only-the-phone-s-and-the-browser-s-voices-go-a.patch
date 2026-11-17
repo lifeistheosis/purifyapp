@@ -1,0 +1,4190 @@
+From 2884cc67bd1d734a5f4d7f37bcff8db1862221cb Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Mon, 16 Nov 2026 23:01:16 +0000
+Subject: [PATCH 1/3] Heart only: the phone's and the browser's voices go, and
+ the Voice sheet with them (tests follow)
+
+His word of 2026-11-16, about 22:35 UTC: "remove locally LLM voices ...
+(only leave one the standard prerecorded voices)". Listen stands only
+where Heart's recording is: a chapter of the English Bible by
+lib/readAloud/chapters.ts (the New Testament today), a library text by
+lib/listen/recordings.ts (none yet), never over a downloaded Bible.
+lib/listen/speech/ is gone, the audio store has no spoken session, the
+player's steps and Now Playing know no spoken address, and the Voice
+sheet, its mount and the player's Voice row are gone. The native
+PurifySpeech files and their registration are untouched.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VuYTwaMDRMVE18BeTfEz4w
+---
+ components/bible/ChapterReader.tsx            |   8 -
+ components/bible/ChapterScreen.tsx            |   8 +-
+ components/bible/DownloadedChapter.tsx        |  22 +-
+ components/bible/MobileChapterPill.tsx        |  18 +-
+ components/bible/ReadAloud.tsx                |  70 +--
+ components/layout/RootFrame.tsx               |   5 -
+ components/player/NowPlayingSheet.tsx         |  21 +-
+ components/player/PlayerMore.tsx              |  31 +-
+ components/player/PlayerSteps.tsx             |  19 -
+ components/player/VoiceSheet.tsx              | 246 ----------
+ components/reading/ListenHere.tsx             | 182 +-------
+ .../speech/__tests__/enginePlugin.test.ts     |  52 ---
+ .../speech/__tests__/nativeSpeech.test.ts     | 132 ------
+ lib/listen/speech/__tests__/session.test.ts   | 438 ------------------
+ lib/listen/speech/__tests__/spoken.test.ts    | 118 -----
+ lib/listen/speech/__tests__/timeline.test.ts  | 112 -----
+ .../speech/__tests__/voiceChoice.test.ts      |  72 ---
+ .../speech/__tests__/voiceSheet.test.ts       | 253 ----------
+ lib/listen/speech/context.ts                  | 105 -----
+ lib/listen/speech/engine.ts                   | 266 -----------
+ lib/listen/speech/pageText.ts                 |  61 ---
+ lib/listen/speech/session.ts                  | 301 ------------
+ lib/listen/speech/sheet.ts                    |  42 --
+ lib/listen/speech/speak.ts                    | 209 ---------
+ lib/listen/speech/spoken.ts                   |  54 ---
+ lib/listen/speech/timeline.ts                 | 151 ------
+ lib/listen/speech/voiceChoice.ts              | 118 -----
+ lib/listen/speech/voices.ts                   | 136 ------
+ lib/player/steps.ts                           |   8 -
+ lib/prayers/persistentAudioStore.ts           | 152 +-----
+ lib/readAloud/play.ts                         |  58 +--
+ 31 files changed, 73 insertions(+), 3395 deletions(-)
+ delete mode 100644 components/player/VoiceSheet.tsx
+ delete mode 100644 lib/listen/speech/__tests__/enginePlugin.test.ts
+ delete mode 100644 lib/listen/speech/__tests__/nativeSpeech.test.ts
+ delete mode 100644 lib/listen/speech/__tests__/session.test.ts
+ delete mode 100644 lib/listen/speech/__tests__/spoken.test.ts
+ delete mode 100644 lib/listen/speech/__tests__/timeline.test.ts
+ delete mode 100644 lib/listen/speech/__tests__/voiceChoice.test.ts
+ delete mode 100644 lib/listen/speech/__tests__/voiceSheet.test.ts
+ delete mode 100644 lib/listen/speech/context.ts
+ delete mode 100644 lib/listen/speech/engine.ts
+ delete mode 100644 lib/listen/speech/pageText.ts
+ delete mode 100644 lib/listen/speech/session.ts
+ delete mode 100644 lib/listen/speech/sheet.ts
+ delete mode 100644 lib/listen/speech/speak.ts
+ delete mode 100644 lib/listen/speech/spoken.ts
+ delete mode 100644 lib/listen/speech/timeline.ts
+ delete mode 100644 lib/listen/speech/voiceChoice.ts
+ delete mode 100644 lib/listen/speech/voices.ts
+
+diff --git a/components/bible/ChapterReader.tsx b/components/bible/ChapterReader.tsx
+index fda41e5bb..f82ba4c73 100644
+--- a/components/bible/ChapterReader.tsx
++++ b/components/bible/ChapterReader.tsx
+@@ -35,7 +35,6 @@ import { useCandlelightWorn } from "@/components/theme/useWornPalette";
+ import { cn } from "@/lib/cn";
+ import { reportNowReading } from "@/lib/profile/client";
+ import { useUndo } from "@/lib/ui/useUndo";
+-import { chapterKey, setPageVerses } from "@/lib/listen/speech/pageText";
+ import { UndoBar } from "@/components/ui/UndoBar";
+ 
+ /** What was read for one chapter, tagged with the chapter it belongs to. */
+@@ -100,13 +99,6 @@ export function ChapterReader({
+   useEffect(() => {
+     reportNowReading(`${book}/${chapter}`);
+   }, [book, chapter]);
+-  // The words Listen reads in the phone's voice (1.9, build 95 note 25): the
+-  // page's own, each verse where it stands (lib/listen/speech/pageText.ts).
+-  useEffect(() => {
+-    const at = chapterKey(book, chapter);
+-    setPageVerses(at, verses.map((v) => ({ text: v.text, n: v.n, anchor: `v${v.n}` })));
+-    return () => setPageVerses(at, null);
+-  }, [book, chapter, verses]);
+   // A verse marked or unmarked by a double tap is offered back for a moment (1.8).
+   const quick = useUndo();
+   const has = useMemo(() => new Set(commentaryVerses ?? []), [commentaryVerses]);
+diff --git a/components/bible/ChapterScreen.tsx b/components/bible/ChapterScreen.tsx
+index 0af1eebaa..d5de2edc2 100644
+--- a/components/bible/ChapterScreen.tsx
++++ b/components/bible/ChapterScreen.tsx
+@@ -193,11 +193,11 @@ export function ChapterScreen({
+           slug={slug}
+           chapter={chapter}
+           totalVerses={verses}
+-          // Listen reads the words the page shows (1.9, build 95 note 25): the
+-          // English, or a downloaded Bible's in the phone's voice. Not over a
++          // Listen plays Heart's recording of the English where it has one
++          // (his word of 2026-11-16: the one prerecorded voice). Not over a
+           // licensed translation, whose words are not ours to have read aloud,
+-          // nor a page whose verses stand in another chapter (as the
+-          // computer's toolbar has it).
++          // nor a downloaded Bible, nor a page whose verses stand in another
++          // chapter (as the computer's toolbar has it).
+           listen={listens}
+           bible={downloaded?.bible ?? null}
+           textKey={downloaded ? `${downloaded.bible.id}:${downloaded.text.state}` : undefined}
+diff --git a/components/bible/DownloadedChapter.tsx b/components/bible/DownloadedChapter.tsx
+index ba6b4e7d4..9542f6e67 100644
+--- a/components/bible/DownloadedChapter.tsx
++++ b/components/bible/DownloadedChapter.tsx
+@@ -25,7 +25,7 @@
+ // the start of each line, on the right), in the Naskh the serif stack carries.
+ 
+ import Link from "next/link";
+-import { Fragment, useEffect } from "react";
++import { Fragment } from "react";
+ 
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+ import { BIBLE_START_SIZE, FONT_CLASSES, SIZE_CLASSES, useReaderPrefs } from "@/components/reader/ReaderPrefs";
+@@ -38,7 +38,6 @@ import { useCandlelightWorn } from "@/components/theme/useWornPalette";
+ import { cn } from "@/lib/cn";
+ import { textDir } from "@/lib/i18n/textDir";
+ import { useReadingLine } from "@/lib/reader/useReadingLine";
+-import { chapterKey, setPageVerses } from "@/lib/listen/speech/pageText";
+ 
+ export function DownloadedChapter({
+   bible,
+@@ -59,26 +58,7 @@ export function DownloadedChapter({
+   const candle = useCandlelightWorn();
+   useReadingLine(candle);
+   const greek = bible.textLang === "grc";
+-  // The words Listen reads in the phone's voice (1.9, build 95 note 25): this
+-  // Bible's own, in its own numbering, each verse where it stands on the page.
+   const page = text.state === "ready" ? text.page : null;
+-  useEffect(() => {
+-    if (!page || page.elsewhere) return;
+-    const at = chapterKey(book, chapter, bible.id);
+-    setPageVerses(
+-      at,
+-      page.sections.flatMap((section) =>
+-        section.verses
+-          .filter(([, words]) => words.trim())
+-          .map(([label, words]) => ({
+-            text: words,
+-            ...(section.chapter === chapter && typeof label === "number" ? { n: label } : {}),
+-            anchor: verseAnchor(section.chapter, chapter, label),
+-          })),
+-      ),
+-    );
+-    return () => setPageVerses(at, null);
+-  }, [page, book, chapter, bible.id]);
+ 
+   if (text.state === "loading") {
+     return (
+diff --git a/components/bible/MobileChapterPill.tsx b/components/bible/MobileChapterPill.tsx
+index 98ab0cbf5..84eaaf0ca 100644
+--- a/components/bible/MobileChapterPill.tsx
++++ b/components/bible/MobileChapterPill.tsx
+@@ -13,13 +13,11 @@ import { AmbienceButton } from "@/components/player/AmbienceButton";
+ import { cn } from "@/lib/cn";
+ import { readingOfSrc, useHasReadAloud } from "@/lib/readAloud/chapters";
+ import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
+-import { useCanSpeak } from "@/lib/listen/speech/voices";
+ import { useOverlayOpen } from "@/lib/ui/overlay";
+ import { EVERYTHING, useOwnPlayer } from "@/lib/player/pagePlayer";
+ import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+ import { useIsNative } from "@/lib/platform/native";
+ import { ReaderDock } from "./ReaderDock";
+-import { spokenOf } from "@/lib/listen/speech/spoken";
+ import { listenToChapter } from "@/lib/readAloud/play";
+ import { useReadingComing } from "@/lib/readAloud/rollOn";
+ 
+@@ -144,7 +142,7 @@ export function MobileChapterPill({
+   totalVerses: number;
+   /** Whether Listen may read this page: not a licensed translation's (1.9). The pill and the dock both keep it. */
+   listen?: boolean;
+-  /** The downloaded Bible the page shows the chapter in, read by the phone's voice (1.9), or null for the English. */
++  /** The downloaded Bible the page shows the chapter in, or null for the English: no Listen over it, since Heart reads the English. */
+   bible?: DownloadableBible | null;
+   /** What the chapter is shown in, when not the English: the running line looks at the verses again when it changes. */
+   textKey?: string;
+@@ -156,11 +154,11 @@ export function MobileChapterPill({
+   const next = nextChapter(slug, chapter);
+   const [sheetOpen, setSheetOpen] = useState(false);
+   const covered = useOverlayOpen();
+-  // Listen: the English where it has its recording, and every chapter, in the
+-  // English or a downloaded Bible, where the device can speak (1.9, build 95 note 25).
++  // Listen: the English where Heart's recording of it is (the New Testament
++  // today), the only voice since his word of 2026-11-16; never over a
++  // downloaded Bible, which Heart does not read.
+   const recorded = useHasReadAloud(slug, chapter);
+-  const speaks = useCanSpeak();
+-  const reads = listen && (bible ? speaks : recorded || speaks);
++  const reads = listen && !bible && recorded;
+   // The dock: the player and the chapter in one card while anything is loaded.
+   const dockShows = useDockShows();
+   useOwnPlayer(dockShows ? HOSTS_EVERYTHING : NOTHING);
+@@ -173,16 +171,12 @@ export function MobileChapterPill({
+   // opening, lib/readAloud/week.ts), and the dock then offered Listen for the
+   // chapter already playing.
+   const loaded = readingOfSrc(src);
+-  const said = spokenOf(src);
+   // A reading on its way to this chapter (a chapter that ended rolling on, the
+   // player's next and previous) counts as loaded: the page comes a moment
+   // before its reading does, and the dock offered Listen for that moment, then
+   // Speed (lib/readAloud/rollOn.ts, readingComing).
+   const coming = useReadingComing(slug, chapter);
+-  const hereLoaded =
+-    coming ||
+-    (!bible && loaded?.book === slug && loaded.chapter === chapter) ||
+-    (said?.kind === "bible" && said.book === slug && said.chapter === chapter && said.bible === (bible?.id ?? null));
++  const hereLoaded = coming || (!bible && loaded?.book === slug && loaded.chapter === chapter);
+   const listenHere = reads && !hereLoaded;
+   // How the name fits (the doc above): 0 as drawn, 1 with Listen's word given
+   // way and the name on up to two lines, 2 with the controls on a row of their
+diff --git a/components/bible/ReadAloud.tsx b/components/bible/ReadAloud.tsx
+index 503e439d9..569ed00f2 100644
+--- a/components/bible/ReadAloud.tsx
++++ b/components/bible/ReadAloud.tsx
+@@ -22,15 +22,10 @@ import { Pause } from "@/components/ui/icons/Pause";
+ import { Play } from "@/components/ui/icons/Play";
+ import { nextChapter } from "@/lib/bible/books";
+ import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
+-import { anchorsOf } from "@/lib/listen/speech/pageText";
+-import { onSpokenEnd } from "@/lib/listen/speech/speak";
+-import { spokenBibleSrc, spokenOf } from "@/lib/listen/speech/spoken";
+-import { useCanSpeak } from "@/lib/listen/speech/voices";
+-import { captionLines, lineAt } from "@/lib/player/captions";
+ import { hasReadAloud, readAloudManifest, readingOfSrc, useHasReadAloud, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
+ import { listenToChapter } from "@/lib/readAloud/play";
+ import { askToListenAt, readingCame, takeListenAsk } from "@/lib/readAloud/rollOn";
+-import { currentTimeNow, getAudioSnapshot, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
++import { currentTimeNow, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+ import { cn } from "@/lib/cn";
+ import { goToReadingPlace, inReadingZone, visibleBand } from "@/lib/ui/readingPlace";
+ 
+@@ -46,28 +41,26 @@ const HANDS_OFF_MS = 4000;
+  * plays (the week's readings can save today's on opening,
+  * lib/readAloud/week.ts), and by address the page then lost it, Listen
+  * offered again, the verse no longer following the voice, and no rolling on
+- * into the next chapter. The phone's voice (1.9, build 95 note 25) by its
+- * spoken address, which names the Bible too (lib/listen/speech/spoken.ts).
++ * into the next chapter. Never a chapter shown in a downloaded Bible: Heart
++ * reads the English.
+  */
+ function useThisChapter(book: string, chapter: number, bible: string | null = null) {
+   const audio = usePersistentAudio();
+   const reading = readingOfSrc(audio.src);
+-  const said = spokenOf(audio.src);
+-  const spoken = said?.kind === "bible" && said.book === book && said.chapter === chapter && said.bible === bible;
+-  const loaded = spoken || (!bible && reading?.book === book && reading.chapter === chapter);
+-  return { audio, loaded, spoken, playing: loaded && audio.playing };
++  const loaded = !bible && reading?.book === book && reading.chapter === chapter;
++  return { audio, loaded, playing: loaded && audio.playing };
+ }
+ 
+ /**
+- * Whether a chapter can be listened to (1.9, build 95 note 25): the English
+- * where it has its recording, and every chapter, in the English or a Bible the
+- * reader downloaded, where the device can speak (the phone's voices, free for
+- * every reader, his "all recs" of 2026-11-13).
++ * Whether a chapter can be listened to: the English where Heart's recording
++ * of it is (lib/readAloud/chapters.ts, the New Testament today), the only
++ * voice since his word of 2026-11-16 (about 22:35 UTC: "only leave one the
++ * standard prerecorded voices"). Never over a downloaded Bible, which Heart
++ * does not read.
+  */
+ function useListens(book: string, chapter: number, bible: DownloadableBible | null): boolean {
+   const recorded = useHasReadAloud(book, chapter);
+-  const speaks = useCanSpeak();
+-  return bible ? speaks : recorded || speaks;
++  return !bible && recorded;
+ }
+ 
+ /**
+@@ -140,7 +133,7 @@ export function ReadAloudPillButton({
+   chapter: number;
+   title: string;
+   wordGivesWay?: boolean;
+-  /** The downloaded Bible the page shows the chapter in: the phone's voice reads it (1.9). */
++  /** The downloaded Bible the page shows the chapter in: no Listen over it, since Heart reads the English. */
+   bible?: DownloadableBible | null;
+ }) {
+   const { t } = useTranslate();
+@@ -201,7 +194,7 @@ export function ReadAloudFollow({ book, chapter, bible = null }: { book: string;
+   const { t } = useTranslate();
+   const router = useRouter();
+   const bibleId = bible?.id ?? null;
+-  const { audio, loaded, spoken, playing } = useThisChapter(book, chapter, bibleId);
++  const { audio, loaded, playing } = useThisChapter(book, chapter, bibleId);
+   const manifest = useRef<ReadAloudManifest | null>(null);
+   const lastHand = useRef(0);
+   // The website's list can name this chapter after the screen opened (in the apps): the effects below run again then.
+@@ -215,11 +208,9 @@ export function ReadAloudFollow({ book, chapter, bible = null }: { book: string;
+     void listenToChapter({ book, chapter, title: `${t(`bible.books.${book}`)} ${chapter}`, t, bible }).finally(() => readingCame(book, chapter));
+   }, [book, chapter, t, available, bible]);
+ 
+-  // The reading ended at its last verse: on into the next chapter, if it has
+-  // one. A recording, where the next has one; the phone's voice, always, read
+-  // in the Bible the reader reads (told by the voice's own end, since its clock
+-  // does not stop exactly at its length).
+-  const ended = loaded && !spoken && !audio.playing && audio.duration > 0 && audio.currentTime >= audio.duration - 0.3;
++  // The reading ended at its last verse: on into the next chapter, where the
++  // next has its recording.
++  const ended = loaded && !audio.playing && audio.duration > 0 && audio.currentTime >= audio.duration - 0.3;
+   useEffect(() => {
+     if (!ended) return;
+     const next = nextChapter(book, chapter);
+@@ -227,16 +218,6 @@ export function ReadAloudFollow({ book, chapter, bible = null }: { book: string;
+     if (!askToListenAt(next.slug, next.chapter)) return;
+     router.push(`/bible/${next.slug}/${next.chapter}`);
+   }, [ended, book, chapter, router]);
+-  useEffect(
+-    () =>
+-      onSpokenEnd((src) => {
+-        if (src !== spokenBibleSrc(book, chapter, bibleId)) return;
+-        const next = nextChapter(book, chapter);
+-        if (!next || !askToListenAt(next.slug, next.chapter)) return;
+-        router.push(`/bible/${next.slug}/${next.chapter}`);
+-      }),
+-    [book, chapter, bibleId, router],
+-  );
+ 
+   useEffect(() => {
+     if (!recorded) return;
+@@ -281,19 +262,10 @@ export function ReadAloudFollow({ book, chapter, bible = null }: { book: string;
+       }
+     };
+     const loop = () => {
+-      if (spoken) {
+-        // The phone's voice: the verse it is on, by the player's own lines,
+-        // lit where it stands on the page (a downloaded Bible's places are its own).
+-        const s = getAudioSnapshot();
+-        const at = s.captions?.length ? lineAt(captionLines(s.captions, s.duration), currentTimeNow()) : -1;
+-        const place = at >= 0 ? (anchorsOf(s.src)?.[at] ?? (typeof s.captions?.[at]?.n === "number" ? `v${s.captions[at].n}` : undefined)) : undefined;
+-        light(place ? document.getElementById(place) : null);
+-      } else {
+-        const m = manifest.current;
+-        if (m) {
+-          const n = verseAt(m, currentTimeNow());
+-          light(n ? document.getElementById(`v${n}`) : null);
+-        }
++      const m = manifest.current;
++      if (m) {
++        const n = verseAt(m, currentTimeNow());
++        light(n ? document.getElementById(`v${n}`) : null);
+       }
+       raf = requestAnimationFrame(loop);
+     };
+@@ -302,7 +274,7 @@ export function ReadAloudFollow({ book, chapter, bible = null }: { book: string;
+       cancelAnimationFrame(raf);
+       light(null);
+     };
+-  }, [playing, spoken]);
++  }, [playing]);
+ 
+   return null;
+ }
+diff --git a/components/layout/RootFrame.tsx b/components/layout/RootFrame.tsx
+index c7ef7c0f4..25fa0500f 100644
+--- a/components/layout/RootFrame.tsx
++++ b/components/layout/RootFrame.tsx
+@@ -45,7 +45,6 @@ import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
+ import { TestersMark } from "@/components/onboarding/TestersMark";
+ import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
+ import { AmbienceSheet } from "@/components/player/AmbienceSheet";
+-import { VoiceSheet } from "@/components/player/VoiceSheet";
+ import { NowPlayingSheet } from "@/components/player/NowPlayingSheet";
+ import { PrayerSyncBridge } from "@/components/profile/PrayerSyncBridge";
+ import { ProfilePrefsBridge } from "@/components/profile/ProfilePrefsBridge";
+@@ -164,10 +163,6 @@ export function RootFrame({
+             every screen, Today included, and the bar that shows it opens
+             this. Renders nothing until it is opened. */}
+         <AmbienceSheet />
+-        {/* The Voice sheet (1.9, build 95 note 25): opened from the player's
+-            ••• over the player, and from a page's Listen where the phone has
+-            no voice for the text's language. Here for the same reason. */}
+-        <VoiceSheet />
+         {/* "It's okay. We got you this time.": the one moment a hidden streak
+             save shows itself, on whatever page Purify opens to. Here for the
+             reason above. Renders nothing until a save has held a day. */}
+diff --git a/components/player/NowPlayingSheet.tsx b/components/player/NowPlayingSheet.tsx
+index 86412b52c..029de053d 100644
+--- a/components/player/NowPlayingSheet.tsx
++++ b/components/player/NowPlayingSheet.tsx
+@@ -11,8 +11,6 @@ import { Book } from "@/components/ui/icons/Book";
+ import { More } from "@/components/ui/icons/More";
+ import { Timer } from "@/components/ui/icons/Timer";
+ import { useAmbienceLeaving, useAmbienceSheet } from "@/lib/ambience/sheet";
+-import { openVoiceSheet, useVoiceSheet } from "@/lib/listen/speech/sheet";
+-import { playerOpenForGone, useVoiceShown } from "@/lib/listen/speech/speak";
+ import { cn } from "@/lib/cn";
+ import { BACKDROP_FILTER, bakesBackdrop, paintBackdrop, readBackdrop, type Backdrop } from "@/lib/player/backdrop";
+ import { WORDS_BUILT_CLOSED, WORDS_SPANNED_NEAR, buildsLongWords, captionWordCount, verseOf } from "@/lib/player/captions";
+@@ -29,7 +27,6 @@ import { AmbienceButton } from "./AmbienceButton";
+ import { CoverArt } from "./CoverArt";
+ import { LiveCaptions } from "./LiveCaptions";
+ import { PlayerMoreSheet } from "./PlayerMore";
+-import { useVoiceRowValue } from "./VoiceSheet";
+ import { PlayerTransport } from "./PlayerSteps";
+ import { SleepTimerSheet } from "./SleepTimerSheet";
+ import { SaveOffline, SaveOfflineNote } from "./SaveOffline";
+@@ -128,20 +125,11 @@ export function NowPlayingSheet() {
+   const [moreMenu, setMoreMenu] = useState(false);
+   const sleep = useSleepTimer();
+   const ambienceSheet = useAmbienceSheet();
+-  const voiceSheet = useVoiceSheet();
+   // A sheet stands over the player: Escape is that sheet's.
+-  const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer) || (voiceSheet.open && voiceSheet.overPlayer);
++  const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer);
+   // The ambience closed over the player is still on the screen while its close
+   // runs: the words wait for it to go (build 97 note 10, Updates 67).
+   const ambienceLeaving = useAmbienceLeaving() && ambienceSheet.overPlayer;
+-  // The voice reading, for the ••• sheet's Voice row (1.9, build 95 note 25).
+-  const voiceName = useVoiceRowValue(audio.src, open);
+-  // A voice the reader chose had gone and another reads: said here once, the
+-  // next time the player is open, and let go when it closes after.
+-  const { gone } = useVoiceShown();
+-  useEffect(() => {
+-    playerOpenForGone(open);
+-  }, [open, gone]);
+   const hasWords = Boolean(audio.captions && audio.captions.length > 0);
+   const words = hasWords && view === "words";
+   // A long text's words (a Father's work, a saint's life) are built once the
+@@ -627,11 +615,6 @@ export function NowPlayingSheet() {
+           <div inert={!up} className="contents">
+             <SaveOfflineNote src={audio.src} className="mt-2" />
+           </div>
+-          {gone && voiceName ? (
+-            <p role="status" className="mt-2 font-sans text-detail leading-[1.45] text-paper/75">
+-              {t("player.voice.gone", { name: voiceName })}
+-            </p>
+-          ) : null}
+           <PositionBar current={audio.currentTime} duration={audio.duration} onSeek={(at) => seek(at)} className="mt-2" />
+           <PlayerTransport audio={audio} className="mt-3" />
+ 
+@@ -713,8 +696,6 @@ export function NowPlayingSheet() {
+             src={audio.src}
+             share={shareHref(playing)}
+             onSleep={() => setSleepMenu(true)}
+-            voice={voiceName}
+-            onVoice={() => openVoiceSheet({ overPlayer: true })}
+           />
+ 
+           {/* The sleep timer, as a sheet over the player: the one timer for
+diff --git a/components/player/PlayerMore.tsx b/components/player/PlayerMore.tsx
+index 34ac22022..6bf08c3f5 100644
+--- a/components/player/PlayerMore.tsx
++++ b/components/player/PlayerMore.tsx
+@@ -8,7 +8,6 @@ import { Check } from "@/components/ui/icons/Check";
+ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+ import { Sound } from "@/components/ui/icons/Sound";
+ import { Timer } from "@/components/ui/icons/Timer";
+-import { Voice } from "@/components/ui/icons/Voice";
+ import { getAmbienceTrack } from "@/lib/ambience/ambience";
+ import { useAmbience } from "@/lib/ambience/player";
+ import { openAmbience } from "@/lib/ambience/sheet";
+@@ -27,11 +26,9 @@ import { SaveOfflineRow } from "./SaveOffline";
+  * corner, each in words: Save for offline (a chapter of the Bible, in the
+  * apps), the sleep timer and Ambience, each opening its own sheet as it does
+  * from the row under the controls, and Share, the page of what is playing.
+- * From 1.9 (build 95 note 25), Voice, between the sleep timer and Ambience:
+- * the voice reading, opening the Voice sheet (components/player/VoiceSheet.tsx),
+- * a row here and not a sixth mark under the controls, whose five were
+- * measured in 21 languages (lib/player/__tests__/optionWords.test.ts).
+- * Nothing moved here: every control under the controls is still there.
++ * Nothing moved here: every control under the controls is still there. The
++ * Voice row of build 95 note 25 went with the phone's voices (his word of
++ * 2026-11-16: Heart, the one prerecorded voice, and nothing to choose).
+  *
+  * Like the reader's ••• sheet, it goes first when a row opens another sheet,
+  * so one sheet never opens over another.
+@@ -43,8 +40,6 @@ export function PlayerMoreSheet({
+   src,
+   share,
+   onSleep,
+-  voice = null,
+-  onVoice,
+ }: {
+   open: boolean;
+   onClose: () => void;
+@@ -55,14 +50,6 @@ export function PlayerMoreSheet({
+   share: string | null;
+   /** Open the sleep timer's own sheet. */
+   onSleep: () => void;
+-  /**
+-   * The voice reading what is playing, for the Voice row (1.9, build 95 note
+-   * 25): its name, or null where no voice reads it (a chant, a prayer, today's
+-   * readings one after another), and no row is drawn.
+-   */
+-  voice?: string | null;
+-  /** Open the Voice sheet. */
+-  onVoice?: () => void;
+ }) {
+   const { t } = useTranslate();
+   const sleep = useSleepTimer();
+@@ -102,18 +89,6 @@ export function PlayerMoreSheet({
+             onSleep();
+           }}
+         />
+-        {voice !== null && onVoice ? (
+-          <Row
+-            icon={<Voice size={16} />}
+-            label={t("player.voice")}
+-            value={voice}
+-            on
+-            onClick={() => {
+-              onClose();
+-              onVoice();
+-            }}
+-          />
+-        ) : null}
+         <Row
+           icon={<Sound size={16} />}
+           label={t("ambience.title")}
+diff --git a/components/player/PlayerSteps.tsx b/components/player/PlayerSteps.tsx
+index 3e945636a..b71e0eb0c 100644
+--- a/components/player/PlayerSteps.tsx
++++ b/components/player/PlayerSteps.tsx
+@@ -1,6 +1,5 @@
+ "use client";
+ 
+-import { useRouter } from "next/navigation";
+ import { useEffect, useState, useSyncExternalStore } from "react";
+ 
+ import { useTranslate } from "@/components/i18n/MessagesProvider";
+@@ -11,13 +10,11 @@ import type { ChantIndexRow, ChantIndexVariant } from "@/lib/chants/types";
+ import { useWordsPrefs } from "@/lib/chants/wordsPrefs";
+ import { startListening } from "@/lib/listen/play";
+ import { stepsOf } from "@/lib/listen/recordings";
+-import { spokenOf } from "@/lib/listen/speech/spoken";
+ import { loadChantIndex } from "@/lib/player/chants";
+ import { chapterSteps, chantVersionOf, playingOf, versionSteps, type ChapterRef } from "@/lib/player/steps";
+ import { skipBy, toggle, type AudioSnapshot } from "@/lib/prayers/persistentAudioStore";
+ import { hasReadAloud } from "@/lib/readAloud/chapters";
+ import { startReading } from "@/lib/readAloud/play";
+-import { askToListenAt } from "@/lib/readAloud/rollOn";
+ import { listeningPlace, stepListening, subscribeListening } from "@/lib/readings/listen";
+ 
+ import { Transport, type Step } from "./Transport";
+@@ -61,7 +58,6 @@ function useSteps(audio: AudioSnapshot): { previous: Step; next: Step } {
+   }, [isChant, index]);
+   const availabilityFor = useChantAvailability(isChant);
+   const prefs = useWordsPrefs();
+-  const router = useRouter();
+ 
+   // Today's readings: step through them, never out of them into the chapters.
+   if (place && audio.src === place.src) {
+@@ -72,21 +68,6 @@ function useSteps(audio: AudioSnapshot): { previous: Step; next: Step } {
+   }
+ 
+   const playing = playingOf(audio.src, index);
+-  // A chapter the phone's voice reads (1.9, build 95 note 25): every chapter
+-  // either side, read the same way, in the Bible the reader reads. Its words
+-  // are that chapter's page's, so the step opens the page, which begins it.
+-  const said = spokenOf(audio.src);
+-  if (playing?.kind === "chapter" && said?.kind === "bible") {
+-    const { previous, next } = chapterSteps(playing.book, playing.chapter, () => true);
+-    const name = (to: ChapterRef) => t(`bible.books.${to.book}`);
+-    const go = (to: ChapterRef) => () => {
+-      if (askToListenAt(to.book, to.chapter)) router.push(`/bible/${to.book}/${to.chapter}`);
+-    };
+-    return {
+-      previous: previous ? { label: t("bible.previousTargetAria", { book: name(previous), chapter: previous.chapter }), go: go(previous) } : null,
+-      next: next ? { label: t("bible.nextTargetAria", { book: name(next), chapter: next.chapter }), go: go(next) } : null,
+-    };
+-  }
+   if (playing?.kind === "chapter") {
+     const { previous, next } = chapterSteps(playing.book, playing.chapter, hasReadAloud);
+     const name = (to: ChapterRef) => t(`bible.books.${to.book}`);
+diff --git a/components/player/VoiceSheet.tsx b/components/player/VoiceSheet.tsx
+deleted file mode 100644
+index 398588f86..000000000
+--- a/components/player/VoiceSheet.tsx
++++ /dev/null
+@@ -1,246 +0,0 @@
+-"use client";
+-
+-import { usePathname } from "next/navigation";
+-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+-
+-import { useTranslate } from "@/components/i18n/MessagesProvider";
+-import { Sheet } from "@/components/ui/Sheet";
+-import { Check } from "@/components/ui/icons/Check";
+-import { Play } from "@/components/ui/icons/Play";
+-import { cn } from "@/lib/cn";
+-import { voiceContextOf, pieceNow, readAgainIn, type VoiceContext } from "@/lib/listen/speech/context";
+-import { speechEngine } from "@/lib/listen/speech/engine";
+-import { closeVoiceSheet, useVoiceSheet } from "@/lib/listen/speech/sheet";
+-import { useVoiceShown } from "@/lib/listen/speech/speak";
+-import { HEART, chooseVoice, useChosenVoice, voiceToUse } from "@/lib/listen/speech/voiceChoice";
+-import { askAgain, useDeviceVoices, voiceRows, type VoiceRow } from "@/lib/listen/speech/voices";
+-import { sentencesOf } from "@/lib/listen/texts";
+-import { readSpeed } from "@/lib/player/speed";
+-import { listeningPlace, subscribeListening } from "@/lib/readings/listen";
+-import { getAudioSnapshot, isSpoken, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+-
+-/**
+- * The Voice sheet (1.9, build 95 note 25, his "all recs" of 2026-11-13: the
+- * phone's own voices, free for every reader, reading the Bible, the lives,
+- * the councils, history, theology and the works, never the prayers). Opened
+- * from the Voice row of the player's •••, over the player, from the player's
+- * own parts: the sheet, its rows as the sleep timer's are, the mark of the one
+- * chosen.
+- *
+- *  - Heart first, where the text has its recording; then the phone's own
+- *    voices for the text's language, each with Hear it, which speaks the first
+- *    words of the verse or paragraph being read in that voice.
+- *  - Choosing one reads what is playing again in it, at the verse or
+- *    paragraph being read, and keeps the choice for the language.
+- *  - A voice the reader chose that the phone no longer has: said here, with
+- *    the voice that reads instead.
+- *  - No voice for the language and no recording (opened from a page's
+- *    Listen): said, and where a voice is added.
+- *
+- * Mounted once in the root frame, as the ambience sheet is.
+- */
+-export function VoiceSheet() {
+-  const { t } = useTranslate();
+-  const sheet = useVoiceSheet();
+-
+-  // A link out of the app's screens leaves it behind, as the ambience sheet does.
+-  const pathname = usePathname();
+-  const firstPath = useRef(pathname);
+-  useEffect(() => {
+-    if (pathname === firstPath.current) return;
+-    firstPath.current = pathname;
+-    closeVoiceSheet();
+-  }, [pathname]);
+-
+-  return (
+-    <Sheet open={sheet.open} onClose={closeVoiceSheet} title={t("player.voice")} desktop layer={sheet.overPlayer ? "over-player" : undefined} bodyClassName="pt-1">
+-      <VoiceSheetContent open={sheet.open} none={sheet.none} />
+-    </Sheet>
+-  );
+-}
+-
+-function VoiceSheetContent({ open, none }: { open: boolean; none: { lang: string } | null }) {
+-  const { t, locale } = useTranslate();
+-  const audio = usePersistentAudio();
+-  const about: VoiceContext | null = none ? null : voiceContextOf(audio.src);
+-  const lang = none?.lang ?? about?.lang ?? "en";
+-  const recorded = Boolean(about?.recorded);
+-  const voices = useDeviceVoices(open);
+-  const choice = useChosenVoice(lang);
+-  const { reading } = useVoiceShown();
+-  // What was playing as the sheet opened: a voice heard meanwhile pauses it, and it goes on after.
+-  const wasPlaying = useRef(false);
+-  const heardSome = useRef(false);
+-  const [busy, setBusy] = useState<string | null>(null);
+-
+-  // Asked again as it opens and as the reader comes back to the app: a voice added in the phone's settings meanwhile is listed.
+-  useEffect(() => {
+-    if (!open) return;
+-    wasPlaying.current = getAudioSnapshot().playing;
+-    heardSome.current = false;
+-    void askAgain();
+-    const back = () => {
+-      if (document.visibilityState === "visible") void askAgain();
+-    };
+-    document.addEventListener("visibilitychange", back);
+-    return () => {
+-      document.removeEventListener("visibilitychange", back);
+-      // Closed without a choice after hearing a voice: the reading goes on as it was.
+-      if (heardSome.current && wasPlaying.current && !getAudioSnapshot().playing) play();
+-    };
+-  }, [open]);
+-
+-  const rows = voices ? voiceRows(voices, lang, locale, (n) => t("player.voice.numbered", { n }), choice) : [];
+-  // The voice reading now: the phone's, or Heart while the recording plays.
+-  const now: string | null =
+-    about && isSpoken() && reading?.src === audio.src ? reading.voice.id : about && recorded && !isSpoken() ? HEART : null;
+-  const resolved = voices ? voiceToUse(choice, voices, lang, recorded) : null;
+-  const checked = now ?? (resolved?.kind === "heart" ? HEART : resolved?.kind === "phone" ? resolved.voice.id : null);
+-  const gone = resolved && resolved.kind !== "none" ? resolved.gone : undefined;
+-  const nameOf = (id: string | null) => (id === HEART ? t("player.voice.heart") : (rows.find((r) => r.voice.id === id)?.name ?? ""));
+-  const languageName = (() => {
+-    try {
+-      return new Intl.DisplayNames([locale], { type: "language" }).of(lang) ?? lang;
+-    } catch {
+-      return lang;
+-    }
+-  })();
+-
+-  const choose = async (id: string) => {
+-    chooseVoice(lang, id);
+-    if (!about || id === now) {
+-      closeVoiceSheet();
+-      return;
+-    }
+-    const to = id === HEART ? HEART : rows.find((r) => r.voice.id === id)?.voice;
+-    if (!to) return;
+-    setBusy(id);
+-    const goOn = wasPlaying.current;
+-    heardSome.current = false;
+-    await readAgainIn(to, about, t, goOn);
+-    setBusy(null);
+-    closeVoiceSheet();
+-  };
+-
+-  const hear = async (row: VoiceRow) => {
+-    const engine = await speechEngine();
+-    if (!engine) return;
+-    if (getAudioSnapshot().playing) pause();
+-    heardSome.current = true;
+-    const s = getAudioSnapshot();
+-    const words = s.captions?.[pieceNow()]?.text ?? "";
+-    const first = sentencesOf(words)[0] ?? words;
+-    const line = (first || s.title || "").slice(0, 160);
+-    if (!line) return;
+-    void engine.preview({ text: line, lang: row.voice.lang, voice: row.voice.id, rate: readSpeed() }).catch(() => {});
+-  };
+-
+-  const none_ = !recorded && voices !== null && rows.length === 0;
+-
+-  return (
+-    <div>
+-      {gone && checked ? (
+-        <p role="status" className="mb-3 font-sans text-detail leading-[1.5] text-paper/80">
+-          {t("player.voice.gone", { name: nameOf(checked) })}
+-        </p>
+-      ) : null}
+-
+-      {none_ ? (
+-        <div role="status" className="pb-1">
+-          <p className="font-sans text-ui leading-[1.5] text-paper/90">{t("player.voice.none", { language: languageName })}</p>
+-          <p className="mt-2 font-sans text-detail leading-[1.5] text-paper/65">{t("player.voice.noneHow")}</p>
+-        </div>
+-      ) : (
+-        <div role="radiogroup" aria-label={t("player.voice")} className="divide-y divide-paper/10">
+-          {recorded ? (
+-            <VoiceChoiceRow
+-              name={t("player.voice.heart")}
+-              about={t("player.voice.heartAbout")}
+-              on={checked === HEART}
+-              busy={busy === HEART}
+-              onChoose={() => void choose(HEART)}
+-            />
+-          ) : null}
+-          {rows.map((row) => (
+-            <VoiceChoiceRow
+-              key={row.voice.id}
+-              name={row.name}
+-              about={row.language}
+-              on={checked === row.voice.id}
+-              busy={busy === row.voice.id}
+-              onChoose={() => void choose(row.voice.id)}
+-              hear={{ label: t("player.voice.hearName", { name: row.name }), word: t("player.voice.hear"), go: () => void hear(row) }}
+-            />
+-          ))}
+-        </div>
+-      )}
+-
+-      {rows.length > 0 ? <p className="mt-3 font-sans text-caption leading-[1.5] text-paper/60">{t("player.voice.phoneNote")}</p> : null}
+-    </div>
+-  );
+-}
+-
+-/** One voice: its name over its language, the mark when it is the one reading, and Hear it for a phone's voice. */
+-function VoiceChoiceRow({
+-  name,
+-  about,
+-  on,
+-  busy,
+-  onChoose,
+-  hear,
+-}: {
+-  name: string;
+-  about: string;
+-  on: boolean;
+-  busy: boolean;
+-  onChoose: () => void;
+-  hear?: { label: string; word: string; go: () => void };
+-}) {
+-  return (
+-    <div className="flex min-h-14 items-center gap-2">
+-      <button
+-        type="button"
+-        role="radio"
+-        aria-checked={on}
+-        onClick={onChoose}
+-        className="flex min-h-14 min-w-0 flex-1 items-center justify-between gap-3 py-1.5 text-start"
+-      >
+-        <span className="min-w-0">
+-          <span className={cn("block truncate font-sans text-ui", on ? "font-semibold text-paper" : "text-paper/85", busy && "motion-safe:animate-pulse")}>{name}</span>
+-          <span className="block truncate font-sans text-caption text-paper/60">{about}</span>
+-        </span>
+-        {on ? <Check size={18} className="shrink-0 text-paper" /> : null}
+-      </button>
+-      {hear ? (
+-        <button
+-          type="button"
+-          onClick={hear.go}
+-          aria-label={hear.label}
+-          className="tap-press hit-44 inline-flex h-9 shrink-0 items-center gap-1.5 rounded-pill border border-paper/15 bg-paper/[0.04] px-3 font-sans text-detail font-medium text-paper/85 hover:border-paper/30 hover:bg-paper/10"
+-        >
+-          <Play size={12} className="shrink-0" />
+-          <span aria-hidden>{hear.word}</span>
+-        </button>
+-      ) : null}
+-    </div>
+-  );
+-}
+-
+-/**
+- * What the player's Voice row says (components/player/PlayerMore.tsx): the
+- * voice reading what is playing, Heart while its recording plays; null where
+- * no voice reads it (a chant, a prayer) and where today's readings are heard
+- * one after another, which step through their own recordings.
+- */
+-export function useVoiceRowValue(src: string | null, ask: boolean): string | null {
+-  const { t, locale } = useTranslate();
+-  const place = useSyncExternalStore(subscribeListening, listeningPlace, () => null);
+-  const about = voiceContextOf(src);
+-  const { reading } = useVoiceShown();
+-  const spokenHere = Boolean(about) && isSpoken() && reading?.src === src;
+-  const voices = useDeviceVoices(ask && spokenHere);
+-  if (!about || (place && place.src === src)) return null;
+-  if (!spokenHere || !reading) return about.recorded ? t("player.voice.heart") : null;
+-  const rows = voiceRows(voices ?? [reading.voice], about.lang, locale, (n) => t("player.voice.numbered", { n }), reading.voice.id);
+-  return rows.find((r) => r.voice.id === reading.voice.id)?.name ?? reading.voice.name;
+-}
+diff --git a/components/reading/ListenHere.tsx b/components/reading/ListenHere.tsx
+index 5052a5e2e..921ca9198 100644
+--- a/components/reading/ListenHere.tsx
++++ b/components/reading/ListenHere.tsx
+@@ -11,18 +11,10 @@ import { Pause } from "@/components/ui/icons/Pause";
+ import { Play } from "@/components/ui/icons/Play";
+ import { sentenceOnPage, startListening } from "@/lib/listen/play";
+ import { listenOfSrc, listenTimings, readingAt, stepsOf, useHasListen } from "@/lib/listen/recordings";
+-import { anchorsOf, rememberAnchors } from "@/lib/listen/speech/pageText";
+-import { openVoiceSheet } from "@/lib/listen/speech/sheet";
+-import { speakText, voiceFor } from "@/lib/listen/speech/speak";
+-import { spokenOf, spokenTextSrc, voiceLang } from "@/lib/listen/speech/spoken";
+-import { wordStarts } from "@/lib/listen/speech/timeline";
+-import { useCanSpeak } from "@/lib/listen/speech/voices";
+-import { hostKeyOf, listenHref, parseListenId, type ListenRef, type ListenTimings } from "@/lib/listen/texts";
+-import { sentenceSpans } from "@/lib/marks/anchor";
++import { listenHref, parseListenId, type ListenTimings } from "@/lib/listen/texts";
+ import { lineBoxes, type Box } from "@/lib/marks/dom";
+ import { fromStart, readsRtl } from "@/lib/marks/startEdge";
+-import { captionLines, lineAt } from "@/lib/player/captions";
+-import { currentTimeNow, getAudioSnapshot, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
++import { currentTimeNow, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+ import { goToReadingPlace, inReadingZone, visibleBand } from "@/lib/ui/readingPlace";
+ import { cn } from "@/lib/cn";
+ import { registerListen, type ListenOnPage } from "@/lib/listen/onPage";
+@@ -47,18 +39,16 @@ const HANDS_OFF_MS = 4000;
+  * the way a held verse is, line by line. The page's own words are used: the
+  * recording's timings carry none.
+  *
+- * From 1.9 (build 95 note 25, his "all recs" of 2026-11-13): where there is
+- * no recording, the phone's own voice reads it, free for every reader, in the
+- * language the page shows it in, from this part to the end of what the page
+- * shows; and where the reader chose a phone's voice, it reads even a text
+- * that has its recording. Where the phone has no voice for the language, the
+- * Voice sheet says so and where one is added. Never on the prayers: no prayer
+- * page draws it.
++ * Heart's recording is the only voice (his word of 2026-11-16, about 22:35
++ * UTC: "remove locally LLM voices ... only leave one the standard prerecorded
++ * voices"): the phone's own voices, which read a text with no recording from
++ * build 95 note 25, are gone, so a text Heart has not recorded has no Listen
++ * until its recording lands. Never on the prayers: no prayer page draws it.
+  */
+ export function ListenHere({ id, title, by, art, className }: { id: string; title: string; by: string; art?: string | null; className?: string }) {
+   const { t } = useTranslate();
+   const listen = useListenText({ id, title, by, art });
+-  const { loaded, playing, busy, tap, spokenHere, src } = listen;
++  const { loaded, playing, busy, tap } = listen;
+   const router = useRouter();
+ 
+   // What Listen reads here, for the foot pill on a phone and a tablet
+@@ -68,7 +58,7 @@ export function ListenHere({ id, title, by, art, className }: { id: string; titl
+ 
+   // A recording read to its end goes on into the next part, as a chapter's
+   // reading does: the next part's recording starts, then its page opens.
+-  const ended = loaded && !spokenHere && !playing && listen.duration > 0 && listen.currentTime >= listen.duration - 0.3;
++  const ended = loaded && !playing && listen.duration > 0 && listen.currentTime >= listen.duration - 0.3;
+   useEffect(() => {
+     if (!ended) return;
+     const { next } = stepsOf(id);
+@@ -95,7 +85,7 @@ export function ListenHere({ id, title, by, art, className }: { id: string; titl
+         {mark}
+         <span className={busy ? "motion-safe:animate-pulse" : undefined}>{playing ? t("readAloud.pause") : t("readAloud.listen")}</span>
+       </ReaderPill>
+-      {playing ? spokenHere ? <SpokenFollow src={src} /> : <ListenFollow id={id} /> : null}
++      {playing ? <ListenFollow id={id} /> : null}
+     </>
+   );
+ }
+@@ -103,20 +93,16 @@ export function ListenHere({ id, title, by, art, className }: { id: string; titl
+ /**
+  * Listen on a text, for the page's button on a computer and the foot pill's
+  * on a phone and a tablet (MobileWorkPill, TextPill, ReaderDock): whether it
+- * may read (its recording, else the phone's voice), whether it is the one
+- * loaded and playing, and the tap, which plays and pauses what is loaded or
+- * starts it: the recording, the phone's voice over the page's words, or the
+- * Voice sheet where the phone has none for the language.
++ * may read (only where Heart's recording of it is, lib/listen/recordings.ts),
++ * whether it is the one loaded and playing, and the tap, which plays and
++ * pauses what is loaded or starts its recording.
+  */
+ export function useListenText(text: ListenOnPage | null) {
+   const id = text?.id ?? "";
+   const recorded = useHasListen(text?.id ?? null);
+-  const speaks = useCanSpeak();
+-  const available = Boolean(text) && (recorded || speaks);
++  const available = Boolean(text) && recorded;
+   const audio = usePersistentAudio();
+-  const said = spokenOf(audio.src);
+-  const spokenHere = Boolean(text) && said?.kind === "text" && said.id === id;
+-  const loaded = Boolean(text) && (listenOfSrc(audio.src)?.id === id || spokenHere);
++  const loaded = Boolean(text) && listenOfSrc(audio.src)?.id === id;
+   const playing = loaded && audio.playing;
+   const [busy, setBusy] = useState(false);
+ 
+@@ -127,23 +113,13 @@ export function useListenText(text: ListenOnPage | null) {
+       else play();
+       return;
+     }
++    if (!recorded) return;
+     setBusy(true);
+-    const ref = parseListenId(id);
+-    const page = ref ? textOnPage(ref) : null;
+-    // The page's own language: the phone's voice reads the words shown.
+-    const lang = page?.lang ?? "en";
+-    const use = await voiceFor(voiceLang(lang), recorded);
+-    if (use.kind === "heart") await startListening(id, { title: text.title, by: text.by, art: text.art });
+-    else if (use.kind === "none") openVoiceSheet({ none: { lang: voiceLang(lang) } });
+-    else if (page?.pieces.length) {
+-      const src = spokenTextSrc(id, lang);
+-      const ok = await speakText({ src, pieces: page.pieces.map((p) => ({ text: p.text })), lang: voiceLang(lang), voice: use.voice, title: text.title, artist: text.by, art: text.art ?? undefined });
+-      if (ok) rememberAnchors(src, page.pieces.map((p) => p.anchor));
+-    }
++    await startListening(id, { title: text.title, by: text.by, art: text.art });
+     setBusy(false);
+   };
+ 
+-  return { available, loaded, playing, busy, tap, spokenHere, src: audio.src, duration: audio.duration, currentTime: audio.currentTime };
++  return { available, loaded, playing, busy, tap, duration: audio.duration, currentTime: audio.currentTime };
+ }
+ 
+ /**
+@@ -172,34 +148,6 @@ export function ListenPillButton({ text }: { text: ListenOnPage | null }) {
+   );
+ }
+ 
+-/**
+- * The text a page shows from a part on, paragraph by paragraph, for the
+- * phone's voice: each paragraph's words and where it stands (its mark,
+- * components/reading/MarkHost.tsx), in the page's order, from the part Listen
+- * stands over to the end of what the page shows; and the language the page
+- * shows it in.
+- */
+-function textOnPage(ref: ListenRef): { pieces: { text: string; anchor: string }[]; lang: string } | null {
+-  if (typeof document === "undefined") return null;
+-  const prefix = hostKeyOf(ref, { sectionN: 0, paragraphIdx: 0 }).replace(/\|0\|0$/, "|");
+-  const from = "n" in ref ? ref.n : 0;
+-  const pieces: { text: string; anchor: string }[] = [];
+-  let lang: string | null = null;
+-  for (const host of document.querySelectorAll<HTMLElement>("[data-mk]")) {
+-    const key = host.dataset.mk ?? "";
+-    if (!key.startsWith(prefix)) continue;
+-    const section = Number(key.slice(prefix.length).split("|")[0]);
+-    if (!(section >= from)) continue;
+-    const words = host.querySelector<HTMLElement>("[data-mk-text]");
+-    const text = (words?.textContent ?? "").replace(/\s+/g, " ").trim();
+-    if (!text || !/[\p{L}\p{N}]/u.test(text)) continue;
+-    lang ??= words?.closest<HTMLElement>("[lang]")?.getAttribute("lang") ?? null;
+-    pieces.push({ text, anchor: key });
+-  }
+-  if (!pieces.length) return null;
+-  return { pieces, lang: lang || document.documentElement.lang || "en" };
+-}
+-
+ /** A line of the sentence being read, with how far it stands from the page's start edge. */
+ type Washed = Box & { start: number };
+ 
+@@ -214,100 +162,6 @@ function washOf(lines: Box[]): Washed[] {
+   return lines.map((b) => ({ ...b, start: fromStart(b, width, rtl) }));
+ }
+ 
+-/**
+- * Lights the paragraph the phone's voice is reading, washes its sentence, and
+- * keeps it at the reading place, as ListenFollow does for a recording: the
+- * paragraph by the player's own lines, the sentence by the word the phone
+- * reports, else by where the clock stands in the paragraph.
+- */
+-function SpokenFollow({ src }: { src: string | null }) {
+-  const lastHand = useRef(0);
+-  const [wash, setWash] = useState<Washed[]>([]);
+-
+-  useEffect(() => {
+-    const hand = () => {
+-      lastHand.current = performance.now();
+-    };
+-    window.addEventListener("wheel", hand, { passive: true });
+-    window.addEventListener("touchmove", hand, { passive: true });
+-    return () => {
+-      window.removeEventListener("wheel", hand);
+-      window.removeEventListener("touchmove", hand);
+-    };
+-  }, []);
+-
+-  useEffect(() => {
+-    let raf = 0;
+-    let lit: HTMLElement | null = null;
+-    let at = "";
+-    const root = document.documentElement;
+-    const light = (el: HTMLElement | null) => {
+-      if (lit === el) return;
+-      if (lit) delete lit.dataset.readNow;
+-      lit = el;
+-      if (!el) {
+-        delete root.dataset.readAloud;
+-        return;
+-      }
+-      el.dataset.readNow = "";
+-      root.dataset.readAloud = "";
+-      if (performance.now() - lastHand.current > HANDS_OFF_MS) {
+-        const band = visibleBand();
+-        if (!inReadingZone(band, el.getBoundingClientRect())) goToReadingPlace(el, { band });
+-      }
+-    };
+-    const loop = () => {
+-      const s = getAudioSnapshot();
+-      const lines = s.captions?.length ? captionLines(s.captions, s.duration) : [];
+-      const now = currentTimeNow();
+-      const i = lines.length ? lineAt(lines, now) : -1;
+-      const anchor = i >= 0 ? anchorsOf(src)?.[i] : undefined;
+-      const host = anchor ? document.querySelector<HTMLElement>(`[data-mk="${CSS.escape(anchor)}"]`) : null;
+-      const textEl = host?.querySelector<HTMLElement>("[data-mk-text]") ?? null;
+-      light(host);
+-      // The sentence: the word being said, where the phone reports words, else the clock's share of the paragraph.
+-      let span: { s: number; e: number } | null = null;
+-      if (textEl && i >= 0) {
+-        const text = textEl.textContent ?? "";
+-        const line = s.captions![i];
+-        const times = line.wordTimes;
+-        let char = 0;
+-        if (times?.length) {
+-          let w = 0;
+-          for (let k = 0; k < times.length; k++) if (times[k][0] <= now) w = k;
+-          char = wordStarts(line.text)[w] ?? 0;
+-        } else {
+-          const share = (now - lines[i].at) / Math.max(0.1, lines[i].end - lines[i].at);
+-          char = Math.floor(Math.max(0, Math.min(1, share)) * line.text.length);
+-        }
+-        const spans = sentenceSpans(text);
+-        span = spans.find((x) => char >= x.s && char < x.e) ?? null;
+-      }
+-      const key = span && i >= 0 ? `${i}:${span.s}:${window.innerWidth}` : "";
+-      if (key !== at) {
+-        at = key;
+-        setWash(span && textEl ? washOf(lineBoxes(textEl, span)) : []);
+-      }
+-      raf = requestAnimationFrame(loop);
+-    };
+-    raf = requestAnimationFrame(loop);
+-    return () => {
+-      cancelAnimationFrame(raf);
+-      light(null);
+-    };
+-  }, [src]);
+-
+-  if (typeof document === "undefined" || !wash.length) return null;
+-  return createPortal(
+-    <div aria-hidden className="pointer-events-none absolute start-0 top-0 z-[5] h-0 w-0">
+-      {wash.map((b, i) => (
+-        <div key={i} className="verse-ghost absolute rounded-[5px]" style={{ insetInlineStart: b.start - 3, top: b.top, width: b.right - b.left + 6, height: b.bottom - b.top }} />
+-      ))}
+-    </div>,
+-    document.body,
+-  );
+-}
+-
+ /** Lights the paragraph being read, washes its sentence, and keeps it at the reading place. */
+ function ListenFollow({ id }: { id: string }) {
+   const timings = useRef<ListenTimings | null>(null);
+diff --git a/lib/listen/speech/__tests__/enginePlugin.test.ts b/lib/listen/speech/__tests__/enginePlugin.test.ts
+deleted file mode 100644
+index 0189bcd23..000000000
+--- a/lib/listen/speech/__tests__/enginePlugin.test.ts
++++ /dev/null
+@@ -1,52 +0,0 @@
+-// The speech plugin reached through Capacitor's own code (1.9, build 95 note
+-// 25), on a stand-in for the bridge the Android shell injects, as
+-// lib/platform/__tests__/nativePlugin.test.ts does for the lock screen: a
+-// plugin handed through a promise bare never answers (the trap that kept the
+-// lock screen's player from the phone from 1.8 to 1.9), and a mock of
+-// registerPlugin could not show it. What a reader would notice: Listen that
+-// does nothing in the app, or a voice list that never fills.
+-
+-import { describe, expect, it, vi } from "vitest";
+-
+-const phone = vi.hoisted(() => {
+-  const calls: { plugin: string; method: string; options: unknown }[] = [];
+-  const callbacks: ((data: unknown) => void)[] = [];
+-  const g = globalThis as Record<string, unknown>;
+-  g.androidBridge = { postMessage: () => {} };
+-  g.Capacitor = {
+-    PluginHeaders: [
+-      {
+-        name: "PurifySpeech",
+-        methods: ["voices", "speak", "stop", "preview", "nowPlaying"].map((name) => ({ name, rtype: "promise" })).concat([{ name: "addListener", rtype: "callback" }]),
+-      },
+-    ],
+-    nativePromise: (plugin: string, method: string, options: unknown) => {
+-      calls.push({ plugin, method, options });
+-      return Promise.resolve(method === "voices" ? { voices: [{ id: "en-gb-x-gba-local", name: "en-gb-x-gba-local", lang: "en-GB", quality: 400, default: true }] } : undefined);
+-    },
+-    nativeCallback: (plugin: string, method: string, options: unknown, callback: (data: unknown) => void) => {
+-      calls.push({ plugin, method, options });
+-      callbacks.push(callback);
+-      return String(calls.length);
+-    },
+-  };
+-  return { calls, callbacks };
+-});
+-
+-describe("the speech plugin, through Capacitor's own code", () => {
+-  it("lists the phone's voices, speaks, and brings the phone's reports back to the player", async () => {
+-    const { speechEngine } = await import("@/lib/listen/speech/engine");
+-    const engine = await speechEngine();
+-    expect(engine?.side).toBe("android");
+-    expect(await engine!.voices()).toEqual([{ id: "en-gb-x-gba-local", name: "en-gb-x-gba-local", lang: "en-GB", quality: 400, default: true }]);
+-    const heard: unknown[] = [];
+-    engine!.onEvent((e) => heard.push(e));
+-    await engine!.speak({ token: 4, pieces: ["In the beginning."], from: 0, offset: 0, lang: "en", voice: null, rate: 1, volume: 1 });
+-    const speak = phone.calls.find((c) => c.method === "speak");
+-    expect(speak).toMatchObject({ plugin: "PurifySpeech", options: { token: 4, pieces: ["In the beginning."] } });
+-    const listen = phone.calls.find((c) => c.method === "addListener");
+-    expect(listen?.options).toMatchObject({ eventName: "speech" });
+-    phone.callbacks[phone.callbacks.length - 1]({ type: "start", token: 4, index: 0 });
+-    expect(heard).toEqual([{ type: "start", token: 4, index: 0 }]);
+-  });
+-});
+diff --git a/lib/listen/speech/__tests__/nativeSpeech.test.ts b/lib/listen/speech/__tests__/nativeSpeech.test.ts
+deleted file mode 100644
+index f91a65ca8..000000000
+--- a/lib/listen/speech/__tests__/nativeSpeech.test.ts
++++ /dev/null
+@@ -1,132 +0,0 @@
+-// The apps' own speech plugin (1.9, build 95 note 25): one contract, two
+-// halves. The player (lib/listen/speech/engine.ts) asks both the same five
+-// things and reads the same reports from both, so a method or a report named
+-// on one side and not the other would leave a phone silent, or a verse never
+-// lit. Neither half compiles here (no Android SDK, no Xcode), so this reads
+-// them; the phone walk on the release APK and TestFlight proves them.
+-//
+-// What a reader would notice if this broke: Listen that does nothing on one
+-// of the two phones; a voice muted by the iPhone's silent switch, or that
+-// stops when the screen locks; the text of a reading sent away to be spoken.
+-
+-import fs from "node:fs";
+-
+-import { describe, expect, it } from "vitest";
+-
+-const read = (p: string) => fs.readFileSync(p, "utf8");
+-const JAVA = read("android/app/src/main/java/net/purifyapp/purify/speech/PurifySpeechPlugin.java");
+-const SWIFT = read("ios/App/App/PurifySpeechPlugin.swift");
+-const ENGINE = read("lib/listen/speech/engine.ts");
+-const METHODS = ["voices", "speak", "stop", "preview", "nowPlaying"];
+-const REPORTS = ["start", "word", "done", "end", "error"];
+-
+-describe("the speech plugin's two halves", () => {
+-  it("answer to one name and the same five methods", () => {
+-    expect(JAVA).toContain('@CapacitorPlugin(name = "PurifySpeech")');
+-    expect(SWIFT).toContain('public let jsName = "PurifySpeech"');
+-    expect(ENGINE).toContain('nativePlugin<PurifySpeechPlugin>("PurifySpeech")');
+-    for (const m of METHODS) {
+-      expect(JAVA, m).toContain(`public void ${m}(PluginCall call)`);
+-      expect(SWIFT, m).toContain(`CAPPluginMethod(name: "${m}", returnType: CAPPluginReturnPromise)`);
+-      expect(SWIFT, m).toContain(`@objc func ${m}(_ call: CAPPluginCall)`);
+-    }
+-  });
+-
+-  it("report on one channel, with the reports the player reads, and the iPhone's lock screen buttons", () => {
+-    expect(JAVA).toContain('notifyListeners("speech", e)');
+-    expect(SWIFT).toContain('notifyListeners("speech", data: payload)');
+-    for (const r of REPORTS) {
+-      expect(ENGINE, r).toContain(`type: "${r}"`);
+-      expect(JAVA, r).toMatch(new RegExp(`send\\("${r}"`));
+-    }
+-    for (const r of ["start", "word", "done", "end"]) expect(SWIFT, r).toContain(`"type": "${r}"`);
+-    expect(SWIFT).toContain('"type": "remote"');
+-    for (const a of ["play", "pause", "toggle", "skip"]) expect(SWIFT).toContain(`tell("${a}"`);
+-  });
+-
+-  it("count a word's letters in the piece as it was given, the reading's start added back", () => {
+-    expect(JAVA).toContain("send(\"word\", p, start + shift, end + shift)");
+-    expect(SWIFT).toContain('"start": range.location + s.shift');
+-  });
+-
+-  it("list only voices on the phone: none that sends the text away, none not installed, no novelty voice", () => {
+-    expect(JAVA).toContain("!v.isNetworkConnectionRequired() && !missing");
+-    expect(JAVA).toContain("KEY_FEATURE_NOT_INSTALLED");
+-    expect(SWIFT).toContain("v.voiceTraits.contains(.isNoveltyVoice)");
+-    expect(ENGINE).toContain(".filter((v) => v.localService)");
+-  });
+-
+-  it("queue every piece at once, so the phone reads on with the screen off", () => {
+-    expect(JAVA).toContain("TextToSpeech.QUEUE_ADD");
+-    expect(SWIFT).toContain("self.synth.speak(u)");
+-  });
+-
+-  it("on the iPhone, speak in the playback session, so the silent switch does not mute it, with background audio declared", () => {
+-    expect(SWIFT).toContain("session.setCategory(.playback, mode: .spokenAudio");
+-    expect(read("ios/App/App/Info.plist")).toMatch(/<key>UIBackgroundModes<\/key>\s*<array>\s*<string>audio<\/string>/);
+-  });
+-
+-  it("on the iPhone, hold the plugin weakly from the synthesizer's delegate", () => {
+-    expect(SWIFT).toContain("weak var owner: PurifySpeechPlugin?");
+-  });
+-
+-  it("on Android, take the app's context and let the phone go when the app does", () => {
+-    expect(JAVA).toContain("new TextToSpeech(getContext().getApplicationContext()");
+-    expect(JAVA).toContain("tts.shutdown()");
+-  });
+-
+-  // Updates 17, item 4 (the arbiter's brief): a phone call, Siri or the
+-  // assistant, or another app taking the sound during a reading pauses the
+-  // voice at its word, as a recording pauses for a call. Until then the voice
+-  // talked on through a call on Android (no audio focus was asked), and on an
+-  // iPhone the player said it was playing while the phone was silent.
+-  it("on Android, hold the audio focus for media speech while reading: a call stops the voice and gives it back, another app keeping the sound leaves it paused", () => {
+-    expect(JAVA).toMatch(/new AudioFocusRequest\.Builder\(AudioManager\.AUDIOFOCUS_GAIN\)\s*\.setAudioAttributes\(SPEECH\)/);
+-    expect(JAVA).toContain(".setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)");
+-    // Taken before the pieces are queued; not over a call.
+-    expect(JAVA.indexOf("if (!takeFocus())")).toBeGreaterThan(-1);
+-    expect(JAVA.indexOf("if (!takeFocus())")).toBeLessThan(JAVA.indexOf("TextToSpeech.QUEUE_ADD"));
+-    // A moment's loss stops and keeps the claim; the gain after it says the reading may go on.
+-    expect(JAVA).toMatch(/AUDIOFOCUS_LOSS_TRANSIENT\) \{[\s\S]*?lostForAMoment = true;[\s\S]*?tts\.stop\(\);[\s\S]*?interruption\(true, false\);/);
+-    expect(JAVA).toMatch(/AUDIOFOCUS_GAIN\) \{[\s\S]*?if \(back\) interruption\(false, true\);/);
+-    // A loss for good lets the claim go and says nothing more.
+-    expect(JAVA).toMatch(/AUDIOFOCUS_LOSS\) \{[\s\S]*?dropFocus\(\);[\s\S]*?interruption\(true, false\);/);
+-    // Let go when the reader stops it and when the reading ends, never left held.
+-    expect(JAVA).toMatch(/public void stop\(PluginCall call\) \{[\s\S]*?dropFocus\(\);/);
+-    expect(JAVA).toMatch(/send\("end", p, -1, -1\);\s*finishedReading\(/);
+-    expect(JAVA).toContain('e.put("type", "interruption")');
+-  });
+-
+-  it("on the iPhone, stop at the word when the audio session is interrupted, and say whether the phone lets the reading go on", () => {
+-    expect(SWIFT).toContain("name: AVAudioSession.interruptionNotification");
+-    expect(SWIFT).toMatch(/case \.began:[\s\S]*?guard !self\.spoken\.isEmpty else \{ return \}[\s\S]*?self\.synth\.stopSpeaking\(at: \.immediate\)[\s\S]*?"type": "interruption", "began": true/);
+-    expect(SWIFT).toContain(".contains(.shouldResume)");
+-    expect(SWIFT).toMatch(/case \.ended:[\s\S]*?guard self\.interruptedWhileReading else \{ return \}[\s\S]*?"type": "interruption", "began": false, "resume": resume/);
+-    // The reader's own pause during a call: nothing is taken up after it.
+-    expect(SWIFT).toMatch(/@objc func stop\(_ call: CAPPluginCall\) \{[\s\S]*?self\.interruptedWhileReading = false/);
+-  });
+-
+-  it("the player reads both halves' interruptions as one report", () => {
+-    expect(ENGINE).toContain('type: "interruption"; began: boolean; resume?: boolean');
+-  });
+-
+-  it("are registered in both apps, and the iPhone's file is built into the app, not the widgets", () => {
+-    expect(read("android/app/src/main/java/net/purifyapp/purify/MainActivity.java")).toMatch(/registerPlugin\(PurifySpeechPlugin\.class\);\s*\n\s*super\.onCreate/);
+-    expect(read("ios/App/App/PurifyBridgeViewController.swift")).toContain("bridge?.registerPluginInstance(PurifySpeechPlugin())");
+-    const project = read("ios/App/App.xcodeproj/project.pbxproj");
+-    const build = /(\w+) \/\* PurifySpeechPlugin\.swift in Sources \*\/ = \{isa = PBXBuildFile; fileRef = (\w+)/.exec(project);
+-    expect(build).not.toBeNull();
+-    expect(project).toContain(`${build![2]} /* PurifySpeechPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurifySpeechPlugin.swift;`);
+-    // The app target's Sources phase is the one that builds the widget bridge.
+-    const phases = [...project.matchAll(/\/\* Sources \*\/ = \{\s*isa = PBXSourcesBuildPhase;[\s\S]*?files = \(([\s\S]*?)\);/g)].map((m) => m[1]);
+-    const app = phases.find((f) => f.includes("WidgetBridgePlugin.swift in Sources"));
+-    expect(app).toContain(`${build![1]} /* PurifySpeechPlugin.swift in Sources */`);
+-    expect(phases.filter((f) => f.includes("PurifySpeechPlugin"))).toHaveLength(1);
+-  });
+-
+-  it("can find the phone's speech engine on Android 11 and later (a visibility rule, not a permission)", () => {
+-    const manifest = read("android/app/src/main/AndroidManifest.xml");
+-    expect(manifest).toMatch(/<queries>\s*<intent>\s*<action android:name="android\.intent\.action\.TTS_SERVICE" \/>\s*<\/intent>\s*<\/queries>/);
+-    expect(manifest).not.toContain("QUERY_ALL_PACKAGES");
+-  });
+-});
+diff --git a/lib/listen/speech/__tests__/session.test.ts b/lib/listen/speech/__tests__/session.test.ts
+deleted file mode 100644
+index fb5a61f7d..000000000
+--- a/lib/listen/speech/__tests__/session.test.ts
++++ /dev/null
+@@ -1,438 +0,0 @@
+-// The phone's voice plays through the one player (1.9, build 95 note 25,
+-// the arbiter's brief: "It is a second player, so play, pause, the lock
+-// screen, the sleep timer and ambience's balance are all wired to it").
+-//
+-// The sleep timer, the ambience's balance and the lock screen all follow the
+-// player's snapshot (lib/player/sleep.ts, lib/ambience/player.ts,
+-// lib/player/lockScreen.ts), so a voice is wired to them when it moves the
+-// snapshot as a recording does. These tests drive the real player with a
+-// stand-in for the phone, reporting as the plugin does, and fail if a rule
+-// breaks. What a reader would notice: the verse lit before the voice reaches
+-// it, Play starting the chapter again after a pause, the ambience staying
+-// loud under the voice, the sleep timer never stopping it.
+-
+-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+-
+-import type { SpeakAsk, SpeechEngine, SpeechEvent } from "@/lib/listen/speech/engine";
+-import { DEFAULT_PACE, speechTimeline, timeAtChar, wordStarts } from "@/lib/listen/speech/timeline";
+-
+-class FakeAudio {
+-  src = "";
+-  error = null;
+-  paused = true;
+-  currentTime = 0;
+-  duration = NaN;
+-  loop = false;
+-  volume = 1;
+-  preload = "";
+-  playbackRate = 1;
+-  defaultPlaybackRate = 1;
+-  addEventListener() {}
+-  removeAttribute(name: string) {
+-    if (name === "src") this.src = "";
+-  }
+-  load() {}
+-  play() {
+-    this.paused = false;
+-    return Promise.resolve();
+-  }
+-  pause() {
+-    this.paused = true;
+-  }
+-}
+-
+-/** The phone, as the plugin reports it. */
+-function phone() {
+-  const asks: SpeakAsk[] = [];
+-  let stops = 0;
+-  const listeners = new Set<(e: SpeechEvent) => void>();
+-  const engine: SpeechEngine = {
+-    side: "android",
+-    voices: async () => [],
+-    speak: async (ask) => {
+-      asks.push(ask);
+-    },
+-    stop: async () => {
+-      stops += 1;
+-    },
+-    preview: async () => {},
+-    nowPlaying: async () => {},
+-    onEvent: (l) => {
+-      listeners.add(l);
+-      return () => listeners.delete(l);
+-    },
+-  };
+-  const say = (e: SpeechEvent) => {
+-    for (const l of [...listeners]) l(e);
+-  };
+-  return { engine, asks, stops: () => stops, say, last: () => asks[asks.length - 1] };
+-}
+-
+-const VERSES = [
+-  { text: "In the beginning God created the heaven and the earth.", n: 1 },
+-  { text: "And the earth was without form, and void; and darkness was upon the face of the deep.", n: 2 },
+-  { text: "And God said, Let there be light: and there was light.", n: 3 },
+-];
+-
+-type Store = typeof import("@/lib/prayers/persistentAudioStore");
+-let store: Store;
+-let session: typeof import("@/lib/listen/speech/session");
+-let ms = 0;
+-
+-async function load(p: ReturnType<typeof phone>, opts: { rate?: number; pieces?: typeof VERSES } = {}) {
+-  const pieces = opts.pieces ?? VERSES;
+-  const t = speechTimeline(pieces, DEFAULT_PACE);
+-  store.setSpokenTrack(
+-    "speech:genesis/1",
+-    (host) =>
+-      session.createSpeechSession({ engine: p.engine, pieces, lang: "en", voice: "en-gb-x-gba-local", rate: opts.rate ?? 1, pace: DEFAULT_PACE, host, clock: () => ms }),
+-    { title: "Genesis 1", captions: t.captions, duration: t.duration, rate: opts.rate ?? 1 },
+-  );
+-  return t;
+-}
+-
+-beforeEach(async () => {
+-  vi.useFakeTimers();
+-  vi.resetModules();
+-  ms = 0;
+-  vi.stubGlobal("window", {});
+-  vi.stubGlobal("navigator", {});
+-  vi.stubGlobal("Audio", FakeAudio);
+-  store = await import("@/lib/prayers/persistentAudioStore");
+-  session = await import("@/lib/listen/speech/session");
+-});
+-
+-afterEach(() => {
+-  vi.useRealTimers();
+-  vi.unstubAllGlobals();
+-});
+-
+-describe("a text spoken by the phone's voice, in the one player", () => {
+-  it("is loaded paused at its start, with its length and its verses as the player's words", async () => {
+-    const p = phone();
+-    const t = await load(p);
+-    const s = store.getAudioSnapshot();
+-    expect(s.src).toBe("speech:genesis/1");
+-    expect(s.playing).toBe(false);
+-    expect(s.duration).toBe(t.duration);
+-    expect(s.captions?.map((c) => c.n)).toEqual([1, 2, 3]);
+-    expect(p.asks).toHaveLength(0);
+-    expect(store.isSpoken()).toBe(true);
+-  });
+-
+-  it("plays by asking the phone for every piece at once, and says it is playing, which the ambience and the lock screen follow", async () => {
+-    const p = phone();
+-    await load(p);
+-    store.play();
+-    expect(p.last()).toMatchObject({ from: 0, offset: 0, lang: "en", voice: "en-gb-x-gba-local", rate: 1 });
+-    expect(p.last().pieces).toEqual(VERSES.map((v) => v.text));
+-    expect(store.getAudioSnapshot().playing).toBe(true);
+-  });
+-
+-  it("lights a verse only when the phone begins it", async () => {
+-    const p = phone();
+-    const t = await load(p);
+-    store.play();
+-    const token = p.last().token;
+-    p.say({ type: "start", token, index: 0 });
+-    ms += 60_000;
+-    // Long past verse 1's estimate, the phone still on it: verse 2 is not lit.
+-    expect(store.currentTimeNow()).toBeLessThan(t.starts[1] - 0.15);
+-    p.say({ type: "done", token, index: 0 });
+-    expect(store.currentTimeNow()).toBeLessThan(t.starts[1] - 0.15);
+-    p.say({ type: "start", token, index: 1 });
+-    expect(store.currentTimeNow()).toBe(t.starts[1]);
+-  });
+-
+-  it("follows the words where the phone reports them: the captions take each word's time, and the clock stands on the word said", async () => {
+-    const p = phone();
+-    await load(p);
+-    store.play();
+-    const token = p.last().token;
+-    p.say({ type: "start", token, index: 2 });
+-    const second = wordStarts(VERSES[2].text)[3];
+-    p.say({ type: "word", token, index: 2, start: second, end: second + 4 });
+-    const s = store.getAudioSnapshot();
+-    expect(s.captions?.[2].wordTimes).toHaveLength(wordStarts(VERSES[2].text).length);
+-    const words = speechTimeline(VERSES, DEFAULT_PACE, { words: true });
+-    expect(store.currentTimeNow()).toBeCloseTo(timeAtChar(words, 2, second), 6);
+-  });
+-
+-  it("stops the phone on Pause and takes the reading up at the word it was on", async () => {
+-    const p = phone();
+-    await load(p);
+-    store.play();
+-    const token = p.last().token;
+-    p.say({ type: "start", token, index: 1 });
+-    const word = wordStarts(VERSES[1].text)[5];
+-    p.say({ type: "word", token, index: 1, start: word, end: word + 4 });
+-    store.pause();
+-    expect(p.stops()).toBe(1);
+-    expect(store.getAudioSnapshot().playing).toBe(false);
+-    store.play();
+-    expect(p.last()).toMatchObject({ from: 1, offset: word });
+-  });
+-
+-  it("takes up at the next verse when paused between two", async () => {
+-    const p = phone();
+-    await load(p);
+-    store.play();
+-    const token = p.last().token;
+-    p.say({ type: "start", token, index: 0 });
+-    p.say({ type: "done", token, index: 0 });
+-    store.pause();
+-    store.play();
+-    expect(p.last()).toMatchObject({ from: 1, offset: 0 });
+-  });
+-
+-  it("goes to the word a seek falls on, and a tap on a line to its first word", async () => {
+-    const p = phone();
+-    const t = await load(p);
+-    store.play();
+-    const at = t.starts[2] + 0.5;
+-    const word = wordStarts(VERSES[2].text).filter((s) => timeAtChar(t, 2, s) <= at).pop()!;
+-    expect(word).toBeGreaterThan(0);
+-    store.seek(at);
+-    expect(p.last()).toMatchObject({ from: 2, offset: word });
+-    expect(store.getAudioSnapshot().currentTime).toBe(timeAtChar(t, 2, word));
+-    store.seek(t.starts[1]);
+-    expect(p.last()).toMatchObject({ from: 1, offset: 0 });
+-    expect(store.getAudioSnapshot().currentTime).toBe(t.starts[1]);
+-    // In the breath after a verse: the next verse's start.
+-    store.seek(t.ends[0] - 0.1);
+-    expect(p.last()).toMatchObject({ from: 1, offset: 0 });
+-    // Back 15 with less than 15 seconds behind: the start.
+-    p.say({ type: "start", token: p.last().token, index: 1 });
+-    store.skipBy(-15);
+-    expect(p.last()).toMatchObject({ from: 0, offset: 0 });
+-  });
+-
+-  // Build 98 note 2 (Updates 98n, then 98o): Now Playing's 15 seconds back and forward while the voice reads.
+-  // To the start of the piece the moment fell in, 15 seconds on inside a long paragraph went back to that
+-  // paragraph's start; 98n then sent it to the next piece, which skipped the rest of the paragraph, and back 15
+-  // still went to the paragraph's start, however far that was. Now each moves about 15 seconds, as on a recording.
+-  it("moves about 15 seconds forward and back inside a long paragraph, and the voice reads on from that word", async () => {
+-    const p = phone();
+-    const long = [{ text: Array(200).fill("word").join(" "), n: 1 }, { text: "And the next paragraph.", n: 2 }, { text: "The last.", n: 3 }];
+-    const t = await load(p, { pieces: long });
+-    store.play();
+-    p.say({ type: "start", token: p.last().token, index: 0 });
+-    ms += 5000;
+-    const before = store.currentTimeNow();
+-    expect(before).toBeCloseTo(5, 5);
+-    store.skipBy(15);
+-    const ahead = p.last();
+-    expect(ahead.from).toBe(0);
+-    expect(ahead.offset).toBeGreaterThan(0);
+-    const landed = store.getAudioSnapshot().currentTime;
+-    expect(landed).toBe(timeAtChar(t, 0, ahead.offset));
+-    expect(landed).toBeGreaterThan(before + 14.5);
+-    expect(landed).toBeLessThanOrEqual(before + 15);
+-    // The voice is asked to read on from that word, and the clock and the lit word follow what it says.
+-    expect(store.getAudioSnapshot().playing).toBe(true);
+-    const next = wordStarts(long[0].text).find((s) => s > ahead.offset)!;
+-    p.say({ type: "word", token: ahead.token, index: 0, start: next, end: next + 4 });
+-    expect(store.currentTimeNow()).toBe(timeAtChar(t, 0, next));
+-    // Back 15 goes back about 15 seconds, not to the paragraph's start.
+-    const from = store.currentTimeNow();
+-    store.skipBy(-15);
+-    const back = p.last();
+-    expect(back.from).toBe(0);
+-    expect(back.offset).toBeGreaterThan(0);
+-    const after = store.getAudioSnapshot().currentTime;
+-    expect(after).toBeGreaterThan(from - 15.5);
+-    expect(after).toBeLessThanOrEqual(from - 15);
+-    // Forward past the end: the last word, so the reading ends there as a recording does.
+-    store.seek(t.starts[2]);
+-    p.say({ type: "start", token: p.last().token, index: 2 });
+-    store.skipBy(15);
+-    expect(p.last()).toMatchObject({ from: 2, offset: wordStarts(long[2].text).pop() });
+-  });
+-
+-  it("takes a new speed at once, from where it is", async () => {
+-    const p = phone();
+-    await load(p);
+-    store.play();
+-    p.say({ type: "start", token: p.last().token, index: 1 });
+-    store.setRate(1.5);
+-    expect(p.last()).toMatchObject({ from: 1, rate: 1.5 });
+-    expect(store.getAudioSnapshot().rate).toBe(1.5);
+-  });
+-
+-  it("never takes a report from a reading stopped a moment ago for the one now", async () => {
+-    const p = phone();
+-    const t = await load(p);
+-    store.play();
+-    const old = p.last().token;
+-    store.seek(t.starts[2]);
+-    p.say({ type: "start", token: old, index: 0 });
+-    p.say({ type: "end", token: old });
+-    expect(store.getAudioSnapshot().playing).toBe(true);
+-    expect(store.currentTimeNow()).toBe(t.starts[2]);
+-  });
+-
+-  it("stops at the end, back at the start", async () => {
+-    const p = phone();
+-    await load(p);
+-    store.play();
+-    p.say({ type: "end", token: p.last().token });
+-    const s = store.getAudioSnapshot();
+-    expect(s.playing).toBe(false);
+-    expect(s.currentTime).toBe(0);
+-  });
+-
+-  it("reads again at the end while Loop is on, for ever or the repeats left", async () => {
+-    const p = phone();
+-    await load(p);
+-    store.setLoopMode("inf");
+-    store.play();
+-    p.say({ type: "end", token: p.last().token });
+-    expect(p.asks).toHaveLength(2);
+-    expect(p.last()).toMatchObject({ from: 0, offset: 0 });
+-    store.setLoopMode(3);
+-    p.say({ type: "end", token: p.last().token });
+-    expect(p.asks).toHaveLength(3);
+-  });
+-
+-  it("obeys a sleep timer set to the end, over any loop", async () => {
+-    const p = phone();
+-    await load(p);
+-    store.setLoopMode("inf");
+-    store.setSleep({ kind: "end" });
+-    store.play();
+-    p.say({ type: "end", token: p.last().token });
+-    expect(p.asks).toHaveLength(1);
+-    expect(store.getAudioSnapshot()).toMatchObject({ playing: false, sleep: { kind: "off" } });
+-  });
+-
+-  it("is stopped by a recording loaded after it, and by the player put away", async () => {
+-    const p = phone();
+-    await load(p);
+-    store.play();
+-    store.setTrack("https://audio.purifyapp.net/read/john/1.mp3", { title: "John 1" });
+-    expect(p.stops()).toBe(1);
+-    expect(store.isSpoken()).toBe(false);
+-    const q = phone();
+-    await load(q);
+-    store.play();
+-    store.unload();
+-    expect(q.stops()).toBe(1);
+-    expect(store.getAudioSnapshot().src).toBeNull();
+-  });
+-
+-  it("says when the phone could not speak, and Play asks it again", async () => {
+-    const p = phone();
+-    await load(p);
+-    store.play();
+-    p.say({ type: "error", token: p.last().token, index: 0, message: "synthesis-failed" });
+-    expect(store.getAudioSnapshot()).toMatchObject({ playing: false, failed: true });
+-    store.play();
+-    expect(p.asks).toHaveLength(2);
+-    expect(store.getAudioSnapshot().failed).toBe(false);
+-  });
+-
+-  it("answers the iPhone's lock screen buttons through the player", async () => {
+-    const p = phone();
+-    const t = await load(p);
+-    p.say({ type: "remote", action: "toggle" });
+-    expect(store.getAudioSnapshot().playing).toBe(true);
+-    p.say({ type: "start", token: p.last().token, index: 0 });
+-    p.say({ type: "remote", action: "skip", seconds: 15 });
+-    expect(p.last().from).toBe(pieceOf(t, 15));
+-    p.say({ type: "remote", action: "pause" });
+-    expect(store.getAudioSnapshot().playing).toBe(false);
+-  });
+-
+-  it("keeps the voice's pace when it has spoken a verse whole, for the next reading's timeline", async () => {
+-    const p = phone();
+-    const kept: number[] = [];
+-    const t = speechTimeline(VERSES, DEFAULT_PACE);
+-    store.setSpokenTrack(
+-      "speech:genesis/1",
+-      (host) => session.createSpeechSession({ engine: p.engine, pieces: VERSES, lang: "en", voice: null, rate: 1, pace: DEFAULT_PACE, host, clock: () => ms, onPace: (x) => kept.push(x) }),
+-      { captions: t.captions, duration: t.duration },
+-    );
+-    store.play();
+-    const token = p.last().token;
+-    p.say({ type: "start", token, index: 1 });
+-    ms += (VERSES[1].text.length / 10 + 0.35) * 1000;
+-    p.say({ type: "done", token, index: 1 });
+-    expect(kept).toHaveLength(1);
+-    expect(kept[0]).toBeCloseTo((DEFAULT_PACE + 10) / 2, 3);
+-  });
+-});
+-
+-// A phone call, Siri or another app taking the sound during a reading (the
+-// arbiter's brief for Updates 17, item 4): the voice pauses at its word, as a
+-// recording pauses for a call, and is ready to take up there. What a reader
+-// would notice if this broke: the player saying it plays through a call while
+-// the phone is silent, the reading starting its verse again after the call,
+-// or a reading the reader paused during the call starting again by itself.
+-describe("a call, Siri or another app taking the sound during a reading", () => {
+-  async function onAWord() {
+-    const p = phone();
+-    await load(p);
+-    store.play();
+-    const token = p.last().token;
+-    p.say({ type: "start", token, index: 1 });
+-    const word = wordStarts(VERSES[1].text)[4];
+-    p.say({ type: "word", token, index: 1, start: word, end: word + 3 });
+-    return { p, word };
+-  }
+-
+-  it("pauses the player at the word, without asking the phone to stop again (it has stopped, and keeps its claim on the sound)", async () => {
+-    const { p } = await onAWord();
+-    const stops = p.stops();
+-    p.say({ type: "interruption", began: true });
+-    expect(store.getAudioSnapshot().playing).toBe(false);
+-    expect(p.stops()).toBe(stops);
+-  });
+-
+-  it("goes on at the same word when the phone gives the sound back and says it may (a call or Siri over)", async () => {
+-    const { p, word } = await onAWord();
+-    const asked = p.asks.length;
+-    p.say({ type: "interruption", began: true });
+-    p.say({ type: "interruption", began: false, resume: true });
+-    expect(p.asks).toHaveLength(asked + 1);
+-    expect(p.last()).toMatchObject({ from: 1, offset: word });
+-    expect(store.getAudioSnapshot().playing).toBe(true);
+-  });
+-
+-  it("waits for the reader when the phone gives the sound back without saying it may, or another app keeps it; Play takes it up at the word", async () => {
+-    const { p, word } = await onAWord();
+-    const asked = p.asks.length;
+-    p.say({ type: "interruption", began: true });
+-    p.say({ type: "interruption", began: false, resume: false });
+-    expect(p.asks).toHaveLength(asked);
+-    expect(store.getAudioSnapshot().playing).toBe(false);
+-    store.play();
+-    expect(p.last()).toMatchObject({ from: 1, offset: word });
+-  });
+-
+-  it("does not start again by itself when the reader paused it during the call, and lets the phone's claim on the sound go", async () => {
+-    const { p } = await onAWord();
+-    const asked = p.asks.length;
+-    p.say({ type: "interruption", began: true });
+-    const stops = p.stops();
+-    store.pause();
+-    expect(p.stops()).toBe(stops + 1);
+-    p.say({ type: "interruption", began: false, resume: true });
+-    expect(p.asks).toHaveLength(asked);
+-    expect(store.getAudioSnapshot().playing).toBe(false);
+-  });
+-
+-  it("is nothing to a reading that was not speaking", async () => {
+-    const p = phone();
+-    await load(p);
+-    p.say({ type: "interruption", began: true });
+-    p.say({ type: "interruption", began: false, resume: true });
+-    expect(p.asks).toHaveLength(0);
+-    expect(store.getAudioSnapshot().playing).toBe(false);
+-  });
+-});
+-
+-function pieceOf(t: ReturnType<typeof speechTimeline>, time: number): number {
+-  let at = 0;
+-  for (let i = 0; i < t.starts.length; i++) if (t.starts[i] <= time) at = i;
+-  return at;
+-}
+diff --git a/lib/listen/speech/__tests__/spoken.test.ts b/lib/listen/speech/__tests__/spoken.test.ts
+deleted file mode 100644
+index a2e7c77b7..000000000
+--- a/lib/listen/speech/__tests__/spoken.test.ts
++++ /dev/null
+@@ -1,118 +0,0 @@
+-// A text read by the phone's voice, as the one player knows it (1.9, build 95
+-// note 25, Updates 17): its address says what it is, so the player's Speed,
+-// Read (at the verse), Share and the page's lit verse know a spoken chapter
+-// as they know a recorded one; the phone's voices are named as a reader can
+-// read them; each voice's pace is kept for its next reading. What a reader
+-// would notice if this broke: no Speed or Read for a chapter the phone reads,
+-// Read opening the wrong page, a Greek Bible with no voice at all, voices
+-// listed as "en-gb-x-gba-local", or the seek bar's length wrong every time.
+-
+-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+-
+-import type { PhoneVoice } from "@/lib/listen/speech/engine";
+-import { spokenBibleSrc, spokenOf, spokenTextSrc, voiceLang } from "@/lib/listen/speech/spoken";
+-import { voiceRows } from "@/lib/listen/speech/voices";
+-import { playingOf, readHref, shareHref } from "@/lib/player/steps";
+-
+-describe("a spoken text's address", () => {
+-  it("names a chapter of the English Bible, and of a downloaded one", () => {
+-    expect(spokenOf(spokenBibleSrc("genesis", 1))).toEqual({ kind: "bible", book: "genesis", chapter: 1, bible: null });
+-    expect(spokenOf(spokenBibleSrc("psalms", 50, "ru-synodal"))).toEqual({ kind: "bible", book: "psalms", chapter: 50, bible: "ru-synodal" });
+-  });
+-
+-  it("names a life, a council's section, a study's part, an event and a work's section, with the language read", () => {
+-    expect(spokenOf(spokenTextSrc("life/xenia-of-petersburg", "ru"))).toEqual({ kind: "text", id: "life/xenia-of-petersburg", lang: "ru" });
+-    expect(spokenOf(spokenTextSrc("council/nicaea-i/creed/2", "en"))).toEqual({ kind: "text", id: "council/nicaea-i/creed/2", lang: "en" });
+-    expect(spokenOf(spokenTextSrc("work/antony-the-great/life-of-antony/3", "en"))?.kind).toBe("text");
+-  });
+-
+-  it("is nothing for a recording's address or a name that is no text's", () => {
+-    expect(spokenOf("https://audio.purifyapp.net/read/john/1.mp3")).toBeNull();
+-    expect(spokenOf("speech:genesis/1")).toBeNull();
+-    expect(spokenOf("speech:bible/genesis/x")).toBeNull();
+-    expect(spokenOf(null)).toBeNull();
+-  });
+-
+-  it("is a chapter to the player: Speed, Read at the verse being read, and Share", () => {
+-    const playing = playingOf(spokenBibleSrc("genesis", 1));
+-    expect(playing).toEqual({ kind: "chapter", book: "genesis", chapter: 1 });
+-    expect(readHref(playing, 7)).toBe("/bible/genesis/1#v7");
+-    expect(shareHref(playing)).toBe("/bible/genesis/1");
+-    expect(playingOf(spokenBibleSrc("john", 3, "ar-van-dyck"))).toEqual({ kind: "chapter", book: "john", chapter: 3 });
+-  });
+-
+-  it("is a text to the player, opened at its part", () => {
+-    expect(playingOf(spokenTextSrc("council/nicaea-i/creed/2", "en"))).toEqual({ kind: "text", id: "council/nicaea-i/creed/2", href: "/councils/nicaea-i/creed#s2" });
+-    expect(playingOf(spokenTextSrc("life/xenia-of-petersburg", "ru"))).toEqual({ kind: "text", id: "life/xenia-of-petersburg", href: "/saints/xenia-of-petersburg" });
+-  });
+-
+-  it("asks a voice for the text's language, the Greek of the Septuagint read in the Greek of today", () => {
+-    expect(voiceLang("grc")).toBe("el");
+-    expect(voiceLang("ru")).toBe("ru");
+-    expect(voiceLang("en-GB")).toBe("en");
+-  });
+-});
+-
+-describe("the phone's voices, as the Voice sheet lists them", () => {
+-  const numbered = (n: number) => `Voice ${n}`;
+-  const voice = (id: string, lang: string, more: Partial<PhoneVoice> = {}): PhoneVoice => ({ id, name: id, lang, ...more });
+-
+-  it("names Android's ids by a number in their language, an iPhone's voices by their own names, a browser's without the language after a dash", () => {
+-    const rows = voiceRows(
+-      [
+-        voice("en-gb-x-gba-local", "en-GB", { default: true }),
+-        voice("en-gb-x-rjs-local", "en-GB"),
+-        voice("com.apple.voice.compact.en-GB.Daniel", "en-GB", { name: "Daniel" }),
+-        voice("Microsoft David - English (United States)", "en-US", { name: "Microsoft David - English (United States)" }),
+-        voice("ru-ru-x-ruf-local", "ru-RU"),
+-      ],
+-      "en",
+-      "en",
+-      numbered,
+-    );
+-    // The phone's own first, then by name (voicesFor).
+-    expect(rows.map((r) => r.name)).toEqual(["Voice 1", "Daniel", "Voice 2", "Microsoft David"]);
+-    expect(rows[0].language).toBe("British English");
+-    expect(rows[3].language).toBe("American English");
+-  });
+-
+-  it("lists a voice the phone has twice under one name once: the better, or the one chosen", () => {
+-    const compact = voice("com.apple.voice.compact.en-GB.Daniel", "en-GB", { name: "Daniel", quality: 1 });
+-    const enhanced = voice("com.apple.voice.enhanced.en-GB.Daniel", "en-GB", { name: "Daniel", quality: 2 });
+-    expect(voiceRows([compact, enhanced], "en", "en", numbered).map((r) => r.voice.id)).toEqual([enhanced.id]);
+-    expect(voiceRows([compact, enhanced], "en", "en", numbered, compact.id).map((r) => r.voice.id)).toEqual([compact.id]);
+-  });
+-
+-  it("lists none for a language the phone does not speak", () => {
+-    expect(voiceRows([voice("en-us-x-sfg-local", "en-US")], "ka", "en", numbered)).toEqual([]);
+-  });
+-});
+-
+-describe("each voice's pace, kept on the device", () => {
+-  beforeEach(() => {
+-    const store = new Map<string, string>();
+-    vi.stubGlobal("window", {
+-      localStorage: { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v), removeItem: (k: string) => void store.delete(k) },
+-    });
+-  });
+-  afterEach(() => vi.unstubAllGlobals());
+-
+-  it("is an ordinary pace before the voice has read, then what it learned, voice by voice", async () => {
+-    const { paceOf, keepPace } = await import("@/lib/listen/speech/speak");
+-    const { DEFAULT_PACE } = await import("@/lib/listen/speech/timeline");
+-    expect(paceOf("en-gb-x-gba-local")).toBe(DEFAULT_PACE);
+-    keepPace("en-gb-x-gba-local", 16.234);
+-    keepPace("Daniel", 12);
+-    expect(paceOf("en-gb-x-gba-local")).toBe(16.23);
+-    expect(paceOf("Daniel")).toBe(12);
+-  });
+-
+-  it("asks nothing of the phone for a text with its recording and no other voice chosen: Heart reads", async () => {
+-    vi.resetModules();
+-    const engine = await import("@/lib/listen/speech/engine");
+-    const asked = vi.spyOn(engine, "speechEngine");
+-    const { voiceFor } = await import("@/lib/listen/speech/speak");
+-    expect(await voiceFor("en", true)).toEqual({ kind: "heart" });
+-    expect(asked).not.toHaveBeenCalled();
+-  });
+-});
+diff --git a/lib/listen/speech/__tests__/timeline.test.ts b/lib/listen/speech/__tests__/timeline.test.ts
+deleted file mode 100644
+index f93232d71..000000000
+--- a/lib/listen/speech/__tests__/timeline.test.ts
++++ /dev/null
+@@ -1,112 +0,0 @@
+-// The phone's voice keeps time the way a recording does (1.9, build 95 note
+-// 25): a chapter or a life spoken by the phone's own voice has a length, a
+-// place, verses that light exactly as each is begun, and words that light as
+-// the phone reports them. lib/listen/speech/timeline.ts holds the rules.
+-
+-import { describe, expect, it } from "vitest";
+-
+-import { captionLines, lineAt, wordAt } from "@/lib/player/captions";
+-import {
+-  BREATH,
+-  DEFAULT_PACE,
+-  learnPace,
+-  pieceAt,
+-  speechTimeline,
+-  timeAtChar,
+-  timeWhileSpeaking,
+-  wordStarts,
+-} from "@/lib/listen/speech/timeline";
+-
+-const VERSES = [
+-  { text: "In the beginning God created the heaven and the earth.", n: 1 },
+-  { text: "And the earth was without form, and void.", n: 2 },
+-  { text: "And God said, Let there be light: and there was light.", n: 3 },
+-];
+-
+-describe("a spoken text's timeline", () => {
+-  it("gives every piece a start, an end where the next begins, and a length from its letters at the voice's pace", () => {
+-    const t = speechTimeline(VERSES, DEFAULT_PACE);
+-    expect(t.starts[0]).toBe(0);
+-    expect(t.starts).toHaveLength(3);
+-    for (let i = 0; i < 3; i++) {
+-      const length = VERSES[i].text.length / DEFAULT_PACE + BREATH;
+-      expect(t.ends[i] - t.starts[i]).toBeCloseTo(length, 6);
+-      if (i < 2) expect(t.ends[i]).toBe(t.starts[i + 1]);
+-    }
+-    expect(t.duration).toBe(t.ends[2]);
+-  });
+-
+-  it("is the player's captions: each verse its number, its time and its end, and no word times until the phone reports words", () => {
+-    const t = speechTimeline(VERSES, DEFAULT_PACE);
+-    expect(t.captions.map((c) => c.n)).toEqual([1, 2, 3]);
+-    expect(t.captions.map((c) => c.time)).toEqual(t.starts);
+-    expect(t.captions.every((c) => c.wordTimes === undefined)).toBe(true);
+-    const words = speechTimeline(VERSES, DEFAULT_PACE, { words: true });
+-    expect(words.captions[0].wordTimes).toHaveLength(VERSES[0].text.split(/\s+/).length);
+-  });
+-
+-  it("lights a verse exactly when the voice begins it: never a breath before", () => {
+-    const t = speechTimeline(VERSES, DEFAULT_PACE);
+-    const lines = captionLines(t.captions, t.duration);
+-    // The voice is still on verse 1 as late as the timeline lets it run.
+-    const lateInOne = timeWhileSpeaking(t, 0, 0, 999, 1);
+-    expect(lineAt(lines, lateInOne)).toBe(0);
+-    // Verse 2 lights only at its own start, which the voice reports.
+-    expect(lineAt(lines, t.starts[1])).toBe(1);
+-  });
+-
+-  it("lights the very word the phone says it is speaking", () => {
+-    const t = speechTimeline(VERSES, DEFAULT_PACE, { words: true });
+-    const lines = captionLines(t.captions, t.duration);
+-    const text = VERSES[2].text;
+-    const starts = wordStarts(text);
+-    for (let j = 0; j < starts.length; j++) {
+-      // The phone reports the word's first letter, or a letter inside it.
+-      for (const at of [starts[j], starts[j] + 1]) {
+-        if (at >= text.length) continue;
+-        const time = timeAtChar(t, 2, at);
+-        expect(lineAt(lines, time)).toBe(2);
+-        expect(wordAt(lines[2].words, time)).toBe(j);
+-      }
+-    }
+-  });
+-
+-  it("finds the piece a moment falls in, for a seek and for skipping 15 seconds", () => {
+-    const t = speechTimeline(VERSES, DEFAULT_PACE);
+-    expect(pieceAt(t, -3)).toBe(0);
+-    expect(pieceAt(t, 0)).toBe(0);
+-    expect(pieceAt(t, t.starts[1] + 0.01)).toBe(1);
+-    expect(pieceAt(t, t.duration + 50)).toBe(2);
+-  });
+-
+-  it("moves on at the reader's speed while a piece is spoken, and never past the piece or the next word", () => {
+-    const t = speechTimeline(VERSES, DEFAULT_PACE, { words: true });
+-    const at = timeWhileSpeaking(t, 1, 0, 1, 2);
+-    expect(at).toBeCloseTo(t.starts[1] + 2, 6);
+-    expect(timeWhileSpeaking(t, 1, 0, 60, 2)).toBeLessThan(t.starts[2]);
+-    // Since the word the phone reported, never into the next word.
+-    const second = wordStarts(VERSES[1].text)[1];
+-    const from = timeAtChar(t, 1, second);
+-    const third = timeAtChar(t, 1, wordStarts(VERSES[1].text)[2]);
+-    expect(timeWhileSpeaking(t, 1, second, 30, 1, true)).toBeLessThan(third);
+-    expect(timeWhileSpeaking(t, 1, second, 0, 1, true)).toBeCloseTo(from, 6);
+-  });
+-
+-  it("learns a voice's own pace from what it has spoken, and keeps it sane", () => {
+-    const text = "x".repeat(140);
+-    // 140 letters spoken in 10.35 s at speed 1 is 14 a second.
+-    expect(learnPace(DEFAULT_PACE, text.length, 10 + BREATH, 1)).toBeCloseTo((DEFAULT_PACE + 14) / 2, 3);
+-    // At speed 2 the same letters take half the time and the pace is the same.
+-    expect(learnPace(14, text.length, (10 + BREATH) / 2, 2)).toBeCloseTo(14, 3);
+-    // A cut-off or a stall teaches nothing.
+-    expect(learnPace(14, text.length, 0.05, 1)).toBe(14);
+-    expect(learnPace(14, text.length, 600, 1)).toBe(14);
+-    expect(learnPace(14, 3, 1, 1)).toBe(14);
+-  });
+-
+-  it("gives a text with no pieces no length and no captions", () => {
+-    const t = speechTimeline([], DEFAULT_PACE);
+-    expect(t.duration).toBe(0);
+-    expect(t.captions).toEqual([]);
+-  });
+-});
+diff --git a/lib/listen/speech/__tests__/voiceChoice.test.ts b/lib/listen/speech/__tests__/voiceChoice.test.ts
+deleted file mode 100644
+index 89d0fc351..000000000
+--- a/lib/listen/speech/__tests__/voiceChoice.test.ts
++++ /dev/null
+@@ -1,72 +0,0 @@
+-// Which voice reads a text (1.9, build 95 note 25, and his "all recs" of
+-// 2026-11-13): Heart first where a recording exists, else the phone's own
+-// voice for the language; the reader's choice kept per language; a chosen
+-// voice that has gone falls back and is said once. What a reader would
+-// notice if this broke: a Russian chapter read by an English voice, the
+-// choice forgotten, or the same "voice gone" line at every chapter.
+-
+-import { beforeEach, describe, expect, it, vi } from "vitest";
+-
+-import type { PhoneVoice } from "@/lib/listen/speech/engine";
+-
+-const VOICES: PhoneVoice[] = [
+-  { id: "en-us-x-sfg-local", name: "en-us-x-sfg-local", lang: "en-US", quality: 400 },
+-  { id: "en-gb-x-gba-local", name: "en-gb-x-gba-local", lang: "en-GB", quality: 400, default: true },
+-  { id: "en-gb-x-rjs-local", name: "en-gb-x-rjs-local", lang: "en-GB", quality: 500 },
+-  { id: "ru-ru-x-dfc-local", name: "ru-ru-x-dfc-local", lang: "ru-RU", quality: 400 },
+-];
+-
+-let m: typeof import("@/lib/listen/speech/voiceChoice");
+-const store = new Map<string, string>();
+-
+-beforeEach(async () => {
+-  store.clear();
+-  vi.stubGlobal("window", { localStorage: { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => store.set(k, v) } });
+-  vi.resetModules();
+-  m = await import("@/lib/listen/speech/voiceChoice");
+-});
+-
+-describe("which voice reads a text", () => {
+-  it("is Heart where the text has its recording and the reader has chosen nothing", () => {
+-    expect(m.voiceToUse(null, VOICES, "en", true)).toEqual({ kind: "heart" });
+-  });
+-
+-  it("is the phone's own voice for the text's language where there is no recording (the Old Testament, a life)", () => {
+-    expect(m.voiceToUse(null, VOICES, "en", false)).toMatchObject({ kind: "phone", voice: { id: "en-gb-x-gba-local" } });
+-    expect(m.voiceToUse(null, VOICES, "ru", false)).toMatchObject({ kind: "phone", voice: { id: "ru-ru-x-dfc-local" } });
+-  });
+-
+-  it("never reads a text in another language's voice: none for a language the phone lacks", () => {
+-    expect(m.voiceToUse(null, VOICES, "sr", false)).toEqual({ kind: "none" });
+-    expect(m.voiceToUse("en-gb-x-rjs-local", VOICES, "ru", false)).toMatchObject({ kind: "phone", voice: { lang: "ru-RU" } });
+-  });
+-
+-  it("is the reader's choice, kept for its language", () => {
+-    m.chooseVoice("en-GB", "en-gb-x-rjs-local");
+-    m.chooseVoice("ru", "ru-ru-x-dfc-local");
+-    m.forgetVoiceChoices();
+-    expect(m.chosenVoice("en")).toBe("en-gb-x-rjs-local");
+-    expect(m.chosenVoice("ru-RU")).toBe("ru-ru-x-dfc-local");
+-    expect(m.voiceToUse(m.chosenVoice("en"), VOICES, "en", true)).toMatchObject({ kind: "phone", voice: { id: "en-gb-x-rjs-local" } });
+-  });
+-
+-  it("falls back to Heart, else the phone's own voice, when the chosen voice has gone, and names it", () => {
+-    expect(m.voiceToUse("en-au-x-gone-local", VOICES, "en", true)).toEqual({ kind: "heart", gone: "en-au-x-gone-local" });
+-    expect(m.voiceToUse("en-au-x-gone-local", VOICES, "en", false)).toMatchObject({ kind: "phone", voice: { id: "en-gb-x-gba-local" }, gone: "en-au-x-gone-local" });
+-  });
+-
+-  it("takes Heart chosen on a text with no recording as the phone's own voice, with nothing to say", () => {
+-    expect(m.voiceToUse(m.HEART, VOICES, "en", false)).toMatchObject({ kind: "phone", voice: { id: "en-gb-x-gba-local" } });
+-    expect(m.voiceToUse(m.HEART, VOICES, "en", false)).not.toHaveProperty("gone");
+-  });
+-
+-  it("lists a language's voices with the phone's own first, then its better ones", () => {
+-    expect(m.voicesFor(VOICES, "en").map((v) => v.id)).toEqual(["en-gb-x-gba-local", "en-gb-x-rjs-local", "en-us-x-sfg-local"]);
+-  });
+-
+-  it("says a voice has gone once", () => {
+-    expect(m.goneSaid("x")).toBe(false);
+-    m.markGoneSaid("x");
+-    expect(m.goneSaid("x")).toBe(true);
+-  });
+-});
+diff --git a/lib/listen/speech/__tests__/voiceSheet.test.ts b/lib/listen/speech/__tests__/voiceSheet.test.ts
+deleted file mode 100644
+index 5f4f3a58c..000000000
+--- a/lib/listen/speech/__tests__/voiceSheet.test.ts
++++ /dev/null
+@@ -1,253 +0,0 @@
+-// The choice of voices, as the reader meets it (1.9, build 95 note 25, his
+-// "all recs" of 2026-11-13): a Voice row in the player's •••, beside the sleep
+-// timer and Ambience, opening a sheet from the player's own parts; Heart
+-// first where the text has its recording, then the phone's voices for the
+-// text's language, each with Hear it; choosing one reads what is playing again
+-// in it at the verse being read; Listen on every text a voice can read, never
+-// the prayers. What a reader would notice if this broke: no way to choose a
+-// voice, a sixth mark crowding the player's row in German, the reading
+-// starting the chapter again after a change of voice, a Listen on a prayer.
+-
+-import fs from "node:fs";
+-import path from "node:path";
+-
+-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+-
+-import type { SpeakAsk, SpeechEngine, SpeechEvent } from "@/lib/listen/speech/engine";
+-
+-const read = (rel: string) => fs.readFileSync(path.resolve(__dirname, "../../../..", rel), "utf8");
+-
+-describe("the Voice row and sheet", () => {
+-  it("stand in the player's •••, between the sleep timer and Ambience, never as a sixth mark under the controls", () => {
+-    const more = read("components/player/PlayerMore.tsx");
+-    const order = ['t("player.sleep")', 't("player.voice")', 't("ambience.title")'].map((m) => more.indexOf(m));
+-    expect(order.every((at) => at > -1)).toBe(true);
+-    expect([...order].sort((a, b) => a - b)).toEqual(order);
+-    expect(more).toMatch(/icon=\{<Voice size=\{16\} \/>\}\s*label=\{t\("player\.voice"\)\}/);
+-    expect(more).toMatch(/onClose\(\);\s*onVoice\(\);/);
+-    const player = read("components/player/NowPlayingSheet.tsx");
+-    expect(player).toContain("voice={voiceName}");
+-    expect(player).toContain("onVoice={() => openVoiceSheet({ overPlayer: true })}");
+-    // The five marks under the controls stay five.
+-    expect(player).not.toContain('t("player.option.voice")');
+-  });
+-
+-  it("is a sheet over the player, from its own parts, mounted once in the root frame", () => {
+-    const sheet = read("components/player/VoiceSheet.tsx");
+-    expect(sheet).toContain('layer={sheet.overPlayer ? "over-player" : undefined}');
+-    expect(sheet).toContain('import { Check } from "@/components/ui/icons/Check";');
+-    expect(sheet).toContain('role="radiogroup"');
+-    expect(read("components/layout/RootFrame.tsx")).toContain("<VoiceSheet />");
+-    expect(fs.existsSync(path.resolve(__dirname, "../../../../components/ui/icons/Voice.tsx"))).toBe(true);
+-  });
+-
+-  it("lists Heart first, only where the text has its recording, then the phone's voices for its language, each with Hear it", () => {
+-    const sheet = read("components/player/VoiceSheet.tsx");
+-    const heart = sheet.indexOf("{recorded ? (");
+-    const phone = sheet.indexOf("{rows.map((row) => (");
+-    expect(heart).toBeGreaterThan(-1);
+-    expect(phone).toBeGreaterThan(heart);
+-    expect(sheet).toContain("voiceRows(voices, lang, locale,");
+-    expect(sheet).toContain("hear={{ label: t(\"player.voice.hearName\", { name: row.name }), word: t(\"player.voice.hear\"), go: () => void hear(row) }}");
+-    // Choosing reads what is playing again in that voice; Hear it first pauses the reading.
+-    expect(sheet).toContain("await readAgainIn(to, about, t, goOn);");
+-    expect(sheet).toMatch(/if \(getAudioSnapshot\(\)\.playing\) pause\(\);/);
+-  });
+-
+-  it("says a chosen voice has gone, and where a voice is added when the phone has none for the language", () => {
+-    const sheet = read("components/player/VoiceSheet.tsx");
+-    expect(sheet).toContain('t("player.voice.gone", { name: nameOf(checked) })');
+-    expect(sheet).toContain('t("player.voice.none", { language: languageName })');
+-    expect(sheet).toContain('t("player.voice.noneHow")');
+-  });
+-
+-  it("has its words in all 21 languages, with no em dash", () => {
+-    const keys = ["player.voice", "player.voice.heart", "player.voice.heartAbout", "player.voice.numbered", "player.voice.hear", "player.voice.hearName", "player.voice.gone", "player.voice.none", "player.voice.noneHow", "player.voice.phoneNote"];
+-    const dir = path.resolve(__dirname, "../../../i18n/messages");
+-    const catalogs = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
+-    expect(catalogs).toHaveLength(21);
+-    for (const file of catalogs) {
+-      const words = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8")) as Record<string, string>;
+-      for (const k of keys) {
+-        expect(words[k], `${file} ${k}`).toBeTruthy();
+-        expect(words[k], `${file} ${k}`).not.toContain("—");
+-      }
+-      for (const k of ["player.voice.numbered", "player.voice.hearName", "player.voice.gone", "player.voice.none"]) {
+-        const want = { "player.voice.numbered": "{n}", "player.voice.hearName": "{name}", "player.voice.gone": "{name}", "player.voice.none": "{language}" }[k]!;
+-        expect(words[k], `${file} ${k}`).toContain(want);
+-      }
+-    }
+-  });
+-});
+-
+-describe("Listen on every text a voice can read, never the prayers", () => {
+-  it("is drawn on the Old Testament and a downloaded Bible's page where the device can speak", () => {
+-    const page = read("components/bible/ReadAloud.tsx");
+-    expect(page).toContain("return bible ? speaks : recorded || speaks;");
+-    expect(page).toContain("await listenToChapter({ book, chapter, title, t, bible });");
+-  });
+-
+-  it("is never on a prayer's page", () => {
+-    const prayers = [path.resolve(__dirname, "../../../../app/(app)/prayers"), path.resolve(__dirname, "../../../../components/prayers")];
+-    const files: string[] = [];
+-    const walk = (dir: string) => {
+-      if (!fs.existsSync(dir)) return;
+-      for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+-        const p = path.join(dir, e.name);
+-        if (e.isDirectory()) walk(p);
+-        else if (/\.tsx?$/.test(e.name)) files.push(p);
+-      }
+-    };
+-    prayers.forEach(walk);
+-    expect(files.length).toBeGreaterThan(5);
+-    for (const f of files) {
+-      const src = fs.readFileSync(f, "utf8");
+-      expect(src, f).not.toMatch(/<ListenHere\b|<ListenButton\b|<ReadAloudPillButton\b|speakText\(|listenToChapter\(/);
+-    }
+-  });
+-});
+-
+-class FakeAudio {
+-  src = "";
+-  error = null;
+-  paused = true;
+-  currentTime = 0;
+-  duration = NaN;
+-  loop = false;
+-  volume = 1;
+-  preload = "";
+-  playbackRate = 1;
+-  defaultPlaybackRate = 1;
+-  addEventListener() {}
+-  removeAttribute(name: string) {
+-    if (name === "src") this.src = "";
+-  }
+-  load() {}
+-  play() {
+-    this.paused = false;
+-    return Promise.resolve();
+-  }
+-  pause() {
+-    this.paused = true;
+-  }
+-}
+-
+-describe("choosing another voice while a chapter is read", () => {
+-  const asks: SpeakAsk[] = [];
+-  const listeners = new Set<(e: SpeechEvent) => void>();
+-  const engine: SpeechEngine = {
+-    side: "android",
+-    voices: async () => [
+-      { id: "en-gb-x-gba-local", name: "en-gb-x-gba-local", lang: "en-GB", default: true },
+-      { id: "en-us-x-sfg-local", name: "en-us-x-sfg-local", lang: "en-US" },
+-    ],
+-    speak: async (ask) => {
+-      asks.push(ask);
+-    },
+-    stop: async () => {},
+-    preview: async () => {},
+-    nowPlaying: async () => {},
+-    onEvent: (l) => {
+-      listeners.add(l);
+-      return () => listeners.delete(l);
+-    },
+-  };
+-
+-  beforeEach(() => {
+-    asks.length = 0;
+-    listeners.clear();
+-    vi.useFakeTimers();
+-    vi.resetModules();
+-    const store = new Map<string, string>();
+-    vi.stubGlobal("window", { localStorage: { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v), removeItem: (k: string) => void store.delete(k) } });
+-    vi.stubGlobal("navigator", {});
+-    vi.stubGlobal("Audio", FakeAudio);
+-    vi.doMock("@/lib/listen/speech/engine", async (orig) => ({ ...(await orig<typeof import("@/lib/listen/speech/engine")>()), speechEngine: async () => engine }));
+-  });
+-  afterEach(() => {
+-    vi.useRealTimers();
+-    vi.unstubAllGlobals();
+-    vi.doUnmock("@/lib/listen/speech/engine");
+-  });
+-
+-  it("reads it again in the new voice from the verse being read, not from the chapter's start", async () => {
+-    const { speakText } = await import("@/lib/listen/speech/speak");
+-    const { readAgainIn, voiceContextOf } = await import("@/lib/listen/speech/context");
+-    const { spokenBibleSrc } = await import("@/lib/listen/speech/spoken");
+-    const store = await import("@/lib/prayers/persistentAudioStore");
+-    const pieces = [
+-      { text: "In the beginning God created the heaven and the earth.", n: 1 },
+-      { text: "And the earth was without form, and void.", n: 2 },
+-      { text: "And God said, Let there be light: and there was light.", n: 3 },
+-    ];
+-    const [a, b] = await engine.voices();
+-    await speakText({ src: spokenBibleSrc("genesis", 1), pieces, lang: "en", voice: a, title: "Genesis 1" });
+-    const first = asks[asks.length - 1];
+-    expect(first.voice).toBe(a.id);
+-    // The phone begins verse 3.
+-    for (const l of listeners) l({ type: "start", token: first.token, index: 2 });
+-    const about = voiceContextOf(store.getAudioSnapshot().src)!;
+-    expect(about).toMatchObject({ kind: "chapter", book: "genesis", chapter: 1, lang: "en" });
+-    await readAgainIn(b, about, (k) => k, true);
+-    const again = asks[asks.length - 1];
+-    expect(again.voice).toBe(b.id);
+-    expect(again.from).toBe(2);
+-    expect(again.pieces).toEqual(pieces.map((p) => p.text));
+-    expect(store.getAudioSnapshot().playing).toBe(true);
+-  });
+-});
+-
+-// Updates 19's walk of the export (2026-11-13): Listen tapped on a page, with
+-// the player closed (the usual way), let the line about a gone voice go at
+-// once, so Now Playing never said it. What a reader would notice: the voice
+-// they chose silently replaced, with nothing said where they look.
+-describe("the line about a gone voice, in Now Playing", () => {
+-  const engine: SpeechEngine = {
+-    side: "android",
+-    voices: async () => [{ id: "en-gb-x-gba-local", name: "Daniel", lang: "en-GB", default: true }],
+-    speak: async () => {},
+-    stop: async () => {},
+-    preview: async () => {},
+-    nowPlaying: async () => {},
+-    onEvent: () => () => {},
+-  };
+-
+-  beforeEach(() => {
+-    vi.resetModules();
+-    const store = new Map<string, string>();
+-    vi.stubGlobal("window", { localStorage: { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v), removeItem: (k: string) => void store.delete(k) } });
+-    vi.stubGlobal("navigator", {});
+-    vi.doMock("@/lib/listen/speech/engine", async (orig) => ({ ...(await orig<typeof import("@/lib/listen/speech/engine")>()), speechEngine: async () => engine }));
+-  });
+-  afterEach(() => {
+-    vi.unstubAllGlobals();
+-    vi.doUnmock("@/lib/listen/speech/engine");
+-  });
+-
+-  it("waits for the player when Listen begins with it closed, shows while it is open, and goes once it closes", async () => {
+-    const { chooseVoice } = await import("@/lib/listen/speech/voiceChoice");
+-    const speak = await import("@/lib/listen/speech/speak");
+-    chooseVoice("en", "a-voice-since-removed");
+-    const use = await speak.voiceFor("en", false);
+-    expect(use).toMatchObject({ kind: "phone", gone: "a-voice-since-removed" });
+-    expect(speak.voiceShown().gone).not.toBeNull();
+-    // Listen on a page: the player is closed as the reading begins.
+-    speak.playerOpenForGone(false);
+-    expect(speak.voiceShown().gone).not.toBeNull();
+-    // The reader opens the player: the line is there.
+-    speak.playerOpenForGone(true);
+-    expect(speak.voiceShown().gone).not.toBeNull();
+-    // And closes it: said once, not again for the same voice.
+-    speak.playerOpenForGone(false);
+-    expect(speak.voiceShown().gone).toBeNull();
+-    await speak.voiceFor("en", false);
+-    expect(speak.voiceShown().gone).toBeNull();
+-  });
+-
+-  it("is told each time the player opens or closes", () => {
+-    const player = read("components/player/NowPlayingSheet.tsx");
+-    expect(player).toMatch(/useEffect\(\(\) => \{\s*playerOpenForGone\(open\);\s*\}, \[open, gone\]\);/);
+-    expect(player).not.toContain("if (!open && gone) goneShown();");
+-    expect(player).toContain('{t("player.voice.gone", { name: voiceName })}');
+-  });
+-});
+diff --git a/lib/listen/speech/context.ts b/lib/listen/speech/context.ts
+deleted file mode 100644
+index e69950359..000000000
+--- a/lib/listen/speech/context.ts
++++ /dev/null
+@@ -1,105 +0,0 @@
+-"use client";
+-
+-import { downloadableBible } from "@/lib/bible/downloads/catalog";
+-import { startListening } from "@/lib/listen/play";
+-import { hasListen, listenOfSrc } from "@/lib/listen/recordings";
+-import { captionLines, lineAt } from "@/lib/player/captions";
+-import { currentTimeNow, getAudioSnapshot, pause, seek } from "@/lib/prayers/persistentAudioStore";
+-import { hasReadAloud, readAloudManifest, readingOfSrc } from "@/lib/readAloud/chapters";
+-import { startReading } from "@/lib/readAloud/play";
+-
+-import type { PhoneVoice } from "./engine";
+-import { anchorsOf, rememberAnchors } from "./pageText";
+-import { speakText } from "./speak";
+-import { spokenBibleSrc, spokenOf, spokenTextSrc, voiceLang } from "./spoken";
+-import { HEART } from "./voiceChoice";
+-
+-/**
+- * What the player is reading, as the Voice sheet needs it (1.9, build 95 note
+- * 25): the language a voice is asked for, whether the text has its recording
+- * (Heart), and what it is, to read it again in another voice at the verse or
+- * paragraph being read. Null for what no voice reads: a chant, a prayer.
+- */
+-export type VoiceContext =
+-  | { kind: "chapter"; book: string; chapter: number; bible: string | null; lang: string; recorded: boolean }
+-  | { kind: "text"; id: string; lang: string; textLang: string; recorded: boolean };
+-
+-export function voiceContextOf(src: string | null): VoiceContext | null {
+-  const reading = readingOfSrc(src);
+-  if (reading) return { kind: "chapter", ...reading, bible: null, lang: "en", recorded: true };
+-  const spoken = spokenOf(src);
+-  if (spoken?.kind === "bible") {
+-    const bible = downloadableBible(spoken.bible);
+-    return {
+-      kind: "chapter",
+-      book: spoken.book,
+-      chapter: spoken.chapter,
+-      bible: bible?.id ?? null,
+-      lang: bible ? voiceLang(bible.textLang) : "en",
+-      recorded: !bible && hasReadAloud(spoken.book, spoken.chapter),
+-    };
+-  }
+-  if (spoken?.kind === "text") return { kind: "text", id: spoken.id, lang: voiceLang(spoken.lang), textLang: spoken.lang, recorded: hasListen(spoken.id) };
+-  // A text's recording is Purify's own telling, in English.
+-  const text = listenOfSrc(src);
+-  if (text) return { kind: "text", id: text.id, lang: "en", textLang: "en", recorded: true };
+-  return null;
+-}
+-
+-/** The piece being read now: the verse or paragraph, by the player's own clock. */
+-export function pieceNow(): number {
+-  const s = getAudioSnapshot();
+-  if (!s.captions?.length) return 0;
+-  return Math.max(0, lineAt(captionLines(s.captions, s.duration), currentTimeNow(), 0));
+-}
+-
+-/**
+- * Read what is playing again in another voice, at the verse or paragraph being
+- * read: Heart (its recording) or one of the phone's voices. The words are the
+- * player's own (a recording's captions carry each verse's words), so nothing
+- * is fetched to change to a phone's voice. `autoplay`: go on reading, as it
+- * was; else it waits there.
+- */
+-export async function readAgainIn(
+-  to: typeof HEART | PhoneVoice,
+-  about: VoiceContext,
+-  t: (key: string, values?: Record<string, string | number>) => string,
+-  autoplay: boolean,
+-): Promise<boolean> {
+-  const s = getAudioSnapshot();
+-  const at = pieceNow();
+-  const lines = s.captions ?? [];
+-  if (to === HEART) {
+-    if (!about.recorded) return false;
+-    if (about.kind === "chapter") {
+-      const verse = lines[at]?.n;
+-      await startReading(about.book, about.chapter, s.title ?? `${t(`bible.books.${about.book}`)} ${about.chapter}`, t);
+-      const manifest = await readAloudManifest(about.book, about.chapter);
+-      const found = manifest?.verses.find((v) => v.n === verse);
+-      if (found) seek(found.at);
+-    } else {
+-      await startListening(about.id, { title: s.title ?? "", by: s.artist ?? "", art: s.art });
+-    }
+-    if (!autoplay) pause();
+-    return true;
+-  }
+-  if (!lines.length || lines.some((l) => !l.text)) return false;
+-  const src = about.kind === "chapter" ? spokenBibleSrc(about.book, about.chapter, about.bible) : spokenTextSrc(about.id, about.textLang);
+-  // The page's places stay with the words: a recording's verses by their numbers.
+-  const places = anchorsOf(s.src) ?? lines.map((l) => (typeof l.n === "number" ? `v${l.n}` : undefined));
+-  const ok = await speakText({
+-    src,
+-    pieces: lines.map((l) => ({ text: l.text, ...(typeof l.n === "number" ? { n: l.n } : {}) })),
+-    lang: about.lang,
+-    voice: to,
+-    title: s.title ?? "",
+-    artist: s.artist ?? undefined,
+-    art: s.art ?? undefined,
+-    artFallback: s.artFallback ?? undefined,
+-    rtl: s.rtl,
+-    from: at,
+-    autoplay,
+-  });
+-  if (ok) rememberAnchors(src, places);
+-  return ok;
+-}
+diff --git a/lib/listen/speech/engine.ts b/lib/listen/speech/engine.ts
+deleted file mode 100644
+index 2f01319d3..000000000
+--- a/lib/listen/speech/engine.ts
++++ /dev/null
+@@ -1,266 +0,0 @@
+-"use client";
+-
+-import { nativePlugin } from "@/lib/platform/nativePlugin";
+-
+-/**
+- * What speaks, for the phone's own voices (1.9, build 95 note 25, his word of
+- * 2026-11-13: "Both", the choice of voices in 1.9 by the phone's own voices).
+- * One seam, three sides:
+- *
+- *  - In the Android app, the phone's TextToSpeech, and on an iPhone or iPad,
+- *    AVSpeechSynthesizer, through the apps' own plugin `PurifySpeech`
+- *    (android/app/src/main/java/net/purifyapp/purify/speech/, ios/App/App/
+- *    PurifySpeechPlugin.swift). The Android web view has no speech of its
+- *    own, and the iPhone's would be muted by the silent switch and stop when
+- *    the screen locks.
+- *  - On the website, the browser's own speech, where it has voices on the
+- *    device.
+- *
+- * Only voices on the device are offered: a voice that sends the text away to
+- * be spoken is never listed (the phone's voices are fast and offline, which
+- * is why they were chosen). The text goes as a list of pieces (verses, or
+- * paragraphs) queued at once, so the phone reads on with the screen off
+- * while the app sleeps, and every report names the piece it is about and the
+- * ask it answers (`token`), so a report from a reading stopped a moment ago
+- * is never taken for the one now.
+- */
+-
+-export type PhoneVoice = {
+-  /** The phone's own name for it, kept as the reader's choice. */
+-  id: string;
+-  /** What the reader sees. */
+-  name: string;
+-  /** BCP 47: "en-GB", "ru-RU". */
+-  lang: string;
+-  /** The phone's own voice for its language. */
+-  default?: boolean;
+-  /** The phone's better voices ("enhanced", "premium" on an iPhone), drawn first. */
+-  quality?: number;
+-};
+-
+-export type SpeechEvent =
+-  | { type: "start"; token: number; index: number }
+-  /** The word being spoken: its letters' place in the piece, as the piece was given. */
+-  | { type: "word"; token: number; index: number; start: number; end: number }
+-  | { type: "done"; token: number; index: number }
+-  | { type: "end"; token: number }
+-  | { type: "error"; token: number; index: number; message?: string }
+-  /** The lock screen's controls (the iPhone's; Android's come through the player's own). */
+-  | { type: "remote"; action: "play" | "pause" | "toggle" | "skip"; seconds?: number }
+-  /**
+-   * The phone took the sound (a call, Siri or the assistant, an alarm, another
+-   * app playing) and has stopped the voice (`began`), or gave the sound back
+-   * (`began: false`), with `resume` where the phone says the reading may go on:
+-   * a call or Siri over, as a recording goes on after one. Android's audio
+-   * focus, the iPhone's audio session interruption.
+-   */
+-  | { type: "interruption"; began: boolean; resume?: boolean };
+-
+-export type SpeakAsk = {
+-  token: number;
+-  pieces: string[];
+-  /** The piece to begin at, and the letter in it (a pause is taken up at its word). */
+-  from: number;
+-  offset: number;
+-  lang: string;
+-  /** A voice's id, or null for the phone's own voice for `lang`. */
+-  voice: string | null;
+-  /** The reader's speed: 1 is the voice's own. */
+-  rate: number;
+-  volume: number;
+-  /** What the lock screen shows, where the plugin draws it (the iPhone). */
+-  title?: string;
+-  artist?: string;
+-  duration?: number;
+-  elapsed?: number;
+-};
+-
+-export type SpeechEngine = {
+-  side: "android" | "ios" | "web";
+-  voices(): Promise<PhoneVoice[]>;
+-  speak(ask: SpeakAsk): Promise<void>;
+-  stop(): Promise<void>;
+-  /** One line, for a voice's "Hear it". */
+-  preview(ask: { text: string; lang: string; voice: string | null; rate: number }): Promise<void>;
+-  /** What the lock screen shows while paused (the iPhone's; elsewhere nothing). */
+-  nowPlaying(info: { title: string; artist: string; duration: number; elapsed: number; playing: boolean } | null): Promise<void>;
+-  onEvent(listener: (e: SpeechEvent) => void): () => void;
+-};
+-
+-/** The plugin as the apps answer it (both shells, one shape). */
+-type PurifySpeechPlugin = {
+-  voices(): Promise<{ voices: PhoneVoice[] }>;
+-  speak(ask: SpeakAsk): Promise<void>;
+-  stop(): Promise<void>;
+-  preview(ask: { text: string; lang: string; voice: string | null; rate: number }): Promise<void>;
+-  nowPlaying(info: { title?: string; artist?: string; duration?: number; elapsed?: number; playing?: boolean; clear?: boolean }): Promise<void>;
+-  addListener(event: "speech", listener: (e: SpeechEvent) => void): Promise<{ remove(): Promise<void> }>;
+-};
+-
+-const listeners = new Set<(e: SpeechEvent) => void>();
+-function tell(e: SpeechEvent): void {
+-  for (const l of listeners) {
+-    try {
+-      l(e);
+-    } catch {
+-      /* one listener's fault is its own */
+-    }
+-  }
+-}
+-function listen(listener: (e: SpeechEvent) => void): () => void {
+-  listeners.add(listener);
+-  return () => {
+-    listeners.delete(listener);
+-  };
+-}
+-
+-/** Whether a voice is on the device and the ask is for its language: "en" takes "en-GB", "en-GB" takes "en-GB" and "en". */
+-export function speaksLanguage(voice: Pick<PhoneVoice, "lang">, lang: string): boolean {
+-  const v = voice.lang.toLowerCase().replace("_", "-");
+-  const l = lang.toLowerCase().replace("_", "-");
+-  return v === l || v.split("-")[0] === l.split("-")[0];
+-}
+-
+-let nativeEngine: Promise<SpeechEngine | null> | null = null;
+-
+-function fromPlugin(): Promise<SpeechEngine | null> {
+-  nativeEngine ??= nativePlugin<PurifySpeechPlugin>("PurifySpeech").then((box) => {
+-    if (!box) return null;
+-    const side = box.platform === "ios" ? "ios" : "android";
+-    let attached = false;
+-    const attach = () => {
+-      if (attached) return;
+-      attached = true;
+-      void box.api.addListener("speech", tell).catch(() => {
+-        attached = false;
+-      });
+-    };
+-    const engine: SpeechEngine = {
+-      side,
+-      voices: () =>
+-        box.api
+-          .voices()
+-          .then((r) => r?.voices ?? [])
+-          .catch(() => []),
+-      speak: (ask) => {
+-        attach();
+-        return box.api.speak(ask);
+-      },
+-      stop: () => box.api.stop().catch(() => {}),
+-      preview: (ask) => {
+-        attach();
+-        return box.api.preview(ask);
+-      },
+-      nowPlaying: (info) => (side === "ios" ? box.api.nowPlaying(info ?? { clear: true }).catch(() => {}) : Promise.resolve()),
+-      onEvent: (l) => {
+-        attach();
+-        return listen(l);
+-      },
+-    };
+-    return engine;
+-  });
+-  return nativeEngine;
+-}
+-
+-/** The browser's own speech, on the website: voices on the device only. */
+-function fromBrowser(): SpeechEngine | null {
+-  if (typeof window === "undefined" || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return null;
+-  const synth = window.speechSynthesis;
+-  const local = () =>
+-    synth
+-      .getVoices()
+-      .filter((v) => v.localService)
+-      .map((v) => ({ id: v.voiceURI, name: v.name, lang: v.lang, ...(v.default ? { default: true } : {}) }));
+-  const find = (id: string | null, lang: string) => {
+-    const all = synth.getVoices().filter((v) => v.localService);
+-    return (id ? all.find((v) => v.voiceURI === id) : undefined) ?? all.find((v) => v.default && speaksLanguage(v, lang)) ?? all.find((v) => speaksLanguage(v, lang)) ?? null;
+-  };
+-  return {
+-    side: "web",
+-    voices: () =>
+-      new Promise((resolve) => {
+-        const now = local();
+-        if (now.length || synth.getVoices().length) return resolve(now);
+-        // The list fills a moment after the page opens.
+-        const done = () => {
+-          synth.removeEventListener("voiceschanged", done);
+-          clearTimeout(timer);
+-          resolve(local());
+-        };
+-        const timer = setTimeout(done, 1500);
+-        synth.addEventListener("voiceschanged", done);
+-      }),
+-    speak: async (ask) => {
+-      synth.cancel();
+-      const voice = find(ask.voice, ask.lang);
+-      for (let i = ask.from; i < ask.pieces.length; i++) {
+-        const shift = i === ask.from ? ask.offset : 0;
+-        const u = new SpeechSynthesisUtterance(ask.pieces[i].slice(shift));
+-        if (voice) u.voice = voice;
+-        u.lang = voice?.lang ?? ask.lang;
+-        u.rate = ask.rate;
+-        u.volume = ask.volume;
+-        const index = i;
+-        u.onstart = () => tell({ type: "start", token: ask.token, index });
+-        u.onboundary = (e) => {
+-          if (e.name && e.name !== "word") return;
+-          tell({ type: "word", token: ask.token, index, start: e.charIndex + shift, end: e.charIndex + shift + (e.charLength || 1) });
+-        };
+-        u.onend = () => {
+-          tell({ type: "done", token: ask.token, index });
+-          if (index === ask.pieces.length - 1) tell({ type: "end", token: ask.token });
+-        };
+-        u.onerror = (e) => {
+-          // A reading stopped by the reader is no fault.
+-          if (e.error === "interrupted" || e.error === "canceled") return;
+-          tell({ type: "error", token: ask.token, index, message: e.error });
+-        };
+-        synth.speak(u);
+-      }
+-    },
+-    stop: async () => synth.cancel(),
+-    preview: async (ask) => {
+-      synth.cancel();
+-      const voice = find(ask.voice, ask.lang);
+-      const u = new SpeechSynthesisUtterance(ask.text);
+-      if (voice) u.voice = voice;
+-      u.lang = voice?.lang ?? ask.lang;
+-      u.rate = ask.rate;
+-      synth.speak(u);
+-    },
+-    nowPlaying: async () => {},
+-    onEvent: listen,
+-  };
+-}
+-
+-/**
+- * Whether this device can speak at all, known at once (for drawing Listen
+- * before any voice is asked for): in the apps, the shell has the plugin (a
+- * shell built before 1.9 has none); in a browser, it has speech.
+- */
+-export function canSpeak(): boolean {
+-  if (typeof window === "undefined") return false;
+-  const cap = (window as { Capacitor?: { isNativePlatform?: () => boolean; isPluginAvailable?: (name: string) => boolean } }).Capacitor;
+-  if (cap?.isNativePlatform?.()) return Boolean(cap.isPluginAvailable?.("PurifySpeech"));
+-  return "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined";
+-}
+-
+-let browser: SpeechEngine | null | undefined;
+-
+-/**
+- * The speech of this device: the apps' plugin, else the browser's, else null
+- * (an app shell built before the plugin, a browser with no speech).
+- */
+-export async function speechEngine(): Promise<SpeechEngine | null> {
+-  const native = await fromPlugin();
+-  if (native) return native;
+-  if (browser === undefined) browser = fromBrowser();
+-  return browser;
+-}
+-
+-/** For tests: forget what was found. */
+-export function resetSpeechEngine(): void {
+-  nativeEngine = null;
+-  browser = undefined;
+-  listeners.clear();
+-}
+diff --git a/lib/listen/speech/pageText.ts b/lib/listen/speech/pageText.ts
+deleted file mode 100644
+index eb12c2eab..000000000
+--- a/lib/listen/speech/pageText.ts
++++ /dev/null
+@@ -1,61 +0,0 @@
+-"use client";
+-
+-/**
+- * The words a page shows, for the phone's voice to read (1.9, build 95 note
+- * 25). A chapter's verses are the page's own (components/bible/ChapterReader,
+- * DownloadedChapter); they are handed over here as the page opens, so Listen
+- * reads exactly what the reader sees, in the Bible they read it in. Each verse
+- * keeps the place it stands on the page (its anchor), so the verse being read
+- * is lit there. Not reactive: Listen reads it when tapped.
+- */
+-
+-export type PageVerse = { text: string; n?: number; anchor?: string };
+-
+-const pages = new Map<string, PageVerse[]>();
+-const waiting = new Map<string, Set<() => void>>();
+-
+-/** The key of a chapter's page: the Bible it is shown in (null for the English) and the app's book and chapter. */
+-export function chapterKey(book: string, chapter: number, bible: string | null = null): string {
+-  return `${bible ?? "en"}:${book}/${chapter}`;
+-}
+-
+-export function setPageVerses(key: string, verses: PageVerse[] | null): void {
+-  if (verses?.length) {
+-    pages.set(key, verses);
+-    const told = waiting.get(key);
+-    waiting.delete(key);
+-    for (const t of told ?? []) t();
+-  } else pages.delete(key);
+-}
+-
+-export function pageVerses(key: string): PageVerse[] | null {
+-  return pages.get(key) ?? null;
+-}
+-
+-/** The page's verses once it has handed them over (a page opening as a reading rolls on into it), or null after `ms`. */
+-export function whenPageVerses(key: string, ms = 4000): Promise<PageVerse[] | null> {
+-  const now = pages.get(key);
+-  if (now) return Promise.resolve(now);
+-  return new Promise((resolve) => {
+-    const told = waiting.get(key) ?? new Set<() => void>();
+-    const done = () => {
+-      clearTimeout(timer);
+-      told.delete(done);
+-      resolve(pages.get(key) ?? null);
+-    };
+-    const timer = setTimeout(done, ms);
+-    told.add(done);
+-    waiting.set(key, told);
+-  });
+-}
+-
+-/** Where each piece of a spoken track stands on its page, by the track's address: the verse or paragraph to light. */
+-const anchors = new Map<string, (string | undefined)[]>();
+-
+-export function rememberAnchors(src: string, list: (string | undefined)[]): void {
+-  anchors.set(src, list);
+-}
+-
+-export function anchorsOf(src: string | null): (string | undefined)[] | null {
+-  return src ? (anchors.get(src) ?? null) : null;
+-}
+diff --git a/lib/listen/speech/session.ts b/lib/listen/speech/session.ts
+deleted file mode 100644
+index 1f4c2cbd1..000000000
+--- a/lib/listen/speech/session.ts
++++ /dev/null
+@@ -1,301 +0,0 @@
+-"use client";
+-
+-import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
+-
+-import type { SpeechEngine, SpeechEvent } from "./engine";
+-import { learnPace, placeAt, speechTimeline, timeAtChar, timeWhileSpeaking, type SpeechPiece, type SpeechTimeline } from "./timeline";
+-
+-/**
+- * One text spoken by the phone's voice, as the one player plays it (1.9,
+- * build 95 note 25): the second way the player makes sound, beside a
+- * recording. The player (lib/prayers/persistentAudioStore.ts) hands it play,
+- * pause, a seek, the speed and the volume, and takes back what a recording's
+- * element would tell it: playing or not, where it is, its length, its words,
+- * and its end. So the mini player, Now Playing, the lock screen, the sleep
+- * timer and the ambience's balance follow the voice as they follow a
+- * recording, because they all follow the player.
+- *
+- * A pause stops the phone and keeps the word it was on; Play takes the
+- * reading up at that word. A seek, and 15 seconds back or forward, go to the
+- * word the moment falls on, and the voice reads on from it. A new speed is
+- * taken at the word being spoken.
+- *
+- * A phone call, Siri or the assistant, or another app taking the sound pauses
+- * the reading the same way, at its word (the plugin's "interruption"): the
+- * player shows it paused, and Play takes it up there. Where the phone gives
+- * the sound back and says the reading may go on (a call or Siri over), it goes
+- * on by itself, as a recording does after a call; where another app keeps the
+- * sound, it waits for the reader. A reader's own Pause in the meantime wins.
+- */
+-
+-export type SpokenState = { playing?: boolean; currentTime?: number; duration?: number; captions?: CaptionSource; failed?: boolean };
+-
+-export type SpeechHost = {
+-  state(patch: SpokenState): void;
+-  /** The text has been read to its end: the player decides whether to stop, repeat, or sleep. */
+-  ended(restart: () => void): void;
+-  /** A button on the lock screen (the iPhone's, which the plugin draws while the phone speaks). */
+-  remote?(action: "play" | "pause" | "toggle" | "skip", seconds?: number): void;
+-};
+-
+-export type SpeechSession = {
+-  timeline(): SpeechTimeline;
+-  play(): void;
+-  pause(): void;
+-  /** To the word `time` falls on (a line's start is its first word). */
+-  seek(time: number): void;
+-  now(): number;
+-  setRate(rate: number): void;
+-  setVolume(volume: number): void;
+-  /** Stop for good: the player has moved on. */
+-  stop(): void;
+-};
+-
+-export type SpeechSessionOptions = {
+-  engine: SpeechEngine;
+-  pieces: SpeechPiece[];
+-  lang: string;
+-  /** A voice's id, or null for the phone's own voice for the language. */
+-  voice: string | null;
+-  rate: number;
+-  volume?: number;
+-  /** The voice's pace as learned before (letters a second at speed 1). */
+-  pace: number;
+-  /** Told the voice's pace each time it is learned, to be kept for next time. */
+-  onPace?: (pace: number) => void;
+-  /** What the lock screen shows, where the plugin draws it. */
+-  title?: string;
+-  artist?: string;
+-  host: SpeechHost;
+-  /** For tests: the clock. */
+-  clock?: () => number;
+-};
+-
+-const TICK_MS = 250;
+-
+-export function createSpeechSession(o: SpeechSessionOptions): SpeechSession {
+-  const clock = o.clock ?? (() => (typeof performance !== "undefined" ? performance.now() : Date.now()));
+-  let pace = o.pace;
+-  let words = false;
+-  let timeline = speechTimeline(o.pieces, pace);
+-  let rate = o.rate;
+-  let volume = o.volume ?? 1;
+-  /** The ask the phone is answering; reports for any other are old. */
+-  let token = 0;
+-  let speaking = false;
+-  let stopped = false;
+-  /** The piece being spoken (or to be spoken at Play), and the letter in it the clock runs from. */
+-  let index = 0;
+-  let fromChar = 0;
+-  /** When the clock last stood exactly (a piece begun, a word reported). */
+-  let since = clock();
+-  /** When the piece being spoken began, for its pace, or -1 when it was not begun at its start at this speed. */
+-  let pieceBegan = -1;
+-  let ticker: ReturnType<typeof setInterval> | null = null;
+-  /** The piece the phone has just finished, before it begins the next. */
+-  let finished = -1;
+-  /** The phone took the sound while this was speaking, and may give it back. */
+-  let interrupted = false;
+-
+-  const pieces = o.pieces.map((p) => p.text);
+-
+-  function now(): number {
+-    if (!pieces.length) return 0;
+-    if (!speaking) return fromChar > 0 ? timeAtChar(timeline, index, fromChar) : timeline.starts[index] ?? 0;
+-    return timeWhileSpeaking(timeline, index, fromChar, (clock() - since) / 1000, rate, words);
+-  }
+-
+-  function tick(on: boolean): void {
+-    if (ticker) clearInterval(ticker);
+-    ticker = on ? setInterval(() => o.host.state({ currentTime: now() }), TICK_MS) : null;
+-  }
+-
+-  function speak(): void {
+-    interrupted = false;
+-    token += 1;
+-    speaking = true;
+-    since = clock();
+-    pieceBegan = fromChar === 0 ? since : -1;
+-    tick(true);
+-    o.host.state({ playing: true, failed: false, currentTime: now() });
+-    void o.engine
+-      .speak({
+-        token,
+-        pieces,
+-        from: index,
+-        offset: fromChar,
+-        lang: o.lang,
+-        voice: o.voice,
+-        rate,
+-        volume,
+-        title: o.title,
+-        artist: o.artist,
+-        duration: timeline.duration,
+-        elapsed: now(),
+-      })
+-      .catch(() => fail());
+-  }
+-
+-  /** Stop where it stands. `quiet`: the phone has already stopped itself (an interruption), so it is not asked again, and keeps its claim on the sound to say when it is given back. */
+-  function halt(quiet = false): void {
+-    if (!speaking) return;
+-    // Where it stands now is where Play takes it up: the next piece when the
+-    // phone was between two, else the word being spoken.
+-    const at = now();
+-    if (finished === index && index < pieces.length - 1) {
+-      index += 1;
+-      fromChar = 0;
+-    } else if (words) {
+-      let char = 0;
+-      for (const s of timeline.words[index] ?? []) if (timeAtChar(timeline, index, s) <= at) char = s;
+-      fromChar = char;
+-    }
+-    finished = -1;
+-    token += 1;
+-    speaking = false;
+-    tick(false);
+-    if (!quiet) void o.engine.stop();
+-  }
+-
+-  function fail(): void {
+-    halt();
+-    o.host.state({ playing: false, failed: true });
+-  }
+-
+-  const off = o.engine.onEvent((e: SpeechEvent) => {
+-    if (stopped) return;
+-    if (e.type === "remote") {
+-      o.host.remote?.(e.action, e.seconds);
+-      return;
+-    }
+-    if (e.type === "interruption") {
+-      if (e.began) {
+-        // Paused at its word, as a reader's Pause leaves it.
+-        if (!speaking) return;
+-        halt(true);
+-        interrupted = true;
+-        o.host.state({ playing: false, currentTime: now() });
+-        void o.engine.nowPlaying({ title: o.title ?? "", artist: o.artist ?? "", duration: timeline.duration, elapsed: now(), playing: false });
+-        return;
+-      }
+-      const again = interrupted && e.resume === true && !speaking;
+-      interrupted = false;
+-      if (again) speak();
+-      return;
+-    }
+-    if (e.token !== token || !speaking) return;
+-    if (e.type === "start") {
+-      if (e.index !== index) {
+-        index = e.index;
+-        fromChar = 0;
+-      }
+-      finished = -1;
+-      since = clock();
+-      pieceBegan = fromChar === 0 ? since : -1;
+-      o.host.state({ currentTime: now() });
+-      return;
+-    }
+-    if (e.type === "word") {
+-      if (e.index !== index) {
+-        index = e.index;
+-        pieceBegan = -1;
+-        finished = -1;
+-      }
+-      if (!words) {
+-        // The phone reports words: from now each verse's words have their own times.
+-        words = true;
+-        const at = now();
+-        timeline = speechTimeline(o.pieces, pace, { words: true });
+-        o.host.state({ captions: timeline.captions, duration: timeline.duration, currentTime: at });
+-      }
+-      fromChar = e.start;
+-      since = clock();
+-      o.host.state({ currentTime: now() });
+-      return;
+-    }
+-    if (e.type === "done") {
+-      if (pieceBegan >= 0 && e.index === index) {
+-        const learned = learnPace(pace, pieces[index].length, (clock() - pieceBegan) / 1000, rate);
+-        if (learned !== pace) {
+-          pace = learned;
+-          o.onPace?.(pace);
+-        }
+-      }
+-      // The verse stays lit until the phone begins the next: never before.
+-      finished = e.index;
+-      return;
+-    }
+-    if (e.type === "end") {
+-      speaking = false;
+-      finished = -1;
+-      tick(false);
+-      index = 0;
+-      fromChar = 0;
+-      // The next reading is timed at the pace learned in this one.
+-      timeline = speechTimeline(o.pieces, pace, { words });
+-      o.host.state({ playing: false, currentTime: 0, duration: timeline.duration, captions: timeline.captions });
+-      o.host.ended(() => speak());
+-      return;
+-    }
+-    if (e.type === "error") fail();
+-  });
+-
+-  return {
+-    timeline: () => timeline,
+-    play() {
+-      if (stopped || speaking || !pieces.length) return;
+-      speak();
+-    },
+-    pause() {
+-      // The reader's own Pause: a call ending does not take the reading up,
+-      // and the phone's claim on the sound is let go.
+-      if (interrupted && !speaking) void o.engine.stop();
+-      interrupted = false;
+-      if (!speaking) return;
+-      halt();
+-      o.host.state({ playing: false, currentTime: now() });
+-      void o.engine.nowPlaying({ title: o.title ?? "", artist: o.artist ?? "", duration: timeline.duration, elapsed: now(), playing: false });
+-    },
+-    seek(time: number) {
+-      if (!pieces.length) return;
+-      // To the word the moment falls on (Updates 98o, build 98 note 2), so 15
+-      // seconds back or forward move about 15 seconds of the reading, as they
+-      // move a recording. To the start of its piece, as it was, 15 seconds on
+-      // inside a long paragraph went back to that paragraph's start, and back
+-      // 15 went further back than 15 seconds; Updates 98n's mend sent forward
+-      // to the next piece instead, which skipped the rest of the paragraph. A
+-      // tap on a line still lands on its first word: a line starts a piece.
+-      const to = placeAt(timeline, time);
+-      const was = speaking;
+-      if (was) halt();
+-      index = to.index;
+-      fromChar = to.char;
+-      o.host.state({ currentTime: now() });
+-      if (was) speak();
+-    },
+-    now,
+-    setRate(next: number) {
+-      if (next === rate) return;
+-      const was = speaking;
+-      if (was) halt();
+-      rate = next;
+-      if (was) speak();
+-    },
+-    setVolume(next: number) {
+-      volume = next;
+-      if (speaking) {
+-        halt();
+-        speak();
+-      }
+-    },
+-    stop() {
+-      if (stopped) return;
+-      if (interrupted && !speaking) void o.engine.stop();
+-      interrupted = false;
+-      halt();
+-      stopped = true;
+-      off();
+-      void o.engine.nowPlaying(null);
+-    },
+-  };
+-}
+diff --git a/lib/listen/speech/sheet.ts b/lib/listen/speech/sheet.ts
+deleted file mode 100644
+index 2c2202b60..000000000
+--- a/lib/listen/speech/sheet.ts
++++ /dev/null
+@@ -1,42 +0,0 @@
+-"use client";
+-
+-import { useSyncExternalStore } from "react";
+-
+-/**
+- * The Voice sheet's state (1.9, build 95 note 25): opened from the player's
+- * ••• (over the player), or from a page's Listen when the phone has no voice
+- * for the text's language and the text has no recording (`none`), to say so
+- * and where a voice is added. Mounted once in the root frame, as the ambience
+- * sheet is (components/player/VoiceSheet.tsx).
+- */
+-
+-export type VoiceSheetState = { open: boolean; overPlayer: boolean; none: { lang: string } | null };
+-
+-let state: VoiceSheetState = { open: false, overPlayer: false, none: null };
+-const listeners = new Set<() => void>();
+-
+-function set(next: VoiceSheetState): void {
+-  state = next;
+-  for (const l of listeners) l();
+-}
+-
+-export function openVoiceSheet(o: { overPlayer?: boolean; none?: { lang: string } } = {}): void {
+-  set({ open: true, overPlayer: Boolean(o.overPlayer), none: o.none ?? null });
+-}
+-
+-export function closeVoiceSheet(): void {
+-  if (state.open) set({ ...state, open: false });
+-}
+-
+-export function useVoiceSheet(): VoiceSheetState {
+-  return useSyncExternalStore(
+-    (l) => {
+-      listeners.add(l);
+-      return () => {
+-        listeners.delete(l);
+-      };
+-    },
+-    () => state,
+-    () => state,
+-  );
+-}
+diff --git a/lib/listen/speech/speak.ts b/lib/listen/speech/speak.ts
+deleted file mode 100644
+index 1fc985405..000000000
+--- a/lib/listen/speech/speak.ts
++++ /dev/null
+@@ -1,209 +0,0 @@
+-"use client";
+-
+-import { useSyncExternalStore } from "react";
+-
+-import { readSpeed } from "@/lib/player/speed";
+-import { getAudioSnapshot, play, seek, setLoopMode, setSpokenTrack } from "@/lib/prayers/persistentAudioStore";
+-
+-import { speechEngine, type PhoneVoice } from "./engine";
+-import { createSpeechSession } from "./session";
+-import { DEFAULT_PACE, speechTimeline, type SpeechPiece } from "./timeline";
+-import { HEART, chosenVoice, goneSaid, markGoneSaid, voiceToUse, type VoiceToUse } from "./voiceChoice";
+-import { deviceVoices } from "./voices";
+-
+-/**
+- * A text read by the phone's voice, through the one player (1.9, build 95
+- * note 25): which voice reads it, as the reader chose; the reading loaded and
+- * begun; each voice's pace kept for next time; and what the player shows
+- * about the voice (its name on the Voice row, the line said once when a
+- * chosen voice has gone).
+- */
+-
+-const PACE_KEY = "purify:listen.pace";
+-
+-function paces(): Record<string, number> {
+-  try {
+-    const kept = JSON.parse(window.localStorage.getItem(PACE_KEY) ?? "{}");
+-    return kept && typeof kept === "object" ? (kept as Record<string, number>) : {};
+-  } catch {
+-    return {};
+-  }
+-}
+-
+-/** A voice's pace as learned from its last reading (letters a second at speed 1), or an ordinary one. */
+-export function paceOf(voiceId: string): number {
+-  const p = paces()[voiceId];
+-  return typeof p === "number" && Number.isFinite(p) && p > 0 ? p : DEFAULT_PACE;
+-}
+-
+-/** Keep a voice's pace on the device (the session reports it as it learns it), for the next reading's timeline. */
+-export function keepPace(voiceId: string, pace: number): void {
+-  if (!(pace > 0)) return;
+-  try {
+-    const all = paces();
+-    // A few dozen voices at most: the newest kept.
+-    const ids = Object.keys(all).filter((id) => id !== voiceId).slice(-39);
+-    const next: Record<string, number> = {};
+-    for (const id of ids) next[id] = all[id];
+-    next[voiceId] = Math.round(pace * 100) / 100;
+-    window.localStorage.setItem(PACE_KEY, JSON.stringify(next));
+-  } catch {
+-    /* a full or private store: learned again next time */
+-  }
+-}
+-
+-type Shown = {
+-  /** The spoken track and the voice reading it. */
+-  reading: { src: string; voice: PhoneVoice } | null;
+-  /** A chosen voice had gone and another reads: said once, by the player. */
+-  gone: { lang: string; instead: "heart" | PhoneVoice } | null;
+-};
+-
+-/** Told when a spoken track has been read to its end and stops there (not a Loop's new round): a chapter rolls on into the next. */
+-const endListeners = new Set<(src: string) => void>();
+-
+-export function onSpokenEnd(listener: (src: string) => void): () => void {
+-  endListeners.add(listener);
+-  return () => {
+-    endListeners.delete(listener);
+-  };
+-}
+-
+-let shown: Shown = { reading: null, gone: null };
+-const listeners = new Set<() => void>();
+-
+-function set(patch: Partial<Shown>): void {
+-  shown = { ...shown, ...patch };
+-  for (const l of listeners) l();
+-}
+-
+-/** What the player shows of the voice: the one reading, and a line said once. */
+-export function voiceShown(): Shown {
+-  return shown;
+-}
+-
+-export function useVoiceShown(): Shown {
+-  return useSyncExternalStore(
+-    (l) => {
+-      listeners.add(l);
+-      return () => {
+-        listeners.delete(l);
+-      };
+-    },
+-    voiceShown,
+-    voiceShown,
+-  );
+-}
+-
+-/** Now Playing has been open while the gone line stood. */
+-let goneSeen = false;
+-
+-/**
+- * Now Playing opens or closes (components/player/NowPlayingSheet.tsx): the
+- * line about a gone voice shows while the player is open, and is let go once
+- * the player closes after showing it. A reading begun with the player closed
+- * (Listen on a page, the usual way) keeps the line until the player is next
+- * opened; it used to be let go at once there, so the player never said it.
+- */
+-export function playerOpenForGone(open: boolean): void {
+-  if (!shown.gone) {
+-    goneSeen = false;
+-    return;
+-  }
+-  if (open) goneSeen = true;
+-  else if (goneSeen) {
+-    goneSeen = false;
+-    set({ gone: null });
+-  }
+-}
+-
+-/**
+- * Which voice reads a text in `lang` (a voice's language, lib/listen/speech/
+- * spoken.ts voiceLang): the reader's choice where the phone still has it, else
+- * Heart where the text has its recording, else the phone's own voice for the
+- * language; none where the phone has no voice for it and there is no
+- * recording. A text with its recording, and no other voice chosen for its
+- * language, is Heart without waking the phone's speech at all.
+- */
+-export async function voiceFor(lang: string, recorded: boolean): Promise<VoiceToUse> {
+-  const choice = chosenVoice(lang);
+-  if (recorded && (!choice || choice === HEART)) return { kind: "heart" };
+-  const use = voiceToUse(choice, await deviceVoices(), lang, recorded);
+-  if (use.kind !== "none" && use.gone && !goneSaid(use.gone)) {
+-    markGoneSaid(use.gone);
+-    set({ gone: { lang, instead: use.kind === "heart" ? "heart" : use.voice } });
+-  }
+-  return use;
+-}
+-
+-export type SpeakText = {
+-  /** Its address in the player (lib/listen/speech/spoken.ts). */
+-  src: string;
+-  pieces: SpeechPiece[];
+-  /** The voice's language. */
+-  lang: string;
+-  voice: PhoneVoice;
+-  title: string;
+-  artist?: string;
+-  art?: string;
+-  artFallback?: string;
+-  artSize?: string;
+-  rtl?: boolean;
+-  /** The piece to begin at: the verse being read when the voice is changed. */
+-  from?: number;
+-  /** Begin speaking at once (the default), or load it paused there. */
+-  autoplay?: boolean;
+-};
+-
+-/**
+- * Load a text for the phone's voice into the one player and read it. False
+- * where the device has no speech after all.
+- */
+-export async function speakText(o: SpeakText): Promise<boolean> {
+-  const engine = await speechEngine();
+-  if (!engine || !o.pieces.length) return false;
+-  const pace = paceOf(o.voice.id);
+-  const rate = readSpeed();
+-  const t = speechTimeline(o.pieces, pace);
+-  setSpokenTrack(
+-    o.src,
+-    (host) =>
+-      createSpeechSession({
+-        engine,
+-        pieces: o.pieces,
+-        lang: o.voice.lang || o.lang,
+-        voice: o.voice.id,
+-        rate,
+-        volume: getAudioSnapshot().volume,
+-        pace,
+-        onPace: (p) => keepPace(o.voice.id, p),
+-        title: o.title,
+-        artist: o.artist,
+-        host: {
+-          ...host,
+-          ended: (restart) => {
+-            host.ended(restart);
+-            // Stopped at its end, not begun again by a Loop or a repeat.
+-            if (!getAudioSnapshot().playing && getAudioSnapshot().src === o.src) for (const l of [...endListeners]) l(o.src);
+-          },
+-        },
+-      }),
+-    {
+-      title: o.title,
+-      artist: o.artist,
+-      art: o.art,
+-      artFallback: o.artFallback,
+-      artSize: o.artSize,
+-      captions: t.captions,
+-      duration: t.duration,
+-      rtl: o.rtl,
+-      rate,
+-    },
+-  );
+-  set({ reading: { src: o.src, voice: o.voice } });
+-  const from = Math.max(0, Math.min(o.from ?? 0, t.starts.length - 1));
+-  if (from > 0) seek(t.starts[from]);
+-  setLoopMode("off");
+-  if (o.autoplay !== false) play();
+-  return true;
+-}
+diff --git a/lib/listen/speech/spoken.ts b/lib/listen/speech/spoken.ts
+deleted file mode 100644
+index db723c132..000000000
+--- a/lib/listen/speech/spoken.ts
++++ /dev/null
+@@ -1,54 +0,0 @@
+-import { parseListenId } from "@/lib/listen/texts";
+-
+-/**
+- * What the one player is speaking with the phone's voice, by its address
+- * (1.9, build 95 note 25). A recording has an address the player plays; a
+- * text the phone speaks has none, so it is given one, which says what it is,
+- * so the player's Speed, Read, Share and the page's lit verse know it as they
+- * know a recording:
+- *
+- *   speech:bible/<book>/<chapter>              a chapter of the English Bible
+- *   speech:bible/<book>/<chapter>?in=<bible>   a chapter of a downloaded Bible
+- *   speech:<listen id>?lang=<lang>             a life, a council's section, a
+- *                                              study's part, an event, a work's
+- *                                              section (lib/listen/texts.ts)
+- *
+- * Pure: no window here.
+- */
+-
+-export const SPOKEN = "speech:";
+-
+-export type Spoken =
+-  | { kind: "bible"; book: string; chapter: number; bible: string | null }
+-  | { kind: "text"; id: string; lang: string };
+-
+-export function spokenBibleSrc(book: string, chapter: number, bible: string | null = null): string {
+-  return `${SPOKEN}bible/${book}/${chapter}${bible ? `?in=${encodeURIComponent(bible)}` : ""}`;
+-}
+-
+-export function spokenTextSrc(id: string, lang: string): string {
+-  return `${SPOKEN}${id}?lang=${encodeURIComponent(lang)}`;
+-}
+-
+-/** What a player address speaks, or null when it is no spoken text's. */
+-export function spokenOf(src: string | null | undefined): Spoken | null {
+-  if (!src?.startsWith(SPOKEN)) return null;
+-  const rest = src.slice(SPOKEN.length);
+-  const cut = rest.indexOf("?");
+-  const path = cut < 0 ? rest : rest.slice(0, cut);
+-  const query = new URLSearchParams(cut < 0 ? "" : rest.slice(cut + 1));
+-  const bible = /^bible\/([a-z0-9-]+)\/(\d{1,3})$/.exec(path);
+-  if (bible) return { kind: "bible", book: bible[1], chapter: Number(bible[2]), bible: query.get("in") || null };
+-  if (parseListenId(path)) return { kind: "text", id: path, lang: query.get("lang") || "en" };
+-  return null;
+-}
+-
+-/**
+- * The language a voice is asked for, from the language of the text's words.
+- * Koine Greek ("grc", the downloaded Septuagint and Patriarchal text) is read
+- * in the Greek of today, as the Church reads it aloud; any other is its own.
+- */
+-export function voiceLang(textLang: string): string {
+-  const base = textLang.toLowerCase().split(/[-_]/)[0] || "en";
+-  return base === "grc" ? "el" : base;
+-}
+diff --git a/lib/listen/speech/timeline.ts b/lib/listen/speech/timeline.ts
+deleted file mode 100644
+index c36782fc3..000000000
+--- a/lib/listen/speech/timeline.ts
++++ /dev/null
+@@ -1,151 +0,0 @@
+-import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
+-
+-/**
+- * The phone's voice keeps time the way a recording does (1.9, build 95 note
+- * 25). A recording has a length and a clock; a voice the phone speaks has
+- * neither, only the piece it is on (a verse, or a paragraph) and, where the
+- * phone reports it, the word. So a spoken text is given a timeline: each
+- * piece a length from its letters at the voice's own pace, the pieces end to
+- * end. The player's seek bar, its 15 seconds back and forward, the sleep
+- * timer, the lock screen and the lit words then work on it as on a
+- * recording's.
+- *
+- * The timeline is in the text's own time, as a recording's clock is: at
+- * speed 2 the clock runs twice as fast and the length stays what it is.
+- *
+- * Exact where it matters: a verse lights when the phone says it has begun
+- * it, never before (the clock is held short of the next piece until then),
+- * and a word lights when the phone says it is speaking that word (its time
+- * is the word's own start on the timeline). Between those reports the clock
+- * runs on at the reader's speed, held short of the next word.
+- */
+-
+-/** Letters a second at speed 1 before a voice has been heard: an ordinary reading pace. */
+-export const DEFAULT_PACE = 14;
+-/** The pause after each piece, in the text's own time. */
+-export const BREATH = 0.35;
+-/** How far short of the next piece the clock is held until the phone begins it (more than the captions' lead of 0.15 s). */
+-const EDGE = 0.25;
+-/** How far short of the next word the clock is held until the phone reports it. */
+-const WORD_EDGE = 0.01;
+-
+-export type SpeechPiece = { text: string; n?: number };
+-
+-export type SpeechTimeline = {
+-  starts: number[];
+-  ends: number[];
+-  /** How long each piece's words take, the breath after it left out. */
+-  spoken: number[];
+-  duration: number;
+-  pace: number;
+-  captions: CaptionSource;
+-  /** Each piece's words' first letters. */
+-  words: number[][];
+-  texts: string[];
+-};
+-
+-/** Where each word of a piece begins, as the player splits words (lib/player/captions.ts wordsOf). */
+-export function wordStarts(text: string): number[] {
+-  return [...text.matchAll(/\S+/g)].map((m) => m.index ?? 0);
+-}
+-
+-/**
+- * A text's timeline at a voice's pace. `words` gives every verse its words'
+- * own times, once the phone has shown it reports words; until then a piece is
+- * lit as a whole.
+- */
+-export function speechTimeline(pieces: readonly SpeechPiece[], pace: number, opts: { words?: boolean } = {}): SpeechTimeline {
+-  const p = Number.isFinite(pace) && pace > 0 ? pace : DEFAULT_PACE;
+-  const starts: number[] = [];
+-  const ends: number[] = [];
+-  const spoken: number[] = [];
+-  const words: number[][] = [];
+-  let at = 0;
+-  for (const piece of pieces) {
+-    const speaking = Math.max(piece.text.length, 1) / p;
+-    starts.push(at);
+-    spoken.push(speaking);
+-    at += speaking + BREATH;
+-    ends.push(at);
+-    words.push(wordStarts(piece.text));
+-  }
+-  const timeline: SpeechTimeline = { starts, ends, spoken, duration: at, pace: p, captions: [], words, texts: pieces.map((x) => x.text) };
+-  timeline.captions = pieces.map((piece, i) => ({
+-    time: starts[i],
+-    end: ends[i],
+-    text: piece.text,
+-    ...(typeof piece.n === "number" ? { n: piece.n } : {}),
+-    ...(opts.words ? { wordTimes: wordTimesOf(timeline, i) } : {}),
+-  }));
+-  return timeline;
+-}
+-
+-/** The time of the word that holds letter `char` of piece `i`: the word's own start. */
+-export function timeAtChar(t: SpeechTimeline, i: number, char: number): number {
+-  const starts = t.words[i] ?? [];
+-  const length = Math.max(t.texts[i]?.length ?? 1, 1);
+-  let first = 0;
+-  for (const s of starts) if (s <= char) first = s;
+-  return t.starts[i] + (first / length) * t.spoken[i];
+-}
+-
+-function wordTimesOf(t: SpeechTimeline, i: number): [number, number][] {
+-  const starts = t.words[i];
+-  const length = Math.max(t.texts[i].length, 1);
+-  const time = (char: number) => t.starts[i] + (char / length) * t.spoken[i];
+-  return starts.map((s, j) => [time(s), j + 1 < starts.length ? time(starts[j + 1]) : t.starts[i] + t.spoken[i]]);
+-}
+-
+-/** The piece a moment falls in, for a seek: the first before the start, the last after the end. */
+-export function pieceAt(t: SpeechTimeline, time: number): number {
+-  let at = 0;
+-  for (let i = 0; i < t.starts.length; i++) if (t.starts[i] <= time) at = i;
+-  return at;
+-}
+-
+-/**
+- * The word a moment falls on, for a seek and 15 seconds back or forward
+- * (Updates 98o, build 98 note 2): its piece, and the first letter of the word
+- * it falls on, 0 at the piece's start. In the breath after a piece, the next
+- * piece's start; after the last piece's words, its last word, so the reading
+- * ends there as a recording does at its end.
+- */
+-export function placeAt(t: SpeechTimeline, time: number): { index: number; char: number } {
+-  const index = pieceAt(t, time);
+-  if (index + 1 < t.starts.length && time >= t.starts[index] + t.spoken[index]) return { index: index + 1, char: 0 };
+-  let char = 0;
+-  for (const s of t.words[index] ?? []) if (timeAtChar(t, index, s) <= time) char = s;
+-  return { index, char };
+-}
+-
+-/**
+- * Where the clock stands while piece `i` is spoken: from the word last
+- * reported (or the piece's start), on at the reader's speed for the time
+- * since, held short of the next word where words are reported, else short of
+- * the next piece.
+- */
+-export function timeWhileSpeaking(t: SpeechTimeline, i: number, fromChar: number, elapsed: number, rate: number, words = false): number {
+-  const base = fromChar > 0 || words ? timeAtChar(t, i, fromChar) : t.starts[i];
+-  const run = base + Math.max(0, elapsed) * rate;
+-  let cap = t.ends[i] - EDGE;
+-  if (words) {
+-    const next = (t.words[i] ?? []).find((s) => timeAtChar(t, i, s) > base);
+-    cap = next !== undefined ? timeAtChar(t, i, next) - WORD_EDGE : t.starts[i] + t.spoken[i];
+-  }
+-  return Math.max(base, Math.min(run, cap));
+-}
+-
+-/**
+- * A voice's pace, learned from a piece it has spoken whole: `chars` letters in
+- * `seconds` of the reader's time at `rate`. Halfway from the pace known to the
+- * one heard, so one odd piece moves it little; a piece cut short, stalled or
+- * too short to tell teaches nothing.
+- */
+-export function learnPace(current: number, chars: number, seconds: number, rate: number): number {
+-  if (chars < 20 || !(seconds > 0) || !(rate > 0)) return current;
+-  const speaking = seconds * rate - BREATH;
+-  if (speaking < 0.3) return current;
+-  const heard = chars / speaking;
+-  if (heard < 4 || heard > 40) return current;
+-  return (current + heard) / 2;
+-}
+diff --git a/lib/listen/speech/voiceChoice.ts b/lib/listen/speech/voiceChoice.ts
+deleted file mode 100644
+index 3057b7b80..000000000
+--- a/lib/listen/speech/voiceChoice.ts
++++ /dev/null
+@@ -1,118 +0,0 @@
+-"use client";
+-
+-import { useSyncExternalStore } from "react";
+-
+-import { speaksLanguage, type PhoneVoice } from "./engine";
+-
+-/**
+- * Which voice reads to the reader (1.9, build 95 note 25), kept on the device
+- * as the reader's speed is (lib/player/speed.ts), one choice for each
+- * language, since a reader of the King James and of the Synodal needs a voice
+- * for each. "heart" is the recorded voice, where a text has its recording;
+- * anything else is one of the phone's voices, by the phone's own id.
+- *
+- * Free for every reader (his "all recs" of 2026-11-13): the phone's voices
+- * cost nothing to serve, and the paywall already says listening to every
+- * chapter read aloud stays free.
+- */
+-
+-export const HEART = "heart";
+-const KEY = "purify:listen.voice";
+-const SAID = "purify:listen.voiceGone";
+-const listeners = new Set<() => void>();
+-let cache: Record<string, string> | null = null;
+-
+-function base(lang: string): string {
+-  return lang.toLowerCase().split(/[-_]/)[0];
+-}
+-
+-function all(): Record<string, string> {
+-  if (cache) return cache;
+-  try {
+-    const kept = JSON.parse(window.localStorage.getItem(KEY) ?? "{}");
+-    cache = kept && typeof kept === "object" ? (kept as Record<string, string>) : {};
+-  } catch {
+-    cache = {};
+-  }
+-  return cache;
+-}
+-
+-/** The reader's choice for a language, or null where they have chosen none. */
+-export function chosenVoice(lang: string): string | null {
+-  return all()[base(lang)] ?? null;
+-}
+-
+-export function chooseVoice(lang: string, id: string): void {
+-  cache = { ...all(), [base(lang)]: id };
+-  try {
+-    window.localStorage.setItem(KEY, JSON.stringify(cache));
+-  } catch {
+-    /* a full or private store: the choice lasts this session */
+-  }
+-  for (const l of listeners) l();
+-}
+-
+-export function useChosenVoice(lang: string): string | null {
+-  return useSyncExternalStore(
+-    (l) => {
+-      listeners.add(l);
+-      return () => {
+-        listeners.delete(l);
+-      };
+-    },
+-    () => chosenVoice(lang),
+-    () => null,
+-  );
+-}
+-
+-export type VoiceToUse =
+-  | { kind: "heart"; gone?: string }
+-  | { kind: "phone"; voice: PhoneVoice; gone?: string }
+-  /** The phone has no voice for the text's language and there is no recording. */
+-  | { kind: "none" };
+-
+-/** The phone's voices for a language, its own first, then its better ones, then by name. */
+-export function voicesFor(voices: readonly PhoneVoice[], lang: string): PhoneVoice[] {
+-  return voices
+-    .filter((v) => speaksLanguage(v, lang))
+-    .sort((a, b) => Number(Boolean(b.default)) - Number(Boolean(a.default)) || (b.quality ?? 0) - (a.quality ?? 0) || a.name.localeCompare(b.name));
+-}
+-
+-/**
+- * Which voice reads a text: the reader's choice where it can, else Heart where
+- * the text has its recording, else the phone's own voice for the language. A
+- * chosen phone voice the phone no longer has falls back the same way, and
+- * says which one has gone (`gone`), for the player to say so once.
+- */
+-export function voiceToUse(choice: string | null, voices: readonly PhoneVoice[], lang: string, recorded: boolean): VoiceToUse {
+-  const mine = voicesFor(voices, lang);
+-  const fallback = (gone?: string): VoiceToUse =>
+-    recorded ? { kind: "heart", ...(gone ? { gone } : {}) } : mine[0] ? { kind: "phone", voice: mine[0], ...(gone ? { gone } : {}) } : { kind: "none" };
+-  if (!choice) return fallback();
+-  if (choice === HEART) return recorded ? { kind: "heart" } : fallback();
+-  const found = mine.find((v) => v.id === choice);
+-  return found ? { kind: "phone", voice: found } : fallback(choice);
+-}
+-
+-/** Whether the player has already said that this voice has gone: it says so once. */
+-export function goneSaid(id: string): boolean {
+-  try {
+-    return (window.localStorage.getItem(SAID) ?? "").split("\n").includes(id);
+-  } catch {
+-    return false;
+-  }
+-}
+-
+-export function markGoneSaid(id: string): void {
+-  try {
+-    const said = (window.localStorage.getItem(SAID) ?? "").split("\n").filter(Boolean);
+-    window.localStorage.setItem(SAID, [...said.filter((x) => x !== id), id].slice(-20).join("\n"));
+-  } catch {
+-    /* said once this session, then */
+-  }
+-}
+-
+-/** For tests. */
+-export function forgetVoiceChoices(): void {
+-  cache = null;
+-}
+diff --git a/lib/listen/speech/voices.ts b/lib/listen/speech/voices.ts
+deleted file mode 100644
+index 0f2506343..000000000
+--- a/lib/listen/speech/voices.ts
++++ /dev/null
+@@ -1,136 +0,0 @@
+-"use client";
+-
+-import { useEffect, useSyncExternalStore } from "react";
+-
+-import { canSpeak, speechEngine, type PhoneVoice } from "./engine";
+-import { voicesFor } from "./voiceChoice";
+-
+-/**
+- * The voices this phone has, asked once and kept for the life of the page
+- * (1.9, build 95 note 25). Asking wakes the phone's speech engine, so it is
+- * asked when the player or a Listen needs it, never as the app opens. Asked
+- * again when the Voice sheet opens and when the reader comes back to the app
+- * (a voice added in the phone's settings meanwhile); the list known stands
+- * until the new one comes.
+- */
+-
+-let known: PhoneVoice[] | null = null;
+-let asking: Promise<PhoneVoice[]> | null = null;
+-const listeners = new Set<() => void>();
+-
+-function tell(): void {
+-  for (const l of listeners) l();
+-}
+-
+-/** The phone's voices: those known, or asked for now. Empty where the device has no speech. */
+-export function deviceVoices(): Promise<PhoneVoice[]> {
+-  if (known) return Promise.resolve(known);
+-  return askAgain();
+-}
+-
+-/** Ask the phone again, keeping the list known until it answers. */
+-export function askAgain(): Promise<PhoneVoice[]> {
+-  asking ??= speechEngine()
+-    .then((engine) => (engine ? engine.voices() : []))
+-    .catch(() => [] as PhoneVoice[])
+-    .then((voices) => {
+-      asking = null;
+-      known = voices;
+-      tell();
+-      return voices;
+-    });
+-  return asking;
+-}
+-
+-/** The phone's voices for a component: null until first known. `ask` wakes the phone's speech to know them. */
+-export function useDeviceVoices(ask = true): PhoneVoice[] | null {
+-  const voices = useSyncExternalStore(
+-    (l) => {
+-      listeners.add(l);
+-      return () => {
+-        listeners.delete(l);
+-      };
+-    },
+-    () => known,
+-    () => null,
+-  );
+-  useEffect(() => {
+-    if (ask) void deviceVoices();
+-  }, [ask]);
+-  return voices;
+-}
+-
+-const never = () => () => {};
+-
+-/**
+- * Whether Listen can be offered on a text with no recording: the device can
+- * speak. Drawn as true on the server, so a page drawn there does not move when
+- * it wakes; a browser with no speech takes it away.
+- */
+-export function useCanSpeak(): boolean {
+-  return useSyncExternalStore(never, canSpeak, () => true);
+-}
+-
+-/** For tests. */
+-export function forgetDeviceVoices(): void {
+-  known = null;
+-  asking = null;
+-}
+-
+-/** A phone's own name for a voice that is an id, not a name: Android's "en-gb-x-gba-local". */
+-function isAnId(voice: PhoneVoice): boolean {
+-  return voice.name === voice.id && !/\s/.test(voice.name) && /[-_#.]/.test(voice.name);
+-}
+-
+-export type VoiceRow = { voice: PhoneVoice; name: string; language: string };
+-
+-/**
+- * The phone's voices for a language as the Voice sheet lists them, each with
+- * the name a reader sees and its language in the reader's own words: an
+- * iPhone's own names (Daniel, Samantha); a browser's, without the language it
+- * adds after a dash ("Microsoft David - English (United States)"); Android's
+- * ids, by their language and a number ("Voice 2"). A voice listed twice under
+- * one name (an iPhone's compact and enhanced Daniel) is listed once, the
+- * better, or the one the reader chose.
+- */
+-export function voiceRows(voices: readonly PhoneVoice[], lang: string, locale: string, numbered: (n: number) => string, chosen: string | null = null): VoiceRow[] {
+-  let names: Intl.DisplayNames | null = null;
+-  try {
+-    names = new Intl.DisplayNames([locale], { type: "language" });
+-  } catch {
+-    names = null;
+-  }
+-  const languageOf = (tag: string) => {
+-    try {
+-      return names?.of(tag.replace("_", "-")) ?? tag;
+-    } catch {
+-      return tag;
+-    }
+-  };
+-  const counts = new Map<string, number>();
+-  const rows: VoiceRow[] = [];
+-  const seen = new Map<string, number>();
+-  for (const voice of voicesFor(voices, lang)) {
+-    const tag = voice.lang.toLowerCase().replace("_", "-");
+-    let name: string;
+-    if (isAnId(voice)) {
+-      const n = (counts.get(tag) ?? 0) + 1;
+-      counts.set(tag, n);
+-      name = numbered(n);
+-    } else {
+-      name = voice.name.split(" - ")[0].trim() || voice.name;
+-    }
+-    const row = { voice, name, language: languageOf(voice.lang) };
+-    const twin = `${tag}|${name}`;
+-    const at = seen.get(twin);
+-    if (at === undefined) {
+-      seen.set(twin, rows.length);
+-      rows.push(row);
+-      continue;
+-    }
+-    // The twin listed already: keep the reader's choice, else the better.
+-    const before = rows[at].voice;
+-    if (before.id !== chosen && (voice.id === chosen || (voice.quality ?? 0) > (before.quality ?? 0))) rows[at] = row;
+-  }
+-  return rows;
+-}
+diff --git a/lib/player/steps.ts b/lib/player/steps.ts
+index 67fe363ef..bebab5d22 100644
+--- a/lib/player/steps.ts
++++ b/lib/player/steps.ts
+@@ -1,7 +1,6 @@
+ import { nextChapter, prevChapter } from "@/lib/bible/books";
+ import { sameRecording } from "@/lib/chants/media";
+ import { idOfSavedSrc } from "@/lib/listen/shelf";
+-import { spokenOf } from "@/lib/listen/speech/spoken";
+ import { listenHref, parseListenId } from "@/lib/listen/texts";
+ import { readingOfSrc } from "@/lib/readAloud/chapters";
+ 
+@@ -74,13 +73,6 @@ export function playingOf(src: string | null, chants: readonly ChantRowLike[] |
+   if (!src) return null;
+   const reading = readingOfSrc(src);
+   if (reading) return { kind: "chapter", ...reading };
+-  // Read by the phone's voice (1.9, lib/listen/speech/spoken.ts): a chapter, in
+-  // the English or a downloaded Bible, is a chapter as a recording's is (Speed,
+-  // Read at the verse, Share); a life, a council's section and the rest, a text.
+-  const spoken = spokenOf(src);
+-  if (spoken?.kind === "bible") return { kind: "chapter", book: spoken.book, chapter: spoken.chapter };
+-  const spokenRef = spoken?.kind === "text" ? parseListenId(spoken.id) : null;
+-  if (spoken?.kind === "text" && spokenRef) return { kind: "text", id: spoken.id, href: listenHref(spokenRef) };
+   // Another text: the bucket's recording, or its copy saved on the phone.
+   const text = TEXT_RECORDING.exec(src)?.[1] ?? idOfSavedSrc(src);
+   const ref = text ? parseListenId(text) : null;
+diff --git a/lib/prayers/persistentAudioStore.ts b/lib/prayers/persistentAudioStore.ts
+index ad79fa524..0029fcac9 100644
+--- a/lib/prayers/persistentAudioStore.ts
++++ b/lib/prayers/persistentAudioStore.ts
+@@ -2,8 +2,6 @@
+ 
+ import { useSyncExternalStore } from "react";
+ 
+-import type { SpeechHost, SpeechSession } from "@/lib/listen/speech/session";
+-
+ /**
+  * Persistent in-memory audio player. Keeps a single `HTMLAudioElement`
+  * alive at module scope (outside React) so playback survives route
+@@ -97,15 +95,6 @@ export type AudioSnapshot = {
+ };
+ 
+ let audioEl: HTMLAudioElement | null = null;
+-/**
+- * A text the phone's own voice is speaking (1.9, build 95 note 25), the
+- * player's second way of making sound: while it is set, every control below
+- * (play, pause, a seek, 15 seconds back and forward, the speed, the volume,
+- * the lock screen's buttons) goes to the voice, and the voice tells the
+- * player where it is, as a recording's element does. lib/listen/speech/
+- * session.ts. A recording loaded after it stops it, and it stops a recording.
+- */
+-let spoken: SpeechSession | null = null;
+ const subscribers = new Set<() => void>();
+ let snapshot: AudioSnapshot = {
+   src: null,
+@@ -251,10 +240,9 @@ function onError(a: HTMLAudioElement): void {
+ }
+ 
+ /**
+- * The end of what was playing, a recording's or a spoken text's: a sleep
+- * timer set to the end wins over any loop, then the repeats left (and, for
+- * a spoken text, Loop for ever, which a recording's element does by itself),
+- * then it stops at the start.
++ * The end of what was playing: a sleep timer set to the end wins over any
++ * loop, then the repeats left (Loop for ever the recording's element does by
++ * itself), then it stops at the start.
+  */
+ function trackEnded(restart: () => void): void {
+   if (snapshot.sleep.kind === "end") {
+@@ -264,10 +252,6 @@ function trackEnded(restart: () => void): void {
+     update({ playing: false, currentTime: 0, sleep: { kind: "off" } });
+     return;
+   }
+-  if (spoken && snapshot.loopMode === "inf") {
+-    restart();
+-    return;
+-  }
+   if (repeatsLeft > 0) {
+     repeatsLeft -= 1;
+     restart();
+@@ -319,8 +303,7 @@ function ensureElement(): HTMLAudioElement {
+   // navigated to another page or backgrounded the tab.
+   if ("mediaSession" in navigator) {
+     try {
+-      // Through the player's own play and pause, so a voice the phone is
+-      // speaking answers them as a recording does.
++      // Through the player's own play and pause, as its buttons are.
+       navigator.mediaSession.setActionHandler("play", () => play());
+       navigator.mediaSession.setActionHandler("pause", () => pause());
+       navigator.mediaSession.setActionHandler("stop", () => stop());
+@@ -364,10 +347,6 @@ export function setTrack(
+   } = {},
+ ): void {
+   const a = ensureElement();
+-  if (spoken) {
+-    spoken.stop();
+-    spoken = null;
+-  }
+   const sameSrc = a.src.endsWith(src) || a.src === src;
+   if (!sameSrc) {
+     const rate = clampRate(opts.rate ?? 1);
+@@ -427,91 +406,6 @@ export function setTrack(
+   }
+ }
+ 
+-/**
+- * Load a text for the phone's voice to speak (1.9, build 95 note 25): the
+- * spoken counterpart of setTrack. `start` makes the session with the host it
+- * reports to; `captions` and `duration` are its timeline's
+- * (lib/listen/speech/timeline.ts). A recording playing stops, and the track
+- * starts paused at its beginning, as a new recording does.
+- */
+-export function setSpokenTrack(
+-  src: string,
+-  start: (host: SpeechHost) => SpeechSession,
+-  opts: {
+-    title?: string;
+-    artist?: string;
+-    art?: string;
+-    artFallback?: string;
+-    artSize?: string;
+-    captions: CaptionSource;
+-    duration: number;
+-    rtl?: boolean;
+-    rate?: number;
+-  },
+-): void {
+-  const a = ensureElement();
+-  wanted = false;
+-  retries = 0;
+-  asks += 1;
+-  clearRetry();
+-  a.pause();
+-  a.removeAttribute("src");
+-  a.load();
+-  spoken?.stop();
+-  let mine: SpeechSession | null = null;
+-  const host: SpeechHost = {
+-    // Only the session now playing speaks for the player.
+-    state: (patch) => {
+-      if (mine && spoken !== mine) return;
+-      update(patch);
+-    },
+-    ended: (restart) => {
+-      if (mine && spoken !== mine) return;
+-      trackEnded(restart);
+-    },
+-    remote: (action, seconds) => {
+-      if (mine && spoken !== mine) return;
+-      if (action === "play") play();
+-      else if (action === "pause") pause();
+-      else if (action === "toggle") toggle();
+-      else skipBy(seconds ?? 15);
+-    },
+-  };
+-  mine = start(host);
+-  spoken = mine;
+-  update({
+-    failed: false,
+-    src,
+-    title: opts.title ?? null,
+-    artist: opts.artist ?? null,
+-    art: opts.art ?? null,
+-    artFallback: opts.artFallback ?? null,
+-    captions: opts.captions,
+-    rtl: opts.rtl ?? false,
+-    rate: clampRate(opts.rate ?? 1),
+-    playing: false,
+-    currentTime: 0,
+-    duration: opts.duration,
+-  });
+-  if ("mediaSession" in navigator && (opts.title || opts.artist)) {
+-    try {
+-      navigator.mediaSession.metadata = new MediaMetadata({
+-        title: opts.title ?? "",
+-        artist: opts.artist ?? "",
+-        album: "Purify",
+-        ...(opts.art ? { artwork: [{ src: new URL(opts.art, window.location.href).href, sizes: opts.artSize ?? "512x512", type: pictureType(opts.art) }] } : {}),
+-      });
+-    } catch {
+-      /* MediaMetadata unsupported on some browsers */
+-    }
+-  }
+-}
+-
+-/** Whether the player is speaking a text with the phone's voice, rather than playing a recording. */
+-export function isSpoken(): boolean {
+-  return spoken !== null;
+-}
+-
+ /** The picture's type from its name, for the lock screen. */
+ function pictureType(src: string): string {
+   if (/\.png(\?|$)/i.test(src)) return "image/png";
+@@ -529,7 +423,6 @@ export function currentSrc(): string | null {
+  *  smoothly, where the snapshot only moves on timeupdate (four times a
+  *  second). For the live captions' word-by-word light. */
+ export function currentTimeNow(): number {
+-  if (spoken) return spoken.now();
+   return audioEl ? audioEl.currentTime : snapshot.currentTime;
+ }
+ 
+@@ -547,19 +440,12 @@ function applyRate(a: HTMLAudioElement, rate: number): void {
+ /** Playback speed, for reading aloud (1 is as recorded). */
+ export function setRate(rate: number): void {
+   const r = clampRate(rate);
+-  if (spoken) spoken.setRate(r);
+-  else if (audioEl) applyRate(audioEl, r);
++  if (audioEl) applyRate(audioEl, r);
+   update({ rate: r });
+ }
+ 
+ /** Back or forward by so many seconds, inside the track. */
+ export function skipBy(seconds: number): void {
+-  if (spoken) {
+-    // To the word the moment falls on, so about as far as a recording moves
+-    // (lib/listen/speech/session.ts, Updates 98o).
+-    spoken.seek(Math.max(0, Math.min(snapshot.duration, spoken.now() + seconds)));
+-    return;
+-  }
+   const a = ensureElement();
+   const end = Number.isFinite(a.duration) && a.duration > 0 ? a.duration : snapshot.duration;
+   const t = Math.max(0, Math.min(end || 0, a.currentTime + seconds));
+@@ -574,11 +460,6 @@ export function setSleep(next: SleepTimer): void {
+ }
+ 
+ export function play(): void {
+-  if (spoken) {
+-    wanted = true;
+-    spoken.play();
+-    return;
+-  }
+   const a = ensureElement();
+   tryPlay(a);
+ }
+@@ -586,29 +467,16 @@ export function play(): void {
+ export function pause(): void {
+   wanted = false;
+   clearRetry();
+-  if (spoken) {
+-    spoken.pause();
+-    return;
+-  }
+   if (audioEl) audioEl.pause();
+ }
+ 
+ export function toggle(): void {
+-  if (spoken) {
+-    if (snapshot.playing) pause();
+-    else play();
+-    return;
+-  }
+   const a = ensureElement();
+   if (a.paused) tryPlay(a);
+   else pause();
+ }
+ 
+ export function seek(t: number): void {
+-  if (spoken) {
+-    spoken.seek(t);
+-    return;
+-  }
+   const a = ensureElement();
+   a.currentTime = t;
+   update({ currentTime: t });
+@@ -618,7 +486,6 @@ export function setVolume(v: number): void {
+   const a = ensureElement();
+   const clamped = Math.max(0, Math.min(1, v));
+   a.volume = clamped;
+-  spoken?.setVolume(clamped);
+   update({ volume: clamped });
+ }
+ 
+@@ -632,10 +499,7 @@ export function setLoopMode(mode: LoopMode): void {
+ export function stop(): void {
+   wanted = false;
+   clearRetry();
+-  if (spoken) {
+-    spoken.pause();
+-    spoken.seek(0);
+-  } else if (audioEl) {
++  if (audioEl) {
+     audioEl.pause();
+     audioEl.currentTime = 0;
+   }
+@@ -655,10 +519,6 @@ export function unload(): void {
+   wanted = false;
+   retries = 0;
+   clearRetry();
+-  if (spoken) {
+-    spoken.stop();
+-    spoken = null;
+-  }
+   if (audioEl) {
+     audioEl.pause();
+     audioEl.removeAttribute("src");
+diff --git a/lib/readAloud/play.ts b/lib/readAloud/play.ts
+index 85acdd578..559a9a512 100644
+--- a/lib/readAloud/play.ts
++++ b/lib/readAloud/play.ts
+@@ -1,10 +1,6 @@
+ "use client";
+ 
+ import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
+-import { chapterKey, rememberAnchors, whenPageVerses } from "@/lib/listen/speech/pageText";
+-import { openVoiceSheet } from "@/lib/listen/speech/sheet";
+-import { speakText, voiceFor } from "@/lib/listen/speech/speak";
+-import { spokenBibleSrc, voiceLang } from "@/lib/listen/speech/spoken";
+ import { play, seek, setLoopMode, setTrack } from "@/lib/prayers/persistentAudioStore";
+ import { readSpeed } from "@/lib/player/speed";
+ 
+@@ -56,15 +52,15 @@ export async function startReading(book: string, chapter: number, title: string,
+ }
+ 
+ /**
+- * Listen on a chapter (1.9, build 95 note 25, his "all recs" of 2026-11-13:
+- * the phone's voices read the whole Bible, free for every reader). The voice
+- * the reader chose for the chapter's language reads it: Heart, its recording,
+- * where the English has one and no other voice is chosen; else the phone's
+- * voice, reading the very words on the page, in the English or the Bible the
+- * reader downloaded, the Old Testament too. Where the phone has no voice for
+- * the language and there is no recording, the Voice sheet says so and where
+- * one is added. What it did: "heart", "phone", "none", or "failed" (the page's
+- * words were not at hand, or the device cannot speak after all).
++ * Listen on a chapter: Heart's recording, the only voice (his word of
++ * 2026-11-16, about 22:35 UTC: "remove locally LLM voices ... only leave one
++ * the standard prerecorded voices"). Only where the English has its
++ * recording (lib/readAloud/chapters.ts: the New Testament today), and never
++ * over a chapter shown in a downloaded Bible, which Heart does not read: the
++ * English over a Russian page would be another text than the one shown
++ * (Updates 15's finding of 2026-11-13). The phone's own voices, which read
++ * every chapter in any Bible from build 95 note 25, are gone. False where
++ * there is nothing to play, and the page offers no Listen there.
+  */
+ export async function listenToChapter(o: {
+   book: string;
+@@ -73,36 +69,8 @@ export async function listenToChapter(o: {
+   t: (key: string) => string;
+   /** The downloaded Bible the page shows the chapter in, or null for the English. */
+   bible: DownloadableBible | null;
+-}): Promise<"heart" | "phone" | "none" | "failed"> {
+-  const recorded = !o.bible && hasReadAloud(o.book, o.chapter);
+-  const lang = o.bible ? voiceLang(o.bible.textLang) : "en";
+-  const use = await voiceFor(lang, recorded);
+-  if (use.kind === "heart") {
+-    await startReading(o.book, o.chapter, o.title, o.t);
+-    return "heart";
+-  }
+-  if (use.kind === "none") {
+-    openVoiceSheet({ none: { lang } });
+-    return "none";
+-  }
+-  // The page's own words: a page opening as a reading rolls on into it hands them over a moment later.
+-  const verses = await whenPageVerses(chapterKey(o.book, o.chapter, o.bible?.id ?? null), 8000);
+-  if (!verses?.length) return "failed";
+-  const cover = readAloudCover(o.book);
+-  const src = spokenBibleSrc(o.book, o.chapter, o.bible?.id ?? null);
+-  const ok = await speakText({
+-    src,
+-    pieces: verses.map((v) => ({ text: v.text, ...(typeof v.n === "number" ? { n: v.n } : {}) })),
+-    lang,
+-    voice: use.voice,
+-    title: o.title,
+-    artist: coverName(cover, o.t) ?? o.t("readAloud.by"),
+-    art: cover.src,
+-    artFallback: cover.fallback,
+-    artSize: cover.size ?? undefined,
+-    rtl: o.bible?.dir === "rtl",
+-  });
+-  if (!ok) return "failed";
+-  rememberAnchors(src, verses.map((v) => v.anchor));
+-  return "phone";
++}): Promise<boolean> {
++  if (o.bible || !hasReadAloud(o.book, o.chapter)) return false;
++  await startReading(o.book, o.chapter, o.title, o.t);
++  return true;
+ }
+-- 
+2.43.0
+

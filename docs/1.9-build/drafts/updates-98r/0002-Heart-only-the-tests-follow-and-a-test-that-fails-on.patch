@@ -1,0 +1,358 @@
+From 6db9217302da16866cb0505dca2223d9df61c317 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Mon, 16 Nov 2026 23:13:37 +0000
+Subject: [PATCH 2/3] Heart only: the tests follow, and a test that fails on
+ the old code
+
+heartOnly.test.ts: lib/listen/speech is gone and nothing the app runs
+names a speech engine, PurifySpeech or a spoken track; the Voice sheet
+and every door to it are gone; rendered, Listen stands on a New
+Testament chapter with Heart's recording and on no chapter without one,
+no chapter shown in a downloaded Bible, and no life without a
+recording. Eight tests that pinned the phone's voice now pin Heart.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VuYTwaMDRMVE18BeTfEz4w
+---
+ lib/bible/__tests__/readerDock.test.ts        |  14 +-
+ lib/bible/__tests__/readerScreen.test.ts      |   4 +-
+ lib/listen/__tests__/heartOnly.test.ts        | 134 ++++++++++++++++++
+ .../__tests__/listenLikeTheBible.test.ts      |   2 +-
+ lib/listen/__tests__/recordings.test.ts       |   9 +-
+ lib/player/__tests__/steps.test.ts            |  11 +-
+ lib/player/__tests__/views.test.ts            |   4 +-
+ .../__tests__/savedWhilePlaying.test.ts       |   4 +-
+ lib/readAloud/chapters.ts                     |   5 +-
+ lib/readAloud/rollOn.ts                       |   7 +-
+ 10 files changed, 163 insertions(+), 31 deletions(-)
+ create mode 100644 lib/listen/__tests__/heartOnly.test.ts
+
+diff --git a/lib/bible/__tests__/readerDock.test.ts b/lib/bible/__tests__/readerDock.test.ts
+index 612886567..6975260ff 100644
+--- a/lib/bible/__tests__/readerDock.test.ts
++++ b/lib/bible/__tests__/readerDock.test.ts
+@@ -85,16 +85,16 @@ describe("the dock", () => {
+   });
+ 
+   it("offers Listen in Speed's place where this chapter has a reading that is not the one loaded", () => {
+-    // The pill's own rule (its reads): the English with its recording, every
+-    // chapter where the device can speak. Decided by the pill that holds the
+-    // dock since the dock serves every text read aloud (build 98 note 2).
++    // The pill's own rule (its reads): the English where Heart's recording is,
++    // the only voice (his word of 2026-11-16). Decided by the pill that holds
++    // the dock since the dock serves every text read aloud (build 98 note 2).
+     expect(PILL).toContain("const listenHere = reads && !hereLoaded;");
+     // Known by the chapter the loaded recording reads, whichever address it
+     // has: streamed, or saved to the phone while it played.
+     expect(PILL).toContain("const loaded = readingOfSrc(src);");
+     // A reading on its way to this chapter counts as loaded (lib/readAloud/rollOn.ts, rollOnComing.test.ts).
+-    expect(PILL).toMatch(/const hereLoaded =\s*coming \|\|\s*\(!bible && loaded\?\.book === slug && loaded\.chapter === chapter\) \|\|/);
+-    // Read in the reader's voice for the chapter, in the Bible the page shows it in (1.9, build 95 note 25).
++    expect(PILL).toContain("const hereLoaded = coming || (!bible && loaded?.book === slug && loaded.chapter === chapter);");
++    // Heart's recording, through the one way a chapter's reading starts.
+     expect(PILL).toContain("onListen={() => listenToChapter({ book: slug, chapter, title: `${bookName} ${chapter}`, t, bible })}");
+     expect(DOCK).toContain("await onListen();");
+   });
+@@ -105,10 +105,10 @@ describe("the dock", () => {
+   // stands in for offers none. What a reader would notice: Listen on a Russian
+   // page starting an English voice.
+   it("keeps the pill's rule for Listen: none over a page the English reading does not read", () => {
+-    // From the voices (1.9, build 95 note 25): a downloaded Bible's page is read in the phone's voice, never the English over it.
++    // A downloaded Bible's page has no Listen: Heart reads the English, never over another Bible's words (his word of 2026-11-16).
+     expect(PILL).toMatch(/<ReaderDock\s+name=\{bookName\}\s+number=\{chapter\}/);
+     expect(PILL).toContain("listenHere={listenHere}");
+-    expect(PILL).toMatch(/const reads = listen && \(bible \? speaks : recorded \|\| speaks\);/);
++    expect(PILL).toContain("const reads = listen && !bible && recorded;");
+     expect(DOCK).toMatch(/\{listenHere \? \(\s*<button/);
+   });
+ 
+diff --git a/lib/bible/__tests__/readerScreen.test.ts b/lib/bible/__tests__/readerScreen.test.ts
+index 26d18b09d..b73cf73e6 100644
+--- a/lib/bible/__tests__/readerScreen.test.ts
++++ b/lib/bible/__tests__/readerScreen.test.ts
+@@ -358,8 +358,8 @@ describe("the floating pill, with Listen", () => {
+   });
+ 
+   it("ends in Listen, after the sound button, only where the chapter has a reading", () => {
+-    // The English where it has its recording, and every chapter, the English or a downloaded Bible, where the device can speak (1.9, build 95 note 25).
+-    expect(pill).toContain("const reads = listen && (bible ? speaks : recorded || speaks);");
++    // The English where Heart's recording is, and never over a downloaded Bible: Heart is the only voice (his word of 2026-11-16).
++    expect(pill).toContain("const reads = listen && !bible && recorded;");
+     // Its word gives way where the name needs the room (lib/bible/__tests__/dockNamesWhole.test.ts).
+     expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} bible=\{bible\} \/> : null\}\s*<\/span>/);
+     const read = code("components/bible/ReadAloud.tsx");
+diff --git a/lib/listen/__tests__/heartOnly.test.ts b/lib/listen/__tests__/heartOnly.test.ts
+new file mode 100644
+index 000000000..45f18af2f
+--- /dev/null
++++ b/lib/listen/__tests__/heartOnly.test.ts
+@@ -0,0 +1,134 @@
++// Heart alone (his word of 2026-11-16, about 22:35 UTC: "remove locally LLM
++// voices and full drop and turn on campaigns etc (only leave one the standard
++// prerecorded voices)").
++//
++// What it holds:
++//   no phone's voice   nothing the app runs reaches the phone's or the
++//                      browser's speech: lib/listen/speech/ is gone, and no
++//                      page, component or library names speechSynthesis, the
++//                      apps' PurifySpeech plugin or a spoken track
++//   no Voice sheet     the sheet, its mount in the root frame, the player's
++//                      Voice row and its words are gone: one voice, nothing
++//                      to choose
++//   Listen where Heart reads
++//                      a chapter of the English Bible that has Heart's
++//                      recording (the New Testament) shows Listen; a chapter
++//                      that has none (the Old Testament, until Heart's
++//                      recordings land) shows none, and neither does a chapter
++//                      shown in a downloaded Bible, nor a life, a council, a
++//                      study or an event with no recording
++//
++// What a reader would notice if this broke: a Listen that plays a robot voice
++// they were promised is gone, or a Listen that plays nothing; a Voice row in
++// the player's ••• that opens a choice with one voice in it.
++//
++// The native plugin's files and their registration are left as build 100 has
++// them (android/.../speech/, ios/App/App/PurifySpeechPlugin.swift): the app
++// never calls them, which is what is held here.
++
++import { execFileSync } from "node:child_process";
++import fs from "node:fs";
++import path from "node:path";
++
++import { createElement, type ReactElement } from "react";
++import { renderToString } from "react-dom/server";
++import { describe, expect, it } from "vitest";
++
++import { ListenButton, ReadAloudPillButton } from "@/components/bible/ReadAloud";
++import { MessagesProvider } from "@/components/i18n/MessagesProvider";
++import { ListenPillButton } from "@/components/reading/ListenHere";
++import books from "@/data/bible/books.json";
++import carriedTexts from "@/data/listen/index.json";
++import carriedChapters from "@/data/readAloud/index.json";
++import { downloadableBible } from "@/lib/bible/downloads/catalog";
++import { getMessages } from "@/lib/i18n";
++import en from "@/lib/i18n/messages/en.json";
++import { listenId } from "@/lib/listen/texts";
++
++const ROOT = process.cwd();
++const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8");
++
++type ProviderProps = Parameters<typeof MessagesProvider>[0];
++function render(node: ReactElement): string {
++  return renderToString(createElement(MessagesProvider, { locale: "en", messages: getMessages("en") } as ProviderProps, node));
++}
++
++/** Every source file the app is built from: pages, components and libraries, tests left out. */
++function sources(): string[] {
++  const out = execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard", "app", "components", "lib"], { cwd: ROOT, encoding: "utf8" });
++  return out
++    .split("\n")
++    .filter((f) => /\.(?:tsx?|mjs|js)$/.test(f))
++    .filter((f) => !/(^|\/)__tests__\//.test(f))
++    .filter((f) => fs.existsSync(path.join(ROOT, f)));
++}
++
++describe("the phone's own voices are gone (his word of 2026-11-16)", () => {
++  it("leaves no speech library behind", () => {
++    expect(fs.existsSync(path.join(ROOT, "lib/listen/speech"))).toBe(false);
++  });
++
++  it("is reached by nothing the app runs: no import of it, no speech engine, no spoken track", () => {
++    const reaches: string[] = [];
++    for (const file of sources()) {
++      const text = read(file);
++      for (const word of ["listen/speech", "speechSynthesis", "SpeechSynthesisUtterance", "PurifySpeech", "setSpokenTrack", "isSpoken("]) {
++        if (text.includes(word)) reaches.push(`${file}: ${word}`);
++      }
++    }
++    expect(reaches).toEqual([]);
++  });
++});
++
++describe("one voice, nothing to choose: the Voice sheet is gone", () => {
++  it("and every door to it: the root frame, Now Playing, the player's •••", () => {
++    expect(fs.existsSync(path.join(ROOT, "components/player/VoiceSheet.tsx"))).toBe(false);
++    const doors: string[] = [];
++    for (const file of sources()) {
++      const text = read(file);
++      for (const word of [/\bVoiceSheet\b/, /\bopenVoiceSheet\b/, /\buseVoiceRowValue\b/, /\bonVoice\b/, /t\("player\.voice"\)/]) {
++        if (word.test(text)) doors.push(`${file}: ${word.source}`);
++      }
++    }
++    expect(doors).toEqual([]);
++  });
++
++  it("and its words, in every language", () => {
++    expect(Object.keys(en).filter((k) => k === "player.voice" || k.startsWith("player.voice."))).toEqual([]);
++  });
++});
++
++describe("Listen stands only where Heart's recording is", () => {
++  const recorded = new Set(carriedChapters as string[]);
++  const newTestament = (books as { slug: string; testament: string; chapters: number }[]).filter((b) => b.testament === "NT");
++  const oldTestament = (books as { slug: string; testament: string; chapters: number }[]).filter((b) => b.testament === "OT");
++  // A New Testament chapter Heart has read, and an Old Testament chapter it has not, from the lists a build carries.
++  const heard = newTestament.flatMap((b) => Array.from({ length: b.chapters }, (_, i) => ({ book: b.slug, chapter: i + 1 }))).find((c) => recorded.has(`${c.book}/${c.chapter}`));
++  const unheard = oldTestament.flatMap((b) => Array.from({ length: b.chapters }, (_, i) => ({ book: b.slug, chapter: i + 1 }))).find((c) => !recorded.has(`${c.book}/${c.chapter}`));
++  const life = listenId("life", "xenia-of-petersburg");
++
++  it("on a New Testament chapter with its recording: Listen, in the pill and in the toolbar", () => {
++    expect(heard, "a New Testament chapter with Heart's recording").toBeTruthy();
++    const pill = render(createElement(ReadAloudPillButton, { book: heard!.book, chapter: heard!.chapter, title: `${heard!.book} ${heard!.chapter}` }));
++    expect(pill).toContain("data-read-aloud-play");
++    expect(pill).toContain(">Listen<");
++    const toolbar = render(createElement(ListenButton, { book: heard!.book, chapter: heard!.chapter, bookName: heard!.book }));
++    expect(toolbar).toContain(">Listen<");
++  });
++
++  it.skipIf(!unheard)("on a chapter with no recording: no Listen at all", () => {
++    expect(render(createElement(ReadAloudPillButton, { book: unheard!.book, chapter: unheard!.chapter, title: "x" }))).toBe("");
++    expect(render(createElement(ListenButton, { book: unheard!.book, chapter: unheard!.chapter, bookName: unheard!.book }))).toBe("");
++  });
++
++  it("on a chapter shown in a downloaded Bible: none, since Heart reads the English", () => {
++    const russian = downloadableBible("ru-synodal");
++    expect(russian).toBeTruthy();
++    expect(render(createElement(ReadAloudPillButton, { book: heard!.book, chapter: heard!.chapter, title: "x", bible: russian }))).toBe("");
++    expect(render(createElement(ListenButton, { book: heard!.book, chapter: heard!.chapter, bookName: heard!.book, bible: russian }))).toBe("");
++  });
++
++  it.skipIf((carriedTexts as string[]).includes(life))("on a life with no recording: no Listen in its foot pill", () => {
++    expect(render(createElement(ListenPillButton, { text: { id: life, title: "St Xenia of Petersburg", by: "Purify" } }))).toBe("");
++  });
++});
+diff --git a/lib/listen/__tests__/listenLikeTheBible.test.ts b/lib/listen/__tests__/listenLikeTheBible.test.ts
+index 98e1c6ae3..261c0700f 100644
+--- a/lib/listen/__tests__/listenLikeTheBible.test.ts
++++ b/lib/listen/__tests__/listenLikeTheBible.test.ts
+@@ -42,7 +42,7 @@ describe("one way to listen, the Bible's (build 98 note 2)", () => {
+     // Where the pills stand (md:hidden native-md-flex) the page's button does not, and the other way round.
+     expect(HERE).toContain('<ReaderPill onClick={tap} className={cn("hidden md:inline-flex native-md-hidden", className)}');
+     // What it does stays in the page: the paragraph lit, the page following, the roll into the next part.
+-    expect(HERE).toMatch(/\{playing \? spokenHere \? <SpokenFollow src=\{src\} \/> : <ListenFollow id=\{id\} \/> : null\}/);
++    expect(HERE).toContain("{playing ? <ListenFollow id={id} /> : null}");
+     expect(HERE).toContain("void startListening(next).then((began) => {");
+     // And says what it would read, for the pill.
+     expect(HERE).toContain("useEffect(() => registerListen({ id, title, by, art }), [id, title, by, art]);");
+diff --git a/lib/listen/__tests__/recordings.test.ts b/lib/listen/__tests__/recordings.test.ts
+index dd42f3426..7f266013f 100644
+--- a/lib/listen/__tests__/recordings.test.ts
++++ b/lib/listen/__tests__/recordings.test.ts
+@@ -63,15 +63,16 @@ describe("Listen on the pages", () => {
+     expect(read("components/saints/WritingReader.tsx")).toContain('id={listenId("work", saint.slug, content.slug, sec.n)}');
+   });
+ 
+-  it("stands where the text has a recording or the device can speak it (1.9, build 95 note 25): no button that plays nothing", () => {
++  it("stands only where the text has Heart's recording: no button that plays nothing (his word of 2026-11-16)", () => {
+     const here = read("components/reading/ListenHere.tsx");
+     // One hook for the page's button and the foot pill's since build 98 note 2 (useListenText).
+     expect(here).toContain("const recorded = useHasListen(text?.id ?? null);");
+-    expect(here).toContain("const available = Boolean(text) && (recorded || speaks);");
++    expect(here).toContain("const available = Boolean(text) && recorded;");
+     expect(here).toMatch(/if \(!listen\.available\) return null;/);
+     expect(here).toMatch(/const \{ available, playing, busy, tap \} = useListenText\(text\);\s*if \(!available\) return null;/);
+-    // With no voice for the page's language and no recording, a tap says so, and where a voice is added.
+-    expect(here).toContain('else if (use.kind === "none") openVoiceSheet({ none: { lang: voiceLang(lang) } });');
++    // A tap starts the recording, and nothing else: no phone's voice, no Voice sheet.
++    expect(here).toContain("await startListening(id, { title: text.title, by: text.by, art: text.art });");
++    expect(here).not.toMatch(/speech|openVoiceSheet|voiceFor/);
+     // The list a build carries starts empty and grows only from checked timings.
+     expect(read("scripts/listen-index.mjs")).toContain("why = timingsFit(batch,");
+     const carried = JSON.parse(read("data/listen/index.json")) as string[];
+diff --git a/lib/player/__tests__/steps.test.ts b/lib/player/__tests__/steps.test.ts
+index 7aa4f1da8..75c5886ff 100644
+--- a/lib/player/__tests__/steps.test.ts
++++ b/lib/player/__tests__/steps.test.ts
+@@ -69,13 +69,12 @@ describe("previous and next, for the Bible read aloud", () => {
+     expect(steps).toContain("chapterSteps(playing.book, playing.chapter, hasReadAloud)");
+     expect(steps).toContain("void startReading(to.book, to.chapter,");
+     expect(read("lib/readAloud/play.ts")).toContain("rate: readSpeed(),");
+-    // Listen and the reading that rolls on use the same one: the reader's
+-    // voice for the chapter, Heart through startReading (1.9, build 95 note 25).
++    // Listen and the reading that rolls on use the same one: Heart's
++    // recording through startReading, the only voice (his word of 2026-11-16).
+     expect(read("components/bible/ReadAloud.tsx")).toContain('import { listenToChapter } from "@/lib/readAloud/play";');
+-    expect(read("lib/readAloud/play.ts")).toMatch(/if \(use\.kind === "heart"\) \{\s*await startReading\(o\.book, o\.chapter, o\.title, o\.t\);/);
+-    // A chapter the phone's voice reads steps to every chapter either side, by opening its page, which begins it.
+-    expect(steps).toContain("chapterSteps(playing.book, playing.chapter, () => true)");
+-    expect(steps).toContain("if (askToListenAt(to.book, to.chapter)) router.push(`/bible/${to.book}/${to.chapter}`);");
++    expect(read("lib/readAloud/play.ts")).toMatch(/if \(o\.bible \|\| !hasReadAloud\(o\.book, o\.chapter\)\) return false;\s*await startReading\(o\.book, o\.chapter, o\.title, o\.t\);/);
++    // No step to a chapter Heart has not read: the phone's voice that stepped to every chapter is gone.
++    expect(steps).not.toContain("() => true");
+   });
+ });
+ 
+diff --git a/lib/player/__tests__/views.test.ts b/lib/player/__tests__/views.test.ts
+index c6e8afaca..a1d8f6569 100644
+--- a/lib/player/__tests__/views.test.ts
++++ b/lib/player/__tests__/views.test.ts
+@@ -72,9 +72,7 @@ describe("Now Playing: the cover and the words, never merged", () => {
+     expect(top).toContain("<More size={20} />");
+     expect(top).not.toContain('<span className="h-11 w-11 shrink-0" aria-hidden />');
+     // A sheet over the player: Escape and the back button are its own.
+-    expect(src).toContain(
+-      "const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer) || (voiceSheet.open && voiceSheet.overPlayer);",
+-    );
++    expect(src).toContain("const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer);");
+   });
+ 
+   it("holds in ••• what the player does that has no button in that corner, and Share", () => {
+diff --git a/lib/readAloud/__tests__/savedWhilePlaying.test.ts b/lib/readAloud/__tests__/savedWhilePlaying.test.ts
+index 02378040b..e67af464c 100644
+--- a/lib/readAloud/__tests__/savedWhilePlaying.test.ts
++++ b/lib/readAloud/__tests__/savedWhilePlaying.test.ts
+@@ -28,8 +28,8 @@ describe("the chapter playing", () => {
+     const page = read("components/bible/ReadAloud.tsx");
+     const hook = page.slice(page.indexOf("function useThisChapter("), page.indexOf("export function ListenButton"));
+     expect(hook).toContain("const reading = readingOfSrc(audio.src);");
+-    // Or the phone's voice reading it, in the Bible the page shows (1.9, build 95 note 25).
+-    expect(hook).toContain("const loaded = spoken || (!bible && reading?.book === book && reading.chapter === chapter);");
++    // Never over a downloaded Bible: Heart reads the English (his word of 2026-11-16).
++    expect(hook).toContain("const loaded = !bible && reading?.book === book && reading.chapter === chapter;");
+     expect(hook).not.toMatch(/audio\.src\.endsWith/);
+ 
+     // The dock's Listen is decided by the pill that holds it since build 98 note 2.
+diff --git a/lib/readAloud/chapters.ts b/lib/readAloud/chapters.ts
+index 125d04bb6..fdb025b89 100644
+--- a/lib/readAloud/chapters.ts
++++ b/lib/readAloud/chapters.ts
+@@ -24,8 +24,9 @@ import { savedSrc } from "./offline";
+  * chapter read after an app was built still gets Listen. Both are written by
+  * scripts/read-aloud-index.mjs from the files themselves.
+  *
+- * Free for every reader with one voice; Premium gets every voice (the
+- * owner's word of 2026-10-15). The one voice is Kokoro's "Heart", John 1's.
++ * Free for every reader, in one voice: Kokoro's "Heart", John 1's, the only
++ * voice since his word of 2026-11-16 (about 22:35 UTC: "only leave one the
++ * standard prerecorded voices"; the Premium voices of 2026-10-15 are dropped).
+  */
+ export type ReadAloudVerse = { n: number; at: number; end: number; text?: string };
+ export type ReadAloudManifest = { voice: string; seconds: number; verses: ReadAloudVerse[] };
+diff --git a/lib/readAloud/rollOn.ts b/lib/readAloud/rollOn.ts
+index b397fe982..30ee1ecdf 100644
+--- a/lib/readAloud/rollOn.ts
++++ b/lib/readAloud/rollOn.ts
+@@ -4,9 +4,8 @@ import { useSyncExternalStore } from "react";
+ 
+ /**
+  * A chapter's reading asked for on the page about to open (1.7, 1.9): a
+- * reading that ended rolls on into the next chapter, and the player's previous
+- * and next step to a chapter the phone's voice reads, which needs that page's
+- * own words. The page reads the ask as it opens (components/bible/ReadAloud.tsx,
++ * reading that ended rolls on into the next chapter, where it has Heart's
++ * recording. The page reads the ask as it opens (components/bible/ReadAloud.tsx,
+  * ReadAloudFollow) and begins.
+  */
+ const NEXT_KEY = "purify:readAloud.next";
+@@ -62,7 +61,7 @@ export function takeListenAsk(book: string, chapter: number): boolean {
+   return true;
+ }
+ 
+-/** The chapter's reading began, or could not (no voice, no words): it is no longer on its way. */
++/** The chapter's reading began, or could not: it is no longer on its way. */
+ export function readingCame(book: string, chapter: number): void {
+   if (coming !== `${book}/${chapter}`) return;
+   coming = null;
+-- 
+2.43.0
+
