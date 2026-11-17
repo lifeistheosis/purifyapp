@@ -4,4 +4,4 @@ Android build 101: run 43999379696 on main at 6700c2e65 (1.9 as pushed to the ma
 
 ## His notes
 
-1. **"I don't see the v1.9 guided update"** (about 03:16 UTC). Not a fault: the update pop-up is offered on the first open of a release only to a reader who had an earlier version or is signed in, never to a new install (lib/whatsNew/tourState.ts), and build 101 was installed fresh at the arbiter's word ("Uninstall the old one first"). The tour is on What's New, "Take the tour". Asked: a Testers switch to show the pop-up again as an updater meets it, for the second push.
+1. **"I don't see the v1.9 guided update"** (about 03:19 UTC). Not a fault: the update pop-up is offered on the first open of a release only to a reader who had an earlier version or is signed in, never to a new install (lib/whatsNew/tourState.ts), and build 101 was installed fresh at the arbiter's word ("Uninstall the old one first"). The tour is on What's New, "Take the tour". Asked: a Testers switch to show the pop-up again as an updater meets it, for the second push.
