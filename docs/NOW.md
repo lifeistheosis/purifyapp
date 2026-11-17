@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state. The log is `docs/1.9-build/HANDOFF.md`, his words are `docs/1.9-build/BRAINSTORM.md`, and how the chats run is `docs/OPERATIONS.md`.
 
-Updated 2026-11-17 00:28 UTC by Arbiter 14: HIS WORD AT ABOUT 00:27, "recommended": THE MERGE WAITS FOR THE VOICES, one clean website update. The order: Gate 6c's verdict on b40e4192 (its chain re-armed after a restart); Updates 98r parks its three app commits as a patch once its checkMock walks pass (told at 00:10; it passed its line at 534,121 tokens); then one release chat applies the patch with a check of what changed, runs MERGE-DAY steps 1 and 2 on the release head (roads on unless he says "roads off", OWNER-STEPS R0c), and holds; then his two SQL pastes (R1) and his "go"; then the push, campaigns live for his account alone, and "open campaigns" for every reader. Build 100 is on the android-release page.
+Updated 2026-11-17 00:59 UTC by Arbiter 14: R1 IS DONE, EARLY: he ran both SQL files at about 00:58 ("sqls done"); probed at 00:59: data_moves holds psalms-113-115 done at 00:57:42 UTC, shared_pages and shared_page_reports answer 200. On the day he sends only "go". Follow-up owed: a read-only count of Psalms 113 to 115 rows written from a 1.8 client after 00:57:42, once the stores serve 1.9, and a new signed migration for any it finds (BRAINSTORM). The merge waits for the voices (his "recommended", 00:27): Gate 6c's verdict on b40e4192, Updates 98r's parked patch, then one release chat (MERGE-DAY steps 1 and 2), then his "go". Build 100 is on the android-release page.
 
 ## 1.9 now
 

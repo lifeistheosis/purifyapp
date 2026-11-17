@@ -143,6 +143,8 @@ red: stop, change nothing, send the red message to the arbiter.
 
 He sends back: "R1 both green".
 
+**Done early, 2026-11-17 about 00:58 UTC** (his "sqls done"; BRAINSTORM). Probed by the arbiter at 00:59 with the public anon key: `data_moves` holds `psalms-113-115` done at 00:57:42 UTC; `shared_pages` and `shared_page_reports` answer 200. The push's own run will find both done and change nothing (both files run twice safely). Owed after the stores serve 1.9: a read-only count of rows on Psalms 113 to 115 written after 00:57:42 from a 1.8 client (old numbering, not moved), and a new signed migration for any it finds.
+
 ## 5. The push (release chat, at the owner's "go" only)
 
 The owner tells the arbiter **go**; the arbiter relays it word for word. Then,
