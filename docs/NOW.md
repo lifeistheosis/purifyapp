@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state. The log is `docs/1.9-build/HANDOFF.md`, his words are `docs/1.9-build/BRAINSTORM.md`, and how the chats run is `docs/OPERATIONS.md`.
 
-Updated 2026-11-17 02:42 UTC by Arbiter 14: THE WEBSITE STILL SERVES 1.8 (purify-1.8.0 at 02:38, 42 minutes after the push of 6700c2e65), AND MEMORY IS NOT THE LIKELY CAUSE: the arbiter's own `npm run build` of the same code passed in 161 s (6,527 pages, two workers) with the node processes' summed PSS peaking at 3.61 GB, under the Render builder's 8 GB. Left: the build failed on Render for another reason, it is still queued, or auto-deploy did not fire (then Manual Deploy, Deploy latest commit). Only Render's Events can say; he has been asked. The Release chat ended and was archived at 02:39 (its records ce3c58057, docs/handoffs/release-1.9.md: what is owed once /sw.js says purify-1.9.0). 1.9 is on main; the 21 database files ran. Android build 101 is on the android-release page. Updates 98s may push the branch once its checks pass; Gate 6c keeps running.
+Updated 2026-11-17 02:51 UTC by Arbiter 14: RENDER'S DEPLOY OF 6700c2e IS STUCK: his screenshot shows it Building for 53 minutes, its log ending at 'Downloaded and extracted 994 MiB cache in 15s' (8:57:08 PM EST) with no checkout or build line after; not memory, not size, no outage at Render or GitHub. He is asked to cancel it and run Manual Deploy, Clear build cache and deploy; the site stays on 1.8 until a build succeeds. 1.9 is on main (6700c2e65); the 21 database files ran. Android build 101 is on the android-release page. Owed once the site serves 1.9: docs/handoffs/release-1.9.md. Updates 98s may push the branch once its checks pass; Gate 6c keeps running.
 
 ## 1.9 now
 
