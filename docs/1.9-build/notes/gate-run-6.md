@@ -111,3 +111,12 @@ The first walk of every screen at CPU 4x in this series (gate run 5 walked a sho
 - **For the eye, not failed:** the dips through the ground at the foot of a fade (about 200 a chunk with motion on, under 10 reduced), the layers crossing in passing (the top bar over its plates row, the reader pill over the tab bar), and 17 slow answers over 350 ms (chunks 1 and 2, motion on).
 
 The batch went to the arbiter at once (2026-11-17 about 06:50 UTC).
+
+## Gate 6c: the last steps (stopped at the chat's token line, 2026-11-17 08:50 UTC)
+
+- **You with days kept** (`new6.sh you`): **2 fails on /account/**, a new reader's walk clean. tap-you-kept: 2 screens, 35 controls, 2 failed: "Homilies on the Gospel of Matthew" (the kept shelf): Back returned with what was tapped at 542 px where it stood at 458 px; "Share": moved 12 px under the finger as what stands above it changed. tap-you-new: exit 0.
+- **Journal**: verse-note ok, no page errors; quote-library all ok.
+- **Listen and player: not a result for either head.** Updates 98s landed on the branch during the gate (app code after 4ca097da3; "--voice is retired (2026-11-17, Updates 98s)") and `git pull --rebase` before each push brought its scripts into this tree, so the listen and player walks ran newer scripts against the export of 4ca097da3 ("5 with no recording and no Listen" on each listen run; np-transport en and ar passed; the voice runs refused).
+- **Not run:** lines (saved-line hung over an hour), round 3's five lines, the web build with the books sheet. The chain was stopped.
+
+**Verdict for test build 100: not a pass.** The motion walk's 58 transitions and You's two fails stand on 4ca097da3; and the head has moved (Updates 98s), so the next gate cuts a fresh export of the new head and runs: listen, player, lines, round 3, the web build with the books sheet, and the guard and tap walks on what 98s changed.
