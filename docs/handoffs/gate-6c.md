@@ -12,7 +12,10 @@ The container restarts every 81 minutes and kills every process. `chain6c.sh` ru
 `GATE6_SCRATCH=<scratch>/gate6 setsid nohup bash docs/handoffs/gate-6-walks/chain6c.sh > <scratch>/gate6/chain.log 2>&1 &`
 After a restart, start it again the same way; nothing else is needed. A fresh container needs the branch, `npm ci`, `npx next typegen` and the export first (`out/` is not in git).
 
-## Open, exactly where
+## Stopped at the token line (08:50 UTC 2026-11-17)
+You with days kept: 2 fails on /account/ (Back to the kept shelf 542 px against 458; Share moved 12 px). Journal ok. Listen and player ran newer scripts (Updates 98s landed mid-gate) against the old export: no result. Lines, round 3 and the web build not run; the chain was stopped. **Verdict: not a pass.** The next gate cuts a fresh export of the new head (98s changed app code).
+
+## Open, exactly where (the earlier plan)
 1. The chain's last steps, in order: `you`, `journal`, `listen`, `player`, `lines` (new6.sh), `round3` (round3-probe.mjs, read against the note's items 8, 10, 11, 12 and 37), `web` (`npm run build`, `npm start` on :3000, `node scripts/gate/books-version.mjs out`). Their lines are in chain.txt; this file and the record say which landed.
 2. /reading/ in Arabic at 390: the seven dark looks are not measured (the walker's page closes at 21 looks on that one screen; five palettes, the two earned and the seven light looks pass).
 3. The verdict waits on the arbiter's ruling on the 58 transitions (which are known calls or older than 1.9) and on the last steps.
