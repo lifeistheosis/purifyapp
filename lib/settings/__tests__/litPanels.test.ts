@@ -384,7 +384,8 @@ describe("first focus", () => {
     const space = code("components/settings/SettingsClient.tsx");
     const at = space.indexOf("function SpaceSection(");
     const section = space.slice(at, space.indexOf("\nfunction ", at + 10));
-    expect(section).toMatch(/<FirstFocus[\s\S]*?onPick=\{\(i\) => \{\s*writeIntent\(i\);\s*writeFocus\(\[focusFor\(i\)\]\);\s*refreshDayOne\(\);\s*void saveSpaceToAccount\(\);/);
+    // Inside the move that grows the row (Gate 6c; lib/settings/__tests__/spaceChoicesMove.test.ts), in the same order.
+    expect(section).toMatch(/<FirstFocus[\s\S]*?onPick=\{\(i\) =>\s*movePage\(\s*\(\) => \{\s*writeIntent\(i\);\s*writeFocus\(\[focusFor\(i\)\]\);\s*refreshDayOne\(\);\s*void saveSpaceToAccount\(\);/);
     expect(section).not.toMatch(/writeIntents\(/);
   });
 });
