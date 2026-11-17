@@ -4,7 +4,11 @@
 // serves it, each tap from a fresh page:
 //   walker  x3: brought to the middle as scripts/tap-walk.mjs brings a control (scrollIntoView,
 //               then still for two looks 100ms apart), aimed as it aims (aimOf), tapped at once;
-//   finger  x3: the page swiped up by touch to its end, as a reader reads down, then tapped.
+//   finger  x3: the page swiped up by touch until the link stands on the screen, then tapped;
+//   slow    x3: the walker's way with the CPU slowed 4x, as when the tap walk runs three screens
+//               at a time (where it failed, twice, in English).
+// Every layout shift after the page opens is kept with what moved (PerformanceObserver), and the
+// link's box is looked at again 1.5s after the tap's aim, so a late move under the finger is named.
 // Before each tap it records what stands under the finger (document.elementFromPoint), so a
 // cover that comes and goes (the reader's pill, a fade) is named rather than guessed.
 //
@@ -24,7 +28,7 @@ const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromi
 let fails = 0;
 const rows = [];
 
-async function open(lang) {
+async function open(lang, slow = false) {
   const ctx = await browser.newContext({
     viewport: { width: 390, height: 844 },
     deviceScaleFactor: 1,
@@ -41,12 +45,28 @@ async function open(lang) {
       if (l !== "en") localStorage.setItem("CapacitorStorage.purify_locale", l);
     } catch {}
   }, lang);
+  await ctx.addInitScript(() => {
+    window.__shifts = [];
+    try {
+      new PerformanceObserver((list) => {
+        for (const e of list.getEntries()) {
+          const what = (e.sources ?? []).map((s) => {
+            const n = s.node;
+            const tag = n?.nodeType === 1 ? `${n.tagName.toLowerCase()}${n.id ? "#" + n.id : ""}${typeof n.className === "string" && n.className ? "." + n.className.trim().split(/\s+/).slice(0, 2).join(".") : ""}` : n ? "#text" : "?";
+            return `${tag} ${Math.round(s.previousRect.y)}->${Math.round(s.currentRect.y)}`;
+          });
+          window.__shifts.push({ t: Math.round(e.startTime), v: Number(e.value.toFixed(4)), input: e.hadRecentInput, what: what.slice(0, 3) });
+        }
+      }).observe({ type: "layout-shift", buffered: true });
+    } catch {}
+  });
   if (lang !== "en") await ctx.addCookies([{ name: "purify_locale", value: lang, url: "https://localhost" }]);
   await serveLikeTheShell(ctx, OUT);
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e)));
   const cdp = await ctx.newCDPSession(page);
+  if (slow) await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
   await go(page, PAGE, { timeout: 45000 });
   await page.waitForTimeout(2000);
   await firstTouch(page, cdp);
@@ -66,24 +86,27 @@ async function still(page, handle) {
 }
 
 for (const lang of ["en", "ar"]) {
-  for (const way of ["walker", "finger"]) {
+  for (const way of ["walker", "finger", "slow"]) {
     for (let n = 1; n <= 3; n++) {
-      const { ctx, page, cdp, errors } = await open(lang);
+      const { ctx, page, cdp, errors } = await open(lang, way === "slow");
       const link = page.locator("footer a", { hasText: NAMES[lang] }).first();
       let row = { lang, way, n };
       try {
         await link.waitFor({ state: "attached", timeout: 15000 });
-        if (way === "walker") {
+        if (way === "walker" || way === "slow") {
           await link.evaluate((el) => el.scrollIntoView({ block: "center", inline: "center" }));
         } else {
           // Swipes up by touch until the link stands on the screen, as a reader reads down to it.
+          let stuck = 0;
+          let lastTop = null;
           for (let s = 0; s < 60; s++) {
-            const shown = await link.evaluate((el) => {
-              const r = el.getBoundingClientRect();
-              return r.top >= 0 && r.bottom <= innerHeight - 120;
+            const r = await link.evaluate((el) => {
+              const b = el.getBoundingClientRect();
+              return { top: Math.round(b.top), shown: b.top >= 0 && b.bottom <= innerHeight - 120 };
             });
-            const atEnd = await page.evaluate(() => Math.ceil(scrollY + innerHeight) >= document.documentElement.scrollHeight - 2);
-            if (shown || atEnd) break;
+            stuck = lastTop !== null && Math.abs(r.top - lastTop) < 2 ? stuck + 1 : 0;
+            lastTop = r.top;
+            if (r.shown || stuck >= 3) break;
             await cdp.send("Input.synthesizeScrollGesture", { x: 195, y: 600, yDistance: -500, speed: 1600, gestureSourceType: "touch" });
             await page.waitForTimeout(250);
           }
@@ -102,12 +125,14 @@ for (const lang of ["en", "ar"]) {
           [aim.x, aim.y, NAMES[lang]],
         );
         await tapAt(cdp, aim.x, aim.y);
+        const after = await handle.boundingBox().catch(() => null);
         const landed = await page
           .waitForFunction((re) => new RegExp(re).test(location.pathname), WANT.source, { timeout: 5000 })
           .then(() => true)
           .catch(() => false);
         const at = await page.evaluate(() => location.pathname);
-        row = { ...row, y: `${Math.round(box.y)} to ${Math.round(box.y + box.height)}`, aim: `${Math.round(aim.x)},${Math.round(aim.y)}`, under: under.onLink ? "the link" : under.tag, landed, at };
+        const shifts = await page.evaluate(() => window.__shifts ?? []).catch(() => []);
+        row = { ...row, y: `${Math.round(box.y)} to ${Math.round(box.y + box.height)}`, yAfterTap: after ? Math.round(after.y) : null, shifts: shifts.filter((x) => x.v >= 0.001).slice(-4), aim: `${Math.round(aim.x)},${Math.round(aim.y)}`, under: under.onLink ? "the link" : under.tag, landed, at };
         if (!landed) fails += 1;
       } catch (e) {
         fails += 1;
