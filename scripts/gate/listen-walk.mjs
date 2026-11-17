@@ -6,10 +6,10 @@
 //   node scripts/gate/listen-walk.mjs <export> --carry [--reduce]   (the dock's cover tapped: Now Playing carries it up; never with motion reduced)
 //   node scripts/gate/listen-walk.mjs <export> --only work --words [--cpu 4] [--trace dir]   (Now Playing on a long text: opened
 //   on Cover from the dock, then Words, then put away and opened again, each judged and counted; Updates 98n, build 98 note 2)
-//   node scripts/gate/listen-walk.mjs <export> --only bible --transport [--lang ar] [--voice]   (Now Playing's transport row tapped as
+//   node scripts/gate/listen-walk.mjs <export> --only bible --transport [--lang ar]   (Now Playing's transport row tapped as
 //   a reader taps it, each button said to do what it names, read from the player itself; Updates 98n. Back and forward 15 are
-//   held to about 15 seconds, as a recording moves. --voice: the phone's voice chosen for the text's language, so the Bible
-//   is read by the voice and not by Heart's recording, which the walk stands in with the export's bell; Updates 98o)
+//   held to about 15 seconds, as a recording moves. --voice, which chose the phone's voice (Updates 98o), is retired with
+//   the phone's voices: it is refused, below)
 //   --trace <dir>: a Chrome trace of the Listen tap and of the dock's turn, each from the tap, for
 //   scripts/gate/trace-frames.mjs (Updates 98k: the work's 117ms task while its page glides to the reading)
 //   (--why adds what made each restyle: scripts/gate/trace-restyles.mjs reads it; --roots prints every write on
@@ -20,8 +20,8 @@
 // a council's section, with a touch screen, as the phone's shell serves the export:
 //
 //  - at rest: Listen stands in the foot pill, none in the page, one bar at the foot;
-//  - Listen tapped (the phone's voice, a stand-in here: headless Chromium has none): the dock, the
-//    mini player stepped aside, one bar; Pause and Play from the dock;
+//  - Listen tapped (the text's recording): the dock, the mini player stepped aside, one bar; Pause
+//    and Play from the dock;
 //  - a scroll down: the dock draws in, and on a life and an event the tab bar steps away as on the
 //    Bible; a scroll up brings both back;
 //  - a work and a council: the dock's arrow turns the part (the name follows);
@@ -30,12 +30,23 @@
 //  - --check: checkMock with pixels at rest and while playing, on every palette and look.
 //
 // A recording is the export's own bell, served for the recordings' host, so nothing asks the network.
+//
+// Heart alone (2026-11-17, Updates 98s). His word of 2026-11-16 (about 22:35 UTC), "remove locally LLM
+// voices ... (only leave one the standard prerecorded voices)", made Heart the only voice, and Updates
+// 98r's patches left Listen only where Heart's recording is: a chapter of the New Testament, and a text
+// the list of recordings names (data/listen/index.json, and the export's copy of the website's list,
+// audio/listen/index.json). Until 2026-11-17 these lanes stood the phone's voice in for every text
+// (scripts/lib/fake-voice.mjs, gone with it). Now a text the list does not name is measured as the app
+// means it: no Listen in the pill, none in the page, no dock and no mini player, on the phone and with
+// --computer, and the lane ends there; what else was asked of it (--carry, --words, --transport) needs a
+// recording and is reported as not walked. A text the list names is walked as before, with its
+// recording. On 2026-11-17 the list is empty, so the five texts are each measured for no Listen. The
+// browser's speech is a tripwire in every lane: a lane fails if anything asks it to speak.
 import fs from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright";
 
 import { checkMock, EVERY, printMockCheck } from "../mock-check.mjs";
-import { fakeVoice } from "../lib/fake-voice.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 import { firstTouch, tapAt } from "../lib/tap.mjs";
 import { judgeFrames, recordFrames, stripOf } from "./frames.mjs";
@@ -75,9 +86,12 @@ const CPU = Number(flag("--cpu") ?? 1);
 const SLOW = Number(flag("--slow") ?? 1);
 // --transport: Now Playing's row tapped, button by button (Updates 98n; 98l set its order in Arabic and did not tap it).
 const TRANSPORT = has("--transport");
-// --voice: the phone's voice chosen for English, the language of the texts read aloud (Updates 98o: without it John 10 is
-// Heart's recording, so 98n's transport walk, said to be of the voice, tapped a recording).
-const VOICE = has("--voice");
+// --voice chose the phone's voice for English (Updates 98o). Retired: Heart is the only voice, so a run that asks for a
+// voice is refused rather than reported as walked.
+if (has("--voice")) {
+  console.log("--voice is retired (2026-11-17, Updates 98s): Heart is the only voice since his word of 2026-11-16, and the app offers no phone's voice to choose.");
+  process.exit(2);
+}
 const DESKTOP_UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
 const OUT = path.resolve(argv[0] ?? "out");
 if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error(`no native export in ${OUT}`);
@@ -93,6 +107,33 @@ const TEXTS = [
   // A chapter, for --carry: the texts above have no cover picture (the plate is drawn), so nothing can fly from them.
   ...(CARRY || TRANSPORT ? [{ key: "bible", to: "/bible/john/10/" }] : []),
 ].filter((t) => !ONLY || ONLY.includes(t.key));
+
+/** The list of texts Heart has recorded: the build's own, and the export's copy of the website's. */
+const listOf = (file) => {
+  try {
+    const v = JSON.parse(fs.readFileSync(file, "utf8"));
+    return Array.isArray(v) ? v.filter((x) => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+};
+const LISTED = [...new Set([...listOf(new URL("../../data/listen/index.json", import.meta.url).pathname), ...listOf(path.join(OUT, "audio/listen/index.json"))])];
+/** A page's recording: its id, or the start its parts' ids share (lib/listen/texts.ts, parseListenId). */
+const listIdOf = (to) => {
+  const p = to.split("/").filter(Boolean);
+  if (p[0] === "saints" && p.length === 2) return `life/${p[1]}`;
+  if (p[0] === "history" && p.length === 2) return `history/${p[1]}`;
+  if (p[0] === "theology" && p[2] === "read") return `theology/${p[1]}/`;
+  if (p[0] === "saints" && p.length === 3) return `work/${p[1]}/${p[2]}/`;
+  if (p[0] === "councils" && p.length === 3) return `council/${p[1]}/${p[2]}/`;
+  return null;
+};
+/** Whether Heart has recorded what a page shows: John is the New Testament's (lib/readAloud/chapters.ts); a text, when the list names it. */
+const recordedAt = (to) => {
+  if (to.startsWith("/bible/john/")) return true;
+  const id = listIdOf(to);
+  return id !== null && LISTED.some((x) => (id.endsWith("/") ? x.startsWith(id) : x === id));
+};
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const RECORD = { width: WIDTH, height: HEIGHT, minMs: 900, stillMs: 450, maxMs: 2600 };
@@ -171,8 +212,13 @@ for (const text of TEXTS) {
       if (reduce) localStorage.setItem("purify.motion", "off");
     } catch {}
   }, [LANG, REDUCE]);
-  // The transport walk's voice ends each verse as a phone's does, so Play near a verse's end reads on into the next.
-  await ctx.addInitScript(fakeVoice, TRANSPORT ? { endsWithWords: true } : undefined);
+  // Heart is the one voice: the browser's speech is a tripwire, never a stand-in (checked at the lane's end).
+  await ctx.addInitScript(() => {
+    window.__spoke = 0;
+    try {
+      if (window.speechSynthesis) window.speechSynthesis.speak = () => void (window.__spoke += 1);
+    } catch {}
+  });
   // The player's own audio element is never in the document: kept here, so the walk can say whether a recording sounds.
   await ctx.addInitScript(() => {
     const Made = window.Audio;
@@ -184,12 +230,6 @@ for (const text of TEXTS) {
     };
     window.Audio.prototype = Made.prototype;
   });
-  if (VOICE)
-    await ctx.addInitScript((id) => {
-      try {
-        localStorage.setItem("purify:listen.voice", JSON.stringify({ en: id }));
-      } catch {}
-    }, LANG === "en" ? "walk-voice" : "walk-voice-en");
   if (BLOCK)
     await ctx.addInitScript((names) => {
       const add = DOMTokenList.prototype.add;
@@ -273,10 +313,31 @@ for (const text of TEXTS) {
   try {
     await go(page, text.to, { timeout: 45000 });
     await sleep(2000);
-    if (text.fallback && !(await page.evaluate(() => document.querySelector("[data-reader-pill], [data-reader-dock]")))) {
+    // The fallback is walked when it has a recording and the first text has none.
+    if (text.fallback && !recordedAt(text.to) && recordedAt(text.fallback)) {
       r.to = text.fallback;
       await go(page, text.fallback, { timeout: 45000 });
       await sleep(2000);
+    }
+    if (!recordedAt(r.to)) {
+      // Heart has not recorded this text: the app offers no Listen on it, on the phone or on the computer.
+      if (!COMPUTER) await firstTouch(page, cdp);
+      await sleep(300);
+      const rest = await state(page);
+      r.steps.rest = rest;
+      r.steps.recorded = false;
+      if (rest.listenInPill) fail(`no recording, yet ${rest.listenInPill} Listen in the pill`);
+      if (rest.listenInPage) fail(`no recording, yet ${rest.listenInPage} Listen in the page`);
+      if (rest.dock || rest.mini) fail(`no recording, yet the foot shows ${rest.foot.join(" and ")}`);
+      const asked = [CARRY && "--carry", WORDS && "--words", TRANSPORT && "--transport"].filter(Boolean);
+      if (asked.length) r.steps.notWalked = `${asked.join(", ")}: no recording`;
+      await shot("rest");
+      if (CHECK) {
+        const c = await checkMock(page, "body", { pixels: true, palettes: EVERY });
+        r.steps.restCheck = printMockCheck(c, `${text.key} at rest ${WIDTH}${LANG === "en" ? "" : ` ${LANG}`}`) ? "ok" : "FAILED";
+        if (r.steps.restCheck !== "ok") fail("checkMock at rest");
+      }
+      throw Object.assign(new Error("done"), { done: true });
     }
     if (COMPUTER) {
       // The computer as it was: Listen in the page under the title, no pill, and while it plays the mini player.
@@ -583,13 +644,15 @@ for (const text of TEXTS) {
   } catch (e) {
     if (!e.done) fail(`stopped: ${String(e).slice(0, 240)}`);
   }
+  if (await page.evaluate(() => window.__spoke ?? 0).catch(() => 0)) fail("the browser's speech was asked to speak: Heart is the one voice");
   if (errors.length) r.errors = errors;
   if (r.fails.length) failed += 1;
   results.push(r);
   console.log(`${r.fails.length ? "FAIL" : "ok  "} ${text.key} ${r.to}${r.fails.length ? `: ${r.fails.join("; ")}` : ""}`);
-  console.log(`     ${JSON.stringify({ rest: r.steps.rest && { foot: r.steps.rest.foot, listenInPill: r.steps.rest.listenInPill, listenInPage: r.steps.rest.listenInPage }, playing: r.steps.playing && { foot: r.steps.playing.foot, slot: r.steps.playing.dockSlot, name: r.steps.playing.dockName }, afterListen: r.steps.afterListen, carry: r.steps.carry, pausePlay: r.steps.pausePlay, turn: r.steps.turn, scroll: r.steps.scroll, listenMotion: r.steps["listen:motion"], turnMotion: r.steps["turn:motion"], transport: r.steps.transport, words: r.steps.words && { ...r.steps.words, motion: Object.fromEntries(["open", "words", "close", "reopen"].map((m) => [m, r.steps[`${m}:motion`]])) }, errors: r.errors })}`);
+  console.log(`     ${JSON.stringify({ recorded: r.steps.recorded ?? true, notWalked: r.steps.notWalked, rest: r.steps.rest && { foot: r.steps.rest.foot, listenInPill: r.steps.rest.listenInPill, listenInPage: r.steps.rest.listenInPage }, playing: r.steps.playing && { foot: r.steps.playing.foot, slot: r.steps.playing.dockSlot, name: r.steps.playing.dockName }, afterListen: r.steps.afterListen, carry: r.steps.carry, pausePlay: r.steps.pausePlay, turn: r.steps.turn, scroll: r.steps.scroll, listenMotion: r.steps["listen:motion"], turnMotion: r.steps["turn:motion"], transport: r.steps.transport, words: r.steps.words && { ...r.steps.words, motion: Object.fromEntries(["open", "words", "close", "reopen"].map((m) => [m, r.steps[`${m}:motion`]])) }, errors: r.errors })}`);
   await ctx.close();
 }
 await browser.close();
-console.log(`\n${TEXTS.length - failed} of ${TEXTS.length} texts as the Bible listens, at ${WIDTH} by ${HEIGHT}${LANG === "en" ? "" : ` in ${LANG}`}${CHECK ? ", checkMock with pixels on every palette and look" : ""}`);
+const unrecorded = results.filter((x) => x.steps.recorded === false).length;
+console.log(`\n${TEXTS.length - failed} of ${TEXTS.length} texts as the app means them, at ${WIDTH} by ${HEIGHT}${LANG === "en" ? "" : ` in ${LANG}`}: ${unrecorded} with no recording and no Listen, ${TEXTS.length - unrecorded} walked with a recording${CHECK ? "; checkMock with pixels on every palette and look" : ""}`);
 process.exit(failed ? 1 : 0);
