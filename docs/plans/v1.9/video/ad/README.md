@@ -2,7 +2,7 @@
 
 The brief is `../AD.md`. This folder is stage 1 of it: a test of about seven seconds, scene 1 (Today, built by its own pieces) and scene 2 (the journal by the Church's day, built the same way), with the one new thing between them: the phone itself moves from scene to scene.
 
-**Status, 2026-11-20: not finished.** The token cap for this stage came before the render. What exists and what is left is in `docs/handoffs/ad-stage-1.md`. There is no video, no page and no RECORD yet.
+**Status, 2026-11-20: made, waiting for his yes or no.** One version, one render: 6.95 seconds, 1080 by 1920, 60 frames a second, H.264, silent. The file is not in git (`.promo/v1.9-video/ad/purify-1.9-ad-stage-1.mp4`); it plays on its page, https://claude.ai/artifact/4YMJMQmXcX6HSC7fxZJd6X (his, and private until he shares it), with one still and the reason for each choice. `RECORD.md` is the measured record. Stage 2 (the other six scenes) waits for his yes.
 
 ## What it is
 
@@ -26,7 +26,10 @@ node docs/plans/v1.9/video/ad/take.mjs journal
 node docs/plans/v1.9/video/ad/compose.mjs --times   # the film's clock
 node docs/plans/v1.9/video/ad/compose.mjs --sheet   # twelve moments, to look at (--span 3.1-4.7 for the move)
 node docs/plans/v1.9/video/ad/compose.mjs --check   # checkMock at six moments
-VIDEO_EXPORT=6700c2e65 node docs/plans/v1.9/video/ad/compose.mjs --fresh   # every frame, then the file
+VIDEO_EXPORT=6700c2e65 node docs/plans/v1.9/video/ad/compose.mjs --fresh   # every frame, then the file (about 7 minutes)
+node docs/plans/v1.9/video/ad/page.mjs --artifact=<file.html> --video=<address> --still=<address>   # the page, and RECORD.md
 ```
+
+The page is published from a copy outside the repository, with the video and the still in the page's own asset store (capabilities `assets` and `downloads`); a new session that has to change it builds the copy again and publishes to the same address.
 
 Everything made is in `.promo/v1.9-video/` (out of git, and lost when the container restarts).
