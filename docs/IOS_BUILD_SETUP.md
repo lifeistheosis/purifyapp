@@ -437,3 +437,9 @@ older Xcode is still a useful check of the certificate path.
   APNs directly, not through Firebase, so no `GoogleService-Info.plist` is
   needed.
 - `AGENTS.md`: the release ritual, including the six version identifiers.
+
+## By April 2027: build with Xcode 27 (noted 2026-11-20)
+
+Apple's notice on build 39 of 1.9 (ITMS-90725, an email of 2026-11-20; the delivery itself succeeded): the app was built with the iOS 26.5 SDK, and from April 2027 iOS and iPadOS apps must be built with the iOS 27 SDK or later, in Xcode 27 or later, to be uploaded to App Store Connect or submitted. His word the same day: "for when we built v2.0 keep this in mind". So before 2.0's first iOS build, `.github/workflows/ios-release.yml` moves to a runner that carries Xcode 27 (it runs on `macos-26` today), and the signed build is walked on a phone after the move.
+
+One thing follows from it. Apple's screenshot page (read 2026-11-20) says iPhone Duo screenshots are required from April 2027 for any app using the iOS 27.1 SDK or later: 1398 x 2034 for the outer display and 2007 x 2853 for the inner. The store pictures' script (`docs/plans/v1.9/store/make.mjs`) has no such device yet.

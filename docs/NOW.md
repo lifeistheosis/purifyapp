@@ -43,6 +43,11 @@ Updated 2026-11-20 19:10 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 - **What follows:** keep a chat short. Rotate the arbiter at about 150,000 tokens (his yes pending). A worker's price must count its fixed start (about 47,000 tokens of tools and rules), and a cap is better set in dollars read from get_session than in guessed tokens.
 - **The meter:** get_session shows a chat's cost only after a turn ends; inside a turn it shows the last finished turn. The weekly limit read "allowed" at 18:26 UTC and resets 2026-11-27 08:00 UTC.
 
+## For 2.0 (his word, 2026-11-20: "for when we built v2.0 keep this in mind")
+
+- **Xcode 27 by April 2027.** Apple's notice on build 39 (ITMS-90725): built with the iOS 26.5 SDK; from April 2027 an upload needs the iOS 27 SDK. The iOS workflow moves to a runner with Xcode 27 before 2.0's first iOS build (`docs/IOS_BUILD_SETUP.md`, its last section).
+- **iPhone Duo pictures** are then required too (from April 2027, for apps on the iOS 27.1 SDK or later).
+
 ## Found, and not yet on the faults list
 
 - On `/journal/`, reached by You and then Your journal, the tab bar marks Bible, not You. Seen by the ad chat on main's export; not checked by the arbiter.
