@@ -14,6 +14,8 @@ https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 2). Private to him. I
 
 At that word (the page is version 2, same address): the phone is no longer the plain slab. A band of brushed metal lit along its front shoulder and faintly at its back, glass in a fine bright lip, rounder corners (36 from 29), three buttons on the band, and a shadow where it meets the ground. Nothing is drawn on the glass. This is my reading of "upgrade": a finer object, still no maker's hardware. All nine frames were rendered again and pass checkMock.
 
+- About 23:28: "do you have suggestions?" Answered with five, in order of worth: sound (a low tone and one hit on the number), colour in the light (the app's gold, warm, on the mark and the end card only), a hand-off between shots (the number's light becomes the phone's light), the icon of St Nicholas as the one close detail filmed sharper, and the store badges on the end card. None is made; each waits for his word.
+
 ## What was made
 
 - `docs/plans/v1.9/video/release/TREATMENT.md`: the treatment. The one idea is the drop's own line, "Purify 1.9 is here." (the first sentence of the drop's caption).
