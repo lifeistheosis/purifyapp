@@ -21,7 +21,7 @@ Updated 2026-11-20 18:45 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 
 ## Waiting on him
 
-1. **iOS:** take 1.9 out of review, walk build 39 from TestFlight on his iPhone, choose it and send again. Asked; not yet confirmed done. R6's iOS number waits until the App Store serves 1.9.
+1. **iOS:** take 1.9 out of review, walk build 39 from TestFlight on his iPhone, choose it and send again. Asked; not yet confirmed done. The walk should prove the widgets on a real iPhone: with the Old Calendar chosen and a patron saint saved, the day's widget follows the Old Calendar and the patron's widget shows the saint (a reader's report of 11-20; the cause was mended on 11-10 and has not yet been seen on a real iPhone). R6's iOS number waits until the App Store serves 1.9.
 2. **The ad:** finish stage 1, the test of about 7 seconds? About $5 to $8 more by the arbiter's estimate, with $6.51 spent. Stage 2 follows only on his yes to the test.
 3. **The store pictures:** A (use the 11-12 set) or B (a retake from the release code in full colour, with the medium size added; medium cost).
 4. **From the hand-over:** which of R6, R2b and R2c are done; whether the reading of the new system above is right; the order of `docs/PLAN-after-1.9.md`.
