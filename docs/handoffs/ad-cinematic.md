@@ -34,6 +34,36 @@ Its look: hard black and white, hard cuts on the hits, flash frames, one warm em
 
 **Not settled, and his to say (a stop condition: legal):** the music is someone's track, taken from a TikTok. I do not know its name or its owner. Putting it inside Purify's own file is using music without a licence: a business account's post can be muted or taken down, and an ad or a store video cannot carry it. Asked him how to go on. The video and its audio are not in the repository.
 
+- About 23:45: "time it to the audio not video the video is a little bit off on some occasions but you get the idea"
+
+At that word: the track itself was measured (onsets by change of spectrum, and the low band alone), and the film is to be cut to it, not to the reference's picture.
+
+- **Tempo:** about 99 beats a minute. A beat is about 0.61 seconds and a bar of four is about 2.43.
+- **Downbeats, by the low hits (within about 0.08 seconds of an even grid):** 2.19, 4.62, 7.05, 9.48, 11.91, 14.34, 16.77, 19.20.
+- **Before the grid:** the track opens sparse, with single hits near 0.6 and 3.1.
+- **Lifts into a downbeat** (a rush in the treble just before it): into 7.05, 9.48, 16.77 and 19.20.
+- **The break:** about 10.7 to 11.91, nearly no bass, ending on a downbeat.
+- **The final hit:** 20.34, by far the loudest moment, then silence.
+- My measure is by script and not by ear; the grid is to be proved before the render with a sheet of the film's cuts against these times.
+
+The cut proposed to him (about 22 seconds, the end card held in the silence):
+
+| At | The music | The film |
+|---|---|---|
+| 0 | sparse | black, the mark comes up |
+| 2.19 | the first downbeat | "1.9" lands |
+| 4.62 | bar 2 | the phone comes out of the dark |
+| 7.05 | bar 3, after a lift | chapter 1, Today: its card, then cuts on the beat |
+| 9.48 | bar 4, after a lift | chapter 2, cuts on the beat |
+| 10.7 | the break | the journal's card, held |
+| 11.91 | bar 5 | chapter 3, the journal |
+| 14.34 | bar 6 | chapter 4 |
+| 16.77 | bar 7, after a lift | the fastest cuts |
+| 19.20 | bar 8, after a lift | the journal whole, "Free for everyone." |
+| 20.34 | the final hit | the end card, "Purify 1.9 is here.", held in silence |
+
+Chapters 2 and 4 need screens the storyboard does not have (proposed: Every verse, opened; Seven more Bibles). Asked him for his yes with the cost. The music's licence is still open.
+
 ## What was made
 
 - `docs/plans/v1.9/video/release/TREATMENT.md`: the treatment. The one idea is the drop's own line, "Purify 1.9 is here." (the first sentence of the drop's caption).
