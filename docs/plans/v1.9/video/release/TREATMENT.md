@@ -20,6 +20,7 @@ The film has one line and it is the drop's own: **"Purify 1.9 is here."** (the f
 4. **A build.** Slow and held at the start (1.5 and 1.1 seconds), the phone's arrival (1.6), then it quickens: a card (0.7), a close shot with quick cuts inside it (1.5), a card (0.7), a close shot (1.5), the whole journal (1.3), and stillness on the end card (1.8). About 11.7 seconds. Every move settles on the house curve; a fast move is allowed, a springy one is not.
 5. **Type as an event.** Each chapter has a full-frame title card in the app's sans, large and few words, while the phone goes on moving out of focus behind it. No caption sits over the phone. The display serif does not come back.
 6. **Real screens.** The screen on the phone is the ad's own takes: the native export of main `6700c2e65`, each piece the app's own element, word for word after the build as before. The film adds only what is round the screen.
+7. **The phone** (his word, 2026-11-20: "Upgrade the phone design."). No longer the store pictures' plain slab: a band of brushed metal lit along its front shoulder, glass set in a fine bright lip, rounder corners, three buttons on the band, and a shadow where it meets the ground. Nothing is drawn on the glass, so the app's screen stays whole.
 
 ## The words, and where each is from
 

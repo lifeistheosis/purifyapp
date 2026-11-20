@@ -6,11 +6,13 @@ Written 2026-11-20 by the worker chat started for this one job (session_01VuYTwd
 
 ## The page
 
-https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 1). Private to him. It holds his word, the one idea, six choices with their reasons, the rhythm, nine stills each with its reason, every word with its source, and what his yes starts.
+https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 2). Private to him. It holds his word, the one idea, six choices with their reasons, the rhythm, nine stills each with its reason, every word with its source, and what his yes starts.
 
 ## His words in this chat (verbatim, UTC)
 
-None yet. The chat was started by the last chat's prompt at his word there (about 22:26 UTC, in `ad-stage-1.md`).
+- About 22:39, on the storyboard's first version: "Upgrade the phone design."
+
+At that word (the page is version 2, same address): the phone is no longer the plain slab. A band of brushed metal lit along its front shoulder and faintly at its back, glass in a fine bright lip, rounder corners (36 from 29), three buttons on the band, and a shadow where it meets the ground. Nothing is drawn on the glass. This is my reading of "upgrade": a finer object, still no maker's hardware. All nine frames were rendered again and pass checkMock.
 
 ## What was made
 

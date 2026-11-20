@@ -23,7 +23,7 @@ const CHOICES = [
   ["A camera that chooses", "Shots change scale hard: the whole phone small in a wide dark frame, then a detail filling the frame. Close shots are sharp where the eye should be and fall soft toward the far end, as a lens does."],
   ["A build", "Slow and held at the start, quicker through the two chapters, then stillness on the end card. The film is silent, so the rhythm is in the lengths of the shots, drawn below."],
   ["Type as an event", "Each chapter has its own full-frame card in the app's sans, large and few words. No caption sits over the phone. The serif does not come back."],
-  ["Real screens", "The screen on the phone is the real app, the build the stores serve, each piece the app's own, word for word. The film adds only what is round the screen."],
+  ["Real screens", "The screen on the phone is the real app, the build the stores serve, each piece the app's own, word for word. The film adds only what is round the screen. The phone itself is new at your word: a band of brushed metal lit along its shoulder, glass set in a fine bright lip, rounder corners and its three buttons, with nothing drawn on the glass."],
 ];
 const WORDS = [
   ["1.9", "the drop's release number"],

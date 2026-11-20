@@ -184,19 +184,33 @@ const dark = (pct) => `color-mix(in srgb, var(--color-night-deep) ${pct}%, trans
 const plane = (pct) => `color-mix(in srgb, var(--color-paper) ${pct}%, var(--color-night-deep))`;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
-const RIM = 5;
-const ROUND = 29;
+// The phone (his word, 2026-11-20: "Upgrade the phone design."): no longer the store pictures' plain slab. A band of
+// brushed metal round a sheet of glass: the band is lit along its front shoulder and again faintly at its back, the
+// glass sits in a fine bright lip, the corners are rounder, and the band carries its three buttons. Nothing is drawn
+// on the glass itself: the screen is the app's and stays whole.
+const RIM = 6;
+const ROUND = 36;
 const [BW, BH] = [PHONE.width + 2 * RIM, PHONE.height + 2 * RIM];
 const DEEP = r(BW * 0.105);
 const LEAVES = (() => {
   const out = [];
   for (let k = DEEP; k >= 1; k--) {
-    const tone = k <= 2 ? 30 : 15 - 11 * (k / DEEP);
+    const u = k / DEEP;
+    const bell = (at, wide) => Math.exp(-(((u - at) / wide) ** 2));
+    const tone = k <= 1 ? 52 : 8 + 30 * bell(0.2, 0.11) + 12 * bell(0.86, 0.07);
     out.push(`<div data-leaf style="transform:translateZ(${-k}px);background-color:${plane(tone.toFixed(1))}"></div>`);
   }
   return out.join("");
 })();
-const phoneBody = `<div data-phone>${LEAVES}<figure data-screen><img data-sharp alt="" src=""><img data-soft alt="" src=""><span data-shade></span><span data-sheen></span></figure></div>`;
+// The buttons stand out of the band by a few pixels, half way through its depth: one on the end side, two on the start side.
+const BUTTONS = [["end", 236, 92], ["start", 196, 58], ["start", 270, 58]]
+  .map(([side, top, tall]) => {
+    const out = [];
+    for (let z = Math.round(DEEP * 0.32); z <= Math.round(DEEP * 0.68); z += 2) out.push(`<div data-button data-mock-allow="stripe" data-mock-why="a button on the side of the phone, which is a thing in the picture and not a part of any interface" style="${side === "end" ? "right" : "left"}:-3px;top:${top}px;height:${tall}px;transform:translateZ(${-z}px)"></div>`);
+    return out.join("");
+  })
+  .join("");
+const phoneBody = `<div data-phone>${LEAVES}${BUTTONS}<figure data-screen><img data-sharp alt="" src=""><img data-soft alt="" src=""><span data-shade></span><span data-sheen></span></figure></div>`;
 
 function stagePage() {
   return `<!doctype html>
@@ -218,7 +232,8 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
   [data-space] { position: absolute; inset: 0; perspective: ${r(W * 2.1)}px; perspective-origin: ${W / 2}px ${r(H * 0.46)}px; direction: ltr; }
   [data-phone] { position: absolute; top: ${-BH / 2}px; left: ${-BW / 2}px; width: ${BW}px; height: ${BH}px; transform-style: preserve-3d; transform-origin: 50% 50%; }
   [data-leaf] { position: absolute; inset: 0; border-radius: ${ROUND + RIM}px; }
-  [data-screen] { position: absolute; inset: 0; box-sizing: border-box; margin: 0; border-radius: ${ROUND + RIM}px; background-color: var(--color-night-deep); outline: 1px solid ${ink(26)}; overflow: hidden; }
+  [data-screen] { position: absolute; inset: 0; box-sizing: border-box; margin: 0; border-radius: ${ROUND + RIM}px; background-color: var(--color-night-deep); box-shadow: 0 0 0 1.5px ${plane(46)}, inset 0 0 0 1px ${ink(9)}, inset 0 0 0 ${RIM}px var(--color-night-deep); overflow: hidden; }
+  [data-button] { position: absolute; width: 7px; border-radius: 3.5px; background-color: ${plane(30)}; }
   [data-screen] img { position: absolute; top: ${RIM}px; left: ${RIM}px; display: block; width: ${PHONE.width}px; height: ${PHONE.height}px; border-radius: ${ROUND}px; }
   [data-shade], [data-sheen] { position: absolute; inset: 0; border-radius: ${ROUND + RIM}px; }
   /* What the ground gives back: the same phone, turned over about the ground it stands on, soft and fading. */
@@ -259,7 +274,7 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
     const [px, py, pw, ph, ps] = f.pool;
     one("[data-pool]").style.backgroundImage = "radial-gradient(ellipse " + pw + "px " + ph + "px at " + px + "px " + py + "px, " + ink((ps * 100).toFixed(1)) + ", " + ink((ps * 38).toFixed(1)) + " 38%, transparent 74%)";
     // The ground: nothing above it, and under the phone a floor that is a little less dark where the pool lies on it.
-    one("[data-ground]").style.backgroundImage = f.floor ? "linear-gradient(to bottom, transparent " + (f.floor - 40) + "px, " + ink(3.2) + " " + (f.floor + 6) + "px, " + ink(1.2) + " " + (f.floor + 220) + "px, transparent " + (f.floor + 420) + "px)" : "none";
+    one("[data-ground]").style.backgroundImage = f.floor ? (f.phone ? "radial-gradient(ellipse " + Math.round(250 * f.phone.k) + "px 22px at " + f.phone.x + "px " + (f.floor + 4) + "px, " + dark(92) + ", transparent 100%), " : "") + "linear-gradient(to bottom, transparent " + (f.floor - 40) + "px, " + ink(3.2) + " " + (f.floor + 6) + "px, " + ink(1.2) + " " + (f.floor + 220) + "px, transparent " + (f.floor + 420) + "px)" : "none";
     one("[data-vignette]").style.backgroundImage = "radial-gradient(ellipse 86% 74% at 50% 50%, transparent 52%, " + dark(78) + " 100%)";
     one("[data-dim]").style.backgroundColor = f.phone && f.phone.dim ? dark(f.phone.dim * 100) : "transparent";
     const p = f.phone;
