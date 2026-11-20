@@ -16,6 +16,24 @@ At that word (the page is version 2, same address): the phone is no longer the p
 
 - About 23:28: "do you have suggestions?" Answered with five, in order of worth: sound (a low tone and one hit on the number), colour in the light (the app's gold, warm, on the mark and the end card only), a hand-off between shots (the number's light becomes the phone's light), the icon of St Nicholas as the one close detail filmed sharper, and the store badges on the end card. None is made; each waits for his word.
 
+- About 23:44, with a video uploaded (24.4 seconds, 576 square, a TikTok download of another maker's anime edit, the music ending at about 20.4): "this videos audio (and the video linked has the drops and frame switches for reference"
+
+At that word: the video was read, not used. Its map, by measure (bass and treble through time, and the picture's cuts):
+
+| Seconds | The music | The picture |
+|---|---|---|
+| 0 to 3.7 | sparse: single low hits at 0, 1.2 and 2.2 | one held shot |
+| 3.73 | the first drop | the first cut |
+| 3.7 to 6.1 | the bass builds | cuts at 4.87 and 5.53 |
+| 6.1 to 10.7 | full, the fastest part | cuts at 6.13, 6.43, 6.67, 7.7, 8.23, 8.5, 9.6, 10.67 |
+| 10.7 to 11.9 | a break, nearly no bass | one held shot |
+| 11.9 to 18.3 | the main part, full | cuts at 14.03, 14.7, 15.33, 16.73, 17.9, 18.2, 18.3 |
+| 18.3 to 20.4 | a last swell and one final hit at 20.4, then silence | black |
+
+Its look: hard black and white, hard cuts on the hits, flash frames, one warm ember colour. (Its last picture is a beam of light, which the house forbids; flashes stay under three a second.)
+
+**Not settled, and his to say (a stop condition: legal):** the music is someone's track, taken from a TikTok. I do not know its name or its owner. Putting it inside Purify's own file is using music without a licence: a business account's post can be muted or taken down, and an ad or a store video cannot carry it. Asked him how to go on. The video and its audio are not in the repository.
+
 ## What was made
 
 - `docs/plans/v1.9/video/release/TREATMENT.md`: the treatment. The one idea is the drop's own line, "Purify 1.9 is here." (the first sentence of the drop's caption).
