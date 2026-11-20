@@ -42,6 +42,10 @@ What was done at "it should like a edit not just motion graphics" (the page is n
 - The second and third renders' videos are also kept in the page's asset store, unused (third: `/_blob/0e6ee7e0cb297530ac1531bbc57773bd`), for the Vault.
 - The arbiter asked for no more messages (each wakes a long chat), so this file is the record from here.
 
+His word on the fourth render, about 22:26 UTC, verbatim: "it doesn't feel like a major release type of video it feels like a general video that is to showcase the app. it needs to be cinematic. if you need to make a one shot prompt then make it and start a new chat"
+
+At that word: the prompt is `docs/handoffs/ad-cinematic-prompt.md`, and one new chat was started with it for that one job (a treatment and storyboard first, for his yes). This chat stops here. Stage 2 as planned (six more scenes in this look) is not to be made: the look itself is being redone.
+
 ## Tokens
 
 get_session read 0 used tokens every time, so there is no measured number. By my own count the chat's context was about 130,000 tokens when I stopped at the cap of 250,000 (own count times two), about 175,000 at the first finish, and about 200,000 after his two changes, and about 240,000 after the edit. By the times-two rule that is about 480,000. He lifted the cap himself.
