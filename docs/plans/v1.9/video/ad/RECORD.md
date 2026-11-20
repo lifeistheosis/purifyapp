@@ -6,7 +6,7 @@ Written by `page.mjs` on 2026-11-20 from what was made and measured. Do not edit
 |---|---|
 | File | `.promo/v1.9-video/ad/purify-1.9-ad-stage-1.mp4` (out of git) |
 | Length | 6.95 seconds, 417 frames |
-| Size | 4.85 MB (5082894 bytes) |
+| Size | 4.9 MB (5133216 bytes) |
 | Picture | 1080 by 1920, h264 High, yuv420p, 60/1 frames a second |
 | Sound | none |
 | The app | the native export of main `6700c2e65`, cut in a worktree by `scripts/gate/export.mjs --cwd` as the store build with Plus locked |
@@ -17,7 +17,9 @@ Written by `page.mjs` on 2026-11-20 from what was made and measured. Do not edit
 | Pictures that were in view | nicholas-the-wonderworker.v2.jpg (none on the heritage list) |
 | Word for word | each screen read after its build as it did before its pieces were held; a take fails otherwise |
 | The phone | front (upright) to the store pictures' side stand (rotateY 25, rotateX 7, rotateZ 1.2 degrees), one move of 1.3s on the house curve; the script refuses a move that comes back, passes its rest or turns more |
-| Renders | one |
+| The title | the app's sans (DM Sans, 600), by his word after the first render, which set it in the display serif |
+| The ground | moves all through: a slow move in of 11 percent, the far lines lifting faster than the near, and a slide of up to 120 pixels against the phone's turn; mirrored with the phone in a right-to-left page |
+| Renders | three: the first, the second with the sans title, the third with the moving ground. Only the third is on the page; the first two were replaced at his word |
 
 ## The film, by its own clock
 

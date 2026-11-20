@@ -13,7 +13,8 @@
 //
 // The page is the sample's (../sample/compose.mjs), which is the first cut's:
 // the app's own stylesheet, the night ground with the store pictures' hill and
-// one soft pool of light, the title in the app's display serif. What is new is
+// one soft pool of light. The title is in the app's sans, by his word on the
+// first render (the sample's was the display serif). What is new is
 // the phone. It is the store pictures' plain slab (../../store/make.mjs): a
 // screen with a thin dark rim and a body behind it, with no hardware drawn.
 // Scene 1 stands it front, upright and whole. Between the scenes it travels,
@@ -167,7 +168,10 @@ function stateAt(t) {
   const mix = Math.min(1, Math.max(0, (t - (CLOCK.change - FADE / 2)) / FADE));
   const state = {
     t,
-    back: -28 * (t / 45),
+    // The ground moves all through (his word, 2026-11-20: "make the background move, so it's like more cinematic-y rather
+    // than a static motion graphics"): `along` is how far through the film, for a slow, even move in; `turn` is the phone's
+    // own move, which the ground answers by sliding the other way, the far lines less than the near hill.
+    back: { along: t / TOTAL, turn: phoneAt(t).u },
     rise: { dy, opacity: here },
     phone: phoneAt(t),
     a: mix < 1 ? `/__video/takes/ad-${A.id}/${frameAt(TA, Math.min(timeA(t), TA.seconds))}` : null,
@@ -242,8 +246,12 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
   html, body { margin: 0; width: ${W}px; height: ${H}px; overflow: hidden; background-color: var(--color-night); }
   html { scrollbar-gutter: auto; }
   [data-stage] { position: relative; width: ${W}px; height: ${H}px; overflow: hidden; background-color: var(--color-night); color: var(--color-paper); }
-  [data-back] { position: absolute; inset: -40px 0; pointer-events: none; background-image: radial-gradient(ellipse ${r(W * 0.8)}px ${r(H * 0.2)}px at 50% ${back.crest + 40}px, ${ink(15)}, transparent 72%); }
-  [data-back] svg { position: absolute; top: 40px; inset-inline: 0; width: ${W}px; height: ${H}px; overflow: visible; }
+  [data-back] { position: absolute; inset: -40px 0; pointer-events: none; }
+  /* The ground slides against the phone's turn, so in a right-to-left page it turns over with the phone. */
+  :root[dir="rtl"] [data-back] { transform: scaleX(-1); }
+  /* One soft pool of light over the crest. It is a pool and never beams. */
+  [data-pool] { position: absolute; inset: 0 -200px; background-image: radial-gradient(ellipse ${r(W * 0.8)}px ${r(H * 0.2)}px at 50% ${back.crest + 40}px, ${ink(15)}, transparent 72%); will-change: transform, opacity; }
+  [data-back] svg { position: absolute; top: 40px; inset-inline: 0; width: ${W}px; height: ${H}px; overflow: visible; transform-origin: ${W / 2}px ${back.crest}px; will-change: transform; }
   [data-hill] { fill: ${plane(6.5)}; stroke: none; }
   [data-line] { fill: none; stroke: ${ink(40)}; stroke-width: 2; }
   [data-line="1"] { stroke: ${ink(16)}; }
@@ -266,7 +274,8 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
   [data-words-of] { position: absolute; top: 0; inset-inline: 0; box-sizing: border-box; padding: 204px 108px 0; text-align: center; will-change: transform, opacity; }
   /* A scene with a smaller line under its title stands a little higher, as in the first cut, so both clear the phone. */
   [data-words-of]:has([data-sub]) { padding-top: 170px; }
-  [data-title] { margin: 0; font-family: var(--font-display-serif); font-weight: 400; font-size: 84px; line-height: 1.1; letter-spacing: -0.005em; color: var(--color-paper); }
+  /* The title is in the app's sans (his word, 2026-11-20: "I don't like the font that you used for the title cards. Re-render with the minimalist, like, better font."). The first cut and the sample set it in the display serif. */
+  [data-title] { margin: 0; font-family: var(--font-sans); font-weight: 600; font-size: 76px; line-height: 1.12; letter-spacing: -0.022em; color: var(--color-paper); }
   [data-sub] { margin: 22px 0 0; font-family: var(--font-sans); font-weight: 500; font-size: 38px; line-height: 1.3; color: var(--color-paper); }
   [data-line-box] { display: block; overflow: hidden; padding-bottom: 0.14em; margin-bottom: -0.14em; }
   [data-word-line] { display: block; will-change: transform; }
@@ -275,7 +284,7 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
 </head>
 <body>
 <main data-stage>
-  <div data-back aria-hidden="true"><svg viewBox="0 0 ${W} ${H}">${back.svg}</svg></div>
+  <div data-back aria-hidden="true"><div data-pool></div><svg viewBox="0 0 ${W} ${H}">${back.svg}</svg></div>
   <div data-film>
     <div data-rise><div data-space>
       <div data-phone><div data-cast aria-hidden="true"></div>${LEAVES}<figure data-screen><img data-of="a" alt="" src=""><img data-of="b" alt="" src=""></figure></div>
@@ -288,7 +297,17 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
   // Wear one moment of the film (stateAt). Resolves when the pictures it needs are drawn.
   window.__wear = async (state) => {
     const waits = [];
-    document.querySelector("[data-back]").style.transform = "translateY(" + state.back.toFixed(2) + "px)";
+    // The ground: a slow move in toward the crest all through the film; the far lines lift a little faster than the
+    // near ones, so the hill has depth; and as the phone turns the ground slides the other way, the far lines less.
+    const g = state.back;
+    document.querySelector("[data-back] svg").style.transform = "scale(" + (1 + 0.11 * g.along).toFixed(5) + ")";
+    document.querySelectorAll("[data-back] [data-line], [data-back] [data-hill]").forEach((el) => {
+      const far = Number(el.getAttribute("data-line") || 0);
+      el.setAttribute("transform", "translate(" + (-120 * g.turn * (1 - 0.17 * far)).toFixed(2) + "," + (-(6 + 13 * far) * g.along + 10 * g.turn * (far ? 1 : 0)).toFixed(2) + ")");
+    });
+    const pool = document.querySelector("[data-pool]");
+    pool.style.transform = "translate(" + (64 * g.turn).toFixed(2) + "px," + (-24 * g.along).toFixed(2) + "px)";
+    pool.style.opacity = (0.86 + 0.14 * g.along).toFixed(4);
     const rise = document.querySelector("[data-rise]");
     rise.style.opacity = state.rise.opacity.toFixed(4);
     rise.style.transform = "translateY(" + state.rise.dy.toFixed(2) + "px)";
@@ -353,9 +372,9 @@ async function openStage(browser) {
     const first = (el) => getComputedStyle(el).fontFamily.split(",")[0].trim();
     const title = first(document.querySelector("[data-title]"));
     const sub = first(document.querySelector("[data-sub]"));
-    return { title, sub, titleLoaded: document.fonts.check(`84px ${title}`), subLoaded: document.fonts.check(`500 38px ${sub}`) };
+    return { title, sub, titleLoaded: document.fonts.check(`600 76px ${title}`), subLoaded: document.fonts.check(`500 38px ${sub}`) };
   });
-  if (!/DM Serif Display/.test(face.title) || !face.titleLoaded) fail(`the title's face is not the app's display serif, loaded (${JSON.stringify(face)})`);
+  if (!/DM Sans/.test(face.title) || !face.titleLoaded) fail(`the title's face is not the app's sans, loaded (${JSON.stringify(face)})`);
   if (!/DM Sans/.test(face.sub) || !face.subLoaded) fail(`the small line's face is not the app's sans, loaded (${JSON.stringify(face)})`);
   const cdp = await ctx.newCDPSession(page);
   const wear = (t) => page.evaluate((s) => window.__wear(s), stateAt(t));

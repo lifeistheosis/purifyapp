@@ -4,7 +4,7 @@ Written 2026-11-20 by the worker chat the arbiter started for this one job (sess
 
 ## What was made
 
-The test: 6.95 seconds, scene 1 (Today, built by its own pieces) and scene 2 (the journal, built the same way), on one phone that moves from standing front to the store pictures' side stand between them. 1080 by 1920, 60 frames a second, H.264 High, 4.85 MB, no sound stream. One version, one render.
+The test: 6.95 seconds, scene 1 (Today, built by its own pieces) and scene 2 (the journal, built the same way), on one phone that moves from standing front to the store pictures' side stand between them. 1080 by 1920, 60 frames a second, H.264 High, 4.9 MB, no sound stream. One version on the page (the third render, after his two changes below).
 
 - **The page:** https://claude.ai/artifact/4YMJMQmXcX6HSC7fxZJd6X (the video, one still, the reason for each choice, Save the video). Private to him.
 - **In the repo:** `docs/plans/v1.9/video/ad/` (`cut.mjs`, `take.mjs`, `compose.mjs`, `page.mjs`, `README.md`, `RECORD.md`).
@@ -23,15 +23,22 @@ The test: 6.95 seconds, scene 1 (Today, built by its own pieces) and scene 2 (th
 - About 18:41: "continue. there is no cap. finish."
 - About 18:50, while the render ran: "not liking that font"
 
-On the second: he did not say which font, and nothing was changed. The film's title is in the app's display serif (DM Serif Display), as the first cut, the sample and the store pictures set it; the smaller line is the app's sans. The app's own screens in the film use the app's faces. He is asked which he means in this chat's last message. Changing the film's title face is a small change in `compose.mjs` and one more render; changing a face in the app is not this job.
+- About 20:27: "I don't like the font that you used for the title cards. Re-render with the minimalist, like, better font."
+- About 20:36, while that render ran: "And make the background move, so it's like more cinematic-y rather than a static motion graphics."
+
+What was done at those words (the page now shows only the third render, at the same address):
+
+- **The title** is in the app's sans (DM Sans, 600, 76px), no longer the display serif. This is my reading of "the minimalist, like, better font": the app's own plain face, the one its buttons and labels use. The first cut, the sample and the store pictures still use the serif; whether they follow is his to say.
+- **The ground moves** all through: a slow move in toward the hill (11 percent over the film), the far lines lifting faster than the near, and the ground sliding up to 120 pixels against the phone's turn, the far lines less. The light is still one soft pool. checkMock first failed this on mirroring (the pool slid one way in Arabic too); the ground now turns over with the phone in a right-to-left page, and all six moments pass.
+- **Three renders** were made in all (the first, the sans title, the moving ground). The first is still in the page's asset store (video `/_blob/619f065d08558e5eeb25ada356577a3f`, still `/_blob/23c2729c623d8eac613d534320239c67`), unused; nothing was deleted, and it is for the Vault. The second was never uploaded and its file was overwritten by the third in `.promo/`; a copy is in this chat's scratchpad only.
 
 ## Tokens
 
-get_session read 0 used tokens every time, so there is no measured number. By my own count the chat's context was about 130,000 tokens when I stopped at the cap of 250,000 (own count times two), and about 175,000 at the end, after he lifted the cap. By the times-two rule that is about 350,000.
+get_session read 0 used tokens every time, so there is no measured number. By my own count the chat's context was about 130,000 tokens when I stopped at the cap of 250,000 (own count times two), about 175,000 at the first finish, and about 200,000 after his two changes. By the times-two rule that is about 400,000. He lifted the cap himself.
 
 ## What stage 2 needs
 
-- His yes or no on the moving phone, and his answer on the font.
+- His yes or no on the moving phone, the sans title and the moving ground.
 - For each of the six scenes: a `pieces` list read from the export with `take.mjs <scene> --dom`, the way a reader reaches the screen in `REACH`, its stand (the store pictures go front and side turn about), and its words in `../scenes.mjs`.
 - `compose.mjs` holds two scenes and one move by name (`A`, `B`). For eight it wants a list of scenes and a move between each pair; the motion, the page and the checks stay as they are.
 - Scenes 3 and 5 show things a finger does (holding a verse, opening the Fathers). Decide with him whether those keep real taps, as the sample did, with the phone moving between scenes only.

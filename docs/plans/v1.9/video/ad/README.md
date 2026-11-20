@@ -2,7 +2,7 @@
 
 The brief is `../AD.md`. This folder is stage 1 of it: a test of about seven seconds, scene 1 (Today, built by its own pieces) and scene 2 (the journal by the Church's day, built the same way), with the one new thing between them: the phone itself moves from scene to scene.
 
-**Status, 2026-11-20: made, waiting for his yes or no.** One version, one render: 6.95 seconds, 1080 by 1920, 60 frames a second, H.264, silent. The file is not in git (`.promo/v1.9-video/ad/purify-1.9-ad-stage-1.mp4`); it plays on its page, https://claude.ai/artifact/4YMJMQmXcX6HSC7fxZJd6X (his, and private until he shares it), with one still and the reason for each choice. `RECORD.md` is the measured record. Stage 2 (the other six scenes) waits for his yes.
+**Status, 2026-11-20: made, waiting for his yes or no.** One version on its page, the third render after his two changes (the title in the app's sans, the ground moving): 6.95 seconds, 1080 by 1920, 60 frames a second, H.264, silent. The file is not in git (`.promo/v1.9-video/ad/purify-1.9-ad-stage-1.mp4`); it plays on its page, https://claude.ai/artifact/4YMJMQmXcX6HSC7fxZJd6X (his, and private until he shares it), with one still and the reason for each choice. `RECORD.md` is the measured record. Stage 2 (the other six scenes) waits for his yes.
 
 ## What it is
 
@@ -12,6 +12,8 @@ The brief is `../AD.md`. This folder is stage 1 of it: a test of about seven sec
 - **The journal is reached as a reader reaches it**, before the film rolls: a tap on You, a tap on Your journal. Then it is held and built like Today.
 - **The moving phone** (`MOVE` in `cut.mjs`, `STANDS` and `phoneAt` in `compose.mjs`). The phone is the store pictures' plain slab. Scene 1 stands it front, as the store pictures stand Today. Scene 2 stands it in the store pictures' side stand, as they stand the journal. Between them it makes one move on the house curve, entered gently because it sets off from rest. `compose.mjs` refuses to run if the phone ever comes back on its way, passes where it rests, or turns more than the side stand (rotateY 25, rotateX 7, rotateZ 1.2 degrees).
 - **How the screen changes under the move.** Scene 1's pieces leave as they came (last in, first out, the house curve run backward) while the phone sets off. When the screen is bare the film changes takes, both screens bare, joined over a few frames. Scene 2's pieces arrive as the phone comes to rest.
+- **The ground moves** (his word, after the first render): a slow move in toward the hill all through, the far lines lifting faster than the near, and a slide against the phone's turn. One soft pool of light, never beams. In a right-to-left page it turns over with the phone.
+- **The title is in the app's sans** (his word, after the first render). The first cut and the sample set it in the display serif.
 - **The words** are the first cut's own for each scene (`../scenes.mjs`): the store pictures' line for Today, and the drop's point `journal` (its name, and "Free for everyone."). None is written here.
 
 ## Making it

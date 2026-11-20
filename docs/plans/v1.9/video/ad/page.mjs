@@ -44,7 +44,8 @@ const CHOICES = [
   ["Every piece is the app's own element", `The app is the export of main ${video.export}, which is what the stores serve. Each piece is found in its page and moved there, then left where the app put it. Each screen read word for word after the build as it did before.`, "It is honest: what settles on the phone is what a reader gets."],
   ["Today's pieces are new", "Today on main is one card for the day now, with the Nativity Fast's night at its head. So the card rises whole and its parts slide in inside it.", "The sample's list no longer fits the app, and the film must show the app as it is."],
   ["The words change with the phone", `"${words[0].title}" lifts and clears as the phone sets off. "${words[1].title}" rises line by line, with "${words[1].sub}" under it.`, "The first is your store pictures' line for Today. The second is the drop's own name for the journal and its last sentence. None is written for the ad."],
-  ["The ground does not change", "The night, the hill of your store pictures and one soft pool of light, for both scenes.", "So the only new thing to judge is the phone."],
+  ["The title is in the app's plain sans", "The first render set the title in the display serif of your store pictures. You said you did not like it and asked for the minimalist one, so it is now the app's own sans, the face of its buttons and labels.", "It reads cleaner at a glance on a feed, and it is still the app's own face, so nothing foreign is brought in."],
+  ["The ground moves", "The night, the hill of your store pictures and one soft pool of light, as before, but never still now. The picture moves slowly in toward the hill all through; the far lines rise a little faster than the near ones; and as the phone turns, the ground slides the other way, the far lines less than the near hill.", "You asked for it to be more cinematic and less like a still graphic. A ground that answers the phone gives the picture depth, as if a camera moved round it. The light stays a soft pool and never becomes beams."],
 ];
 
 const template = fs.readFileSync(path.join(ROOT, "docs/brand/kit/artifact-template.html"), "utf8");
@@ -203,7 +204,9 @@ Written by \`page.mjs\` on ${made} from what was made and measured. Do not edit 
 | Pictures that were in view | ${pictures.join(", ") || "none"} (none on the heritage list) |
 | Word for word | each screen read after its build as it did before its pieces were held; a take fails otherwise |
 | The phone | front (upright) to the store pictures' side stand (rotateY 25, rotateX 7, rotateZ 1.2 degrees), one move of ${MOVE.for}s on the house curve; the script refuses a move that comes back, passes its rest or turns more |
-| Renders | one |
+| The title | the app's sans (DM Sans, 600), by his word after the first render, which set it in the display serif |
+| The ground | moves all through: a slow move in of 11 percent, the far lines lifting faster than the near, and a slide of up to 120 pixels against the phone's turn; mirrored with the phone in a right-to-left page |
+| Renders | three: the first, the second with the sans title, the third with the moving ground. Only the third is on the page; the first two were replaced at his word |
 
 ## The film, by its own clock
 
