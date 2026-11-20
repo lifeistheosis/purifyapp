@@ -28,7 +28,7 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { MADE, ORIGIN, OUT, PHONE, ROOT, checkMock, dir, launch, serveLikeTheShell, sharp, wait } from "../lib.mjs";
 import { SCENES as FIRST_CUT } from "../scenes.mjs";
-import { MOVE, SCENES, builtAt, leftAt } from "./cut.mjs";
+import { MOVE, SCENES, SHOTS, builtAt, leftAt } from "./cut.mjs";
 
 const [W, H] = [1080, 1920];
 const FPS = 60;
@@ -160,6 +160,31 @@ function phoneAt(t) {
   }
 }
 
+/**
+ * The edit: which shot the film is in, and where the camera stands for it. A shot begins with a hard cut. Within a
+ * shot the camera only moves in, slowly and evenly. A close shot puts a point of the app's screen in the middle of the
+ * picture under the words; where that point is on the film is worked out from the stand the phone is in at the cut.
+ */
+const CUTS = SHOTS.map((shot) => ({ ...shot, t: frame(CLOCK[shot.from] + shot.at) }));
+CUTS.forEach((c, i) => {
+  if (i === 0 ? c.t !== 0 : c.t <= CUTS[i - 1].t + 0.4) fail(`the shot "${c.name}" begins at ${c.t.toFixed(2)}s: the first must begin the film, and none may be shorter than 0.4s`);
+  if (c.close[1] < c.close[0]) fail(`the shot "${c.name}" moves out`);
+  if (c.look !== "wide" && phoneAt(c.t).k * c.close[1] > 2.5 + 1e-9) fail(`the shot "${c.name}" is nearer than the takes were filmed`);
+});
+const HEART = [W / 2, 1160]; // where a close shot puts what it looks at: the middle, under the words
+function cameraAt(t) {
+  let i = 0;
+  while (i + 1 < CUTS.length && CUTS[i + 1].t <= t + 1e-9) i++;
+  const c = CUTS[i];
+  const until = i + 1 < CUTS.length ? CUTS[i + 1].t : TOTAL;
+  const z = lerp(c.close[0], c.close[1], (t - c.t) / (until - c.t));
+  // A wide shot moves in about the middle of the phone; a close one about the point it looks at.
+  const p = phoneAt(c.look === "wide" ? t : c.t);
+  const about = c.look === "wide" ? [W / 2, STANDS.front.y] : [p.x + (c.look[0] - PHONE.width / 2) * p.k * Math.cos((p.ry * Math.PI) / 180), p.y + (c.look[1] - PHONE.height / 2) * p.k * Math.cos((p.rx * Math.PI) / 180)];
+  const to = c.look === "wide" ? about : HEART;
+  return { shot: i, z, x: to[0] - z * about[0], y: to[1] - z * about[1] };
+}
+
 /** Everything on the picture at one moment, as plain numbers for the page to wear. */
 function stateAt(t) {
   // The screen arrives as a page arrives in the app: it rises its last pixels as it clears. It is bare then.
@@ -172,6 +197,7 @@ function stateAt(t) {
     // than a static motion graphics"): `along` is how far through the film, for a slow, even move in; `turn` is the phone's
     // own move, which the ground answers by sliding the other way, the far lines less than the near hill.
     back: { along: t / TOTAL, turn: phoneAt(t).u },
+    cam: cameraAt(t),
     rise: { dy, opacity: here },
     phone: phoneAt(t),
     a: mix < 1 ? `/__video/takes/ad-${A.id}/${frameAt(TA, Math.min(timeA(t), TA.seconds))}` : null,
@@ -246,9 +272,13 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
   html, body { margin: 0; width: ${W}px; height: ${H}px; overflow: hidden; background-color: var(--color-night); }
   html { scrollbar-gutter: auto; }
   [data-stage] { position: relative; width: ${W}px; height: ${H}px; overflow: hidden; background-color: var(--color-night); color: var(--color-paper); }
-  [data-back] { position: absolute; inset: -40px 0; pointer-events: none; }
-  /* The ground slides against the phone's turn, so in a right-to-left page it turns over with the phone. */
-  :root[dir="rtl"] [data-back] { transform: scaleX(-1); }
+  [data-back] { position: absolute; inset: -600px -500px; pointer-events: none; }
+  [data-back-in] { position: absolute; inset: 560px 500px; }
+  /* In a right-to-left page the whole picture under the words turns over as one: the ground, the phone and its screen. */
+  [data-flip] { position: absolute; inset: 0; }
+  :root[dir="rtl"] [data-flip] { transform: scaleX(-1); }
+  /* The camera: each shot stands it somewhere, and a cut moves it at once. */
+  [data-cam] { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; }
   /* One soft pool of light over the crest. It is a pool and never beams. */
   [data-pool] { position: absolute; inset: 0 -200px; background-image: radial-gradient(ellipse ${r(W * 0.8)}px ${r(H * 0.2)}px at 50% ${back.crest + 40}px, ${ink(15)}, transparent 72%); will-change: transform, opacity; }
   [data-back] svg { position: absolute; top: 40px; inset-inline: 0; width: ${W}px; height: ${H}px; overflow: visible; transform-origin: ${W / 2}px ${back.crest}px; will-change: transform; }
@@ -259,8 +289,6 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
   [data-line="3"] { stroke: ${ink(8)}; }
   [data-line="4"] { stroke: ${ink(5)}; }
   [data-film] { position: absolute; inset: 0; direction: ltr; }
-  /* In a right-to-left page the phone and its screen turn over together, as one picture. */
-  :root[dir="rtl"] [data-film] { transform: scaleX(-1); }
   [data-rise] { position: absolute; inset: 0; will-change: transform, opacity; }
   /* The eye that sees the phone turn stands where the store pictures' does: far off, a little above the middle of the phone. */
   [data-space] { position: absolute; inset: 0; perspective: ${r(W * 3.2)}px; perspective-origin: ${W / 2}px ${r(STANDS.front.y - BH * 1.66 * 0.08)}px; }
@@ -284,12 +312,14 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
 </head>
 <body>
 <main data-stage>
-  <div data-back aria-hidden="true"><div data-pool></div><svg viewBox="0 0 ${W} ${H}">${back.svg}</svg></div>
+  <div data-flip><div data-cam>
+  <div data-back aria-hidden="true"><div data-back-in><div data-pool></div><svg viewBox="0 0 ${W} ${H}">${back.svg}</svg></div></div>
   <div data-film>
     <div data-rise><div data-space>
       <div data-phone><div data-cast aria-hidden="true"></div>${LEAVES}<figure data-screen><img data-of="a" alt="" src=""><img data-of="b" alt="" src=""></figure></div>
     </div></div>
   </div>
+  </div></div>
   <div data-scrim aria-hidden="true"></div>
   <div data-words>${WORDS.map(words).join("")}</div>
 </main>
@@ -299,6 +329,8 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
     const waits = [];
     // The ground: a slow move in toward the crest all through the film; the far lines lift a little faster than the
     // near ones, so the hill has depth; and as the phone turns the ground slides the other way, the far lines less.
+    const cam = state.cam;
+    document.querySelector("[data-cam]").style.transform = "translate(" + cam.x.toFixed(2) + "px," + cam.y.toFixed(2) + "px) scale(" + cam.z.toFixed(5) + ")";
     const g = state.back;
     document.querySelector("[data-back] svg").style.transform = "scale(" + (1 + 0.11 * g.along).toFixed(5) + ")";
     document.querySelectorAll("[data-back] [data-line], [data-back] [data-hill]").forEach((el) => {
@@ -394,8 +426,9 @@ const FRAME_DIR = dir("ad", "frames");
 const FILE = path.join(HOME, "purify-1.9-ad-stage-1.mp4");
 const frameFile = (n) => path.join(FRAME_DIR, `v${String(n).padStart(5, "0")}.jpg`);
 
-/** The moments checkMock reads, by the film's own clock. */
+/** The moments checkMock reads, by the film's own clock: the six of the first render, and the middle of every close shot. */
 const CHECKS = [
+  ...CUTS.flatMap((c, i) => (c.look === "wide" ? [] : [[`the shot "${c.name}"`, frame((c.t + CUTS[i + 1].t) / 2)]])),
   ["Today's pieces arriving", 1.1],
   ["Today whole", frame(CLOCK.leave - 0.08)],
   ["the phone moving, the screen emptying", frame(CLOCK.leave + 0.4)],
@@ -424,12 +457,13 @@ function encode() {
   // The app in the film is the export in out/, cut from another checkout: its commit is given, never guessed.
   record.export = process.env.VIDEO_EXPORT ?? fail("say which commit the export in out/ was cut from: VIDEO_EXPORT=<commit>");
   record.clock = CLOCK;
+  record.cuts = CUTS.map((c) => ({ at: c.t, name: c.name }));
   fs.writeFileSync(path.join(HOME, "video.json"), JSON.stringify(record, null, 1));
   return record;
 }
 
 if (flag("times")) {
-  console.log(JSON.stringify({ total: TOTAL, frames: FRAMES, clock: CLOCK, stands: STANDS, checks: CHECKS, words: WORDS }, null, 1));
+  console.log(JSON.stringify({ total: TOTAL, frames: FRAMES, cuts: CUTS.map((c) => [c.t, c.name]), clock: CLOCK, stands: STANDS, checks: CHECKS, words: WORDS }, null, 1));
   process.exit(0);
 }
 if (flag("encode")) {

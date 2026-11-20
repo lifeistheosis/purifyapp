@@ -6,7 +6,7 @@ Written by `page.mjs` on 2026-11-20 from what was made and measured. Do not edit
 |---|---|
 | File | `.promo/v1.9-video/ad/purify-1.9-ad-stage-1.mp4` (out of git) |
 | Length | 6.95 seconds, 417 frames |
-| Size | 4.9 MB (5133216 bytes) |
+| Size | 4.95 MB (5185215 bytes) |
 | Picture | 1080 by 1920, h264 High, yuv420p, 60/1 frames a second |
 | Sound | none |
 | The app | the native export of main `6700c2e65`, cut in a worktree by `scripts/gate/export.mjs --cwd` as the store build with Plus locked |
@@ -19,7 +19,8 @@ Written by `page.mjs` on 2026-11-20 from what was made and measured. Do not edit
 | The phone | front (upright) to the store pictures' side stand (rotateY 25, rotateX 7, rotateZ 1.2 degrees), one move of 1.3s on the house curve; the script refuses a move that comes back, passes its rest or turns more |
 | The title | the app's sans (DM Sans, 600), by his word after the first render, which set it in the display serif |
 | The ground | moves all through: a slow move in of 11 percent, the far lines lifting faster than the near, and a slide of up to 120 pixels against the phone's turn; mirrored with the phone in a right-to-left page |
-| Renders | three: the first, the second with the sans title, the third with the moving ground. Only the third is on the page; the first two were replaced at his word |
+| The edit | 7 shots, hard cuts, by his word and his choice of "Cuts and close-ups": 0.00 the phone, wide; 0.97 close on St Nicholas; 1.50 close on Begin; 2.17 wide: Today whole, and the turn; 4.08 close on the journal's name; 4.95 close on the readings and their pens; 5.67 wide: the journal whole. No shot is nearer than the takes were filmed, and none moves out |
+| Renders | four: the first, the second with the sans title, the third with the moving ground, the fourth cut into shots. Only the fourth is on the page; each earlier one was replaced at his word |
 
 ## The film, by its own clock
 
@@ -64,6 +65,10 @@ On the page the film is drawn on, on all five palettes. `node scripts/mock-check
 
 | Moment | At | Result |
 |---|---|---|
+| the shot "close on St Nicholas" | 1.23s | pass |
+| the shot "close on Begin" | 1.83s | pass |
+| the shot "close on the journal's name" | 4.52s | pass |
+| the shot "close on the readings and their pens" | 5.32s | pass |
 | Today's pieces arriving | 1.10s | pass |
 | Today whole | 3.10s | pass |
 | the phone moving, the screen emptying | 3.58s | pass |
@@ -73,4 +78,4 @@ On the page the film is drawn on, on all five palettes. `node scripts/mock-check
 
 ## The stills sheet
 
-`node docs/plans/v1.9/video/ad/compose.mjs --sheet` (twelve moments) and `--sheet 12 --span 3.0-4.9` (the move). Both were looked at before the render. They are working files in `.promo/v1.9-video/ad/stills/`.
+`node docs/plans/v1.9/video/ad/compose.mjs --sheet` (twelve moments), `--sheet 12 --span 3.0-4.9` (the move) and `--sheet 12 --span 0.8-6.3` (across every cut). Each was looked at before its render. They are working files in `.promo/v1.9-video/ad/stills/`.

@@ -89,3 +89,22 @@ export const MOVE = { starts: 0.05, for: 1.3 };
 
 /** The film's length is what the two scenes and the move come to; compose.mjs works it out and holds it near seven seconds. */
 export const ABOUT = 7;
+
+/**
+ * The edit (his word on the third render, 2026-11-20: "it should like a edit not just motion graphics", and his choice
+ * of "Cuts and close-ups"). The film is cut into shots, each a hard cut, each landing while a piece is still moving.
+ *   at     seconds after `from` begins: "go1" (Today's pieces let go), "leave" (Today begins to empty), "go2" (the journal's let go)
+ *   look   "wide": the whole phone; or the point of the app's screen the shot is close on, [x, y] in the app's pixels
+ *   close  how much nearer than wide the shot is, where it begins and where it ends: every shot moves in a little, never out
+ *   why    the reason, for the page
+ * A close shot is never nearer than the takes were filmed (2.5 device pixels to one), so nothing is soft.
+ */
+export const SHOTS = [
+  { name: "the phone, wide", from: "go1", at: -0.3, look: "wide", close: [1, 1.03], why: "The film opens on the whole phone so the viewer knows where everything that follows is." },
+  { name: "close on St Nicholas", from: "go1", at: 0.66, look: [206, 395], close: [1.44, 1.49], why: "The cut lands as his picture and his name slide in from opposite sides, so the cut and the motion are one beat." },
+  { name: "close on Begin", from: "go1", at: 1.2, look: [206, 585], close: [1.45, 1.5], why: "The day's one bright button arrives in its own shot: the button you asked to see move, seen large." },
+  { name: "wide: Today whole, and the turn", from: "go1", at: 1.86, look: "wide", close: [1, 1.05], why: "Back to the whole phone for the tab bar closing the screen, then the screen emptying and the phone's turn, which must be seen whole." },
+  { name: "close on the journal's name", from: "go2", at: 0.14, look: [206, 300], close: [1.4, 1.46], why: "The cut lands on the turned phone as Your journal and its line come in, and the day's page rises into the shot." },
+  { name: "close on the readings and their pens", from: "go2", at: 1.0, look: [215, 468], close: [1.5, 1.55], why: "The scene's point, seen large: the Epistle and the Gospel, each with a pen to begin a page." },
+  { name: "wide: the journal whole", from: "go2", at: 1.72, look: "wide", close: [1, 1.05], why: "The film ends on the whole phone at rest on its side stand, with the words." },
+];

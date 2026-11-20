@@ -14,7 +14,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { MADE, ROOT, SLOW } from "../lib.mjs";
 import { SCENES as FIRST_CUT } from "../scenes.mjs";
-import { MOVE, SCENES } from "./cut.mjs";
+import { MOVE, SCENES, SHOTS } from "./cut.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const arg = (name) => process.argv.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3);
@@ -36,6 +36,9 @@ const s2 = (n) => n.toFixed(2);
 
 /** The choices, each with what it is, why, and what it does for the viewer. */
 const CHOICES = [
+  ["It is cut, like an edit", `You said it should be like an edit and not just motion graphics, and chose cuts and close-ups. The film is now ${video.cuts.length} shots with hard cuts between them: wide on the phone, close on St Nicholas, close on Begin, wide for the turn, close on the journal's name, close on the readings and their pens, wide to end.`, "A cut changes what the viewer looks at in one frame, which is what makes a film feel made by a hand. Each cut lands while a piece is still moving, so the cut and the motion are one beat."],
+  ["Close shots show the pieces large", "A close shot is the same phone seen up to one and a half times nearer, never nearer than it was filmed, so nothing is soft. Every shot moves in a little, slowly, and never out.", "On a phone's feed the wide shot is small. The close shots are where the saint, the button and the pens can be read."],
+  ["The turn is seen whole", "The one wide shot in the middle holds Today whole, the screen emptying and the phone's turn, with no cut inside it.", "The moving phone is the thing you chose, so it is never cut across."],
   ["One phone, and it moves once", `Between the scenes the phone travels from standing front to standing turned to one side. It sets off ${s2(C.moveFrom)} seconds in and is at rest ${s2(C.moveTo)} seconds in.`, "This is your choice, the sample's motion with a moving phone. It is one phone all through, so the eye follows a thing and not a cut."],
   ["The two stands are your store pictures' own", "Front, upright and whole, is how the store pictures stand Today. Turned to one side is how they stand the journal, turn for turn: 25 degrees, and never more.", "Nothing new is invented for the phone. The ad, the store row and the first cut read as one release."],
   ["The house curve, entered gently", "The move is on the app's own curve. Because the phone sets off from rest, the curve is entered softly, as the first cut moves its picture. It goes one way, never past where it rests, and never back. The script refuses to run otherwise.", "It settles the way everything in the app settles. Nothing bounces, overshoots or spins."],
@@ -80,7 +83,7 @@ ${kitStyle}
     <span class="k-mark" role="img" aria-label="Purify"></span>
     <span class="k-eyebrow">For your yes or no</span>
     <h1>The 1.9 ad: the first test</h1>
-    <p class="k-lede">Today and the journal, each built by its own pieces, on one phone that moves from one to the other.</p>
+    <p class="k-lede">Today and the journal, each built by its own pieces, on one phone that moves from one to the other, cut into ${video.cuts.length} shots.</p>
     <p class="k-meta">Made ${made} from what the stores serve. One version, one render.</p>
   </header>
 
@@ -93,7 +96,7 @@ ${kitStyle}
     </figure>
     <div class="k-note">
       <span class="k-eyebrow">What you are saying yes or no to</span>
-      <p>The moving phone. It is the one new thing since the sample. If it is a yes, the other six scenes are made the same way, the phone standing front and side turn about. If it is a no, say what the phone should do and only the move changes.</p>
+      <p>The look of the whole ad: the moving phone, the cuts and close-ups, the moving ground and the plain title. If it is a yes, the other six scenes are made the same way. If it is a no, say which of the four to change and only that changes.</p>
     </div>
     <div class="k-stats">
       <div class="k-stat"><span class="k-stat-label">Length</span><span class="k-stat-change">Asked for: about seven seconds. ${video.frames} frames at 60 a second</span><span class="k-stat-value">${video.seconds.toFixed(2)}s</span></div>
@@ -110,11 +113,19 @@ ${CHOICES.map(([title, what, why], n) => row(String(n + 1), title, what, why)).j
     </ol>
   </section>
 
+  <section class="k-section" aria-labelledby="s-shots">
+    <h2 id="s-shots">The shots</h2>
+    <p>Seconds into the film where each shot begins, what it shows, and why.</p>
+    <ol class="v-scenes">
+${video.cuts.map((c, n) => row(s2(c.at), cap(c.name), SHOTS[n].look === "wide" ? "The whole phone." : `Close: ${SHOTS[n].close[0]} times nearer, moving in to ${SHOTS[n].close[1]}.`, SHOTS[n].why)).join("\n")}
+    </ol>
+  </section>
+
   <section class="k-section" aria-labelledby="s-still">
     <h2 id="s-still">One still</h2>
     <figure class="v-film">
-      ${stillSrc ? `<img src="${esc(stillSrc)}" alt="The journal whole on the phone, turned to one side, under the words ${esc(words[1].title)}">` : `<div role="img" aria-label="The still is not on the page yet"></div>`}
-      <figcaption>${(video.seconds - 0.1).toFixed(2)} seconds in: the journal whole on the side stand, every piece where the app put it.</figcaption>
+      ${stillSrc ? `<img src="${esc(stillSrc)}" alt="A close shot of the journal's day: the Epistle and the Gospel, each with a pen, on the phone turned to one side, under the words ${esc(words[1].title)}">` : `<div role="img" aria-label="The still is not on the page yet"></div>`}
+      <figcaption>5.30 seconds in: the close shot of the day's readings and their pens.</figcaption>
     </figure>
   </section>
 
@@ -206,7 +217,8 @@ Written by \`page.mjs\` on ${made} from what was made and measured. Do not edit 
 | The phone | front (upright) to the store pictures' side stand (rotateY 25, rotateX 7, rotateZ 1.2 degrees), one move of ${MOVE.for}s on the house curve; the script refuses a move that comes back, passes its rest or turns more |
 | The title | the app's sans (DM Sans, 600), by his word after the first render, which set it in the display serif |
 | The ground | moves all through: a slow move in of 11 percent, the far lines lifting faster than the near, and a slide of up to 120 pixels against the phone's turn; mirrored with the phone in a right-to-left page |
-| Renders | three: the first, the second with the sans title, the third with the moving ground. Only the third is on the page; the first two were replaced at his word |
+| The edit | ${video.cuts.length} shots, hard cuts, by his word and his choice of "Cuts and close-ups": ${video.cuts.map((c) => `${s2(c.at)} ${c.name}`).join("; ")}. No shot is nearer than the takes were filmed, and none moves out |
+| Renders | four: the first, the second with the sans title, the third with the moving ground, the fourth cut into shots. Only the fourth is on the page; each earlier one was replaced at his word |
 
 ## The film, by its own clock
 
@@ -234,6 +246,6 @@ ${checks.map((c) => `| ${c.moment} | ${s2(c.at)}s | ${c.pass ? "pass" : `NO: ${c
 
 ## The stills sheet
 
-\`node docs/plans/v1.9/video/ad/compose.mjs --sheet\` (twelve moments) and \`--sheet 12 --span 3.0-4.9\` (the move). Both were looked at before the render. They are working files in \`.promo/v1.9-video/ad/stills/\`.
+\`node docs/plans/v1.9/video/ad/compose.mjs --sheet\` (twelve moments), \`--sheet 12 --span 3.0-4.9\` (the move) and \`--sheet 12 --span 0.8-6.3\` (across every cut). Each was looked at before its render. They are working files in \`.promo/v1.9-video/ad/stills/\`.
 `);
 console.log("RECORD.md written");

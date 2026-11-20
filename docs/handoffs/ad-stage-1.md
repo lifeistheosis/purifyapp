@@ -4,7 +4,7 @@ Written 2026-11-20 by the worker chat the arbiter started for this one job (sess
 
 ## What was made
 
-The test: 6.95 seconds, scene 1 (Today, built by its own pieces) and scene 2 (the journal, built the same way), on one phone that moves from standing front to the store pictures' side stand between them. 1080 by 1920, 60 frames a second, H.264 High, 4.9 MB, no sound stream. One version on the page (the third render, after his two changes below).
+The test: 6.95 seconds, scene 1 (Today, built by its own pieces) and scene 2 (the journal, built the same way), on one phone that moves from standing front to the store pictures' side stand between them. 1080 by 1920, 60 frames a second, H.264 High, 4.9 MB, no sound stream. One version on the page (the fourth render, after his three changes below), 4.95 MB.
 
 - **The page:** https://claude.ai/artifact/4YMJMQmXcX6HSC7fxZJd6X (the video, one still, the reason for each choice, Save the video). Private to him.
 - **In the repo:** `docs/plans/v1.9/video/ad/` (`cut.mjs`, `take.mjs`, `compose.mjs`, `page.mjs`, `README.md`, `RECORD.md`).
@@ -34,13 +34,21 @@ What was done at those words (the page now shows only the third render, at the s
 - **The ground moves** all through: a slow move in toward the hill (11 percent over the film), the far lines lifting faster than the near, and the ground sliding up to 120 pixels against the phone's turn, the far lines less. The light is still one soft pool. checkMock first failed this on mirroring (the pool slid one way in Arabic too); the ground now turns over with the phone in a right-to-left page, and all six moments pass.
 - **Three renders** were made in all (the first, the sans title, the moving ground). The first is still in the page's asset store (video `/_blob/619f065d08558e5eeb25ada356577a3f`, still `/_blob/23c2729c623d8eac613d534320239c67`), unused; nothing was deleted, and it is for the Vault. The second was never uploaded and its file was overwritten by the third in `.promo/`; a copy is in this chat's scratchpad only.
 
+What was done at "it should like a edit not just motion graphics" (the page is now version 4, the fourth render, same address):
+
+- I asked him one question with three choices (cuts and close-ups; cuts plus speed ramps; one shot with a moving camera). His answer, about 21:55 UTC: "Cuts and close-ups (Recommended)".
+- **The film is cut into seven shots** (`SHOTS` in `cut.mjs`, `cameraAt` in `compose.mjs`), hard cuts, each landing while a piece is still moving: wide, close on St Nicholas, close on Begin, wide for Today whole and the turn, close on the journal's name, close on the readings and their pens, wide to end. The script refuses a shot nearer than the takes were filmed, one shorter than 0.4 seconds, or one that moves out. The turn is never cut across.
+- checkMock passes at ten moments now: the six of before and the middle of each close shot.
+- The second and third renders' videos are also kept in the page's asset store, unused (third: `/_blob/0e6ee7e0cb297530ac1531bbc57773bd`), for the Vault.
+- The arbiter asked for no more messages (each wakes a long chat), so this file is the record from here.
+
 ## Tokens
 
-get_session read 0 used tokens every time, so there is no measured number. By my own count the chat's context was about 130,000 tokens when I stopped at the cap of 250,000 (own count times two), about 175,000 at the first finish, and about 200,000 after his two changes. By the times-two rule that is about 400,000. He lifted the cap himself.
+get_session read 0 used tokens every time, so there is no measured number. By my own count the chat's context was about 130,000 tokens when I stopped at the cap of 250,000 (own count times two), about 175,000 at the first finish, and about 200,000 after his two changes, and about 240,000 after the edit. By the times-two rule that is about 480,000. He lifted the cap himself.
 
 ## What stage 2 needs
 
-- His yes or no on the moving phone, the sans title and the moving ground.
+- His yes or no on the moving phone, the sans title, the moving ground and the cuts.
 - For each of the six scenes: a `pieces` list read from the export with `take.mjs <scene> --dom`, the way a reader reaches the screen in `REACH`, its stand (the store pictures go front and side turn about), and its words in `../scenes.mjs`.
 - `compose.mjs` holds two scenes and one move by name (`A`, `B`). For eight it wants a list of scenes and a move between each pair; the motion, the page and the checks stay as they are.
 - Scenes 3 and 5 show things a finger does (holding a verse, opening the Fathers). Decide with him whether those keep real taps, as the sample did, with the phone moving between scenes only.
