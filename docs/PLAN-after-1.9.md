@@ -8,7 +8,7 @@ A draft by Arbiter 15, 2026-11-20. It waits for his yes. One item at a time, not
 
 - **Found on 11-20.** The iOS build he submitted is run 37 of 2026-11-13, from 6193982d5. Android's is build 101 of 11-17, from main 6700c2e65. The iOS build is four days older: 1,024 files apart in app, components, lib, data, public and ios, without the World English Bible and without the mends made after it for his build 95, 97 and 98 notes.
 - **Not live yet.** Apple's public lookup still served 1.8 at 16:19 UTC, so no reader had the old build.
-- **Run 39** (44772453085) started at 16:20:49 UTC from main 6700c2e65, the same code as Android 101, to TestFlight. Cost: about 20 minutes of GitHub's macOS runner, almost no usage.
+- **Run 39** (44772453085) started at 16:20:49 UTC from main 6700c2e65, the same code as Android 101, and succeeded at 16:50 UTC: build 39 is on TestFlight. Cost: about 20 minutes of GitHub's macOS runner, almost no usage.
 - **His steps.** Take 1.9 out of review, so run 37 cannot go live. Walk build 39 from TestFlight on his iPhone: no iOS build has been made since 11-13 and four native files changed since (the speech plugin, the download notice, the bridge, the project). Choose build 39 and send again.
 - **If the run fails:** the arbiter reads the failing step only (small), and a mend and a new run wait for his yes.
 
