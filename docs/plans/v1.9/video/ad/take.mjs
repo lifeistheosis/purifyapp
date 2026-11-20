@@ -71,13 +71,12 @@ function hold({ pieces, name, leave }) {
     if (leave && p.from !== "near") {
       // Last in, first out: the screen empties from the bottom of its order, each piece to the side it came from.
       const turn = outer.length - 1 - outer.findIndex((f) => f.el === el);
-      const b = el.animate([rest, off], { duration: leave.for * 1000, delay: turn * leave.each * 1000, easing: back, fill: "forwards" });
-      b.pause();
-      going.push(b);
+      // Made only when it is time to leave: an animation waiting on a piece would hold it at rest and undo its arrival.
+      going.push(() => el.animate([rest, off], { duration: leave.for * 1000, delay: turn * leave.each * 1000, easing: back, fill: "forwards" }));
     }
   }
   window.__held = held;
-  window.__going = going;
+  window.__leave = () => (window.__going = going.map((start) => start()));
   // A piece waiting beyond the end side must not make the page wider than the screen.
   return { curve, back, counts, wide: document.scrollingElement.scrollWidth > vw };
 }
@@ -168,7 +167,7 @@ try {
     if (scene.leave) {
       await h.rest(scene.leave.after * 1000);
       h.mark("leave");
-      await h.page.evaluate(() => window.__going.forEach((a) => a.play()));
+      await h.page.evaluate(() => void window.__leave());
       if (DRY) await h.page.evaluate(() => Promise.all(window.__going.map((a) => a.finished)));
       else await h.rest((leftAt(scene) + 0.6) * 1000);
       const left = await h.page.evaluate(() => window.__going.filter((a) => a.playState !== "finished").length);

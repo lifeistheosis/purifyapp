@@ -33,7 +33,7 @@ export const SCENES = [
     words: "today",
     stand: "front",
     lead: 0.3,
-    leave: { after: 0.4, for: 0.42, each: 0.03 },
+    leave: { after: 0.25, for: 0.42, each: 0.03 },
     pieces: [
       { name: "the top bar", pick: "header[data-tab-topbar]", from: "above", at: 0, for: 0.7, why: "The screen's name comes first, so everything after it is read as Today." },
       { name: "the top bar's buttons", pick: "header[data-tab-topbar] [data-tab-actions] > *", from: "near", by: -34, at: 0.2, each: 0.07, count: 3, for: 0.55, why: "Plus, search and the bell drop into their places one after another: the buttons he asked to see move." },
