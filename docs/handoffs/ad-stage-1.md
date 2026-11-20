@@ -26,6 +26,8 @@ The test: 6.95 seconds, scene 1 (Today, built by its own pieces) and scene 2 (th
 - About 20:27: "I don't like the font that you used for the title cards. Re-render with the minimalist, like, better font."
 - About 20:36, while that render ran: "And make the background move, so it's like more cinematic-y rather than a static motion graphics."
 
+- About 21:55, after seeing the third render: "it should like a edit not just motion graphics"
+
 What was done at those words (the page now shows only the third render, at the same address):
 
 - **The title** is in the app's sans (DM Sans, 600, 76px), no longer the display serif. This is my reading of "the minimalist, like, better font": the app's own plain face, the one its buttons and labels use. The first cut, the sample and the store pictures still use the serif; whether they follow is his to say.
