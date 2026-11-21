@@ -38,8 +38,8 @@ You are making one promo film for Purify, cut to a track the owner chose: a slow
 
 | Time | Music | Picture |
 |---|---|---|
-| **0.00 to 2.07** | near silence, one soft hit | Black. On the hit at 0.07 a single soft pool of light opens low in the frame, as before dawn. Nothing else. Hold. |
-| **2.07 to 3.72** | second soft hit | On 2.07 Purify's mark arrives in the light, small and still, with the release's name under it from the drop. It holds, then the light dims toward black just before 3.72. |
+| **0.00 to 2.07** | near silence, one soft hit | Black. On the hit at 0.07 a single soft pool of light opens low in the frame, and the first half of the intro's line arrives in it, large, in the app's sans: "He can no longer have God for his Father," |
+| **2.07 to 3.72** | second soft hit | On 2.07 the second half arrives under it: "who has not the Church for his mother." Small beneath, the citation: St Cyprian of Carthage, On the Unity of the Church. Both hold, then go to black just before 3.72. Purify's mark is kept for the end card alone. |
 | **Bar 1, 3.72 to 7.62** | first swell | **Today.** On the swell the phone rises out of the dark, lit from above, screen bare. Its pieces arrive on the beats (4.37, 5.02, 5.67): the day's card, St Nicholas, Begin. Slow push in the whole bar. Title card on the last beat (6.66), full width: the store pictures' line for Today. |
 | **Bar 2, 7.62 to 11.52** | swell | **The journal.** Hard cut on 7.64 to a close shot, the phone already turned to its side stand. The day's page rises; the Epistle and the Gospel slide in on 8.99 and 9.64, each with its pen. Title on 10.31: the drop's name for the journal. |
 | **Bar 3, 11.52 to 15.42** | swell | **Hold a verse.** Cut on 11.61, very close on the Bible's text. A finger holds a verse (real touch); the tools rise on 12.28 and the Greek opens on 13.61. Shallow focus: only the verse is sharp. Title on 14.28 from the drop's point `verse`. |
@@ -49,6 +49,15 @@ You are making one promo film for Purify, cut to a track the owner chose: a slow
 | **Bar 7, 27.12 to 31.02** | swell, the music is fullest | **The Creed by council.** Cut on 27.49. The Creed's lines arrive one on each beat (28.19, 28.84, 29.49), the council's name over them. The camera is at its closest and the light at its warmest. Title on 30.49 from the drop's point `creed`. |
 | **Bar 8, 31.02 to 34.48** | last swell, building | **Prayer campaigns.** Cut on 31.16, wide. The campaign screen builds on 32.16; the count of those praying is the last thing to land, on 33.81. Hold for the hit. Title: the app's own labels, "Pray together" and "Prayer campaigns". (Shown only once campaigns are open to every reader.) |
 | **34.48 to 35.20** | **the one big hit** | Cut to black exactly on 34.48, then Purify's mark and the drop's first sentence, full size, still. No motion at all on the loudest moment: the stillness is the point. Hold to 35.20 and end. |
+
+### The intro's words (his choice, 2026-11-21 about 23:02 UTC: "b")
+
+He asked for the intro to be "about other religions critizing ecuemenism and views like v2 and Muhammad or other religions worshipping the one true God", and of the two ways offered chose the critical one, on its stated terms: every line a verbatim quotation from a public-domain source, cited, with a priest's yes, naming doctrines and never mocking people.
+
+- **The line above is verbatim** from the app's own library (`data/saints/cyprian-of-carthage/on-the-unity-of-the-church.json`, read at the Council of Carthage, 251). It answers ecumenism in a Father's own words: there is one Church. Two more from the same work, if a different one is wanted: "He who does not hold this unity does not hold God's law, does not hold the faith of the Father and the Son, does not hold life and salvation." and "nor is there any other home to believers but the one Church."
+- **It does not go out until a priest has said yes** to this line used this way (`docs/editorial-standards.md`: doctrinal framing goes to the clergy queue). The storyboard may show it; the film may not be posted with it before that yes is recorded here with his name and the date.
+- **Not sourced, so not in the film:** a line on Vatican II (no public-domain source can speak of a council of the 1960s; any such line would be newly written, which the standards forbid) and a line on Muhammad or Islam (the library holds no patristic text on it; St John of Damascus's chapter on the Ishmaelites would be the source, and it would need a public-domain translation added to the library through the editorial queue first). No such line is to be written for the film by anyone making it.
+- **Where it may run:** the organic post only. Not a paid ad, not the store listings, not the website's front page. Expect that a platform may still limit it.
 
 ### How it should look and move
 

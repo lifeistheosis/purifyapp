@@ -50,6 +50,8 @@ His word on 2026-11-21, about 22:46 UTC, with a 38.6 second clip saved from TikT
 
 His word on the Forever prompt's intro, 2026-11-21 about 23:00 UTC, verbatim: "make the intro about other religions critizing ecuemenism and views like v2 and Muhammad or other religions worshipping the one true God". Not written into the prompt yet. Answered in chat: this is doctrinal wording, which `docs/editorial-standards.md` sends to the clergy queue and which the film's rule limits to the drop's words; it also risks the ad platforms' and stores' rules on religion and the brand. He was offered an intro that states the Orthodox confession in the Creed's own words, or a polemical one whose lines come verbatim from a public-domain source with a priest's yes. It waits for his choice.
 
+His choice, about 23:02 UTC, verbatim: "b". Done: the Forever prompt's intro now carries one verbatim line of St Cyprian (On the Unity of the Church, from the app's own library), cited, and says it does not go out before a priest's yes; it also says plainly that no line on Vatican II or on Muhammad is sourced and none is to be written.
+
 ## Tokens
 
 get_session read 0 used tokens every time, so there is no measured number. By my own count the chat's context was about 130,000 tokens when I stopped at the cap of 250,000 (own count times two), about 175,000 at the first finish, and about 200,000 after his two changes, and about 240,000 after the edit. By the times-two rule that is about 480,000. He lifted the cap himself.
