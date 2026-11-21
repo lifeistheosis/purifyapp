@@ -13,10 +13,11 @@ import { CURRENT_VERSION, featureRelease } from "@/lib/whatsNew/version";
 import { checkEmailCopy } from "../doctrine";
 import { renderMarketing } from "../marketing";
 import { esc as kitEsc } from "../kit";
+import { READER_EMAIL_LOOK } from "../look";
 import { escapeHtml } from "../send";
 import { releaseBody } from "../templates/contentBodies";
 import { bodyLines } from "../templates/marketingBodies";
-import { EMAIL_THEMES, type EmailMode } from "../theme";
+import { EMAIL_THEMES, KIT_DARK, type EmailMode } from "../theme";
 import { explainEmail } from "./emailCopyHelpers";
 
 /**
@@ -30,8 +31,10 @@ import { explainEmail } from "./emailCopyHelpers";
  * release whose email cannot be sent fails here first.
  *
  * `node scripts/release.mjs email` runs this file with RELEASE_EMAIL_PREVIEW
- * set, and the last test then writes the email as a page, in each of the four
- * reading modes, for a person to open and read before anything is sent.
+ * set, and the last test then writes the email as a page for a person to open
+ * and read before anything is sent: the kit's one Dark letter, which is what
+ * goes out, or each of the four reading modes were the look before the kit
+ * (READER_EMAIL_LOOK "1") ever sent again.
  */
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
@@ -177,12 +180,35 @@ describe.runIf(entry && PREVIEW)("the preview", () => {
     vi.resetModules();
   });
 
-  it("is written in each reading mode, for a person to read before the send", async () => {
+  it("is written as it is sent, for a person to read before the send", async () => {
     const dir = path.resolve(ROOT, PREVIEW!);
     fs.mkdirSync(dir, { recursive: true });
     const site = SITE_URL.replace(/\/$/, "");
     const local = pathToFileURL(path.join(ROOT, "public")).href;
+    // The pictures are on the site only after the deploy. Before it, draw
+    // them from this checkout; the links still go to the site.
+    const write = (name: string, out: { html: string; subject: string; text: string }, withText: boolean) => {
+      const html = out.html.replaceAll(`src="${site}/`, `src="${local}/`);
+      fs.writeFileSync(path.join(dir, name), html);
+      if (withText) fs.writeFileSync(path.join(dir, "release.txt"), `Subject: ${out.subject}\n\n${out.text}\n`);
+      return html;
+    };
 
+    if (READER_EMAIL_LOOK !== "1") {
+      // The kit's letter (his yes, 2026-11-13) is sent in one palette, Dark,
+      // written inline, whatever EMAIL_MODE says. So there is one page, the
+      // one that goes out, under the name the release tool tells him to open.
+      // Until 2026-11-21 this test still looked for each reading mode's card
+      // colour, which the kit's letter never draws, so the release tool
+      // refused an email that could be sent.
+      const out = renderMarketing(releaseBody(entry!, letter), "release_news", TOKEN, ADDRESS);
+      const html = write("release-night.html", out, true);
+      expect(html).toContain(KIT_DARK.ground);
+      expect(html).toContain(KIT_DARK.body);
+      return;
+    }
+
+    // The look before the kit followed the reading mode: one page for each.
     for (const mode of Object.keys(EMAIL_THEMES) as EmailMode[]) {
       vi.resetModules();
       vi.doMock("../theme", async (original) => {
@@ -192,11 +218,7 @@ describe.runIf(entry && PREVIEW)("the preview", () => {
       const marketing = await import("../marketing");
       const bodies = await import("../templates/contentBodies");
       const out = marketing.renderMarketing(bodies.releaseBody(entry!, letter), "release_news", TOKEN, ADDRESS);
-      // The pictures are on the site only after the deploy. Before it, draw
-      // them from this checkout; the links still go to the site.
-      const html = out.html.replaceAll(`src="${site}/`, `src="${local}/`);
-      fs.writeFileSync(path.join(dir, `release-${mode}.html`), html);
-      if (mode === "night") fs.writeFileSync(path.join(dir, "release.txt"), `Subject: ${out.subject}\n\n${out.text}\n`);
+      const html = write(`release-${mode}.html`, out, mode === "night");
       expect(html).toContain(EMAIL_THEMES[mode].card);
     }
   });

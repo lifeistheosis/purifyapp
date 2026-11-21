@@ -235,8 +235,8 @@ function email() {
   }
   console.log(`\nThe release email for ${versions().version}, as it would be sent today:`);
   for (const f of made) console.log(`  ${PREVIEW_DIR}/${f}`);
-  console.log("Open release-night.html in a browser and read it to the end. Night is the mode every email goes out in");
-  console.log("(lib/email/theme.ts); the other three are there to compare. release.txt is the plain-text part.");
+  console.log("Open release-night.html in a browser and read it to the end. It is the kit's Dark, the one palette a letter");
+  console.log("is sent in (lib/email/theme.ts, KIT_DARK). release.txt is the plain-text part.");
   console.log("The owner sends it from Admin, Email, after the note is published and the site is live.");
 }
 
