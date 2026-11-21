@@ -10,7 +10,11 @@ https://claude.ai/artifact/4Lp3SBagwRwLi5d8QtVd2B (version 1). Private to him. T
 
 ## His words in this chat (verbatim, UTC)
 
-None yet. The chat was started by the ad stage 1 chat at his word there, about 23:08 UTC: "start a fresh chat with it" (`docs/handoffs/ad-stage-1.md`).
+- About 23:45, on the storyboard: "When I say edit, I'm referring to a whole new approach. It's not promo for the app, but it's like an edit. It's like just search up like black pill edits. Search up like, yeah, black pill edits are the best example. So make like black pill purify with like high retention topics like we talked about, like ecumenism, even the filioque. Actually, don't do filioque, just do like polytheism stuff."
+
+At that word: the storyboard above is set aside (kept, for the Vault; nothing deleted). One search was made. Nothing new is made yet: a plan was put to him in chat for his yes, since the words are doctrinal (a stop condition) and the film's rule on sourced words still binds. The plan: no app screens, icons and Scripture only; every line on screen verbatim from Scripture or a Father in the app's own library, cited; a question for the hook; nothing that names or attacks a person; Purify's mark only at the end.
+
+The chat was started by the ad stage 1 chat at his word there, about 23:08 UTC: "start a fresh chat with it" (`docs/handoffs/ad-stage-1.md`).
 
 ## This overlaps with another chat
 
