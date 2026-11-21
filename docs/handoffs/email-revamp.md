@@ -76,3 +76,11 @@ Built on the branch; not on main, so it does not exist on the main web yet.
 - It goes to the address of the admin account he is signed in with. He named lifeistheosis@gmail.com; if he signs in to Admin with another address, the test goes there.
 - Checked: typecheck 0, eslint clean, `npm run test:unit` 15,530 pass and 1 fails. The one failure is `lib/downloads/__tests__/log.test.ts` ("lights the bell for an end not yet seen"), which fails the same way with my changes set aside: not mine, not mended.
 - Not checked: the route against the real sender. That can only be tried on the main web, after a push to main.
+
+## Ready for main, not pushed (2026-11-21)
+
+Main moved today, from `6700c2e65` to `b89b56b11` ("Ease the database"), by another hand. On a local line from `b89b56b11` (a worktree in this chat's scratchpad, branch `email-look-3-for-main`, pushed nowhere) the three code commits apply cleanly: `07617e006`, `4b19845ca`, `2ea506f6f`, with the branch-only docs left out. 16 files: `lib/email` (the look, its tests), `lib/whatsNew/releaseEmail.ts`, the test-send route and its button, and the seven pictures. There: typecheck 0; `npx vitest run lib/email lib/whatsNew lib/admin` 165 files, all pass. The website build was run on the branch (passed), not on that line.
+
+A push to main deploys the main web. It waits for his word, asked plainly. The scratchpad does not outlast the container: if it is gone, cherry-pick the three commits onto main again.
+
+**If he says yes, in order:** push the line to main (`PURIFY_ALLOW_MAIN=1`, at his word only); `node scripts/release.mjs live` or `curl` purifyapp.net until the deploy serves; `curl -I https://purifyapp.net/whats-new/1.9/email-today.jpg` is 200; he opens Admin, Email, the release draft, presses "Send a test to me", and looks at it in Gmail, Apple Mail and Outlook; only then does he press the real send.
