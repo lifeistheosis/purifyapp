@@ -369,11 +369,15 @@ export function MoneyOverviewTab() {
         ]).map((l) => (
           <li key={l.tab} className="border-[color:var(--adm-line)]">
             <button type="button" onClick={() => open(l.tab)} className="flex min-h-11 w-full items-center gap-3 py-2 text-left font-sans">
-              <span className="w-[110px] shrink-0 text-[13.5px] font-medium" style={{ color: "var(--adm-ink)" }}>
-                {l.name}
-              </span>
-              <span className={"min-w-0 flex-1 text-[13px] " + SENSITIVE} style={{ color: "var(--adm-ink-2)" }}>
-                {l.line}
+              {/* On a phone the name stands over its line, so the line has the row's whole width
+                  and does not wrap to four short lines beside a 110px name (his walk of 2026-11-21). */}
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-3">
+                <span className="shrink-0 text-[13.5px] font-medium sm:w-[110px]" style={{ color: "var(--adm-ink)" }}>
+                  {l.name}
+                </span>
+                <span className={"min-w-0 flex-1 text-[13px] " + SENSITIVE} style={{ color: "var(--adm-ink-2)" }}>
+                  {l.line}
+                </span>
               </span>
               <GoLabel />
             </button>
