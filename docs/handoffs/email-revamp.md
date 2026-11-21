@@ -30,6 +30,9 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 - 2026-11-21 19:46 UTC, after this chat's first admin notes, made from the code alone: "I need you to use the admin panel to see the design"
 - 2026-11-21 19:46 UTC, after this chat said the preview showed the layout but none of his data: "just use example data for yourself"
 - 2026-11-21 21:19 UTC, after eight admin notes and two questions ((1) "Which do you feel most? I would start with 1 and 2 ... I would draw it first for your yes." (2) the word for main, and the look at 3 or 2): "do all"
+- 2026-11-21 22:14 UTC, after this chat asked "Do I have your word to push to main? It deploys the website, and would carry the email work and these three fixes.": "yes oush"
+
+"yes oush" is read as: yes, push. It is his word for main, for the email work and the three admin mends. He did not answer 3 or 2, so the look stays as built and tested, at 3.
 
 "do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 
