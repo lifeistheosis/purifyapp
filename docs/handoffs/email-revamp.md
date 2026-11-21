@@ -23,7 +23,9 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 
 ## His words
 
-None yet. If he writes in this chat, his words go here verbatim with the time.
+- 2026-11-21 06:53 UTC, after the page and "Yes or no?": "sure let's just finalize this and send it out tonight"
+
+Read by this chat as his yes to the design and his ask to start stage 2 and send tonight. Stage 2 was not started here: this chat is at its cap, and a send needs code in `lib/email`, the pictures on the main web (a push to main, which deploys) and the first-send guard. This chat asked him whether to lift the cap.
 
 ## The count
 

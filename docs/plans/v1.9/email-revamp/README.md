@@ -2,7 +2,7 @@
 
 One design, for the owner's yes or no. Made 2026-11-21 by one capped chat, from `BRIEF.md`. Nothing under `lib/`, `app/` or `components/` was changed, and nothing was sent.
 
-**His page:** https://claude.ai/artifact/KFjrCn4eUBg33ptSJMhHDD (private to him). **His answer:** none yet.
+**His page:** https://claude.ai/artifact/KFjrCn4eUBg33ptSJMhHDD (private to him). **His answer:** 2026-11-21 06:53 UTC: "sure let's just finalize this and send it out tonight".
 
 ## What is here
 
