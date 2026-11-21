@@ -1,6 +1,6 @@
 import { SITE_URL } from "@/lib/site";
 
-import { button, days, esc, link, linkRow, night, opening, para, pen, quietButton, saintCard, shell, signOff, wide, type Assets, type KitDay } from "./kit";
+import { button, buttonSans, closingLine, days, esc, hero, link, linkRow, night, opening, openingSans, para, paraSans, pen, pointCard, quietButton, saintCard, shell, signOff, signOffSans, wide, type Assets, type KitDay } from "./kit";
 import type { EmailDay } from "./templates/build";
 import type { MarketingBody } from "./templates/marketingBodies";
 import { KIT_DARK } from "./theme";
@@ -19,9 +19,13 @@ import { KIT_DARK } from "./theme";
  *                     Fast · day N of 40", each day's fast, and the path for
  *                     the fast.
  *   The monthly note  the month; its paragraphs; the one button.
- *   A release letter  the release's name and its own name under it; its
- *                     picture; its points as paragraphs with the name set
- *                     heavier; "See everything that is new".
+ *   A release letter  from look 3 (his yes of 2026-11-21 to the 1.9 design,
+ *                     docs/plans/v1.9/email-revamp/), all in the sans: the
+ *                     release's name large and its own line under it; the
+ *                     app's own screen as the hero; each point in its own
+ *                     card, with its screen when it has one; the closing
+ *                     line heavier; "See everything that is new". The other
+ *                     letters keep look 2 until he says yes to theirs.
  *
  * Every letter ends on why it came, who sent it (the company and its postal
  * address), and the Unsubscribe button with this reader's own link.
@@ -84,6 +88,33 @@ export function kitDay(d: EmailDay): KitDay {
   };
 }
 
+/**
+ * A release letter in look 3: the design he said yes to on 2026-11-21, piece
+ * for piece (docs/plans/v1.9/email-revamp/make.mjs). Every word is the
+ * body's own; nothing is written here.
+ */
+function releaseLetter(body: MarketingBody, opts: { kind: string; why: string; company: string; unsubscribeHref: string }): string {
+  const p = pen(KIT_DARK);
+  const rows: string[] = [];
+  rows.push(openingSans(p, { title: body.heading, sub: body.deck }));
+  if (body.image) rows.push(hero(p, { ...body.image, href: body.action?.href }));
+  body.paragraphs.forEach((t, i) => rows.push(paraSans(p, esc(t), { top: i === 0 ? 28 : 12, bottom: i === body.paragraphs.length - 1 ? 8 : 0, size: 17 })));
+  for (const pt of body.points ?? []) rows.push(pointCard(p, { name: pt.name.replace(/\.$/, ""), text: pt.text, picture: pt.picture }));
+  // The lines after the cards; the last is the letter's closing, set heavier.
+  const after = (body.after ?? []).filter((t) => t !== body.footNote);
+  after.forEach((t, i) => rows.push(i === after.length - 1 ? closingLine(p, t) : paraSans(p, esc(t), { top: i === 0 ? 32 : 16 })));
+  if (body.action) rows.push(buttonSans(p, { href: body.action.href, text: body.action.label }));
+  rows.push(signOffSans(p));
+
+  const foot = `<p style="margin:0">${body.footNote ? `${esc(body.footNote)} ` : ""}${esc(opts.why)}</p>
+  <p style="margin:6px 0 0">${esc(opts.company)}</p>
+  <p style="margin:18px 0 0">${quietButton(p, { href: opts.unsubscribeHref, text: "Unsubscribe" })}</p>
+  <p style="margin:8px 0 0">${link(p, site("/"), "purifyapp.net")}</p>`;
+
+  const preheader = [body.deck, ...body.paragraphs, ...(body.after ?? [])].find((t) => t && t.trim()) ?? body.subject;
+  return shell(p, { title: body.subject, preheader, kind: opts.kind, rows, foot, assets: KIT_ASSETS, sans: true });
+}
+
 export function kitLetter(
   body: MarketingBody,
   opts: {
@@ -96,6 +127,8 @@ export function kitLetter(
     unsubscribeHref: string;
   },
 ): string {
+  // A release letter with its points is the sans letter (look 3).
+  if (body.points?.length) return releaseLetter(body, opts);
   const season = body.season?.kind === "nativity-fast" ? body.season : null;
   // Dark in a fast and out of it: every email keeps the app's default colours (his word, 2026-11-13).
   const p = pen(KIT_DARK);

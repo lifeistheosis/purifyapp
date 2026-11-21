@@ -60,41 +60,49 @@ export type ReleaseEmail = {
 
 export const RELEASE_EMAIL: ReleaseEmail = {
   version: "1.9",
-  // The picture is taken from the live site once 1.9 is out
-  // (scripts/release-pictures.mjs, docs/plans/v1.9/pictures.json); until
-  // then the letter goes without one.
-  picture: null,
+  // The hero and each point's screen are the 1.9 app's own, taken from the
+  // native export of main 6700c2e65 as a new reader with no Plus sees it
+  // (docs/plans/v1.9/email-revamp/shots.mjs), each a part of one real screen
+  // at the phone's whole width. Church history has none: no event falls on
+  // the day the screens were taken, and none was staged.
+  picture: { src: "/whats-new/1.9/email-today.jpg", alt: "Today in Purify: St Nicholas the Wonderworker, the Nativity Fast with fish allowed, and the verse of the day.", width: 720, height: 1094 },
   intro: "1.9 is for keeping what you read. Here is what is new.",
   points: [
     {
       emoji: "📓",
       name: "Your journal, by the Church's day",
       text: "Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.",
+      picture: { src: "/whats-new/1.9/email-journal.jpg", alt: "The page of the journal for the day: the saint, the fast, and the Epistle and Gospel, each with a pen.", width: 720, height: 856 },
     },
     {
       emoji: "📖",
       name: "Every verse, opened",
       text: "Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.",
+      picture: { src: "/whats-new/1.9/email-verse.jpg", alt: "John 1:1 held open: the highlight colours, and Copy, Share, Image, Note and Study.", width: 720, height: 1005 },
     },
     {
       emoji: "🌍",
       name: "Seven more Bibles",
       text: "The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: Arabic, Spanish and Portuguese.",
+      picture: { src: "/whats-new/1.9/email-bibles.jpg", alt: "The translations list: the World English Bible, the Russian Synodal and the Greek Septuagint, each to download.", width: 720, height: 1031 },
     },
     {
       emoji: "🔎",
       name: "Study a verse, in Purify Plus",
       text: "Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.",
+      picture: { src: "/whats-new/1.9/email-study.jpg", alt: "The study sheet for John 1:1: the Greek, and Cross-references and Compare marked Purify Plus.", width: 720, height: 661 },
     },
     {
       emoji: "🗓️",
       name: "New reading plans, in Purify Plus",
       text: "John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.",
+      picture: { src: "/whats-new/1.9/email-plans.jpg", alt: "Reading plans: the Nativity Fast, the prophecies and Gospels the Church reads at the Nativity, marked Purify Plus.", width: 720, height: 762 },
     },
     {
       emoji: "☦️",
       name: "The Creed by council",
       text: "The Symbol of Faith article by article, with the words the Council of Constantinople added lit.",
+      picture: { src: "/whats-new/1.9/email-creed.jpg", alt: "The Creed, line by line: the first two articles, with the words added at Constantinople in 381 lit.", width: 720, height: 856 },
     },
     {
       emoji: "📜",

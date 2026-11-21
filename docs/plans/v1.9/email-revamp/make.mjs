@@ -36,9 +36,9 @@ export const WORDS = {
   title: "Purify 1.9",
   deck: "Keep a journal by the Church's day, and go deeper into every verse",
   opening: "1.9 is for keeping what you read. Here is what is new.",
-  hero: { shot: "today", alt: "Today in Purify: St Nicholas the Wonderworker, the Nativity Fast with fish allowed, and the day's verse." },
+  hero: { shot: "today", alt: "Today in Purify: St Nicholas the Wonderworker, the Nativity Fast with fish allowed, and the verse of the day." },
   points: [
-    { name: "Your journal, by the Church's day", text: "Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.", shot: "journal", alt: "The journal's page for the day: the day's saint, the fast, and the Epistle and Gospel, each with a pen." },
+    { name: "Your journal, by the Church's day", text: "Today's page shows the feast or saints and readings, each with a pen to begin a page. Add verse cards and highlights, export it, or print it on the website. Free for everyone.", shot: "journal", alt: "The page of the journal for the day: the saint, the fast, and the Epistle and Gospel, each with a pen." },
     { name: "Every verse, opened", text: "Hold a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.", shot: "verse", alt: "John 1:1 held open: the highlight colours, and Copy, Share, Image, Note and Study." },
     { name: "Seven more Bibles", text: "The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, the World English Bible, and three labelled Protestant: Arabic, Spanish and Portuguese.", shot: "bibles", alt: "The translations list: the Russian Synodal, the Greek Septuagint and the Serbian Bible, each to download." },
     { name: "Study a verse, in Purify Plus", text: "Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.", shot: "study", alt: "The study sheet for John 1:1: the Greek, and Cross-references and Compare marked Purify Plus." },

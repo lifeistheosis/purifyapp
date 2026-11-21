@@ -62,7 +62,10 @@ export function pen(dark: KitWears = KIT_DARK): Pen {
 }
 
 /** The head's style block: a wide screen lets the title and the figures out. No colour is set here, and nothing turns on the reader's scheme. */
-function sheet(): string {
+function sheet(sans = false): string {
+  // The sans letter (look 3): a wide screen lets the name, its line, the cards' names and their room out.
+  if (sans)
+    return `@media (min-width:600px){.e-title{font-size:56px !important;line-height:60px !important}.e-deck{font-size:24px !important;line-height:33px !important}.e-name{font-size:26px !important;line-height:32px !important}.e-words{padding:28px 32px 32px !important}}`;
   return `@media (min-width:600px){.e-title{font-size:34px !important;line-height:42px !important}.e-fig{font-size:30px !important;line-height:36px !important}}`;
 }
 
@@ -76,8 +79,18 @@ export type Assets = { cross: string };
 /** The shell: the page, the letter's column, the masthead, and the foot. */
 export function shell(
   p: Pen,
-  opts: { title: string; preheader: string; kind: string; rows: string[]; foot: string; assets: Assets },
+  opts: {
+    title: string;
+    preheader: string;
+    kind: string;
+    rows: string[];
+    foot: string;
+    assets: Assets;
+    /** The sans letter (look 3, his yes of 2026-11-21): the wordmark in the sans, no rule under the masthead, the foot set to the start. */
+    sans?: boolean;
+  },
 ): string {
+  const sans = opts.sans === true;
   const { c, bgcolor } = p;
   // The cross is the app's own mark. The wordmark beside it is live text, so
   // a letter with every picture blocked still says Purify.
@@ -92,7 +105,7 @@ export function shell(
 <meta name="supported-color-schemes" content="dark">
 <title>${esc(opts.title)}</title>
 <style>
-${sheet()}
+${sheet(sans)}
 </style>
 </head>
 <body${c({ bg: "ground" }, "margin:0;padding:0;")}>
@@ -100,18 +113,17 @@ ${sheet()}
 <table ${TABLE} width="100%"${bgcolor("ground")}${c({ bg: "ground" })}><tr><td style="padding:24px 16px 44px">
 <!--[if mso]><table ${TABLE} width="600" align="center"><tr><td><![endif]-->
 <table ${TABLE} width="100%" align="center" style="max-width:600px;margin:0 auto">
-<tr><td style="padding:0 0 16px">
+<tr><td style="padding:0 0 ${sans ? 4 : 16}px">
   <table ${TABLE} width="100%"><tr>
     <td width="15" valign="middle" style="width:15px">${cross}</td>
     ${gap(10)}
-    <td width="100%" valign="middle"${c({ fg: "ink" }, `font-family:${SERIF};font-size:19px;line-height:26px;`)}>Purify</td>
-    <td valign="middle"${c({ fg: "quiet" }, `white-space:nowrap;font-family:${SANS};font-size:12px;line-height:26px;font-weight:600;`)}>${esc(opts.kind)}</td>
+    <td width="100%" valign="middle"${sans ? c({ fg: "ink" }, `font-family:${SANS};font-size:18px;line-height:26px;font-weight:700;`) : c({ fg: "ink" }, `font-family:${SERIF};font-size:19px;line-height:26px;`)}>Purify</td>
+    <td valign="middle"${c({ fg: "quiet" }, `white-space:nowrap;font-family:${SANS};font-size:${sans ? 13 : 12}px;line-height:26px;font-weight:600;`)}>${esc(opts.kind)}</td>
   </tr></table>
 </td></tr>
-<tr><td${c({ bd: "line" }, "border-top-width:1px;border-top-style:solid;font-size:0;line-height:0;height:0;")}>&nbsp;</td></tr>
-${opts.rows.join("\n")}
+${sans ? "" : `<tr><td${c({ bd: "line" }, "border-top-width:1px;border-top-style:solid;font-size:0;line-height:0;height:0;")}>&nbsp;</td></tr>\n`}${opts.rows.join("\n")}
 <tr><td style="padding:40px 0 0"><table ${TABLE} width="100%"><tr><td${c({ bd: "line" }, "border-top-width:1px;border-top-style:solid;font-size:0;line-height:0;height:0;")}>&nbsp;</td></tr></table></td></tr>
-<tr><td align="center"${c({ fg: "quiet" }, `padding:20px 0 0;text-align:center;font-family:${SANS};font-size:13px;line-height:20px;`)}>
+<tr><td${sans ? "" : ` align="center"`}${c({ fg: "quiet" }, `padding:20px 0 0;${sans ? "" : "text-align:center;"}font-family:${SANS};font-size:13px;line-height:20px;`)}>
   ${opts.foot}
 </td></tr>
 </table>
@@ -396,3 +408,64 @@ export function pairs(p: Pen, list: readonly { words: string; value: string; qui
     })
     .join("\n")}</table></td></tr>`;
 }
+
+// ── The sans letter (look 3) ────────────────────────────────────────────
+//
+// His yes of 2026-11-21 to the 1.9 release email's new design
+// (docs/plans/v1.9/email-revamp/): a hero picture of the app and a real
+// screen in each main point's card, big clean headings with more room, each
+// new thing in its own card, and every word in the sans ("All sans"). The
+// pieces are the design's own, mark for mark (its make.mjs).
+
+/** The opening: the release's name large, and its own line under it. Set to the start. */
+export function openingSans(p: Pen, o: { title: string; sub?: string }): string {
+  return `<tr><td style="padding:44px 0 0">
+  <h1${p.c({ fg: "ink", cls: "e-title" }, `margin:0;font-family:${SANS};font-size:44px;line-height:48px;font-weight:700;letter-spacing:-1px;`)}>${esc(o.title)}</h1>
+  ${o.sub ? `<p${p.c({ fg: "body", cls: "e-deck" }, `margin:14px 0 0;font-family:${SANS};font-size:20px;line-height:28px;font-weight:400;`)}>${esc(o.sub)}</p>` : ""}
+</td></tr>`;
+}
+
+type Screen = { src: string; alt: string; width: number; height: number };
+
+/** A screen of the app, the column's whole width. Its words stand in its place, in the sans, when pictures are off. */
+function screen(p: Pen, img: Screen, radius: string, href?: string): string {
+  const pic = `<img src="${esc(img.src)}" width="${Math.min(600, img.width)}" alt="${esc(img.alt)}"${p.c({ fg: "quiet", bg: "raised" }, `display:block;width:100%;max-width:100%;height:auto;border:0;outline:none;border-radius:${radius};font-family:${SANS};font-size:14px;line-height:21px;`)}>`;
+  return href ? `<a href="${esc(href)}" style="display:block;text-decoration:none">${pic}</a>` : pic;
+}
+
+/** The hero: the app itself, in a fine edge, a way in to what is new. */
+export function hero(p: Pen, img: Screen & { href?: string }): string {
+  return `<tr><td style="padding:28px 0 0;font-size:0;line-height:0">
+  <table ${TABLE} width="100%"${p.c({ bd: "line" }, "border-collapse:separate;border-width:1px;border-style:solid;border-radius:20px;")}><tr><td style="padding:0;font-size:0;line-height:0">${screen(p, img, "19px", img.href)}</td></tr></table>
+</td></tr>`;
+}
+
+/** Running text in the sans. `html` is already escaped by its caller. */
+export const paraSans = (p: Pen, html: string, o: { top?: number; bottom?: number; size?: 16 | 17 } = {}) =>
+  `<tr><td${p.c({ fg: "body" }, `padding:${o.top ?? 28}px 0 ${o.bottom ?? 0}px;font-family:${SANS};font-size:${o.size ?? 16}px;line-height:${o.size === 17 ? 27 : 26}px;`)}>${html}</td></tr>`;
+
+/** One new thing in its own card, the app's raised card with a fine edge all round: its screen, its name, its words. */
+export function pointCard(p: Pen, pt: { name: string; text: string; picture?: Screen }): string {
+  const top = pt.picture ? `<tr><td style="padding:0;font-size:0;line-height:0">${screen(p, pt.picture, "15px 15px 0 0")}</td></tr>\n  ` : "";
+  return `<tr><td style="padding:16px 0 0">
+  <table ${TABLE} width="100%"${p.bgcolor("raised")}${p.c({ bg: "raised", bd: "line" }, "border-collapse:separate;border-width:1px;border-style:solid;border-radius:16px;")}>
+  ${top}<tr><td class="e-words" style="padding:22px 20px 24px">
+    <h2${p.c({ fg: "ink", cls: "e-name" }, `margin:0;font-family:${SANS};font-size:22px;line-height:28px;font-weight:700;letter-spacing:-0.2px;`)}>${esc(pt.name)}</h2>
+    <p${p.c({ fg: "body" }, `margin:10px 0 0;font-family:${SANS};font-size:16px;line-height:25px;`)}>${esc(pt.text)}</p>
+  </td></tr>
+  </table>
+</td></tr>`;
+}
+
+/** The letter's last line, set heavier, just above the button. */
+export const closingLine = (p: Pen, text: string) =>
+  `<tr><td${p.c({ fg: "ink" }, `padding:20px 0 0;font-family:${SANS};font-size:18px;line-height:27px;font-weight:700;`)}>${esc(text)}</td></tr>`;
+
+/** The sans letter's one button: 52 tall, across the column. */
+export const buttonSans = (p: Pen, b: { href: string; text: string }) =>
+  `<tr><td style="padding:28px 0 0"><table ${TABLE} width="100%" style="border-collapse:separate"><tr><td align="center"${p.bgcolor("button")}${p.c({ bg: "button" }, "border-radius:999px;text-align:center;")}>` +
+  `<a href="${esc(b.href)}"${p.c({ fg: "onButton" }, `display:block;padding:16px 18px;font-family:${SANS};font-size:16px;line-height:20px;font-weight:700;text-decoration:none;border-radius:999px;`)}>${esc(b.text)}</a>` +
+  `</td></tr></table></td></tr>`;
+
+export const signOffSans = (p: Pen) =>
+  `<tr><td${p.c({ fg: "quiet" }, `padding:28px 0 0;font-family:${SANS};font-size:15px;line-height:23px;`)}>Edgar, the Purify Team</td></tr>`;
