@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state and keeps it to one page: history goes to the log (`docs/1.9-build/HANDOFF.md`) and his words to `docs/1.9-build/BRAINSTORM.md`. The NOW of the 1.9 build is kept whole in `docs/1.9-build/NOW-to-2026-11-20.md`; it is very long, so read a line of it only when a step needs it.
 
-Updated 2026-11-21 02:20 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
+Updated 2026-11-21 03:58 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 
 ## How we work (his word, 2026-11-20; CLAUDE.md, "The new system")
 
@@ -25,8 +25,9 @@ Updated 2026-11-21 02:20 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 2. **The ad:** his yes or no on the revised test (the moving phone, the new title face, the moving ground). Stage 2, six more scenes, only on his yes, in a fresh chat, priced from stage 1's measured cost.
 3. **The store pictures:** A (use the 11-12 set) or B (a retake from the release code in full colour, with the medium size added; medium cost).
 4. **The release email** passes its check since 02:20 UTC on 11-21 (the stale preview check is mended; the hand-over's A3). He has its picture. It should be sent from Admin, Email, only once the App Store serves 1.9.
-5. **From the hand-over:** which of R6, R2b and R2c are done; whether the reading of the new system above is right; the order of `docs/PLAN-after-1.9.md`.
-6. **Rotation:** should the arbiter move to a fresh chat at about 150,000 tokens of context? The arbiter recommends yes (see Spend).
+5. **The email revamp** (his word of 11-21, `docs/plans/v1.9/email-revamp/BRIEF.md`): stage 1, one design of the 1.9 release email, is with its own capped chat. It waits for his yes or no on that design; the sender changes only in stage 2.
+6. **From the hand-over:** which of R6, R2b and R2c are done; whether the reading of the new system above is right; the order of `docs/PLAN-after-1.9.md`.
+7. **Rotation:** should the arbiter move to a fresh chat at about 150,000 tokens of context? The arbiter recommends yes (see Spend).
 
 ## Running
 
