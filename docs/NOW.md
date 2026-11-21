@@ -35,6 +35,7 @@ Updated 2026-11-21 03:58 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 |---|---|---|
 | Arbiter 15 | session_01VuYTwacqkyCMKTighQY7o3 | The one chat since 15:30 UTC on 11-20. At 337,000 tokens of context by 18:26, so it ends when he starts the next arbiter from this page |
 | Purify 1.9 ad: stage 1 | session_01VuYTwdhrUStFNXC4goT9fG | Stage 1 done ($8.40, context 268,000). He talks to it directly; it waits for his answer on the font and the moving phone. Archive it once he has answered and any font change is made; stage 2 belongs in a fresh chat from its hand-over |
+| Purify email revamp: stage 1 | session_01VuYTwZsrP4zay4qyBieFAL | One job at his choice of 2026-11-21: one design of the 1.9 release email for his yes (`docs/plans/v1.9/email-revamp/BRIEF.md`); capped at about $12 (60 tool calls or 150,000 tokens of its own count); he talks to it directly and it sends the arbiter nothing; its hand-over will be `docs/handoffs/email-revamp.md`; archive it once he has answered |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository); idle, waits on his two facts |
 
 ## Spend (measured with get_session on 2026-11-20)
