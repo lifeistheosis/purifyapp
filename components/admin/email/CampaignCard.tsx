@@ -78,6 +78,8 @@ export function CampaignCard({ onStarted, only }: { onStarted?: () => void; only
   const [confirming, setConfirming] = useState(false);
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<SendResult | null>(null);
+  const [testing, setTesting] = useState(false);
+  const [tested, setTested] = useState<string | null>(null);
 
   async function load(k: Kind) {
     setKind(k);
@@ -118,6 +120,28 @@ export function CampaignCard({ onStarted, only }: { onStarted?: () => void; only
     } finally {
       setSending(false);
       setConfirming(false);
+    }
+  }
+
+  /** The draft as it would go, to this admin's own address alone (app/api/admin/email/campaign/test). */
+  async function sendTest() {
+    if (!preview) return;
+    setTesting(true);
+    setTested(null);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/email/campaign/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: preview.kind }),
+      });
+      const data = (await res.json().catch(() => null)) as { ok?: boolean; to?: string; error?: string } | null;
+      if (!res.ok || !data?.ok) setError(data?.error ?? `The test did not go (${res.status}).`);
+      else setTested(data.to ?? "you");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setTesting(false);
     }
   }
 
@@ -208,6 +232,17 @@ export function CampaignCard({ onStarted, only }: { onStarted?: () => void; only
           )}
 
           {blockers.length === 0 && <SendOrderControls order={order} onOrder={setOrder} perDay={perDay} onPerDay={setPerDay} />}
+
+          {preview.text && preview.postalAddressSet && (
+            <div className="flex flex-wrap items-center gap-3">
+              <ToolbarButton loading={testing} onClick={sendTest}>
+                Send a test to me
+              </ToolbarButton>
+              <span className="font-sans text-[12px]" style={ink2}>
+                {tested ? `A test went to ${tested} alone. Look at it in your inbox before the send.` : "Goes to your own address alone. It starts no send."}
+              </span>
+            </div>
+          )}
 
           {blockers.length > 0 ? (
             <ul className="space-y-1 font-sans text-[12px]" style={{ color: "var(--adm-warn)" }}>

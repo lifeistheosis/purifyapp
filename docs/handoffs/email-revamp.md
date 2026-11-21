@@ -25,6 +25,16 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 
 - 2026-11-21 06:53 UTC, after the page and "Yes or no?": "sure let's just finalize this and send it out tonight"
 - 2026-11-21 13:40 UTC, after this chat asked (1) "Do you lift my cap so I build stage 2 here now? Or should the arbiter take it?" and (2) "If it is built and checked tonight, do I have your word to push to main so you can send the test to yourself?": "do that now"
+- 2026-11-21 19:23 UTC, after this chat asked for his word on main and on the look's number, and said no test send exists for a release: "test send to my email only (lifeistheosis@gmail.com)"
+- 2026-11-21 19:34 UTC, with the two questions on main and the look still open: "can you scan the admin panel and do a revision on it?. brainstorm mode on. and find any sections that aren't really optimal for my admin panel ux experience"
+- 2026-11-21 19:46 UTC, after this chat's first admin notes, made from the code alone: "I need you to use the admin panel to see the design"
+- 2026-11-21 19:46 UTC, after this chat said the preview showed the layout but none of his data: "just use example data for yourself"
+- 2026-11-21 21:19 UTC, after eight admin notes and two questions ((1) "Which do you feel most? I would start with 1 and 2 ... I would draw it first for your yes." (2) the word for main, and the look at 3 or 2): "do all"
+- 2026-11-21 22:14 UTC, after this chat asked "Do I have your word to push to main? It deploys the website, and would carry the email work and these three fixes.": "yes oush"
+
+"yes oush" is read as: yes, push. It is his word for main, for the email work and the three admin mends. He did not answer 3 or 2, so the look stays as built and tested, at 3.
+
+"do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 
 The second is read by this chat as: lift the cap and build stage 2 here now. It is NOT read as his word to push to main: that is asked again, alone, when the work is checked.
 
@@ -64,3 +74,55 @@ Not on main. Nothing deployed, nothing sent.
 2. **Raising the look to "3" holds the next automatic email instead.** That is the Sunday email of 22 November: it would go to him alone, and readers wait until he says on the desk that he has seen it. The Sunday email itself did not change.
 3. **Every list send refuses without `EMAIL_POSTAL_ADDRESS` on the server** (`lib/email/consent.ts`). I cannot read whether it is set on the main web.
 4. The pictures are on the main web only after a push to main.
+
+## The test send (2026-11-21, at his "test send to my email only")
+
+Built on the branch; not on main, so it does not exist on the main web yet.
+
+- `app/api/admin/email/campaign/test/route.ts`: POST `{ kind }`. Admin only. It sends the draft as it would go to the signed-in admin's own address and no other (the address is the session's, never one the request names), with "[Test]" before the subject. It starts no campaign and no job and records no mailing, so the real send can still go. Refused without the postal address, like every list email.
+- `components/admin/email/CampaignCard.tsx`: a "Send a test to me" button under the draft.
+- `lib/email/__tests__/campaignTestSend.test.ts` holds it to one address.
+- It goes to the address of the admin account he is signed in with. He named lifeistheosis@gmail.com; if he signs in to Admin with another address, the test goes there.
+- Checked: typecheck 0, eslint clean, `npm run test:unit` 15,530 pass and 1 fails. The one failure is `lib/downloads/__tests__/log.test.ts` ("lights the bell for an end not yet seen"), which fails the same way with my changes set aside: not mine, not mended.
+- Not checked: the route against the real sender. That can only be tried on the main web, after a push to main.
+
+## Ready for main, not pushed (2026-11-21)
+
+Main moved today, from `6700c2e65` to `b89b56b11` ("Ease the database"), by another hand. On a local line from `b89b56b11` (a worktree in this chat's scratchpad, branch `email-look-3-for-main`, pushed nowhere) the three code commits apply cleanly: `07617e006`, `4b19845ca`, `2ea506f6f`, with the branch-only docs left out. 16 files: `lib/email` (the look, its tests), `lib/whatsNew/releaseEmail.ts`, the test-send route and its button, and the seven pictures. There: typecheck 0; `npx vitest run lib/email lib/whatsNew lib/admin` 165 files, all pass. The website build was run on the branch (passed), not on that line.
+
+A push to main deploys the main web. It waits for his word, asked plainly. The scratchpad does not outlast the container: if it is gone, cherry-pick the three commits onto main again.
+
+**If he says yes, in order:** push the line to main (`PURIFY_ALLOW_MAIN=1`, at his word only); `node scripts/release.mjs live` or `curl` purifyapp.net until the deploy serves; `curl -I https://purifyapp.net/whats-new/1.9/email-today.jpg` is 200; he opens Admin, Email, the release draft, presses "Send a test to me", and looks at it in Gmail, Apple Mail and Outlook; only then does he press the real send.
+
+## The admin panel, looked at (2026-11-21, brainstorm only; nothing changed)
+
+Seen through `/admin/shell-preview` on a local `next dev` (the real shell, no sign-in, every API answering 403, so layouts and empty states but none of his data), at 390 by 844 and 1440 by 900: Home, Traffic, Money, Users, Orders, Catalogue, Releases, Content. Notes given to him in the chat; none acted on.
+
+**A fault found, not mended:** `next dev` fails on the branch with "Parsing CSS source code failed" at `app/globals.css`, because Tailwind reads `docs/handoffs/updates-98q.md`, which holds a Tailwind class name written with a placeholder in angle brackets inside it (the fast colours' background class, with the word kind in angle brackets where the fast's name goes), and writes it as a class. This note first quoted that text itself and so broke the dev server a second time; never write it out in a file Tailwind reads. The production build only warns. For the look I set that one doc aside locally and put it back; it was not changed or committed. Also: `/admin/shell-preview?tab=x` and `#tab=x` on a first load both stay on Home; only a tap in the menu switches the page.
+
+**Looked at again on example numbers** (his word: "just use example data for yourself"). The chart gallery (`/admin/charts-preview`, its own sample data), then Home and Money with invented figures answered to the page inside this chat's own browser (Playwright, `/api/admin/overview`, `stats`, `traffic`, `hourly-goals`, `money`). Nothing was saved, nothing is in the repo, and no picture of invented money was sent to anyone. Traffic did not draw: my example for it was incomplete, which is my example's fault and not the panel's. The dev server's fault above is still there for the next chat; the one doc was set aside for the run and put back.
+
+## The admin panel: three small mends on the branch (2026-11-21, at his "do all")
+
+Of the eight notes given to him, three were mended, three turned out wrong when the code was read, and two wait for a plan.
+
+**Mended, on the branch, not on main:**
+- `components/admin/AttentionStrip.tsx`: a band holding more than three things opens folded behind its headline, with a 44px "Show all N" button. Nothing is dismissed; with three or fewer it is as before.
+- `components/admin/tabs/HomeTab.tsx`: on a phone "Still waiting on you" comes before the timeline's list; on a wide screen it stays beside it.
+- `components/admin/tabs/MoneyOverviewTab.tsx`: on a phone each of the three lines stands under its name.
+- `lib/admin/__tests__/phoneWalk20261121.test.ts` holds all three. Typecheck 0, eslint clean, `npx vitest run lib/admin components` 112 files pass. Seen in the shell preview at 390 wide on example numbers; not seen on the main web or on his phone.
+
+**Wrong on reading the code, and said so to him:**
+- The status band is drawn only while something is wrong (its own header says so). It stood on every page in the preview because every check fails there.
+- Home's week bars are drawn to scale from zero. They looked alike because my example days were alike.
+- The phone's bottom bar and the folded Tools line are his own: the bar follows the pages he opens most (`lib/admin/rail.ts`), and the Tools line is the rail "as he picked it" (`lib/admin/pages.ts`).
+
+**Waiting for a plan and his yes:** Releases' length on a phone; Traffic's seven tabs running off a phone's edge (a scrolling row by design).
+
+## Pushed to main (2026-11-21, at his "yes oush")
+
+`b89b56b11..b88c88b4f` on main: five commits, 20 files (the release letter in look 3 and its tests, 1.9's seven pictures, the test send and its button, the three admin mends and their test). The branch-only docs were left out. Before the push, on that exact line: typecheck 0; `npx vitest run lib/email lib/whatsNew lib/admin components` 166 files pass; `npm run build` exit 0 with 6,527 pages; then the push guard's own checks passed.
+
+**The way back:** `b89b56b11` is the commit main held before.
+
+`READER_EMAIL_LOOK` is "3" on main: he did not choose between 3 and 2. So the next automatic list email (the Sunday email of 22 November) goes to him alone, and readers' automatic emails wait until he says on the owner's desk that he has seen the look. A send he presses himself is not held.

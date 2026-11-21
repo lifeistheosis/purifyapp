@@ -17,6 +17,12 @@
  * apart is its edge: every card under it is outlined in the hairline grey,
  * and this is the one box on the page outlined in full ink, solid for a
  * failure and dashed for a warning, with the matching mark beside each word.
+ * A band with more than FOLD_OVER things in it opens folded: its headline and
+ * count stand, and one button shows the list (the owner's walk of 2026-11-21:
+ * on a phone eight chips stood above every page's title and pushed the page
+ * off the first screen). Folding dismisses nothing: the box, its edge and its
+ * count stay until the conditions go.
+ *
  * It is drawn only while there is something to say. On a clear day it is a
  * single line of ink-3 on Overview and nothing at all on any other tab, so
  * the day the box appears it still means something.
@@ -67,6 +73,9 @@ const LOOK: Record<Exclude<AttentionLevel, "queue">, { dot: StatusTone; dashed: 
   unmeasured: { dot: "wait", dashed: true },
 };
 
+/** More chips than this and the band opens folded, behind its headline. */
+export const FOLD_OVER = 3;
+
 export function AttentionStrip({
   summary,
   isOverview,
@@ -88,6 +97,8 @@ export function AttentionStrip({
   }, []);
 
   const h = headline(summary, now);
+  // Folded or open is his own choice for as long as the panel is open.
+  const [shown, setShown] = useState(false);
 
   if (summary.state === "checking") {
     if (!isOverview) return null;
@@ -118,6 +129,7 @@ export function AttentionStrip({
   const worst = (summary.worst ?? "unmeasured") as Exclude<AttentionLevel, "queue">;
   const look = LOOK[worst];
   const chips: AttentionItem[] = [...summary.faults, ...summary.unmeasured];
+  const folds = chips.length > FOLD_OVER;
 
   return (
     <section
@@ -129,7 +141,7 @@ export function AttentionStrip({
       className={"mb-4 rounded-[var(--adm-radius)] border p-3 md:p-4" + (look.dashed ? " border-dashed" : "")}
       style={{ borderColor: "var(--adm-ink)" }}
     >
-      <div className="mb-2.5 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+      <div className={(folds && !shown ? "" : "mb-2.5 ") + "flex flex-wrap items-center gap-x-3 gap-y-1"}>
         {/* role=status on the headline alone: it changes only when the state
             or the count does, which is what a live region should announce. */}
         <h2
@@ -145,12 +157,31 @@ export function AttentionStrip({
             {h.meta}
           </span>
         ) : null}
+        {folds ? (
+          <button
+            type="button"
+            aria-expanded={shown}
+            aria-controls="adm-attention-list"
+            onClick={() => setShown((v) => !v)}
+            className="adm-control ml-auto inline-flex min-h-11 items-center rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[12.5px] font-medium"
+            style={
+              {
+                borderColor: "var(--adm-line-strong)",
+                color: "var(--adm-ink)",
+                "--_bg": "transparent",
+                "--_bg-hover": "var(--adm-panel-2)",
+              } as React.CSSProperties
+            }
+          >
+            {shown ? "Hide" : `Show all ${chips.length}`}
+          </button>
+        ) : null}
       </div>
 
       {/* Rectangles, not pills, wrapping to full-width rows on a phone. Each
           is a real button at the 44px floor, because each is an action: open
           the tab that fixes it, or ask the source again. */}
-      <ul className="flex flex-wrap gap-2">
+      <ul id="adm-attention-list" hidden={folds && !shown} className="flex flex-wrap gap-2">
         {chips.map((it) => (
           <Chip key={it.id} item={it} onOpenTab={onOpenTab} onRetry={onRetry} />
         ))}
