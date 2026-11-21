@@ -129,6 +129,10 @@ At that word (the page is version 9, same address; the sixth render):
 - **Left as it was, and his to say:** the light on the ground under the phone in the wide shots (it is what the phone stands in, with what the ground gives back), and the faint light behind the out-of-focus phone under the chapter cards. They are the same kind of soft pool. If "the glow" means those too, they go the same way.
 - All 18 shots pass checkMock. Looked at on a sheet. Frames 0 to 280 and 1150 to 1284 were rendered again. New in the asset store: the preview `/_blob/f571cb6ab5cd70a9a2ef2203703dfc74`, the silent film `/_blob/68f44b9c81ff3293b5f64d12923bae09`, a still `/_blob/0eb578de5815dfa0338673f2d453b8c0`.
 
+- About 01:39: "send the version with audio and I'll download (high quality)"
+
+At that word: the sixth render's own picture (not re-encoded, 7.3 Mb a second) joined to his track at 256 kb a second, cropped at 20.3 with the fade, 21.4 seconds, 20.3 MB, sent to him in the chat as a file. It is not in the repository or the page. The track's licence is still open, and he was told again in one line.
+
 ## What was made
 
 - `docs/plans/v1.9/video/release/TREATMENT.md`: the treatment. The one idea is the drop's own line, "Purify 1.9 is here." (the first sentence of the drop's caption).
