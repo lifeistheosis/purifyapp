@@ -9,6 +9,7 @@ import { isClergyMark } from "@/lib/profile/clergy";
 import { hiddenAuthors } from "@/lib/community/blocks";
 import { chapterRefOf, findChapterRef, validChapterRef } from "@/lib/community/chapterRef";
 import { ensureFeastThread } from "@/lib/community/feast";
+import { dropHeldFeeds, feedMemoKey, heldFeed, holdFeed } from "@/lib/community/feedMemo";
 import { requestStanding } from "@/lib/community/adminStanding";
 import { guardWrite } from "@/lib/community/guard";
 import { notifyClergyOfQuestion, notifyMentions } from "@/lib/community/notify";
@@ -306,6 +307,33 @@ export async function GET(req: Request) {
   const hidden = await hiddenAuthors(req, admin);
   const blocked = [...new Set([...hidden.blocked, ...hidden.muted])];
 
+  // The feed of a reader with no block or mute of their own is every such
+  // reader's feed, which is why it leaves here as "public, max-age=15". It is
+  // held in this process for a short while as well, so readers who poll are
+  // one read of the database between them (lib/community/feedMemo.ts). A
+  // group's thread, Following, one post by its id and a filtered feed are
+  // never held.
+  const memoKey = feedMemoKey({
+    scopedGroup,
+    following: Boolean(followees),
+    onePost,
+    blocked: blocked.length,
+    chapter,
+    category,
+  });
+  if (memoKey) {
+    const held = heldFeed(memoKey, Date.now());
+    if (held) {
+      return withCors(
+        NextResponse.json(
+          { posts: held },
+          { headers: { "Cache-Control": "public, max-age=15", Vary: "Origin, Authorization" } },
+        ),
+        req,
+      );
+    }
+  }
+
   // The day's feast thread opens itself on the first read of a new day,
   // after the response, so nobody waits for it (lib/community/feast.ts).
   if (!scopedGroup && !followees && !chapter && !category && !onePost) {
@@ -390,6 +418,7 @@ export async function GET(req: Request) {
   const shown = shownPosts(rows);
   const authors = await authorsNow(admin, shown.filter((r) => !isWithdrawn(r)));
   const posts = shown.map((r) => (isWithdrawn(r) ? withdrawnPost(r) : publicPost(r, now, authors)));
+  if (memoKey) holdFeed(memoKey, posts, now);
 
   return withCors(
     NextResponse.json(
@@ -627,6 +656,8 @@ async function handlePOST(req: Request) {
     });
   }
 
+  // The post is in the feed's next read, not a held one (lib/community/feedMemo.ts).
+  dropHeldFeeds();
   return NextResponse.json({ ok: true, id: created.id });
 }
 
