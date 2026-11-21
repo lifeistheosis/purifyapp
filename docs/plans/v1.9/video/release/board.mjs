@@ -48,20 +48,29 @@ const RELEASE = String(DROP.release); // "1.9"
 
 // ── The takes ────────────────────────────────────────────────────────────
 
-const takeOf = (id) => {
-  const file = path.join(MADE, "takes", `ad-${id}`, "take.json");
-  if (!fs.existsSync(file)) fail(`no take "ad-${id}": run ../ad/take.mjs ${id} first`);
+const TAKE_DIR = { today: "ad-today", journal: "ad-journal", verse: "verse", bibles: "bibles" };
+const TAKES = {};
+export const takeOf = (id) => {
+  if (TAKES[id]) return TAKES[id];
+  const file = path.join(MADE, "takes", TAKE_DIR[id] ?? fail(`no take is named "${id}"`), "take.json");
+  if (!fs.existsSync(file)) fail(`no take "${TAKE_DIR[id]}": film it first (TREATMENT.md)`);
   const t = JSON.parse(fs.readFileSync(file, "utf8"));
-  if (t.problems.length) fail(`the take "ad-${id}" has problems: ${t.problems.join("; ")}`);
-  return t;
+  if (t.problems.length) fail(`the take "${TAKE_DIR[id]}" has problems: ${t.problems.join("; ")}`);
+  return (TAKES[id] = t);
 };
 /** The picture of a take at a moment: [take, mark, seconds after it]. */
-function picture([id, mark, after]) {
+export function picture([id, mark, after]) {
   const t = takeOf(id);
-  const at = (t.marks.find((m) => m.name === mark) ?? fail(`the take "ad-${id}" has no mark "${mark}"`)).t + after;
-  let file = t.frames[0].file;
-  for (const f of t.frames) if (f.t <= at) file = f.file;
-  return `/__video/takes/ad-${id}/${file}`;
+  const at = (t.marks.find((m) => m.name === mark) ?? fail(`the take "${id}" has no mark "${mark}"`)).t + after;
+  const f = t.frames;
+  let lo = 0;
+  let hi = f.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (f[mid].t <= at) lo = mid;
+    else hi = mid - 1;
+  }
+  return `/__video/takes/${TAKE_DIR[id]}/${f[lo].file}`;
 }
 
 // ── The storyboard ───────────────────────────────────────────────────────
@@ -168,7 +177,7 @@ for (const f of FRAMES) {
   const p = f.phone;
   if (!p) continue;
   if (Math.abs(p.ry) > SIDE_MOST.ry || Math.abs(p.rx) > SIDE_MOST.rx || Math.abs(p.rz) > SIDE_MOST.rz) fail(`"${f.name}": the phone turns more than the store pictures' side stand`);
-  if (p.k > 2.5 + 1e-9) fail(`"${f.name}": nearer than the takes were filmed`);
+  if (p.k > takeOf(f.screen[0]).sharp + 1e-9) fail(`"${f.name}": nearer than the takes were filmed`);
 }
 
 // ── The page ─────────────────────────────────────────────────────────────
@@ -227,6 +236,7 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
   [data-flip] { position: absolute; inset: 0; }
   :root[dir="rtl"] [data-flip] { transform: scaleX(-1); }
   /* The one pool of light. A pool, never beams. */
+  [data-black] { position: absolute; inset: 0; z-index: 9; background-color: var(--color-night-deep); pointer-events: none; }
   [data-pool], [data-ground], [data-vignette], [data-dim] { position: absolute; inset: 0; pointer-events: none; }
   /* The eye stands nearer than the store pictures' does, so a turned phone has depth: its near edge is larger than its far. */
   [data-space] { position: absolute; inset: 0; perspective: ${r(W * 2.1)}px; perspective-origin: ${W / 2}px ${r(H * 0.46)}px; direction: ltr; }
@@ -262,6 +272,7 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
     <div data-vignette aria-hidden="true"></div>
   </div>
   <span data-mark aria-hidden="true" hidden></span>
+  <div data-black aria-hidden="true"></div>
   <div data-words><p data-big hidden></p><h1 data-title hidden></h1><p data-sub hidden></p></div>
 </main>
 <script>
@@ -277,6 +288,7 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
     one("[data-ground]").style.backgroundImage = f.floor ? (f.phone ? "radial-gradient(ellipse " + Math.round(250 * f.phone.k) + "px 22px at " + f.phone.x + "px " + (f.floor + 4) + "px, " + dark(92) + ", transparent 100%), " : "") + "linear-gradient(to bottom, transparent " + (f.floor - 40) + "px, " + ink(3.2) + " " + (f.floor + 6) + "px, " + ink(1.2) + " " + (f.floor + 220) + "px, transparent " + (f.floor + 420) + "px)" : "none";
     one("[data-vignette]").style.backgroundImage = "radial-gradient(ellipse 86% 74% at 50% 50%, transparent 52%, " + dark(78) + " 100%)";
     one("[data-dim]").style.backgroundColor = f.phone && f.phone.dim ? dark(f.phone.dim * 100) : "transparent";
+    one("[data-black]").style.opacity = f.black ?? 0;
     const p = f.phone;
     document.querySelector("[data-film]").hidden = !p;
     document.querySelector("[data-back-box]").hidden = !p || !f.floor;
@@ -296,7 +308,7 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
       document.querySelectorAll("[data-soft]").forEach((img) => {
         img.hidden = !p.soft;
         if (!p.soft) return;
-        img.style.filter = "blur(5px)";
+        img.style.filter = "blur(" + (p.soft[2] ?? 5) + "px)";
         const m = "linear-gradient(" + side[p.soft[0]] + ", black 0%, black " + (p.soft[1] * 34).toFixed(0) + "%, transparent " + (p.soft[1] * 100).toFixed(0) + "%)";
         img.style.maskImage = m;
         img.style.webkitMaskImage = m;
@@ -321,19 +333,31 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
       mark.style.top = f.mark[0] - f.mark[1] / 2 + "px";
       mark.style.height = f.mark[1] + "px";
       mark.style.opacity = f.mark[2];
+      mark.style.transform = "scale(" + (f.mark[3] ?? 1) + ")";
     }
     const big = one("[data-big]");
     big.hidden = !f.big;
-    if (f.big) big.textContent = f.big;
+    if (f.big) {
+      big.textContent = f.big;
+      big.style.opacity = f.bigIn ?? 1;
+      big.style.transform = "scale(" + (f.bigScale ?? 1) + ")";
+    }
     const title = one("[data-title]");
     const sub = one("[data-sub]");
     title.hidden = !(f.title && f.title.lines.length);
     sub.hidden = !(f.title && f.title.sub);
     if (f.title) {
-      title.replaceChildren(...f.title.lines.map((line) => Object.assign(document.createElement("span"), { textContent: line })));
+      title.replaceChildren(...f.title.lines.map((line, n) => {
+        const u = f.title.in ? f.title.in[n] ?? 1 : 1;
+        const span = Object.assign(document.createElement("span"), { textContent: line });
+        span.style.opacity = Math.min(1, u * 1.5);
+        span.style.transform = "translateY(" + (1 - u) * 46 + "px)";
+        return span;
+      }));
       title.style.top = f.title.y + "px";
       title.style.fontSize = f.title.size + "px";
       sub.textContent = f.title.sub ?? "";
+      sub.style.opacity = f.title.subIn ?? 1;
       sub.style.top = f.title.y + (f.title.lines.length ? f.title.lines.length * f.title.size * 1.06 + 40 : 0) + "px";
     }
     await Promise.all(waits);
@@ -344,7 +368,7 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
 </html>`;
 }
 
-async function openStage(browser) {
+export async function openStage(browser) {
   const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, colorScheme: "dark", locale: "en-US" });
   await serveLikeTheShell(ctx, OUT, {});
   const html = stagePage();
@@ -352,12 +376,12 @@ async function openStage(browser) {
     const name = decodeURIComponent(new URL(route.request().url()).pathname.replace("/__video/", ""));
     if (name === "stage.html") return route.fulfill({ contentType: "text/html; charset=utf-8", body: html });
     const file = path.join(MADE, name);
-    if (name.startsWith("takes/") && !name.includes("..") && fs.existsSync(file)) return route.fulfill({ contentType: "image/jpeg", path: file });
+    if (name.startsWith("takes/") && !name.includes("..") && fs.existsSync(file)) return route.fulfill({ contentType: /\.png$/.test(file) ? "image/png" : "image/jpeg", path: file });
     return route.fulfill({ status: 404, body: "not found" });
   });
   const page = await ctx.newPage();
   await page.goto(`${ORIGIN}/__video/stage.html`, { waitUntil: "load" });
-  const wear = (f) => page.evaluate((s) => window.__wear(s), { ...f, src: f.screen ? picture(f.screen) : null });
+  const wear = (f) => page.evaluate((s) => window.__wear(s), { ...f, src: f.src ?? (f.screen ? picture(f.screen) : null) });
   // The faces are asked for by a frame that wears them, then checked: the type is the app's sans, loaded.
   await wear(FRAMES.find((f) => f.big));
   await wear(FRAMES.find((f) => f.title?.lines.length));
@@ -372,7 +396,7 @@ async function openStage(browser) {
   });
   if (!/DM Sans/.test(face.first) || !face.loaded) fail(`the type is not the app's sans, loaded (${JSON.stringify(face)})`);
   const cdp = await ctx.newCDPSession(page);
-  const shoot = async () => Buffer.from((await cdp.send("Page.captureScreenshot", { format: "png" })).data, "base64");
+  const shoot = async (type = "png") => Buffer.from((await cdp.send("Page.captureScreenshot", type === "png" ? { format: "png" } : { format: "jpeg", quality: 97 })).data, "base64");
   return { page, wear, shoot };
 }
 

@@ -64,6 +64,8 @@ The cut proposed to him (about 22 seconds, the end card held in the silence):
 
 Chapters 2 and 4 need screens the storyboard does not have (proposed: Every verse, opened; Seven more Bibles). Asked him for his yes with the cost. The music's licence is still open.
 
+- About 23:51, to the cut proposed above, its two more screens (Every verse, opened; Seven more Bibles), its cost and the plan for the music (a preview with the audio for him only, a silent file to post): "yes"
+
 ## What was made
 
 - `docs/plans/v1.9/video/release/TREATMENT.md`: the treatment. The one idea is the drop's own line, "Purify 1.9 is here." (the first sentence of the drop's caption).
