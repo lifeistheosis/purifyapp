@@ -50,7 +50,7 @@ export const ZONE = "America/New_York";
 /** The phone: the part of a 412 by 915 screen the app draws in, as the Play pictures have it. */
 export const PHONE = { width: 412, height: 846 };
 /** How sharp a take is filmed: 2.5 device pixels to one of the app's, so a close-up of 1080 across is the film's own grain. */
-export const SHARP = 2.5;
+export const SHARP = Number(process.env.VIDEO_SHARP || 2.5); // the release film films at 4, so a detail can fill the frame
 /** How many times slower the app's clock runs while it is filmed. */
 export const SLOW = Number(process.env.VIDEO_SLOW || 6);
 

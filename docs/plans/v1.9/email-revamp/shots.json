@@ -1,0 +1,80 @@
+{
+  "export": "main 6700c2e65, cut as the store build with Plus locked",
+  "day": "2026-12-06T09:30:00-05:00",
+  "view": [
+    412,
+    846
+  ],
+  "screens": {
+    "today": {
+      "route": "/",
+      "cut": {
+        "top": 0,
+        "height": 626
+      },
+      "width": 720,
+      "height": 1094,
+      "bytes": 50692
+    },
+    "journal": {
+      "route": "/journal",
+      "cut": {
+        "top": 56,
+        "height": 490
+      },
+      "width": 720,
+      "height": 856,
+      "bytes": 35675
+    },
+    "verse": {
+      "route": "/bible/john/1",
+      "cut": {
+        "top": 130,
+        "height": 575
+      },
+      "width": 720,
+      "height": 1005,
+      "bytes": 40207
+    },
+    "bibles": {
+      "route": "/bible/john/1",
+      "cut": {
+        "top": 130,
+        "height": 590
+      },
+      "width": 720,
+      "height": 1031,
+      "bytes": 37677
+    },
+    "study": {
+      "route": "/bible/john/1",
+      "cut": {
+        "top": 336,
+        "height": 378
+      },
+      "width": 720,
+      "height": 661,
+      "bytes": 27692
+    },
+    "plans": {
+      "route": "/plans",
+      "cut": {
+        "top": 62,
+        "height": 436
+      },
+      "width": 720,
+      "height": 762,
+      "bytes": 57179
+    },
+    "creed": {
+      "route": "/theology/creed",
+      "cut": {
+        "top": 56,
+        "height": 490
+      },
+      "width": 720,
+      "height": 856,
+      "bytes": 54800
+    }
+  }
+}

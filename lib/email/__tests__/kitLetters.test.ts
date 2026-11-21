@@ -11,7 +11,9 @@ import { esc } from "../kit";
 import { KIT_ASSETS, NIGHTS_DRAWN } from "../kitLetters";
 import { renderMarketing } from "../marketing";
 import { saintCardOf } from "../saintCard";
-import { monthlyBody, nativityFastDay, weekRange, weeklyBody } from "../templates/contentBodies";
+import { RELEASE_EMAIL } from "@/lib/whatsNew/releaseEmail";
+
+import { monthlyBody, nativityFastDay, releaseBody, weekRange, weeklyBody } from "../templates/contentBodies";
 import { KIT_DARK, KIT_NIGHT } from "../theme";
 import { weekAhead } from "../weekly";
 
@@ -170,6 +172,60 @@ describe("every letter in the kit's look", () => {
         const ok = /padding:13px 0;[^"]*line-height:18px/.test(style) || /padding:13px 22px;[^"]*line-height:16px/.test(style) || /display:block;padding:15px 18px/.test(style) || /text-decoration:none$/.test(style);
         expect(ok, style).toBe(true);
       }
+    }
+  });
+});
+
+/**
+ * Look 3: the release letter he said yes to on 2026-11-21
+ * (docs/plans/v1.9/email-revamp/). It keeps every rule the other letters
+ * keep, and its own: all sans, a card for each point, the app's screens.
+ */
+describe("the release letter in look 3", () => {
+  const body = releaseBody({ version: RELEASE_EMAIL.version, kind: "Keep a journal by the Church's day", blurb: "" }, RELEASE_EMAIL);
+  const l = renderMarketing(body, "release_news", TOKEN, ADDRESS);
+
+  it("is all in the sans, with the release's name large and no rule down a side", () => {
+    expect(l.html).not.toMatch(/Lora|Georgia|serif;font-style:italic/);
+    expect(l.html).toMatch(/<h1[^>]*font-size:44px[^>]*>Purify 1\.9<\/h1>/);
+    expect(l.html).not.toMatch(/border-(left|right|inline-start|inline-end)/);
+  });
+
+  it("gives each point its own card, in the letter's order, with its screen when it has one", () => {
+    const names = [...l.html.matchAll(/<h2[^>]*>([^<]+)<\/h2>/g)].map((m) => m[1]);
+    expect(names).toEqual(body.points!.map((pt) => esc(pt.name)));
+    for (const pt of body.points!) {
+      const card = l.html.slice(l.html.lastIndexOf("<table", l.html.indexOf(`>${esc(pt.name)}</h2>`)), l.html.indexOf(`>${esc(pt.name)}</h2>`));
+      expect(card.includes("<img"), pt.name).toBe(Boolean(pt.picture));
+      if (pt.picture) expect(card).toContain(`alt="${esc(pt.picture.alt)}"`);
+    }
+    // The hero is the app's own screen, and a way in to the note.
+    expect(l.html).toContain(`<a href="${body.action!.href}" style="display:block;text-decoration:none"><img src="${body.image!.src}"`);
+  });
+
+  it("names Plus where a point is about Plus, and promises it to no one else", () => {
+    for (const pt of body.points!) {
+      const plus = /Purify Plus/.test(pt.picture?.alt ?? "") || /Plus/.test(pt.name);
+      if (/Plus/.test(pt.picture?.alt ?? "")) expect(pt.name, pt.name).toContain("Purify Plus");
+      if (!plus) expect(pt.text).not.toMatch(/\bPlus\b/);
+    }
+  });
+
+  it("keeps the rules every letter keeps: the foot whole, Dark alone, 44px targets, under Gmail's limit", () => {
+    expect(l.html).toContain("You are getting this because");
+    expect(l.html).toContain(esc(ADDRESS));
+    expect(l.html).toMatch(new RegExp(`href="[^"]*${TOKEN}[^"]*"[^>]*>Unsubscribe</a>`));
+    expect(l.html).not.toMatch(/<script|<svg|display:\s*(flex|grid)|conic-gradient|prefers-color-scheme/i);
+    const allowed = new Set<string>(Object.values(KIT_DARK));
+    for (const hex of new Set([...l.html.matchAll(/#[0-9a-f]{6}\b/gi)].map((m) => m[0].toLowerCase()))) expect(allowed.has(hex), hex).toBe(true);
+    expect(Buffer.byteLength(l.html, "utf8")).toBeLessThan(40_000);
+    expect(l.html).not.toContain("—");
+    for (const src of [...l.html.matchAll(/<img[^>]* src="([^"]+)"/g)].map((m) => m[1])) expect(src.startsWith("https://")).toBe(true);
+    for (const m of l.html.matchAll(/<a href="[^"]+"[^>]*style="([^"]*)"/g)) {
+      const style = m[1];
+      // The button is 16 + 20 + 16 = 52 tall; Unsubscribe 13 + 16 + 13 and its edge; a line link 13 + 18 + 13; the hero is a picture.
+      const ok = /display:block;padding:16px 18px;[^"]*line-height:20px/.test(style) || /padding:13px 22px;[^"]*line-height:16px/.test(style) || /padding:13px 0;[^"]*line-height:18px/.test(style) || style === "display:block;text-decoration:none";
+      expect(ok, style).toBe(true);
     }
   });
 });

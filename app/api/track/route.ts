@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { geolocate, clientIp } from "@/lib/analytics/geo";
 import { isAutomatedAgent } from "@/lib/analytics/bot";
+import { classifyTrack } from "@/lib/analytics/heartbeat";
 import { sessionStart } from "@/lib/analytics/sessionStart";
 import { trackSchema } from "@/lib/security/schemas";
 import { rateLimited, ipKey } from "@/lib/security/ratelimit";
@@ -84,13 +85,45 @@ async function handlePOST(req: Request) {
   }
 
   const ip = ipKey(req.headers);
+
+  // A tracker's post is small, and a small body is read before the burst
+  // guard so that a heartbeat (the same session on the same page, every 20
+  // seconds) is answered without a page view's four calls to the database
+  // (lib/analytics/heartbeat.ts). Anything larger waits for the guard, as
+  // every post did before 2026-11-21.
+  const declared = Number(req.headers.get("content-length") ?? "");
+  const small = Number.isFinite(declared) && declared > 0 && declared <= 4096;
+  let raw: unknown = null;
+  if (small) {
+    raw = await req.json().catch(() => null);
+    const early = trackSchema.safeParse(raw);
+    if (early.success && !early.data.path.startsWith("/admin")) {
+      const beat = classifyTrack(early.data.sessionId, early.data.path, Date.now());
+      if (beat !== "pageview") {
+        if (beat === "heartbeat-write") {
+          // Still here: the one thing the desk's "live now" reads.
+          try {
+            const { error: beatErr } = await createAdminClient()
+              .from("analytics_sessions")
+              .update({ last_seen: new Date().toISOString() })
+              .eq("session_id", early.data.sessionId);
+            if (beatErr) console.error("[track] heartbeat failed", beatErr.message);
+          } catch (e) {
+            console.error("[track] heartbeat threw", (e as Error).message);
+          }
+        }
+        return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
+      }
+    }
+  }
+
   // Per-minute burst guard.
   if (await rateLimited(`track:${ip}`, 60, 120)) {
     return new NextResponse(null, { status: 429 });
   }
 
   try {
-    const raw = await req.json().catch(() => null);
+    if (!small) raw = await req.json().catch(() => null);
     const parsed = trackSchema.safeParse(raw);
     if (!parsed.success) {
       return NextResponse.json({ ok: false }, { status: 400 });

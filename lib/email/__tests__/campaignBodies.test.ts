@@ -169,18 +169,22 @@ describe("the release email", () => {
 
     const email = renderMarketing(body, "product_updates", TOKEN, ADDRESS);
     expect(email.html).not.toContain("What changed.");
-    // The release's picture across the letter, where the button goes (the kit's look, lib/email/kitLetters.ts).
-    expect(email.html).toContain('width="568" alt="Genesis 1 with its Greek."');
-    expect(email.html).toContain(`<a href="${body.action!.href}" style="text-decoration:none"><img`);
-    // Each point: its name in the ink, set heavier, with a full stop, then its line. Escaped once.
-    expect(email.html).toContain(">The Greek Old Testament.</strong> The Greek beside the English.");
-    expect(email.html).toContain(">Icons &amp; prints.</strong> A new shelf in the shop.");
-    // A screenshot under its point, at a phone's width, with its words for a reader who sees no pictures.
-    expect(email.html).toContain('/whats-new/1.5/email-profile.jpg" width="300" alt="A shelf of icons."');
-    expect(email.html.indexOf("A new shelf in the shop.")).toBeLessThan(email.html.indexOf("email-profile.jpg"));
+    // Look 3 (his yes of 2026-11-21, docs/plans/v1.9/email-revamp/): the release's picture is the hero, a way in to the note.
+    expect(email.html).toContain(`<a href="${body.action!.href}" style="display:block;text-decoration:none"><img`);
+    expect(email.html).toContain('alt="Genesis 1 with its Greek."');
+    // Each point in its own card: its name a heading in the sans, with no full stop, then its line. Escaped once.
+    expect(email.html).toMatch(/<h2[^>]*>The Greek Old Testament<\/h2>\s*<p[^>]*>The Greek beside the English\.<\/p>/);
+    expect(email.html).toMatch(/<h2[^>]*>Icons &amp; prints<\/h2>\s*<p[^>]*>A new shelf in the shop\.<\/p>/);
+    // A point's screen heads its card, the column's width, with its words for a reader who sees no pictures.
+    expect(email.html).toMatch(/\/whats-new\/1\.5\/email-profile\.jpg" width="\d+" alt="A shelf of icons\."/);
+    expect(email.html.indexOf("email-profile.jpg")).toBeLessThan(email.html.indexOf("A new shelf in the shop."));
+    expect(email.html.indexOf(">Icons &amp; prints</h2>")).toBeLessThan(email.html.indexOf("email-profile.jpg") + 2000);
+    // All in the sans: no serif face is named in the letter.
+    expect(email.html).not.toMatch(/Lora|Georgia/);
     // In the order a reader meets them, and all of it in the text part.
-    const order = ["Here is what is new.", "The Greek Old Testament.", "Icons &amp; prints.", "The library stays free.", "See everything that is new"];
+    const order = ["Here is what is new.", ">The Greek Old Testament<", ">Icons &amp; prints<", "The library stays free.", "See everything that is new"];
     expect(order.map((t) => email.html.indexOf(t))).toEqual([...order.map((t) => email.html.indexOf(t))].sort((x, y) => x - y));
+    expect(order.every((t) => email.html.includes(t))).toBe(true);
     expect(email.text).toContain(
       "Genesis 1 with its Greek.\n\nHere is what is new.\n\n📖 The Greek Old Testament. The Greek beside the English.\n\n🛒 Icons & prints. A new shelf in the shop. (A shelf of icons.)\n\nThe library stays free.",
     );
