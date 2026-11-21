@@ -18,6 +18,18 @@ At that word: the storyboard above is set aside (kept, for the Vault; nothing de
 
 At that word: the style is taken as gritty and heavy with effects (grain, hard contrast, shake on the hits, flash frames, fast zooms), with hard clean cuts on the measured hits. He has not yet said yes to the plan's lines or named the account that posts it; nothing is made.
 
+- About 23:45, to the lines (the hook, Psalm 96:5, 1 Corinthians 10:20, Ephesians 4:5, St Cyprian, John 14:6) and the question of which account posts it: "yes, separate account, make the storyboard"
+
+At that word: the new storyboard is made and published, https://claude.ai/artifact/C4rmkeUGKs5mEaLw5rnDpQ (version 1), private to him. It waits for his yes or no. No film, no credits.
+
+- `release/blackpill-board.mjs`: eleven rows on the same measured hits, no screen of the app. Hard black and white icons with grain, words one line to a beat in the app's sans, colour coming back once on the last swell, Purify's mark alone on the last hit. `release/blackpill-page.mjs` makes its page.
+- Every line but the hook is checked by the script, word for word, against the app's own files: Psalm 95:5, 1 Corinthians 10:20, Ephesians 4:5, St Cyprian (On the Unity of the Church), the Creed's line on the Church (`lib/councils/creed.ts`, added by me, his to strike), John 14:6.
+- **The Psalm differs from what he said yes to.** I offered "are idols" (King James, Psalm 96:5). The app's Old Testament is Brenton's Septuagint, where it is Psalm 95:5 and reads "For all the gods of the heathen are devils: but the Lord made the heavens." The app's text is used, and the page says so.
+- Pictures: eight icons from the app's own bundle, none on the heritage list (the script refuses one that is), none a modern painter's work (the app's icons of St Cyprian and St Mark of Ephesus are modern and were left out). They are small files enlarged; larger public-domain copies are wanted for the film.
+- `mock-check --self-test` passed earlier in this chat; `blackpill-board.mjs --check`: all eleven stills pass.
+- Still open, and his: a priest's yes before it goes out (the editorial rule on doctrinal framing); the song's licence (the file stays silent, the sound is added in the app on the separate edits account); whether the mark stays at the end.
+- Cost so far by my own count: the chat's context is about 230,000 tokens. The film is estimated at 200,000 to 300,000 more.
+
 The chat was started by the ad stage 1 chat at his word there, about 23:08 UTC: "start a fresh chat with it" (`docs/handoffs/ad-stage-1.md`).
 
 ## This overlaps with another chat
