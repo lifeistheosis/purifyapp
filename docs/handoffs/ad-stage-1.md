@@ -46,6 +46,8 @@ His word on the fourth render, about 22:26 UTC, verbatim: "it doesn't feel like 
 
 At that word: the prompt is `docs/handoffs/ad-cinematic-prompt.md`, and one new chat was started with it for that one job (a treatment and storyboard first, for his yes). This chat stops here. Stage 2 as planned (six more scenes in this look) is not to be made: the look itself is being redone.
 
+His word on 2026-11-21, about 22:46 UTC, with a 38.6 second clip saved from TikTok ("forever - the little dippers (Bass Boosted + slowed)"), verbatim: "make me full length edit prompts for promo of purify based of these audio". Done: the audio was measured (about 92 beats a minute, eight bars of 3.9 seconds after a 3.7 second intro, one big hit at about 34.5) and the prompt written to `docs/plans/v1.9/video/release/forever-edit-prompt.md`: a beat-timed cut of the brief's eight scenes, with the warning that the music is not cleared for a baked-in file or an ad. Nothing was filmed and no chat was started from it. (Earlier the same day in this chat, off the ad: his Supabase custom domain, `docs/handoffs/supabase-custom-domain.md`; Play Console's website and D-U-N-S steps, which he reports are good; and questions on Mercury, Temu and packaging, answered in chat only.)
+
 ## Tokens
 
 get_session read 0 used tokens every time, so there is no measured number. By my own count the chat's context was about 130,000 tokens when I stopped at the cap of 250,000 (own count times two), about 175,000 at the first finish, and about 200,000 after his two changes, and about 240,000 after the edit. By the times-two rule that is about 480,000. He lifted the cap himself.
