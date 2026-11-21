@@ -27,6 +27,7 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 - 2026-11-21 13:40 UTC, after this chat asked (1) "Do you lift my cap so I build stage 2 here now? Or should the arbiter take it?" and (2) "If it is built and checked tonight, do I have your word to push to main so you can send the test to yourself?": "do that now"
 - 2026-11-21 19:23 UTC, after this chat asked for his word on main and on the look's number, and said no test send exists for a release: "test send to my email only (lifeistheosis@gmail.com)"
 - 2026-11-21 19:34 UTC, with the two questions on main and the look still open: "can you scan the admin panel and do a revision on it?. brainstorm mode on. and find any sections that aren't really optimal for my admin panel ux experience"
+- 2026-11-21 19:46 UTC, after this chat's first admin notes, made from the code alone: "I need you to use the admin panel to see the design"
 
 The second is read by this chat as: lift the cap and build stage 2 here now. It is NOT read as his word to push to main: that is asked again, alone, when the work is checked.
 
@@ -85,3 +86,9 @@ Main moved today, from `6700c2e65` to `b89b56b11` ("Ease the database"), by anot
 A push to main deploys the main web. It waits for his word, asked plainly. The scratchpad does not outlast the container: if it is gone, cherry-pick the three commits onto main again.
 
 **If he says yes, in order:** push the line to main (`PURIFY_ALLOW_MAIN=1`, at his word only); `node scripts/release.mjs live` or `curl` purifyapp.net until the deploy serves; `curl -I https://purifyapp.net/whats-new/1.9/email-today.jpg` is 200; he opens Admin, Email, the release draft, presses "Send a test to me", and looks at it in Gmail, Apple Mail and Outlook; only then does he press the real send.
+
+## The admin panel, looked at (2026-11-21, brainstorm only; nothing changed)
+
+Seen through `/admin/shell-preview` on a local `next dev` (the real shell, no sign-in, every API answering 403, so layouts and empty states but none of his data), at 390 by 844 and 1440 by 900: Home, Traffic, Money, Users, Orders, Catalogue, Releases, Content. Notes given to him in the chat; none acted on.
+
+**A fault found, not mended:** `next dev` fails on the branch with "Parsing CSS source code failed" at `app/globals.css`, because Tailwind reads `docs/handoffs/updates-98q.md`, which holds the text `bg-[rgb(var(--fast-<kind>))]`, and writes it as a class. The production build only warns. For the look I set that one doc aside locally and put it back; it was not changed or committed. Also: `/admin/shell-preview?tab=x` and `#tab=x` on a first load both stay on Home; only a tap in the menu switches the page.
