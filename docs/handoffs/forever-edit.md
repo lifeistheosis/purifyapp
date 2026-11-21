@@ -30,6 +30,10 @@ At that word: the new storyboard is made and published, https://claude.ai/artifa
 - Still open, and his: a priest's yes before it goes out (the editorial rule on doctrinal framing); the song's licence (the file stays silent, the sound is added in the app on the separate edits account); whether the mark stays at the end.
 - Cost so far by my own count: the chat's context is about 230,000 tokens. The film is estimated at 200,000 to 300,000 more.
 
+- About 23:55, on the new storyboard: "Honestly, this is good, but just make the effects grittier. Make sure it adds, I don't know, what should you add actually for like a cool effect, right? Like cinematic effect. Because yes, we're gonna add like a I don't know if we should add a gritty filter, but like I don't know, what should we add to make it better?"
+
+At that word: answered in chat with a short list and one recommendation (heavier moving grain with dust and scratches, crushed blacks, a slight colour split on the hits only, a shake and punch in, flash frames under three a second, a short blur on fast moves; no glow, no rays, no lens flare). Nothing made; it waits for his yes.
+
 The chat was started by the ad stage 1 chat at his word there, about 23:08 UTC: "start a fresh chat with it" (`docs/handoffs/ad-stage-1.md`).
 
 ## This overlaps with another chat
