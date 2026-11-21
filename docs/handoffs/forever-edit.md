@@ -14,6 +14,10 @@ https://claude.ai/artifact/4Lp3SBagwRwLi5d8QtVd2B (version 1). Private to him. T
 
 At that word: the storyboard above is set aside (kept, for the Vault; nothing deleted). One search was made. Nothing new is made yet: a plan was put to him in chat for his yes, since the words are doctrinal (a stop condition) and the film's rule on sourced words still binds. The plan: no app screens, icons and Scripture only; every line on screen verbatim from Scripture or a Father in the app's own library, cited; a question for the hook; nothing that names or attacks a person; Purify's mark only at the end.
 
+- About 23:40, to the plan: "But yeah, the black pill sounds like a gritty, like high effects type of edit with clean cuts."
+
+At that word: the style is taken as gritty and heavy with effects (grain, hard contrast, shake on the hits, flash frames, fast zooms), with hard clean cuts on the measured hits. He has not yet said yes to the plan's lines or named the account that posts it; nothing is made.
+
 The chat was started by the ad stage 1 chat at his word there, about 23:08 UTC: "start a fresh chat with it" (`docs/handoffs/ad-stage-1.md`).
 
 ## This overlaps with another chat
