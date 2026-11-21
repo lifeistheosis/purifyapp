@@ -55,7 +55,7 @@ Not on main. Nothing deployed, nothing sent.
 
 - `npm run typecheck`: 0 errors. `npx vitest run lib/email lib/whatsNew lib/admin`: 166 files, all pass. eslint on the changed files: clean.
 - `node scripts/release.mjs email` writes the new letter (15.8 KB). Drawn at 390 wide it is the design he saw, 2 px shorter: the sender keeps the kit's own Unsubscribe button (13 px words), where the design drew 14 px.
-- The website's production build (`npm run build`): see the last line of this section.
+- The website's production build (`npm run build`) on the stage 2 code: exit 0.
 - Not checked: any real mail app. The kit's own email folder (`docs/brand/kit/email/`) does not hold look 3 yet.
 
 **What he must know before a send**
