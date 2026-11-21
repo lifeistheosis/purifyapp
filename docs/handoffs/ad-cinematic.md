@@ -6,7 +6,7 @@ Written 2026-11-20 by the worker chat started for this one job (session_01VuYTwd
 
 ## The page
 
-https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 4). Private to him. It now holds the film: a preview with his track (for him only), the silent file to post with Save, the rhythm, every cut with its reason, every word with its source, what was measured and what is open. The treatment and storyboard are its versions 1 and 2.
+https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 5). Private to him. It now holds the film: a preview with his track (for him only), the silent file to post with Save, the rhythm, every cut with its reason, every word with its source, what was measured and what is open. The treatment and storyboard are its versions 1 and 2.
 
 ## His words in this chat (verbatim, UTC)
 
@@ -79,6 +79,16 @@ At his yes (the film, made 2026-11-20 to 21):
 - **Not proved by ear:** the beats are measured by script. He is the judge of whether each cut sits on the track.
 
 To make it again: the export and the four takes (TREATMENT.md, and the lines above), then `film.mjs --check`, `VIDEO_EXPORT=6700c2e65 film.mjs --fresh` (about 12 minutes in three parts with `--part`, then `--encode`), then `film-page.mjs`.
+
+- About 00:50, on the film: "make the intro revealing and high retention (uncovering effect)"
+
+At that word (the page is version 5, same address; the second render):
+
+- **The film never opens on black.** The first frame is so near the mark that it is only bright shapes, under a dark that is already drawing off them; the dark draws off as the camera pulls back, entered gently and settling on the house curve.
+- **"1.9" is uncovered on the first downbeat**, not faded in: it is there under the dark, and the dark is drawn off it upward in about half a second.
+- **The phone is uncovered a third time**, slowest: the dark draws sideways off the whole picture, then off the glass.
+- The uncovering is one soft-edged dark over the picture (`cover` on the stage, `uncover` on a shot): no rays, no stripe. All 20 shots pass checkMock again.
+- Only frames 0 to 430 were rendered again. New in the asset store: the preview `/_blob/7aeb9d6f8124b89c23f22ab50dd6329a`, the silent film `/_blob/7e037b7930aaf181824cfb5b5ac645e0` (19.8 MB). The first render's two files are still there, unused, for the Vault.
 
 ## What was made
 

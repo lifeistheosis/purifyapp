@@ -236,6 +236,7 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
   [data-flip] { position: absolute; inset: 0; }
   :root[dir="rtl"] [data-flip] { transform: scaleX(-1); }
   /* The one pool of light. A pool, never beams. */
+  [data-cover] { position: absolute; inset: 0; z-index: 8; pointer-events: none; }
   [data-black] { position: absolute; inset: 0; z-index: 9; background-color: var(--color-night-deep); pointer-events: none; }
   [data-pool], [data-ground], [data-vignette], [data-dim] { position: absolute; inset: 0; pointer-events: none; }
   /* The eye stands nearer than the store pictures' does, so a turned phone has depth: its near edge is larger than its far. */
@@ -272,6 +273,7 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
     <div data-vignette aria-hidden="true"></div>
   </div>
   <span data-mark aria-hidden="true" hidden></span>
+  <div data-cover aria-hidden="true"></div>
   <div data-black aria-hidden="true"></div>
   <div data-words><p data-big hidden></p><h1 data-title hidden></h1><p data-sub hidden></p></div>
 </main>
@@ -289,6 +291,10 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
     one("[data-vignette]").style.backgroundImage = "radial-gradient(ellipse 86% 74% at 50% 50%, transparent 52%, " + dark(78) + " 100%)";
     one("[data-dim]").style.backgroundColor = f.phone && f.phone.dim ? dark(f.phone.dim * 100) : "transparent";
     one("[data-black]").style.opacity = f.black ?? 0;
+    // The uncovering: a soft-edged dark that lies over the whole picture and draws off it. [how far off (0 covered, 1 gone), the way it goes].
+    const off = f.cover ? f.cover[0] : 1;
+    const edge = -24 + 150 * off;
+    one("[data-cover]").style.backgroundImage = off >= 1 ? "none" : "linear-gradient(" + f.cover[1] + "deg, transparent " + (edge - 22).toFixed(2) + "%, " + dark(86) + " " + (edge - 7).toFixed(2) + "%, var(--color-night-deep) " + edge.toFixed(2) + "%)";
     const p = f.phone;
     document.querySelector("[data-film]").hidden = !p;
     document.querySelector("[data-back-box]").hidden = !p || !f.floor;
