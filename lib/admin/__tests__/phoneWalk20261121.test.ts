@@ -18,8 +18,10 @@ describe("the admin panel on a phone, 2026-11-21", () => {
     expect(strip).toContain("hidden={folds && !shown}");
     expect(strip).toContain("aria-expanded={shown}");
     // The count stays in the button, and the button is a 44px target.
-    expect(strip).toMatch(/min-h-11[^"]*"[\s\S]{0,400}`Show all \$\{chips\.length\}`/);
-    expect(strip).not.toMatch(/onDismiss|dismissed/);
+    expect(strip).toContain("`Show all ${chips.length}`");
+    expect(strip).toMatch(/aria-controls="adm-attention-list"[\s\S]{0,200}className="adm-control ml-auto inline-flex min-h-11 /);
+    // No way to wave a fault away: the band has no dismiss.
+    expect(strip).not.toMatch(/onDismiss|onClose/);
   });
 
   it("puts what waits on him before the timeline on a phone, and beside it on a wide screen", () => {
