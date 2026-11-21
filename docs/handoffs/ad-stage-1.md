@@ -52,6 +52,8 @@ His word on the Forever prompt's intro, 2026-11-21 about 23:00 UTC, verbatim: "m
 
 His choice, about 23:02 UTC, verbatim: "b". Done: the Forever prompt's intro now carries one verbatim line of St Cyprian (On the Unity of the Church, from the app's own library), cited, and says it does not go out before a priest's yes; it also says plainly that no line on Vatican II or on Muhammad is sourced and none is to be written.
 
+His words after that, verbatim: "it doesn't have to be a editorial video. its just an edit. its just garner views and retention", and, to three question hooks offered, about 23:05 UTC: "I like it". Done: the Forever prompt's intro is now the hook "Do all religions worship the same God?" answered by John 14:6 word for word; the prompt says no attack on any religion or person is to be written and why, and that the hook alone steps outside the drop's words, at his word. He did not say which of the three he liked; the recommended one was taken and the other two are kept in the prompt.
+
 ## Tokens
 
 get_session read 0 used tokens every time, so there is no measured number. By my own count the chat's context was about 130,000 tokens when I stopped at the cap of 250,000 (own count times two), about 175,000 at the first finish, and about 200,000 after his two changes, and about 240,000 after the edit. By the times-two rule that is about 480,000. He lifted the cap himself.
