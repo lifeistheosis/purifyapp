@@ -54,6 +54,8 @@ His choice, about 23:02 UTC, verbatim: "b". Done: the Forever prompt's intro now
 
 His words after that, verbatim: "it doesn't have to be a editorial video. its just an edit. its just garner views and retention", and, to three question hooks offered, about 23:05 UTC: "I like it". Done: the Forever prompt's intro is now the hook "Do all religions worship the same God?" answered by John 14:6 word for word; the prompt says no attack on any religion or person is to be written and why, and that the hook alone steps outside the drop's words, at his word. He did not say which of the three he liked; the recommended one was taken and the other two are kept in the prompt.
 
+His word, about 23:08 UTC, verbatim: "start a fresh chat with it". Done: one new chat, "Purify promo: the Forever edit" (session_01VuYTwZkhGTEyJ8suxQiF6d), started with `docs/plans/v1.9/video/release/forever-edit-prompt.md` as its brief: a storyboard first for his yes, then the silent film cut to the track. It overlaps with yesterday's chat "Purify 1.9 ad: the release film" (session_01VuYTwdjxDrv3qHjVwVdhve); he was told, so he can keep one.
+
 ## Tokens
 
 get_session read 0 used tokens every time, so there is no measured number. By my own count the chat's context was about 130,000 tokens when I stopped at the cap of 250,000 (own count times two), about 175,000 at the first finish, and about 200,000 after his two changes, and about 240,000 after the edit. By the times-two rule that is about 480,000. He lifted the cap himself.
