@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state and keeps it to one page: history goes to the log (`docs/1.9-build/HANDOFF.md`) and his words to `docs/1.9-build/BRAINSTORM.md`. The NOW of the 1.9 build is kept whole in `docs/1.9-build/NOW-to-2026-11-20.md`; it is very long, so read a line of it only when a step needs it.
 
-Updated 2026-11-21 03:58 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
+Updated 2026-11-21 06:57 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 
 ## How we work (his word, 2026-11-20; CLAUDE.md, "The new system")
 
@@ -20,6 +20,8 @@ Updated 2026-11-21 03:58 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 - **The 1.9 ad** (`docs/plans/v1.9/video/AD.md`): stage 1 is done, and revised at his word in the ad chat: the test of 6.95 seconds (scenes 1 and 2, the moving phone), its title now in the app's sans and its ground moving (his words there at about 20:27 and 20:36 UTC), on its page https://claude.ai/artifact/4YMJMQmXcX6HSC7fxZJd6X (version 3). Its hand-over, with his words, is `docs/handoffs/ad-stage-1.md`.
 
 ## Waiting on him
+
+0. **Supabase's free quota, with a date: 11 Dec 2026.** Egress went over last cycle; after the grace period requests can answer 402 (sign-in, sync, Community and Plus checks for every reader). This cycle's pace is about 8.6 GB of egress against 5, and log ingestion is already at 149%. Two causes are named from the code (the 20 second heartbeat to `/api/track`; Community's 8 second reload) and both can be eased on the server. The fix is one capped job plus a push to main at his word; it waits for his yes. The fallback is the Pro plan for one month, decided by about 5 Dec. The log has the numbers (11-21).
 
 1. **iOS:** take 1.9 out of review, walk build 39 from TestFlight on his iPhone, choose it and send again. Asked; not yet confirmed done. The walk should prove the widgets on a real iPhone: with the Old Calendar chosen and a patron saint saved, the day's widget follows the Old Calendar and the patron's widget shows the saint (a reader's report of 11-20; the cause was mended on 11-10 and has not yet been seen on a real iPhone). R6's iOS number waits until the App Store serves 1.9.
 2. **The ad:** his yes or no on the revised test (the moving phone, the new title face, the moving ground). Stage 2, six more scenes, only on his yes, in a fresh chat, priced from stage 1's measured cost.
