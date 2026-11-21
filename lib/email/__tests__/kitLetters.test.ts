@@ -182,7 +182,7 @@ describe("every letter in the kit's look", () => {
  * keep, and its own: all sans, a card for each point, the app's screens.
  */
 describe("the release letter in look 3", () => {
-  const body = releaseBody({ version: RELEASE_EMAIL.version, kind: "Keep a journal by the Church's day", blurb: "", name: null }, RELEASE_EMAIL);
+  const body = releaseBody({ version: RELEASE_EMAIL.version, kind: "Keep a journal by the Church's day", blurb: "" }, RELEASE_EMAIL);
   const l = renderMarketing(body, "release_news", TOKEN, ADDRESS);
 
   it("is all in the sans, with the release's name large and no rule down a side", () => {
