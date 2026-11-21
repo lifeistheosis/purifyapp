@@ -118,3 +118,11 @@ Of the eight notes given to him, three were mended, three turned out wrong when 
 - The phone's bottom bar and the folded Tools line are his own: the bar follows the pages he opens most (`lib/admin/rail.ts`), and the Tools line is the rail "as he picked it" (`lib/admin/pages.ts`).
 
 **Waiting for a plan and his yes:** Releases' length on a phone; Traffic's seven tabs running off a phone's edge (a scrolling row by design).
+
+## Pushed to main (2026-11-21, at his "yes oush")
+
+`b89b56b11..b88c88b4f` on main: five commits, 20 files (the release letter in look 3 and its tests, 1.9's seven pictures, the test send and its button, the three admin mends and their test). The branch-only docs were left out. Before the push, on that exact line: typecheck 0; `npx vitest run lib/email lib/whatsNew lib/admin components` 166 files pass; `npm run build` exit 0 with 6,527 pages; then the push guard's own checks passed.
+
+**The way back:** `b89b56b11` is the commit main held before.
+
+`READER_EMAIL_LOOK` is "3" on main: he did not choose between 3 and 2. So the next automatic list email (the Sunday email of 22 November) goes to him alone, and readers' automatic emails wait until he says on the owner's desk that he has seen the look. A send he presses himself is not held.
