@@ -1,6 +1,6 @@
 # Supabase custom domain: api.purifyapp.net
 
-Set up by the owner on 2026-11-21, walked through in the ad stage 1 chat (session_01VuYTwdhrUStFNXC4goT9fG). This file is the record, so nobody has to hunt for these again. **Not finished: see "State".**
+Set up by the owner on 2026-11-21, walked through in the ad stage 1 chat (session_01VuYTwdhrUStFNXC4goT9fG). This file is the record, so nobody has to hunt for these again. **The domain is active and both sign-ins accept it: see "State".**
 
 ## What was done
 
@@ -9,12 +9,16 @@ Set up by the owner on 2026-11-21, walked through in the ad stage 1 chat (sessio
   - `CNAME api -> avbqyvjgcrucjwevwixt.supabase.co`, DNS only (grey cloud; the proxy must stay off or Supabase cannot verify).
   - `TXT _acme-challenge.api` with the value Supabase gave.
 - **Google sign-in lives in the Google Cloud project named "Purify", ID `rich-amphora-497422-g5`, number `872309580762`.** Not `purify-505500` (empty, no consent screen) and not `purifyappnet`. Its clients: Purify Web (`872309580762-3hjv...`, Web application), Android client 1 (`...-s0c4...`), Android client (Play App Signing) (`...-dalo...`), Purify iOS (`...-358d...`).
-- On **Purify Web**, `https://api.purifyapp.net/auth/v1/callback` was added to the authorized redirect URIs. The `supabase.co` one was kept.
+- On **Purify Web**, `https://api.purifyapp.net/auth/v1/callback` was added to the authorized redirect URI## State (2026-11-21, after activation)
 
-## State (when this was written)
+- **Active.** He pressed Activate; Supabase shows `api.purifyapp.net` as active and serving traffic. Checked from outside: both addresses answer for auth and for the data API (200 each), and purifyapp.net is up.
+- **Since activation Supabase sends `https://api.purifyapp.net/auth/v1/callback` as the return address for every browser sign-in, even to readers on the old `supabase.co` address.** So both providers had to know the new address at once, not only when the apps move.
+- **Google:** accepted. Following Supabase's own redirect, Google showed its sign-in page and no `redirect_uri_mismatch`.
+- **Apple:** on, and accepted. He added `api.purifyapp.net` and the return URL to the Services ID `net.purifyapp.purify.web`. Following Supabase's redirect, Apple showed its sign-in page and no invalid redirect error. Apple was added some minutes after activation, so browser Apple sign-in was likely refused in that gap.
+- Neither sign-in was completed from here (that needs a real account). His own test of each on purifyapp.net is the last proof.
+- **Nothing in the website or the apps uses the new address by its own setting.** `NEXT_PUBLIC_SUPABASE_URL` on Render and in the store builds is still the `supabase.co` address, which keeps working.
 
-- Not yet confirmed by him: that Verify passed in Supabase, whether Sign in with Apple is enabled (if so, its Services ID needs the new domain and return URL before Activate), and that Activate was pressed.
-- **Nothing in the website or the apps uses the new address.** `NEXT_PUBLIC_SUPABASE_URL` on Render and in the store builds is still the `supabase.co` address, which keeps working after activation.
+ch keeps working after activation.
 
 ## Open, for later
 
