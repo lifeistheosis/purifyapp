@@ -25,6 +25,7 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 
 - 2026-11-21 06:53 UTC, after the page and "Yes or no?": "sure let's just finalize this and send it out tonight"
 - 2026-11-21 13:40 UTC, after this chat asked (1) "Do you lift my cap so I build stage 2 here now? Or should the arbiter take it?" and (2) "If it is built and checked tonight, do I have your word to push to main so you can send the test to yourself?": "do that now"
+- 2026-11-21 19:23 UTC, after this chat asked for his word on main and on the look's number, and said no test send exists for a release: "test send to my email only (lifeistheosis@gmail.com)"
 
 The second is read by this chat as: lift the cap and build stage 2 here now. It is NOT read as his word to push to main: that is asked again, alone, when the work is checked.
 
@@ -64,3 +65,14 @@ Not on main. Nothing deployed, nothing sent.
 2. **Raising the look to "3" holds the next automatic email instead.** That is the Sunday email of 22 November: it would go to him alone, and readers wait until he says on the desk that he has seen it. The Sunday email itself did not change.
 3. **Every list send refuses without `EMAIL_POSTAL_ADDRESS` on the server** (`lib/email/consent.ts`). I cannot read whether it is set on the main web.
 4. The pictures are on the main web only after a push to main.
+
+## The test send (2026-11-21, at his "test send to my email only")
+
+Built on the branch; not on main, so it does not exist on the main web yet.
+
+- `app/api/admin/email/campaign/test/route.ts`: POST `{ kind }`. Admin only. It sends the draft as it would go to the signed-in admin's own address and no other (the address is the session's, never one the request names), with "[Test]" before the subject. It starts no campaign and no job and records no mailing, so the real send can still go. Refused without the postal address, like every list email.
+- `components/admin/email/CampaignCard.tsx`: a "Send a test to me" button under the draft.
+- `lib/email/__tests__/campaignTestSend.test.ts` holds it to one address.
+- It goes to the address of the admin account he is signed in with. He named lifeistheosis@gmail.com; if he signs in to Admin with another address, the test goes there.
+- Checked: typecheck 0, eslint clean, `npm run test:unit` 15,530 pass and 1 fails. The one failure is `lib/downloads/__tests__/log.test.ts` ("lights the bell for an end not yet seen"), which fails the same way with my changes set aside: not mine, not mended.
+- Not checked: the route against the real sender. That can only be tried on the main web, after a push to main.
