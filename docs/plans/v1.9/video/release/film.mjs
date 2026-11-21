@@ -78,6 +78,12 @@ function house(u) {
 }
 /** The house curve for a thing that sets off from rest: the same curve, entered gently. It never passes its end. */
 const glide = (u) => house(u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+/**
+ * For the two slow reveals of the opening (his word: "a better slower but smoother reveal for the logo and the 1.9"):
+ * it sets off gently, travels evenly and comes to rest gently, with no rush at either end. The house curve does most
+ * of its travel in its first third, which is what made the first uncovering read as quick.
+ */
+const smooth = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * u * (u * (u * 6 - 15) + 10));
 const lerp = (a, b, u) => a + (b - a) * u;
 /** Every number of `a` moved toward the same number of `b`; what is not a number is `a`'s. */
 function between(a, b, u) {
@@ -117,12 +123,12 @@ export const SHOTS = [
   {
     name: "Out of the dark",
     at: 0,
-    move: "glide",
+    move: "smooth",
     from: { pool: [540, 900, 1000, 900, 0.2], mark: [900, 330, 0.96, 3.1] },
     to: { pool: [540, 900, 760, 620, 0.17], mark: [900, 330, 0.96, 1] },
-    span: 2.1,
-    uncover: [1.9, 158, 0.46],
-    why: "The first frame is never black (his word: \"make the intro revealing and high retention (uncovering effect)\"). It opens so near the mark that it is only bright shapes under a dark that is already drawing off them. The dark goes on drawing off as the camera pulls back, and by the track's first hit the eye has worked out what it is looking at: the question is asked in the first frame and answered inside two seconds.",
+    span: 2.19,
+    uncover: [2.1, 158, 0.36, 54],
+    why: "The first frame is never black (his word: \"make the intro revealing and high retention (uncovering effect)\"). It opens so near the mark that it is only bright shapes under a dark that is already drawing off them. The dark draws off slowly and evenly through the whole of the track's sparse opening, with a deep soft edge, as the camera pulls back at the same even pace (his word: \"a better slower but smoother reveal\"): the mark is whole only as the first downbeat arrives.",
   },
   {
     name: "The release, by its number",
@@ -130,9 +136,9 @@ export const SHOTS = [
     move: "even",
     from: { pool: [540, 980, 900, 520, 0.1], mark: [468, 120, 0.9], big: WORDS.release.words, bigScale: 1 },
     to: { pool: [620, 1300, 900, 420, 0.2], mark: [468, 120, 0.9], big: WORDS.release.words, bigScale: 1.035 },
-    lands: 0.5,
-    uncover: [0.55, 12, 0.12],
-    why: "The first downbeat is the first drop. The number is already there, full frame, under the dark, and the dark is drawn off it upward in half a second: uncovered on the beat, not faded in. Through the bar the light sinks toward where the phone will stand, so the next cut is handed its light.",
+    uncover: [1.8, 12, 0.42, 54],
+    smooth: true,
+    why: "The first downbeat is the first drop. The number is there, full frame, under the dark, and from the beat the dark draws off it upward, slowly and evenly, for most of the bar: its foot first, its head last. Through the bar the light sinks toward where the phone will stand, so the next cut is handed its light.",
   },
   {
     name: "The phone comes out of the dark",
@@ -341,7 +347,7 @@ function stateAt(t) {
   const s = SHOTS[i];
   const into = t - s.at;
   const span = s.span ?? s.until - s.at;
-  const u = s.move === "house" ? house(into / span) : s.move === "glide" ? glide(into / span) : Math.min(1, into / span);
+  const u = s.move === "house" ? house(into / span) : s.move === "glide" ? glide(into / span) : s.move === "smooth" ? smooth(into / span) : Math.min(1, into / span);
   const f = between(s.from, s.to, u);
   f.shot = i;
   if (s.lands) {
@@ -362,7 +368,7 @@ function stateAt(t) {
   const swell = HITS.reduce((sum, [at, much]) => sum + (t >= at ? much * Math.exp(-(t - at) / 0.22) : 0), 0);
   f.pool = [f.pool[0], f.pool[1], f.pool[2] * (1 + 0.1 * swell), f.pool[3] * (1 + 0.1 * swell), f.pool[4] * (1 + 0.9 * swell)];
   // The uncovering: the dark is already part way off at the cut, and draws off the rest on the house curve.
-  if (s.uncover) f.cover = [s.uncover[2] + (1 - s.uncover[2]) * (s.move === "glide" ? glide : house)(into / s.uncover[0]), s.uncover[1]];
+  if (s.uncover) f.cover = [s.uncover[2] + (1 - s.uncover[2]) * (s.move === "smooth" || s.smooth ? smooth : s.move === "glide" ? glide : house)(into / s.uncover[0]), s.uncover[1], s.uncover[3] ?? 22];
   // The film never opens on black (a feed decides on the first frame); it goes back to black at its end.
   f.black = house((t - (TOTAL - 0.45)) / 0.4);
   return f;

@@ -293,8 +293,10 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
     one("[data-black]").style.opacity = f.black ?? 0;
     // The uncovering: a soft-edged dark that lies over the whole picture and draws off it. [how far off (0 covered, 1 gone), the way it goes].
     const off = f.cover ? f.cover[0] : 1;
-    const edge = -24 + 150 * off;
-    one("[data-cover]").style.backgroundImage = off >= 1 ? "none" : "linear-gradient(" + f.cover[1] + "deg, transparent " + (edge - 22).toFixed(2) + "%, " + dark(86) + " " + (edge - 7).toFixed(2) + "%, var(--color-night-deep) " + edge.toFixed(2) + "%)";
+    // Its edge is "band" parts in a hundred of the picture deep: the deeper, the softer and slower it reads.
+    const band = f.cover ? f.cover[2] ?? 22 : 22;
+    const edge = -2 + (104 + band) * off;
+    one("[data-cover]").style.backgroundImage = off >= 1 ? "none" : "linear-gradient(" + f.cover[1] + "deg, transparent " + (edge - band).toFixed(2) + "%, " + dark(42) + " " + (edge - band * 0.62).toFixed(2) + "%, " + dark(84) + " " + (edge - band * 0.3).toFixed(2) + "%, var(--color-night-deep) " + edge.toFixed(2) + "%)";
     const p = f.phone;
     document.querySelector("[data-film]").hidden = !p;
     document.querySelector("[data-back-box]").hidden = !p || !f.floor;

@@ -6,7 +6,7 @@ Written 2026-11-20 by the worker chat started for this one job (session_01VuYTwd
 
 ## The page
 
-https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 5). Private to him. It now holds the film: a preview with his track (for him only), the silent file to post with Save, the rhythm, every cut with its reason, every word with its source, what was measured and what is open. The treatment and storyboard are its versions 1 and 2.
+https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 6). Private to him. It now holds the film: a preview with his track (for him only), the silent file to post with Save, the rhythm, every cut with its reason, every word with its source, what was measured and what is open. The treatment and storyboard are its versions 1 and 2.
 
 ## His words in this chat (verbatim, UTC)
 
@@ -89,6 +89,16 @@ At that word (the page is version 5, same address; the second render):
 - **The phone is uncovered a third time**, slowest: the dark draws sideways off the whole picture, then off the glass.
 - The uncovering is one soft-edged dark over the picture (`cover` on the stage, `uncover` on a shot): no rays, no stripe. All 20 shots pass checkMock again.
 - Only frames 0 to 430 were rendered again. New in the asset store: the preview `/_blob/7aeb9d6f8124b89c23f22ab50dd6329a`, the silent film `/_blob/7e037b7930aaf181824cfb5b5ac645e0` (19.8 MB). The first render's two files are still there, unused, for the Vault.
+
+- About 01:04, on the uncovering intro: "still needs a better slower but smoother reveal for the logo and the 1.9"
+
+At that word (the page is version 6, same address; the third render):
+
+- **The mark's reveal now lasts the whole sparse opening, 0 to 2.19 seconds**, where it was over in about 0.75. The dark's edge is more than twice as deep (54 parts in a hundred of the picture, from 22), so it reads as light arriving and not as a wipe, and the camera pulls back at the same pace.
+- **The number's reveal lasts about 1.8 seconds from the first downbeat**, where it was 0.55, foot first and head last. The small jump in size as it landed is gone.
+- **The curve:** both use an even curve that sets off gently and comes to rest gently (`smooth` in `film.mjs`). This is my reading of "slower but smoother": the house curve does most of its travel in its first third, which is what made the first version read as quick. Nothing bounces or passes its end. Every other move in the film is still on the house curve.
+- Neither reveal ever sits on black: each begins part way off. Looked at on a sheet of twelve moments before the render.
+- All 20 shots pass checkMock. Only frames 0 to 280 were rendered again. New in the asset store: the preview `/_blob/255daae8bae36033d4470f24262c454f`, the silent film `/_blob/58f74dbbd3bf2a86f22f81baf27d538b` (19.6 MB). The earlier renders are still there, unused, for the Vault.
 
 ## What was made
 
