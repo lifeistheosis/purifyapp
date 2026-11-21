@@ -713,7 +713,10 @@ export function HomeTab() {
             ) : null}
           </Panel>
 
-          <Panel title="Still waiting on you" pad="px-4 pt-3.5 pb-1.5">
+          {/* On a phone what waits on him comes before the timeline: it is the
+              one list he acts on, and it stood under everything else there
+              (his walk of 2026-11-21). Beside the timeline on a wide screen, as before. */}
+          <Panel title="Still waiting on you" pad="px-4 pt-3.5 pb-1.5" className="order-first lg:order-none">
             {checking ? (
               <Quiet className="pb-2.5">Checking the queues.</Quiet>
             ) : todo.length === 0 && gaps.length === 0 ? (

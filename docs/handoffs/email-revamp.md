@@ -29,6 +29,9 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 - 2026-11-21 19:34 UTC, with the two questions on main and the look still open: "can you scan the admin panel and do a revision on it?. brainstorm mode on. and find any sections that aren't really optimal for my admin panel ux experience"
 - 2026-11-21 19:46 UTC, after this chat's first admin notes, made from the code alone: "I need you to use the admin panel to see the design"
 - 2026-11-21 19:46 UTC, after this chat said the preview showed the layout but none of his data: "just use example data for yourself"
+- 2026-11-21 21:19 UTC, after eight admin notes and two questions ((1) "Which do you feel most? I would start with 1 and 2 ... I would draw it first for your yes." (2) the word for main, and the look at 3 or 2): "do all"
+
+"do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 
 The second is read by this chat as: lift the cap and build stage 2 here now. It is NOT read as his word to push to main: that is asked again, alone, when the work is checked.
 
@@ -95,3 +98,20 @@ Seen through `/admin/shell-preview` on a local `next dev` (the real shell, no si
 **A fault found, not mended:** `next dev` fails on the branch with "Parsing CSS source code failed" at `app/globals.css`, because Tailwind reads `docs/handoffs/updates-98q.md`, which holds a Tailwind class name written with a placeholder in angle brackets inside it (the fast colours' background class, with the word kind in angle brackets where the fast's name goes), and writes it as a class. This note first quoted that text itself and so broke the dev server a second time; never write it out in a file Tailwind reads. The production build only warns. For the look I set that one doc aside locally and put it back; it was not changed or committed. Also: `/admin/shell-preview?tab=x` and `#tab=x` on a first load both stay on Home; only a tap in the menu switches the page.
 
 **Looked at again on example numbers** (his word: "just use example data for yourself"). The chart gallery (`/admin/charts-preview`, its own sample data), then Home and Money with invented figures answered to the page inside this chat's own browser (Playwright, `/api/admin/overview`, `stats`, `traffic`, `hourly-goals`, `money`). Nothing was saved, nothing is in the repo, and no picture of invented money was sent to anyone. Traffic did not draw: my example for it was incomplete, which is my example's fault and not the panel's. The dev server's fault above is still there for the next chat; the one doc was set aside for the run and put back.
+
+## The admin panel: three small mends on the branch (2026-11-21, at his "do all")
+
+Of the eight notes given to him, three were mended, three turned out wrong when the code was read, and two wait for a plan.
+
+**Mended, on the branch, not on main:**
+- `components/admin/AttentionStrip.tsx`: a band holding more than three things opens folded behind its headline, with a 44px "Show all N" button. Nothing is dismissed; with three or fewer it is as before.
+- `components/admin/tabs/HomeTab.tsx`: on a phone "Still waiting on you" comes before the timeline's list; on a wide screen it stays beside it.
+- `components/admin/tabs/MoneyOverviewTab.tsx`: on a phone each of the three lines stands under its name.
+- `lib/admin/__tests__/phoneWalk20261121.test.ts` holds all three. Typecheck 0, eslint clean, `npx vitest run lib/admin components` 112 files pass. Seen in the shell preview at 390 wide on example numbers; not seen on the main web or on his phone.
+
+**Wrong on reading the code, and said so to him:**
+- The status band is drawn only while something is wrong (its own header says so). It stood on every page in the preview because every check fails there.
+- Home's week bars are drawn to scale from zero. They looked alike because my example days were alike.
+- The phone's bottom bar and the folded Tools line are his own: the bar follows the pages he opens most (`lib/admin/rail.ts`), and the Tools line is the rail "as he picked it" (`lib/admin/pages.ts`).
+
+**Waiting for a plan and his yes:** Releases' length on a phone; Traffic's seven tabs running off a phone's edge (a scrolling row by design).
