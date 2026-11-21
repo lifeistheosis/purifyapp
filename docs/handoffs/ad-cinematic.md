@@ -6,7 +6,7 @@ Written 2026-11-20 by the worker chat started for this one job (session_01VuYTwd
 
 ## The page
 
-https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 8). Private to him. It now holds the film: a preview with his track (for him only), the silent file to post with Save, the rhythm, every cut with its reason, every word with its source, what was measured and what is open. The treatment and storyboard are its versions 1 and 2.
+https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 9). Private to him. It now holds the film: a preview with his track (for him only), the silent file to post with Save, the rhythm, every cut with its reason, every word with its source, what was measured and what is open. The treatment and storyboard are its versions 1 and 2.
 
 ## His words in this chat (verbatim, UTC)
 
@@ -119,6 +119,15 @@ At that word (the page is version 8, same address; the fifth render):
 - Nothing is laid over the picture, so no shadow or haze is round the figures at any moment: an outline, a clean edge of light, a solid number.
 - The mark's own reveal at the film's head still uses the soft dark drawn off it. He did not name it; it is the same kind of effect, and it is his to say.
 - All 18 shots pass checkMock. Looked at on a sheet of twelve moments. Only frames 128 to 280 were rendered again. New in the asset store: the preview `/_blob/3046a98ba3f92a1f09440bee947a9fbf`, the silent film `/_blob/e278c651f4fee775cb8bb2dd46fca381`.
+
+- About 01:32, on the fifth render: "Sorry, the review looks good. It's just the glow. The glow looks vibe coded." (I read "review" as "reveal".)
+
+At that word (the page is version 9, same address; the sixth render):
+
+- **The glow is gone from the three shots of type:** the mark at the head, the number, and the end card. Each is now its figures on the dark and nothing else. The reveals themselves are unchanged (he said they look good).
+- With it went the hand-off of light from the number to the phone (my third suggestion): the number's glow sinking to where the phone would stand.
+- **Left as it was, and his to say:** the light on the ground under the phone in the wide shots (it is what the phone stands in, with what the ground gives back), and the faint light behind the out-of-focus phone under the chapter cards. They are the same kind of soft pool. If "the glow" means those too, they go the same way.
+- All 18 shots pass checkMock. Looked at on a sheet. Frames 0 to 280 and 1150 to 1284 were rendered again. New in the asset store: the preview `/_blob/f571cb6ab5cd70a9a2ef2203703dfc74`, the silent film `/_blob/68f44b9c81ff3293b5f64d12923bae09`, a still `/_blob/0eb578de5815dfa0338673f2d453b8c0`.
 
 ## What was made
 
