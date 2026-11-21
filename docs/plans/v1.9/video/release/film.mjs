@@ -137,9 +137,8 @@ export const SHOTS = [
     move: "even",
     from: { pool: [540, 980, 900, 520, 0.1], mark: [468, 120, 0.9], big: WORDS.release.words, bigScale: 1 },
     to: { pool: [620, 1300, 900, 420, 0.2], mark: [468, 120, 0.9], big: WORDS.release.words, bigScale: 1.035 },
-    uncover: [1.8, 12, 0.42, 54],
-    smooth: true,
-    why: "The first downbeat is the first drop. The number is there, full frame, under the dark, and from the beat the dark draws off it upward, slowly and evenly, for most of the bar: its foot first, its head last. Through the bar the light sinks toward where the phone will stand, so the next cut is handed its light.",
+    fill: 2.0,
+    why: "The first downbeat is the first drop. On the beat the number is there at once, full frame, as a fine clean outline. Then light fills the figures from the foot up, inside their own edges, slowly and evenly for most of the bar (his word: \"That reveal is kind of weak. Just make sure ... it's clean shadows\"). Nothing is laid over the picture, so there is no haze or shadow round the figures at any moment. Through the bar the light sinks toward where the phone will stand, so the next cut is handed its light.",
   },
   {
     name: "The phone comes out of the dark",
@@ -347,6 +346,11 @@ function stateAt(t) {
   }
   // The light does not answer the track (his word, 2026-11-21: "I want you to not time the glow to the beat. I want it
   // to be purely clean transitions."): it never swells on a hit. Only the cuts are on the beat.
+  // The number's reveal: an outline on the beat, then light filling it; the small mark above arrives as the light reaches it.
+  if (s.fill) {
+    f.bigFill = smooth(into / s.fill);
+    f.mark = [f.mark[0], f.mark[1], f.mark[2] * smooth((into - s.fill * 0.55) / (s.fill * 0.5))];
+  }
   // The uncovering: the dark is already part way off at the cut, and draws off the rest on the house curve.
   if (s.uncover) f.cover = [s.uncover[2] + (1 - s.uncover[2]) * (s.move === "smooth" || s.smooth ? smooth : s.move === "glide" ? glide : house)(into / s.uncover[0]), s.uncover[1], s.uncover[3] ?? 22];
   // The film never opens on black (a feed decides on the first frame); it goes back to black at its end.

@@ -6,7 +6,7 @@ Written 2026-11-20 by the worker chat started for this one job (session_01VuYTwd
 
 ## The page
 
-https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 7). Private to him. It now holds the film: a preview with his track (for him only), the silent file to post with Save, the rhythm, every cut with its reason, every word with its source, what was measured and what is open. The treatment and storyboard are its versions 1 and 2.
+https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 8). Private to him. It now holds the film: a preview with his track (for him only), the silent file to post with Save, the rhythm, every cut with its reason, every word with its source, what was measured and what is open. The treatment and storyboard are its versions 1 and 2.
 
 ## His words in this chat (verbatim, UTC)
 
@@ -110,6 +110,15 @@ At that word (the page is version 7, same address; the fourth render, every fram
 - All 18 shots pass checkMock. Looked at on a strip of the finished file.
 - New in the asset store: the preview `/_blob/1722af6f44898b378a41ea4f66223922`, the silent film `/_blob/c8bd5a10d00c61107ee052f43009462e`. The earlier renders stay, unused, for the Vault.
 - The map of the track above is wrong in its last two rows for the same reason: there is no "final hit" in the music.
+
+- About 01:27, on the fourth render: "Make the reveal on 1.9 like better. That reveal is kind of weak. Just make sure you can like it's clean shadows and stuff, because it looks vibe coding."
+
+At that word (the page is version 8, same address; the fifth render):
+
+- **The number's reveal is new.** The soft dark drawn off it is gone: it left the figures half lit and hazy, which is what read as weak and vibe coded. Now, on the first downbeat, "1.9" is there at once as a fine clean outline, full frame. Then light fills the figures from the foot up, inside their own edges, on the even curve, for about two seconds. The small mark above arrives as the light reaches the top.
+- Nothing is laid over the picture, so no shadow or haze is round the figures at any moment: an outline, a clean edge of light, a solid number.
+- The mark's own reveal at the film's head still uses the soft dark drawn off it. He did not name it; it is the same kind of effect, and it is his to say.
+- All 18 shots pass checkMock. Looked at on a sheet of twelve moments. Only frames 128 to 280 were rendered again. New in the asset store: the preview `/_blob/3046a98ba3f92a1f09440bee947a9fbf`, the silent film `/_blob/e278c651f4fee775cb8bb2dd46fca381`.
 
 ## What was made
 

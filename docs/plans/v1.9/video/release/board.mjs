@@ -349,6 +349,15 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
       big.textContent = f.big;
       big.style.opacity = f.bigIn ?? 1;
       big.style.transform = "scale(" + (f.bigScale ?? 1) + ")";
+      // The number's reveal: it stands first as a fine clean outline, and light fills the figures from the foot up, inside
+      // their own edges. Nothing is laid over the picture, so there is no shadow or haze round them at any moment.
+      const filling = f.bigFill != null;
+      const level = filling ? (f.bigFill >= 1 ? 130 : 16 + 76 * f.bigFill) : 0; // the figures stand between about 20 and 86 parts in a hundred of their box
+      big.style.webkitTextStroke = filling ? "2.5px " + ink(92) : "";
+      big.style.color = filling ? "transparent" : "";
+      big.style.backgroundImage = filling ? "linear-gradient(7deg, var(--color-paper) " + (level - 5).toFixed(2) + "%, transparent " + level.toFixed(2) + "%)" : "none";
+      big.style.webkitBackgroundClip = filling ? "text" : "";
+      big.style.backgroundClip = filling ? "text" : "";
     }
     const title = one("[data-title]");
     const sub = one("[data-sub]");
