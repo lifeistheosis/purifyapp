@@ -6,7 +6,7 @@ Written 2026-11-20 by the worker chat started for this one job (session_01VuYTwd
 
 ## The page
 
-https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 6). Private to him. It now holds the film: a preview with his track (for him only), the silent file to post with Save, the rhythm, every cut with its reason, every word with its source, what was measured and what is open. The treatment and storyboard are its versions 1 and 2.
+https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 7). Private to him. It now holds the film: a preview with his track (for him only), the silent file to post with Save, the rhythm, every cut with its reason, every word with its source, what was measured and what is open. The treatment and storyboard are its versions 1 and 2.
 
 ## His words in this chat (verbatim, UTC)
 
@@ -101,6 +101,15 @@ At that word (the page is version 6, same address; the third render):
 - All 20 shots pass checkMock. Only frames 0 to 280 were rendered again. New in the asset store: the preview `/_blob/255daae8bae36033d4470f24262c454f`, the silent film `/_blob/58f74dbbd3bf2a86f22f81baf27d538b` (19.6 MB). The earlier renders are still there, unused, for the Vault.
 
 - About 01:13, on the third render: "So in the intro, there's like the brightness, not the brightness, there's like a glow, and then it's like time to the beat. I want you to not time the glow to the beat. I want it to be purely clean transitions. Also in the outro, you actually matched it to the TikTok outro, which isn't right. The TikTok outro is pretty much like supposed to be cropped out of the audio."
+
+At that word (the page is version 7, same address; the fourth render, every frame):
+
+- **The light no longer answers the track.** The swell of the pool on each hit and downbeat is gone from the whole film, not only the opening. Only the cuts are on the beat.
+- **My fault, found by him:** the "loudest hit of the track" at 20.34 was TikTok's own outro sound, and the end card was cut to it. The music ends at about 20.3. The end card now cuts on the track's last downbeat, bar 8 at 19.2 seconds. In the preview the track is cropped at 20.3 with a fade from 19.85, and the film holds its end card in silence to 21.4.
+- To make room, the fast run in bar 7 lost its two last repeats (the Bibles, and Write). The journal whole with "Free for everyone." is now at 17.98 for two beats. The film is 18 shots and 21.4 seconds, 18.7 MB.
+- All 18 shots pass checkMock. Looked at on a strip of the finished file.
+- New in the asset store: the preview `/_blob/1722af6f44898b378a41ea4f66223922`, the silent film `/_blob/c8bd5a10d00c61107ee052f43009462e`. The earlier renders stay, unused, for the Vault.
+- The map of the track above is wrong in its last two rows for the same reason: there is no "final hit" in the music.
 
 ## What was made
 
