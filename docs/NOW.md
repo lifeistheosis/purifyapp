@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state and keeps it to one page: history goes to the log (`docs/1.9-build/HANDOFF.md`) and his words to `docs/1.9-build/BRAINSTORM.md`. The NOW of the 1.9 build is kept whole in `docs/1.9-build/NOW-to-2026-11-20.md`; it is very long, so read a line of it only when a step needs it.
 
-Updated 2026-11-21 14:05 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
+Updated 2026-11-21 14:08 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 
 ## How we work (his word, 2026-11-20; CLAUDE.md, "The new system")
 
@@ -21,7 +21,7 @@ Updated 2026-11-21 14:05 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 
 ## Waiting on him
 
-0. **Supabase's free quota, with a date: 11 Dec 2026.** Egress went over last cycle; after the grace period requests can answer 402. THE FIX WENT TO MAIN at his word on 11-21 at 13:59 UTC (main b89b56b11; the way back is 6700c2e65; on the branch as d1fc1355e): a ping is no longer a page view, the public feed is held 45 s, Community polls every 20 s. Still to do: confirm the deploy is live and the site answers; then watch Supabase's Usage page daily (egress was 1.868 GB on 11-21, a pace of 0.29 GB a day; it must fall under about 0.13 GB a day to end the cycle under 5 GB); decide by about 5 Dec whether to pay Pro for one month. Not yet done: a prune of old ping rows (the database is 82% full; his sign-off), the Screens view's heavy read, and the log meter, which is already past this cycle's allowance. His desk's Views numbers fall from 11-21: they counted the pings. The log has the numbers (11-21).
+0. **Supabase's free quota, with a date: 11 Dec 2026.** Egress went over last cycle; after the grace period requests can answer 402. THE FIX WENT TO MAIN at his word on 11-21 at 13:59 UTC (main b89b56b11; the way back is 6700c2e65; on the branch as d1fc1355e): a ping is no longer a page view, the public feed is held 45 s, Community polls every 20 s. The deploy was live by 14:04 UTC and the site answers (the log, 11-21). Still to do: watch Supabase's Usage page daily (egress was 1.868 GB on 11-21, a pace of 0.29 GB a day; it must fall under about 0.13 GB a day to end the cycle under 5 GB); decide by about 5 Dec whether to pay Pro for one month. Not yet done: a prune of old ping rows (the database is 82% full; his sign-off), the Screens view's heavy read, and the log meter, which is already past this cycle's allowance. His desk's Views numbers fall from 11-21: they counted the pings. The log has the numbers (11-21).
 
 1. **iOS:** take 1.9 out of review, walk build 39 from TestFlight on his iPhone, choose it and send again. Asked; not yet confirmed done. The walk should prove the widgets on a real iPhone: with the Old Calendar chosen and a patron saint saved, the day's widget follows the Old Calendar and the patron's widget shows the saint (a reader's report of 11-20; the cause was mended on 11-10 and has not yet been seen on a real iPhone). R6's iOS number waits until the App Store serves 1.9.
 2. **The ad:** his yes or no on the revised test (the moving phone, the new title face, the moving ground). Stage 2, six more scenes, only on his yes, in a fresh chat, priced from stage 1's measured cost.
