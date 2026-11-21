@@ -100,6 +100,8 @@ At that word (the page is version 6, same address; the third render):
 - Neither reveal ever sits on black: each begins part way off. Looked at on a sheet of twelve moments before the render.
 - All 20 shots pass checkMock. Only frames 0 to 280 were rendered again. New in the asset store: the preview `/_blob/255daae8bae36033d4470f24262c454f`, the silent film `/_blob/58f74dbbd3bf2a86f22f81baf27d538b` (19.6 MB). The earlier renders are still there, unused, for the Vault.
 
+- About 01:13, on the third render: "So in the intro, there's like the brightness, not the brightness, there's like a glow, and then it's like time to the beat. I want you to not time the glow to the beat. I want it to be purely clean transitions. Also in the outro, you actually matched it to the TikTok outro, which isn't right. The TikTok outro is pretty much like supposed to be cropped out of the audio."
+
 ## What was made
 
 - `docs/plans/v1.9/video/release/TREATMENT.md`: the treatment. The one idea is the drop's own line, "Purify 1.9 is here." (the first sentence of the drop's caption).

@@ -34,10 +34,11 @@ const BEAT = BAR / 4;
 /** Bar n (1 is the first downbeat), and beats after it. */
 const bar = (n, beats = 0) => Math.round((FIRST + (n - 1) * BAR + beats * BEAT) * FPS) / FPS;
 const BREAK = Math.round(10.7 * FPS) / FPS; // the bass falls away here, until bar 5
-const LAST_HIT = Math.round(20.34 * FPS) / FPS; // the loudest moment of the track, then silence
-const END = 22.4;
-/** Where the light answers the track: [time, how much]. The two sparse hits before the grid, the downbeats, the last hit. */
-const HITS = [[0.6, 0.5], [3.12, 0.4], ...[2, 3, 4, 5, 6, 7, 8].map((n) => [bar(n), 0.28]), [bar(1), 0.6], [LAST_HIT, 1.1]];
+// The track ends at about 20.3 seconds. What follows it in the file he sent (a loud hit at 20.34) is TikTok's own
+// outro, not the music (his word, 2026-11-21: "The TikTok outro is pretty much like supposed to be cropped out of the
+// audio"). So the film's last cut is on the track's last downbeat, bar 8, and the music is faded out before 20.3.
+export const MUSIC_ENDS = 20.3;
+const END = 21.4;
 
 // ── The words: none is written here ──────────────────────────────────────
 
@@ -268,7 +269,7 @@ export const SHOTS = [
     hold: true,
     from: { phone: close(170, 400, 3.7, 0.7, { soft: ["bottom", 0.4, 6], sheen: [0.6, 0.45] }), pool: [760, 900, 900, 700, 0.13] },
     to: { phone: close(176, 400, 3.86, 0.7, { soft: ["bottom", 0.4, 6], sheen: [0.56, 0.45] }), pool: [760, 900, 900, 700, 0.13] },
-    why: "The track lifts into its fullest bar and the film answers with its fastest cuts: the four chapters again, one to a beat, each nearer than before.",
+    why: "The track lifts into its fullest bar and the film answers with its fastest cuts: two chapters again, one to a beat, each nearer than before.",
   },
   {
     name: "Again: the verse",
@@ -281,28 +282,8 @@ export const SHOTS = [
     why: "The verse with its highlight landed.",
   },
   {
-    name: "Again: the Bibles",
-    at: bar(7, 2),
-    move: "even",
-    screen: ["bibles", "list", 3.3],
-    hold: true,
-    from: { phone: close(180, 560, 3.0, 0.8, { soft: ["top", 0.4, 6], sheen: [0.6, 0.5] }), pool: [760, 900, 900, 700, 0.13] },
-    to: { phone: close(184, 560, 3.14, 0.8, { soft: ["top", 0.4, 6], sheen: [0.56, 0.5] }), pool: [760, 900, 900, 700, 0.13] },
-    why: "The names of the Bibles, large.",
-  },
-  {
-    name: "Again: Write",
-    at: bar(7, 3),
-    move: "even",
-    screen: ["journal", "go", 2.4],
-    hold: true,
-    from: { phone: close(206, 690, 3.3, -1, { soft: ["top", 0.5, 7], dark: [0.3, "top"], sheen: [0.4, 0.74] }), pool: [300, 1000, 900, 700, 0.13] },
-    to: { phone: close(206, 694, 3.46, -1, { soft: ["top", 0.5, 7], dark: [0.3, "top"], sheen: [0.44, 0.74] }), pool: [300, 1000, 900, 700, 0.13] },
-    why: "The run ends on the journal's one bright button, which is where the release begins for a reader.",
-  },
-  {
     name: "The journal, whole, and the promise",
-    at: bar(8),
+    at: bar(7, 2),
     move: "house",
     screen: ["journal", "go", 2.4],
     hold: true,
@@ -310,17 +291,17 @@ export const SHOTS = [
     to: { phone: wide(600, 1130, 1.2, 1, { dark: [0.3, "far"], sheen: [0.7, 0.28] }), pool: [650, 1672, 940, 240, 0.36] },
     ground: true,
     card: { y: 300, size: 104, lines: [], sub: WORDS.free.words },
-    why: "The last bar: the camera draws back at once, on the house curve, to the whole phone standing in the dark with its light on the ground, and the three words that matter most in this release.",
+    why: "The fast run ends half way through its bar: the camera draws back at once, on the house curve, to the whole phone standing in the dark with its light on the ground, and the three words that matter most in this release.",
   },
   {
     name: "The end card",
-    at: LAST_HIT,
+    at: bar(8),
     move: "house",
-    from: { pool: [540, 860, 900, 700, 0.17], mark: [690, 250, 0.96, 1.05] },
+    from: { pool: [540, 860, 820, 620, 0.17], mark: [690, 250, 0.96, 1.03] },
     to: { pool: [540, 860, 820, 620, 0.17], mark: [690, 250, 0.96, 1] },
     span: 0.9,
     card: { y: 960, size: 124, lines: WORDS.here.lines },
-    why: "The loudest hit of the track is the cut to the end card: the mark, and the first sentence of the drop's caption. The light swells with the hit and settles, and the card is held in the track's silence.",
+    why: "The track's last downbeat is the cut to the end card: the mark, and the first sentence of the drop's caption, clean, with nothing flashing. The music runs one more second under it and is gone, and the card is held.",
   },
 ];
 SHOTS.forEach((s, i) => {
@@ -364,9 +345,8 @@ function stateAt(t) {
     const takes = s.slow ? 0.7 : 0.34;
     f.title = { ...s.card, in: s.card.lines.map((_, n) => house((into - n * each) / takes)), subIn: house(into / 0.4) };
   }
-  // The light answers the track: it swells at a hit and falls back within half a second.
-  const swell = HITS.reduce((sum, [at, much]) => sum + (t >= at ? much * Math.exp(-(t - at) / 0.22) : 0), 0);
-  f.pool = [f.pool[0], f.pool[1], f.pool[2] * (1 + 0.1 * swell), f.pool[3] * (1 + 0.1 * swell), f.pool[4] * (1 + 0.9 * swell)];
+  // The light does not answer the track (his word, 2026-11-21: "I want you to not time the glow to the beat. I want it
+  // to be purely clean transitions."): it never swells on a hit. Only the cuts are on the beat.
   // The uncovering: the dark is already part way off at the cut, and draws off the rest on the house curve.
   if (s.uncover) f.cover = [s.uncover[2] + (1 - s.uncover[2]) * (s.move === "smooth" || s.smooth ? smooth : s.move === "glide" ? glide : house)(into / s.uncover[0]), s.uncover[1], s.uncover[3] ?? 22];
   // The film never opens on black (a feed decides on the first frame); it goes back to black at its end.

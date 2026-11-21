@@ -82,7 +82,7 @@ const html = `<title>Purify 1.9 Release Film</title>
       <div class="film">
         <h2>Silent, to post</h2>
         <video controls playsinline muted preload="metadata"${still ? ` poster="${esc(still)}"` : ""} src="${esc(silent ?? "")}" aria-label="The film, silent, ${TOTAL.toFixed(0)} seconds"></video>
-        <p>${video.size.join(" by ")}, 60 frames a second, ${video.megabytes} MB, no sound stream. Add the sound inside TikTok or Instagram when you post, starting at the track's first second.</p>
+        <p>${video.size.join(" by ")}, 60 frames a second, ${video.megabytes} MB, no sound stream. Add the sound inside TikTok or Instagram when you post, starting at the track's first second. The music ends at about 20.3 seconds; the film holds its end card a second longer.</p>
         <button class="save" id="save-silent" type="button" hidden>Save the silent film</button>
       </div>
     </div>
@@ -92,7 +92,7 @@ const html = `<title>Purify 1.9 Release Film</title>
     <h2>The rhythm</h2>
     <div class="rhythm" role="img" aria-label="The ${SHOTS.length} shots, each as wide as it is long">${SHOTS.map((s) => `<span${s.card?.lines.length && s.screen ? ' class="card"' : ""} style="flex:${(s.until - s.at).toFixed(3)} 1 0"></span>`).join("")}</div>
     <div class="ends"><span>0s</span><span>held, then on the beat, then still</span><span>${TOTAL.toFixed(1)}s</span></div>
-    <p class="quiet read">Each box is one shot, as wide as it is long. The filled boxes are the chapter cards. The track runs at about 99 beats a minute: the long boxes at the start are its sparse opening, the short ones are single beats, and the last is the end card held in the track's silence.</p>
+    <p class="quiet read">Each box is one shot, as wide as it is long. The filled boxes are the chapter cards. The track runs at about 99 beats a minute: the long boxes at the start are its sparse opening, the short ones are single beats, and the last is the end card, cut on the track's last downbeat. The light never pulses with the music: only the cuts are on the beat. TikTok's own outro sound is cropped off the end of the track.</p>
   </section>
 
   <section>
