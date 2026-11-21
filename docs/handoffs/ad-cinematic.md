@@ -2,11 +2,11 @@
 
 Written 2026-11-20 by the worker chat started for this one job (session_01VuYTwdjxDrv3qHjVwVdhve) with `docs/handoffs/ad-cinematic-prompt.md`.
 
-**Status: the treatment and the storyboard are made and wait for his yes or no. Nothing is rendered as video. No credits spent.**
+**Status, 2026-11-21 about 00:25 UTC: the film is made, cut to his track, and waits for his yes or no. No credits spent. The track's licence is still open.**
 
 ## The page
 
-https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 2). Private to him. It holds his word, the one idea, six choices with their reasons, the rhythm, nine stills each with its reason, every word with its source, and what his yes starts.
+https://claude.ai/artifact/5MaNos13x89spBQViXENe7 (version 4). Private to him. It now holds the film: a preview with his track (for him only), the silent file to post with Save, the rhythm, every cut with its reason, every word with its source, what was measured and what is open. The treatment and storyboard are its versions 1 and 2.
 
 ## His words in this chat (verbatim, UTC)
 
@@ -66,6 +66,20 @@ Chapters 2 and 4 need screens the storyboard does not have (proposed: Every vers
 
 - About 23:51, to the cut proposed above, its two more screens (Every verse, opened; Seven more Bibles), its cost and the plan for the music (a preview with the audio for him only, a silent file to post): "yes"
 
+At his yes (the film, made 2026-11-20 to 21):
+
+- **The film:** 22.4 seconds, 20 shots, 1080 by 1920, 60 frames a second, H.264 High, 19.9 MB, no sound stream. `film.mjs` is its clock and its shots; every cut is on the track's grid (`FIRST` 2.19, `BAR` 2.43), the break at 10.7 and the last hit at 20.34.
+- **Four screens:** Today and the journal (the ad's own takes, built by the app's pieces, 86 and 83 words word for word), the verse (`../record.mjs verse`, used only up to its highlight; Study is never opened) and the Bibles (`release/take.mjs`: the first cut's take waits for a sheet named "Translation", which main does not name so).
+- **Filmed at 4 device pixels to one** (`VIDEO_SHARP=4`; `SHARP` in `../lib.mjs` can now be set). The journal's take fails at a slower clock than 6 (its one-question card is not dismissed in time), so it was filmed at the default; the verse and the Bibles at `VIDEO_SLOW=12`.
+- **Checked:** `mock-check --self-test`, then `film.mjs --check`: all 20 shots pass at their middle. The script refuses more than three cuts in a second, a turn past the side stand, and a shot nearer than its take was filmed.
+- **Looked at:** the sheet of every shot's middle before the render, and a strip of the finished file at two frames a second after it.
+- **The preview with the track** was made by joining his uploaded audio to the film (5.6 MB, lower grain). It is only in the page's asset store, for him. The audio is not in the repository.
+- **In the page's asset store:** the preview `/_blob/c58309f676f0ca3c3a08b5045a1a8d8a`, the silent film `/_blob/0cb84c35075d3b730d0995a04929830c`, a still `/_blob/985da55b9e891135c7be9d114a42a96e`.
+- **Of my five suggestions:** sound is his track; the hand-off of light (the number's pool sinks to where the phone stands) and the nearer close shots are in; the gold tint and the store badges are not.
+- **Not proved by ear:** the beats are measured by script. He is the judge of whether each cut sits on the track.
+
+To make it again: the export and the four takes (TREATMENT.md, and the lines above), then `film.mjs --check`, `VIDEO_EXPORT=6700c2e65 film.mjs --fresh` (about 12 minutes in three parts with `--part`, then `--encode`), then `film-page.mjs`.
+
 ## What was made
 
 - `docs/plans/v1.9/video/release/TREATMENT.md`: the treatment. The one idea is the drop's own line, "Purify 1.9 is here." (the first sentence of the drop's caption).
@@ -95,4 +109,4 @@ Chapters 2 and 4 need screens the storyboard does not have (proposed: Every vers
 
 ## Tokens
 
-By my own count the chat was at about 120,000 tokens when the page was published: about 45,000 fixed (tools and rules), 30,000 reading the prompt's files and the old compose script, 25,000 on the stage and its three looks, 20,000 on the treatment and the page. No step passed 100,000.
+By my own count the chat was at about 330,000 tokens when the film was published (about 120,000 at the storyboard, 30,000 on the phone, the suggestions and the track, 180,000 on the film: its four takes, its script, one sheet, the render and the page). Before that, at the storyboard, it was at about 120,000: about 45,000 fixed (tools and rules), 30,000 reading the prompt's files and the old compose script, 25,000 on the stage and its three looks, 20,000 on the treatment and the page. No step passed 100,000.

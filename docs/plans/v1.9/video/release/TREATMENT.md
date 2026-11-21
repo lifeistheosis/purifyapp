@@ -2,7 +2,7 @@
 
 His word on the ad's fourth render, 2026-11-20 about 22:26 UTC: "it doesn't feel like a major release type of video it feels like a general video that is to showcase the app. it needs to be cinematic."
 
-**Status, 2026-11-20: a treatment and a storyboard, waiting for his yes or no.** Nothing is rendered as video. The page is in `docs/handoffs/ad-cinematic.md`.
+**Status, 2026-11-21: the film is made at his yes, cut to the track he chose, and waits for his yes or no** (`film.mjs`, 22.4 seconds, 20 shots, four screens). What follows is the treatment it was made from; the storyboard's nine frames became the film's shots. The page is in `docs/handoffs/ad-cinematic.md`.
 
 ## What was wrong
 
