@@ -170,9 +170,16 @@ const field =
  * (LiveTab, OverviewTab), so this is the pattern the codebase supports today.
  *
  * Paused while the document is hidden, so a phone in a pocket is not calling
- * the API every eight seconds for a screen nobody is looking at.
+ * the API every twenty seconds for a screen nobody is looking at.
+ *
+ * It was eight seconds until 2026-11-21. Every ask is a read of the whole
+ * feed, and at eight seconds a reader with Community open for an hour moved
+ * about 28 MB out of the database, which helped take the project past its
+ * free quota. Twenty is still quick for a feed of prayers and questions, and
+ * the server now holds the public feed for a moment too
+ * (lib/community/feedMemo.ts).
  */
-const POLL_MS = 8000;
+const POLL_MS = 20_000;
 
 /** The hash that selects the Conversations panel. */
 const CONVERSATIONS_HASH = "#conversations";
