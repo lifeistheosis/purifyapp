@@ -33,6 +33,7 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 - 2026-11-21 22:14 UTC, after this chat asked "Do I have your word to push to main? It deploys the website, and would carry the email work and these three fixes.": "yes oush"
 
 "yes oush" is read as: yes, push. It is his word for main, for the email work and the three admin mends. He did not answer 3 or 2, so the look stays as built and tested, at 3.
+- 2026-11-22 16:23 UTC, with a screenshot of purifyapp.onrender.com/admin showing the site's 404 page ("This page is not in our index."): "I can't login to the admin panel"
 
 "do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 
