@@ -31,7 +31,7 @@ const EFFECTS = [
   ["Projector flicker", "The brightness wavers a little, all through."],
 ];
 const NOTES = [
-  ["The words are simply there", "A line appears on its hit, sharp and still, with no movement of its own, so each quote reads in one glance."],
+  ["Each quote holds for its whole shot", "Your word on the second render: make the text appear longer. The whole quote and its source are there from the cut into its shot until the cut out of it, sharp and still. Between three and four seconds each."],
   ["Every line is someone else's", "The hook is the one written line. The rest is Scripture, St Cyprian and the Creed, word for word from the app's own text. The script refuses to run if a word differs."],
   ["No one is named or attacked", "No line names any religion or person."],
   ["A priest first, by your own rule", "This is doctrine. Your editorial rule sends doctrinal framing to a priest before it goes out. Your call when."],
@@ -78,7 +78,7 @@ const html = `<title>Purify Blackpill Edit</title>
 </style>
 <main class="page">
   <header>
-    <p class="label">Purify · the edit · cut to "Forever", slowed · second render</p>
+    <p class="label">Purify · the edit · cut to "Forever", slowed · third render</p>
     <h1>An edit, not an ad</h1>
     <p class="quiet read">${SECONDS} seconds in ${SHOTS.length} shots, every cut and every line on a hit measured from your track, with clean cuts and steady grit. No screen of the app. Say yes or no, or tell me what to change.</p>
   </header>
@@ -105,7 +105,7 @@ ${track ? `  <section class="film">
 
   <section>
     <h2>The cut</h2>
-    <ol class="cut">${SHOTS.map((s) => `<li><span class="at">${secs(s.at[0])}</span><h3>${esc(s.name)}</h3>${s.words ? `<p class="said">${esc(s.words.lines.join(" "))}${s.words.cite ? ` (${esc(s.words.cite)})` : ""}</p>` : ""}<p>${s.words ? `Lines land on ${[...new Set(s.words.at)].map(secs).join(", ")}. ` : ""}${s.pic ? "" : s.mark ? "Purify's mark alone, still, on the loudest hit." : "Black, for the breath before the last swell."}</p></li>`).join("")}</ol>
+    <ol class="cut">${SHOTS.map((s) => `<li><span class="at">${secs(s.at[0])}</span><h3>${esc(s.name)}</h3>${s.words ? `<p class="said">${esc(s.words.lines.join(" "))}${s.words.cite ? ` (${esc(s.words.cite)})` : ""}</p>` : ""}<p>${s.words ? `The whole quote is on screen for ${(s.at[1] - s.at[0]).toFixed(1)} seconds. ` : ""}${s.pic ? "" : s.mark ? "Purify's mark alone, still, on the loudest hit." : "Black, for the breath before the last swell."}</p></li>`).join("")}</ol>
   </section>
 
   <section>

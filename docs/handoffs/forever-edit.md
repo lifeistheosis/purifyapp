@@ -4,7 +4,7 @@ Written 2026-11-21 by the worker chat started for this one job ("Purify promo: t
 
 **Status, 2026-11-22 about 00:20 UTC: the edit (his new approach, below) is rendered and on its page, and waits for his yes or no. No credits spent. The first storyboard, the promo with the app's screens, is set aside for the Vault.**
 
-**The film's page:** https://claude.ai/artifact/57zD2YHavR5Yw6gWN5NVDs (version 4: the clean second render, and a copy with his track for him alone), private to him.
+**The film's page:** https://claude.ai/artifact/57zD2YHavR5Yw6gWN5NVDs (version 5: the third render, clean cuts and each quote held for its whole shot, silent and with his track for him alone), private to him.
 
 ## The page
 
@@ -69,6 +69,8 @@ At that word: the file sent in the chat did not show for him. The copy with his 
 - About 00:55, on the second render with the track: "make the text appear longer"
 
 At that word (the third render): each whole quote, with its source, is on screen from its shot's first frame to its last, where it used to arrive a line to a beat (`WHOLE` in `blackpill-film.mjs`). This is my reading of "longer": on screen longer, the film's length unchanged. If he meant larger type or a longer film, it is his to say.
+
+The third render is on the page (version 5): 2,112 frames, 35.2 seconds by ffprobe, all 15 shots pass checkMock, looked at on a strip. Silent `/_blob/ac7f5a441622230619ae6b8a25c9db95` (18.1 MB), with his track for him alone `/_blob/17aa694d2ab3667ee195aebd3d6a36b9` (19.0 MB). The earlier renders stay in the page's store, unused, for the Vault. Cost by my own count: the chat's context is about 390,000 tokens; it is past the 200,000 mark where a chat should rotate, so the next job belongs to a fresh chat with this file as its baton.
 
 The chat was started by the ad stage 1 chat at his word there, about 23:08 UTC: "start a fresh chat with it" (`docs/handoffs/ad-stage-1.md`).
 
