@@ -4,7 +4,7 @@ His word, 2026-11-22 about 00:35 UTC (in the ad stage 1 chat), with a 9.9 second
 
 His word on the first cut, about 00:52 UTC: "Use the audio from the second clip because that's the full audio, and also ensure it's one-to-one in every single aspect. For example, the part in the edit where it transitions the multiple faces, put like multiple icons of Christ and like showcase his face, and do that like effect with the faces where like kind of like blurs or warps. But yeah, like make it one-to-one with the edit. And I put you on max, so"
 
-**Status, 2026-11-22 about 02:50 UTC: the second cut is rendered and waits for his yes or no.** 9.9 seconds, 594 frames, 1080 by 1920 at 60 frames a second, H.264. Nothing is posted. The second clip he speaks of has not reached this chat (see "The sound"). The files are out of git, in `.promo/v1.9-video/christ2/`, and are lost when the container goes; he has both.
+**Status, 2026-11-22 about 02:50 UTC: the second cut is rendered and waits for his yes or no.** 9.9 seconds, 594 frames, 1080 by 1920 at 60 frames a second, H.264. Nothing is posted. The full sound he sent at about 03:00 UTC is under the preview (see "The sound"). The files are out of git, in `.promo/v1.9-video/christ2/`, and are lost when the container goes; he has both.
 
 The first cut was an HTML stage (`make.mjs`) timed by eye. It is at commit `646414ee8` with its own `assets.py` and `screens.mjs`. The second cut replaces it: the template was measured frame by frame, and the film is built from those measures.
 
@@ -89,7 +89,9 @@ The template's song is a commercial recording and is not cleared.
 - `purify-christ-edit.mp4`: the **silent master**. This is what is posted, with the sound added inside TikTok or Instagram from the app's own library.
 - `purify-christ-edit-PREVIEW-not-for-posting.mp4`: the same picture with the template's sound, **for him to judge the sync only**. Never posted, never an ad, never on the store pages or the website.
 
-The two files he sent are the same file, byte for byte. Its music stops at about 4.7 seconds and a voice goes on alone, so the preview has the song for the first half only. The "second clip" with the full audio has not reached this chat; when it does, `edit.py ... render <that file>` lays it under.
+The two video files he sent first were one file, byte for byte, and its music stops at about 4.7 seconds, where a voice goes on alone. On 2026-11-22 about 03:00 UTC he sent the sound itself, an MP3 saved from TikTok (9.64 seconds), with the word: "replace with this audio".
+
+It is the same recording at the same speed. Set against the template's own sound, sample by sample, it matches at 0.95, and its first sample falls 0.0891 seconds into the film. `edit.py ... sound <file> 0.0891` lays it there under the film already rendered and pads it with silence to the film's length; the picture is not touched. Measured afterwards: the template's music sits in the preview exactly where it sits in the template (0.0 milliseconds off at 0.2, 2.0 and 3.4 seconds). The music dies away between about 8.9 and 9.5 seconds, so the film's last 0.4 seconds are silent, as the sound itself is.
 
 ## Making it again
 
@@ -102,7 +104,8 @@ export TEMPLATE_FRAMES=<a folder of the template's upper half, one 0000.jpg a fr
 python3 docs/plans/v1.9/video/release/christ-edit/edit.py . .promo/v1.9-video/christ2 big <name> 208 212 216 223   # ours beside the template's
 python3 docs/plans/v1.9/video/release/christ-edit/edit.py . .promo/v1.9-video/christ2 strip <name> 364 380         # the film's own frames in a row
 python3 docs/plans/v1.9/video/release/christ-edit/edit.py . .promo/v1.9-video/christ2 luma                         # brightness and sharpness, ours beside the template's
-python3 docs/plans/v1.9/video/release/christ-edit/edit.py . .promo/v1.9-video/christ2 render [sound file]          # every frame, then the files (about eight minutes on four cores)
+python3 docs/plans/v1.9/video/release/christ-edit/edit.py . .promo/v1.9-video/christ2 render [sound file [offset]] # every frame, then the files (about eight minutes on four cores)
+python3 docs/plans/v1.9/video/release/christ-edit/edit.py . .promo/v1.9-video/christ2 sound <sound file> 0.0891          # a new sound under the film already made
 ```
 
 The cut is the tables in `edit.py`: `SHOTS` (each shot's picture, the point held, its push, blur and flash by the template's frame), `FACES1` and `FACES2` (the icons in each run and how near), and the word tables. The template's file is not in the repository: it is someone else's video.

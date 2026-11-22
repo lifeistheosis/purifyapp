@@ -7,8 +7,11 @@
   python3 edit.py <repo root> <work dir> strip <name> <first> <last>           the film's own frames in a row, small
   python3 edit.py <repo root> <work dir> luma [from to]                       how bright and how sharp each frame is,
                                                                               ours beside the template's
-  python3 edit.py <repo root> <work dir> render [audio file]                  every frame, then the silent master;
+  python3 edit.py <repo root> <work dir> render [sound file [offset]]         every frame, then the silent master;
                                                                               with a sound file, also a private preview
+  python3 edit.py <repo root> <work dir> sound <sound file> [offset]          a new sound under the film already made
+                                                                              (offset: seconds into the film at which
+                                                                              the sound's first sample falls)
 
 Time is counted in the template's own frames (30 a second), so every table in template.json is used as it was
 measured; the film itself is 60 frames a second. The template's picture is read as the middle band of a 9:16
@@ -1000,7 +1003,21 @@ def render_range(args):
     return b - a
 
 
-def render(audio=None):
+def lay_sound(audio, offset=0.0):
+    """The private preview: the silent master with a sound laid under it. `offset` is how many seconds into the
+    film the sound's first sample falls (found by setting the sound against the template's own, sample by sample);
+    the sound is padded with silence to the film's length and the picture is not touched."""
+    total = int(round(TOTAL_F * FPS / TF))
+    master = f"{HOME}/purify-christ-edit.mp4"
+    preview = f"{HOME}/purify-christ-edit-PREVIEW-not-for-posting.mp4"
+    late = int(round(max(0.0, offset) * 44100))
+    chain = f"aresample=44100,adelay={late}S:all=1,apad=whole_dur={total / FPS:.4f}"
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", master, "-i", audio, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-af", chain,
+                    "-c:a", "aac", "-b:a", "192k", "-t", f"{total / FPS:.4f}", "-movflags", "+faststart", preview], check=True)
+    return preview
+
+
+def render(audio=None, offset=0.0):
     from multiprocessing import Pool
     total = int(round(TOTAL_F * FPS / TF))
     step = 12
@@ -1017,9 +1034,7 @@ def render(audio=None):
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *common, "-an", master], check=True)
     out = {"master": master, "frames": total, "seconds": total / FPS}
     if audio:
-        preview = f"{HOME}/purify-christ-edit-PREVIEW-not-for-posting.mp4"
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", master, "-i", audio, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", preview], check=True)
-        out["preview"] = preview
+        out["preview"] = lay_sound(audio, offset)
     print(json.dumps(out))
 
 
@@ -1037,4 +1052,6 @@ if __name__ == "__main__":
     elif mode == "luma":
         luma(*(int(x) for x in sys.argv[4:6])) if len(sys.argv) > 5 else luma()
     elif mode == "render":
-        render(sys.argv[4] if len(sys.argv) > 4 else None)
+        render(sys.argv[4] if len(sys.argv) > 4 else None, float(sys.argv[5]) if len(sys.argv) > 5 else 0.0)
+    elif mode == "sound":  # a new sound under the film already rendered
+        print(lay_sound(sys.argv[4], float(sys.argv[5]) if len(sys.argv) > 5 else 0.0))

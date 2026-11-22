@@ -66,6 +66,8 @@ What is not the template's, each named in the folder's README for his yes or no:
 
 Not done: the sound. The two files he sent are one file, byte for byte, and its music stops at about 4.7 seconds; the "second clip" with the full audio has not reached this chat. The preview carries the first file's sound. He was told and asked for it again. `checkMock` cannot read this film (it is composed from pictures, not a page); it was held to the rules by eye, and the README says so.
 
+His word, 2026-11-22 about 03:00 UTC, with an MP3 saved from TikTok (9.64 seconds), verbatim: "replace with this audio". Done: it is the same recording at the same speed as the template's own sound (a match of 0.95, its first sample 0.0891 seconds into the film), so it was laid under the film already rendered at that offset and padded with silence to the film's length (`edit.py ... sound`); the picture was not touched and the silent master is as it was. Measured afterwards, the template's music sits in the preview where it sits in the template, to the millisecond. The file with the sound is still the private preview: the recording is not cleared, and what is posted is the silent master with the sound added inside the app it is posted in.
+
 ## Tokens
 
 get_session read 0 used tokens every time, so there is no measured number. By my own count the chat's context was about 130,000 tokens when I stopped at the cap of 250,000 (own count times two), about 175,000 at the first finish, and about 200,000 after his two changes, and about 240,000 after the edit. By the times-two rule that is about 480,000. He lifted the cap himself.
