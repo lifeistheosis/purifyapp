@@ -743,9 +743,12 @@ body {
    fitted to the column, where only its marks are read, and near, at its own
    size, where it scrolls both ways under a finger. A line keeps its weight
    at either size (each is divided by --k-web-s, which the page sets).
-   A plate is never a control: the Choice above the web is. Nothing here is
+   A plate is never a control: the Choice beside the web is. Nothing here is
    dimmed below 4.5:1: a quiet plate keeps the faint ink, and the lit way is
-   told by its ring, its fill and its thread. */
+   told by its ring, its fill and its thread.
+   A web may carry numbers: a plate its count (em), a thread its weight
+   (--k-web-weight, 0 to 1, a share of the most, so widths are to scale) and
+   beside it the share that went on (.k-web-share). */
 .k-web { --k-web-s: 1; margin: var(--k-space-4) 0 var(--k-space-5); }
 
 .k-web-frame {
@@ -788,14 +791,14 @@ body {
 .k-web-ways path {
   fill: none;
   stroke: var(--k-ink-3);
-  stroke-width: calc(1.25px / var(--k-web-s));
+  stroke-width: calc((1.25px + var(--k-web-weight, 0) * 5px) / var(--k-web-s));
   stroke-linecap: round;
   transition: stroke var(--k-duration-fast) var(--k-ease-house);
 }
 
 .k-web.has-lit .k-web-ways path { stroke: var(--k-line-strong); }
 
-.k-web.has-lit .k-web-ways path.is-lit { stroke: var(--k-ink); stroke-width: calc(2.25px / var(--k-web-s)); }
+.k-web.has-lit .k-web-ways path.is-lit { stroke: var(--k-ink); stroke-width: calc((2.25px + var(--k-web-weight, 0) * 5px) / var(--k-web-s)); }
 
 /* A plate: a screen, an answer, a road or a page. Its small line says what it is. */
 .k-web-node {
@@ -822,6 +825,25 @@ body {
 .k-web-node small { display: block; font-size: var(--k-text-eyebrow); line-height: 15px; font-weight: 600; color: var(--k-ink-3); }
 
 .k-web-node span { display: block; font-size: var(--k-text-eyebrow); line-height: 15px; font-weight: 400; color: var(--k-ink-3); }
+
+/* A plate's count, in figures that line up. */
+.k-web-node em { display: block; font-style: normal; font-size: var(--k-text-eyebrow); line-height: 15px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--k-ink-2); }
+
+.k-web.has-lit .k-web-node:not(.is-lit) em { color: var(--k-ink-3); }
+
+/* Beside a thread: the share of one plate's readers that reached the next. */
+.k-web-share {
+  position: absolute;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-eyebrow);
+  line-height: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--k-ink-3);
+  white-space: nowrap;
+}
+
+.k-web.has-lit .k-web-share.is-lit { color: var(--k-ink); }
 
 .k-web.has-lit .k-web-node { background-color: transparent; box-shadow: inset 0 0 0 calc(1px / var(--k-web-s)) var(--k-line); color: var(--k-ink-3); }
 

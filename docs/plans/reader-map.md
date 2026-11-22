@@ -216,22 +216,38 @@ His word (20:22 UTC): "whwe need some way to actually track data from a to b to 
 - **The seven counts** (`lib/analytics/moreCounting.ts`): the first prayer or chapter finished, each day of the first week opened or closed (the day's number, never which step), an account made and where, reminders set, a "Try it" opened or the subscribe button tapped with the lock behind it, a purchase on the pricing page, a small card on Today answered or closed.
 - **Locks** (`lib/analytics/lockCounting.ts`): which lock is tapped, and which leads to a purchase.
 - **Where a visit came from** (`lib/analytics/source.ts`, `tag.ts`), on the visit's own row.
-- **The questions**: begun, finished, returned (`lib/admin/onboardingSummary.ts`).
+- **The questions, by answer** (`lib/onboarding/counting.ts`, his word of 2026-10-26: "how many Roman Catholics come, how many Protestants come"). Each screen reached, each answer given, a skip, a finish, and a note from the device on its second, seventh and thirtieth day that it came back. The finish and the notes carry the reader's answers (where they come from, how familiar they are, what they came for) and the link that brought them, if it was one of ours. Admin, Onboarding, shows finishes and returns by where a reader comes from, and the link that brought the most finishers (`lib/admin/onboardingSummary.ts`). The privacy page has said so since 1.8: "a reader who answered Catholic finished" is one more on a total.
 
 All are totals, kept to the day, with no account, no session and no device on the row.
 
 **What is not counted.**
 
-1. Nothing by road or by answer. That was his "yes privacy" of 2026-11-11, and the counts' own header says it: "Nothing about where a reader comes from in faith is on any of them."
-2. A step by its name. The week is counted by the day's number only.
-3. Where a reader came from, on any row that says how they fared. That a video sent a visit is known; whether that reader stayed or bought is not.
-4. One picture. The numbers stand in separate panels, and none is on the web.
+1. The road itself. Finishing and coming back are counted by answer, so a road can be worked out from rows that exist (all but "coming back", which no row says). Nothing tallies it yet.
+2. Anything after the questions, by answer. The seven counts, the locks and Plus carry no answer: their own header says "Nothing about where a reader comes from in faith is on any of them." So the week's days, a first prayer, a lock and a purchase cannot be read by road.
+3. A step by its name. The week is counted by the day's number only.
+4. Where a reader came from, past the questions. The link that brought a reader is on the finish and on the notes of coming back, when it was one of ours. A visit from a social app that carried no tag is known only as a visit, and no link is on a lock or a purchase.
+5. One picture. The numbers stand in separate panels, and none is on the web.
+
+(Corrected 2026-11-22, an hour after it was written: this list said nothing was counted by answer and that the source was on no row that says how a reader fared. The questions' own counts do both, and have since 1.8. He was told in the chat.)
 
 **The proposal** (for his yes, part by part; nothing is begun).
 
-- **A. The road as one word on rows that exist** (the week's days, the first prayer or chapter, what a test's readers reach, a lock tapped, Plus bought): the eight roads and "none", a closed list. Totals only, no account or device on the row, no cell under twenty shown, as now. It is a count about faith, so it waits for what section 9 names: his decision of 2026-11-22 carried into the terms and the privacy page, and for a reader in the EU their own yes (mock-up 1). It also has to be read against the rule that a row which says too much describes one person (the note, 4.2). Small in code; the words are the slow part.
-- **B. The numbers drawn on the web.** The reader web of section 11, in Admin: each plate with how many reached it and what share went on, a thread's weight by its readers, and for a running test version A beside version B. Medium. It needs A, and a design first: a mock-up with numbers marked as examples.
+- **A1. The road tallied from rows that exist.** Finishes and returns on days 2, 7 and 30 already carry the answers a road is made of. Admin can add them up by road today: nothing new is sent, and the privacy page already describes these rows. "Coming back" cannot be told from "practicing" until a row says it. Small.
+- **A2. The road as one word on the rows that carry no answer** (the week's days, the first prayer or chapter, what a test's readers reach, a lock tapped, Plus bought): the eight roads and "none", a closed list. Totals only, no account or device on the row, no cell under twenty shown, as now. It is a count about faith on rows that were promised to hold none, so the privacy page says it first (his word, 2026-11-22, about 20:30 UTC: "yes we can update the privacy policy"), on the same footing as the questions' counts, and the lawyer's read of section 9 covers both. It also has to be read against the rule that a row which says too much describes one person (the note, 4.2). Small in code; the words are the slow part.
+- **B. The numbers drawn on the web.** The reader web of section 11, in Admin: each plate with how many reached it and what share went on, a thread's weight by its readers, and for a running test version A beside version B. Medium. With A1 alone it can show the questions, the finish and the return for each road; the week, the locks and Plus wait for A2. A design first: the mock-up below.
 - **C. The source as one word on the same rows:** a closed list of the app's own named sources and his tagged links, so that a video or a page is read by who stayed and not by who visited. On Android the store can say which link an install came from; on iPhone only the store's own report for a store page can. Medium, with a line on the privacy page, and each store's rules read when it is built.
 - **D. A line in his weekly brief for each running test:** wait, version A leads, version B leads, or stop. The panel already works this out.
 
 **The limit that no tracking lifts.** A few hundred new readers a week (the note, 4.3), and by road they are fewer still: a road with thirty new readers a week shows nothing for months. So a road's numbers are counts to watch, not verdicts; a verdict comes from a test of one large fork, on all readers together, on the website first, where the readers are.
+
+**His yes (2026-11-22, about 20:30 UTC): "everything recommended let's do it. and yes we can update the privacy policy."** Read by this chat as: the four parts above, and the six ideas marked worth taking from the video (`onboarding-2.0.md`), each still with its own drawing for his yes, and the privacy page's own sentences still his to read before they stand (legal acceptance). The order of work is in `onboarding-2.0.md`.
+
+**The mock-up of B.** https://claude.ai/artifact/8fm48CBrL6usMQkJftyzzy (his, private). `node docs/plans/reader-map/web.mjs --numbers` writes `docs/plans/reader-map/web-numbers.html`: the same web, with a count on every plate, a thread as thick as its readers (to scale), and beside each thread the share that went on. Under it, the lit road from A to B row by row, and the roads side by side. Every number is an example made in the script from round shares (a thousand readers in an example month); none is a count, and the page says so in its title line, its caption and under each table. A count under twenty reads "too few", as in Admin today, which also shows the limit: at that size four of the eight roads cannot be read at their door. It is a drawing of the idea on a kit page, not of the Admin page itself, which would be made from the admin's own pieces. The kit's Web piece gained what it needs for this (a plate's count, a thread's weight and share).
+
+**Draft for the privacy page, for his reading (A2 and C). Not on the page.** To stand beside the page's sentence on the seven counts:
+
+> From 2.0, a count of a step of your first week, of a first prayer or chapter, of a lock or of Plus may also say which of eight roads through Purify you are on. Your device works that word out from your answers to the welcome questions. It is one word from a short list, the same for every reader on that road: "a reader on the Catholic road opened day three" is one more on a total, never you. No session id, no account, no device id.
+
+> The same counts may say which of our own links brought you, as the welcome questions' counts already do.
+
+Each needs its German, and the test that holds the page to the counts (`lib/analytics/__tests__/moreCounting.test.ts`) keeps the count shut until the sentence is there.

@@ -101,3 +101,30 @@ The video is an interview with the founder of an astrology app that spent six ye
 - **15, new. One personal thing on Today that moves with time:** the name day and the patron saint, the day of the fast, the place in the week.
 - **16, new. Numbers on the web:** `reader-map.md`, section 12.
 - **17, new. The large forks tested on the website first.**
+
+## His yes, and the order of work (2026-11-22)
+
+**His word, about 20:30 UTC: "everything recommended let's do it. and yes we can update the privacy policy."**
+
+Read by this chat as a yes to what its last message recommended: numbers on the web (`reader-map.md`, section 12, parts A to D), and the six ideas marked worth taking above (13, 15, a longer set of questions where each screen gives back, a real picture on the Plus sheet, 14, 17). Not read as a yes to what that message set under "not for this house" or "yours to decide" (the trial, one lower price, paying outside the App Store), nor to suggestions 1 to 12, which stay his to pick.
+
+**What his yes does not replace.** Each thing designed still goes to him as a drawing, with its reasons, for a yes or no. The privacy page's sentences are his to read before they stand, and so are the Terms. A price is his number. Words about the faith wait for the clergy queue. A push to main waits for his word, and a migration for his sign-off on the SQL. The store's own steps (a product, a store page) are his hands.
+
+**The order, cheapest and most useful first.** Sizes are this chat's judgement, not measured. One at a time, by the house's rule of one chat.
+
+| # | What | Size | Needs before it is built |
+|---|---|---|---|
+| 1 | Numbers on the web: the mock-up | done 2026-11-22 | his yes or no on the drawing |
+| 2 | The road tallied in Admin from counts that exist (A1), drawn on the reader web there (B, its first part) | medium | his yes to 1; a design from the admin's own pieces |
+| 3 | A line in his weekly brief for each running test (D) | small | nothing |
+| 4 | Start from where the reader came in (13): the page or the tagged link a reader came from chooses the first step | medium | a drawing of the first screen; which pages lead where |
+| 5 | One personal thing on Today that moves with time (15): the patron saint and the name day, the day of the fast | medium | a drawing; where a name day's date comes from |
+| 6 | A lifetime plan as the high price (14) | small in code | his price; the product made in both stores and in RevenueCat by him |
+| 7 | A longer set of questions where each screen gives something back | medium to large | a drawing of each new screen; the clergy queue for any new line about the faith |
+| 8 | A real picture on the Plus sheet, as one test | small | the picture, his yes; its turn among the tests (the sheet's own test holds that place from 2027-02-10 to 2027-05-05) |
+| 9 | The road on the counts after the questions (A2), and the source (C) | small in code | the privacy page's new sentences, read by him, in English and German; with 2.0's new terms |
+| 10 | The rest of the web's numbers (B, in full) | small | 9 |
+
+Number 17, the large forks tested on the website first, is a way of working and no build: every test from here is planned for the website's readers first.
+
+**Said to him with this.** It is about ten pieces of work, and this chat is far past the size at which a chat is meant to hand over (`docs/OPERATIONS.md`). The drawings can be made here; the building should begin in a fresh chat, from this file and `reader-map.md`.

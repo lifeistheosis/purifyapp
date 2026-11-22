@@ -1,0 +1,1595 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Purify web in numbers</title>
+<meta name="description" content="A mock-up of the Purify reader web with a count on every plate and thread. Every number is an example.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* kit:begin. Written by `node docs/brand/kit/check.mjs --write` from tokens.css and pieces.css; edit those, not this. */
+/* The Purify design kit: tokens.
+ *
+ * Taken from the app, nothing invented. Every value names the line of the
+ * app's source it comes from (line numbers as of fe399ca23). When the app
+ * changes a value, change it here and run `node docs/brand/kit/check.mjs`.
+ *
+ * The five palettes are the app's own (scripts/mock-check.mjs PALETTES):
+ *   Dark         no attribute          app/globals.css 81-82, 90, 106-107, and the ink of :root
+ *   Light        data-theme="light" (and the app's parchment attribute): white, the app's ink, never parchment
+ *   Black        data-reading-mode="black"       app/globals.css 5147-5154
+ *   Candlelight  data-reading-mode="candlelight" app/globals.css 5029-5037, 5217
+ *   Monastery    data-reading-mode="monastery"   app/globals.css 5107-5112, 5220
+ *
+ * A design (an artifact, a report) opens on Dark, the app's own ground.
+ * data-theme="light" gives the clean neutral light; data-reading-mode wears
+ * the app's other palettes. Parchment is never a design ground (his word,
+ * 2026-11-13); its values are listed below for app mockups only.
+ *
+ * Names: the app calls the ground "night" and the ink "paper" because they
+ * flip on Light. The kit names them by their job (ground, ink) so nobody
+ * has to remember the flip.
+ */
+
+:root {
+  /* ── Dark (the app's default) ─────────────────────────────────────── */
+  --k-ground: #101013;      /* --color-night, globals.css 81 */
+  --k-card: #1d1d20;        /* --color-night-soft, globals.css 82 */
+  --k-well: #0b0b0e;        /* --color-night-deep, globals.css 90 */
+  --k-ink-base: #ffffff;    /* --color-paper, globals.css 71 (the ink on dark) */
+  --k-accent: #eaeaec;      /* --color-gold, globals.css 106: a glowing white, never gold (lib/ui/goldTone.ts) */
+  --k-accent-soft: #cfcfd3; /* --color-gold-soft, globals.css 107 */
+  /* The ink's shares, as the app writes them (text-paper/NN) and as each
+     palette lifts its faint share to pass 4.5:1 (globals.css 5539-5553). */
+  --k-ink-2-share: 75%;     /* text-paper/75, 186 uses in app/ and components/ */
+  --k-ink-3-share: 55%;     /* text-paper/55, the most used share (720 uses) */
+
+  /* ── Type (globals.css 161-191; app/layout.tsx 31-48) ─────────────── */
+  --k-font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;      /* --font-sans, 161 */
+  --k-font-serif: "Lora", Georgia, serif;                                             /* --font-serif and --font-heading, 165 and 175 */
+  --k-font-display: "DM Serif Display", Georgia, serif;                               /* --font-display-serif, 169 */
+  --k-text-eyebrow: 11px;   /* 180 */
+  --k-text-caption: 12px;   /* 181 */
+  --k-text-detail: 13px;    /* 182 */
+  --k-text-ui: 14px;        /* 183 */
+  --k-text-body: 17px;      /* 184 */
+  --k-text-lede: 19px;      /* 185 */
+  --k-text-title-sm: 22px;  /* 186 */
+  --k-text-title: 28px;     /* 187 */
+  --k-text-heading: 32px;   /* 188 */
+  --k-text-display: 48px;   /* 190 */
+  --k-eyebrow-tracking: 0.14em; /* the app's eyebrow: uppercase, bold, tracking-[0.14em] (components/, 4 uses) */
+
+  /* ── Shape and space (globals.css 193-198; Tailwind's 4px step) ──── */
+  --k-radius-sm: 8px;       /* 193 */
+  --k-radius-md: 12px;      /* 194 */
+  --k-radius-lg: 20px;      /* 195: a card, rounded-lg (26 uses with border-paper/10 bg-night-soft) */
+  --k-radius-card: 28px;    /* 196 */
+  --k-radius-pill: 999px;   /* 198: buttons only, never a list of places (CLAUDE.md, floating pills) */
+  --k-space-1: 4px;
+  --k-space-2: 8px;
+  --k-space-3: 12px;
+  --k-space-4: 16px;        /* the phone gutter */
+  --k-space-5: 24px;
+  --k-space-6: 32px;
+  --k-space-7: 48px;
+  --k-space-8: 64px;
+  --k-target: 44px;         /* every control, lib/ui/__tests__/touchTargets.test.ts */
+  --k-measure: 68ch;        /* a reading line */
+
+  /* ── Motion (globals.css 235-241) ─────────────────────────────────── */
+  --k-ease-house: cubic-bezier(0.22, 1, 0.36, 1); /* the house curve, 235 */
+  --k-duration-fast: 200ms; /* 239 */
+  --k-duration-base: 320ms; /* 240 */
+  --k-duration-slow: 480ms; /* 241 */
+  --k-rise: 8px;            /* --rise-card, 271 */
+  --k-press: 0.98;          /* --press-scale-card, 277 */
+
+  /* ── Fixed on every palette ───────────────────────────────────────── */
+  --k-crimson: #c1272d;     /* --color-crimson, 113: the Church's red (the strict fast, a removal, an error), one red everywhere */
+
+  /* ── Money: the one chart with hues (app/admin/admin-theme.css 226-228 dark, 824-826 light) ── */
+  --k-money-shop: #3987e5;
+  --k-money-plus: #008300;
+  --k-money-box: #d55181;
+
+  color-scheme: dark;
+}
+
+/* ── Light: a clean neutral, never parchment ─────────────────────────
+   His word, 2026-11-13: "stop using parchment for designs". A design's
+   light is white carrying the app's ink: the ground is --color-paper
+   (globals.css 71), the ink is --color-ink and --color-ink-soft (68-69, the
+   app's ink on its white surfaces), the card and well are the admin panel's
+   neutral grey (admin-theme.css 768, --adm-panel-2). A design opens on Dark
+   and is light only when asked (data-theme="light"). The app's Light palette
+   (data-reading-mode="parchment") draws this same neutral here, so no design
+   ever stands on parchment. */
+:root[data-theme="light"],
+:root[data-reading-mode="parchment"] {
+  --k-ground: #ffffff;      /* --color-paper, globals.css 71 */
+  --k-card: #f3f3f3;        /* --adm-panel-2, admin-theme.css 768 */
+  --k-well: #f3f3f3;
+  --k-ink-base: #49424e;    /* --color-ink, globals.css 68 */
+  --k-accent: #49424e;      /* the ink is the accent on white, as --color-on-paper (globals.css 140) */
+  --k-accent-soft: #6b6470; /* --color-ink-soft, globals.css 69 */
+  --k-ink-2-share: 90%;
+  --k-ink-3-share: 80%;     /* about --color-ink-soft: 5.0:1 on the card */
+  --k-money-shop: #2a78d6;  /* admin-theme.css 824 */
+  color-scheme: light;
+}
+
+/* ── Parchment: app only, never a design ground ───────────────────────
+   The app's Light palette (globals.css 5164-5180), listed so a mockup of
+   the app can name it. No piece reads these, and check.mjs fails a design
+   whose ground is parchment, cream or sepia. */
+:root {
+  --k-app-parchment-ground: #f1e8d4;  /* app only, never a design ground */
+  --k-app-parchment-card: #e7dcc1;    /* app only */
+  --k-app-parchment-ink: #2b2317;     /* app only */
+}
+
+/* ── Black (True black, globals.css 5147-5154; faint share 5500) ──── */
+:root[data-reading-mode="black"] {
+  --k-ground: #000000;
+  --k-card: #161616;
+  --k-well: #000000;
+  --k-ink-base: #ffffff;
+  --k-accent: #eaeaec;
+  --k-accent-soft: #cfcfd3;
+  --k-ink-2-share: 75%;
+  --k-ink-3-share: 55%;
+  color-scheme: dark;
+}
+
+/* ── Candlelight (globals.css 5029-5037, well 5217; faint share 5546) ── */
+:root[data-reading-mode="candlelight"] {
+  --k-ground: #050505;
+  --k-card: #18181b;
+  --k-well: #000000;
+  --k-ink-base: #d4d4d8;
+  --k-accent: #e4e4e7;
+  --k-accent-soft: #a1a1aa;
+  --k-ink-2-share: 80%;
+  --k-ink-3-share: 60%;
+  color-scheme: dark;
+}
+
+/* ── Monastery (globals.css 5107-5112, well 5220; faint share 5549) ── */
+:root[data-reading-mode="monastery"] {
+  --k-ground: #0d1119;
+  --k-card: #171e2b;
+  --k-well: #080b11;
+  --k-ink-base: #e6ebf4;
+  --k-accent: #aebedd;
+  --k-accent-soft: #8fa2c4;
+  --k-ink-2-share: 75%;
+  --k-ink-3-share: 55%;
+  color-scheme: dark;
+}
+
+/* Derived on every palette, the way the app derives them: the ink at a
+   share (text-paper/NN) and the hairlines in the ink (border-paper/10 for a
+   card, 249 uses; border-paper/20 for a control, 102 uses). */
+:root,
+:root[data-theme],
+:root[data-reading-mode] {
+  --k-ink: var(--k-ink-base);
+  --k-ink-2: color-mix(in oklab, var(--k-ink-base) var(--k-ink-2-share), transparent);
+  --k-ink-3: color-mix(in oklab, var(--k-ink-base) var(--k-ink-3-share), transparent);
+  --k-line: color-mix(in oklab, var(--k-ink-base) 10%, transparent);
+  --k-line-strong: color-mix(in oklab, var(--k-ink-base) 20%, transparent);
+  --k-grid: color-mix(in oklab, var(--k-ink-base) 8%, transparent);  /* --chart-grid, globals.css 150 */
+}
+
+/* ── Night sky: one of the app's looks, a night on every palette ──────
+   "A still night, small stars, the star above" (lib/reader/readingModes.ts
+   156-163; html[data-look="nightsky"], globals.css 12651-12669). The one
+   place a design is dark whatever the page wears, as the app's own Nativity
+   card is (components/today/NativityStarCard.tsx, `dark-island`). Read by
+   .k-night in pieces.css; the emails' Nativity Fast wears the same look. */
+:root {
+  --k-sky-top: #03050a;                 /* the sky's head, --room, globals.css 12669 */
+  --k-sky: #05070d;                     /* --color-night of the look, 12652 */
+  --k-sky-foot: #070b14;                /* the sky's foot, 12669 */
+  --k-sky-glow: rgb(72 100 168 / 0.2);  /* the light along the horizon, 12668 */
+  --k-sky-ink: #edf0f6;                 /* --color-paper of the look, 12655 */
+  --k-sky-quiet: 64%;                   /* --look-quiet, 12660: its faint share */
+}
+
+/* The Purify design kit: pieces for documents.
+ *
+ * One system with the emails (docs/brand/kit/email/). A page opens the way a
+ * chapter opens in the app: the mark, a small line, the title, a line under
+ * it, the short rule. One thing leads, and it stands on the app's Night sky;
+ * everything after it is quiet, set on the page itself with hairlines. A
+ * thing is raised only when it is a thing to act on, and then it is the
+ * app's own tray. Labels are sentence case (docs/brand/voice.md).
+ *
+ * Phone first (the owner, 2026-11-13: "the design must be optimized for
+ * mobile"). Every piece is drawn at 360 to 412 wide first, in the app's own
+ * phone sizes, and let out from 640px. No piece is a row of tiles, so none
+ * leaves an orphan, an empty half-row or two boxes of unequal height.
+ *
+ * Built only from tokens.css, the way the app builds its own screens. The
+ * guardrails of CLAUDE.md hold: no light rays (the star's light is a soft
+ * pool), no side stripes, no sparkle star (the star is the Octogram's eight
+ * points), pills only for buttons, every control 44px, contrast on every
+ * palette, no parchment, logical sides (start and end) so Arabic mirrors,
+ * and no em dashes in the words.
+ */
+
+/* ── The page ──────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background-color: var(--k-ground);
+  color: var(--k-ink);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.k-page {
+  max-width: 680px;
+  margin-inline: auto;
+  padding-block: var(--k-space-6) var(--k-space-8);
+  padding-left: max(var(--k-space-4), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--k-space-4), env(safe-area-inset-right, 0px));
+}
+
+/* Running text is the reader's serif, as in the emails. */
+.k-page p {
+  margin-block: 0 var(--k-space-4);
+  max-width: var(--k-measure);
+  font-family: var(--k-font-serif);
+  font-size: var(--k-text-body);
+  line-height: 1.65;
+  color: var(--k-ink-2);
+}
+
+.k-page a { color: var(--k-ink); text-decoration-color: var(--k-ink-3); text-underline-offset: 3px; }
+
+/* A link that stands alone: a line of its own, underlined, 44 tall. */
+.k-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--k-target);
+  min-width: var(--k-target);
+  font-family: var(--k-font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--k-ink) 70%, transparent); /* globals.css 3337: the ring in the page's own ink, never red */
+  outline-offset: 2px;
+}
+
+/* The small line over a thing: sentence case, never capitals spaced out. */
+.k-eyebrow {
+  display: block;
+  margin: 0 0 var(--k-space-2);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-caption);
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--k-ink-3);
+}
+
+/* ── Title: how a chapter opens ────────────────────────────────────── */
+.k-title { margin-block: var(--k-space-2) var(--k-space-6); text-align: center; }
+
+/* The app's cross (public/purify-cross-mark.png), in the page's own ink. */
+.k-mark {
+  display: block;
+  width: 18px;
+  height: 32px;
+  margin: 0 auto var(--k-space-5);
+  background-color: var(--k-ink);
+  -webkit-mask: var(--k-pic-cross) center / contain no-repeat;
+  mask: var(--k-pic-cross) center / contain no-repeat;
+}
+
+.k-title h1 {
+  margin: 0;
+  font-family: var(--k-font-display);
+  font-weight: 400;
+  /* A phone's title first (34px), the app's display on a wide screen. */
+  font-size: clamp(34px, 4vw + 20px, var(--k-text-display));
+  line-height: 1.1;
+  color: var(--k-ink);
+  text-wrap: balance;
+}
+
+.k-page .k-lede {
+  margin: var(--k-space-3) auto 0;
+  max-width: 34ch;
+  font-style: italic;
+  font-size: var(--k-text-body);
+  line-height: 1.5;
+  color: var(--k-ink-3);
+  text-wrap: balance;
+}
+
+/* The short rule at a chapter's head (h-px w-7 bg-paper/25 in the reader). */
+.k-title::after {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 1px;
+  margin: var(--k-space-5) auto 0;
+  background-color: var(--k-line-strong);
+}
+
+.k-page .k-meta { margin: var(--k-space-3) auto 0; font-family: var(--k-font-sans); font-size: var(--k-text-caption); line-height: 18px; color: var(--k-ink-3); }
+
+/* ── Section ───────────────────────────────────────────────────────── */
+.k-section { margin-block: var(--k-space-7); }
+
+.k-section > h2 {
+  margin: 0 0 var(--k-space-2);
+  font-family: var(--k-font-serif);
+  font-weight: 600;
+  /* The app's phone section is text-title-sm (22px). */
+  font-size: clamp(var(--k-text-title-sm), 1vw + 18px, 26px);
+  line-height: 1.25;
+  color: var(--k-ink);
+}
+
+.k-section h3 {
+  margin: var(--k-space-5) 0 var(--k-space-2);
+  font-family: var(--k-font-serif);
+  font-weight: 600;
+  font-size: var(--k-text-lede);
+  line-height: 1.3;
+  color: var(--k-ink);
+}
+
+/* A divider between sections: a full-width hairline, never down an edge. */
+.k-rule { height: 0; margin-block: var(--k-space-7); border: 0; border-block-start: 1px solid var(--k-line); }
+
+/* ── The night: Night sky, a night on every palette ────────────────── */
+/* The app's look (globals.css 12651-12669), as its own Nativity card wears
+   it: dark on every palette (`dark-island`). Whatever stands in it reads the
+   night's ink. Once on a page, for the one thing that leads. */
+.k-night {
+  --k-ground: var(--k-sky);
+  --k-ink-base: var(--k-sky-ink);
+  --k-ink: var(--k-sky-ink);
+  --k-ink-2: color-mix(in oklab, var(--k-sky-ink) 80%, transparent);
+  --k-ink-3: color-mix(in oklab, var(--k-sky-ink) var(--k-sky-quiet), transparent);
+  --k-line: color-mix(in oklab, var(--k-sky-ink) 12%, transparent);
+  --k-line-strong: color-mix(in oklab, var(--k-sky-ink) 22%, transparent);
+  color: var(--k-sky-ink);
+  background-color: var(--k-sky);
+  /* The small stars, the light along the horizon, the sky: the look's own layers. */
+  background-image:
+    var(--k-pic-stars),
+    radial-gradient(140% 52% at 50% 112%, var(--k-sky-glow), transparent 66%),
+    linear-gradient(180deg, var(--k-sky-top) 0%, var(--k-sky) 40%, var(--k-sky-foot) 100%);
+  background-position: center top, center, center;
+  background-size: cover, auto, auto;
+  background-repeat: no-repeat;
+}
+
+/* ── The lead: one figure, and its week ────────────────────────────── */
+.k-lead {
+  margin-block: var(--k-space-5);
+  padding: var(--k-space-5) 18px var(--k-space-4);
+  border: 1px solid var(--k-line);
+  border-radius: 22px; /* the Nativity card's own, rounded-[22px] */
+  overflow: hidden;
+}
+
+.k-lead-value {
+  display: block;
+  font-family: var(--k-font-display);
+  font-weight: 400;
+  font-size: clamp(56px, 10vw + 20px, 76px);
+  line-height: 1;
+  color: var(--k-ink);
+  /* The glowing white: a soft pool, as the app's white accent glows (globals.css 4814). */
+  text-shadow: 0 0 22px rgb(255 255 255 / 0.22);
+}
+
+.k-page .k-lead-change { margin: var(--k-space-2) 0 0; font-family: var(--k-font-sans); font-size: var(--k-text-ui); line-height: 20px; color: var(--k-ink-2); }
+
+/* ── Figures: the quiet ones, as rows ──────────────────────────────── */
+/* A name and what changed at the start, the number at the end, a hairline
+   between. Rows at every width: never tiles. */
+.k-stats { margin-block: var(--k-space-2) var(--k-space-5); }
+
+.k-stat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: var(--k-space-4);
+  align-items: center;
+  padding-block: 14px;
+}
+
+.k-stat + .k-stat { border-block-start: 1px solid var(--k-line); }
+
+.k-stat-label { grid-column: 1; grid-row: 1; font-size: 16px; line-height: 22px; font-weight: 600; color: var(--k-ink); }
+
+.k-stat-change { grid-column: 1; grid-row: 2; font-size: var(--k-text-detail); line-height: 19px; color: var(--k-ink-3); }
+
+.k-stat-value {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-family: var(--k-font-display);
+  font-size: var(--k-text-title);
+  line-height: 1.1;
+  color: var(--k-ink);
+}
+
+/* ── Chart ─────────────────────────────────────────────────────────── */
+/* The app's own method (components/admin/charts.tsx): one ink, the period
+   before as a dashed line, a legend for two series or more. Thin columns
+   with every value over its column, so nothing has to be hovered to be
+   read. The eight-point star stands over the best day, once. */
+.k-chart { margin: var(--k-space-5) 0 0; }
+
+.k-chart > svg { display: block; width: 100%; max-width: 520px; margin-inline: auto; height: auto; overflow: visible; }
+
+.k-chart .k-col { fill: var(--k-ink); }
+
+.k-chart .k-base { stroke: var(--k-line-strong); stroke-width: 1; }
+
+.k-chart .k-before { fill: none; stroke: var(--k-ink-3); stroke-width: 1.5; stroke-dasharray: 5 4; stroke-linecap: round; stroke-linejoin: round; }
+
+.k-chart .k-val { fill: var(--k-ink); font-family: var(--k-font-sans); font-size: 12px; font-weight: 600; }
+
+.k-chart .k-axis { fill: var(--k-ink-3); font-family: var(--k-font-sans); font-size: 12px; }
+
+.k-chart .k-star { fill: var(--k-ink); filter: drop-shadow(0 0 4px rgb(255 255 255 / 0.9)); } /* the Nativity card's own star and its light */
+
+.k-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-space-1) var(--k-space-4);
+  margin: var(--k-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--k-text-caption);
+  line-height: 18px;
+  color: var(--k-ink-2);
+}
+
+.k-legend li { display: inline-flex; align-items: center; gap: 6px; }
+
+.k-key { display: inline-block; width: 6px; height: 12px; border-radius: 3px 3px 0 0; background-color: var(--k-ink); }
+.k-key-line { width: 16px; height: 0; border-radius: 0; background: none; border-block-start: 2px dashed var(--k-ink-3); }
+.k-legend .k-key-star { flex: none; width: 12px; height: 12px; border-radius: 0; background: none; color: var(--k-ink); }
+
+/* ── Split: one whole, by its parts ────────────────────────────────── */
+/* Money in by source: one bar in money's own hues, a gap of the page
+   between its parts, and under it each part with its name and its amount in
+   the page's ink, so no part is told by its colour alone. */
+.k-split { display: flex; gap: 2px; height: 12px; margin-block: var(--k-space-4) var(--k-space-2); }
+
+.k-split > span { display: block; min-width: 6px; }
+.k-split > span:first-child { border-start-start-radius: 4px; border-end-start-radius: 4px; }
+.k-split > span:last-child { border-start-end-radius: 4px; border-end-end-radius: 4px; }
+
+.k-shop { background-color: var(--k-money-shop); }
+.k-plus { background-color: var(--k-money-plus); }
+.k-box { background-color: var(--k-money-box); }
+
+.k-keys { margin: 0; padding: 0; list-style: none; }
+
+.k-keys li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  column-gap: 10px;
+  align-items: center;
+  padding-block: 10px;
+}
+
+.k-keys li + li { border-block-start: 1px solid var(--k-line); }
+
+.k-swatch { width: 10px; height: 10px; border-radius: 3px; }
+
+.k-keys-name { font-size: 16px; line-height: 22px; color: var(--k-ink); }
+
+.k-keys-name small { display: block; font-size: var(--k-text-detail); line-height: 19px; color: var(--k-ink-3); }
+
+.k-keys-value { font-size: 16px; line-height: 22px; font-weight: 600; color: var(--k-ink); font-variant-numeric: tabular-nums; }
+
+/* ── Bars: what was most ───────────────────────────────────────────── */
+.k-bars { margin: var(--k-space-2) 0 0; padding: 0; list-style: none; }
+
+.k-bars li { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--k-space-4); align-items: baseline; padding-block-start: var(--k-space-3); }
+
+.k-bars-name { font-family: var(--k-font-serif); font-size: var(--k-text-body); line-height: 24px; color: var(--k-ink); }
+
+.k-bars-value { font-size: 16px; line-height: 24px; font-weight: 600; color: var(--k-ink); font-variant-numeric: tabular-nums; }
+
+.k-bars-bar { grid-column: 1 / -1; display: block; height: 6px; margin-block-start: 6px; border-radius: 3px; background-color: var(--k-ink-3); }
+
+/* ── Table ─────────────────────────────────────────────────────────── */
+.k-table-wrap { overflow-x: auto; margin-block: var(--k-space-3) var(--k-space-5); }
+
+.k-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+
+.k-table caption {
+  caption-side: bottom;
+  text-align: start;
+  padding-block-start: var(--k-space-3);
+  font-size: var(--k-text-detail);
+  line-height: 19px;
+  color: var(--k-ink-3);
+}
+
+.k-table th {
+  text-align: start;
+  padding: 0 0 var(--k-space-2);
+  font-size: var(--k-text-caption);
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--k-ink-3);
+  border-block-end: 1px solid var(--k-line-strong);
+}
+
+.k-table td {
+  padding: 13px 0;
+  font-family: var(--k-font-serif);
+  font-size: var(--k-text-body);
+  line-height: 24px;
+  color: var(--k-ink);
+  border-block-end: 1px solid var(--k-line);
+}
+
+.k-table tbody tr:last-child td { border-block-end: 0; }
+
+/* Two columns of words keep a gutter between them, and begin on one line.
+   They touched, and a short first cell hung in the middle of a long second
+   (a table of choices and their reasons, 2026-11-13). A column of numbers
+   keeps its own gutter (.k-num). */
+.k-table td { vertical-align: top; }
+
+.k-table td + td:not(.k-num),
+.k-table th + th:not(.k-num) { padding-inline-start: var(--k-space-4); }
+
+.k-table td.k-num,
+.k-table th.k-num { text-align: end; padding-inline-start: var(--k-space-4); white-space: nowrap; }
+
+.k-table td.k-num { font-family: var(--k-font-sans); font-size: 16px; font-weight: 600; }
+
+.k-table td.k-quiet { font-weight: 400; color: var(--k-ink-3); }
+
+/* ── Figure ────────────────────────────────────────────────────────── */
+.k-figure { margin: var(--k-space-5) 0; }
+
+/* A picture from the app, or a short film of it (a clip of a gesture, muted and looping). */
+.k-figure :is(img, video) {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 22px;
+  border: 1px solid var(--k-line);
+  background-color: var(--k-well);
+}
+
+.k-figure figcaption { margin-block-start: var(--k-space-3); font-size: var(--k-text-detail); line-height: 19px; color: var(--k-ink-3); max-width: var(--k-measure); }
+
+/* A still of the app's screen at a phone's width (.k-phone): on a phone it
+   takes the column, as a picture does; on a wide screen it stands in the
+   middle at 390, the walks' phone (scripts/gate/), rather than growing to
+   twice the screen it shows. Its caption keeps its width. */
+.k-figure.k-phone img,
+.k-figure.k-phone figcaption { max-width: 390px; margin-inline: auto; }
+
+/* Before and after (.k-pair): two stills of one thing side by side at every
+   width, each with its word under it. For a change that is seen and not
+   read, a colour or a shape, where the two are set against each other. A
+   change that has to be read goes one under the other, as two figures. */
+.k-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--k-space-3); margin: var(--k-space-5) 0; max-width: 560px; }
+.k-pair .k-figure { margin: 0; min-width: 0; }
+.k-pair .k-figure img { border-radius: 14px; }
+
+/* ── Note ──────────────────────────────────────────────────────────── */
+/* It stands on its own type: a small line and the serif in italics, set in
+   from the reading line. No rule beside it, no stripe, no box (CLAUDE.md). */
+.k-note { margin: var(--k-space-5) 0; padding-inline: var(--k-space-4); max-width: var(--k-measure); }
+
+.k-page .k-note p { margin: 0; font-style: italic; font-size: var(--k-text-body); line-height: 1.6; color: var(--k-ink-2); }
+
+/* ── The tray: the app's raised card ───────────────────────────────── */
+/* As the app raises a thing to act on (.theology-tray, globals.css
+   7443-7449): a step of the card's colour down its height, a fine edge, a
+   sheen along its top and a soft shade under it. */
+.k-tray {
+  --k-shade: 0.9;
+  --k-sheen: 255 255 255;
+  margin-block: var(--k-space-5);
+  border-radius: var(--k-radius-lg);
+  border: 1px solid var(--k-line);
+  background-color: var(--k-card);
+  background-image: linear-gradient(180deg, transparent, color-mix(in srgb, var(--k-ground) 45%, transparent));
+  box-shadow:
+    inset 0 1px 0 rgb(var(--k-sheen) / 0.07),
+    0 24px 38px -22px rgb(0 0 0 / var(--k-shade)),
+    0 2px 6px rgb(0 0 0 / calc(var(--k-shade) * 0.37));
+}
+
+/* On a light page the shade is a breath and the sheen is none (--panel-sheen, globals.css 5194). */
+:root[data-theme="light"] .k-tray,
+:root[data-reading-mode="parchment"] .k-tray { --k-shade: 0.14; --k-sheen: 0 0 0; }
+
+/* ── List: things to act on, in one tray ───────────────────────────── */
+.k-list { margin-inline: 0; padding: 0; list-style: none; }
+
+.k-list li + li { border-block-start: 1px solid var(--k-line); }
+
+.k-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px;
+  column-gap: var(--k-space-3);
+  align-items: center;
+  min-height: 64px;
+  padding: 14px var(--k-space-4);
+  text-decoration: none;
+}
+
+.k-row-title { display: block; font-family: var(--k-font-serif); font-size: var(--k-text-lede); line-height: 25px; font-weight: 600; color: var(--k-ink); }
+
+.k-row-line { display: block; margin-block-start: 2px; font-size: var(--k-text-ui); line-height: 20px; color: var(--k-ink-2); }
+
+.k-row svg { color: var(--k-ink-3); }
+
+[dir="rtl"] .k-row svg { transform: scaleX(-1); }
+
+/* ── Card: one thing, and its one button ───────────────────────────── */
+/* Today's card in the app, and the saint's card in the emails. */
+.k-card { padding: var(--k-space-4); }
+
+.k-card h3 { margin: 0; font-family: var(--k-font-serif); font-weight: 600; font-size: 21px; line-height: 27px; color: var(--k-ink); }
+
+.k-page .k-card p { margin: var(--k-space-1) 0 0; max-width: none; font-family: var(--k-font-sans); font-size: var(--k-text-ui); line-height: 20px; color: var(--k-ink-2); }
+
+.k-card .k-button { width: 100%; margin-block-start: var(--k-space-4); }
+
+/* ── Button ────────────────────────────────────────────────────────── */
+/* The app's primary: a pill in the ink, the ground's colour for its words
+   (rounded-pill bg-paper text-night). 48 tall, and across its card on a
+   phone, as Today's is. One to a page. The quiet one: the ink inside a
+   control's hairline. */
+.k-actions { display: grid; gap: var(--k-space-3); margin-block: var(--k-space-5); }
+@media (min-width: 640px) { .k-actions { display: flex; flex-wrap: wrap; } }
+
+.k-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  min-width: var(--k-target);
+  padding: 0 var(--k-space-6);
+  border-radius: var(--k-radius-pill);
+  border: 1px solid transparent;
+  background-color: var(--k-ink);
+  color: var(--k-ground);
+  font-family: var(--k-font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--k-duration-fast) var(--k-ease-house);
+}
+
+.k-page a.k-button { color: var(--k-ground); }
+
+.k-button:active { transform: scale(var(--k-press)); }
+
+.k-button-quiet { background-color: transparent; color: var(--k-ink); border-color: var(--k-line-strong); }
+
+.k-page a.k-button-quiet { color: var(--k-ink); }
+
+/* ── Choice: a small choice that switches what is on the screen ────── */
+/* Equal buttons in one grid, one of them pressed: the app's primary look
+   for the one that is on, a hairline for the rest. A pill is right here and
+   only here (CLAUDE.md, floating pills): it filters or switches what is on
+   the screen and is never a list of places to go. Its columns are set where
+   it is used (--k-choice-cols), to a number its buttons fill, so no row is
+   left with an orphan. 44 tall. */
+.k-choice {
+  display: grid;
+  grid-template-columns: repeat(var(--k-choice-cols, 3), minmax(0, 1fr));
+  gap: var(--k-space-2);
+  margin: var(--k-space-2) 0 var(--k-space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.k-choice button {
+  width: 100%;
+  min-height: var(--k-target);
+  padding: 6px var(--k-space-2);
+  border-radius: var(--k-radius-pill);
+  border: 1px solid var(--k-line-strong);
+  background-color: transparent;
+  color: var(--k-ink);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-ui);
+  font-weight: 600;
+  line-height: 18px;
+  cursor: pointer;
+  transition:
+    background-color var(--k-duration-fast) var(--k-ease-house),
+    color var(--k-duration-fast) var(--k-ease-house),
+    transform var(--k-duration-fast) var(--k-ease-house);
+}
+
+.k-choice button:active { transform: scale(var(--k-press)); }
+
+.k-choice button[aria-pressed="true"] { background-color: var(--k-ink); border-color: transparent; color: var(--k-ground); }
+
+/* ── Web: a map of ways ────────────────────────────────────────────── */
+/* Places as plates and the ways between them as threads, with one way lit
+   at a time. It is the thing that leads on its page, so its frame wears the
+   night (.k-night) and reads the night's ink. Drawn once, at its own size
+   (--k-web-w by --k-web-h, numbers of px), and shown at two: the whole of it
+   fitted to the column, where only its marks are read, and near, at its own
+   size, where it scrolls both ways under a finger. A line keeps its weight
+   at either size (each is divided by --k-web-s, which the page sets).
+   A plate is never a control: the Choice beside the web is. Nothing here is
+   dimmed below 4.5:1: a quiet plate keeps the faint ink, and the lit way is
+   told by its ring, its fill and its thread.
+   A web may carry numbers: a plate its count (em), a thread its weight
+   (--k-web-weight, 0 to 1, a share of the most, so widths are to scale) and
+   beside it the share that went on (.k-web-share). */
+.k-web { --k-web-s: 1; margin: var(--k-space-4) 0 var(--k-space-5); }
+
+.k-web-frame {
+  /* A plate's fill: a breath of the ink over the ground it stands on. */
+  --k-web-plate: color-mix(in oklab, var(--k-ink-base) 8%, var(--k-ground));
+  position: relative;
+  max-height: min(68vh, 620px);
+  overflow: auto;
+  border: 1px solid var(--k-line);
+  border-radius: 22px; /* a figure's own */
+}
+
+.k-web[data-zoom="whole"] .k-web-frame { max-height: none; overflow: hidden; cursor: zoom-in; }
+
+/* The room the web takes at the size it is shown, and the web itself, scaled into it. */
+.k-web-room {
+  position: relative;
+  width: calc(var(--k-web-w) * var(--k-web-s) * 1px);
+  height: calc(var(--k-web-h) * var(--k-web-s) * 1px);
+  overflow: hidden;
+}
+
+.k-web-plane {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  width: calc(var(--k-web-w) * 1px);
+  height: calc(var(--k-web-h) * 1px);
+  transform: scale(var(--k-web-s));
+  transform-origin: top left;
+}
+
+[dir="rtl"] .k-web-plane { transform-origin: top right; }
+
+/* The threads. */
+.k-web-ways { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+
+[dir="rtl"] .k-web-ways { transform: scaleX(-1); }
+
+.k-web-ways path {
+  fill: none;
+  stroke: var(--k-ink-3);
+  stroke-width: calc((1.25px + var(--k-web-weight, 0) * 5px) / var(--k-web-s));
+  stroke-linecap: round;
+  transition: stroke var(--k-duration-fast) var(--k-ease-house);
+}
+
+.k-web.has-lit .k-web-ways path { stroke: var(--k-line-strong); }
+
+.k-web.has-lit .k-web-ways path.is-lit { stroke: var(--k-ink); stroke-width: calc((2.25px + var(--k-web-weight, 0) * 5px) / var(--k-web-s)); }
+
+/* A plate: a screen, an answer, a road or a page. Its small line says what it is. */
+.k-web-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--k-space-2) 11px;
+  border-radius: var(--k-radius-md);
+  background-color: var(--k-web-plate);
+  box-shadow: inset 0 0 0 calc(1px / var(--k-web-s)) var(--k-line-strong);
+  color: var(--k-ink);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-detail);
+  line-height: 17px;
+  font-weight: 600;
+  transition:
+    background-color var(--k-duration-fast) var(--k-ease-house),
+    color var(--k-duration-fast) var(--k-ease-house),
+    box-shadow var(--k-duration-fast) var(--k-ease-house);
+}
+
+.k-web-node small { display: block; font-size: var(--k-text-eyebrow); line-height: 15px; font-weight: 600; color: var(--k-ink-3); }
+
+.k-web-node span { display: block; font-size: var(--k-text-eyebrow); line-height: 15px; font-weight: 400; color: var(--k-ink-3); }
+
+/* A plate's count, in figures that line up. */
+.k-web-node em { display: block; font-style: normal; font-size: var(--k-text-eyebrow); line-height: 15px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--k-ink-2); }
+
+.k-web.has-lit .k-web-node:not(.is-lit) em { color: var(--k-ink-3); }
+
+/* Beside a thread: the share of one plate's readers that reached the next. */
+.k-web-share {
+  position: absolute;
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-eyebrow);
+  line-height: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--k-ink-3);
+  white-space: nowrap;
+}
+
+.k-web.has-lit .k-web-share.is-lit { color: var(--k-ink); }
+
+.k-web.has-lit .k-web-node { background-color: transparent; box-shadow: inset 0 0 0 calc(1px / var(--k-web-s)) var(--k-line); color: var(--k-ink-3); }
+
+/* The lit way: the ink's ring, the plate's fill and a soft pool of light. Never rays. */
+.k-web.has-lit .k-web-node.is-lit {
+  background-color: var(--k-web-plate);
+  box-shadow:
+    inset 0 0 0 calc(1.75px / var(--k-web-s)) var(--k-ink),
+    0 0 calc(16px / var(--k-web-s)) color-mix(in srgb, var(--k-ink) 24%, transparent);
+  color: var(--k-ink);
+}
+
+/* A group: one screen and its answers, or the roads that share a look. */
+.k-web-group {
+  position: absolute;
+  padding: var(--k-space-3) 14px;
+  border-radius: var(--k-radius-lg);
+  background-color: color-mix(in oklab, var(--k-ink-base) 4%, transparent);
+  box-shadow: inset 0 0 0 calc(1px / var(--k-web-s)) var(--k-line);
+}
+
+.k-web-group small { display: block; font-family: var(--k-font-sans); font-size: var(--k-text-eyebrow); line-height: 15px; font-weight: 600; color: var(--k-ink-3); }
+
+.k-web-group b { display: block; margin-block-start: 2px; font-family: var(--k-font-serif); font-size: 16px; line-height: 22px; font-weight: 600; color: var(--k-ink); }
+
+/* A mark: the name of a part of the web, large enough to be read when the
+   whole is shown, and put away when near, where the plates say it. */
+.k-web-mark {
+  position: absolute;
+  inset-inline: 0;
+  display: none;
+  width: fit-content;
+  margin-inline: auto;
+  padding: 0 var(--k-space-6);
+  background-color: var(--k-ground);
+  color: var(--k-ink);
+  font-family: var(--k-font-display);
+  font-weight: 400;
+  font-size: var(--k-text-display);
+  line-height: 64px;
+  white-space: nowrap;
+}
+
+.k-web[data-zoom="whole"] .k-web-mark { display: block; }
+
+.k-web figcaption { margin-block-start: var(--k-space-3); font-size: var(--k-text-detail); line-height: 19px; color: var(--k-ink-3); max-width: var(--k-measure); }
+
+/* ── Arriving: the house's rise, still with reduced motion ─────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .k-rise { animation: k-rise var(--k-duration-slow) var(--k-ease-house) both; }
+  @keyframes k-rise { from { opacity: 0; transform: translateY(var(--k-rise)); } }
+}
+
+/* ── The footer ────────────────────────────────────────────────────── */
+.k-foot { margin-block-start: var(--k-space-8); padding-block-start: var(--k-space-5); border-block-start: 1px solid var(--k-line); text-align: center; }
+
+.k-page .k-foot p { margin: 0 auto; font-style: italic; font-size: 16px; line-height: 24px; color: var(--k-ink-3); }
+
+.k-page .k-foot .k-meta { margin-block-start: var(--k-space-2); font-style: normal; }
+/* kit:end */
+/* kit:pictures:begin. Written by the same command, from the app's own files. */
+:root { --k-pic-cross: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALEAAAE3CAYAAADlt6C0AAAACXBIWXMAAAPoAAAD6AG1e1JrAAALmklEQVR4nO2dTYheZxmG31ZLFasornShDdP8GJOG0DYUfyiiuHUhdiOCCxfZuRSFLlyVIkWRYlpDVQJdiBW6EzduRMQi/hWhiCi4kFDEvCKPrxbhyMD5YCgxM5kzmfu+v3MtriYzk87c7/Nc83zvd875ztdG9Qb71uDPo/pfR/XXRvV/3oR/jOp/H9X/tocb8+f/Nar/ew+vz5+7MX+/3e97ff549+v/HdWnmd2P6U/dugYU6GCSTELOIXJH4nCJLyJxR2Ik7lv9iCsPEAKTuOQ9QOJgic+qJRnmyAMEcJdY4tMGNWjOyAMEoJaYSVxIfBQiI3HJhwmTOFjiM2pJhjnyACEoJT5lsP7mjDxACEqJTxisvzkjDxCCUuIdg/U3Z+QBQuCJXcl7gMTBEp9XSzLMkQcIAYlL3gMkRuIulw2J1zuJOWNXTOJ0iTlOXEiMxKV/yGc7se5J/IDB+psz8gAhKCXm2olC4nSJeWJXSIzEtd3IA4SgnMS8ZL+QOF1ithOFxEhc2408QAhsJ0reAyQOlpg7ABUSp0/iS+pJN8yRBwjgPrHEjxnUoDkjDxDAF8QSP2lQg+aMPMABUUq0dpo78gBILJd0QmIkVks2IbF+yrKd0Is6sZ1AYrVoExL7o27kmmnuyAMgsVzSCYmRWC3ZhMT6Kct2Qi/qxHYCidWiTUjsj7qRa6a5Iw+AxHJJJyRGYrVkExLrpyzbCb2oE9sJJFaLNiGxP+pGrpnmjjwAEsslnZAYidWSTUisn7JsJ/SiTmwnkFgt2oTE/qgbuWaaO/IASCyXdEJiJFZLNiGxfsqyndCLOrGdQGK1aBMS+6Nu5Jpp7sgDILFc0gmJkVgt2YTE+inLdkIv6sR2AonVok1I7I+6kWumuSMPcEAeH9W/Oao/N6pfmf/+9fnPZ0b1Z0f1qzPfGdWfH9W/O6p/b/746vz/PjPzrZnn5q/v/rtr859X5+93Zf77DQORXhzVX5gzbrJv1nxtzxp3+fZN6rFZ/4bN1/bWZVPLK/Pndn/GZYPeb43ESt4rFviTBjVozsgDBHCvWOIPGdSgOSMPEIJS4kcM1t+ckQcIQSkxb4tbSJwu8UmDX+LmjDxACEqJdwzW35yRBwgBiUveAyRG4i6XDYnXO4nPqiUZ5sgDhKCUmDcoLyRG4tpu5AFCUE7i8wbrb87IA4SglPiUwfqbM/IAIXCIreQ9QGIk7nLZkJhJLJdlmCIPEIJyO8G1E4XE6RJzsqOQOF3iMwaPRM0ZeYAQlBJ/wGD9zRl5gBCUEl8wWH9zRh4gBKXEXDtRSIzEtd3IA4SgnMQPG6y/OSMPEIJS4ocM1t+ckQcI4C3sibu6B0i8sEhvFUvMS/YLiZG49NOSSbzu21hxUXwxiZdKfJ9Y4kvqSTfMkQcI4B1iiR8zqEFzRh4ggJNiiT9vUIPmzO5/nhY3CajBtKAGr+xK/CuKyC/SCK7BrsS/VYcAajCQGAnGimvAdsKgCdAXS/xLiohII1ziX6hDADUYCyV+GYmQaATXAIkNmgB9scTsiRFpSpf4N+oQQA3GQol/h0RINIJrgMQGTYC+WOJXKCIijeAaILFBE6Avlvj3FBGRRnANkNigCdAXS8ylmIg0JdeAq9gMmgB9scScsUOkKbkGSGzQBOiLJf45RUSkEVwDJrFBE6AvlvjXFBGRRnANkNigCdAXS8ylmIg0JdeAaycMmgB9scSvUkREGuES/1EdAqjBWCjxH5AIiUZwDbgAyKAJ0BdL/H2KiEgjtwavy2+QHMDHxE26bFCD5ow8QADvFkvMmzEWEqe/jx1vi1tIvFTiN4slftTg0ag5Iw8QwD1iiT9sUIPmjDxACEqJLxqsvzkjDxCCUmLe27mQOF3i0wa/xM0ZeYAQlBKfMlh/c0YeIASlxDsG62/OyAOEoJT4rMH6mzPyACEoJT5vsP7mjDxACEqJHzRYf3NGHiAEpcQcJy4kRuLabuQBQlBOYi4AKiROl5hLMQuJ0yVmT1xIjMS13cgDhKCcxBcM1t+ckQcIQSkxJzsKidMl5lLMQuJ0ibl2opA4XeIzBtup5ow8QAhIXPIeIHGwxFwUX0jMJC79tGQS6wvFJC55D9hOIHGXy4bE653EHJ0oJnG6xJx2LiROl5gzdoXESFz6fSt7Yn2hmMTlizxACEqJP2iw/uaMPEAITOKS9wCJgyXmeuJC4vRJjMSFxOkSc4itkDhdYm5jVUicLjEv2S8kTpeYm6cUEqdLzG2sConTJWY7UUicLjFP7AqJ0yXmJfuFxOkS80LRQmIkru1GHiAE5STm5UmFxOkSsycuJEbi2m7kAUJgEpe8B0iMxF0uGxIzieWyDFPkAUJQbie4KL6QGIlru5EHCEE5ibl2opAYiWu7kQcIgUlc8h4gcbDEvFC0kDh9EiNxIXG6xFwAVEicLjHXExcSp0u8o37iNMyRBwgBiUveAyQOlviEWpJhjjxACEhc8h4gMRJ3uWxrl/jyiifx+w3q35yRB7hNiX4i/vnsiUvuQrzEG15EYnlPmgupEm/4hvjnc3Si5G7ES7zhCSTu6h4h8RFNwq+Kfok4TlxIfNQSfWmLJOboRN26P/KHgjss0ee2QGLO2NW6Jd7wmWCJuYqtkHivEJ8NlJjriQuJbybGp4Ik5oaChcS3EuTRAImZxIXEBxHlfcYSsycuJL4dYe65ScHuFUvMKzsKiW9XmhtvKNq7kLhbIw9gvCe9Pv/sk2KJHzCof3NGHsBYYhfYExcSp8MhtkLidLg/cSFxOtzGqpA4HfbEhcRqCZG4ODqx9qMTnOwoJrFaQiQuJjGTWH+cvjkjD8DJjn0nNU/sConT4VLMQuJ0eAuwQuJ0Lhhs55oz8gDsifeVmNPOhcTp8MSukDid+w0eCZsz8gBsJw4ksrr+zRl5ACQ+8ER+zaAPzRF5ACS+7e3Fnwz6YYU8wAG5y2Bv6sarBn1pDsgDHIL/GAjkxE8NeoLEhyjC2wzkceOHaplUyAMsZMdAHjd+YNAXJD5EEd5jII8bL6nlOi7kAY6YRwzkceNHBn1B4kMU4XEDedx4Si3bnUIe4A7zRQN53HjWoC9IjMxHIvPTavmOCnmAY+bLBpPQja8Z9AWJD1GErxjI48ZTahkPizyAmCcN5HHjeYO+IPEhCvGCgTxuPKGW86DIA5jxYwN53GjuyAOY8rKBPC40d+QBzPmZgURqmjvyAAGo37NDTXNHHiAEtUhIXEiMxMUkXjvqacgkLiYxEheTeO2opyGTuJjESFxM4rWjnoZM4mISI3ExideOehoyiYtJjMTFJF4za7+FVnNHHiCAuw1EQuJCYiZxMYnXjnoaMomLSYzExSReO+ppyCQuJnGyxJ+YM7wk+vnNHXmAEJQSf+QNWXZvdoLEhcRJEn/0/2S6xiTuTOIQiS+KX8za3JEHCEEp8dkDZvwLEutFcUYp8Y44a3NHHiCExLfFvY7EenGcUEp8YmH260xivUAOJG0n2hFfidfckQcIIV3iNvNOJNbLhMTH//5/zR15gBCUk/jMHVzX/Uisl2sNEh/0OHFbwDkmsV6ybZb4wjGu8+NsJ/SybaPEDwvW++k9P7+5Iw8QglLiS8J1v92g9vsiDxCCUuKHDNbfnJEHCEEp8XmD9Tdn5AFCUEp8ymD9zRl5gBC25Yxd20bkAUJIvIqtrQV5gBCYxCXvARIHS8yeuJA4fRJzdKKQOF3i0+qH62GOPEAITOKS9wCJkbjLZUPi9U7iB9WSDHPkAUJA4pL3AImRuMtlQ+L1TuL9bmPV1o48QAhIXPIeIHGwxMf58qSWiDxACDyxK3kPkDhY4nMOogxj5AFCQOKS9wCJgyU+jvtOtGTkAULY1jsAtW1AHiAEJC55D5A4WGK2E4XE6ZOYM3aFxOkSc/OUQuKlAt/NJO7yfS974uxJrLihYEtCHiCAN7Gd6OoeIHH4JOaVHYXE6RJziK1u3Z//AU8ka2zP0kd2AAAAAElFTkSuQmCC"); --k-pic-stars: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgOTAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pbiBzbGljZSI+PGNpcmNsZSBjeD0iNiIgY3k9IjgiIHI9IjEuMiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yMCIvPjxjaXJjbGUgY3g9IjkwIiBjeT0iMzI3LjYiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjQiLz48Y2lyY2xlIGN4PSIxNzQiIGN5PSI5NS41IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM1Ii8+PGNpcmNsZSBjeD0iMjU4IiBjeT0iNjk3LjIiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzAiLz48Y2lyY2xlIGN4PSIzNDIiIGN5PSIzMDguOSIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQ2Ii8+PGNpcmNsZSBjeD0iMzgiIGN5PSI1NDAuNSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xNSIvPjxjaXJjbGUgY3g9IjEyMiIgY3k9IjE5NC42IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI2Ii8+PGNpcmNsZSBjeD0iMTE1IiBjeT0iMzUuNyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zNiIvPjxjaXJjbGUgY3g9IjE5OSIgY3k9IjUxNi40IiByPSIwLjkiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzQiLz48Y2lyY2xlIGN4PSIyODMiIGN5PSIxODAuMyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40OSIvPjxjaXJjbGUgY3g9IjM2NyIgY3k9IjM2Ni42IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjE2Ii8+PGNpcmNsZSBjeD0iNjMiIGN5PSIxMTUiIHI9IjEuMiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yNyIvPjxjaXJjbGUgY3g9IjE0NyIgY3k9IjguMyIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM3Ii8+PGNpcmNsZSBjeD0iMjMxIiBjeT0iMzQ2LjgiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzgiLz48Y2lyY2xlIGN4PSIyMjQiIGN5PSIxMDUiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNTEiLz48Y2lyY2xlIGN4PSIzMDgiIGN5PSIyMjUuMSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xOCIvPjxjaXJjbGUgY3g9IjM5MiIgY3k9IjQ2LjYiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yOCIvPjxjaXJjbGUgY3g9Ijg4IiBjeT0iNTY1LjIiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjciLz48Y2lyY2xlIGN4PSIxNzIiIGN5PSIyMDkuNiIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40MSIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjQwLjkiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNTMiLz48Y2lyY2xlIGN4PSIzNDAiIGN5PSIxMzYuOCIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjE5Ii8+PGNpcmNsZSBjeD0iMzMzIiBjeT0iMTAuNiIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yOCIvPjxjaXJjbGUgY3g9IjI5IiBjeT0iMzg3IiByPSIxLjIiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzAiLz48Y2lyY2xlIGN4PSIxMTMiIGN5PSIxMjUuNiIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40MyIvPjxjaXJjbGUgY3g9IjE5NyIgY3k9IjkuMSIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjU0Ii8+PGNpcmNsZSBjeD0iMjgxIiBjeT0iNTkuOSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xOSIvPjxjaXJjbGUgY3g9IjM2NSIgY3k9IjYxNi4yIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjIwIi8+PGNpcmNsZSBjeD0iNjEiIGN5PSIyNDEuMSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zMyIvPjxjaXJjbGUgY3g9IjU0IiBjeT0iNTMiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40NCIvPjxjaXJjbGUgY3g9IjEzOCIgY3k9IjU5MC40IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM4Ii8+PGNpcmNsZSBjeD0iMjIyIiBjeT0iMTUuMiIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yMCIvPjxjaXJjbGUgY3g9IjMwNiIgY3k9IjQyOS41IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjIyIi8+PGNpcmNsZSBjeD0iMzkwIiBjeT0iMTQ4LjYiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zNCIvPjxjaXJjbGUgY3g9Ijg2IiBjeT0iMTIuNiIgcj0iMS4yIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQ1Ii8+PGNpcmNsZSBjeD0iMTcwIiBjeT0iNDA4IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQzIi8+PGNpcmNsZSBjeD0iMTYzIiBjeT0iNjY5LjYiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMTMiLz48Y2lyY2xlIGN4PSIyNDciIGN5PSIyNzUiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yNSIvPjxjaXJjbGUgY3g9IjMzMSIgY3k9IjY3LjMiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzYiLz48Y2lyY2xlIGN4PSIyNyIgY3k9IjY0Mi43IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjMxIi8+PGNpcmNsZSBjeD0iMTExIiBjeT0iMjU3LjgiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDciLz48Y2lyY2xlIGN4PSIxOTUiIGN5PSI0NzQuMyIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjE1Ii8+PGNpcmNsZSBjeD0iMjc5IiBjeT0iMTczLjgiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjYiLz48Y2lyY2xlIGN4PSIyNzIiIGN5PSIxOC4zIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM3Ii8+PGNpcmNsZSBjeD0iMzU2IiBjeT0iNDUxLjYiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzUiLz48Y2lyY2xlIGN4PSI1MiIgY3k9IjE2MC45IiByPSIxLjIiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNTAiLz48Y2lyY2xlIGN4PSIxMzYiIGN5PSIzMTEuMiIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xNyIvPjxjaXJjbGUgY3g9IjIyMCIgY3k9Ijg0IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI3Ii8+PGNpcmNsZSBjeD0iMzA0IiBjeT0iNjk3LjIiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjQiLz48Y2lyY2xlIGN4PSIzODgiIGN5PSIyOTIuOCIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM5Ii8+PGNpcmNsZSBjeD0iMzgxIiBjeT0iNzUuNCIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC41MiIvPjxjaXJjbGUgY3g9Ijc3IiBjeT0iMjAxLjQiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMTgiLz48Y2lyY2xlIGN4PSIxNjEiIGN5PSIyNi40IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI4Ii8+PGNpcmNsZSBjeD0iMjQ1IiBjeT0iNDk3LjUiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yOCIvPjxjaXJjbGUgY3g9IjMyOSIgY3k9IjE4Ny4zIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQxIi8+PGNpcmNsZSBjeD0iMjUiIGN5PSIyMi4xIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjUzIi8+PGNpcmNsZSBjeD0iMTA5IiBjeT0iMTAyLjkiIHI9IjEuMiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xOSIvPjxjaXJjbGUgY3g9IjEwMiIgY3k9IjIyLjEiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yOCIvPjxjaXJjbGUgY3g9IjE4NiIgY3k9IjMzMC4xIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjMxIi8+PGNpcmNsZSBjeD0iMjcwIiBjeT0iOTMuMSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40MyIvPjxjaXJjbGUgY3g9IjM1NCIgY3k9IjcyNS4zIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM0Ii8+PGNpcmNsZSBjeD0iNTAiIGN5PSIzNi43IiByPSIwLjkiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjAiLz48Y2lyY2xlIGN4PSIxMzQiIGN5PSI1NDUuNyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yMSIvPjxjaXJjbGUgY3g9IjIxOCIgY3k9IjIxNiIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zMyIvPjxjaXJjbGUgY3g9IjIxMSIgY3k9IjMxLjMiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDUiLz48Y2lyY2xlIGN4PSIyOTUiIGN5PSI1MjEuMyIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQwIi8+PGNpcmNsZSBjeD0iMzc5IiBjeT0iMjMuOCIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yMCIvPjxjaXJjbGUgY3g9Ijc1IiBjeT0iMzY5LjciIHI9IjEuMiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yMyIvPjxjaXJjbGUgY3g9IjE1OSIgY3k9IjExMy4yIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM1Ii8+PGNpcmNsZSBjeD0iMjQzIiBjeT0iMjIuNiIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQ1Ii8+PGNpcmNsZSBjeD0iMzI3IiBjeT0iMzQ5LjYiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDUiLz48Y2lyY2xlIGN4PSIzMjAiIGN5PSI1OTYuMyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xNCIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMjQ3IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI1Ii8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iNDIuNyIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM2Ii8+PGNpcmNsZSBjeD0iMTg0IiBjeT0iNTcwLjciIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzMiLz48Y2lyY2xlIGN4PSIyNjgiIGN5PSIyMzEuMyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC40OCIvPjxjaXJjbGUgY3g9IjM1MiIgY3k9IjQxMS43IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjE2Ii8+PGNpcmNsZSBjeD0iNDgiIGN5PSIxMzUuNiIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI3Ii8+PGNpcmNsZSBjeD0iNDEiIGN5PSIyNS41IiByPSIxLjIiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzciLz48Y2lyY2xlIGN4PSIxMjUiIGN5PSIzOTAuNCIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zNyIvPjxjaXJjbGUgY3g9IjIwOSIgY3k9IjEyNC4xIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjUxIi8+PGNpcmNsZSBjeD0iMjkzIiBjeT0iMjgwLjMiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xNyIvPjxjaXJjbGUgY3g9IjM3NyIgY3k9IjU2LjUiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjgiLz48Y2lyY2xlIGN4PSI3MyIgY3k9IjYyMi40IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI1Ii8+PGNpcmNsZSBjeD0iMTU3IiBjeT0iMjYzLjQiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDAiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSI0OS4zIiByPSIwLjkiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNTMiLz48Y2lyY2xlIGN4PSIyMzQiIGN5PSIxNjAuMyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xOCIvPjxjaXJjbGUgY3g9IjMxOCIgY3k9IjMwLjciIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjgiLz48Y2lyY2xlIGN4PSIxNCIgY3k9IjQzMy41IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI5Ii8+PGNpcmNsZSBjeD0iOTgiIGN5PSIxNDcuNyIgcj0iMS4yIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQyIi8+PGNpcmNsZSBjeD0iMTgyIiBjeT0iMjcuOCIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC41MyIvPjxjaXJjbGUgY3g9IjI2NiIgY3k9IjcyLjYiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMTkiLz48Y2lyY2xlIGN4PSIyNTkiIGN5PSI2NzYuMyIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xOSIvPjxjaXJjbGUgY3g9IjM0MyIgY3k9IjI5Ny44IiByPSIwLjkiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzEiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjY0LjMiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDQiLz48Y2lyY2xlIGN4PSIxMjMiIGN5PSI2NDkuMSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zNiIvPjxjaXJjbGUgY3g9IjIwNyIgY3k9IjM4LjEiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjAiLz48Y2lyY2xlIGN4PSIyOTEiIGN5PSI0NzguOCIgcj0iMC45IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjIyIi8+PGNpcmNsZSBjeD0iMzc1IiBjeT0iMTczLjUiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMzQiLz48Y2lyY2xlIGN4PSIzNjgiIGN5PSIzNC4xIiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQ1Ii8+PGNpcmNsZSBjeD0iNjQiIGN5PSI0NTUuOSIgcj0iMS4yIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjQyIi8+PGNpcmNsZSBjeD0iMTQ4IiBjeT0iMTUiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yMCIvPjxjaXJjbGUgY3g9IjIzMiIgY3k9IjMzNC42IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI0Ii8+PGNpcmNsZSBjeD0iMzE2IiBjeT0iODEuNSIgcj0iMC42NSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zNSIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iNzA0LjIiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjkiLz48Y2lyY2xlIGN4PSI5NiIgY3k9IjMxNS45IiByPSIwLjkiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDUiLz48Y2lyY2xlIGN4PSI4OSIgY3k9IjUyNi41IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjE1Ii8+PGNpcmNsZSBjeD0iMTczIiBjeT0iMjAxLjYiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMjYiLz48Y2lyY2xlIGN4PSIyNTciIGN5PSI0Mi43IiByPSIwLjY1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjM2Ii8+PGNpcmNsZSBjeD0iMzQxIiBjeT0iNTAyLjQiIHI9IjAuOSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zNCIvPjxjaXJjbGUgY3g9IjM3IiBjeT0iMTg3LjMiIHI9IjAuNjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNDkiLz48L3N2Zz4K"); }
+/* kit:pictures:end */
+</style>
+</head>
+<body>
+<main class="k-page">
+  <header class="k-title k-rise">
+    <span class="k-mark" role="img" aria-label="Purify"></span>
+    <span class="k-eyebrow">For 2.0, a mock-up</span>
+    <h1>Numbers on the web</h1>
+    <p class="k-lede">The reader web with a count on every plate, and on every thread the share that went on.</p>
+    <p class="k-meta">Example numbers: 1,000 readers in an example month. Nothing on this page was counted.</p>
+  </header>
+
+  <section aria-label="The web">
+    <figure class="k-web has-lit" id="web" data-road="catholic" style="--k-web-w:1770;--k-web-h:2746">
+      <div class="k-web-frame k-night dark-island" tabindex="0" role="group" aria-label="The reader web with example numbers. One road is lit. Up close, it scrolls both ways.">
+        <div class="k-web-room">
+          <div class="k-web-plane">
+            <svg class="k-web-ways" viewBox="0 0 1770 2746" aria-hidden="true" focusable="false">
+              <path class="is-lit" data-roads="practicing returning catechumen catholic protestant christian seeker newcomer" style="--k-web-weight:1.000" d="M885 174V208"/>
+              <path data-roads="practicing returning catechumen" style="--k-web-weight:0.340" d="M276 340C276 378 329 378 329 416"/>
+              <path data-roads="practicing" style="--k-web-weight:0.187" d="M104 566C104 716 276 704 276 854V870"/>
+              <path data-roads="returning" style="--k-web-weight:0.075" d="M254 566C254 716 450 704 450 854V870"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.051" d="M404 566C404 716 624 704 624 854V972"/>
+              <path style="--k-web-weight:0.027" d="M554 566C554 716 102 704 102 854V972"/>
+              <path class="is-lit" data-roads="catholic catechumen" style="--k-web-weight:0.130" d="M450 340C450 378 885 378 885 416"/>
+              <path data-roads="protestant catechumen" style="--k-web-weight:0.170" d="M624 340C624 378 885 378 885 416"/>
+              <path data-roads="christian catechumen" style="--k-web-weight:0.060" d="M798 340C798 378 885 378 885 416"/>
+              <path data-roads="newcomer catechumen" style="--k-web-weight:0.030" d="M972 340C972 378 885 378 885 416"/>
+              <path data-roads="newcomer seeker catechumen" style="--k-web-weight:0.140" d="M1146 340C1146 378 885 378 885 416"/>
+              <path class="is-lit" data-roads="catholic" style="--k-web-weight:0.081" d="M735 566C735 716 798 704 798 854V972"/>
+              <path data-roads="protestant" style="--k-web-weight:0.069" d="M735 566C735 716 972 704 972 854V972"/>
+              <path data-roads="protestant" style="--k-web-weight:0.037" d="M735 566C735 716 1146 704 1146 854V972"/>
+              <path data-roads="christian" style="--k-web-weight:0.037" d="M735 566C735 716 1320 704 1320 854V972"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.079" d="M735 566C735 716 1668 704 1668 854V972"/>
+              <path data-roads="seeker" style="--k-web-weight:0.026" d="M735 566C735 716 1494 704 1494 854V972"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.138" d="M885 566C885 716 624 704 624 854V972"/>
+              <path class="is-lit" data-roads="catholic" style="--k-web-weight:0.016" d="M1035 566C1035 716 798 704 798 854V972"/>
+              <path data-roads="protestant" style="--k-web-weight:0.013" d="M1035 566C1035 716 972 704 972 854V972"/>
+              <path data-roads="protestant" style="--k-web-weight:0.007" d="M1035 566C1035 716 1146 704 1146 854V972"/>
+              <path data-roads="christian" style="--k-web-weight:0.007" d="M1035 566C1035 716 1320 704 1320 854V972"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.015" d="M1035 566C1035 716 1668 704 1668 854V972"/>
+              <path data-roads="seeker" style="--k-web-weight:0.005" d="M1035 566C1035 716 1494 704 1494 854V972"/>
+              <path data-roads="newcomer seeker catechumen practicing" style="--k-web-weight:0.060" d="M1320 340C1320 378 1441 378 1441 416"/>
+              <path data-roads="newcomer seeker catechumen practicing" style="--k-web-weight:0.070" d="M1494 340C1494 378 1441 378 1441 416"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.041" d="M1216 566C1216 716 1668 704 1668 854V972"/>
+              <path data-roads="seeker" style="--k-web-weight:0.018" d="M1216 566C1216 716 1494 704 1494 854V972"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.026" d="M1366 566C1366 716 624 704 624 854V972"/>
+              <path data-roads="practicing" style="--k-web-weight:0.026" d="M1516 566C1516 716 276 704 276 854V870"/>
+              <path style="--k-web-weight:0.019" d="M1666 566C1666 716 102 704 102 854V972"/>
+              <path data-roads="practicing" style="--k-web-weight:0.213" d="M276 944V972"/>
+              <path data-roads="returning" style="--k-web-weight:0.075" d="M450 944V972"/>
+              <path style="--k-web-weight:0.042" d="M102 1054V1078"/>
+              <path style="--k-web-weight:0.042" d="M102 1152V1256"/>
+              <path d="M102 1436V1554"/>
+              <path data-roads="practicing" style="--k-web-weight:0.192" d="M276 1054V1078"/>
+              <path data-roads="practicing" style="--k-web-weight:0.192" d="M276 1152V1256"/>
+              <path data-roads="practicing" style="--k-web-weight:0.124" d="M276 1436V1554"/>
+              <path data-roads="practicing" style="--k-web-weight:0.097" d="M276 1672V1692"/>
+              <path data-roads="practicing" style="--k-web-weight:0.081" d="M276 1810V1830"/>
+              <path data-roads="practicing" style="--k-web-weight:0.068" d="M276 1948V1968"/>
+              <path data-roads="practicing" style="--k-web-weight:0.060" d="M276 2086V2106"/>
+              <path data-roads="practicing" style="--k-web-weight:0.054" d="M276 2224V2244"/>
+              <path data-roads="practicing" style="--k-web-weight:0.050" d="M276 2362V2382"/>
+              <path data-roads="practicing" style="--k-web-weight:0.025" d="M276 2500V2604"/>
+              <path data-roads="returning" style="--k-web-weight:0.067" d="M450 1054V1078"/>
+              <path data-roads="returning" style="--k-web-weight:0.067" d="M450 1152V1256"/>
+              <path data-roads="returning" style="--k-web-weight:0.039" d="M450 1436V1554"/>
+              <path data-roads="returning" style="--k-web-weight:0.030" d="M450 1672V1692"/>
+              <path data-roads="returning" style="--k-web-weight:0.025" d="M450 1810V1830"/>
+              <path data-roads="returning" style="--k-web-weight:0.021" d="M450 1948V1968"/>
+              <path data-roads="returning" style="--k-web-weight:0.019" d="M450 2086V2106"/>
+              <path data-roads="returning" style="--k-web-weight:0.017" d="M450 2224V2244"/>
+              <path data-roads="returning" style="--k-web-weight:0.016" d="M450 2362V2382"/>
+              <path data-roads="returning" style="--k-web-weight:0.008" d="M450 2500V2604"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.193" d="M624 1054V1078"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.193" d="M624 1152V1256"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.130" d="M624 1436V1554"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.102" d="M624 1672V1692"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.084" d="M624 1810V1830"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.071" d="M624 1948V1968"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.063" d="M624 2086V2106"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.056" d="M624 2224V2244"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.052" d="M624 2362V2382"/>
+              <path data-roads="catechumen" style="--k-web-weight:0.026" d="M624 2500V2604"/>
+              <path class="is-lit" data-roads="catholic" style="--k-web-weight:0.087" d="M798 1054V1078"/>
+              <path class="is-lit" data-roads="catholic" style="--k-web-weight:0.087" d="M798 1152V1256"/>
+              <path class="is-lit" data-roads="catholic" style="--k-web-weight:0.054" d="M798 1436V1554"/>
+              <path class="is-lit" data-roads="catholic" style="--k-web-weight:0.042" d="M798 1672V1692"/>
+              <path class="is-lit" data-roads="catholic" style="--k-web-weight:0.035" d="M798 1810V1830"/>
+              <path class="is-lit" data-roads="catholic" style="--k-web-weight:0.030" d="M798 1948V1968"/>
+              <path class="is-lit" data-roads="catholic" style="--k-web-weight:0.026" d="M798 2086V2106"/>
+              <path class="is-lit" data-roads="catholic" style="--k-web-weight:0.023" d="M798 2224V2244"/>
+              <path class="is-lit" data-roads="catholic" style="--k-web-weight:0.022" d="M798 2362V2382"/>
+              <path class="is-lit" data-roads="catholic" style="--k-web-weight:0.011" d="M798 2500V2604"/>
+              <path data-roads="protestant" style="--k-web-weight:0.074" d="M972 1054V1078"/>
+              <path data-roads="protestant" style="--k-web-weight:0.074" d="M972 1152V1256"/>
+              <path data-roads="protestant" style="--k-web-weight:0.041" d="M972 1436V1554"/>
+              <path data-roads="protestant" style="--k-web-weight:0.032" d="M972 1672V1692"/>
+              <path data-roads="protestant" style="--k-web-weight:0.026" d="M972 1810V1830"/>
+              <path data-roads="protestant" style="--k-web-weight:0.022" d="M972 1948V1968"/>
+              <path data-roads="protestant" style="--k-web-weight:0.020" d="M972 2086V2106"/>
+              <path data-roads="protestant" style="--k-web-weight:0.018" d="M972 2224V2244"/>
+              <path data-roads="protestant" style="--k-web-weight:0.016" d="M972 2362V2382"/>
+              <path data-roads="protestant" style="--k-web-weight:0.008" d="M972 2500V2604"/>
+              <path data-roads="protestant" style="--k-web-weight:0.040" d="M1146 1054V1078"/>
+              <path data-roads="protestant" style="--k-web-weight:0.040" d="M1146 1152V1256"/>
+              <path data-roads="protestant" style="--k-web-weight:0.024" d="M1146 1436V1554"/>
+              <path data-roads="protestant" style="--k-web-weight:0.019" d="M1146 1672V1692"/>
+              <path data-roads="protestant" style="--k-web-weight:0.015" d="M1146 1810V1830"/>
+              <path data-roads="protestant" style="--k-web-weight:0.013" d="M1146 1948V1968"/>
+              <path data-roads="protestant" style="--k-web-weight:0.011" d="M1146 2086V2106"/>
+              <path data-roads="protestant" style="--k-web-weight:0.010" d="M1146 2224V2244"/>
+              <path data-roads="protestant" style="--k-web-weight:0.010" d="M1146 2362V2382"/>
+              <path data-roads="protestant" style="--k-web-weight:0.005" d="M1146 2500V2604"/>
+              <path data-roads="christian" style="--k-web-weight:0.040" d="M1320 1054V1078"/>
+              <path data-roads="christian" style="--k-web-weight:0.040" d="M1320 1152V1256"/>
+              <path data-roads="christian" style="--k-web-weight:0.023" d="M1320 1436V1554"/>
+              <path data-roads="christian" style="--k-web-weight:0.018" d="M1320 1672V1692"/>
+              <path data-roads="christian" style="--k-web-weight:0.015" d="M1320 1810V1830"/>
+              <path data-roads="christian" style="--k-web-weight:0.013" d="M1320 1948V1968"/>
+              <path data-roads="christian" style="--k-web-weight:0.011" d="M1320 2086V2106"/>
+              <path data-roads="christian" style="--k-web-weight:0.010" d="M1320 2224V2244"/>
+              <path data-roads="christian" style="--k-web-weight:0.009" d="M1320 2362V2382"/>
+              <path data-roads="christian" style="--k-web-weight:0.005" d="M1320 2500V2604"/>
+              <path data-roads="seeker" style="--k-web-weight:0.044" d="M1494 1054V1078"/>
+              <path data-roads="seeker" style="--k-web-weight:0.044" d="M1494 1152V1256"/>
+              <path data-roads="seeker" style="--k-web-weight:0.029" d="M1494 1436V1554"/>
+              <path data-roads="seeker" style="--k-web-weight:0.023" d="M1494 1672V1692"/>
+              <path data-roads="seeker" style="--k-web-weight:0.019" d="M1494 1810V1830"/>
+              <path data-roads="seeker" style="--k-web-weight:0.016" d="M1494 1948V1968"/>
+              <path data-roads="seeker" style="--k-web-weight:0.014" d="M1494 2086V2106"/>
+              <path data-roads="seeker" style="--k-web-weight:0.013" d="M1494 2224V2244"/>
+              <path data-roads="seeker" style="--k-web-weight:0.012" d="M1494 2362V2382"/>
+              <path data-roads="seeker" style="--k-web-weight:0.006" d="M1494 2500V2604"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.122" d="M1668 1054V1078"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.122" d="M1668 1152V1256"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.064" d="M1668 1436V1554"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.051" d="M1668 1672V1692"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.042" d="M1668 1810V1830"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.035" d="M1668 1948V1968"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.031" d="M1668 2086V2106"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.028" d="M1668 2224V2244"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.026" d="M1668 2362V2382"/>
+              <path data-roads="newcomer" style="--k-web-weight:0.000" d="M1668 2500V2604"/>
+            </svg>
+            <div class="k-web-mark" style="inset-block-start:20px">The questions</div>
+            <div class="k-web-node is-lit" data-roads="practicing returning catechumen catholic protestant christian seeker newcomer" style="inset-inline-start:775px;inset-block-start:100px;width:220px;height:74px"><small>First open</small>Welcome to Purify<em>1,000 readers</em></div>
+            <div class="k-web-group" style="inset-inline-start:184px;inset-block-start:208px;width:1402px;height:146px"><small>Asked of every reader</small><b>Where are you coming from?</b></div>
+            <div class="k-web-node " data-roads="practicing returning catechumen" style="inset-inline-start:198px;inset-block-start:270px;width:156px;height:70px">Orthodox<em>340 readers</em></div>
+            <div class="k-web-node is-lit" data-roads="catholic catechumen" style="inset-inline-start:372px;inset-block-start:270px;width:156px;height:70px">Catholic<em>130 readers</em></div>
+            <div class="k-web-node " data-roads="protestant catechumen" style="inset-inline-start:546px;inset-block-start:270px;width:156px;height:70px">Protestant<em>170 readers</em></div>
+            <div class="k-web-node " data-roads="christian catechumen" style="inset-inline-start:720px;inset-block-start:270px;width:156px;height:70px">Another Christian tradition<em>60 readers</em></div>
+            <div class="k-web-node " data-roads="newcomer catechumen" style="inset-inline-start:894px;inset-block-start:270px;width:156px;height:70px">Another faith<em>30 readers</em></div>
+            <div class="k-web-node " data-roads="newcomer seeker catechumen" style="inset-inline-start:1068px;inset-block-start:270px;width:156px;height:70px">Just curious<em>140 readers</em></div>
+            <div class="k-web-node " data-roads="newcomer seeker catechumen practicing" style="inset-inline-start:1242px;inset-block-start:270px;width:156px;height:70px">Prefer not to say<em>60 readers</em></div>
+            <div class="k-web-node " data-roads="newcomer seeker catechumen practicing" style="inset-inline-start:1416px;inset-block-start:270px;width:156px;height:70px">Skipped<em>70 readers</em></div>
+            <div class="k-web-group" style="inset-inline-start:24px;inset-block-start:416px;width:610px;height:164px"><small>Asked after Orthodox</small><b>Where are you now?</b></div>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:38px;inset-block-start:492px;width:132px;height:74px">Practicing<em>187 readers</em></div>
+            <div class="k-web-node " data-roads="returning" style="inset-inline-start:188px;inset-block-start:492px;width:132px;height:74px">Coming back<em>75 readers</em></div>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:338px;inset-block-start:492px;width:132px;height:74px">Preparing to be received<em>51 readers</em></div>
+            <div class="k-web-node " style="inset-inline-start:488px;inset-block-start:492px;width:132px;height:74px">Skipped<em>27 readers</em></div>
+            <div class="k-web-group" style="inset-inline-start:655px;inset-block-start:416px;width:460px;height:164px"><small>Asked after Catholic, Protestant, Another Christian tradition, Another faith or Just curious</small><b>Have you been to an Orthodox church?</b></div>
+            <div class="k-web-node is-lit" data-roads="catholic protestant christian newcomer seeker" style="inset-inline-start:669px;inset-block-start:492px;width:132px;height:74px">Not yet<em>329 readers</em></div>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:819px;inset-block-start:492px;width:132px;height:74px">I have started going<em>138 readers</em></div>
+            <div class="k-web-node is-lit" data-roads="catholic protestant christian newcomer seeker" style="inset-inline-start:969px;inset-block-start:492px;width:132px;height:74px">Skipped<em>64 readers</em></div>
+            <div class="k-web-group" style="inset-inline-start:1136px;inset-block-start:416px;width:610px;height:164px"><small>Asked after Prefer not to say or a skip</small><b>How familiar are you with Orthodox Christianity?</b></div>
+            <div class="k-web-node " data-roads="newcomer seeker" style="inset-inline-start:1150px;inset-block-start:492px;width:132px;height:74px">Completely new<em>59 readers</em></div>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:1300px;inset-block-start:492px;width:132px;height:74px">Learning<em>26 readers</em></div>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:1450px;inset-block-start:492px;width:132px;height:74px">Practicing<em>26 readers</em></div>
+            <div class="k-web-node " style="inset-inline-start:1600px;inset-block-start:492px;width:132px;height:74px">Skipped<em>20 readers</em></div>
+            <div class="k-web-node " data-roads="practicing returning" style="inset-inline-start:198px;inset-block-start:870px;width:330px;height:74px"><small>Asked of the practicing</small>Your calendar and your fast<em>288 readers</em></div>
+            <div class="k-web-mark" style="inset-block-start:1172px">The roads</div>
+            <div class="k-web-mark" style="inset-block-start:1470px">Your first week</div>
+            <div class="k-web-mark" style="inset-block-start:2520px">After the week</div>
+            <div class="k-web-group" style="inset-inline-start:17px;inset-block-start:1256px;width:518px;height:194px"><small>How Today looks</small><b>For the Orthodox</b></div>
+            <div class="k-web-group" style="inset-inline-start:539px;inset-block-start:1256px;width:170px;height:194px"><small>How Today looks</small><b>For one learning</b></div>
+            <div class="k-web-group" style="inset-inline-start:713px;inset-block-start:1256px;width:1040px;height:194px"><small>How Today looks</small><b>For one who is new</b></div>
+            <div class="k-web-node " style="inset-inline-start:24px;inset-block-start:972px;width:156px;height:82px"><small>Asked of every reader</small>What are you looking for?<em>45 readers</em></div>
+            <i class="k-web-share " style="inset-inline-start:111px;inset-block-start:1058px;width:40px;font-style:normal">93%</i>
+            <div class="k-web-node " style="inset-inline-start:24px;inset-block-start:1078px;width:156px;height:74px"><small>Then Today opens</small>Your space is ready<em>42 readers</em></div>
+            <div class="k-web-node " style="inset-inline-start:24px;inset-block-start:1318px;width:156px;height:118px">No road<span>Purify as it always was</span><em>42 readers</em></div>
+            <div class="k-web-node " style="inset-inline-start:24px;inset-block-start:1554px;width:156px;height:118px">No first week<span>Today as it always was</span></div>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:198px;inset-block-start:972px;width:156px;height:82px"><small>Asked of every reader</small>What are you looking for?<em>207 readers</em></div>
+            <i class="k-web-share " data-roads="practicing" style="inset-inline-start:285px;inset-block-start:1058px;width:40px;font-style:normal">93%</i>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:198px;inset-block-start:1078px;width:156px;height:74px"><small>Then Today opens</small>Your space is ready<em>192 readers</em></div>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:198px;inset-block-start:1318px;width:156px;height:118px"><small>Road</small>Practicing<em>192 readers</em></div>
+            <i class="k-web-share " data-roads="practicing" style="inset-inline-start:285px;inset-block-start:1536px;width:40px;font-style:normal">65%</i>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:198px;inset-block-start:1554px;width:156px;height:118px"><small>1 · Prayers</small>Your rule<em>124 readers</em></div>
+            <i class="k-web-share " data-roads="practicing" style="inset-inline-start:285px;inset-block-start:1675px;width:40px;font-style:normal">78%</i>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:198px;inset-block-start:1692px;width:156px;height:118px"><small>2 · Prayers</small>Today's readings<em>97 readers</em></div>
+            <i class="k-web-share " data-roads="practicing" style="inset-inline-start:285px;inset-block-start:1813px;width:40px;font-style:normal">84%</i>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:198px;inset-block-start:1830px;width:156px;height:118px"><small>3 · Bible</small>The Psalter<em>81 readers</em></div>
+            <i class="k-web-share " data-roads="practicing" style="inset-inline-start:285px;inset-block-start:1951px;width:40px;font-style:normal">84%</i>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:198px;inset-block-start:1968px;width:156px;height:118px"><small>4 · Calendar</small>The Church's year<em>68 readers</em></div>
+            <i class="k-web-share " data-roads="practicing" style="inset-inline-start:285px;inset-block-start:2089px;width:40px;font-style:normal">88%</i>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:198px;inset-block-start:2106px;width:156px;height:118px"><small>5 · Reading</small>Pray with the Fathers<em>60 readers</em></div>
+            <i class="k-web-share " data-roads="practicing" style="inset-inline-start:285px;inset-block-start:2227px;width:40px;font-style:normal">90%</i>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:198px;inset-block-start:2244px;width:156px;height:118px"><small>6 · Prayers</small>Before sleep<em>54 readers</em></div>
+            <i class="k-web-share " data-roads="practicing" style="inset-inline-start:285px;inset-block-start:2365px;width:40px;font-style:normal">93%</i>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:198px;inset-block-start:2382px;width:156px;height:118px"><small>7 · Reading</small>Start with the Fathers<span>The road's door</span><em>50 readers</em></div>
+            <div class="k-web-node " data-roads="practicing" style="inset-inline-start:198px;inset-block-start:2604px;width:156px;height:114px"><small>The Plus card</small>Remember the verse<em>25 readers</em></div>
+            <div class="k-web-node " data-roads="returning" style="inset-inline-start:372px;inset-block-start:972px;width:156px;height:82px"><small>Asked of every reader</small>What are you looking for?<em>73 readers</em></div>
+            <i class="k-web-share " data-roads="returning" style="inset-inline-start:459px;inset-block-start:1058px;width:40px;font-style:normal">92%</i>
+            <div class="k-web-node " data-roads="returning" style="inset-inline-start:372px;inset-block-start:1078px;width:156px;height:74px"><small>Then Today opens</small>Your space is ready<em>67 readers</em></div>
+            <div class="k-web-node " data-roads="returning" style="inset-inline-start:372px;inset-block-start:1318px;width:156px;height:118px"><small>Road</small>Returning<em>67 readers</em></div>
+            <i class="k-web-share " data-roads="returning" style="inset-inline-start:459px;inset-block-start:1536px;width:40px;font-style:normal">58%</i>
+            <div class="k-web-node " data-roads="returning" style="inset-inline-start:372px;inset-block-start:1554px;width:156px;height:118px"><small>1 · Prayers</small>A simple morning rule<em>39 readers</em></div>
+            <i class="k-web-share " data-roads="returning" style="inset-inline-start:459px;inset-block-start:1675px;width:40px;font-style:normal">77%</i>
+            <div class="k-web-node " data-roads="returning" style="inset-inline-start:372px;inset-block-start:1692px;width:156px;height:118px"><small>2 · Prayers</small>Today's readings<em>30 readers</em></div>
+            <i class="k-web-share " data-roads="returning" style="inset-inline-start:459px;inset-block-start:1813px;width:40px;font-style:normal">83%</i>
+            <div class="k-web-node " data-roads="returning" style="inset-inline-start:372px;inset-block-start:1830px;width:156px;height:118px"><small>3 · Prayers</small>The Jesus Prayer<em>25 readers</em></div>
+            <i class="k-web-share " data-roads="returning" style="inset-inline-start:459px;inset-block-start:1951px;width:40px;font-style:normal">84%</i>
+            <div class="k-web-node " data-roads="returning" style="inset-inline-start:372px;inset-block-start:1968px;width:156px;height:118px"><small>4 · Calendar</small>The Church's year<em>21 readers</em></div>
+            <div class="k-web-node " data-roads="returning" style="inset-inline-start:372px;inset-block-start:2106px;width:156px;height:118px"><small>5 · Prayers</small>Before sleep<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="returning" style="inset-inline-start:372px;inset-block-start:2244px;width:156px;height:118px"><small>6 · Prayers</small>The Nicene Creed<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="returning" style="inset-inline-start:372px;inset-block-start:2382px;width:156px;height:118px"><small>7 · Find a parish</small>Find a parish<span>The road's door</span><em>too few to show</em></div>
+            <div class="k-web-node " data-roads="returning" style="inset-inline-start:372px;inset-block-start:2604px;width:156px;height:114px"><small>The Plus card</small>Reading plans<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:546px;inset-block-start:972px;width:156px;height:82px"><small>Asked of every reader</small>What are you looking for?<em>208 readers</em></div>
+            <i class="k-web-share " data-roads="catechumen" style="inset-inline-start:633px;inset-block-start:1058px;width:40px;font-style:normal">93%</i>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:546px;inset-block-start:1078px;width:156px;height:74px"><small>Then Today opens</small>Your space is ready<em>193 readers</em></div>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:546px;inset-block-start:1318px;width:156px;height:118px"><small>Road</small>Catechumen<em>193 readers</em></div>
+            <i class="k-web-share " data-roads="catechumen" style="inset-inline-start:633px;inset-block-start:1536px;width:40px;font-style:normal">67%</i>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:546px;inset-block-start:1554px;width:156px;height:118px"><small>1 · Prayers</small>The Trisagion Prayers<em>130 readers</em></div>
+            <i class="k-web-share " data-roads="catechumen" style="inset-inline-start:633px;inset-block-start:1675px;width:40px;font-style:normal">78%</i>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:546px;inset-block-start:1692px;width:156px;height:118px"><small>2 · Prayers</small>The Sign of the Cross<em>102 readers</em></div>
+            <i class="k-web-share " data-roads="catechumen" style="inset-inline-start:633px;inset-block-start:1813px;width:40px;font-style:normal">82%</i>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:546px;inset-block-start:1830px;width:156px;height:118px"><small>3 · Start here</small>Your first Liturgy<em>84 readers</em></div>
+            <i class="k-web-share " data-roads="catechumen" style="inset-inline-start:633px;inset-block-start:1951px;width:40px;font-style:normal">85%</i>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:546px;inset-block-start:1968px;width:156px;height:118px"><small>4 · Prayers</small>The Nicene Creed<em>71 readers</em></div>
+            <i class="k-web-share " data-roads="catechumen" style="inset-inline-start:633px;inset-block-start:2089px;width:40px;font-style:normal">89%</i>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:546px;inset-block-start:2106px;width:156px;height:118px"><small>5 · Prayers</small>Today's readings<em>63 readers</em></div>
+            <i class="k-web-share " data-roads="catechumen" style="inset-inline-start:633px;inset-block-start:2227px;width:40px;font-style:normal">89%</i>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:546px;inset-block-start:2244px;width:156px;height:118px"><small>6 · Prayers</small>A simple morning rule<em>56 readers</em></div>
+            <i class="k-web-share " data-roads="catechumen" style="inset-inline-start:633px;inset-block-start:2365px;width:40px;font-style:normal">93%</i>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:546px;inset-block-start:2382px;width:156px;height:118px"><small>7 · Find a parish</small>Find a parish<span>The road's door</span><em>52 readers</em></div>
+            <div class="k-web-node " data-roads="catechumen" style="inset-inline-start:546px;inset-block-start:2604px;width:156px;height:114px"><small>The Plus card</small>Reading plans<em>26 readers</em></div>
+            <div class="k-web-node is-lit" data-roads="catholic" style="inset-inline-start:720px;inset-block-start:972px;width:156px;height:82px"><small>Asked of every reader</small>What are you looking for?<em>93 readers</em></div>
+            <i class="k-web-share is-lit" data-roads="catholic" style="inset-inline-start:807px;inset-block-start:1058px;width:40px;font-style:normal">94%</i>
+            <div class="k-web-node is-lit" data-roads="catholic" style="inset-inline-start:720px;inset-block-start:1078px;width:156px;height:74px"><small>Then Today opens</small>Your space is ready<em>87 readers</em></div>
+            <div class="k-web-node is-lit" data-roads="catholic" style="inset-inline-start:720px;inset-block-start:1318px;width:156px;height:118px"><small>Road</small>Catholic<em>87 readers</em></div>
+            <i class="k-web-share is-lit" data-roads="catholic" style="inset-inline-start:807px;inset-block-start:1536px;width:40px;font-style:normal">62%</i>
+            <div class="k-web-node is-lit" data-roads="catholic" style="inset-inline-start:720px;inset-block-start:1554px;width:156px;height:118px"><small>1 · Reading</small>Start with the Fathers<em>54 readers</em></div>
+            <i class="k-web-share is-lit" data-roads="catholic" style="inset-inline-start:807px;inset-block-start:1675px;width:40px;font-style:normal">78%</i>
+            <div class="k-web-node is-lit" data-roads="catholic" style="inset-inline-start:720px;inset-block-start:1692px;width:156px;height:118px"><small>2 · Councils</small>First Council of Nicaea<em>42 readers</em></div>
+            <i class="k-web-share is-lit" data-roads="catholic" style="inset-inline-start:807px;inset-block-start:1813px;width:40px;font-style:normal">83%</i>
+            <div class="k-web-node is-lit" data-roads="catholic" style="inset-inline-start:720px;inset-block-start:1830px;width:156px;height:118px"><small>3 · Saints</small>St. Leo the Great<em>35 readers</em></div>
+            <i class="k-web-share is-lit" data-roads="catholic" style="inset-inline-start:807px;inset-block-start:1951px;width:40px;font-style:normal">86%</i>
+            <div class="k-web-node is-lit" data-roads="catholic" style="inset-inline-start:720px;inset-block-start:1968px;width:156px;height:118px"><small>4 · Prayers</small>The Jesus Prayer<em>30 readers</em></div>
+            <i class="k-web-share is-lit" data-roads="catholic" style="inset-inline-start:807px;inset-block-start:2089px;width:40px;font-style:normal">87%</i>
+            <div class="k-web-node is-lit" data-roads="catholic" style="inset-inline-start:720px;inset-block-start:2106px;width:156px;height:118px"><small>5 · Orthodox History</small>The Excommunications of 1054<em>26 readers</em></div>
+            <i class="k-web-share is-lit" data-roads="catholic" style="inset-inline-start:807px;inset-block-start:2227px;width:40px;font-style:normal">88%</i>
+            <div class="k-web-node is-lit" data-roads="catholic" style="inset-inline-start:720px;inset-block-start:2244px;width:156px;height:118px"><small>6 · Start here</small>Your first Liturgy<em>23 readers</em></div>
+            <i class="k-web-share is-lit" data-roads="catholic" style="inset-inline-start:807px;inset-block-start:2365px;width:40px;font-style:normal">96%</i>
+            <div class="k-web-node is-lit" data-roads="catholic" style="inset-inline-start:720px;inset-block-start:2382px;width:156px;height:118px"><small>7 · Find a parish</small>Find a parish<span>The road's door</span><em>22 readers</em></div>
+            <div class="k-web-node is-lit" data-roads="catholic" style="inset-inline-start:720px;inset-block-start:2604px;width:156px;height:114px"><small>The Plus card</small>Follow history year by year<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:894px;inset-block-start:972px;width:156px;height:82px"><small>Asked of every reader</small>What are you looking for?<em>79 readers</em></div>
+            <i class="k-web-share " data-roads="protestant" style="inset-inline-start:981px;inset-block-start:1058px;width:40px;font-style:normal">94%</i>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:894px;inset-block-start:1078px;width:156px;height:74px"><small>Then Today opens</small>Your space is ready<em>74 readers</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:894px;inset-block-start:1318px;width:156px;height:118px"><small>Road</small>Protestant<span>The Bible lean</span><em>74 readers</em></div>
+            <i class="k-web-share " data-roads="protestant" style="inset-inline-start:981px;inset-block-start:1536px;width:40px;font-style:normal">55%</i>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:894px;inset-block-start:1554px;width:156px;height:118px"><small>1 · Bible</small>The Gospel of John<em>41 readers</em></div>
+            <i class="k-web-share " data-roads="protestant" style="inset-inline-start:981px;inset-block-start:1675px;width:40px;font-style:normal">78%</i>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:894px;inset-block-start:1692px;width:156px;height:118px"><small>2 · Saints</small>St. Ignatius of Antioch<em>32 readers</em></div>
+            <i class="k-web-share " data-roads="protestant" style="inset-inline-start:981px;inset-block-start:1813px;width:40px;font-style:normal">81%</i>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:894px;inset-block-start:1830px;width:156px;height:118px"><small>3 · Councils</small>First Council of Nicaea<em>26 readers</em></div>
+            <i class="k-web-share " data-roads="protestant" style="inset-inline-start:981px;inset-block-start:1951px;width:40px;font-style:normal">85%</i>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:894px;inset-block-start:1968px;width:156px;height:118px"><small>4 · Prayers</small>What is prayer?<em>22 readers</em></div>
+            <i class="k-web-share " data-roads="protestant" style="inset-inline-start:981px;inset-block-start:2089px;width:40px;font-style:normal">91%</i>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:894px;inset-block-start:2106px;width:156px;height:118px"><small>5 · Councils</small>Council of Carthage (419)<em>20 readers</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:894px;inset-block-start:2244px;width:156px;height:118px"><small>6 · Councils</small>The Council of Ephesus<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:894px;inset-block-start:2382px;width:156px;height:118px"><small>7 · Start here</small>Your first Liturgy<span>The road's door</span><em>too few to show</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:894px;inset-block-start:2604px;width:156px;height:114px"><small>The Plus card</small>Cross-references<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:1068px;inset-block-start:972px;width:156px;height:82px"><small>Asked of every reader</small>What are you looking for?<em>43 readers</em></div>
+            <i class="k-web-share " data-roads="protestant" style="inset-inline-start:1155px;inset-block-start:1058px;width:40px;font-style:normal">93%</i>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:1068px;inset-block-start:1078px;width:156px;height:74px"><small>Then Today opens</small>Your space is ready<em>40 readers</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:1068px;inset-block-start:1318px;width:156px;height:118px"><small>Road</small>Protestant<span>The liturgical lean</span><em>40 readers</em></div>
+            <i class="k-web-share " data-roads="protestant" style="inset-inline-start:1155px;inset-block-start:1536px;width:40px;font-style:normal">60%</i>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:1068px;inset-block-start:1554px;width:156px;height:118px"><small>1 · Bible</small>The Gospel of John<em>24 readers</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:1068px;inset-block-start:1692px;width:156px;height:118px"><small>2 · Councils</small>First Council of Nicaea<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:1068px;inset-block-start:1830px;width:156px;height:118px"><small>3 · Saints</small>St. Leo the Great<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:1068px;inset-block-start:1968px;width:156px;height:118px"><small>4 · Prayers</small>The Jesus Prayer<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:1068px;inset-block-start:2106px;width:156px;height:118px"><small>5 · Councils</small>Council of Carthage (419)<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:1068px;inset-block-start:2244px;width:156px;height:118px"><small>6 · Start here</small>Your first Liturgy<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:1068px;inset-block-start:2382px;width:156px;height:118px"><small>7 · Find a parish</small>Find a parish<span>The road's door</span><em>too few to show</em></div>
+            <div class="k-web-node " data-roads="protestant" style="inset-inline-start:1068px;inset-block-start:2604px;width:156px;height:114px"><small>The Plus card</small>Cross-references<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="christian" style="inset-inline-start:1242px;inset-block-start:972px;width:156px;height:82px"><small>Asked of every reader</small>What are you looking for?<em>43 readers</em></div>
+            <i class="k-web-share " data-roads="christian" style="inset-inline-start:1329px;inset-block-start:1058px;width:40px;font-style:normal">93%</i>
+            <div class="k-web-node " data-roads="christian" style="inset-inline-start:1242px;inset-block-start:1078px;width:156px;height:74px"><small>Then Today opens</small>Your space is ready<em>40 readers</em></div>
+            <div class="k-web-node " data-roads="christian" style="inset-inline-start:1242px;inset-block-start:1318px;width:156px;height:118px"><small>Road</small>Christian<em>40 readers</em></div>
+            <i class="k-web-share " data-roads="christian" style="inset-inline-start:1329px;inset-block-start:1536px;width:40px;font-style:normal">58%</i>
+            <div class="k-web-node " data-roads="christian" style="inset-inline-start:1242px;inset-block-start:1554px;width:156px;height:118px"><small>1 · Prayers</small>The Nicene Creed<em>23 readers</em></div>
+            <div class="k-web-node " data-roads="christian" style="inset-inline-start:1242px;inset-block-start:1692px;width:156px;height:118px"><small>2 · Councils</small>First Council of Nicaea<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="christian" style="inset-inline-start:1242px;inset-block-start:1830px;width:156px;height:118px"><small>3 · Bible</small>The Gospel of John<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="christian" style="inset-inline-start:1242px;inset-block-start:1968px;width:156px;height:118px"><small>4 · Councils</small>The Council of Chalcedon<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="christian" style="inset-inline-start:1242px;inset-block-start:2106px;width:156px;height:118px"><small>5 · Orthodox History</small>The Estrangement of the Non-Chalcedonian Churches<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="christian" style="inset-inline-start:1242px;inset-block-start:2244px;width:156px;height:118px"><small>6 · Prayers</small>The Trisagion Prayers<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="christian" style="inset-inline-start:1242px;inset-block-start:2382px;width:156px;height:118px"><small>7 · Start here</small>Your first Liturgy<span>The road's door</span><em>too few to show</em></div>
+            <div class="k-web-node " data-roads="christian" style="inset-inline-start:1242px;inset-block-start:2604px;width:156px;height:114px"><small>The Plus card</small>Cross-references<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="seeker" style="inset-inline-start:1416px;inset-block-start:972px;width:156px;height:82px"><small>Asked of every reader</small>What are you looking for?<em>47 readers</em></div>
+            <i class="k-web-share " data-roads="seeker" style="inset-inline-start:1503px;inset-block-start:1058px;width:40px;font-style:normal">94%</i>
+            <div class="k-web-node " data-roads="seeker" style="inset-inline-start:1416px;inset-block-start:1078px;width:156px;height:74px"><small>Then Today opens</small>Your space is ready<em>44 readers</em></div>
+            <div class="k-web-node " data-roads="seeker" style="inset-inline-start:1416px;inset-block-start:1318px;width:156px;height:118px"><small>Road</small>Seeker<span>First pick: The Fathers' writings, The councils or Church history</span><em>44 readers</em></div>
+            <i class="k-web-share " data-roads="seeker" style="inset-inline-start:1503px;inset-block-start:1536px;width:40px;font-style:normal">66%</i>
+            <div class="k-web-node " data-roads="seeker" style="inset-inline-start:1416px;inset-block-start:1554px;width:156px;height:118px"><small>1 · Saints</small>St. Ignatius of Antioch<em>29 readers</em></div>
+            <i class="k-web-share " data-roads="seeker" style="inset-inline-start:1503px;inset-block-start:1675px;width:40px;font-style:normal">79%</i>
+            <div class="k-web-node " data-roads="seeker" style="inset-inline-start:1416px;inset-block-start:1692px;width:156px;height:118px"><small>2 · Orthodox History</small>The Church's history<em>23 readers</em></div>
+            <div class="k-web-node " data-roads="seeker" style="inset-inline-start:1416px;inset-block-start:1830px;width:156px;height:118px"><small>3 · Councils</small>First Council of Nicaea<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="seeker" style="inset-inline-start:1416px;inset-block-start:1968px;width:156px;height:118px"><small>4 · Councils</small>The councils<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="seeker" style="inset-inline-start:1416px;inset-block-start:2106px;width:156px;height:118px"><small>5 · Reading</small>Start with the Fathers<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="seeker" style="inset-inline-start:1416px;inset-block-start:2244px;width:156px;height:118px"><small>6 · Prayers</small>The Trisagion Prayers<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="seeker" style="inset-inline-start:1416px;inset-block-start:2382px;width:156px;height:118px"><small>7 · Start here</small>Your first Liturgy<span>The road's door</span><em>too few to show</em></div>
+            <div class="k-web-node " data-roads="seeker" style="inset-inline-start:1416px;inset-block-start:2604px;width:156px;height:114px"><small>The Plus card</small>Follow history year by year<em>too few to show</em></div>
+            <div class="k-web-node " data-roads="newcomer" style="inset-inline-start:1590px;inset-block-start:972px;width:156px;height:82px"><small>Asked of every reader</small>What are you looking for?<em>132 readers</em></div>
+            <i class="k-web-share " data-roads="newcomer" style="inset-inline-start:1677px;inset-block-start:1058px;width:40px;font-style:normal">92%</i>
+            <div class="k-web-node " data-roads="newcomer" style="inset-inline-start:1590px;inset-block-start:1078px;width:156px;height:74px"><small>Then Today opens</small>Your space is ready<em>122 readers</em></div>
+            <div class="k-web-node " data-roads="newcomer" style="inset-inline-start:1590px;inset-block-start:1318px;width:156px;height:118px"><small>Road</small>Newcomer<em>122 readers</em></div>
+            <i class="k-web-share " data-roads="newcomer" style="inset-inline-start:1677px;inset-block-start:1536px;width:40px;font-style:normal">52%</i>
+            <div class="k-web-node " data-roads="newcomer" style="inset-inline-start:1590px;inset-block-start:1554px;width:156px;height:118px"><small>1 · Start here</small>Start here<em>64 readers</em></div>
+            <i class="k-web-share " data-roads="newcomer" style="inset-inline-start:1677px;inset-block-start:1675px;width:40px;font-style:normal">80%</i>
+            <div class="k-web-node " data-roads="newcomer" style="inset-inline-start:1590px;inset-block-start:1692px;width:156px;height:118px"><small>2 · Saints</small>St. Mary of Egypt<em>51 readers</em></div>
+            <i class="k-web-share " data-roads="newcomer" style="inset-inline-start:1677px;inset-block-start:1813px;width:40px;font-style:normal">82%</i>
+            <div class="k-web-node " data-roads="newcomer" style="inset-inline-start:1590px;inset-block-start:1830px;width:156px;height:118px"><small>3 · Bible</small>The Gospel of John<em>42 readers</em></div>
+            <i class="k-web-share " data-roads="newcomer" style="inset-inline-start:1677px;inset-block-start:1951px;width:40px;font-style:normal">83%</i>
+            <div class="k-web-node " data-roads="newcomer" style="inset-inline-start:1590px;inset-block-start:1968px;width:156px;height:118px"><small>4 · Prayers</small>The Nicene Creed<em>35 readers</em></div>
+            <i class="k-web-share " data-roads="newcomer" style="inset-inline-start:1677px;inset-block-start:2089px;width:40px;font-style:normal">89%</i>
+            <div class="k-web-node " data-roads="newcomer" style="inset-inline-start:1590px;inset-block-start:2106px;width:156px;height:118px"><small>5 · Prayers</small>The Sign of the Cross<em>31 readers</em></div>
+            <i class="k-web-share " data-roads="newcomer" style="inset-inline-start:1677px;inset-block-start:2227px;width:40px;font-style:normal">90%</i>
+            <div class="k-web-node " data-roads="newcomer" style="inset-inline-start:1590px;inset-block-start:2244px;width:156px;height:118px"><small>6 · Calendar</small>The Church's year<em>28 readers</em></div>
+            <i class="k-web-share " data-roads="newcomer" style="inset-inline-start:1677px;inset-block-start:2365px;width:40px;font-style:normal">93%</i>
+            <div class="k-web-node " data-roads="newcomer" style="inset-inline-start:1590px;inset-block-start:2382px;width:156px;height:118px"><small>7 · Start here</small>Your first Liturgy<span>The road's door</span><em>26 readers</em></div>
+            <div class="k-web-node " data-roads="newcomer" style="inset-inline-start:1590px;inset-block-start:2604px;width:156px;height:114px"><small>The Plus card</small>No card<span>The locks only</span></div>
+          </div>
+        </div>
+      </div>
+      <figcaption>Example numbers, to show the idea. A thread is as thick as the readers on it. A plate says how many reached it, and the figure beside a thread says what share went on. Under twenty, nothing is shown. Tap the web, or Up close, to read it.</figcaption>
+    </figure>
+    <span class="k-eyebrow" id="pick-road">Light one road</span>
+    <div class="k-choice" role="group" aria-labelledby="pick-road" style="--k-choice-cols:3">
+      <button type="button" id="road-all" data-pick-road="" aria-pressed="false">All roads</button>
+      <button type="button" id="road-practicing" data-pick-road="practicing" aria-pressed="false">Practicing</button>
+      <button type="button" id="road-returning" data-pick-road="returning" aria-pressed="false">Returning</button>
+      <button type="button" id="road-catechumen" data-pick-road="catechumen" aria-pressed="false">Catechumen</button>
+      <button type="button" id="road-catholic" data-pick-road="catholic" aria-pressed="true">Catholic</button>
+      <button type="button" id="road-protestant" data-pick-road="protestant" aria-pressed="false">Protestant</button>
+      <button type="button" id="road-christian" data-pick-road="christian" aria-pressed="false">Christian</button>
+      <button type="button" id="road-seeker" data-pick-road="seeker" aria-pressed="false">Seeker</button>
+      <button type="button" id="road-newcomer" data-pick-road="newcomer" aria-pressed="false">Newcomer</button>
+    </div>
+    <span class="k-eyebrow" id="pick-size">How close</span>
+    <div class="k-choice" role="group" aria-labelledby="pick-size" style="--k-choice-cols:2">
+      <button type="button" id="size-whole" data-pick-size="whole" aria-pressed="true">All of it</button>
+      <button type="button" id="size-near" data-pick-size="near" aria-pressed="false">Up close</button>
+    </div>
+  </section>
+
+  <section class="k-section" data-trail="all" hidden>
+    <h2>Every road at once</h2>
+    <p>Light one road to read it plate by plate. The table under this sets the roads side by side.</p>
+  </section>
+
+  <section class="k-section" data-trail="practicing" hidden>
+    <h2>The Practicing road, from A to B</h2>
+    <p>Each row is a plate on the lit thread. "Went on" is the share of its readers who reached the next one. Where that share drops most is the plate to mend.</p>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>From A to B</th><th class="k-num">Readers</th><th class="k-num">Went on</th></tr></thead>
+        <tbody>
+          <tr><td>Answers that lead here</td><td class="k-num">213</td><td class="k-num k-quiet">90%</td></tr>
+          <tr><td>Finished the questions</td><td class="k-num">192</td><td class="k-num k-quiet">65%</td></tr>
+          <tr><td>Day 1: Your rule</td><td class="k-num">124</td><td class="k-num k-quiet">78%</td></tr>
+          <tr><td>Day 2: Today's readings</td><td class="k-num">97</td><td class="k-num k-quiet">84%</td></tr>
+          <tr><td>Day 3: The Psalter</td><td class="k-num">81</td><td class="k-num k-quiet">84%</td></tr>
+          <tr><td>Day 4: The Church's year</td><td class="k-num">68</td><td class="k-num k-quiet">88%</td></tr>
+          <tr><td>Day 5: Pray with the Fathers</td><td class="k-num">60</td><td class="k-num k-quiet">90%</td></tr>
+          <tr><td>Day 6: Before sleep</td><td class="k-num">54</td><td class="k-num k-quiet">93%</td></tr>
+          <tr><td>Day 7: Start with the Fathers</td><td class="k-num">50</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Met the Plus card: Remember the verse</td><td class="k-num">25</td><td class="k-num k-quiet"></td></tr>
+        </tbody>
+        <caption>Example numbers. "Too few" is a count under twenty, which is not shown, as in Admin today.</caption>
+      </table>
+    </div>
+  </section>
+
+  <section class="k-section" data-trail="returning" hidden>
+    <h2>The Returning road, from A to B</h2>
+    <p>Each row is a plate on the lit thread. "Went on" is the share of its readers who reached the next one. Where that share drops most is the plate to mend.</p>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>From A to B</th><th class="k-num">Readers</th><th class="k-num">Went on</th></tr></thead>
+        <tbody>
+          <tr><td>Answers that lead here</td><td class="k-num">75</td><td class="k-num k-quiet">89%</td></tr>
+          <tr><td>Finished the questions</td><td class="k-num">67</td><td class="k-num k-quiet">58%</td></tr>
+          <tr><td>Day 1: A simple morning rule</td><td class="k-num">39</td><td class="k-num k-quiet">77%</td></tr>
+          <tr><td>Day 2: Today's readings</td><td class="k-num">30</td><td class="k-num k-quiet">83%</td></tr>
+          <tr><td>Day 3: The Jesus Prayer</td><td class="k-num">25</td><td class="k-num k-quiet">84%</td></tr>
+          <tr><td>Day 4: The Church's year</td><td class="k-num">21</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 5: Before sleep</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 6: The Nicene Creed</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 7: Find a parish</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Met the Plus card: Reading plans</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+        </tbody>
+        <caption>Example numbers. "Too few" is a count under twenty, which is not shown, as in Admin today.</caption>
+      </table>
+    </div>
+  </section>
+
+  <section class="k-section" data-trail="catechumen" hidden>
+    <h2>The Catechumen road, from A to B</h2>
+    <p>Each row is a plate on the lit thread. "Went on" is the share of its readers who reached the next one. Where that share drops most is the plate to mend.</p>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>From A to B</th><th class="k-num">Readers</th><th class="k-num">Went on</th></tr></thead>
+        <tbody>
+          <tr><td>Answers that lead here</td><td class="k-num">215</td><td class="k-num k-quiet">90%</td></tr>
+          <tr><td>Finished the questions</td><td class="k-num">193</td><td class="k-num k-quiet">67%</td></tr>
+          <tr><td>Day 1: The Trisagion Prayers</td><td class="k-num">130</td><td class="k-num k-quiet">78%</td></tr>
+          <tr><td>Day 2: The Sign of the Cross</td><td class="k-num">102</td><td class="k-num k-quiet">82%</td></tr>
+          <tr><td>Day 3: Your first Liturgy</td><td class="k-num">84</td><td class="k-num k-quiet">85%</td></tr>
+          <tr><td>Day 4: The Nicene Creed</td><td class="k-num">71</td><td class="k-num k-quiet">89%</td></tr>
+          <tr><td>Day 5: Today's readings</td><td class="k-num">63</td><td class="k-num k-quiet">89%</td></tr>
+          <tr><td>Day 6: A simple morning rule</td><td class="k-num">56</td><td class="k-num k-quiet">93%</td></tr>
+          <tr><td>Day 7: Find a parish</td><td class="k-num">52</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Met the Plus card: Reading plans</td><td class="k-num">26</td><td class="k-num k-quiet"></td></tr>
+        </tbody>
+        <caption>Example numbers. "Too few" is a count under twenty, which is not shown, as in Admin today.</caption>
+      </table>
+    </div>
+  </section>
+
+  <section class="k-section" data-trail="catholic">
+    <h2>The Catholic road, from A to B</h2>
+    <p>Each row is a plate on the lit thread. "Went on" is the share of its readers who reached the next one. Where that share drops most is the plate to mend.</p>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>From A to B</th><th class="k-num">Readers</th><th class="k-num">Went on</th></tr></thead>
+        <tbody>
+          <tr><td>Answers that lead here</td><td class="k-num">96</td><td class="k-num k-quiet">91%</td></tr>
+          <tr><td>Finished the questions</td><td class="k-num">87</td><td class="k-num k-quiet">62%</td></tr>
+          <tr><td>Day 1: Start with the Fathers</td><td class="k-num">54</td><td class="k-num k-quiet">78%</td></tr>
+          <tr><td>Day 2: First Council of Nicaea</td><td class="k-num">42</td><td class="k-num k-quiet">83%</td></tr>
+          <tr><td>Day 3: St. Leo the Great</td><td class="k-num">35</td><td class="k-num k-quiet">86%</td></tr>
+          <tr><td>Day 4: The Jesus Prayer</td><td class="k-num">30</td><td class="k-num k-quiet">87%</td></tr>
+          <tr><td>Day 5: The Excommunications of 1054</td><td class="k-num">26</td><td class="k-num k-quiet">88%</td></tr>
+          <tr><td>Day 6: Your first Liturgy</td><td class="k-num">23</td><td class="k-num k-quiet">96%</td></tr>
+          <tr><td>Day 7: Find a parish</td><td class="k-num">22</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Met the Plus card: Follow history year by year</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+        </tbody>
+        <caption>Example numbers. "Too few" is a count under twenty, which is not shown, as in Admin today.</caption>
+      </table>
+    </div>
+  </section>
+
+  <section class="k-section" data-trail="protestant" hidden>
+    <h2>The Protestant road, from A to B</h2>
+    <p>Each row is a plate on the lit thread. "Went on" is the share of its readers who reached the next one. Where that share drops most is the plate to mend.</p>
+    <h3>The Bible lean</h3>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>From A to B</th><th class="k-num">Readers</th><th class="k-num">Went on</th></tr></thead>
+        <tbody>
+          <tr><td>Answers that lead here</td><td class="k-num">82</td><td class="k-num k-quiet">90%</td></tr>
+          <tr><td>Finished the questions</td><td class="k-num">74</td><td class="k-num k-quiet">55%</td></tr>
+          <tr><td>Day 1: The Gospel of John</td><td class="k-num">41</td><td class="k-num k-quiet">78%</td></tr>
+          <tr><td>Day 2: St. Ignatius of Antioch</td><td class="k-num">32</td><td class="k-num k-quiet">81%</td></tr>
+          <tr><td>Day 3: First Council of Nicaea</td><td class="k-num">26</td><td class="k-num k-quiet">85%</td></tr>
+          <tr><td>Day 4: What is prayer?</td><td class="k-num">22</td><td class="k-num k-quiet">91%</td></tr>
+          <tr><td>Day 5: Council of Carthage (419)</td><td class="k-num">20</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 6: The Council of Ephesus</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 7: Your first Liturgy</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Met the Plus card: Cross-references</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+        </tbody>
+        <caption>Example numbers. "Too few" is a count under twenty, which is not shown, as in Admin today.</caption>
+      </table>
+    </div>
+    <h3>The liturgical lean</h3>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>From A to B</th><th class="k-num">Readers</th><th class="k-num">Went on</th></tr></thead>
+        <tbody>
+          <tr><td>Answers that lead here</td><td class="k-num">44</td><td class="k-num k-quiet">91%</td></tr>
+          <tr><td>Finished the questions</td><td class="k-num">40</td><td class="k-num k-quiet">60%</td></tr>
+          <tr><td>Day 1: The Gospel of John</td><td class="k-num">24</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 2: First Council of Nicaea</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 3: St. Leo the Great</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 4: The Jesus Prayer</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 5: Council of Carthage (419)</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 6: Your first Liturgy</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 7: Find a parish</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Met the Plus card: Cross-references</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+        </tbody>
+        <caption>Example numbers. "Too few" is a count under twenty, which is not shown, as in Admin today.</caption>
+      </table>
+    </div>
+  </section>
+
+  <section class="k-section" data-trail="christian" hidden>
+    <h2>The Christian road, from A to B</h2>
+    <p>Each row is a plate on the lit thread. "Went on" is the share of its readers who reached the next one. Where that share drops most is the plate to mend.</p>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>From A to B</th><th class="k-num">Readers</th><th class="k-num">Went on</th></tr></thead>
+        <tbody>
+          <tr><td>Answers that lead here</td><td class="k-num">44</td><td class="k-num k-quiet">91%</td></tr>
+          <tr><td>Finished the questions</td><td class="k-num">40</td><td class="k-num k-quiet">58%</td></tr>
+          <tr><td>Day 1: The Nicene Creed</td><td class="k-num">23</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 2: First Council of Nicaea</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 3: The Gospel of John</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 4: The Council of Chalcedon</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 5: The Estrangement of the Non-Chalcedonian Churches</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 6: The Trisagion Prayers</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 7: Your first Liturgy</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Met the Plus card: Cross-references</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+        </tbody>
+        <caption>Example numbers. "Too few" is a count under twenty, which is not shown, as in Admin today.</caption>
+      </table>
+    </div>
+  </section>
+
+  <section class="k-section" data-trail="seeker" hidden>
+    <h2>The Seeker road, from A to B</h2>
+    <p>Each row is a plate on the lit thread. "Went on" is the share of its readers who reached the next one. Where that share drops most is the plate to mend.</p>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>From A to B</th><th class="k-num">Readers</th><th class="k-num">Went on</th></tr></thead>
+        <tbody>
+          <tr><td>Answers that lead here</td><td class="k-num">49</td><td class="k-num k-quiet">90%</td></tr>
+          <tr><td>Finished the questions</td><td class="k-num">44</td><td class="k-num k-quiet">66%</td></tr>
+          <tr><td>Day 1: St. Ignatius of Antioch</td><td class="k-num">29</td><td class="k-num k-quiet">79%</td></tr>
+          <tr><td>Day 2: The Church's history</td><td class="k-num">23</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 3: First Council of Nicaea</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 4: The councils</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 5: Start with the Fathers</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 6: The Trisagion Prayers</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Day 7: Your first Liturgy</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+          <tr><td>Met the Plus card: Follow history year by year</td><td class="k-num k-quiet">too few</td><td class="k-num k-quiet"></td></tr>
+        </tbody>
+        <caption>Example numbers. "Too few" is a count under twenty, which is not shown, as in Admin today.</caption>
+      </table>
+    </div>
+  </section>
+
+  <section class="k-section" data-trail="newcomer" hidden>
+    <h2>The Newcomer road, from A to B</h2>
+    <p>Each row is a plate on the lit thread. "Went on" is the share of its readers who reached the next one. Where that share drops most is the plate to mend.</p>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>From A to B</th><th class="k-num">Readers</th><th class="k-num">Went on</th></tr></thead>
+        <tbody>
+          <tr><td>Answers that lead here</td><td class="k-num">136</td><td class="k-num k-quiet">90%</td></tr>
+          <tr><td>Finished the questions</td><td class="k-num">122</td><td class="k-num k-quiet">52%</td></tr>
+          <tr><td>Day 1: Start here</td><td class="k-num">64</td><td class="k-num k-quiet">80%</td></tr>
+          <tr><td>Day 2: St. Mary of Egypt</td><td class="k-num">51</td><td class="k-num k-quiet">82%</td></tr>
+          <tr><td>Day 3: The Gospel of John</td><td class="k-num">42</td><td class="k-num k-quiet">83%</td></tr>
+          <tr><td>Day 4: The Nicene Creed</td><td class="k-num">35</td><td class="k-num k-quiet">89%</td></tr>
+          <tr><td>Day 5: The Sign of the Cross</td><td class="k-num">31</td><td class="k-num k-quiet">90%</td></tr>
+          <tr><td>Day 6: The Church's year</td><td class="k-num">28</td><td class="k-num k-quiet">93%</td></tr>
+          <tr><td>Day 7: Your first Liturgy</td><td class="k-num">26</td><td class="k-num k-quiet"></td></tr>
+        </tbody>
+        <caption>Example numbers. "Too few" is a count under twenty, which is not shown, as in Admin today.</caption>
+      </table>
+    </div>
+  </section>
+
+  <hr class="k-rule">
+
+  <section class="k-section">
+    <h2>Which road is working</h2>
+    <p>The roads side by side: how many readers finished the questions on each, how many opened the first day, and how many reached the road's door on day seven.</p>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>Road</th><th class="k-num">On it</th><th class="k-num">Day 1</th><th class="k-num">The door</th></tr></thead>
+        <tbody>
+          <tr><td>Practicing</td><td class="k-num">192</td><td class="k-num">124</td><td class="k-num">50</td></tr>
+          <tr><td>Returning</td><td class="k-num">67</td><td class="k-num">39</td><td class="k-num k-quiet">too few</td></tr>
+          <tr><td>Catechumen</td><td class="k-num">193</td><td class="k-num">130</td><td class="k-num">52</td></tr>
+          <tr><td>Catholic</td><td class="k-num">87</td><td class="k-num">54</td><td class="k-num">22</td></tr>
+          <tr><td>Protestant</td><td class="k-num">113</td><td class="k-num">64</td><td class="k-num">26</td></tr>
+          <tr><td>Christian</td><td class="k-num">40</td><td class="k-num">23</td><td class="k-num k-quiet">too few</td></tr>
+          <tr><td>Seeker</td><td class="k-num">44</td><td class="k-num">29</td><td class="k-num k-quiet">too few</td></tr>
+          <tr><td>Newcomer</td><td class="k-num">122</td><td class="k-num">64</td><td class="k-num">26</td></tr>
+        </tbody>
+        <caption>Example numbers. With a thousand readers a month, four of the eight roads are too small to read at their door. Plus bought, road by road, would read "too few" on every line.</caption>
+      </table>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>Before this is real</h2>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>What it needs</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>The road as one word on the counts</td><td>Today no count says which road a reader is on. That was your choice of 11 November, and the counts say nothing of a reader's faith.</td></tr>
+          <tr><td>The privacy page, and a yes from readers in the EU</td><td>It is a count about faith. The page has to say it before anything is sent, and a reader in the EU has to agree first.</td></tr>
+          <tr><td>More readers than a road has</td><td>A count under twenty is not shown. Small roads go dark, as they do on this page. A road's numbers are to watch. A verdict comes from a test on all readers together.</td></tr>
+          <tr><td>Its place in Admin</td><td>This page shows the idea. In Admin it is drawn from the admin's own pieces, after your yes.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>Why it is drawn this way</h2>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>The choice</th><th>Why, and what it does for you</th></tr></thead>
+        <tbody>
+          <tr><td>A thread as thick as its readers</td><td>The eye finds where readers go, and where the web thins, before a number is read. Widths are to scale: a thread with half the readers is half as thick.</td></tr>
+          <tr><td>The count on the plate, the share beside the thread</td><td>A plate is a place, and a thread is the way from A to B. So the figure that says how many went on stands on the way itself.</td></tr>
+          <tr><td>&quot;Too few to show&quot; under twenty</td><td>It is Admin's own rule today. A handful of readers is close to a description of people, and it is no finding either. On this page it also shows the limit: a small road goes dark by the middle of its week.</td></tr>
+          <tr><td>Every number marked as an example</td><td>Nothing is counted by road today. A drawing must not be taken for a result.</td></tr>
+          <tr><td>The same web as before</td><td>One picture to learn. The numbers are added to it, and nothing is moved.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="k-foot">
+    <p>Edgar, the Purify Team</p>
+    <p class="k-meta">A mock-up. Its web is drawn from the reader map; its numbers are examples.</p>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const web = document.getElementById("web");
+  if (!web) return;
+  const frame = web.querySelector(".k-web-frame");
+  const plane = web.querySelector(".k-web-plane");
+  const sheet = Number(getComputedStyle(web).getPropertyValue("--k-web-w"));
+  let size = "whole";
+  let road = web.dataset.road || "";
+
+  const scale = () => (size === "whole" ? frame.clientWidth / sheet : 1);
+  const fit = () => web.style.setProperty("--k-web-s", String(scale()));
+
+  /** Bring a point of the sheet (as shares of its width and height) to the middle of the frame. */
+  function bring(fx, fy) {
+    const p = plane.getBoundingClientRect();
+    const f = frame.getBoundingClientRect();
+    frame.scrollLeft += p.left + fx * p.width - (f.left + f.width / 2);
+    if (fy !== null) frame.scrollTop += p.top + fy * p.height - (f.top + f.height / 2);
+  }
+  /** Bring the lit road's strand under the eye, keeping how far down the reader is. */
+  function bringRoad() {
+    const head = road && web.querySelector('.k-web-node[data-roads="' + road + '"]');
+    if (!head) return;
+    const p = plane.getBoundingClientRect();
+    const h = head.getBoundingClientRect();
+    bring((h.left + h.width / 2 - p.left) / p.width, null);
+  }
+
+  function setSize(next, point) {
+    size = next;
+    web.dataset.zoom = next;
+    for (const b of document.querySelectorAll("[data-pick-size]")) b.setAttribute("aria-pressed", String(b.dataset.pickSize === next));
+    fit();
+    if (next !== "near") return;
+    frame.scrollTop = 0;
+    if (point) bring(point.x, point.y);
+    else bringRoad();
+  }
+
+  function light(next) {
+    road = next;
+    web.classList.toggle("has-lit", Boolean(next));
+    for (const el of web.querySelectorAll("[data-roads]")) el.classList.toggle("is-lit", Boolean(next) && el.dataset.roads.split(" ").includes(next));
+    for (const b of document.querySelectorAll("[data-pick-road]")) b.setAttribute("aria-pressed", String(b.dataset.pickRoad === next));
+    for (const s of document.querySelectorAll("[data-trail]")) s.hidden = s.dataset.trail !== (next || "all");
+    if (size === "near") bringRoad();
+  }
+
+  for (const b of document.querySelectorAll("[data-pick-road]")) b.addEventListener("click", () => light(b.dataset.pickRoad));
+  for (const b of document.querySelectorAll("[data-pick-size]")) b.addEventListener("click", () => setSize(b.dataset.pickSize));
+  // A tap on the whole web goes near, to the place tapped.
+  frame.addEventListener("click", (e) => {
+    if (size !== "whole") return;
+    const p = plane.getBoundingClientRect();
+    setSize("near", { x: (e.clientX - p.left) / p.width, y: (e.clientY - p.top) / p.height });
+  });
+  if ("ResizeObserver" in window) new ResizeObserver(fit).observe(frame);
+  setSize("whole");
+})();
+</script>
+</body>
+</html>

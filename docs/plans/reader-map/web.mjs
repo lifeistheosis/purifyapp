@@ -3,8 +3,9 @@
 // 2026-11-22: "make a spider web / family tree type of artifact for the
 // different screens and sections and pathways").
 //
-//   node docs/plans/reader-map/web.mjs           write web.html
-//   node docs/plans/reader-map/web.mjs --check   fail when web.html is not what the map draws now
+//   node docs/plans/reader-map/web.mjs                     write web.html
+//   node docs/plans/reader-map/web.mjs --numbers           write web-numbers.html, a mock-up
+//   node docs/plans/reader-map/web.mjs [--numbers] --check fail when the page is not what the map draws now
 //
 // Nothing here is drawn by hand. Every plate, thread and row comes from
 // docs/plans/reader-map.json, which lib/onboarding/__tests__/readerMap.test.ts
@@ -13,9 +14,16 @@
 // What this file adds is only where things stand on the sheet, and it stops
 // (throws) on anything the rules say that it has no place for.
 //
+// --numbers is the same web with a count on every plate and a share on every
+// thread (the owner, 2026-11-22: "we need some way to actually track data
+// from a to b to see which one is working"). It is a MOCK-UP. Nothing counts
+// readers by road today (docs/plans/reader-map.md, section 12), so every
+// number is an example made in example() below from a few round shares, and
+// the page says so wherever a number stands. It never reads a count.
+//
 // The page is made of the design kit's pieces (docs/brand/design-kit.md): its
 // head is the kit's own template, and the web itself is the kit's Web piece
-// on the night, with the Choice piece over it. Check it as any kit page:
+// on the night, with the Choice piece under it. Check it as any kit page:
 //   node docs/brand/kit/check.mjs --page docs/plans/reader-map/web.html
 
 import fs from "node:fs";
@@ -27,7 +35,8 @@ const ROOT = path.resolve(HERE, "../../..");
 const MAP = JSON.parse(fs.readFileSync(path.join(ROOT, "docs/plans/reader-map.json"), "utf8"));
 const WALK = JSON.parse(fs.readFileSync(path.join(HERE, "walk.json"), "utf8"));
 const TEMPLATE = fs.readFileSync(path.join(ROOT, "docs/brand/kit/artifact-template.html"), "utf8");
-const OUT = path.join(HERE, "web.html");
+const NUM = process.argv.includes("--numbers");
+const OUT = path.join(HERE, NUM ? "web-numbers.html" : "web.html");
 
 /** The road the page opens on: one lit thread says what the web is at a glance. */
 const OPENS_ON = "catholic";
@@ -89,6 +98,64 @@ const roadOfCol = (to) => COLS[colAt.get(to)].road;
 const roadsOfBackground = (b) => new Set(b.answers.flatMap((a) => a.ways.map((w) => roadOfCol(w.to))).filter(Boolean));
 const backgroundName = (b) => b.label ?? "Skipped";
 
+// ── The mock-up's numbers: examples, made here, never counted ────────────
+
+/** A count under this is not shown, as in Admin today (lib/ab/panel.ts, SMALLEST_CELL). */
+const SMALLEST = 20;
+const figure = (n) => (Math.round(n) < SMALLEST ? "too few to show" : `${num(Math.round(n))} readers`);
+const cell = (n) => (Math.round(n) < SMALLEST ? "too few" : num(Math.round(n)));
+const wentOn = (from, to) => (Math.round(from) < SMALLEST || Math.round(to) < SMALLEST ? "" : `${Math.round((100 * Math.round(to)) / Math.round(from))}%`);
+
+/**
+ * One example month: a thousand readers begin the questions, and round
+ * shares say where they go. The shares are invented to look like a month
+ * could, and to show what the page does with a small road. They are not
+ * Purify's, and nothing here is read from a count.
+ */
+function example() {
+  const BEGAN = 1000;
+  const FROM = { orthodox: 34, catholic: 13, protestant: 17, christian: 6, "other-faith": 3, none: 14, "prefer-not": 6, "not asked": 7 };
+  const THEN = {
+    where: { practicing: 55, "coming back": 22, preparing: 15, skipped: 8 },
+    been: { "not yet been to a church": 62, "going to a church": 26, skipped: 12 },
+    level: { "completely new": 45, learning: 20, practicing: 20, skipped: 15 },
+  };
+  /** Where the first pick decides the strand, the share that goes each way. */
+  const SPLIT = { seeker: 30, newcomer: 70, "protestant:liturgical": 35, "protestant:bible": 65 };
+  /** Of a hundred readers on a road, how many open each day of the week. */
+  const STAYS = [60, 47, 39, 33, 29, 26, 24];
+  /** Each strand a little better or worse than the rest, so the roads can be told apart. */
+  const LEAN = [100, 108, 96, 112, 104, 92, 100, 95, 110, 88];
+  if (LEAN.length < COLS.length) stop("an example for more strands than it was made for");
+
+  const background = new Map();
+  const answer = new Map();
+  const way = new Map();
+  const on = new Map(COLS.map((c) => [c.id, 0]));
+  for (const b of MAP.backgrounds) {
+    const n = (BEGAN * (FROM[b.id] ?? stop(`an example share for ${b.id}`))) / 100;
+    background.set(b.id, n);
+    for (const a of b.answers) {
+      const m = (n * (THEN[b.asks]?.[a.says] ?? stop(`an example share for ${b.asks}, ${a.says}`))) / 100;
+      answer.set(`${b.id}|${a.says}`, m);
+      for (const w of a.ways) {
+        const k = w.firsts === "any" ? m : (m * (SPLIT[w.to] ?? stop(`an example split for ${w.to}`))) / 100;
+        way.set(`${b.id}|${a.says}|${w.to}`, k);
+        on.set(w.to, on.get(w.to) + k);
+      }
+    }
+  }
+  const strand = new Map();
+  for (const [i, c] of COLS.entries()) {
+    const reached = on.get(c.id);
+    const finished = reached * 0.9;
+    const days = c.road ? STAYS.map((s) => (finished * s * LEAN[i]) / 10000) : [];
+    strand.set(c.id, { on: reached, picks: reached * 0.97, finished, days, plus: c.plus ? days[6] * 0.5 : null });
+  }
+  return { BEGAN, background, answer, way, strand };
+}
+const EX = NUM ? example() : null;
+
 // ── Where things stand on the sheet ─────────────────────────────────────
 
 const NW = 156; // a plate
@@ -98,16 +165,18 @@ const W = 2 * M + COLS.length * NW + (COLS.length - 1) * GX;
 const colX = (i) => M + i * (NW + GX);
 const colC = (i) => colX(i) + NW / 2;
 
+/** A plate that carries a count is one line taller. */
+const E = NUM ? 18 : 0;
 const MARK = 64;
-const Y = { mark1: 20, start: 100, q1: 190, q2: 380, cross: 800, rule: 816, picks: 900, ready: 988, mark2: 1064, today: 1148 };
-const ROAD_H = 100;
-const DAY_H = 100;
-const DAY_STEP = 120;
+const Y = { mark1: 20, start: 100, q1: 190 + E, q2: 380 + 2 * E, cross: 800 + 3 * E, rule: 816 + 3 * E, picks: 900 + 4 * E, ready: 988 + 5 * E, mark2: 1064 + 6 * E, today: 1148 + 6 * E };
+const ROAD_H = 100 + E;
+const DAY_H = 100 + E;
+const DAY_STEP = 120 + E;
 Y.mark3 = Y.today + 62 + ROAD_H + 14 + 20;
 Y.days = Y.mark3 + MARK + 20;
 Y.mark4 = Y.days + 6 * DAY_STEP + DAY_H + 20;
 Y.plus = Y.mark4 + MARK + 20;
-const PLUS_H = 96;
+const PLUS_H = 96 + E;
 const H = Y.plus + PLUS_H + 28;
 
 const plates = [];
@@ -116,8 +185,10 @@ const lit = (roads) => (roads.has(OPENS_ON) ? "is-lit" : "");
 const roadsAttr = (roads) => (roads.size ? ` data-roads="${[...roads].join(" ")}"` : "");
 const at = (x, y, w, h) => `inset-inline-start:${x}px;inset-block-start:${y}px;width:${w}px${h ? `;height:${h}px` : ""}`;
 
-function plate({ x, y, w = NW, h, small, name, line, roads = new Set() }) {
-  plates.push(`<div class="k-web-node ${lit(roads)}"${roadsAttr(roads)} style="${at(x, y, w, h)}">${small ? `<small>${esc(small)}</small>` : ""}${esc(name)}${line ? `<span>${esc(line)}</span>` : ""}</div>`);
+/** A plate. `n` is its count, in the mock-up only. */
+function plate({ x, y, w = NW, h, small, name, line, roads = new Set(), n = null }) {
+  const count = n === null ? "" : `<em>${esc(figure(n))}</em>`;
+  plates.push(`<div class="k-web-node ${lit(roads)}"${roadsAttr(roads)} style="${at(x, y, w, h)}">${small ? `<small>${esc(small)}</small>` : ""}${esc(name)}${line ? `<span>${esc(line)}</span>` : ""}${count}</div>`);
 }
 function group({ x, y, w, h, small, name }) {
   plates.push(`<div class="k-web-group" style="${at(x, y, w, h)}"><small>${esc(small)}</small><b>${esc(name)}</b></div>`);
@@ -125,28 +196,35 @@ function group({ x, y, w, h, small, name }) {
 function mark(y, name) {
   plates.push(`<div class="k-web-mark" style="inset-block-start:${y}px">${esc(name)}</div>`);
 }
-function thread(d, roads = new Set()) {
-  threads.push(`<path${lit(roads) ? ` class="${lit(roads)}"` : ""}${roadsAttr(roads)} d="${d}"/>`);
+/** A thread. `n` is the readers on it, in the mock-up only: its weight is their share of all who began. */
+function thread(d, roads = new Set(), n = null) {
+  const weight = n === null ? "" : ` style="--k-web-weight:${Math.min(1, n / EX.BEGAN).toFixed(3)}"`;
+  threads.push(`<path${lit(roads) ? ` class="${lit(roads)}"` : ""}${roadsAttr(roads)}${weight} d="${d}"/>`);
 }
-const down = (x, y1, y2, roads) => thread(`M${x} ${y1}V${y2}`, roads);
+const down = (x, y1, y2, roads, n = null) => thread(`M${x} ${y1}V${y2}`, roads, n);
 const bend = (x1, y1, x2, y2, reach) => `M${x1} ${y1}C${x1} ${y1 + reach} ${x2} ${y2 - reach} ${x2} ${y2}`;
+/** Beside a thread, the share of one plate's readers that reached the next. Nothing where either is too few. */
+function share(x, y, from, to, roads) {
+  const said = wentOn(from, to);
+  if (said) plates.push(`<i class="k-web-share ${lit(roads)}"${roadsAttr(roads)} style="${at(x + 9, y, 40)};font-style:normal">${said}</i>`);
+}
 
 const ALL = new Set(ROADS);
 
 // The first open.
 mark(Y.mark1, "The questions");
-plate({ x: (W - 220) / 2, y: Y.start, w: 220, h: 56, small: "First open", name: MAP.screens.welcome, roads: ALL });
-down(W / 2, Y.start + 56, Y.q1, ALL);
+plate({ x: (W - 220) / 2, y: Y.start, w: 220, h: 56 + E, small: "First open", name: MAP.screens.welcome, roads: ALL, n: EX ? EX.BEGAN : null });
+down(W / 2, Y.start + 56 + E, Y.q1, ALL, EX ? EX.BEGAN : null);
 
 // The first question, and its answers in the screen's own order.
 {
   const n = MAP.backgrounds.length;
   const row = n * NW + (n - 1) * GX;
   const x0 = (W - row) / 2;
-  group({ x: x0 - 14, y: Y.q1, w: row + 28, h: 128, small: "Asked of every reader", name: MAP.screens.background });
+  group({ x: x0 - 14, y: Y.q1, w: row + 28, h: 128 + E, small: "Asked of every reader", name: MAP.screens.background });
   for (const [i, b] of MAP.backgrounds.entries()) {
     b.cx = x0 + i * (NW + GX) + NW / 2;
-    plate({ x: x0 + i * (NW + GX), y: Y.q1 + 62, h: 52, name: backgroundName(b), roads: roadsOfBackground(b) });
+    plate({ x: x0 + i * (NW + GX), y: Y.q1 + 62, h: 52 + E, name: backgroundName(b), roads: roadsOfBackground(b), n: EX ? EX.background.get(b.id) : null });
   }
 }
 
@@ -159,17 +237,19 @@ down(W / 2, Y.start + 56, Y.q1, ALL);
   let x = M;
   for (const [g, s] of SECOND.entries()) {
     const w = widths[g];
-    group({ x, y: Y.q2, w, h: 146, small: `Asked after ${list(s.from.map((b) => b.label ?? "a skip"))}`, name: MAP.screens[s.asks] });
-    for (const b of s.from) thread(bend(b.cx, Y.q1 + 62 + 52, x + w / 2, Y.q2, 38), roadsOfBackground(b));
+    group({ x, y: Y.q2, w, h: 146 + E, small: `Asked after ${list(s.from.map((b) => b.label ?? "a skip"))}`, name: MAP.screens[s.asks] });
+    for (const b of s.from) thread(bend(b.cx, Y.q1 + 62 + 52 + E, x + w / 2, Y.q2, 38), roadsOfBackground(b), EX ? EX.background.get(b.id) : null);
     for (const [i, a] of s.answers.entries()) {
       const ax = x + 14 + i * (AW + GX);
       const ways = new Set(s.from.flatMap((b) => b.answers[i].ways.map((way) => way.to)));
-      plate({ x: ax, y: Y.q2 + 76, w: AW, h: 56, name: a.label, roads: new Set([...ways].map(roadOfCol).filter(Boolean)) });
+      const here = EX ? s.from.reduce((sum, b) => sum + EX.answer.get(`${b.id}|${a.says}`), 0) : null;
+      plate({ x: ax, y: Y.q2 + 76, w: AW, h: 56 + E, name: a.label, roads: new Set([...ways].map(roadOfCol).filter(Boolean)), n: here });
       // From this answer to each strand it can lead to, crossing the others on the way.
       for (const to of ways) {
         const c = COLS[colAt.get(to)];
         const cx = colC(colAt.get(to));
-        thread(`${bend(ax + AW / 2, Y.q2 + 76 + 56, cx, Y.cross, 150)}V${c.rule ? Y.rule : Y.picks}`, new Set(c.road ? [c.road] : []));
+        const along = EX ? s.from.reduce((sum, b) => sum + (EX.way.get(`${b.id}|${a.says}|${to}`) ?? 0), 0) : null;
+        thread(`${bend(ax + AW / 2, Y.q2 + 76 + 56 + E, cx, Y.cross, 150)}V${c.rule ? Y.rule : Y.picks}`, new Set(c.road ? [c.road] : []), along);
       }
     }
     x += w + gap;
@@ -182,8 +262,9 @@ down(W / 2, Y.start + 56, Y.q1, ALL);
   if (asked.length) {
     if (asked[asked.length - 1] - asked[0] !== asked.length - 1) stop("the strands asked for their rule do not stand side by side");
     const x = colX(asked[0]);
-    plate({ x, y: Y.rule, w: colX(asked[asked.length - 1]) + NW - x, h: 56, small: "Asked of the practicing", name: MAP.screens.rule, roads: new Set(asked.map((i) => COLS[i].road).filter(Boolean)) });
-    for (const i of asked) down(colC(i), Y.rule + 56, Y.picks, new Set(COLS[i].road ? [COLS[i].road] : []));
+    const here = EX ? asked.reduce((sum, i) => sum + EX.strand.get(COLS[i].id).on, 0) : null;
+    plate({ x, y: Y.rule, w: colX(asked[asked.length - 1]) + NW - x, h: 56 + E, small: "Asked of the practicing", name: MAP.screens.rule, roads: new Set(asked.map((i) => COLS[i].road).filter(Boolean)), n: here });
+    for (const i of asked) down(colC(i), Y.rule + 56 + E, Y.picks, new Set(COLS[i].road ? [COLS[i].road] : []), EX ? EX.strand.get(COLS[i].id).on : null);
   }
 }
 
@@ -199,10 +280,12 @@ for (const [i, c] of COLS.entries()) {
   const x = colX(i);
   const cx = colC(i);
   const roads = new Set(c.road ? [c.road] : []);
-  plate({ x, y: Y.picks, h: 64, small: "Asked of every reader", name: MAP.screens.picks, roads });
-  down(cx, Y.picks + 64, Y.ready, roads);
-  plate({ x, y: Y.ready, h: 56, small: "Then Today opens", name: MAP.screens.ready, roads });
-  down(cx, Y.ready + 56, Y.today, roads);
+  const ex = EX ? EX.strand.get(c.id) : null;
+  plate({ x, y: Y.picks, h: 64 + E, small: "Asked of every reader", name: MAP.screens.picks, roads, n: ex ? ex.picks : null });
+  down(cx, Y.picks + 64 + E, Y.ready, roads, ex ? ex.finished : null);
+  if (ex) share(cx, Y.picks + 64 + E + 4, ex.picks, ex.finished, roads);
+  plate({ x, y: Y.ready, h: 56 + E, small: "Then Today opens", name: MAP.screens.ready, roads, n: ex ? ex.finished : null });
+  down(cx, Y.ready + 56 + E, Y.today, roads, ex ? ex.finished : null);
 
   // What sets this strand apart from its neighbour, where the first pick decides it.
   const firsts = c.firsts.size === 1 ? JSON.parse([...c.firsts][0]) : null;
@@ -213,21 +296,23 @@ for (const [i, c] of COLS.entries()) {
       : Array.isArray(firsts) && firsts.length <= 3 && !firsts.includes("no pick")
         ? `First pick: ${list(firsts.map((f) => pickLabel.get(f) ?? stop(`a pick with no name: ${f}`)))}`
         : null;
-  plate({ x, y: Y.today + 62, h: ROAD_H, small: c.road ? "Road" : null, name: c.road ? cap(c.road) : "No road", line, roads });
-  down(cx, Y.today + 62 + ROAD_H, Y.days, roads);
+  plate({ x, y: Y.today + 62, h: ROAD_H, small: c.road ? "Road" : null, name: c.road ? cap(c.road) : "No road", line, roads, n: ex ? ex.finished : null });
+  down(cx, Y.today + 62 + ROAD_H, Y.days, roads, ex && c.road ? ex.days[0] : null);
 
   if (!c.road) {
     plate({ x, y: Y.days, h: DAY_H, name: "No first week", line: "Today as it always was" });
     continue;
   }
   if (c.steps.length !== 7) stop(`${c.id} has a week of ${c.steps.length} pages`);
+  if (ex) share(cx, Y.days - 18, ex.finished, ex.days[0], roads);
   for (const [k, key] of c.steps.entries()) {
     const page = MAP.pages[key] ?? stop(`a page with no name: ${key}`);
     const y = Y.days + k * DAY_STEP;
-    plate({ x, y, h: DAY_H, small: `${k + 1} · ${page.section}`, name: page.name, line: k === 6 ? "The road's door" : null, roads });
-    down(cx, y + DAY_H, k === 6 ? Y.plus : y + DAY_STEP, roads);
+    plate({ x, y, h: DAY_H, small: `${k + 1} · ${page.section}`, name: page.name, line: k === 6 ? "The road's door" : null, roads, n: ex ? ex.days[k] : null });
+    down(cx, y + DAY_H, k === 6 ? Y.plus : y + DAY_STEP, roads, ex ? (k === 6 ? (ex.plus ?? 0) : ex.days[k + 1]) : null);
+    if (ex && k < 6) share(cx, y + DAY_H + 3, ex.days[k], ex.days[k + 1], roads);
   }
-  plate({ x, y: Y.plus, h: PLUS_H, small: "The Plus card", name: c.plus ? c.plus.name : "No card", line: c.plus ? null : "The locks only", roads });
+  plate({ x, y: Y.plus, h: PLUS_H, small: "The Plus card", name: c.plus ? c.plus.name : "No card", line: c.plus ? null : "The locks only", roads, n: ex && c.plus ? ex.plus : null });
 }
 
 // ── The page around the web ─────────────────────────────────────────────
@@ -238,6 +323,7 @@ const held = new Map();
 for (const c of WEEKS) for (const key of c.steps) held.set(key, [...(held.get(key) ?? []), c]);
 
 const firstPickWords = (firsts) => (firsts.includes("no pick") ? "with any other first pick, or none" : `when the first pick is ${list(firsts.map((f) => pickLabel.get(f)))}`);
+const leanName = (c) => (c.lean === "bible" ? "Bible" : c.lean);
 
 function trail(road) {
   const r = MAP.roads.find((x) => x.id === road);
@@ -300,58 +386,93 @@ function trail(road) {
   </section>`;
 }
 
+/** The mock-up's trail: the lit road from its first plate to its last, a row for each. */
+function trailNumbers(road) {
+  const tables = WEEKS.filter((c) => c.road === road)
+    .map((c) => {
+      const ex = EX.strand.get(c.id);
+      const steps = [
+        ["Answers that lead here", ex.on],
+        ["Finished the questions", ex.finished],
+        ...c.steps.map((key, k) => [`Day ${k + 1}: ${MAP.pages[key].name}`, ex.days[k]]),
+        ...(c.plus ? [[`Met the Plus card: ${c.plus.name}`, ex.plus]] : []),
+      ];
+      // The card is met by one arm of a test, so the share from day 7 to it is not a share that "went on".
+      const last = c.plus ? steps.length - 2 : steps.length - 1;
+      const rows = steps.map(([name, n], k) => `<tr><td>${esc(name)}</td><td class="k-num${Math.round(n) < SMALLEST ? " k-quiet" : ""}">${cell(n)}</td><td class="k-num k-quiet">${k < last ? wentOn(n, steps[k + 1][1]) : ""}</td></tr>`);
+      return `${c.lean ? `<h3>The ${leanName(c)} lean</h3>\n    ` : ""}<div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>From A to B</th><th class="k-num">Readers</th><th class="k-num">Went on</th></tr></thead>
+        <tbody>
+          ${rows.join("\n          ")}
+        </tbody>
+        <caption>Example numbers. "Too few" is a count under twenty, which is not shown, as in Admin today.</caption>
+      </table>
+    </div>`;
+    })
+    .join("\n    ");
+  return `<section class="k-section" data-trail="${road}"${road === OPENS_ON ? "" : " hidden"}>
+    <h2>The ${cap(road)} road, from A to B</h2>
+    <p>Each row is a plate on the lit thread. "Went on" is the share of its readers who reached the next one. Where that share drops most is the plate to mend.</p>
+    ${tables}
+  </section>`;
+}
+
 const crossings = [...held]
   .map(([key, cols]) => ({ name: MAP.pages[key].name, section: MAP.pages[key].section, n: cols.length }))
   .filter((p) => p.n >= 3)
   .sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));
 const most = crossings[0].n;
 
-const REASONS = [
-  ["A web on the app's night sky", "It is the app's own look, and threads on a night read as the constellation they are. It is the one thing that leads on the page, so it is the one thing on the night."],
-  ["Top to bottom, a strand for each road", "A phone is tall. A road is followed down with the thumb, a day at a time, the way a reader walks it."],
-  ["Two sizes: all of it, and up close", "All of it shows the shape you asked to see, with only its four marks to read. Up close shows the words. Threads keep their weight at both."],
-  ["One road lit at a time", `${num(MAP.count.readers)} sets of answers cannot be read at once. One lit thread can, with the rest left faint and still readable.`],
-  ["Every plate in the app's own words", "A plate says what the screen or page says in the app, and its small line names its section, so nothing is renamed and nothing has to be translated back."],
-  ["Drawn by a script, from the rules", "The test that holds the reader map writes this web's data. When a rule changes, the test fails until the web is drawn again, so the web cannot say what the app does not do."],
-  ["Plates are not buttons", "A plate is too small for a thumb when all of it is shown. The choices above the web are 44px buttons, and they do the choosing."],
-];
+const REASONS = NUM
+  ? [
+      ["A thread as thick as its readers", "The eye finds where readers go, and where the web thins, before a number is read. Widths are to scale: a thread with half the readers is half as thick."],
+      ["The count on the plate, the share beside the thread", "A plate is a place, and a thread is the way from A to B. So the figure that says how many went on stands on the way itself."],
+      ["\"Too few to show\" under twenty", "It is Admin's own rule today. A handful of readers is close to a description of people, and it is no finding either. On this page it also shows the limit: a small road goes dark by the middle of its week."],
+      ["Every number marked as an example", "Nothing is counted by road today. A drawing must not be taken for a result."],
+      ["The same web as before", "One picture to learn. The numbers are added to it, and nothing is moved."],
+    ]
+  : [
+      ["A web on the app's night sky", "It is the app's own look, and threads on a night read as the constellation they are. It is the one thing that leads on the page, so it is the one thing on the night."],
+      ["Top to bottom, a strand for each road", "A phone is tall. A road is followed down with the thumb, a day at a time, the way a reader walks it."],
+      ["Two sizes: all of it, and up close", "All of it shows the shape you asked to see, with only its four marks to read. Up close shows the words. Threads keep their weight at both."],
+      ["One road lit at a time", `${num(MAP.count.readers)} sets of answers cannot be read at once. One lit thread can, with the rest left faint and still readable.`],
+      ["Every plate in the app's own words", "A plate says what the screen or page says in the app, and its small line names its section, so nothing is renamed and nothing has to be translated back."],
+      ["Drawn by a script, from the rules", "The test that holds the reader map writes this web's data. When a rule changes, the test fails until the web is drawn again, so the web cannot say what the app does not do."],
+      ["Plates are not buttons", "A plate is too small for a thumb when all of it is shown. The choices under the web are 44px buttons, and they do the choosing."],
+    ];
 
-const body = `<main class="k-page">
-  <header class="k-title k-rise">
-    <span class="k-mark" role="img" aria-label="Purify"></span>
-    <span class="k-eyebrow">For 2.0, the mock-up phase</span>
-    <h1>The reader web</h1>
-    <p class="k-lede">Every screen, section and way a new reader can take, from the first open to the road's door.</p>
-    <p class="k-meta">${num(MAP.count.readers)} sets of answers, ${ROADS.length} roads, ${num(MAP.count.weeks)} different first weeks. Drawn from the app's own rules, 22 November 2026.</p>
-  </header>
+const head = NUM
+  ? {
+      title: "Purify web in numbers",
+      says: "A mock-up of the Purify reader web with a count on every plate and thread. Every number is an example.",
+      eyebrow: "For 2.0, a mock-up",
+      h1: "Numbers on the web",
+      lede: "The reader web with a count on every plate, and on every thread the share that went on.",
+      meta: `Example numbers: ${num(EX.BEGAN)} readers in an example month. Nothing on this page was counted.`,
+      label: "The reader web with example numbers. One road is lit. Up close, it scrolls both ways.",
+      caption: "Example numbers, to show the idea. A thread is as thick as the readers on it. A plate says how many reached it, and the figure beside a thread says what share went on. Under twenty, nothing is shown. Tap the web, or Up close, to read it.",
+    }
+  : {
+      title: "Purify reader web",
+      says: "Every screen, section and way a new reader can take in Purify, drawn from the app's own rules.",
+      eyebrow: "For 2.0, the mock-up phase",
+      h1: "The reader web",
+      lede: "Every screen, section and way a new reader can take, from the first open to the road's door.",
+      meta: `${num(MAP.count.readers)} sets of answers, ${ROADS.length} roads, ${num(MAP.count.weeks)} different first weeks. Drawn from the app's own rules, 22 November 2026.`,
+      label: "The reader web. One road is lit. Up close, it scrolls both ways.",
+      caption: "The whole web, from the first open at the top to the one Plus card at the foot. Tap it, or Up close, to read the plates. Each plate is a screen or a page in the app's own words, and its small line names its section.",
+    };
 
-  <section aria-label="The web">
-    <figure class="k-web has-lit" id="web" data-road="${OPENS_ON}" style="--k-web-w:${W};--k-web-h:${H}">
-      <div class="k-web-frame k-night dark-island" tabindex="0" role="group" aria-label="The reader web. One road is lit. Up close, it scrolls both ways.">
-        <div class="k-web-room">
-          <div class="k-web-plane">
-            <svg class="k-web-ways" viewBox="0 0 ${W} ${H}" aria-hidden="true" focusable="false">
-              ${threads.join("\n              ")}
-            </svg>
-            ${plates.join("\n            ")}
-          </div>
-        </div>
-      </div>
-      <figcaption>The whole web, from the first open at the top to the one Plus card at the foot. Tap it, or Up close, to read the plates. Each plate is a screen or a page in the app's own words, and its small line names its section.</figcaption>
-    </figure>
-    <span class="k-eyebrow" id="pick-road">Light one road</span>
-    <div class="k-choice" role="group" aria-labelledby="pick-road" style="--k-choice-cols:3">
-      <button type="button" id="road-all" data-pick-road="" aria-pressed="false">All roads</button>
-      ${ROADS.map((id) => `<button type="button" id="road-${id}" data-pick-road="${id}" aria-pressed="${id === OPENS_ON}">${cap(id)}</button>`).join("\n      ")}
-    </div>
-    <span class="k-eyebrow" id="pick-size">How close</span>
-    <div class="k-choice" role="group" aria-labelledby="pick-size" style="--k-choice-cols:2">
-      <button type="button" id="size-whole" data-pick-size="whole" aria-pressed="true">All of it</button>
-      <button type="button" id="size-near" data-pick-size="near" aria-pressed="false">Up close</button>
-    </div>
-  </section>
+/** A road's strands as one, for the mock-up's table of roads. */
+const roadSum = (road, pick) => WEEKS.filter((c) => c.road === road).reduce((sum, c) => sum + pick(EX.strand.get(c.id)), 0);
 
-  <section class="k-section" data-trail="all" hidden>
+const everyRoad = NUM
+  ? `<section class="k-section" data-trail="all" hidden>
+    <h2>Every road at once</h2>
+    <p>Light one road to read it plate by plate. The table under this sets the roads side by side.</p>
+  </section>`
+  : `<section class="k-section" data-trail="all" hidden>
     <h2>Every road at once</h2>
     <p>Light one road to read it step by step. All together, this is what the questions can make.</p>
     <div class="k-stats">
@@ -360,13 +481,44 @@ const body = `<main class="k-page">
       <div class="k-stat"><span class="k-stat-label">With no road</span><span class="k-stat-change">Sets of answers that leave Purify as it always was</span><span class="k-stat-value">${num(MAP.count.noRoad)}</span></div>
       <div class="k-stat"><span class="k-stat-label">Weeks that are not whole</span><span class="k-stat-change">Not seven pages, a page twice, or the door missed</span><span class="k-stat-value">${num(MAP.count.faults)}</span></div>
     </div>
+  </section>`;
+
+const after = NUM
+  ? `<section class="k-section">
+    <h2>Which road is working</h2>
+    <p>The roads side by side: how many readers finished the questions on each, how many opened the first day, and how many reached the road's door on day seven.</p>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>Road</th><th class="k-num">On it</th><th class="k-num">Day 1</th><th class="k-num">The door</th></tr></thead>
+        <tbody>
+          ${ROADS.map((road) => {
+            const on = roadSum(road, (s) => s.finished);
+            const day1 = roadSum(road, (s) => s.days[0]);
+            const door = roadSum(road, (s) => s.days[6]);
+            const quiet = (n) => (Math.round(n) < SMALLEST ? " k-quiet" : "");
+            return `<tr><td>${cap(road)}</td><td class="k-num${quiet(on)}">${cell(on)}</td><td class="k-num${quiet(day1)}">${cell(day1)}</td><td class="k-num${quiet(door)}">${cell(door)}</td></tr>`;
+          }).join("\n          ")}
+        </tbody>
+        <caption>Example numbers. With a thousand readers a month, four of the eight roads are too small to read at their door. Plus bought, road by road, would read "too few" on every line.</caption>
+      </table>
+    </div>
   </section>
 
-  ${ROADS.map(trail).join("\n\n  ")}
-
-  <hr class="k-rule">
-
   <section class="k-section">
+    <h2>Before this is real</h2>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th>What it needs</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>The road as one word on the counts</td><td>Today no count says which road a reader is on. That was your choice of 11 November, and the counts say nothing of a reader's faith.</td></tr>
+          <tr><td>The privacy page, and a yes from readers in the EU</td><td>It is a count about faith. The page has to say it before anything is sent, and a reader in the EU has to agree first.</td></tr>
+          <tr><td>More readers than a road has</td><td>A count under twenty is not shown. Small roads go dark, as they do on this page. A road's numbers are to watch. A verdict comes from a test on all readers together.</td></tr>
+          <tr><td>Its place in Admin</td><td>This page shows the idea. In Admin it is drawn from the admin's own pieces, after your yes.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>`
+  : `<section class="k-section">
     <h2>Where the roads cross</h2>
     <p>The pages that hold the most threads. Change one of these, and that many of the ${WEEKS.length} hand-written weeks change with it.</p>
     <ul class="k-bars">
@@ -386,7 +538,50 @@ const body = `<main class="k-page">
         <caption>Where a pick has more than one page, how far along the reader is decides which.</caption>
       </table>
     </div>
+  </section>`;
+
+const body = `<main class="k-page">
+  <header class="k-title k-rise">
+    <span class="k-mark" role="img" aria-label="Purify"></span>
+    <span class="k-eyebrow">${head.eyebrow}</span>
+    <h1>${head.h1}</h1>
+    <p class="k-lede">${esc(head.lede)}</p>
+    <p class="k-meta">${esc(head.meta)}</p>
+  </header>
+
+  <section aria-label="The web">
+    <figure class="k-web has-lit" id="web" data-road="${OPENS_ON}" style="--k-web-w:${W};--k-web-h:${H}">
+      <div class="k-web-frame k-night dark-island" tabindex="0" role="group" aria-label="${esc(head.label)}">
+        <div class="k-web-room">
+          <div class="k-web-plane">
+            <svg class="k-web-ways" viewBox="0 0 ${W} ${H}" aria-hidden="true" focusable="false">
+              ${threads.join("\n              ")}
+            </svg>
+            ${plates.join("\n            ")}
+          </div>
+        </div>
+      </div>
+      <figcaption>${esc(head.caption)}</figcaption>
+    </figure>
+    <span class="k-eyebrow" id="pick-road">Light one road</span>
+    <div class="k-choice" role="group" aria-labelledby="pick-road" style="--k-choice-cols:3">
+      <button type="button" id="road-all" data-pick-road="" aria-pressed="false">All roads</button>
+      ${ROADS.map((id) => `<button type="button" id="road-${id}" data-pick-road="${id}" aria-pressed="${id === OPENS_ON}">${cap(id)}</button>`).join("\n      ")}
+    </div>
+    <span class="k-eyebrow" id="pick-size">How close</span>
+    <div class="k-choice" role="group" aria-labelledby="pick-size" style="--k-choice-cols:2">
+      <button type="button" id="size-whole" data-pick-size="whole" aria-pressed="true">All of it</button>
+      <button type="button" id="size-near" data-pick-size="near" aria-pressed="false">Up close</button>
+    </div>
   </section>
+
+  ${everyRoad}
+
+  ${ROADS.map(NUM ? trailNumbers : trail).join("\n\n  ")}
+
+  <hr class="k-rule">
+
+  ${after}
 
   <section class="k-section">
     <h2>Why it is drawn this way</h2>
@@ -402,7 +597,7 @@ const body = `<main class="k-page">
 
   <footer class="k-foot">
     <p>Edgar, the Purify Team</p>
-    <p class="k-meta">Drawn by a script from the reader map, which the app's own rules write.</p>
+    <p class="k-meta">${NUM ? "A mock-up. Its web is drawn from the reader map; its numbers are examples." : "Drawn by a script from the reader map, which the app's own rules write."}</p>
   </footer>
 </main>
 
@@ -473,19 +668,20 @@ const body = `<main class="k-page">
 
 const open = TEMPLATE.indexOf("<body>");
 if (open < 0) stop("the kit's template has no <body>");
-const head = TEMPLATE.slice(0, open + "<body>".length)
-  .replace(/<title>[^<]*<\/title>/, "<title>Purify reader web</title>")
-  .replace(/<meta name="description" content="[^"]*">/, '<meta name="description" content="Every screen, section and way a new reader can take in Purify, drawn from the app\'s own rules.">');
-const html = `${head}\n${body}</body>\n</html>\n`;
+const top = TEMPLATE.slice(0, open + "<body>".length)
+  .replace(/<title>[^<]*<\/title>/, `<title>${head.title}</title>`)
+  .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${esc(head.says)}">`);
+const html = `${top}\n${body}</body>\n</html>\n`;
+const name = path.basename(OUT);
 
 if (process.argv.includes("--check")) {
   const written = fs.existsSync(OUT) ? fs.readFileSync(OUT, "utf8") : "";
   if (written !== html) {
-    console.error("web.html is not what the reader map draws now: run `node docs/plans/reader-map/web.mjs` and look at the page again");
+    console.error(`${name} is not what the reader map draws now: run \`node docs/plans/reader-map/web.mjs${NUM ? " --numbers" : ""}\` and look at the page again`);
     process.exit(1);
   }
-  console.log("web.html is the reader map's own drawing");
+  console.log(`${name} is the reader map's own drawing`);
 } else {
   fs.writeFileSync(OUT, html);
-  console.log(`web.html: a sheet of ${W} by ${H}, ${plates.length} plates and marks, ${threads.length} threads, ${COLS.length} strands, ${Math.round(html.length / 1024)} KB`);
+  console.log(`${name}: a sheet of ${W} by ${H}, ${plates.length} plates and marks, ${threads.length} threads, ${COLS.length} strands, ${Math.round(html.length / 1024)} KB`);
 }
