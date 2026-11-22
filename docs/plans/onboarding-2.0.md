@@ -483,7 +483,7 @@ The lead is 506 px high on a phone 844 high and holds three things, each laid ou
 - **On the sky:** the date, the hour's greeting (`today.greetingEvening`, the words every other reader's lead already says) and Pascha's count under it. The star's three lines are not drawn.
 - **Under the horizon, on the page's own ground:** the hour's prayer and the screen's one Begin, as they are.
 - **Once:** the saint stands in The Church today. The fast stands in The Fast, which takes the star's count ("The Fast · day 8 of 40") and today's reading from the star's band.
-- The lead was 506 high and is 322. The streak and the verse of the day are on the first screen.
+- The lead was 506 high and is 326. The streak and the verse of the day are on the first screen.
 - No word is new.
 
 **What it costs.** For an Orthodox reader the saint and the fast leave the first screen and are one scroll down; if he wants them higher, The Church today can stand right under the streak (that moves the verse of the day down, which he set first in round 17). The star no longer says in words what it is.
@@ -497,4 +497,30 @@ The lead is 506 px high on a phone 844 high and holds three things, each laid ou
 **His word, in the same message: "note this (unrelated to this specific task) : I want full immersion ux experiences also so when you finish there is a high quality smooth finish animation"**
 
 Noted, and a rule in `CLAUDE.md` now. Not designed and not built. Where it meets this plan: the end of a day of the first week (mock-up 7, "It ends on tomorrow", where the tap on "Done for today" is answered by the week's card) is a finish, and so is the end of a prayer and of a lesson. What exists today at each of those ends has to be read before anything is drawn: the app marks "Lesson read" and "Prayed today" already. It is its own piece of work, and it waits for his word on when.
+
+### The spacing of mock-up 13, measured (2026-11-22)
+
+**His word, about 23:10 UTC, to mock-up 13: "make sure it's spaced optimally"**
+
+Every gap on the new first screen was measured on the drawing as he first saw it. Three things were wrong, and each is changed in the drawing:
+
+| What was measured | What it is now, and why |
+|---|---|
+| The words stood 18 px under the top bar, with 95 px of empty sky under them | They sit on the horizon, with the sky open over them (about 80 px). The greeting stands next to what it leads to, and the top bar is not crowded |
+| The greeting was 32 px. "Good afternoon" is 243 px wide at that size and ran into the star's light on the days the star is level with it | It is the house's title size, 28 px (`--text-title`), eased down on a phone narrower than 390 (to 26 at 360), so the longest of the three greetings stays on one line beside the star |
+| The streak's words started 4 px inside the page's left edge, and the rope's days 10 px inside | Both stand on the page's one left edge and one right edge, under the ends of Begin |
+
+**The rhythm now** (a 390 phone, px between the letters' own boxes): the sky open over the date 81; date to greeting 7; greeting to Pascha's count 3; Pascha's count to the horizon 28; horizon to the hour's line 26; the hour's line to the prayer's name 3; the prayer's name to Begin 15; Begin to the streak's words 27. Three groups (the words, the hour's prayer with its Begin, the streak) with the same air between them: 28, 26, 27.
+
+**Made sure by a probe in the script** (`docs/plans/reader-map/mock-welcome.mjs`; no page is written if a rule breaks): on phones 360 by 640, 390 by 844 and 412 by 915, with each of the hour's three greetings and the star at days 1, 8, 20, 34 and 40 of its rise:
+
+- every line starts on the page's one edge (21 px), and Begin, the streak's arrow and the rope end on the other;
+- each greeting stays on one line;
+- the words never come nearer than 21 px to the star's light (at 360; 27 at 390, 43 at 412), where the rule is 8;
+- the words never come nearer than 14 px to the horizon, where the rule is 12;
+- Begin's foot stands at 391, above the tab bar on all three (its top at 557 on the smallest).
+
+The lead is 326 high. `checkMock` passed again on the new drawing, all fifteen rules, and the page passed the kit's check.
+
+**Not measured.** Other languages, where a greeting can be longer than "Good afternoon": the words keep to the left 64% of the sky, as the star's band does today, and a longer greeting takes a second line upward into the open sky. A great feast's name in the greeting's place. Wide screens. Each is for the build's own tests.
 

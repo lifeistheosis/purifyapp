@@ -20,16 +20,23 @@
 //                the screen's whole width under the top bar, and ends in the horizon the star's
 //                drawing already has. The hill under that horizon takes the page's own ground, so
 //                the page begins where the sky ends.
-//   the words    on the sky, clear of the star's side: the date, the hour's greeting (the app's own
-//                words, today.greetingEvening) and Pascha's count under it. The star's three lines
-//                are not drawn on it.
+//   the words    on the sky, clear of the star's side and seated on the horizon: the date, the
+//                hour's greeting (the app's own words, today.greetingEvening, at the house's title
+//                size) and Pascha's count under it. The star's three lines are not drawn on it.
 //   the action   under the horizon, on the page's own ground: the hour's prayer and the screen's
 //                one Begin, as they are.
 //   once         the saint stood in the lead and again in The Church today: he stands in The
 //                Church today. The fast stood three times (the star's band, the lead, The Fast):
 //                it stands in The Fast, which takes the star's own count and today's reading.
 //
-// No word is new. Held to checkMock before a still is kept.
+//   the edges    one left edge and one right edge down the screen: the streak's words and the
+//                rope's days, which stood a few px inside them, stand on them.
+//
+// No word is new. Held to checkMock before a still is kept. Then the spacing is measured (his word
+// the same evening: "make sure it's spaced optimally"): on phones 360, 390 and 412 wide, with each
+// of the hour's three greetings and the star at five of its forty heights, every line starts on the
+// page's one edge, the words stay clear of the star's light and of the horizon, each greeting stays
+// on one line, and Begin is whole above the tab bar. A rule that breaks stops the page.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -104,12 +111,17 @@ function draw(greeting) {
   hill.removeAttribute("class");
   hill.style.fill = "var(--page-ground)";
 
-  // On the sky, clear of the star's own side: the date, the hour's greeting, and Pascha's count
-  // under it, in the look of the lead's own line under a greeting.
+  // On the sky, clear of the star's own side and seated on the horizon: the date, the hour's
+  // greeting, and Pascha's count under it. Seated low, the words leave the sky open over them and
+  // stand next to what they lead to. The greeting is the house's title size, eased down on a phone
+  // narrower than 390 so the longest of the three greetings stays on one line beside the star.
   const words = document.createElement("div");
-  words.className = "pointer-events-none absolute start-0 top-0 w-[64%] ps-5 pt-4";
+  words.className = "pointer-events-none absolute start-0 bottom-0 w-[64%] ps-5";
+  words.style.paddingBottom = "2rem";
+  words.setAttribute("data-welcome-words", "");
   const hello = document.createElement("h2");
-  hello.className = "title-in mt-2 font-serif text-heading leading-[1.1] text-paper";
+  hello.className = "title-in mt-2 font-serif leading-[1.1] text-paper";
+  hello.style.fontSize = "min(var(--text-title), 7.2vw)";
   hello.textContent = greeting;
   const until = document.createElement("p");
   until.className = "mt-1 font-sans text-detail text-paper/65";
@@ -118,8 +130,17 @@ function draw(greeting) {
   sky.append(band, words);
 
   // Under the horizon, on the page's own ground: the hour's prayer and the one Begin.
-  prayer.className = "px-5 pt-3";
+  prayer.className = "px-5 pt-4";
   lead.replaceChildren(sky, prayer);
+
+  // One left edge and one right edge down the screen: the streak's words stood 4 px inside them,
+  // and the rope's days 6 px more.
+  const streak = lead.nextElementSibling;
+  if (streak?.matches('button[aria-haspopup="dialog"]')) {
+    streak.style.paddingInline = "0";
+    const rope = streak.children[1];
+    if (rope) rope.style.paddingInline = "0";
+  }
 
   // Once: the fast's count and today's reading stand in The Fast, in its own lines' look.
   fastEyebrow.textContent = `${fastEyebrow.textContent} · ${count}`;
@@ -186,6 +207,152 @@ if (!ok) {
 }
 console.log("the stills stand");
 
+// ── The spacing, measured (the owner, 2026-11-22: "make sure it's spaced optimally") ──
+// On three phone widths, with each of the hour's three greetings and the star at five of its forty
+// heights, the screen is asked: does every line start on the page's one edge, do the words stay
+// clear of the star's light and of the horizon, does each greeting stay on one line, and is the
+// Begin whole above the tab bar. The numbers of the 390 phone go on the page.
+
+const EN = JSON.parse(fs.readFileSync(path.join(ROOT, "lib/i18n/messages/en.json"), "utf8"));
+const GREETINGS = [EN["today.greetingMorning"], EN["today.greetingAfternoon"], EN["today.greetingEvening"]];
+const STAR_DAYS = [1, 8, 20, 34, 40];
+const PHONES = [[360, 640], [390, 844], [412, 915]];
+
+/** Runs in the page, after the welcome is drawn and its motion is stilled. */
+function measure({ greetings, days }) {
+  const text = (el) => {
+    const r = document.createRange();
+    r.selectNodeContents(el);
+    return r.getBoundingClientRect();
+  };
+  const lead = document.querySelector("[data-day-lead]");
+  const sky = lead.children[0].getBoundingClientRect();
+  const words = lead.querySelector("[data-welcome-words]");
+  const [date, hello, until] = words.children;
+  const star = lead.querySelector(".nat-star");
+  const prayer = lead.children[1];
+  const [now, title] = prayer.querySelectorAll("p");
+  const begin = prayer.querySelector("a[data-pray-hour]").getBoundingClientRect();
+  const streak = lead.nextElementSibling;
+  const count = streak.querySelector("span span");
+  const chevron = streak.querySelector("svg");
+  const pad = parseFloat(getComputedStyle(prayer).paddingInlineStart);
+  const tab = document.querySelector('[data-screen-edge="bottom"]').getBoundingClientRect().top;
+  // The horizon, as the star's drawing draws it: a curve on a 350 by 196 field, stretched to the sky's width.
+  const horizon = (x) => {
+    const t = ((x - sky.left) * (350 / sky.width) + 20) / 390;
+    return sky.top + 196 * ((1 - t) ** 2 + t ** 2) + 150 * 2 * t * (1 - t);
+  };
+  const over = (r) => {
+    let least = Infinity;
+    for (let x = r.left; x <= r.right; x += 4) least = Math.min(least, horizon(x) - r.bottom);
+    return Math.min(least, horizon(r.right) - r.bottom);
+  };
+  // The star's light is seen to 21 px from its middle (its halo fades to nothing at seven tenths of 30).
+  const middle = () => {
+    const r = star.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  };
+  const faults = [];
+  const edges = { date: text(date).left, hello: text(hello).left, until: text(until).left, now: text(now.querySelector("span")).left, title: text(title).left, begin: begin.left, streak: text(count).left };
+  for (const [k, v] of Object.entries(edges)) if (Math.abs(v - pad) > 1) faults.push(`${k} starts at ${v.toFixed(1)}, not on the edge at ${pad.toFixed(1)}`);
+  const right = innerWidth - pad;
+  const rope = streak.children[1].getBoundingClientRect();
+  if (Math.abs(rope.left - pad) > 1 || Math.abs(rope.right - right) > 1) faults.push(`the rope runs from ${rope.left.toFixed(1)} to ${rope.right.toFixed(1)}, not from ${pad.toFixed(1)} to ${right.toFixed(1)}`);
+  for (const [k, v] of Object.entries({ begin: begin.right, streak: chevron.getBoundingClientRect().right })) if (Math.abs(v - right) > 1) faults.push(`${k} ends at ${v.toFixed(1)}, not on the edge at ${right.toFixed(1)}`);
+  if (begin.bottom > tab) faults.push(`Begin's foot at ${begin.bottom.toFixed(0)} is under the tab bar's top at ${tab.toFixed(0)}`);
+  let nearestStar = Infinity;
+  let nearestHorizon = Infinity;
+  const widths = {};
+  for (const g of greetings) {
+    hello.textContent = g;
+    const h = text(hello);
+    widths[g] = Math.round(h.width);
+    const lines = Math.round(h.height / parseFloat(getComputedStyle(hello).lineHeight));
+    if (lines !== 1) faults.push(`"${g}" takes ${lines} lines`);
+    nearestHorizon = Math.min(nearestHorizon, over(text(date)), over(h), over(text(until)));
+    for (const d of days) {
+      star.style.top = `${150 - (d / 40) * 110}px`;
+      const m = middle();
+      for (const r of [text(date), text(hello), text(until)]) {
+        const level = r.bottom > m.y - 21 && r.top < m.y + 21;
+        const gap = m.x - 21 - r.right;
+        if (level) nearestStar = Math.min(nearestStar, gap);
+        if (level && gap < 8) faults.push(`"${g}", day ${d}: the words end ${gap.toFixed(1)} px from the star's light`);
+      }
+    }
+  }
+  if (nearestHorizon < 12) faults.push(`the words stand ${nearestHorizon.toFixed(1)} px over the horizon`);
+  const u = text(until);
+  const n = text(now.querySelector("span"));
+  const ti = text(title);
+  const d0 = text(date);
+  const h0 = text(hello);
+  return {
+    faults,
+    edge: Math.round(pad * 10) / 10,
+    widths,
+    size: getComputedStyle(hello).fontSize,
+    nearestStar: Math.round(nearestStar),
+    nearestHorizon: Math.round(nearestHorizon),
+    gaps: {
+      "top bar to the date": Math.round(d0.top - sky.top),
+      "date to the greeting": Math.round(h0.top - d0.bottom),
+      "greeting to Pascha's count": Math.round(u.top - h0.bottom),
+      "Pascha's count to the horizon, under its first letter": Math.round(horizon(u.left) - u.bottom),
+      "horizon to the hour's line, over its first letter": Math.round(n.top - horizon(n.left)),
+      "the hour's line to the prayer's name": Math.round(ti.top - n.bottom),
+      "the prayer's name to Begin": Math.round(begin.top - ti.bottom),
+      "Begin to the streak's words": Math.round(text(count).top - begin.bottom),
+    },
+    begin: Math.round(begin.bottom),
+    tab: Math.round(tab),
+    lead: Math.round(lead.getBoundingClientRect().height),
+  };
+}
+
+const probe = await chromium.launch(fs.existsSync(own) ? { executablePath: own } : {});
+const measured = {};
+let spaced = true;
+try {
+  for (const [W, H] of PHONES) {
+    const ctx = await probe.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, locale: "en-US", timezoneId: "Europe/Athens", reducedMotion: "reduce" });
+    await ctx.addInitScript((kept) => {
+      localStorage.setItem("purify:whatsNewSeen", "99");
+      for (const [k, v] of Object.entries(kept)) localStorage.setItem(k, v);
+      window.androidBridge = { postMessage() {} };
+      window.Capacitor = { getPlatform: () => "android", isNativePlatform: () => true };
+    }, KEPT);
+    await serveLikeTheShell(ctx, OUT, {});
+    const page = await ctx.newPage();
+    await page.clock.install({ time: new Date(NOW) });
+    await go(page, "/");
+    await page.locator("[data-day-lead]").first().waitFor({ state: "visible", timeout: 30000 });
+    await page.locator('[data-today-band="fast"]').first().waitFor({ state: "attached", timeout: 30000 });
+    await page.waitForTimeout(3000);
+    const drawn = await page.evaluate(draw, GREETING);
+    if (drawn !== "ok") throw new Error(`${W}: ${drawn}`);
+    // Every part at rest: the star is measured where it ends its rise.
+    await page.addStyleTag({ content: "*, *::before, *::after { animation: none !important; transition: none !important; }" });
+    await page.waitForTimeout(400);
+    const m = await page.evaluate(measure, { greetings: GREETINGS, days: STAR_DAYS });
+    measured[W] = m;
+    console.log(`\nspacing at ${W} by ${H}: the edge at ${m.edge}, the greeting at ${m.size} (${Object.entries(m.widths).map(([g, w]) => `${g} ${w}`).join(", ")})`);
+    console.log(`  the words' nearest to the star's light: ${m.nearestStar} px; to the horizon: ${m.nearestHorizon} px; Begin's foot at ${m.begin}, the tab bar's top at ${m.tab}; the lead ${m.lead} high`);
+    for (const [k, v] of Object.entries(m.gaps)) console.log(`  ${String(v).padStart(3)}  ${k}`);
+    for (const f of m.faults) console.log(`  NO   ${f}`);
+    if (m.faults.length) spaced = false;
+    await ctx.close();
+  }
+} finally {
+  await probe.close();
+}
+if (!spaced) {
+  console.error("\nthe spacing does not hold: no page is written");
+  process.exit(1);
+}
+console.log("\nthe spacing holds on the three phones");
+
 // ── The page: the kit's own head, now and new side by side, and the reason for each choice ──
 
 const TEMPLATE = fs.readFileSync(path.join(ROOT, "docs/brand/kit/artifact-template.html"), "utf8");
@@ -236,10 +403,22 @@ const body = `<main class="k-page">
       ["No box", "Your word. The night runs the whole width of the screen and ends in the horizon, so the top of Today is a place and not a card."],
       ["The page begins at the horizon", "The hill under the star takes the page's own ground. What the reader does next stands on that ground: one line and one Begin."],
       ["A greeting first", "A welcome is a greeting. The hour's own words stand largest, with the date over them and Pascha's count under them."],
+      ["The words sit on the horizon", "The sky stays open over them, and the greeting stands next to what it leads to: the hour's prayer, right under the line."],
       ["One Begin, higher", "The hour's prayer is still the screen's one white button. It now sits in the upper half, under the thumb."],
       ["The star says nothing in words", "Its three lines made the fast a third thing in the box. The star still rises a little each day, and still opens the fast's readings."],
       ["Shorter", `The lead was ${high.before} high and is ${high.after}. The streak and the verse of the day are on the first screen.`],
     ])}
+  </section>
+
+  <section class="k-section">
+    <h2>The spacing, measured</h2>
+    <p>Three groups, with the same air between them: the words, the hour's prayer with its Begin, and the streak.</p>
+    ${table(["Between", "On a 390 phone"], Object.entries(measured[390].gaps).map(([k, v]) => [k[0].toUpperCase() + k.slice(1), `${v} px`]))}
+    <ul class="k-list">
+      <li>One left edge and one right edge down the whole screen. The streak's words and the rope's seven days stood a few px inside them, and now stand on them, under the ends of Begin.</li>
+      <li>The greeting is the app's own title size. "${esc(GREETINGS[1])}", the longest of the three, stays on one line beside the star.</li>
+      <li>Measured on phones 360, 390 and 412 wide, with each of the three greetings and the star at five of its forty heights. The words never come nearer than ${Math.min(...PHONES.map(([w]) => measured[w].nearestStar))} px to the star's light or ${Math.min(...PHONES.map(([w]) => measured[w].nearestHorizon))} px to the horizon, and Begin is whole above the tab bar on all three.</li>
+    </ul>
   </section>
 
   <section class="k-section">
