@@ -21,7 +21,10 @@ Object.assign(globalThis, {
 const { putDownload, dropDownload, readDownloads, hasUnseenEnd, markDownloadsSeen, keep, KEPT, KEPT_MS, resetDownloadsForTests } = await import("@/lib/downloads/log");
 type Download = import("@/lib/downloads/log").Download;
 
-const at = "2026-11-13T10:00:00.000Z";
+// An hour before the test runs. It was a fixed day, 2026-11-13, and the log keeps seven days
+// (KEPT_MS), so from 2026-11-20 the download fell out of the log and this file failed by the
+// calendar alone, the whole suite with it.
+const at = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 const bible = (over: Partial<Download> = {}): Download => ({ key: "bible:ru-synodal", kind: "bible", name: "Синодальный перевод (1876)", state: "running", share: 0.4, done: 0, total: 0, at, ...over });
 
 beforeEach(() => {

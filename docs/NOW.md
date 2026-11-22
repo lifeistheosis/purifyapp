@@ -62,6 +62,5 @@ Updated 2026-11-21 14:08 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 
 ## Found, and not yet on the faults list
 
-- `lib/downloads/__tests__/log.test.ts` fails from 2026-11-20 on: its fixed date of 11-13 is past the log's seven days. A fault in the test, not in the app; the whole suite is red by this one test until it is mended.
 - On `/journal/`, reached by You and then Your journal, the tab bar marks Bible, not You. Seen by the ad chat on main's export; not checked by the arbiter.
 - A fresh clone is shallow, so `git log` on a path misleads until the history is deepened: `git fetch --filter=blob:none --shallow-since=<date> origin <branch>`.
