@@ -205,3 +205,33 @@ node docs/brand/kit/check.mjs --page docs/plans/reader-map/web.html
 **Its look.** Two pieces were added to the design kit for it, by the kit's own rule that a new need is a new piece: Web (a map of ways on the night) and Choice (a small choice of equal buttons). Both are in `docs/brand/kit/pieces.css` and `docs/brand/design-kit.md`, and the page passes the kit's check on five palettes at 360, 390, 412 and 1032. The reasons for each choice are on the page itself, under "Why it is drawn this way". It awaits his yes or no.
 
 **What it does not show.** The locks a reader runs into along a road are not on the map yet (offered before: "first lock met" for each road). The Plus card at the foot is drawn as it is today, a live test; whether his rule of the same day ("they must run into plus feature or click on the premium pill") ends that card is still his to say. The web draws each road's own week before a reader's picks arrange it; the counts beside it say how many weeks come from each.
+
+## 12. Numbers on the web: tracking from A to B (2026-11-22)
+
+His word (20:22 UTC): "whwe need some way to actually track data from a to b to see which one is working."
+
+**What is counted today** (read in the code this day).
+
+- **Tests** (`lib/ab`). A device is shown a version (`ab_exposed`: the test, the version, the kind of device) and what it then reaches is counted for thirteen days (`ab_reached`): finished the questions, made an account, opened its first step, came back in its second week, tapped the button to subscribe, bought Plus. Admin, Onboarding, shows each version's totals and where the test stands (`lib/ab/panel.ts`); a count under twenty is not shown. Two run, from 2026-11-17 to 2027-02-09: where the account is offered (judged by readers coming back in week two, about 1,100 readers a version), and Plus as locks only or also one card after the first week (judged by Plus bought, about 1,140 a version). One waits for 2027-02-10: how the Plus sheet opens from a lock. One is planned: when reminders are asked.
+- **The seven counts** (`lib/analytics/moreCounting.ts`): the first prayer or chapter finished, each day of the first week opened or closed (the day's number, never which step), an account made and where, reminders set, a "Try it" opened or the subscribe button tapped with the lock behind it, a purchase on the pricing page, a small card on Today answered or closed.
+- **Locks** (`lib/analytics/lockCounting.ts`): which lock is tapped, and which leads to a purchase.
+- **Where a visit came from** (`lib/analytics/source.ts`, `tag.ts`), on the visit's own row.
+- **The questions**: begun, finished, returned (`lib/admin/onboardingSummary.ts`).
+
+All are totals, kept to the day, with no account, no session and no device on the row.
+
+**What is not counted.**
+
+1. Nothing by road or by answer. That was his "yes privacy" of 2026-11-11, and the counts' own header says it: "Nothing about where a reader comes from in faith is on any of them."
+2. A step by its name. The week is counted by the day's number only.
+3. Where a reader came from, on any row that says how they fared. That a video sent a visit is known; whether that reader stayed or bought is not.
+4. One picture. The numbers stand in separate panels, and none is on the web.
+
+**The proposal** (for his yes, part by part; nothing is begun).
+
+- **A. The road as one word on rows that exist** (the week's days, the first prayer or chapter, what a test's readers reach, a lock tapped, Plus bought): the eight roads and "none", a closed list. Totals only, no account or device on the row, no cell under twenty shown, as now. It is a count about faith, so it waits for what section 9 names: his decision of 2026-11-22 carried into the terms and the privacy page, and for a reader in the EU their own yes (mock-up 1). It also has to be read against the rule that a row which says too much describes one person (the note, 4.2). Small in code; the words are the slow part.
+- **B. The numbers drawn on the web.** The reader web of section 11, in Admin: each plate with how many reached it and what share went on, a thread's weight by its readers, and for a running test version A beside version B. Medium. It needs A, and a design first: a mock-up with numbers marked as examples.
+- **C. The source as one word on the same rows:** a closed list of the app's own named sources and his tagged links, so that a video or a page is read by who stayed and not by who visited. On Android the store can say which link an install came from; on iPhone only the store's own report for a store page can. Medium, with a line on the privacy page, and each store's rules read when it is built.
+- **D. A line in his weekly brief for each running test:** wait, version A leads, version B leads, or stop. The panel already works this out.
+
+**The limit that no tracking lifts.** A few hundred new readers a week (the note, 4.3), and by road they are fewer still: a road with thirty new readers a week shows nothing for months. So a road's numbers are counts to watch, not verdicts; a verdict comes from a test of one large fork, on all readers together, on the website first, where the readers are.
