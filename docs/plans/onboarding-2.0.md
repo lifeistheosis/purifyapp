@@ -16,6 +16,12 @@ What a million dollars of testing buys is readers to test on. Purify has a few h
 - Not seen: the price, the plans and the seven days free. The export used here carries a stand-in for the store's key, so no price loads. The catalogue has the words (`plus.cta.trial`: "Start {trial} free"; yearly begins with 7 days free on a first subscription, `lib/premium/plans.ts`).
 - Three tests have counted since 1.9's release: where the account is asked, the one Plus card after the first week, and the order of the Plus sheet (`lib/ab/tests.ts`). A fourth is planned: reminders asked after a first prayer.
 
+## Settled so far
+
+- **Plus is never shown in onboarding. A reader meets it in two ways only: they run into a Plus feature, or they tap the Plus pill** (his word, 2026-11-22 18:49 UTC, above at question 3). So no test of a paywall at the questions' end. Suggestions 7 to 9 below are about the sheet those two ways open, and stand.
+- **What this makes the levers:** where the first lock stands on each road (a reader's own path leads them to it, and the reader map should name it for every road); the "Try it" each lock opens; and the sheet itself.
+- **Asked of him and open:** the one Plus card on Today after the first week (`components/onboarding/RoadCards.tsx`, PlusIntroCard) is neither a lock nor the pill. It is live as a test against Purify without it (`lib/ab/tests.ts`, plus-introduced), by his "yes Plus card" of 2026-11-10. Does the test run to its end, or does this rule end the card?
+
 ## Suggestions (his to pick from; none is begun)
 
 **The questions and the first day**
@@ -44,6 +50,7 @@ What a million dollars of testing buys is readers to test on. Purify has a few h
 1. Which company was it, and what did they end up with: a long set of questions, the paywall at their end, a trial?
 2. What does he want most from a new reader's first day: a first prayer, an account, a trial begun, or coming back tomorrow?
 3. His rule is that Plus is never in the questions nor in the first week (his 111). Does it stand for 2.0, or may one honest screen that can be skipped come at the questions' end?
+   **His answer, 2026-11-22 18:49 UTC: "don't show the plus on the onboarding they must run into plus feature or click on the premium pill".**
 4. How many readers begin the questions in a week, and how many finish (Admin, Traffic, Onboarding)?
 5. Where do most new readers come from?
 6. How long may the questions be: three as now, or up to eight if each visibly shapes the plan?

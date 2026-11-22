@@ -48,6 +48,7 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 
 "yes" is read as: go, in the order given. The first is drawn now; the second waits until he has seen the first.
 - 2026-11-22 18:30 UTC, after mock-up 1: "Okay, first, I want to talk to you about the actual onboarding itself, because there was another company, they spent $1 million on A/B testing. And the majority of it went to the paywall design and the onboarding design and the different screens that each user sees. So ask a bunch of questions about that, give a bunch of suggestions, recommendations, and yeah."
+- 2026-11-22 18:49 UTC, after twelve suggestions and twelve questions on onboarding and the paywall: "don't show the plus on the onboarding they must run into plus feature or click on the premium pill"
 
 "do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 

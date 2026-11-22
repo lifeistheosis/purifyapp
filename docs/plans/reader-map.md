@@ -124,7 +124,7 @@ Read by this chat as three aims in one line: know the reader; fit the app to wha
 **Two rules offered for his yes.** Both are the house's own already, each said in one line.
 
 - Know the reader on their phone; count readers only as totals. **He said no to this one the same day: "no more local. it stays on their accounts." See section 9.**
-- The road into the Church is free; Plus is the deeper study beside it. Never in the questions, never in the first week, never at a point of need (the note, 3.7; his 111).
+- The road into the Church is free; Plus is the deeper study beside it. Never in the questions, never in the first week, never at a point of need (the note, 3.7; his 111). **He sharpened it, 2026-11-22 18:49 UTC: "don't show the plus on the onboarding they must run into plus feature or click on the premium pill".** So the ledger gains one fact for every road: the first lock its reader meets, and about when (`docs/plans/onboarding-2.0.md`, Settled so far).
 
 **Offered as the next thing to draw:** one reader's first month, day by day, as a page: what the phone knows, what Today gives, where they learn, where the door is, and where Plus is first shown. Week one from photos; weeks two to four drawn as proposals from the app's own screens.
 
