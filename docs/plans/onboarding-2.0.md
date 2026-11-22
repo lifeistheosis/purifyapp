@@ -197,3 +197,45 @@ Each is the app's own screen on the native export, with only what is proposed ch
 - **The lines about a need** are plain and new: a priest's glance before they ship.
 
 It awaits his yes or no, drawing by drawing.
+
+## A day of the week, worked on (2026-11-22)
+
+His word, about 21:20 UTC: "and also I want each day of the path actually worked on. right now it's just acts as a hyperlink to a page. (and a lot of the times it doesn't even switch to the screen smoothly) so we need eFh day or plan or whatever it is to really be worked on to be personalized to the user"
+
+Brainstorm, and one fault measured. Nothing is changed.
+
+**What a day is today** (`components/onboarding/FirstStepsNudge.tsx`, `lib/onboarding/week.ts`). He is right: it is a link.
+
+- A card on Today: "Your first week · 3 of 7", the page's own name, a line where the app already has one, and Begin, which is a plain link to that page.
+- The step is marked taken at the tap. Nothing knows whether the reader read, prayed, or left after two seconds.
+- The page it opens does not know it is a day of a week: no "day 3 of 7", no end, no "done", no word about tomorrow. The reader is simply somewhere in the library.
+- The next card comes the next day the reader opens Purify. Closing a card passes it; two passed in a row end the week without a word.
+- Every reader meets the same page. That is the roads' own rule (`lib/onboarding/road.ts`): "no page of content knows who is reading it."
+- Five of the days open a whole section's front page and not one thing: The Church's year, Find a parish, The Church's history, The councils, Start here. Five of the picks do the same: the saints' lives, the councils, Church history, Fasts and feasts, and What the Orthodox believe for the practicing. A reader who picks the councils is given, as their day, the list of councils.
+
+**The fault he named, measured** (the export of main, a phone of 390 by 844, three readers; the script is not kept, its figures are here).
+
+1. **Begin is under the tab bar when Today opens.** The card stands at 636 px; its button runs from 776 to 822 px; the tab bar begins at 761 px. A tap where the button is lands on the tab bar: in the first run it opened the Bible for all three readers.
+2. **The card goes before the page moves.** From the tap: the card is gone from Today at 4 ms, Today's layout jumps at 12 ms, and the page's own transition only begins at 50 to 141 ms. So the reader sees the card vanish and Today jump, and then the switch, which pictures a Today that no longer has the card. The card cannot carry into its page.
+3. **The cause is one line.** Begin's `onOpen` writes the step as taken at the tap (`writeWeek(stepTaken(...))`), so the card is taken off the screen before React has pictured the page being left.
+
+The house's rules it breaks: every page switch moves, and a card that opens its own page carries its picture into it (CLAUDE.md, 2026-11-10); nothing jumps under the finger (the pre-build gate). It is in 1.9 as readers have it. The mend: the step is taken when the day is finished or once the new page stands, the card stays while the page opens and grows into it, and the card is drawn clear of the tab bar. It belongs with the work below, and its test is "the card is still there when the transition starts".
+
+**What a day worked on could be: a beginning, a middle and an end.**
+
+1. **It opens from its card.** The card grows into the day, in the house's motion.
+2. **A beginning.** "Day 3 of 7", and one line that says why this is here for this reader, from their own answers: their need, their pick, their road.
+3. **A middle: one thing, a few minutes long.** Not a section's front page. The part of the page that is today's, and the whole page one tap further for whoever wants it.
+4. **One small act that makes it theirs.** Pray it once. Keep one line. Say "I went". Nothing that is Plus is promised here.
+5. **An end.** "Day 3 kept", tomorrow's step by its name, and after the first day the question about a reminder (the planned test).
+6. **The week seen whole.** The seven days of mock-up 4 become the week's own place: what is kept, what is today, what is ahead.
+
+**Personal to the reader, in three layers, cheapest first.**
+
+- **The frame.** Why it is here ("You picked the councils", "For peace in a hard time"), the time of day, their pace, their patron saint where they named one. No new teaching: the words are about the reader's own answers.
+- **The portion.** How much of the page is today's, by how far along the reader is: the short way in for one who is new, more for one learning, the whole for the practicing. The rules already choose a page by level (`pickStep`); this chooses a part.
+- **The bridge.** A few lines written for where the reader comes from. This is new teaching aimed at a reader, so it goes to the clergy queue, and it bends the roads' rule that no page knows who reads it. If it is ever done, it stands in the day's frame and never in the page. His decision, and a priest's.
+
+**Where to begin, by the map.** Twenty-eight pages fill the sixty-three days of the nine weeks. Ten of them carry thirty-nine of those days, about six in every ten: Your first Liturgy (7), First Council of Nicaea (5), The Nicene Creed (4), Find a parish (4), The Gospel of John (4), Today's readings (3), The Church's year (3), Start with the Fathers (3), The Jesus Prayer (3), The Trisagion Prayers (3). Twelve pages are met on one road only. So the frame is built once for every day, and the portion and the act are made for those ten first.
+
+**Asked of him.** What makes a day "kept": opening it, reaching its end, or the reader saying so? And may a day say something written for where the reader comes from, or only frame the same page for everyone?
