@@ -62,7 +62,7 @@ For his yes, part by part.
 
 **E. Walk as.** Settings, Testers gains "Walk as": open the app as any road, on any day of its curve. The pre-build gate walks every road's rows.
 
-**F. Limits that keep it a web he can hold.** No more roads than eight without his word. A new row has its count before it ships. No row changes what a council, a saint or a prayer says (the roads' own rule, `lib/onboarding/road.ts`). A row with new teaching waits for the clergy queue. A reader's background stays on the device unless he and a lawyer say otherwise.
+**F. Limits that keep it a web he can hold.** No more roads than eight without his word. A new row has its count before it ships. No row changes what a council, a saint or a prayer says (the roads' own rule, `lib/onboarding/road.ts`). A row with new teaching waits for the clergy queue. A reader's answers are kept with their account from 2.0, by the reader's own yes (his word of 2026-11-22, section 9, and the steps there).
 
 ## 5. Size and order
 
@@ -123,7 +123,31 @@ Read by this chat as three aims in one line: know the reader; fit the app to wha
 
 **Two rules offered for his yes.** Both are the house's own already, each said in one line.
 
-- Know the reader on their phone; count readers only as totals.
+- Know the reader on their phone; count readers only as totals. **He said no to this one the same day: "no more local. it stays on their accounts." See section 9.**
 - The road into the Church is free; Plus is the deeper study beside it. Never in the questions, never in the first week, never at a point of need (the note, 3.7; his 111).
 
 **Offered as the next thing to draw:** one reader's first month, day by day, as a page: what the phone knows, what Today gives, where they learn, where the door is, and where Plus is first shown. Week one from photos; weeks two to four drawn as proposals from the app's own screens.
+
+## 9. On their accounts, not local (his word, 2026-11-22)
+
+"no more local. it stays on their accounts."
+
+Said when this chat offered the rule "Know the reader on their phone; count readers only as totals". It reverses his "yes privacy" and "yes fasting" of 2026-11-11 (call 32), by which the answers about a reader's faith (how familiar they are with Orthodox Christianity, coming back, where they come from, their fast) stay on the device and are taken off any account that held them (`lib/onboarding/accountSync.ts`, `lib/onboarding/__tests__/faithAnswers.test.ts`). A decision for 2.0, made in brainstorm. Nothing is built or changed.
+
+**What it gives.** One reader, the same on every device. Emails and reminders that follow the road. And he can see by road: which road stays, which stops at day three, which takes Plus.
+
+**What stands in the way today, in the app's own words.** The privacy page says: "Your answers themselves stay on your device, for making Purify yours. If you sign in, your answer to what you came for is kept with your account too; your answers about your faith, how familiar you are with Orthodox Christianity and your background, are not kept with it." (`components/legal/PrivacyText.tsx`). And 1.9 clears those answers from an account at sign-in.
+
+**What must be true before a build keeps them.** Each is his step, or needs his word.
+
+1. The reader is asked, in plain words, where the question is asked: that the answer is kept with their account, and what for. "Prefer not to say" stays, and nothing is required. Where a person comes from in faith is special-category data in the EU (GDPR, Article 9) and sensitive data in several US states: it needs the reader's own clear yes.
+2. Readers who answered under today's promise are asked before anything of theirs leaves their phone. Nothing is moved silently.
+3. The privacy page says the new thing before the build ships, and the change is listed as that page promises. The stores' data forms are changed to match (Apple's "Sensitive Info", Google Play's "religious beliefs").
+4. A reader can see what is kept, change it and remove it (Settings, Your space, already shows and changes the answers), and deleting the account deletes it.
+5. It is kept where only the reader can read it: a table under row-level security, not the sign-in record. Today the account's copy is `user_metadata.purify_space`, which arrives with the session and so travels with every signed-in request. A person's faith should not ride there.
+6. The admin does not show one person's faith by default: totals by road, and a named reason before one person's row is opened.
+7. A lawyer reads 1 to 4 once. For some readers this is dangerous to have known (a convert where conversion is punished), which is why it is asked, never required, and removable.
+
+**What it changes in this plan.** Rule one of section 8 falls. 4F's limit becomes "kept with the account, by the reader's yes". Counts by road become possible from accounts; whether the anonymous totals also carry the road is a second decision.
+
+**Asked of him:** a reader with no account: do their answers wait on the phone until they sign in, or must every reader make an account before the questions?

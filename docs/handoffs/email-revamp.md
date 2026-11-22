@@ -39,6 +39,7 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 - 2026-11-22 17:19 UTC, after this chat said 1.9's roads are the learning curves already: "ensure each section that's given to the user Is fully mapped out to we can control this spiderweb type of system we are going to create"
 - 2026-11-22 17:30 UTC, after the reader map and the ledger proposed for 2.0: "we are in brainstorm mode. we are going into mock up phase. this phase requires photos for me and mock up draws, and we can make artifacts to visualize this."
 - 2026-11-22 17:52 UTC, after the first page of the mock-up phase: "so what I want to know the user to help enhance their experience based off their preferences and their needs to then also to help them convert to premium and learn the Orthodox church"
+- 2026-11-22 17:55 UTC, after this chat offered the rule "Know the reader on their phone; count readers only as totals": "no more local. it stays on their accounts."
 
 "do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 
@@ -148,7 +149,7 @@ His words: "this is for v2.0 and some goals we have", with two PDFs: "Purify App
 - Lifecycle emails are in code (`lib/email/lifecycle.ts`, `lib/email/retention/`); whether they are switched on was not checked.
 - The owner's own projection is `lib/owner/projection.ts`. The word churn does not appear in `lib/owner/`; whether it models readers leaving was not read.
 
-**For whoever plans 2.0, three cautions that need no figures:** anything that keeps a reader's religious background on the server is sensitive personal data and needs a lawyer's read first (today it stays on the device, on purpose); doctrinal content of any kind goes to the clergy queue and is public domain only (`docs/editorial-standards.md`); and a survey may never stand between a reader and cancelling.
+**For whoever plans 2.0, three cautions that need no figures:** anything that keeps a reader's religious background on the server is sensitive personal data and needs a lawyer's read first (today it stays on the device, on purpose); doctrinal content of any kind goes to the clergy queue and is public domain only (`docs/editorial-standards.md`); and a survey may never stand between a reader and cancelling. **On the first of these he decided, 2026-11-22: "no more local. it stays on their accounts."** It reverses his "yes privacy" of 2026-11-11, and the privacy page promises the opposite today; what must be true before a build does it is `docs/plans/reader-map.md`, section 9.
 
 **His clarification (2026-11-22):** "its Eastern Orthodox based app with different LEARNING CURVES (targeting onboarding)". So the framework's tracks are not separate teachings: Purify teaches one faith, and a reader's background sets where they start. This chat first read the framework's table as a separate Catholic content track. That reading was wrong, and the table's wording invites it (it lists a tradition's own teaching under each track). Whoever builds from the document reads "track" as "learning curve".
 
