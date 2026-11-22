@@ -239,3 +239,27 @@ The house's rules it breaks: every page switch moves, and a card that opens its 
 **Where to begin, by the map.** Twenty-eight pages fill the sixty-three days of the nine weeks. Ten of them carry thirty-nine of those days, about six in every ten: Your first Liturgy (7), First Council of Nicaea (5), The Nicene Creed (4), Find a parish (4), The Gospel of John (4), Today's readings (3), The Church's year (3), Start with the Fathers (3), The Jesus Prayer (3), The Trisagion Prayers (3). Twelve pages are met on one road only. So the frame is built once for every day, and the portion and the act are made for those ten first.
 
 **Asked of him.** What makes a day "kept": opening it, reaching its end, or the reader saying so? And may a day say something written for where the reader comes from, or only frame the same page for everyone?
+
+**His answers (2026-11-22, about 21:30 UTC): "tapping done and unsure do recommended".** So: a day is kept when the reader taps Done. On the second question he left the choice to this chat, whose recommendation stands: a day frames the same page for every reader, from the reader's own answers; no lines are written for where a reader comes from. The bridge stays out unless he and a priest ask for it.
+
+### Mock-ups 5 to 7: one day, worked on (2026-11-22)
+
+https://claude.ai/artifact/RJrVoeYwVW3WNzQXpR2mW1 (his, private). `node docs/plans/reader-map/mock-day.mjs <export>` draws the three stills and the page (`docs/plans/reader-map/mock-day.html`). The same reader as mock-ups 2 to 4, on day one of their week: the lesson "The Jesus Prayer".
+
+Each is the lesson's own page on the native export, reached as a reader reaches it (the questions, then Begin on the week's card), with only what is proposed changed, and each passed `checkMock` on the whole screen. The page passed the kit's check.
+
+1. **It begins as a day** (`img/mock-day-begins.jpg`). The line over the title is the week's own mark, "Your first week · 1 of 7", where the page says "Lesson 3" today; under the title, "For peace in a hard time · 5 min". The lesson is untouched.
+2. **The reader says when it is done** (`img/mock-day-done.jpg`). At the foot, the page's own primary button says "Done for today". The lesson's two links stay as quiet links.
+3. **It ends on tomorrow** (`img/mock-day-kept.jpg`). After the tap the week's own card stands in the button's place: "Day 1 of 7, kept", "Tomorrow: Start with the Fathers" with that page's own line, and "Back to Today". The card is the one this reader tapped on Today, taken from the screen.
+
+**Found while drawing.**
+
+- **The page already has a middle.** This lesson has its teaching, the prayer itself, a "Try this" and its length ("5 min"). What it lacks is a beginning and an end that belong to the week. For the lessons the frame is most of the work.
+- **The foot's button leads away from the week.** Today the page's one primary button is "Next lesson: The Trisagion Prayers". For this reader tomorrow is Start with the Fathers. The lessons and the week pull two ways.
+- **The app already marks a lesson read** by itself ("Lesson read", seen on the third still, the app's own). The week's Done is the reader's own tap, by his answer; the two are different things and both can stand.
+
+**New words, all his to change:** "For peace in a hard time", "Done for today", "Day 1 of 7, kept", "Tomorrow:" before a page's name, "Back to Today".
+
+**What the stills do not show** (the page says so): the card growing into the day in the house's motion; the card clear of the tab bar on Today; how much of a section's front page is one day's; the week's own place.
+
+They await his yes or no. With mock-ups 2 to 4 and the numbers drawing, seven drawings are waiting on him.
