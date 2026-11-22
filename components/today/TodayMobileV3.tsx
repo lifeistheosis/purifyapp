@@ -63,6 +63,11 @@ export function TodayMobileV3() {
             so this cascade correctly starts at zero rather than waiting on a
             route fade that never runs. */}
         <div className="cascade cascade-tight cascade-rise px-5 pt-3 pb-8 md:mx-auto md:w-full md:max-w-[760px] lg:max-w-[880px]">
+          {/* A new reader's step for today, first on the screen while one is
+              up (2026-11-22): whole, and its Begin clear of the tab bar. Under
+              the greeting it stood at the fold with its button under the bar. */}
+          <FirstStepsNudge />
+
           {/* The greeting, one design for each type of reader (1.8, the
               owner's round 14, transitionary). */}
           <TodayGreeting />
@@ -73,8 +78,6 @@ export function TodayMobileV3() {
               of round 6, "Day 1 alone"). */}
           <StreakRow className="mt-4" />
           <StreakAtRisk className="mt-4" waitsForDayOne />
-
-          <FirstStepsNudge />
 
           {/* The roads (1.9, off for readers: lib/onboarding/flags.ts). After
               a first step, the account and the reminders in one offer; and

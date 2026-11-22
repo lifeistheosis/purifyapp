@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Close } from "@/components/ui/icons/Close";
@@ -9,6 +10,7 @@ import { reached } from "@/lib/ab/device";
 import { countWeekStep } from "@/lib/analytics/moreCount";
 import { dismissNudge, readWeek, wasOnboardedAgain, writeWeek } from "@/lib/onboarding/state";
 import { countDayOne } from "@/lib/onboarding/count";
+import { stepOpening, type StepOpening, type StepParts } from "@/lib/onboarding/openStep";
 import { DAY_ONE_KEYS, dayOneFor, type DayOneKey } from "@/lib/onboarding/space";
 import { useDayOneShown } from "@/lib/onboarding/useDayOne";
 import { useSpace } from "@/lib/onboarding/useSpace";
@@ -17,17 +19,18 @@ import { localDay, stepPassed, stepTaken } from "@/lib/onboarding/week";
 
 /**
  * "Your Day 1": the first step the onboarding handoff chose for this reader
- * (lib/onboarding/space.ts, dayOneFor), waiting at the top of Today once the
- * overlay has gone. It rises in and a band of light crosses it once, so the
+ * (lib/onboarding/space.ts, dayOneFor), first on Today once the overlay has
+ * gone: above the greeting, so that it is whole and its Begin is clear of the
+ * tab bar as Today opens (2026-11-22: under the greeting its Begin stood
+ * under the tab bar, where a tap opens the Bible). It rises in and a band of light crosses it once, so the
  * eye lands on it after the slate. One suggestion, dismissible, gone once
  * taken.
  *
- * While it shows, it stands alone under the greeting: the streak's rope waits
- * until it is taken or dismissed (1.8, the owner's pick B of round 6, "Day 1
- * alone"). Both read whether it is up from lib/onboarding/useDayOne.ts, so
- * they change in the same render. Its top margin is its siblings' (mt-4): it
- * carried mb-4 and none on top, and touched the card above it (his
- * screenshot of 2026-10-28, "the cards are touching").
+ * While it shows, the streak's rope waits until it is taken or dismissed
+ * (1.8, the owner's pick B of round 6, "Day 1 alone"). Both read whether it
+ * is up from lib/onboarding/useDayOne.ts, so they change in the same render.
+ * It is the first thing on the screen, so its space is under it (mb-4), and
+ * the greeting follows; nothing stands over it to touch.
  *
  * With the roads on (1.9, lib/onboarding/flags.ts) the same card carries the
  * reader's first week: seven steps chosen by their road, one a day
@@ -43,6 +46,7 @@ export function FirstStepsNudge() {
   const ready = useDayOneShown();
   // With the roads on (1.9), today's step of the reader's first week.
   const week = useWeekToday();
+  const opening = useStepOpening();
 
   if (!ready) return null;
   // A reader who was back when they answered is not on their first day: the
@@ -66,18 +70,21 @@ export function FirstStepsNudge() {
         // The first step is the Day 1 the counts have always taken, where it
         // is one of theirs. The days after it are not counted: their sentence
         // on the privacy page is not agreed (notes/onboarding-fable.md, 5.2).
-        onOpen={() => {
-          if (week.index === 0 && isDayOneKey(week.step.key)) {
-            countDayOne(week.step.key, {
-              ...(background ? { background } : {}),
-              ...(level ? { level } : {}),
-              ...(intent ? { intent } : {}),
-            });
-          }
-          countWeekStep(week.index + 1, "opened");
-          if (week.index === 0) reached("first_step");
-          writeWeek(stepTaken(readWeek(), today()));
-        }}
+        onOpen={opening({
+          count: () => {
+            if (week.index === 0 && isDayOneKey(week.step.key)) {
+              countDayOne(week.step.key, {
+                ...(background ? { background } : {}),
+                ...(level ? { level } : {}),
+                ...(intent ? { intent } : {}),
+              });
+            }
+            countWeekStep(week.index + 1, "opened");
+            if (week.index === 0) reached("first_step");
+          },
+          // Written once the card has left with its page, never at the tap (lib/onboarding/openStep.ts).
+          keep: () => writeWeek(stepTaken(readWeek(), today())),
+        })}
       />
     );
   }
@@ -89,20 +96,42 @@ export function FirstStepsNudge() {
       title={t(`onboard.day1.${step.key}.title`)}
       body={t(`onboard.day1.${step.key}.body`)}
       href={step.href}
-      onDismiss={() => dismissNudge()}
-      onOpen={() => {
+      onDismiss={dismissNudge}
+      onOpen={opening({
         // Counted only here, where the reader chose it: the website sends a
         // reader straight to their first step as the questions end, which
         // is not a choice and is not counted.
-        countDayOne(step.key, {
-          ...(background ? { background } : {}),
-          ...(level ? { level } : {}),
-          ...(intent ? { intent } : {}),
-        });
-        dismissNudge();
-      }}
+        count: () =>
+          countDayOne(step.key, {
+            ...(background ? { background } : {}),
+            ...(level ? { level } : {}),
+            ...(intent ? { intent } : {}),
+          }),
+        keep: () => dismissNudge(),
+      })}
     />
   );
+}
+
+/**
+ * A tap on Begin, in two parts (lib/onboarding/openStep.ts): what is only
+ * counted, now; and what takes the card off Today, once the card has left the
+ * screen with its page. Taking the card off at the tap made Today jump under
+ * the finger before the page's transition had begun (measured 2026-11-22).
+ */
+function useStepOpening(): (parts: StepParts) => () => void {
+  const opening = useRef<StepOpening | null>(null);
+  useEffect(
+    () => () => {
+      opening.current?.left();
+      opening.current = null;
+    },
+    [],
+  );
+  return (parts) => () => {
+    if (!opening.current) opening.current = stepOpening(parts);
+    opening.current.tapped();
+  };
 }
 
 function isDayOneKey(key: string): key is DayOneKey {
@@ -130,7 +159,7 @@ function StepCard({
   return (
     <div
       data-first-step=""
-      className="ob-day1-in ob-sheen lm-card relative mt-4 overflow-hidden rounded-[22px] p-5 ring-1 ring-inset ring-premium/30 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.6)]"
+      className="ob-day1-in ob-sheen lm-card relative mb-4 overflow-hidden rounded-[22px] p-5 ring-1 ring-inset ring-premium/30 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.6)]"
       style={CARD_BG}
     >
       <div className="flex items-start gap-3">
