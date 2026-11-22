@@ -331,3 +331,69 @@ This chat's judgement, from what it read in the code, photographed and measured 
 **Not for this house, named so nobody proposes it:** a card to share one's own streak or week. Showing one's prayer is not the Church's way. A verse or a saint is what is shared.
 
 **What this chat would cut, if the work has to be smaller.** Keep rows 0 to 3 of the order and A and B above. Leave the longer questions, the picture on the Plus sheet and the source on the counts for after.
+
+## What a ten is, section by section (2026-11-22)
+
+His word, about 21:50 UTC: "let's try to 10/10 each and every single section. try the best methods based on our goals."
+
+For each section rated above: what a ten would be, written so that it can be checked; the method, chosen by his goal (know the reader, fit Purify to what they need, lead them to the Church and to Plus); the pieces, most of them already named in this file; and the number that says it was reached. Brainstorm: nothing is built, and each piece still comes to him as a drawing. A ten in results needs readers and weeks as well as work; the targets marked "from the baseline" are set once Admin's numbers are read.
+
+### 1. The ground it stands on (8.5 now)
+
+- **A ten is:** nothing a reader is given because of who they are exists outside one held list; a tester and the gate can walk any road on any day; no known fault is open.
+- **The method:** one source and a test that fails on drift, as the reader map already works.
+- **The pieces:** the ledger, parts A to C of `reader-map.md` section 4 (still his yes); "Walk as" in Testers (part E); the gate walking every road's days; the open faults closed (`next dev` and the file Tailwind reads, the downloads' test that fails, the answers moved from the sign-in record to a table only the reader can read).
+- **The number:** faults open, 0; roads the gate walks, 8 of 8.
+
+### 2. The questions (7 now)
+
+- **A ten is:** every question changes something the reader sees on the very next screen; no answer does anything unseen; every line a reader sees is true and, where it speaks of the faith, read by a priest; it takes under ninety seconds.
+- **The method:** ask for the reader's need before the library's shelves (what the largest testers found: the need, then one small thing given back, then what answers it). Keep only a question that earns its place.
+- **The pieces:** the need first, picks that say what they do (mock-ups 2 and 3); the picture cards in a fair order, so that standing first is not what gets a card tapped; the seeker's rule made visible in the cards; a line of what Purify will do after each answer, as the first question already has; the card for the page a reader came from already picked (13); the EU step (mock-up 1).
+- **The number:** the share who finish, held at or above the baseline with one question more; the share of first picks that are the top two cards, falling toward what chance would give.
+
+### 3. What the reader gets back at once (4 now)
+
+- **A ten is:** within a minute of the last answer the reader has prayed or read one thing; the first screen they land on could not be taken for anyone else's; the week's card is whole and above the tab bar.
+- **The method:** the first act is the proof. An app is kept by the reader who did the thing once, on the first day, and not by the reader who was told about it.
+- **The pieces:** the week as the last screen (mock-up 4), with day one beginning from it; the week's card first on Today and clear of the tab bar; a greeting and one personal thing on Today that move with time (15: the patron saint and name day, the day of the fast, the place in the week); Today's shortcuts by the reader's picks.
+- **The number:** a first prayer or chapter finished on the first day (`first_act`, already counted), with a target from the baseline.
+
+### 4. The first week (3.5 now)
+
+- **A ten is:** each of the sixty-three days is one thing of a few minutes with a beginning and an end; none is a section's front page; the card grows into its day and nothing jumps; a day is kept by the reader's own Done; a day away costs nothing and the week waits.
+- **The method:** a small loop each day: a calm call at the hour the reader chose, one short thing, and an ending that names tomorrow. Endings are what is remembered, so every day and the week itself get one.
+- **The pieces:** the two faults of the week's card (row 0); the day's frame (mock-ups 5 to 7), built once for every day; one thing chosen for each of the five days that open a whole section; the ten pages that carry six days in ten worked first; the first Liturgy held in the week; the page's own button no longer leading away; reminders that need no account, at an hour the reader picks (B); a week that pauses (E); the week's own place.
+- **The number:** day one kept by Done; day seven kept, of those who kept day one; both from the baseline once days are counted by Done.
+
+### 5. After day seven (3 now)
+
+- **A ten is:** no reader ends a week and finds nothing. Each is told the week is kept and offered their next step by name; the reader who was led to a parish is asked, once and kindly, whether they went.
+- **The method:** hand the reader from a guided week to the Church's own rhythm, which is what keeps a person for years: a daily rule, the Sunday Liturgy, the fasts and the feasts. The beginnings the Church already has (a Sunday, a feast, the first day of a fast) are when a new path is offered.
+- **The pieces:** a closing moment for the week; a second week by the reader's need; a small rule of their own built from what they kept; a path offered at the next fast or feast; a reading plan as the next step, which is where a reader meets Plus by their own wish (A); "I went" at the door.
+- **The number:** readers back in their second week (`back_week2`, already counted) and in their fourth.
+
+### 6. Knowing what works (6 now)
+
+- **A ten is:** each stage has one number, its baseline is written down, all of them stand on one page, and every running test says each week: wait, version A, version B, or stop.
+- **The method:** one number a stage, decided before the work; large forks only, on the website first; and five real readers watched through their first run at each release, which finds what no count of this size can.
+- **The pieces:** the stages named (finished, day one kept, week kept, back in week two, a lock met, Plus); Admin's baselines read into this file; the road and the first pick tallied from counts that exist, drawn on the reader web in Admin; the line in his brief for each test; later, with the privacy page, the road and the source on the rest of the counts.
+- **The number:** stages with a written baseline, 6 of 6; tests that ended with a note of what was learned.
+
+### 7. The way to Plus (5 now)
+
+- **A ten is:** Plus is never brought to a reader, and no reader misses it: every road passes at least one lock by its fourteenth day on the reader's own path; the sheet says everything Plus is and its price on one screen; price, trial and a lifetime plan have each been tested once.
+- **The method:** worth before the ask, and the ask at the moment the reader wants more. A dear lifetime plan beside the yearly, since prices are judged against each other. Offers are tested where the money is counted, in RevenueCat, on his word each time.
+- **The pieces:** the first lock on each road named on the map; the sheet with the price, the yearly saving and the trial seen at once (8, 9); one real picture at its head, tested; the plan after day seven (A); the lifetime plan (14); each offer test his to start.
+- **The number:** the share of readers who meet a lock in their first fourteen days; of those, the share who tap to subscribe (`plus_pay`); purchases as a tally to watch until there are readers enough to judge by.
+
+### The order: where the most readers are lost, first
+
+1. Sections 4 and 3 together: the faults, the new first week and what comes back at once. This is where the scores are lowest and where every new reader passes.
+2. Section 6 beside them from the start, so that each change has its number before it ships.
+3. Section 5, once a reader can keep a week.
+4. Section 2's remaining parts, which wait for the questions' test place (2027-02-09).
+5. Section 7, whose own tests are his to start.
+6. Section 1 throughout: the ledger first, since it makes every row above cheaper to build and to hold.
+
+**Said to him with this.** A ten everywhere at once is how a plan outgrows its hands. It is reached one section at a time, each with its number, in a fresh chat.
