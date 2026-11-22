@@ -444,3 +444,57 @@ Read as: two cards one over the other, each with its own Begin, pull the eye two
 **If he says yes,** it replaces the card's new place in row 0 (the card first on Today): the week's card is no longer drawn on Today at all, and what row 0 mended in the card (the step kept only once the screen has moved) is kept in the lead. The probe asks the same two things of the lead.
 
 **Open in it.** The line the card has under a step's name ("One short prayer, said slowly...") is not drawn in the lead, which has no such line for the hour's prayer either. And while a step is up, the hour's prayer is one scroll or one tab away, not in the lead.
+
+### Mock-ups 9 to 12: the lead, four other ways (2026-11-22)
+
+**His word, about 22:42 UTC, to mock-up 8: "can we actually revamped that design? try out different things"**
+
+Four takes, each from the app's own Today on the branch's export for the same reader (a Catholic who has not yet been to a church and came for Daily quiet, day one), each passed by `checkMock`, all fifteen rules (`docs/plans/reader-map/mock-today-leads.mjs`, stills `img/mock-lead-a.jpg` to `-d.jpg`, page `mock-today-leads.html`, https://claude.ai/artifact/AWCrgRcY4GixPNGuq3hWec). In all four there is one Begin, the week's card is not drawn, and no word is new.
+
+| | What it is | What it costs |
+|---|---|---|
+| 9. Step first | The step and its line on the night, Begin right under, the greeting and the verse after, smaller | The star's sentence and today's reading leave the lead for the seven days |
+| 10. One night | The star alone as the picture, every line on one centre line, no rule | The tallest; the star no longer says in words that it opens the fast's readings |
+| 11. Short | Mock-up 8 without the hour's verse and with a shorter band | The plainest; it mends the two Begins and the height only |
+| 12. Your picture | The lead wears the picture of what the reader came for (`lib/onboarding/pictures.ts`), fading into the night; the step, its line, Begin, the day on one line | The greeting, the hour's verse and the star give way for the seven days; each of the eleven picks needs its picture at the lead's size (the apps carry them at the size of the questions' cards, 315 wide for this one), and four are stand-ins until his are made |
+
+The recommendation on the page was 12 for the first week, and 9 if the greeting and the verse must stay.
+
+**Overtaken the same hour.** His next word (below) is that he does not like the box at all. All four keep it. They stay as a record. What lasts from them: 12's idea, that the first week's Today wears the reader's own picture, and the rule that a step of the first week stands where the hour's prayer is, with the one Begin.
+
+### His word on the welcome, and mock-up 13: no box, each thing once (2026-11-22)
+
+**His word, about 22:55 UTC, with two pictures of his own Today: "I want a better welcome back screen honestly. (so first thing they see on the today) I don't like the black box square design and remember multiplicity optimization because the screens we have know it shows the same stuff twice which ruins immersion"**
+
+**What Today shows twice**, read from the export as his pictures show it (a practicing reader, Sunday 22 November 2026, 17:55, day 8 of the Nativity Fast, 14 days kept):
+
+| The thing | Where it stands now |
+|---|---|
+| The saint of the day | Twice: in the lead (a small picture, "Apostle Philemon and Apphia of the Seventy") and in The Church today ("Today's Saint", the same picture) |
+| The fast | Three times: the star's band ("Nativity Fast · day 8 of 40"), the lead's line under the saint ("Nativity Fast, fish allowed"), and The Fast in The Church today |
+| The hour's prayer | Once, in the lead. Pray, lower, lists the rest of the day's rule and not the hour's |
+| A verse | For a new reader two stand one after the other: the hour's psalm verse in the lead, then the verse of the day |
+
+The lead is 506 px high on a phone 844 high and holds three things, each laid out its own way: the fast's star, the saint, the hour's prayer. That is the box.
+
+**Mock-up 13** (`docs/plans/reader-map/mock-welcome.mjs`; stills `img/mock-welcome-before.jpg`, `img/mock-welcome.jpg`, `img/mock-welcome-church.jpg`; page `mock-welcome.html`, https://claude.ai/artifact/VD5qJxi7vtNuTbCmbXJKnf; passed `checkMock`, all fifteen rules, and the page passed the kit's check).
+
+- **No box.** The lead's edge, corners and side margins are gone. Its night runs the screen's whole width under the top bar and ends in the horizon the star's drawing already has. The hill under that horizon takes the page's own ground, so the page begins where the sky ends.
+- **On the sky:** the date, the hour's greeting (`today.greetingEvening`, the words every other reader's lead already says) and Pascha's count under it. The star's three lines are not drawn.
+- **Under the horizon, on the page's own ground:** the hour's prayer and the screen's one Begin, as they are.
+- **Once:** the saint stands in The Church today. The fast stands in The Fast, which takes the star's count ("The Fast · day 8 of 40") and today's reading from the star's band.
+- The lead was 506 high and is 322. The streak and the verse of the day are on the first screen.
+- No word is new.
+
+**What it costs.** For an Orthodox reader the saint and the fast leave the first screen and are one scroll down; if he wants them higher, The Church today can stand right under the streak (that moves the verse of the day down, which he set first in round 17). The star no longer says in words what it is.
+
+**Not drawn yet.** A great feast, where the feast's name leads today and has to lead here and still be said once. The rest of the year, where the lead has the Night sky look's own sky and no star. A new reader's first week, where the day's step would stand where the hour's prayer is. Wide screens (the page is centred there, so the sky needs its own rule to stay the screen's whole width), the Light palette by eye (the sky is a night on every palette, as the lead is today, with the page's own ground under the horizon) and Arabic.
+
+**If he says yes,** it is built in `components/today/GreetingHeader.tsx` and `NativityStarCard.tsx` (the sky, the words, the hill's fill), `lib/today/greeting.ts` (an Orthodox reader's lead no longer carries the saint and the fast) and The Church today's fast band (the count and the reading), with a test that fails on the old code for each of: the saint said once, the fast said once, the lead without its box. The mend of row 0 (a step kept only once its page has moved) is kept, and its probe and test follow the new place of the step.
+
+### His note: a finish is a moment of its own (2026-11-22)
+
+**His word, in the same message: "note this (unrelated to this specific task) : I want full immersion ux experiences also so when you finish there is a high quality smooth finish animation"**
+
+Noted, and a rule in `CLAUDE.md` now. Not designed and not built. Where it meets this plan: the end of a day of the first week (mock-up 7, "It ends on tomorrow", where the tap on "Done for today" is answered by the week's card) is a finish, and so is the end of a prayer and of a lesson. What exists today at each of those ends has to be read before anything is drawn: the app marks "Lesson read" and "Prayed today" already. It is its own piece of work, and it waits for his word on when.
+
