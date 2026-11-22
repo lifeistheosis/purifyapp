@@ -1,0 +1,183 @@
+{
+ "about": "The icons of Christ in the edit. Each is a faithful photograph of a flat work, marked Public domain on Wikimedia Commons, where each was fetched on 2026-11-22 (the page is given). Seven were made between the 6th and the 17th century. Two are late: 'pantocrator19' and 'golden' are the work of unnamed Russian painters of the late 19th or the early 20th century, so their makers are not known to have died before 1900; Commons marks both Public domain, and that is all this file claims for them. None is held in Greece or Italy, so none is on the heritage list (lib/marketing/heritagePictures.ts). The first is the app's own icon (public/shop/media/christ-pantocrator-mounted.jpg and public/icons/prayer/christ-pantocrator.v2.jpg show the same work); the others are not in the app. 'eyes' is where His eyes are in the fetched file, read off by hand: the eye at the viewer's left first. 'halo' is the halo's circle: centre x, y and radius. 'fetched_width' is the width Wikimedia served; the eyes are in that file's pixels.",
+ "pictures": {
+  "sinai": {
+   "what": "Christ Pantocrator, encaustic on panel, 6th century",
+   "held": "St Catherine's Monastery, Sinai, Egypt",
+   "page": "https://commons.wikimedia.org/wiki/File:CHRIST_PANTOCRATOR-SINAI(6th_Century).jpg",
+   "licence": "Public domain",
+   "in_the_app": true,
+   "eyes": [
+    [
+     1433,
+     1916
+    ],
+    [
+     1980,
+     1900
+    ]
+   ],
+   "halo": [
+    1862,
+    1823,
+    1644
+   ],
+   "used": "the figure that rises in the dome; the question; the runs of faces",
+   "fetched_width": 3840
+  },
+  "zlatye": {
+   "what": "The Saviour of the Golden Hair, early 13th century",
+   "held": "Dormition Cathedral, Moscow Kremlin",
+   "page": "https://commons.wikimedia.org/wiki/File:Zlaty_vlasy_(13th_c.,_Assumption_Cathedral).jpg",
+   "licence": "Public domain",
+   "eyes": [
+    [
+     1432,
+     1941
+    ],
+    [
+     2419,
+     1941
+    ]
+   ],
+   "used": "the runs of faces",
+   "fetched_width": 3840
+  },
+  "novgorod": {
+   "what": "The Holy Face (the Saviour Not Made by Hands), Novgorod, 12th century",
+   "held": "Tretyakov Gallery, Moscow",
+   "page": "https://commons.wikimedia.org/wiki/File:Спас_Нерукотворный_-_Google_Art_Project.jpg",
+   "licence": "Public domain",
+   "eyes": [
+    [
+     816,
+     919
+    ],
+    [
+     1151,
+     910
+    ]
+   ],
+   "used": "the runs of faces",
+   "fetched_width": 1920
+  },
+  "ushakov": {
+   "what": "The Holy Face, by Simon Ushakov, 1658",
+   "held": "Tretyakov Gallery, Moscow",
+   "page": "https://commons.wikimedia.org/wiki/File:Simon_Ushakov_-_Спас_Нерукотворный_-_Google_Art_Project.jpg",
+   "licence": "Public domain",
+   "eyes": [
+    [
+     721,
+     1072
+    ],
+    [
+     1086,
+     1072
+    ]
+   ],
+   "used": "the runs of faces",
+   "fetched_width": 1920
+  },
+  "pantocrator19": {
+   "what": "Christ Pantocrator, tempera on wood, late 19th century",
+   "held": "not stated on its page",
+   "page": "https://commons.wikimedia.org/wiki/File:Christ_Pantocrator_icon.jpg",
+   "licence": "Public domain",
+   "eyes": [
+    [
+     870,
+     689
+    ],
+    [
+     1077,
+     689
+    ]
+   ],
+   "halo": [
+    975,
+    650,
+    505
+   ],
+   "used": "the figure that stands first in the dome; the second shot (\"and\"); the runs of faces",
+   "fetched_width": 1920
+  },
+  "vysotsky": {
+   "what": "Christ Pantocrator from the Vysotsky tier, Byzantine, 1387 to 1395",
+   "held": "Tretyakov Gallery, Moscow",
+   "page": "https://commons.wikimedia.org/wiki/File:Christ_Pantocrator_from_Vysotsky_chin_(14c,_Tretyakov_gallery).jpg",
+   "licence": "Public domain",
+   "eyes": [
+    [
+     607,
+     478
+    ],
+    [
+     704,
+     478
+    ]
+   ],
+   "halo": [
+    678,
+    476,
+    276
+   ],
+   "used": "the third shot (\"the life\") and the shot beneath the first run of faces; the runs of faces",
+   "fetched_width": 1280
+  },
+  "rublev": {
+   "what": "The Saviour, from the Zvenigorod tier, by Andrei Rublev, about 1410",
+   "held": "Tretyakov Gallery, Moscow",
+   "page": "https://commons.wikimedia.org/wiki/File:Rublev's_saviour.jpg",
+   "licence": "Public domain",
+   "eyes": [
+    [
+     362,
+     421
+    ],
+    [
+     554,
+     412
+    ]
+   ],
+   "used": "the runs of faces",
+   "fetched_width": 960
+  },
+  "yaroe": {
+   "what": "The Saviour of the Fiery Eye, mid 14th century",
+   "held": "Dormition Cathedral, Moscow Kremlin",
+   "page": "https://commons.wikimedia.org/wiki/File:Spas_Yaroe_Oko_ikona.jpg",
+   "licence": "Public domain",
+   "eyes": [
+    [
+     203,
+     272
+    ],
+    [
+     290,
+     270
+    ]
+   ],
+   "used": "the runs of faces",
+   "fetched_width": 500
+  },
+  "golden": {
+   "what": "Christ Pantocrator on a chased gold ground, tempera on wood, Russia, late 19th or early 20th century",
+   "held": "not stated on its page",
+   "page": "https://commons.wikimedia.org/wiki/File:Christ_Pantocrator_Tempera_on_woodpanel.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "eyes": [
+    [
+     905,
+     690
+    ],
+    [
+     1035,
+     691
+    ]
+   ],
+   "used": "the answer"
+  }
+ }
+}
