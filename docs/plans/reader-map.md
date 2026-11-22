@@ -183,3 +183,25 @@ At his "yes" to the two drawings offered, the first of them. **The page, private
 - **Not checked:** the wording by a lawyer; how the app knows a reader is in the EU; the other languages; the screen in Arabic by eye (checkMock's mirror rule passed).
 
 Mock-up 2, the Catholic reader's first month, is not begun: it waits until he has seen this one.
+
+## 11. The reader web (2026-11-22)
+
+His word, with a picture of a branching chart from a game: "make a spider web / family tree  type of artifact for the different screens and sections and pathways".
+
+The map, drawn. https://claude.ai/artifact/53Drdsrfn8Nmo6gFnaW5z6 (his, private until he shares it). The page is `docs/plans/reader-map/web.html`.
+
+**What it shows.** One sheet, read from the top: the first open, the first question and its eight answers (a skip is one), the second question's three screens by the first answer, the threads from each answer to its road (they cross, which is the web), the rule's question on the two strands that are asked it, the last question and the handoff on every strand, the roads grouped by how Today looks, each road's own week page by page with the section of the app each page stands in, and the one Plus card at the foot. Ten strands: the eight roads, the Protestant road twice (its two leans), and the readers with no road. One road is lit at a time; the rest stay faint and readable. Under it, the lit road step by step: who lands there, its week with how many other roads share each page, the photo of its first card, and what comes after the week. Then the pages that hold the most threads, and what each pick brings.
+
+**How it is made.** Never by hand. `lib/onboarding/__tests__/readerMap.test.ts` now writes the same walk twice: `reader-map.txt` to be read, and `reader-map.json` to be drawn, in the screens' own words, and it holds both to the rules. `docs/plans/reader-map/web.mjs` reads the json and nothing else, and stops on anything the rules say that it has no place for (a road reached by two reader types, a week that is not seven pages, a new screen for the second question). After a rule changes:
+
+```
+READER_MAP_WRITE=1 npx vitest run lib/onboarding/__tests__/readerMap.test.ts
+node docs/plans/reader-map/web.mjs
+node docs/brand/kit/check.mjs --page docs/plans/reader-map/web.html
+```
+
+`web.mjs --check` fails when the page is not what the map draws now. This is part D of the ledger in section 4 ("the map draws itself"), made early as a page; in Admin it would be the same drawing.
+
+**Its look.** Two pieces were added to the design kit for it, by the kit's own rule that a new need is a new piece: Web (a map of ways on the night) and Choice (a small choice of equal buttons). Both are in `docs/brand/kit/pieces.css` and `docs/brand/design-kit.md`, and the page passes the kit's check on five palettes at 360, 390, 412 and 1032. The reasons for each choice are on the page itself, under "Why it is drawn this way". It awaits his yes or no.
+
+**What it does not show.** The locks a reader runs into along a road are not on the map yet (offered before: "first lock met" for each road). The Plus card at the foot is drawn as it is today, a live test; whether his rule of the same day ("they must run into plus feature or click on the premium pill") ends that card is still his to say. The web draws each road's own week before a reader's picks arrange it; the counts beside it say how many weeks come from each.

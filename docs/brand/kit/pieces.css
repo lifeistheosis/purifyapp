@@ -495,6 +495,179 @@ body {
 
 .k-page a.k-button-quiet { color: var(--k-ink); }
 
+/* ── Choice: a small choice that switches what is on the screen ────── */
+/* Equal buttons in one grid, one of them pressed: the app's primary look
+   for the one that is on, a hairline for the rest. A pill is right here and
+   only here (CLAUDE.md, floating pills): it filters or switches what is on
+   the screen and is never a list of places to go. Its columns are set where
+   it is used (--k-choice-cols), to a number its buttons fill, so no row is
+   left with an orphan. 44 tall. */
+.k-choice {
+  display: grid;
+  grid-template-columns: repeat(var(--k-choice-cols, 3), minmax(0, 1fr));
+  gap: var(--k-space-2);
+  margin: var(--k-space-2) 0 var(--k-space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.k-choice button {
+  width: 100%;
+  min-height: var(--k-target);
+  padding: 6px var(--k-space-2);
+  border-radius: var(--k-radius-pill);
+  border: 1px solid var(--k-line-strong);
+  background-color: transparent;
+  color: var(--k-ink);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-ui);
+  font-weight: 600;
+  line-height: 18px;
+  cursor: pointer;
+  transition:
+    background-color var(--k-duration-fast) var(--k-ease-house),
+    color var(--k-duration-fast) var(--k-ease-house),
+    transform var(--k-duration-fast) var(--k-ease-house);
+}
+
+.k-choice button:active { transform: scale(var(--k-press)); }
+
+.k-choice button[aria-pressed="true"] { background-color: var(--k-ink); border-color: transparent; color: var(--k-ground); }
+
+/* ── Web: a map of ways ────────────────────────────────────────────── */
+/* Places as plates and the ways between them as threads, with one way lit
+   at a time. It is the thing that leads on its page, so its frame wears the
+   night (.k-night) and reads the night's ink. Drawn once, at its own size
+   (--k-web-w by --k-web-h, numbers of px), and shown at two: the whole of it
+   fitted to the column, where only its marks are read, and near, at its own
+   size, where it scrolls both ways under a finger. A line keeps its weight
+   at either size (each is divided by --k-web-s, which the page sets).
+   A plate is never a control: the Choice above the web is. Nothing here is
+   dimmed below 4.5:1: a quiet plate keeps the faint ink, and the lit way is
+   told by its ring, its fill and its thread. */
+.k-web { --k-web-s: 1; margin: var(--k-space-4) 0 var(--k-space-5); }
+
+.k-web-frame {
+  /* A plate's fill: a breath of the ink over the ground it stands on. */
+  --k-web-plate: color-mix(in oklab, var(--k-ink-base) 8%, var(--k-ground));
+  position: relative;
+  max-height: min(68vh, 620px);
+  overflow: auto;
+  border: 1px solid var(--k-line);
+  border-radius: 22px; /* a figure's own */
+}
+
+.k-web[data-zoom="whole"] .k-web-frame { max-height: none; overflow: hidden; cursor: zoom-in; }
+
+/* The room the web takes at the size it is shown, and the web itself, scaled into it. */
+.k-web-room {
+  position: relative;
+  width: calc(var(--k-web-w) * var(--k-web-s) * 1px);
+  height: calc(var(--k-web-h) * var(--k-web-s) * 1px);
+  overflow: hidden;
+}
+
+.k-web-plane {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  width: calc(var(--k-web-w) * 1px);
+  height: calc(var(--k-web-h) * 1px);
+  transform: scale(var(--k-web-s));
+  transform-origin: top left;
+}
+
+[dir="rtl"] .k-web-plane { transform-origin: top right; }
+
+/* The threads. */
+.k-web-ways { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+
+[dir="rtl"] .k-web-ways { transform: scaleX(-1); }
+
+.k-web-ways path {
+  fill: none;
+  stroke: var(--k-ink-3);
+  stroke-width: calc(1.25px / var(--k-web-s));
+  stroke-linecap: round;
+  transition: stroke var(--k-duration-fast) var(--k-ease-house);
+}
+
+.k-web.has-lit .k-web-ways path { stroke: var(--k-line-strong); }
+
+.k-web.has-lit .k-web-ways path.is-lit { stroke: var(--k-ink); stroke-width: calc(2.25px / var(--k-web-s)); }
+
+/* A plate: a screen, an answer, a road or a page. Its small line says what it is. */
+.k-web-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--k-space-2) 11px;
+  border-radius: var(--k-radius-md);
+  background-color: var(--k-web-plate);
+  box-shadow: inset 0 0 0 calc(1px / var(--k-web-s)) var(--k-line-strong);
+  color: var(--k-ink);
+  font-family: var(--k-font-sans);
+  font-size: var(--k-text-detail);
+  line-height: 17px;
+  font-weight: 600;
+  transition:
+    background-color var(--k-duration-fast) var(--k-ease-house),
+    color var(--k-duration-fast) var(--k-ease-house),
+    box-shadow var(--k-duration-fast) var(--k-ease-house);
+}
+
+.k-web-node small { display: block; font-size: var(--k-text-eyebrow); line-height: 15px; font-weight: 600; color: var(--k-ink-3); }
+
+.k-web-node span { display: block; font-size: var(--k-text-eyebrow); line-height: 15px; font-weight: 400; color: var(--k-ink-3); }
+
+.k-web.has-lit .k-web-node { background-color: transparent; box-shadow: inset 0 0 0 calc(1px / var(--k-web-s)) var(--k-line); color: var(--k-ink-3); }
+
+/* The lit way: the ink's ring, the plate's fill and a soft pool of light. Never rays. */
+.k-web.has-lit .k-web-node.is-lit {
+  background-color: var(--k-web-plate);
+  box-shadow:
+    inset 0 0 0 calc(1.75px / var(--k-web-s)) var(--k-ink),
+    0 0 calc(16px / var(--k-web-s)) color-mix(in srgb, var(--k-ink) 24%, transparent);
+  color: var(--k-ink);
+}
+
+/* A group: one screen and its answers, or the roads that share a look. */
+.k-web-group {
+  position: absolute;
+  padding: var(--k-space-3) 14px;
+  border-radius: var(--k-radius-lg);
+  background-color: color-mix(in oklab, var(--k-ink-base) 4%, transparent);
+  box-shadow: inset 0 0 0 calc(1px / var(--k-web-s)) var(--k-line);
+}
+
+.k-web-group small { display: block; font-family: var(--k-font-sans); font-size: var(--k-text-eyebrow); line-height: 15px; font-weight: 600; color: var(--k-ink-3); }
+
+.k-web-group b { display: block; margin-block-start: 2px; font-family: var(--k-font-serif); font-size: 16px; line-height: 22px; font-weight: 600; color: var(--k-ink); }
+
+/* A mark: the name of a part of the web, large enough to be read when the
+   whole is shown, and put away when near, where the plates say it. */
+.k-web-mark {
+  position: absolute;
+  inset-inline: 0;
+  display: none;
+  width: fit-content;
+  margin-inline: auto;
+  padding: 0 var(--k-space-6);
+  background-color: var(--k-ground);
+  color: var(--k-ink);
+  font-family: var(--k-font-display);
+  font-weight: 400;
+  font-size: var(--k-text-display);
+  line-height: 64px;
+  white-space: nowrap;
+}
+
+.k-web[data-zoom="whole"] .k-web-mark { display: block; }
+
+.k-web figcaption { margin-block-start: var(--k-space-3); font-size: var(--k-text-detail); line-height: 19px; color: var(--k-ink-3); max-width: var(--k-measure); }
+
 /* ── Arriving: the house's rise, still with reduced motion ─────────── */
 @media (prefers-reduced-motion: no-preference) {
   .k-rise { animation: k-rise var(--k-duration-slow) var(--k-ease-house) both; }

@@ -34,7 +34,7 @@ One system: a page and an email are the same look, made of the same pieces.
 | File | What it is |
 |---|---|
 | `tokens.css` | The tokens: the five palettes (Dark, the clean neutral Light, Black, Candlelight, Monastery; Parchment listed for app mockups only), the ink's shares, type, space, radius, motion, the Church's red, money's three hues and the Night sky look. Each names its line in `app/globals.css` or `app/admin/admin-theme.css`. |
-| `pieces.css` | The pieces: title, section, the night, the lead, figures, chart, split, bars, table, figure, note, tray, list, card, button, footer. Built only from the tokens. |
+| `pieces.css` | The pieces: title, section, the night, the lead, figures, chart, split, bars, table, figure, note, tray, list, card, button, choice, web, footer. Built only from the tokens. |
 | `artifact-template.html` | One self-contained HTML page holding the tokens and pieces, with every piece shown once, as a weekly brief. Start an artifact or a report from a copy of it. |
 | `email/` | The emails, in the same look: the reader email, its Nativity Fast season and the owner's brief, with their own `README.md`, `build.mjs` and `check.mjs`. Start every email there. |
 | `check.mjs` | Renders the page at 360, 390, 412 and 1032 and holds it to checkMock on the five palettes at each width, to no sideways scroll and to no parchment; then runs the emails' own check. `--write` refreshes the page from the two CSS files and the app's pictures. |
@@ -85,6 +85,7 @@ Each choice, its reason, and what it does for whoever reads the page.
 | Sentence-case labels | The house voice asks for it, and capitals spaced out are the mark of a template. | Labels read as words. |
 | Dark first, and a clean white light with the app's ink | His words: the dark palettes lead, and no parchment. | It looks like the app he knows, and stays readable where a screen is light. |
 | Phone first: one column, 17px words, 44px targets | He reads on his phone, and so do most readers. | Nothing has to be pinched, and nothing is missed by a thumb. |
+| A thing with many ways is a web on the night, one way lit at a time | A list of thirty thousand ways cannot be read, and a picture of all of them at once is a tangle. The night is the app's own look, and threads on it read as the constellation they are. | He sees the whole shape first, lights one way to follow it, and goes near to read its words. |
 | Fast: one file under 100KB, no library, three faces with real fallbacks | A page that waits on a library is slower than the brief deserves. | It opens at once, and reads in Georgia and the system's sans if the faces do not load. |
 
 ## The pieces, in one line each
@@ -105,6 +106,8 @@ Each choice, its reason, and what it does for whoever reads the page.
 - **List** (`.k-list`, `.k-row`): things to act on, as rows in one tray, each a way in with the app's chevron. Never three cards side by side.
 - **Card** (`.k-card`): one thing and its one button, as Today's card is in the app and the saint's card in the emails.
 - **Button** (`.k-button`): the app's primary (a pill in the ink, the ground's colour for its words), 48px tall and across its card on a phone. One to a page. The quiet one (`.k-button-quiet`) stands in a hairline, and a link that stands alone (`.k-link`) is underlined and 44px tall.
+- **Choice** (`.k-choice`): a small choice that switches what is on the screen. Equal buttons in one grid, the one that is on in the app's primary look and the rest in a hairline, 44 tall. Its columns are set where it is used (`--k-choice-cols`), to a number its buttons fill, so no row is left with an orphan. Never a list of places to go. Not shown in the template; first used under the reader web.
+- **Web** (`.k-web`): a map of ways, for a thing with many paths. Places are plates, the ways between them are threads, and one way is lit at a time: its ring, its fill and its thread, with the rest left faint and still above 4.5:1. Its frame wears the night, so it is the one thing that leads on its page. It is drawn once at its own size and shown at two: all of it, fitted to the column, where only its marks are read, and near, where it scrolls both ways under a finger. A line keeps its weight at both. A plate is never a control; the Choice beside it is. A web is always written by a script from a source the tests hold, never by hand (the first is `docs/plans/reader-map/web.mjs`). Not shown in the template, since it is drawn from a map.
 - **Footer** (`.k-foot`): a hairline, "Edgar, the Purify Team" in italics, one small line.
 
 In an email the same pieces are drawn with tables and inline styles (`email/build.mjs`): the opening, the week as a leaf of the calendar, figures, columns, the split, bars, the card and its button.

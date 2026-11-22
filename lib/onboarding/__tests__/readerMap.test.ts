@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import en from "@/lib/i18n/messages/en.json";
 
 import { flowSteps } from "../flowSteps";
-import { INTRO_FEATURE } from "../plusIntro";
+import { INTRO_FEATURE, PLUS_INTRO_AFTER_DAYS, introRow } from "../plusIntro";
 import { readerTypeOf } from "../readerType";
 import { ROADS, leanOf, roadOf, type Lean, type Road } from "../road";
 import { ALL_BACKGROUNDS, INTENTS, LEVELS, asksRule, defaultsFor, type Background, type Intent, type Level } from "../space";
@@ -27,10 +27,17 @@ import { PROTESTANT_WEEKS, ROAD_WEEKS, WEEK_LENGTH, WEEK_STEPS, pickStep, weekFo
  *
  *   READER_MAP_WRITE=1 npx vitest run lib/onboarding/__tests__/readerMap.test.ts
  *
+ * The same walk is written a second time as docs/plans/reader-map.json, for
+ * drawing (the owner, 2026-11-22: "make a spider web / family tree type of
+ * artifact for the different screens and sections and pathways"). The page
+ * that draws it, docs/plans/reader-map/web.mjs, reads that file and nothing
+ * else, so a web is never drawn by hand and never says what the rules do not.
+ *
  * The plan it belongs to is docs/plans/reader-map.md.
  */
 
 const FILE = path.resolve(__dirname, "../../../docs/plans/reader-map.txt");
+const DRAWN = path.resolve(__dirname, "../../../docs/plans/reader-map.json");
 
 /** A page's own name, as the English catalogue says it. A step with no name is a fault. */
 function say(key: string): string {
@@ -63,8 +70,13 @@ const PICKS: readonly (readonly Intent[])[] = (() => {
 
 type Reader = { background: Background | null; level: Level | null; returning: boolean; picks: readonly Intent[] };
 
-type Second = { level: Level | null; returning: boolean; says: string };
-const SKIPPED: Second = { level: null, returning: false, says: "skipped" };
+/** One answer to the second question: what it sets, how the map names it, and the screen's own word for it (none for a skip). */
+type Second = { level: Level | null; returning: boolean; says: string; key: string | null };
+const SKIPPED: Second = { level: null, returning: false, says: "skipped", key: null };
+
+/** Which of the three screens asks the second question, by the first answer. */
+type SecondScreen = "where" | "been" | "level";
+const screenOf = (background: Background | null): SecondScreen => (background === "orthodox" ? "where" : background === null || background === "prefer-not" ? "level" : "been");
 
 /**
  * What the second question offers, by the first answer. This is decided on the screen itself
@@ -76,21 +88,21 @@ const SKIPPED: Second = { level: null, returning: false, says: "skipped" };
 function offered(background: Background | null): Second[] {
   if (background === "orthodox")
     return [
-      { level: "practicing", returning: false, says: "practicing" },
-      { level: "practicing", returning: true, says: "coming back" },
-      { level: "learning", returning: false, says: "preparing" },
+      { level: "practicing", returning: false, says: "practicing", key: "onboard.level.practicing" },
+      { level: "practicing", returning: true, says: "coming back", key: "onboard.where.returning" },
+      { level: "learning", returning: false, says: "preparing", key: "onboard.where.preparing" },
       SKIPPED,
     ];
   if (background === null || background === "prefer-not")
     return [
-      { level: "inquirer", returning: false, says: "completely new" },
-      { level: "learning", returning: false, says: "learning" },
-      { level: "practicing", returning: false, says: "practicing" },
+      { level: "inquirer", returning: false, says: "completely new", key: "onboard.level.inquirer" },
+      { level: "learning", returning: false, says: "learning", key: "onboard.level.learning" },
+      { level: "practicing", returning: false, says: "practicing", key: "onboard.level.practicing" },
       SKIPPED,
     ];
   return [
-    { level: "inquirer", returning: false, says: "not yet been to a church" },
-    { level: "learning", returning: false, says: "going to a church" },
+    { level: "inquirer", returning: false, says: "not yet been to a church", key: "onboard.been.notYet" },
+    { level: "learning", returning: false, says: "going to a church", key: "onboard.been.going" },
     SKIPPED,
   ];
 }
@@ -228,6 +240,112 @@ function writtenMap(): string {
   return `${out.join("\n")}\n`;
 }
 
+/** The section of the app a page stands in, by where its address begins, in the menu's own word. */
+const SECTIONS: Readonly<Record<string, string>> = {
+  prayers: "nav.prayers",
+  bible: "nav.bible",
+  saints: "nav.saints",
+  councils: "nav.councils",
+  calendar: "nav.calendar",
+  reading: "nav.reading",
+  history: "nav.discoverMenu.history",
+  theology: "nav.discoverMenu.theology",
+  parishes: "nav.discoverMenu.parishes",
+  start: "nav.discoverMenu.start",
+};
+function sectionOf(href: string): string {
+  const key = SECTIONS[href.split("/")[1] ?? ""];
+  if (!key) throw new Error(`no section of the app is named for ${href}`);
+  return say(key);
+}
+
+/**
+ * The same web, for drawing: every screen's own words, every way from an answer to a road, each road's own week
+ * page by page with its section, and its one Plus card. Nothing here is said that the walk above did not find.
+ */
+function drawnMap(): string {
+  const FIRSTS: readonly (Intent | null)[] = [null, ...INTENTS];
+  const firstName = (i: Intent | null) => i ?? "no pick";
+
+  const backgrounds = BACKGROUNDS.map((background) => ({
+    id: backgroundName(background),
+    label: background ? say(`onboard.background.${background}`) : null,
+    asks: screenOf(background),
+    answers: offered(background).map((second) => {
+      // By the first thing asked for, since two roads and one lean are read from it (road.ts).
+      const ways = new Map<string, string[]>();
+      for (const first of FIRSTS) {
+        const road = roadOf({ background, level: second.level, intent: first, returning: second.returning });
+        const to = !road ? "none" : road === "protestant" ? `protestant:${leanOf(first)}` : road;
+        ways.set(to, [...(ways.get(to) ?? []), firstName(first)]);
+      }
+      return {
+        says: second.says,
+        label: second.key ? say(second.key) : null,
+        level: levelName(second.level),
+        rule: second.level ? asksRule(second.level) : false,
+        type: readerTypeOf(second.level, background),
+        ways: [...ways].map(([to, firsts]) => ({ to, firsts: ways.size === 1 ? "any" : firsts })),
+      };
+    }),
+  }));
+
+  const roads = ROADS.map((road) => {
+    const seen = WEB.roads.get(road);
+    const row = introRow(road);
+    const leans: readonly (Lean | null)[] = road === "protestant" ? ["bible", "liturgical"] : [null];
+    return {
+      id: road,
+      plus: row ? { feature: INTRO_FEATURE[road], name: say(row.name), does: say(row.body) } : null,
+      readers: seen?.readers ?? 0,
+      differentWeeks: seen?.weeks.size ?? 0,
+      differentPages: seen?.pages.size ?? 0,
+      weeks: leans.map((lean) => ({ to: lean ? `${road}:${lean}` : road, lean, steps: baseWeek(road, lean ?? "bible") })),
+    };
+  });
+
+  const pages = Object.fromEntries(
+    ALL_STEPS.map((k) => [
+      k,
+      {
+        name: page(k),
+        href: WEEK_STEPS[k].href,
+        section: sectionOf(WEEK_STEPS[k].href),
+        when: !WEB.met.has(k) ? "in no week" : !WEB.inBase.has(k) ? "only when a reader picks it" : "in a road's own week",
+      },
+    ]),
+  );
+
+  const drawn = {
+    from: "lib/onboarding (flowSteps, readerType, road, week, plusIntro, space), written by lib/onboarding/__tests__/readerMap.test.ts. Never edited by hand.",
+    screens: {
+      welcome: say("onboard.welcome.eyebrow"),
+      background: say("onboard.background.title"),
+      where: say("onboard.where.title"),
+      been: say("onboard.been.title"),
+      level: say("onboard.level.title"),
+      rule: say("onboard.rule.title"),
+      picks: say("onboard.intent.lookingFor"),
+      ready: say("onboard.handoff.ready"),
+      week: say("onboard.week.title"),
+      weekSub: say("onboard.week.sub"),
+      picksSub: say("onboard.intent.lookingForSub"),
+    },
+    backgrounds,
+    picks: INTENTS.map((intent) => ({ id: intent, label: say(`onboard.intent.${intent}`), brings: [...new Set(ASKED_LEVELS.map((level) => pickStep(intent, level)))] })),
+    roads,
+    pages,
+    plusCardAfterDays: PLUS_INTRO_AFTER_DAYS,
+    count: {
+      readers: READERS.length,
+      noRoad: WEB.noRoad,
+      weeks: [...WEB.roads.values()].reduce((n, s) => n + s.weeks.size, 0),
+      faults: WEB.faults.length,
+    },
+  };
+  return `${JSON.stringify(drawn, null, 2)}\n`;
+}
+
 describe("every reader the questions can make", () => {
   it("is given a whole week, or Purify as it always was: seven pages, none twice, ending at the road's own door", () => {
     expect(READERS.length).toBeGreaterThan(30_000);
@@ -260,6 +378,8 @@ describe("the second question", () => {
     expect(offers('chooseLevel("practicing")')).toBe(2);
     expect(offers('chooseLevel("learning")')).toBe(3);
     expect(offers('chooseLevel("inquirer")')).toBe(2);
+    // Each answer's own word, as the screen draws it: the web is drawn in these words.
+    for (const background of BACKGROUNDS) for (const second of offered(background)) if (second.key) expect(flow, second.key).toContain(`title={t("${second.key}")}`);
   });
 });
 
@@ -275,5 +395,12 @@ describe("the reader map", () => {
     if (process.env.READER_MAP_WRITE === "1") fs.writeFileSync(FILE, now);
     const written = fs.existsSync(FILE) ? fs.readFileSync(FILE, "utf8") : "";
     expect(written, "a rule changed what a reader is given: write the map again (the command is at the head of this file) and read the difference").toBe(now);
+  });
+
+  it("is written for drawing too, and that copy is the rules' own", () => {
+    const now = drawnMap();
+    if (process.env.READER_MAP_WRITE === "1") fs.writeFileSync(DRAWN, now);
+    const written = fs.existsSync(DRAWN) ? fs.readFileSync(DRAWN, "utf8") : "";
+    expect(written, "a rule changed what the web draws: write the map again (the command is at the head of this file), then draw the web again (node docs/plans/reader-map/web.mjs)").toBe(now);
   });
 });

@@ -1,0 +1,1050 @@
+{
+  "from": "lib/onboarding (flowSteps, readerType, road, week, plusIntro, space), written by lib/onboarding/__tests__/readerMap.test.ts. Never edited by hand.",
+  "screens": {
+    "welcome": "Welcome to Purify",
+    "background": "Where are you coming from?",
+    "where": "Where are you now?",
+    "been": "Have you been to an Orthodox church?",
+    "level": "How familiar are you with Orthodox Christianity?",
+    "rule": "Your calendar and your fast",
+    "picks": "What are you looking for?",
+    "ready": "Your space is ready",
+    "week": "Your first week",
+    "weekSub": "Seven steps, one a day",
+    "picksSub": "Pick as many as you like. The order you tap is the order Purify puts them in."
+  },
+  "backgrounds": [
+    {
+      "id": "orthodox",
+      "label": "Orthodox",
+      "asks": "where",
+      "answers": [
+        {
+          "says": "practicing",
+          "label": "Practicing",
+          "level": "practicing",
+          "rule": true,
+          "type": "orthodox",
+          "ways": [
+            {
+              "to": "practicing",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "coming back",
+          "label": "Coming back",
+          "level": "practicing",
+          "rule": true,
+          "type": "orthodox",
+          "ways": [
+            {
+              "to": "returning",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "preparing",
+          "label": "Preparing to be received",
+          "level": "learning",
+          "rule": false,
+          "type": "learning",
+          "ways": [
+            {
+              "to": "catechumen",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "skipped",
+          "label": null,
+          "level": "no level",
+          "rule": false,
+          "type": "orthodox",
+          "ways": [
+            {
+              "to": "none",
+              "firsts": "any"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "catholic",
+      "label": "Catholic",
+      "asks": "been",
+      "answers": [
+        {
+          "says": "not yet been to a church",
+          "label": "Not yet",
+          "level": "inquirer",
+          "rule": false,
+          "type": "new",
+          "ways": [
+            {
+              "to": "catholic",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "going to a church",
+          "label": "I have started going",
+          "level": "learning",
+          "rule": false,
+          "type": "learning",
+          "ways": [
+            {
+              "to": "catechumen",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "skipped",
+          "label": null,
+          "level": "no level",
+          "rule": false,
+          "type": "new",
+          "ways": [
+            {
+              "to": "catholic",
+              "firsts": "any"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "protestant",
+      "label": "Protestant",
+      "asks": "been",
+      "answers": [
+        {
+          "says": "not yet been to a church",
+          "label": "Not yet",
+          "level": "inquirer",
+          "rule": false,
+          "type": "new",
+          "ways": [
+            {
+              "to": "protestant:bible",
+              "firsts": [
+                "no pick",
+                "gospels",
+                "beliefs",
+                "prayer",
+                "quiet",
+                "study"
+              ]
+            },
+            {
+              "to": "protestant:liturgical",
+              "firsts": [
+                "saints",
+                "fathers",
+                "councils",
+                "history",
+                "liturgy",
+                "feasts"
+              ]
+            }
+          ]
+        },
+        {
+          "says": "going to a church",
+          "label": "I have started going",
+          "level": "learning",
+          "rule": false,
+          "type": "learning",
+          "ways": [
+            {
+              "to": "catechumen",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "skipped",
+          "label": null,
+          "level": "no level",
+          "rule": false,
+          "type": "new",
+          "ways": [
+            {
+              "to": "protestant:bible",
+              "firsts": [
+                "no pick",
+                "gospels",
+                "beliefs",
+                "prayer",
+                "quiet",
+                "study"
+              ]
+            },
+            {
+              "to": "protestant:liturgical",
+              "firsts": [
+                "saints",
+                "fathers",
+                "councils",
+                "history",
+                "liturgy",
+                "feasts"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "christian",
+      "label": "Another Christian tradition",
+      "asks": "been",
+      "answers": [
+        {
+          "says": "not yet been to a church",
+          "label": "Not yet",
+          "level": "inquirer",
+          "rule": false,
+          "type": "new",
+          "ways": [
+            {
+              "to": "christian",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "going to a church",
+          "label": "I have started going",
+          "level": "learning",
+          "rule": false,
+          "type": "learning",
+          "ways": [
+            {
+              "to": "catechumen",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "skipped",
+          "label": null,
+          "level": "no level",
+          "rule": false,
+          "type": "new",
+          "ways": [
+            {
+              "to": "christian",
+              "firsts": "any"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "other-faith",
+      "label": "Another faith",
+      "asks": "been",
+      "answers": [
+        {
+          "says": "not yet been to a church",
+          "label": "Not yet",
+          "level": "inquirer",
+          "rule": false,
+          "type": "new",
+          "ways": [
+            {
+              "to": "newcomer",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "going to a church",
+          "label": "I have started going",
+          "level": "learning",
+          "rule": false,
+          "type": "learning",
+          "ways": [
+            {
+              "to": "catechumen",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "skipped",
+          "label": null,
+          "level": "no level",
+          "rule": false,
+          "type": "new",
+          "ways": [
+            {
+              "to": "newcomer",
+              "firsts": "any"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "none",
+      "label": "Just curious",
+      "asks": "been",
+      "answers": [
+        {
+          "says": "not yet been to a church",
+          "label": "Not yet",
+          "level": "inquirer",
+          "rule": false,
+          "type": "new",
+          "ways": [
+            {
+              "to": "newcomer",
+              "firsts": [
+                "no pick",
+                "saints",
+                "gospels",
+                "beliefs",
+                "liturgy",
+                "feasts",
+                "prayer",
+                "quiet",
+                "study"
+              ]
+            },
+            {
+              "to": "seeker",
+              "firsts": [
+                "fathers",
+                "councils",
+                "history"
+              ]
+            }
+          ]
+        },
+        {
+          "says": "going to a church",
+          "label": "I have started going",
+          "level": "learning",
+          "rule": false,
+          "type": "learning",
+          "ways": [
+            {
+              "to": "catechumen",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "skipped",
+          "label": null,
+          "level": "no level",
+          "rule": false,
+          "type": "new",
+          "ways": [
+            {
+              "to": "newcomer",
+              "firsts": [
+                "no pick",
+                "saints",
+                "gospels",
+                "beliefs",
+                "liturgy",
+                "feasts",
+                "prayer",
+                "quiet",
+                "study"
+              ]
+            },
+            {
+              "to": "seeker",
+              "firsts": [
+                "fathers",
+                "councils",
+                "history"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prefer-not",
+      "label": "Prefer not to say",
+      "asks": "level",
+      "answers": [
+        {
+          "says": "completely new",
+          "label": "Completely new",
+          "level": "inquirer",
+          "rule": false,
+          "type": "new",
+          "ways": [
+            {
+              "to": "newcomer",
+              "firsts": [
+                "no pick",
+                "saints",
+                "gospels",
+                "beliefs",
+                "liturgy",
+                "feasts",
+                "prayer",
+                "quiet",
+                "study"
+              ]
+            },
+            {
+              "to": "seeker",
+              "firsts": [
+                "fathers",
+                "councils",
+                "history"
+              ]
+            }
+          ]
+        },
+        {
+          "says": "learning",
+          "label": "Learning",
+          "level": "learning",
+          "rule": false,
+          "type": "learning",
+          "ways": [
+            {
+              "to": "catechumen",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "practicing",
+          "label": "Practicing",
+          "level": "practicing",
+          "rule": true,
+          "type": "orthodox",
+          "ways": [
+            {
+              "to": "practicing",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "skipped",
+          "label": null,
+          "level": "no level",
+          "rule": false,
+          "type": "orthodox",
+          "ways": [
+            {
+              "to": "none",
+              "firsts": "any"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "not asked",
+      "label": null,
+      "asks": "level",
+      "answers": [
+        {
+          "says": "completely new",
+          "label": "Completely new",
+          "level": "inquirer",
+          "rule": false,
+          "type": "new",
+          "ways": [
+            {
+              "to": "newcomer",
+              "firsts": [
+                "no pick",
+                "saints",
+                "gospels",
+                "beliefs",
+                "liturgy",
+                "feasts",
+                "prayer",
+                "quiet",
+                "study"
+              ]
+            },
+            {
+              "to": "seeker",
+              "firsts": [
+                "fathers",
+                "councils",
+                "history"
+              ]
+            }
+          ]
+        },
+        {
+          "says": "learning",
+          "label": "Learning",
+          "level": "learning",
+          "rule": false,
+          "type": "learning",
+          "ways": [
+            {
+              "to": "catechumen",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "practicing",
+          "label": "Practicing",
+          "level": "practicing",
+          "rule": true,
+          "type": "orthodox",
+          "ways": [
+            {
+              "to": "practicing",
+              "firsts": "any"
+            }
+          ]
+        },
+        {
+          "says": "skipped",
+          "label": null,
+          "level": "no level",
+          "rule": false,
+          "type": "orthodox",
+          "ways": [
+            {
+              "to": "none",
+              "firsts": "any"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "picks": [
+    {
+      "id": "saints",
+      "label": "The saints' lives",
+      "brings": [
+        "saintsLives"
+      ]
+    },
+    {
+      "id": "fathers",
+      "label": "The Fathers' writings",
+      "brings": [
+        "fathersPath"
+      ]
+    },
+    {
+      "id": "gospels",
+      "label": "The Gospels",
+      "brings": [
+        "gospelJohn"
+      ]
+    },
+    {
+      "id": "councils",
+      "label": "The councils",
+      "brings": [
+        "councils"
+      ]
+    },
+    {
+      "id": "history",
+      "label": "Church history",
+      "brings": [
+        "history"
+      ]
+    },
+    {
+      "id": "beliefs",
+      "label": "What the Orthodox believe",
+      "brings": [
+        "startHere",
+        "creed",
+        "theology"
+      ]
+    },
+    {
+      "id": "liturgy",
+      "label": "The Liturgy",
+      "brings": [
+        "firstLiturgy",
+        "trisagion",
+        "churchYear"
+      ]
+    },
+    {
+      "id": "feasts",
+      "label": "Fasts and feasts",
+      "brings": [
+        "feasts"
+      ]
+    },
+    {
+      "id": "prayer",
+      "label": "A rule of prayer",
+      "brings": [
+        "morningRule",
+        "morningPrayers"
+      ]
+    },
+    {
+      "id": "quiet",
+      "label": "Daily quiet",
+      "brings": [
+        "jesusPrayer"
+      ]
+    },
+    {
+      "id": "study",
+      "label": "Study",
+      "brings": [
+        "gospelJohn",
+        "job"
+      ]
+    }
+  ],
+  "roads": [
+    {
+      "id": "practicing",
+      "plus": {
+        "feature": "remember",
+        "name": "Remember the verse",
+        "does": "The verses you save come back, one small card a day, until you know them by heart."
+      },
+      "readers": 3336,
+      "differentWeeks": 675,
+      "differentPages": 16,
+      "weeks": [
+        {
+          "to": "practicing",
+          "lean": null,
+          "steps": [
+            "yourRule",
+            "readings",
+            "psalter",
+            "churchYear",
+            "prayFathers",
+            "beforeSleep",
+            "fathersPath"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "returning",
+      "plus": {
+        "feature": "plans",
+        "name": "Reading plans",
+        "does": "The Psalter by kathisma, the four Gospels a chapter a day and Proverbs in a month, with your place kept and your streak counted."
+      },
+      "readers": 1112,
+      "differentWeeks": 676,
+      "differentPages": 16,
+      "weeks": [
+        {
+          "to": "returning",
+          "lean": null,
+          "steps": [
+            "morningRule",
+            "readings",
+            "jesusPrayer",
+            "churchYear",
+            "beforeSleep",
+            "creed",
+            "parish"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "catechumen",
+      "plus": {
+        "feature": "plans",
+        "name": "Reading plans",
+        "does": "The Psalter by kathisma, the four Gospels a chapter a day and Proverbs in a month, with your place kept and your streak counted."
+      },
+      "readers": 8896,
+      "differentWeeks": 472,
+      "differentPages": 14,
+      "weeks": [
+        {
+          "to": "catechumen",
+          "lean": null,
+          "steps": [
+            "trisagion",
+            "signOfCross",
+            "firstLiturgy",
+            "creed",
+            "readings",
+            "morningRule",
+            "parish"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "catholic",
+      "plus": {
+        "feature": "history",
+        "name": "Follow history year by year",
+        "does": "The great events told step by step, with a map that moves to each place as you read."
+      },
+      "readers": 2224,
+      "differentWeeks": 472,
+      "differentPages": 14,
+      "weeks": [
+        {
+          "to": "catholic",
+          "lean": null,
+          "steps": [
+            "fathersPath",
+            "nicaea",
+            "leo",
+            "jesusPrayer",
+            "schism",
+            "firstLiturgy",
+            "parish"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "protestant",
+      "plus": {
+        "feature": "crossrefs",
+        "name": "Cross-references",
+        "does": "See the passages a verse echoes across both Testaments, the Psalms and the prophets among them, with their words beside it, and open any of them in one tap."
+      },
+      "readers": 2224,
+      "differentWeeks": 516,
+      "differentPages": 17,
+      "weeks": [
+        {
+          "to": "protestant:bible",
+          "lean": "bible",
+          "steps": [
+            "gospelJohn",
+            "ignatius",
+            "nicaea",
+            "whatIsPrayer",
+            "carthage",
+            "ephesus",
+            "firstLiturgy"
+          ]
+        },
+        {
+          "to": "protestant:liturgical",
+          "lean": "liturgical",
+          "steps": [
+            "gospelJohn",
+            "nicaea",
+            "leo",
+            "jesusPrayer",
+            "carthage",
+            "firstLiturgy",
+            "parish"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "christian",
+      "plus": {
+        "feature": "crossrefs",
+        "name": "Cross-references",
+        "does": "See the passages a verse echoes across both Testaments, the Psalms and the prophets among them, with their words beside it, and open any of them in one tap."
+      },
+      "readers": 2224,
+      "differentWeeks": 602,
+      "differentPages": 15,
+      "weeks": [
+        {
+          "to": "christian",
+          "lean": null,
+          "steps": [
+            "creed",
+            "nicaea",
+            "gospelJohn",
+            "chalcedon",
+            "afterChalcedon",
+            "trisagion",
+            "firstLiturgy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seeker",
+      "plus": {
+        "feature": "history",
+        "name": "Follow history year by year",
+        "does": "The great events told step by step, with a map that moves to each place as you read."
+      },
+      "readers": 1212,
+      "differentWeeks": 129,
+      "differentPages": 13,
+      "weeks": [
+        {
+          "to": "seeker",
+          "lean": null,
+          "steps": [
+            "ignatius",
+            "history",
+            "nicaea",
+            "councils",
+            "fathersPath",
+            "trisagion",
+            "firstLiturgy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "newcomer",
+      "plus": null,
+      "readers": 5460,
+      "differentWeeks": 315,
+      "differentPages": 14,
+      "weeks": [
+        {
+          "to": "newcomer",
+          "lean": null,
+          "steps": [
+            "startHere",
+            "maryOfEgypt",
+            "gospelJohn",
+            "creed",
+            "signOfCross",
+            "churchYear",
+            "firstLiturgy"
+          ]
+        }
+      ]
+    }
+  ],
+  "pages": {
+    "whatIsPrayer": {
+      "name": "What is prayer?",
+      "href": "/prayers/learning/what-is-prayer",
+      "section": "Prayers",
+      "when": "in a road's own week"
+    },
+    "jesusPrayer": {
+      "name": "The Jesus Prayer",
+      "href": "/prayers/learning/jesus-prayer",
+      "section": "Prayers",
+      "when": "in a road's own week"
+    },
+    "trisagion": {
+      "name": "The Trisagion Prayers",
+      "href": "/prayers/learning/trisagion-prayers",
+      "section": "Prayers",
+      "when": "in a road's own week"
+    },
+    "signOfCross": {
+      "name": "The Sign of the Cross",
+      "href": "/prayers/learning/sign-of-the-cross",
+      "section": "Prayers",
+      "when": "in a road's own week"
+    },
+    "firstLiturgy": {
+      "name": "Your first Liturgy",
+      "href": "/start/first-liturgy",
+      "section": "Start here",
+      "when": "in a road's own week"
+    },
+    "churchYear": {
+      "name": "The Church's year",
+      "href": "/calendar",
+      "section": "Calendar",
+      "when": "in a road's own week"
+    },
+    "gospelJohn": {
+      "name": "The Gospel of John",
+      "href": "/bible/john/1",
+      "section": "Bible",
+      "when": "in a road's own week"
+    },
+    "job": {
+      "name": "The Book of Job",
+      "href": "/bible/job/1",
+      "section": "Bible",
+      "when": "only when a reader picks it"
+    },
+    "morningRule": {
+      "name": "A simple morning rule",
+      "href": "/prayers/learning/morning-rule",
+      "section": "Prayers",
+      "when": "in a road's own week"
+    },
+    "morningPrayers": {
+      "name": "Morning prayers",
+      "href": "/prayers/morning",
+      "section": "Prayers",
+      "when": "only when a reader picks it"
+    },
+    "saintsLives": {
+      "name": "The lives of the saints",
+      "href": "/saints",
+      "section": "Saints",
+      "when": "only when a reader picks it"
+    },
+    "readingPaths": {
+      "name": "A path through the Fathers",
+      "href": "/reading/paths",
+      "section": "Reading",
+      "when": "in no week"
+    },
+    "councils": {
+      "name": "The councils",
+      "href": "/councils",
+      "section": "Councils",
+      "when": "in a road's own week"
+    },
+    "history": {
+      "name": "The Church's history",
+      "href": "/history",
+      "section": "Orthodox History",
+      "when": "in a road's own week"
+    },
+    "startHere": {
+      "name": "Start here",
+      "href": "/start",
+      "section": "Start here",
+      "when": "in a road's own week"
+    },
+    "theology": {
+      "name": "What the Orthodox believe",
+      "href": "/theology",
+      "section": "Theology",
+      "when": "only when a reader picks it"
+    },
+    "feasts": {
+      "name": "Fasts and feasts",
+      "href": "/calendar",
+      "section": "Calendar",
+      "when": "only when a reader picks it"
+    },
+    "fathersPath": {
+      "name": "Start with the Fathers",
+      "href": "/reading/paths/start",
+      "section": "Reading",
+      "when": "in a road's own week"
+    },
+    "prayFathers": {
+      "name": "Pray with the Fathers",
+      "href": "/reading/paths/prayer",
+      "section": "Reading",
+      "when": "in a road's own week"
+    },
+    "creed": {
+      "name": "The Nicene Creed",
+      "href": "/prayers/creed",
+      "section": "Prayers",
+      "when": "in a road's own week"
+    },
+    "parish": {
+      "name": "Find a parish",
+      "href": "/parishes",
+      "section": "Find a parish",
+      "when": "in a road's own week"
+    },
+    "yourRule": {
+      "name": "Your rule",
+      "href": "/prayers/personal",
+      "section": "Prayers",
+      "when": "in a road's own week"
+    },
+    "readings": {
+      "name": "Today's readings",
+      "href": "/prayers/today",
+      "section": "Prayers",
+      "when": "in a road's own week"
+    },
+    "psalter": {
+      "name": "The Psalter",
+      "href": "/bible/psalms/1",
+      "section": "Bible",
+      "when": "in a road's own week"
+    },
+    "beforeSleep": {
+      "name": "Before sleep",
+      "href": "/prayers/before-sleep",
+      "section": "Prayers",
+      "when": "in a road's own week"
+    },
+    "nicaea": {
+      "name": "First Council of Nicaea",
+      "href": "/councils/first-nicaea",
+      "section": "Councils",
+      "when": "in a road's own week"
+    },
+    "ephesus": {
+      "name": "The Council of Ephesus",
+      "href": "/councils/ephesus",
+      "section": "Councils",
+      "when": "in a road's own week"
+    },
+    "chalcedon": {
+      "name": "The Council of Chalcedon",
+      "href": "/councils/chalcedon",
+      "section": "Councils",
+      "when": "in a road's own week"
+    },
+    "carthage": {
+      "name": "Council of Carthage (419)",
+      "href": "/councils/carthage-419",
+      "section": "Councils",
+      "when": "in a road's own week"
+    },
+    "leo": {
+      "name": "St. Leo the Great",
+      "href": "/saints/leo-the-great",
+      "section": "Saints",
+      "when": "in a road's own week"
+    },
+    "ignatius": {
+      "name": "St. Ignatius of Antioch",
+      "href": "/saints/ignatius-of-antioch",
+      "section": "Saints",
+      "when": "in a road's own week"
+    },
+    "maryOfEgypt": {
+      "name": "St. Mary of Egypt",
+      "href": "/saints/mary-of-egypt",
+      "section": "Saints",
+      "when": "in a road's own week"
+    },
+    "schism": {
+      "name": "The Excommunications of 1054",
+      "href": "/history/great-schism-1054",
+      "section": "Orthodox History",
+      "when": "in a road's own week"
+    },
+    "afterChalcedon": {
+      "name": "The Estrangement of the Non-Chalcedonian Churches",
+      "href": "/history/non-chalcedonian-estrangement",
+      "section": "Orthodox History",
+      "when": "in a road's own week"
+    }
+  },
+  "plusCardAfterDays": 7,
+  "count": {
+    "readers": 30024,
+    "noRoad": 3336,
+    "weeks": 3857,
+    "faults": 0
+  }
+}
