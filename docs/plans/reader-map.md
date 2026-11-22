@@ -99,3 +99,31 @@ His word: "we are in brainstorm mode. we are going into mock up phase. this phas
 **Not photographed yet:** the Plus card on day 8, the account and reminders card, the second chance, the Protestant road's second order, and days 2 to 7 on Today.
 
 **Mock-ups offered, none drawn:** the week's card where a new reader sees it without scrolling; "Walk as" in Settings, Testers; the reader map as a page in Admin; and what a curve gives after day seven. Each would be drawn from the app's own components on the export, changing only what is proposed, and held to `checkMock` (CLAUDE.md, "Mockups").
+
+## 8. What the map is for (his word, 2026-11-22)
+
+"so what I want to know the user to help enhance their experience based off their preferences and their needs to then also to help them convert to premium and learn the Orthodox church"
+
+Read by this chat as three aims in one line: know the reader; fit the app to what they want and need; and by that fit help them learn the Church and, where it serves them, take Plus. Brainstorm only; nothing below is built.
+
+**What the app knows of a reader today, and where it is kept**
+
+- On the phone only: where they come from, how far along they are, whether they are coming back, and their fast (his "yes privacy", 2026-11-11). What they are looking for is kept with the account too.
+- On the server: totals only. The questions' answers are counted as totals (`lib/onboarding/counting.ts`). The seven later counts (the first prayer or chapter, the week's steps, accounts, reminders, the Plus sheet's steps, purchases, the two cards on Today) carry nothing about where a reader comes from in faith, and a test holds that (`lib/analytics/moreCounting.ts`; the design note, section 11).
+- So the phone can fit everything to its reader, and he can see how many readers stop at day three, but not which road they were on. That line was drawn on purpose.
+
+**What his aim still lacks, found in the code and the note**
+
+1. **The need.** The note's 3.3 designed a quiet row under the first question (peace, comfort in loss, someone who is ill, wanting to pray and not knowing how), kept on the device, taking the first three days of the week. The photo of the first question shows no such row.
+2. **After day seven.** The road stops carrying a reader after the first week. "The month's thing" of the note's own map is in no component.
+3. **What a reader does.** The app fits by what a reader says. What they open, finish or pass over changes one thing: two steps passed over in a row end the week (`lib/onboarding/week.ts`, PASSES_THAT_END).
+4. **Teaching to give.** The catechism's bank holds no questions (`data/catechism/questions.json`, 0 on 2026-11-22), so Today's catechism draws nothing. Five of the seven studies a Catholic's or a Protestant's road would lead to are held back until repaired (`lib/onboarding/week.ts`, at ROAD_WEEKS; clergy queue item 5).
+5. **The bridge to Plus.** One calm card after the week shows the one feature that fits the road (built). Every reading plan is Plus, and a plan is the natural month for four of the eight roads; the note's 3.7 left the first plan as his decision (one plan free, the first seven days of any plan free, or the lock as it is). No decision of his was found.
+6. **By road, he cannot see.** By design, as above.
+
+**Two rules offered for his yes.** Both are the house's own already, each said in one line.
+
+- Know the reader on their phone; count readers only as totals.
+- The road into the Church is free; Plus is the deeper study beside it. Never in the questions, never in the first week, never at a point of need (the note, 3.7; his 111).
+
+**Offered as the next thing to draw:** one reader's first month, day by day, as a page: what the phone knows, what Today gives, where they learn, where the door is, and where Plus is first shown. Week one from photos; weeks two to four drawn as proposals from the app's own screens.

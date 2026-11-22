@@ -38,6 +38,7 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 - 2026-11-22 17:09 UTC, after this chat read one of the two documents as planning a separate Catholic track: "its Eastern Orthodox based app with different LEARNING CURVES (targeting onboarding)"
 - 2026-11-22 17:19 UTC, after this chat said 1.9's roads are the learning curves already: "ensure each section that's given to the user Is fully mapped out to we can control this spiderweb type of system we are going to create"
 - 2026-11-22 17:30 UTC, after the reader map and the ledger proposed for 2.0: "we are in brainstorm mode. we are going into mock up phase. this phase requires photos for me and mock up draws, and we can make artifacts to visualize this."
+- 2026-11-22 17:52 UTC, after the first page of the mock-up phase: "so what I want to know the user to help enhance their experience based off their preferences and their needs to then also to help them convert to premium and learn the Orthodox church"
 
 "do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 
