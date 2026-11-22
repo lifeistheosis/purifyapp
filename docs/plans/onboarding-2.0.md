@@ -174,3 +174,26 @@ Brainstorm. Read in the code and on the photo this day; nothing is changed.
 - **Start from where the reader came in** (13): the card for the page they came from is already picked, with a line saying why, and they can change it.
 
 **Asked of him.** What makes it feel so important: what it should decide, or how it is asked? And what Admin, Onboarding, shows for the picks, since that says what readers choose today.
+
+**His yes (2026-11-22, about 20:50 UTC): "all recommended and let's continue".** Read as a yes to the ideas above, each still to come to him as a drawing.
+
+### Mock-ups 2 to 4: the question, drawn again (2026-11-22)
+
+https://claude.ai/artifact/K7VL7cv8dDx7s88rcgp3r4 (his, private). `node docs/plans/reader-map/mock-looking-for.mjs <export>` draws the three stills and the page (`docs/plans/reader-map/mock-looking-for.html`). One reader throughout: a Catholic who has not yet been to an Orthodox church.
+
+Each is the app's own screen on the native export, with only what is proposed changed, and each passed `checkMock` (all fifteen rules) before it was kept. The page passed the kit's check.
+
+1. **The need comes first** (`img/mock-need.jpg`), from the second question's own screen: "What brings you here?", one answer of five, each on the app's own choice card with one of the app's own icons. Each need is one of today's eleven answers under a plainer name (to pray each day is A rule of prayer; to understand the faith is What the Orthodox believe; to read the Scriptures is The Gospels; peace in a hard time is Daily quiet; to get ready for church is The Liturgy), so each already has its page for every reader and nothing has to be written. The small line on each card is the catalogue's own.
+2. **The picks say what they do** (`img/mock-picks.jpg`), from the question's own screen with two cards tapped: the line under the question becomes "Pick up to two more. They join your first week in the order you tap.", and a picked card says under its name which day it joins. His picture cards are untouched.
+3. **The week, paid back** (`img/mock-week.jpg`), from the handoff's own rows: "Your first week", seven days by name with the day's number in each row's disc, why each of the reader's own days is there ("For peace in a hard time", "Your pick"), and one button, "Begin day 1". The week is the app's own rule's answer for these answers (asked of `weekFor` with a test that was then removed).
+
+**New words, all his to change** (the page lists them): the question and its line, the five needs, the picks' line, "Day 4 of your week", "For peace in a hard time", "Your pick", "Where your week leads", "Begin day 1".
+
+**Found while drawing, and still open.**
+
+- **Two picks push two of the road's own pages out of the week.** For this reader the week loses "Your first Liturgy" and "The Excommunications of 1054" to make room for the two picks. That is today's rule (`weekFor` keeps six and the door). The first Liturgy is where every road outside the practicing leads, so it may deserve to stay; his to say.
+- **The seeker's road.** Today a "Just curious" reader's first pick chooses between the seeker's road and the newcomer's. With the need asked first, that rule has to read the picture cards.
+- **The cards' order** is not drawn. They could stand in the reader's own order.
+- **The lines about a need** are plain and new: a priest's glance before they ship.
+
+It awaits his yes or no, drawing by drawing.
