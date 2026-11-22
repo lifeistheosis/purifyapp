@@ -128,3 +128,49 @@ Read by this chat as a yes to what its last message recommended: numbers on the 
 Number 17, the large forks tested on the website first, is a way of working and no build: every test from here is planned for the website's readers first.
 
 **Said to him with this.** It is about ten pieces of work, and this chat is far past the size at which a chat is meant to hand over (`docs/OPERATIONS.md`). The drawings can be made here; the building should begin in a fresh chat, from this file and `reader-map.md`.
+
+## "What are you looking for?": the question he wants looked at (2026-11-22)
+
+His word, about 20:45 UTC: "I feel like the what are you looking for section is very very important we should focalize in that for a second"
+
+Brainstorm. Read in the code and on the photo this day; nothing is changed.
+
+**What it is today** (`components/onboarding/LookingFor.tsx`, his own pick of 2026-10-27, "picture cards numbered in tap order").
+
+- Eleven picture cards, two across, in one order for every reader (`lib/onboarding/space.ts`, INTENTS): the saints' lives, the Fathers' writings, the Gospels, the councils, Church history, What the Orthodox believe, the Liturgy, Fasts and feasts, A rule of prayer, Daily quiet, Study. On a phone six stand whole on the first screen and the last three are a scroll away (`docs/plans/reader-map/img/q-looking-for.jpg`).
+- A card shows its picture and its name. The line each has in the catalogue ("Stillness, and some peace from anxiety") is not drawn; a screen reader says it.
+- "Pick as many as you like. The order you tap is the order Purify puts them in." Each pick wears its number. The button reads "Continue with 3".
+
+**What the picks do** (`lib/onboarding/week.ts`, `road.ts`, `state.ts`).
+
+- The first pick leads the week: it is day one. The second and third take days four and five. A fourth pick and any after it change nothing a reader sees.
+- For a reader who is "Just curious", who prefers not to say, or who skipped the first question, the first pick also chooses the road: the Fathers, the councils or history first is the seeker's road, anything else the newcomer's.
+- For a Protestant reader the first pick chooses between the road's two weeks.
+- The first pick is "the intent the rest of Purify reads": it is shown as Focus on "Your space is ready", it can be changed in Settings, and it is the one answer kept with the account today, since it says nothing of a reader's faith.
+- Every pick is counted with its place in the order, and the finish and the notes of coming back carry the first pick. Admin, Onboarding, tallies finishes by it.
+
+**Why it is the one to look at.**
+
+1. It is the only question about what the reader wants. The other two are about who they are. In the video's terms it is where the reader's need is said, and everything they found hangs on that.
+2. It is not an answer about faith. It is already with the account and already counted, so it can fit Purify to a reader, be followed in the numbers and be used in a letter with none of the questions of section 9 of `reader-map.md`.
+3. It already decides more than it says: the first day, and for three kinds of reader the road itself.
+
+**What is weak in it.**
+
+1. Nine of the eleven are shelves of the library. The two that are a need (a rule of prayer, daily quiet) come ninth and tenth, below the first screen.
+2. The first tap decides the most, and the cards stand in one order for everyone. Readers tend to tap from the top, so the order of the cards may be choosing first picks, and through them roads. Admin can show whether it does: if the first picks follow the order of the cards, it is the order answering and not the reader.
+3. The reader is not told what the first tap does. "The order Purify puts them in" is true of three picks and of the week only.
+4. "Pick as many as you like" promises more than is given: the fourth pick on does nothing.
+5. The answer is paid back out of sight. After it comes "Your space is ready", and then a Today that looks the same on five roads, with the week's card low on the screen (the photos).
+
+**Ideas, for talking over. None is begun.**
+
+- **The need first, then the shelves.** One question before this one, of four or five plain needs (to pray each day, to understand the faith, to read the Scriptures and the Fathers, peace in a hard time, to get ready for church). Then this question arranges what is read. The need sets the tone and the one personal thing; the shelves set the week. New lines about a need want a priest's glance (suggestion 4).
+- **The cards in the reader's own order.** By where they come from, the likeliest first, or the needs first for everyone.
+- **Say what a pick does.** "Pick up to three: the first is where you begin." When a card is picked it names the page it brings.
+- **Pay it back on the next screen.** "Your week", each day named with the pick that brought it (suggestion 1).
+- **Let the picks run more of Purify:** the shortcuts on Today, the one Plus card (chosen by the pick, which says nothing of faith, in place of the road), a letter or a reminder that follows it.
+- **Numbers by pick first.** Which first pick finishes, comes back and meets a lock. It is on the rows already, and it is the one way to cut the numbers that carries nothing of a reader's faith.
+- **Start from where the reader came in** (13): the card for the page they came from is already picked, with a line saying why, and they can change it.
+
+**Asked of him.** What makes it feel so important: what it should decide, or how it is asked? And what Admin, Onboarding, shows for the picks, since that says what readers choose today.
