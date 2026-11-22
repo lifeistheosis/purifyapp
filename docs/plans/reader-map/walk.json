@@ -1,0 +1,236 @@
+{
+  "day": "2026-12-06T09:30:00-05:00",
+  "view": [
+    390,
+    844
+  ],
+  "roads": {
+    "practicing": {
+      "ended": "the questions closed",
+      "photographed": [
+        "welcome",
+        "background",
+        "second-orthodox",
+        "rule",
+        "looking-for"
+      ],
+      "kept": {
+        "level": "practicing",
+        "background": "orthodox",
+        "returning": null,
+        "week": null,
+        "at": "/"
+      },
+      "atTop": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 Your rule Begin",
+        "top": 709,
+        "height": 161
+      },
+      "card": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 Your rule Begin",
+        "top": 200,
+        "height": 161
+      }
+    },
+    "returning": {
+      "ended": "the questions closed",
+      "photographed": [
+        "welcome",
+        "background",
+        "second-orthodox",
+        "rule",
+        "looking-for"
+      ],
+      "kept": {
+        "level": "practicing",
+        "background": "orthodox",
+        "returning": "1",
+        "week": null,
+        "at": "/"
+      },
+      "atTop": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 A simple morning rule A few prayers to begin each day, short enough to keep. Begin",
+        "top": 690,
+        "height": 208
+      },
+      "card": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 A simple morning rule A few prayers to begin each day, short enough to keep. Begin",
+        "top": 200,
+        "height": 208
+      }
+    },
+    "catechumen": {
+      "ended": "the questions closed",
+      "photographed": [
+        "welcome",
+        "background",
+        "second-orthodox",
+        "looking-for"
+      ],
+      "kept": {
+        "level": "learning",
+        "background": "orthodox",
+        "returning": null,
+        "week": null,
+        "at": "/"
+      },
+      "atTop": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 The Trisagion Prayers The prayers that open nearly every service, one line at a time. Begin",
+        "top": 639,
+        "height": 208
+      },
+      "card": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 The Trisagion Prayers The prayers that open nearly every service, one line at a time. Begin",
+        "top": 200,
+        "height": 208
+      }
+    },
+    "catholic": {
+      "ended": "the questions closed",
+      "photographed": [
+        "welcome",
+        "background",
+        "second-others",
+        "looking-for"
+      ],
+      "kept": {
+        "level": "inquirer",
+        "background": "catholic",
+        "returning": null,
+        "week": null,
+        "at": "/"
+      },
+      "atTop": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 Start with the Fathers Seven days, from the letters of the martyrs to St Leo's Tome and the Paschal Homily. Begin",
+        "top": 636,
+        "height": 228
+      },
+      "card": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 Start with the Fathers Seven days, from the letters of the martyrs to St Leo's Tome and the Paschal Homily. Begin",
+        "top": 200,
+        "height": 228
+      }
+    },
+    "protestant": {
+      "ended": "the questions closed",
+      "photographed": [
+        "welcome",
+        "background",
+        "second-others",
+        "looking-for"
+      ],
+      "kept": {
+        "level": "inquirer",
+        "background": "protestant",
+        "returning": null,
+        "week": null,
+        "at": "/"
+      },
+      "atTop": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 The Gospel of John Begin where many do, with the first chapter of John. Begin",
+        "top": 636,
+        "height": 208
+      },
+      "card": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 The Gospel of John Begin where many do, with the first chapter of John. Begin",
+        "top": 200,
+        "height": 208
+      }
+    },
+    "christian": {
+      "ended": "the questions closed",
+      "photographed": [
+        "welcome",
+        "background",
+        "second-others",
+        "looking-for"
+      ],
+      "kept": {
+        "level": "inquirer",
+        "background": "christian",
+        "returning": null,
+        "week": null,
+        "at": "/"
+      },
+      "atTop": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 The Nicene Creed The Symbol of Faith, prayed at every Liturgy and in the daily rule. Begin",
+        "top": 636,
+        "height": 208
+      },
+      "card": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 The Nicene Creed The Symbol of Faith, prayed at every Liturgy and in the daily rule. Begin",
+        "top": 200,
+        "height": 208
+      }
+    },
+    "seeker": {
+      "ended": "the questions closed",
+      "photographed": [
+        "welcome",
+        "background",
+        "second-as-it-was",
+        "looking-for",
+        "ready"
+      ],
+      "kept": {
+        "level": "inquirer",
+        "background": "prefer-not",
+        "returning": null,
+        "week": null,
+        "at": "/"
+      },
+      "atTop": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 Start with the Fathers Seven days, from the letters of the martyrs to St Leo's Tome and the Paschal Homily. Begin",
+        "top": 636,
+        "height": 228
+      },
+      "card": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 Start with the Fathers Seven days, from the letters of the martyrs to St Leo's Tome and the Paschal Homily. Begin",
+        "top": 200,
+        "height": 228
+      }
+    },
+    "newcomer": {
+      "ended": "the questions closed",
+      "photographed": [
+        "welcome",
+        "background",
+        "second-others",
+        "looking-for"
+      ],
+      "kept": {
+        "level": "inquirer",
+        "background": "other-faith",
+        "returning": null,
+        "week": null,
+        "at": "/"
+      },
+      "atTop": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 Start here Seven small steps into the faith, in order, one a day or one a week. Begin",
+        "top": 636,
+        "height": 208
+      },
+      "card": {
+        "says": "Your first week · 1 of 7",
+        "words": "Your first week · 1 of 7 Start here Seven small steps into the faith, in order, one a day or one a week. Begin",
+        "top": 200,
+        "height": 208
+      }
+    }
+  }
+}

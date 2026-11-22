@@ -164,3 +164,9 @@ His words: "this is for v2.0 and some goals we have", with two PDFs: "Purify App
 - `lib/onboarding/__tests__/readerMap.test.ts`: walks all 30,024 sets of answers the screens can give, holds each to a whole week ending at its road's door, and fails when the written map is not the rules' own. A test only; no app code changed. On the branch, not on main.
 - Counted that day: 3,336 sets of answers with no road, 3,857 different first weeks, 0 faults; ten components read a reader's answers, three of them the road.
 - **A correction, the same day.** The map's first writing walked the rule files alone (44,480 sets, 4,161 weeks) and this chat told him "a Catholic who taps practicing lands on the Orthodox practicing road". No screen offers a Catholic that answer: the second question differs by the first answer, on the screen itself (`components/onboarding/OnboardingFlow.tsx`). The test now mirrors the screen and reads that file; the figures above are the corrected ones; he was told.
+
+## The mock-up phase, begun (2026-11-22)
+
+- The first page, private to him: https://claude.ai/artifact/Tah94bmVtwZMogfBTuVVAz ("Purify reader map"). The eight roads, photos of the real app (the questions, Today's greeting by type, each road's card on day 1), each road's seven days as rows that open the live pages, and the reason for each choice. Source and photos: `docs/plans/reader-map/`. The plan's section 7 (`docs/plans/reader-map.md`) says how the photos were taken and what they showed.
+- Photos only. No mock-up is drawn; four were offered and he was asked which comes first.
+- The native export used for the photos is in this chat's scratchpad and does not outlast the container; `shots.mjs` says how to cut it again.

@@ -81,3 +81,21 @@ Sizes are this chat's judgement, not measured.
 
 1. Is the ledger (A to C) a yes?
 2. What must he see for each road first: the reader's first month as a page, or the numbers that show where each road loses its readers?
+
+## 7. The photos (2026-11-22, the mock-up phase)
+
+His word: "we are in brainstorm mode. we are going into mock up phase. this phase requires photos for me and mock up draws, and we can make artifacts to visualize this."
+
+**The page:** https://claude.ai/artifact/Tah94bmVtwZMogfBTuVVAz (private to him). Its source is `docs/plans/reader-map/page.html`, made from the design kit's template and from `reader-map.txt`, with 17 photos in `docs/plans/reader-map/img/`. It passes `node docs/brand/kit/check.mjs --page` (checkMock on five palettes at 360, 390, 412 and 1032, no parchment, no sideways scroll). It is 19,000 px long on a phone; whether each road should be a page of its own was asked of him.
+
+**How the photos were taken.** `docs/plans/reader-map/shots.mjs` walks each of the eight roads from a first open on the native export of main (`b88c88b4f`, cut as the store build with Plus locked), at 390 by 844, on 6 December 2026, by tapping the questions' own answers. Nothing is put into the page. `docs/plans/reader-map/walk.json` is what each walk found. These are photos of the app as it is: no mock-up is drawn yet.
+
+**What the photos showed.**
+
+- The app agrees with the map: on all eight roads the first step on Today is the step the map names (the seeker's is their own pick, as the rule says).
+- The one card that differs by road is low on the first screen. On a phone 844 tall its top is at 636 to 709 px and the tab bar begins near 760, so its Begin button is under the tab bar on all eight roads, and on the practicing road only its small first line shows.
+- Catholic, Protestant, Christian, seeker and newcomer see the same Today above that card: the greeting follows the reader's type, not the road.
+
+**Not photographed yet:** the Plus card on day 8, the account and reminders card, the second chance, the Protestant road's second order, and days 2 to 7 on Today.
+
+**Mock-ups offered, none drawn:** the week's card where a new reader sees it without scrolling; "Walk as" in Settings, Testers; the reader map as a page in Admin; and what a curve gives after day seven. Each would be drawn from the app's own components on the export, changing only what is proposed, and held to `checkMock` (CLAUDE.md, "Mockups").
