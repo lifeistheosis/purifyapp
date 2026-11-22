@@ -41,6 +41,7 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 - 2026-11-22 17:52 UTC, after the first page of the mock-up phase: "so what I want to know the user to help enhance their experience based off their preferences and their needs to then also to help them convert to premium and learn the Orthodox church"
 - 2026-11-22 17:55 UTC, after this chat offered the rule "Know the reader on their phone; count readers only as totals": "no more local. it stays on their accounts."
 - 2026-11-22 17:59 UTC, after this chat listed what must happen before a build keeps a reader's answers with their account: "just add it in v2.0 with new terms"
+- 2026-11-22 18:01 UTC, after this chat said new terms alone do not cover readers in the EU, who need their own yes at the question: "eu users get it in their specific onboarding"
 
 "do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 

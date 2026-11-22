@@ -160,4 +160,14 @@ Said when this chat offered the rule "Know the reader on their phone; count read
 
 **What 2.0 takes on for this** (a list for the plan, none of it begun): the new terms and privacy text; the line and the choice at the question; asking readers who answered before; a table under row-level security in place of the sign-in record (a migration: his sign-off on the SQL, and merging it to main runs it on production); the end of 1.9's clearing of these answers (`lib/onboarding/accountSync.ts`) and its test rewritten to the new rule (`lib/onboarding/__tests__/faithAnswers.test.ts`); the stores' data forms; and totals by road in Admin.
 
+**EU readers are asked in their own onboarding (his word, the same day): "eu users get it in their specific onboarding".** So the reader's own yes is a step of the questions for readers in the EU, and readers elsewhere are told by the new terms. Brainstorm; none of it is built. How this chat reads it, for his yes:
+
+- **The app has to know who is in the EU, and today it does not.** The only country in the questions is the one a priest or deacon picks for where they serve (`components/onboarding/OnboardingFlow.tsx`, `clergyWhere`). No file in `lib/` works out where a reader is. The way that keeps the most on the phone: the device's own time zone and region, read on the device, with nothing sent. A named list is needed, since Cyprus keeps an Asian time zone and the Atlantic islands and the French overseas departments are in the Union.
+- **When it cannot tell, the reader is treated as in the EU.** Asking someone who did not need asking costs one tap; not asking someone who did is the fault.
+- **"EU" here is the EU, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.** The first four are the same law; the last two keep the same rule for a person's faith.
+- **One more step, and only that.** After the questions about faith: keep my answers with my account, or keep them on this phone only. A reader who chooses the phone is fitted as every reader is today. Nothing else in the app differs by where a reader lives.
+- **As easy to take back as to give.** Settings, Your space carries the same choice; turning it off removes the account's copy.
+- **For the map and the ledger:** where a reader is becomes one more input, and it decides one row. `reader-map.txt` and its test grow by that input when it is built.
+- **For the lawyer's read:** the wording of the choice, the list of countries, and age (in the EU a child's consent needs a parent's below an age each country sets between 13 and 16).
+
 **This chat's default, his to change:** a reader with no account keeps their answers on the phone until they sign in, and from then they are kept with the account. No reader is made to make an account before the questions. Asked of him and not answered yet; this is the choice that changes least.
