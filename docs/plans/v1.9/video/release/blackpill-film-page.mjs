@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 // The edit's page: the silent film with Save, the effects, every cut with its hit and its words, and what was measured.
 //
-//   node docs/plans/v1.9/video/release/blackpill-film-page.mjs <file.html> --video=<address> --still=<address>
+//   node docs/plans/v1.9/video/release/blackpill-film-page.mjs <file.html> --video=<address> --still=<address> [--track=<address>]
+//
+// --track is the copy with his track, for him alone to judge the timing (his word, 2026-11-22: "with the ahdio").
+// The song is not cleared: that copy is never the one to post, and the page says so beside it.
 //
 // The video and its still live in the page's own asset store (capabilities `assets` and `downloads`), never in the
 // repository. Phone first, the dark ground leading, no parchment.
@@ -14,7 +17,7 @@ import { SECONDS, SHOTS } from "./blackpill-film.mjs";
 const args = process.argv.slice(2);
 const out = args.find((a) => !a.startsWith("--")) ?? (() => { throw new Error("say where the page goes"); })();
 const arg = (name) => args.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3) ?? "";
-const [video, still] = [arg("video"), arg("still")];
+const [video, still, track] = [arg("video"), arg("still"), arg("track")];
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 const made = JSON.parse(fs.readFileSync(path.join(MADE, "release", "blackpill-film", "video.json"), "utf8"));
 const secs = (x) => Number(x).toFixed(2);
@@ -80,9 +83,17 @@ const html = `<title>Purify Blackpill Edit</title>
     <p class="quiet read">${SECONDS} seconds in ${SHOTS.length} shots, every cut and every line on a hit measured from your track, with clean cuts and steady grit. No screen of the app. Say yes or no, or tell me what to change.</p>
   </header>
 
-  <section class="film">
+${track ? `  <section class="film">
+    <h2>With your track</h2>
+    <video controls playsinline preload="metadata"${still ? ` poster="${esc(still)}"` : ""} src="${esc(track)}" aria-label="The edit with the track, ${Math.round(SECONDS)} seconds"></video>
+    <button class="save" data-save="${esc(track)}" data-name="purify-edit-with-track.mp4" type="button" hidden>Save this copy</button>
+    <p>For your eyes only, to judge the timing. The song is not cleared, so this is not the copy to post.</p>
+  </section>
+
+` : ""}  <section class="film">
+    <h2>Silent, for posting</h2>
     <video controls playsinline muted preload="metadata"${still ? ` poster="${esc(still)}"` : ""} src="${esc(video)}" aria-label="The edit, silent, ${Math.round(SECONDS)} seconds"></video>
-    <button class="save" id="save-film" type="button" hidden>Save the video</button>
+    <button class="save" data-save="${esc(video)}" data-name="purify-edit-forever.mp4" type="button" hidden>Save the video</button>
     <p>${made.size.join(" by ")}, ${made.fps} frames a second, ${made.megabytes} MB, no sound stream. Play it beside the track to judge the timing: start both at the same moment.</p>
   </section>
 
@@ -104,24 +115,25 @@ const html = `<title>Purify Blackpill Edit</title>
 </main>
 <script>
 (async () => {
-  const button = document.getElementById("save-film");
   const downloads = await window.claude?.use?.("downloads");
-  if (!button || !downloads) return;
-  button.hidden = false;
-  button.addEventListener("click", async () => {
-    const label = button.textContent;
-    button.disabled = true;
-    button.textContent = "Saving";
-    try {
-      const file = await (await fetch(${JSON.stringify(video)})).blob();
-      await downloads.save({ filename: "purify-edit-forever.mp4", data: file });
-      button.textContent = "Saved";
-    } catch {
-      button.textContent = "Not saved. Tap to try again";
-    }
-    button.disabled = false;
-    setTimeout(() => (button.textContent = label), 4000);
-  });
+  if (!downloads) return;
+  for (const button of document.querySelectorAll("button[data-save]")) {
+    button.hidden = false;
+    button.addEventListener("click", async () => {
+      const label = button.textContent;
+      button.disabled = true;
+      button.textContent = "Saving";
+      try {
+        const file = await (await fetch(button.dataset.save)).blob();
+        await downloads.save({ filename: button.dataset.name, data: file });
+        button.textContent = "Saved";
+      } catch {
+        button.textContent = "Not saved. Tap to try again";
+      }
+      button.disabled = false;
+      setTimeout(() => (button.textContent = label), 4000);
+    });
+  }
 })();
 </script>
 `;

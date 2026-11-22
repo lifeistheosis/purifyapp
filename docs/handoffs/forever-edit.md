@@ -4,7 +4,7 @@ Written 2026-11-21 by the worker chat started for this one job ("Purify promo: t
 
 **Status, 2026-11-22 about 00:20 UTC: the edit (his new approach, below) is rendered and on its page, and waits for his yes or no. No credits spent. The first storyboard, the promo with the app's screens, is set aside for the Vault.**
 
-**The film's page:** https://claude.ai/artifact/57zD2YHavR5Yw6gWN5NVDs (version 3, the clean second render), private to him.
+**The film's page:** https://claude.ai/artifact/57zD2YHavR5Yw6gWN5NVDs (version 4: the clean second render, and a copy with his track for him alone), private to him.
 
 ## The page
 
@@ -61,6 +61,10 @@ At that word (the second render, same page):
 - About 00:28: "with the ahdio", and then the clip itself uploaded to this chat (38.6 seconds, the same TikTok save).
 
 At that word: the second render finished (2,112 frames, 35.2 seconds, checked by ffprobe and on a strip; all 15 shots pass checkMock). The page is version 3 with the clean render: video `/_blob/c4db46f3a681d888cd4919a6647ed64e` (18.3 MB), still `/_blob/5da4acff39515bfb98526464970fcccf`. The first render's video and still stay in the page's store, unused, for the Vault. A copy with his track was sent to him in the chat as a file (7 megabits a second, the track cropped at 35.2 with a short fade, 30.9 MB), for his eyes only; he was told again that the song is not cleared. The audio is not in the repository or on the page.
+
+- About 00:45: "I don't see the one with audio"
+
+At that word: the file sent in the chat did not show for him. The copy with his track is now on the page itself (version 4), as its own player above the silent one, marked for his eyes only and not for posting: `/_blob/11256060e14e9fa89ed7712bd9cd2ffb` (the page's own picture with the track at 192 kb a second, cropped at 35.2 with a short fade, 19.2 MB). The page is private to him. It was also sent again as a file. The audio is still not in the repository.
 
 The chat was started by the ad stage 1 chat at his word there, about 23:08 UTC: "start a fresh chat with it" (`docs/handoffs/ad-stage-1.md`).
 
