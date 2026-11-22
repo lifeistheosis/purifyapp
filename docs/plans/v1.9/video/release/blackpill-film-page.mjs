@@ -20,16 +20,15 @@ const made = JSON.parse(fs.readFileSync(path.join(MADE, "release", "blackpill-fi
 const secs = (x) => Number(x).toFixed(2);
 
 const EFFECTS = [
-  ["Moving grain, dust and scratches", "New on every frame, like old film stock. This is the gritty filter, and it sits on everything but the end card's mark."],
+  ["Clean cuts", "A cut is a cut and nothing else: no bright frame, no blur, no wipe. Each one sits on a measured hit, and that is the only thing the picture does with the music."],
+  ["Nothing answers the beat", "No shake, no punch in, no colour split. Your word on the first render: the effects that matched the beat read as vibe coded. They are all gone."],
+  ["Moving grain, dust and scratches", "New on every frame, like old film stock. The grit is in the film itself, steady, and does not perform."],
   ["Crushed blacks", "Hard black and white, so faces come out of pure dark."],
-  ["A colour split on the hits", "A red and blue edge for a split second when the bass lands, then clean."],
-  ["Shake and punch in", "On every measured hit, small and sharp, settled a fifth of a second later. Stronger in the fast bars."],
-  ["One bright frame on a cut", "Never more than three in a second."],
-  ["A short blur on the fast moves", "In the run of faces and the Resurrection."],
+  ["One slow move in each shot", "The camera pushes in slowly and evenly from a shot's first frame to its last."],
   ["Projector flicker", "The brightness wavers a little, all through."],
 ];
 const NOTES = [
-  ["The words never shake", "Every effect is on the picture. A line lands a little large and is its own size a tenth of a second later, sharp and steady, so each quote reads in one glance."],
+  ["The words are simply there", "A line appears on its hit, sharp and still, with no movement of its own, so each quote reads in one glance."],
   ["Every line is someone else's", "The hook is the one written line. The rest is Scripture, St Cyprian and the Creed, word for word from the app's own text. The script refuses to run if a word differs."],
   ["No one is named or attacked", "No line names any religion or person."],
   ["A priest first, by your own rule", "This is doctrine. Your editorial rule sends doctrinal framing to a priest before it goes out. Your call when."],
@@ -76,9 +75,9 @@ const html = `<title>Purify Blackpill Edit</title>
 </style>
 <main class="page">
   <header>
-    <p class="label">Purify · the edit · cut to "Forever", slowed</p>
+    <p class="label">Purify · the edit · cut to "Forever", slowed · second render</p>
     <h1>An edit, not an ad</h1>
-    <p class="quiet read">${SECONDS} seconds in ${SHOTS.length} shots, every cut and every line on a hit measured from your track, with the seven gritty effects you said yes to. No screen of the app. Say yes or no, or tell me what to change.</p>
+    <p class="quiet read">${SECONDS} seconds in ${SHOTS.length} shots, every cut and every line on a hit measured from your track, with clean cuts and steady grit. No screen of the app. Say yes or no, or tell me what to change.</p>
   </header>
 
   <section class="film">
@@ -88,14 +87,14 @@ const html = `<title>Purify Blackpill Edit</title>
   </section>
 
   <section>
-    <h2>The seven effects</h2>
+    <h2>The look, after your note</h2>
     <ul class="pairs">${EFFECTS.map(([name, why]) => `<li><h3>${esc(name)}</h3><p>${esc(why)}</p></li>`).join("")}</ul>
-    <p class="quiet read">Left out on purpose: glow, beams of light, lens flares, VHS lines and glitch blocks.</p>
+    <p class="quiet read">Also left out: glow, beams of light, lens flares, VHS lines and glitch blocks.</p>
   </section>
 
   <section>
     <h2>The cut</h2>
-    <ol class="cut">${SHOTS.map((s) => `<li><span class="at">${secs(s.at[0])}</span><h3>${esc(s.name)}</h3>${s.words ? `<p class="said">${esc(s.words.lines.join(" "))}${s.words.cite ? ` (${esc(s.words.cite)})` : ""}</p>` : ""}<p>${s.words ? `Lines land on ${[...new Set(s.words.at)].map(secs).join(", ")}. ` : ""}${s.hits?.length ? `The picture answers ${s.hits.map(secs).join(", ")}.` : s.mark ? "Purify's mark alone, still, on the loudest hit." : "Black, for the breath before the last swell."}</p></li>`).join("")}</ol>
+    <ol class="cut">${SHOTS.map((s) => `<li><span class="at">${secs(s.at[0])}</span><h3>${esc(s.name)}</h3>${s.words ? `<p class="said">${esc(s.words.lines.join(" "))}${s.words.cite ? ` (${esc(s.words.cite)})` : ""}</p>` : ""}<p>${s.words ? `Lines land on ${[...new Set(s.words.at)].map(secs).join(", ")}. ` : ""}${s.pic ? "" : s.mark ? "Purify's mark alone, still, on the loudest hit." : "Black, for the breath before the last swell."}</p></li>`).join("")}</ol>
   </section>
 
   <section>

@@ -75,7 +75,7 @@ export const SHOTS = [
   { name: "One", at: [15.91, 19.25], pic: "cross", x: 50, y: 42, z: [1.6, 1.85], grade: "bw", lit: 0.56, hits: [15.91, 17.25, 17.9, 18.55], flash: true, words: W_(LINES.one, [17.25, 17.9, 18.55], 168, 660) },
   { name: "The Church for his mother", at: [19.25, 23.55], pic: "pentecost", x: 50, y: 52, z: [1.35, 1.55], grade: "bw", lit: 0.46, hits: [19.25, 20.25, 21.25, 21.87], flash: true, words: W_(LINES.cyprian, [20.25, 20.25, 20.25, 21.25, 21.25, 21.87], 104, 560) },
   { name: "The Creed", at: [23.55, 27.49], pic: "hierarchs", x: 50, y: 30, z: [1.4, 1.6], grade: "bw", lit: 0.38, hits: [23.55, 24.54, 25.19, 25.84], flash: true, words: W_(LINES.creed, [23.55, 24.54, 25.19, 25.84], 116, 700) },
-  { name: "The Resurrection", at: [27.49, 30.49], pic: "anastasis", x: 52, y: 40, z: [1.5, 2.6], steps: [28.19, 28.84, 29.49], grade: "bw", lit: 0.8, hits: [27.49, 28.19, 28.84, 29.49], fast: true, flash: true },
+  { name: "The Resurrection", at: [27.49, 30.49], pic: "anastasis", x: 52, y: 40, z: [1.5, 2.0], steps: [28.19, 28.84, 29.49], grade: "bw", lit: 0.8, hits: [27.49, 28.19, 28.84, 29.49], fast: true, flash: true },
   { name: "The breath", at: [30.49, 31.16] },
   { name: "The way", at: [31.16, 34.48], pic: "christ", x: 47, y: 30, z: [1.22, 1.36], grade: "colour", lit: 0.56, hits: [31.16, 32.16, 33.81], flash: true, words: W_(LINES.way, [31.16, 31.66, 32.16, 32.71, 33.26, 33.81], 104, 760) },
   { name: "The end", at: [34.48, SECONDS], mark: true },
@@ -146,6 +146,9 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
 <script>
   const SHOTS = ${JSON.stringify(SHOTS)};
   const FPS = ${FPS};
+  const ANSWER = 0; // how much the picture answers a hit (1 in the first render)
+  const BRIGHT = 0; // the bright frame on a cut (1 in the first render): a cut is a cut and nothing else
+  const LAND = 0; // how much larger a line lands than it rests (0.16 in the first render): a line is simply there
   const one = (q) => document.querySelector(q);
   // A number from a frame's own number: the same film every time.
   const rand = (n, k) => { const x = Math.sin(n * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -158,17 +161,19 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
     const u = (t - s.at[0]) / (s.at[1] - s.at[0]);
     // What the last hit still does to the picture: all of it on the hit, gone a fifth of a second later.
     const hit = (s.hits ?? []).filter((h) => h <= t + 1e-6).pop();
-    const d = hit == null ? 0 : Math.exp(-(t - hit) / (s.fast ? 0.085 : 0.07));
+    // His word on the first render (2026-11-22): "the effect that matches the beat is too vibe coded ... I want clean
+    // transitions". So nothing answers a hit any more: no shake, no punch in, no colour split, no blur. ANSWER is 0.
+    const d = ANSWER * (hit == null ? 0 : Math.exp(-(t - hit) / (s.fast ? 0.085 : 0.07)));
     const strong = s.fast ? 1.5 : 1;
     document.querySelectorAll("[data-pic]").forEach((img) => (img.hidden = img.dataset.name !== s.pic));
     if (s.pic) {
       const img = one('[data-pic][data-name="' + s.pic + '"]');
       let zoom = s.z[0] + (s.z[1] - s.z[0]) * u;
       // The Resurrection comes nearer by steps, one on each beat.
-      if (s.steps) { const k = s.steps.filter((x) => x <= t + 1e-6).length; zoom = s.z[0] + ((s.z[1] - s.z[0]) * k) / s.steps.length + 0.04 * u; }
+      if (s.steps && ANSWER) { const k = s.steps.filter((x) => x <= t + 1e-6).length; zoom = s.z[0] + ((s.z[1] - s.z[0]) * k) / s.steps.length + 0.04 * u; }
       zoom *= 1 + 0.055 * strong * d;
-      const dx = (rand(n, 1) * 2 - 1) * (1.4 + 24 * strong * d);
-      const dy = (rand(n, 2) * 2 - 1) * (1.4 + 18 * strong * d);
+      const dx = (rand(n, 1) * 2 - 1) * (0.5 + 24 * strong * d);
+      const dy = (rand(n, 2) * 2 - 1) * (0.5 + 18 * strong * d);
       const flicker = 1 + (rand(n, 3) - 0.5) * 0.09;
       img.style.objectPosition = s.x + "% " + s.y + "%";
       img.style.transformOrigin = s.x + "% " + s.y + "%";
@@ -200,7 +205,7 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
     }
     // One bright frame as a shot cuts in, and its tail on the next.
     const since = Math.round((t - s.at[0]) * FPS);
-    one("[data-flash]").style.opacity = s.flash ? (since === 0 ? 0.62 : since === 1 ? 0.2 : 0) : 0;
+    one("[data-flash]").style.opacity = BRIGHT && s.flash ? (since === 0 ? 0.62 : since === 1 ? 0.2 : 0) : 0;
     one("[data-mark]").hidden = !s.mark;
     const words = one("[data-words]");
     const cite = one("[data-cite]");
@@ -213,7 +218,7 @@ ${SHEETS.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n")}
         const since = t - s.words.at[i];
         span.style.visibility = since >= -1e-6 ? "visible" : "hidden";
         // A line lands a little large and is its own size a tenth of a second later. It does not shake.
-        span.style.transform = "scale(" + (1 + 0.16 * Math.exp(-Math.max(0, since) / 0.045)).toFixed(4) + ")";
+        span.style.transform = "scale(" + (1 + LAND * Math.exp(-Math.max(0, since) / 0.045)).toFixed(4) + ")";
       });
       const last = Math.max(...s.words.at);
       cite.hidden = !(s.words.cite && t >= last - 1e-6);

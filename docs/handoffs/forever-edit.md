@@ -49,6 +49,15 @@ At that word, taken as A, the one recommended: the film.
 - Still open, and his: a priest's yes, the song's licence, whether the mark stays at the end.
 - Cost by my own count: the chat's context is about 330,000 tokens.
 
+- About 00:25, on the first render: "the transitions are super vibe are very vibe coded and the effect that matches the beat is too vibe coded also. I want clean transitions"
+
+At that word (the second render, same page):
+
+- **Cuts are clean:** the bright frame on a cut is gone, and the blur on the fast moves with it.
+- **Nothing answers the beat:** no shake, no punch in, no colour split; the Resurrection no longer steps nearer on each beat but moves in evenly; a line no longer lands large, it is simply there on its hit. Only cuts and lines are on the hits. (`ANSWER`, `BRIGHT` and `LAND` in `blackpill-film.mjs`, all 0; the first render had 1, 1 and 0.16.)
+- **Kept:** the grain with dust and scratches, the crushed blacks, the flicker, one slow even move in each shot. These are steady and do not follow the music. If "vibe coded" covers any of these too, it is his to say.
+- This is the same note he gave the release film ("I want you to not time the glow to the beat. I want it to be purely clean transitions"). I should have taken it as standing for every edit; it is now: no effect follows the beat, in any film, unless he asks.
+
 The chat was started by the ad stage 1 chat at his word there, about 23:08 UTC: "start a fresh chat with it" (`docs/handoffs/ad-stage-1.md`).
 
 ## This overlaps with another chat
