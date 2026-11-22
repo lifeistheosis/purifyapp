@@ -2,7 +2,9 @@
 
 Written 2026-11-21 by the worker chat started for this one job ("Purify promo: the Forever edit", session_01VuYTwZkhGTEyJ8suxQiF6d). The brief is `docs/plans/v1.9/video/release/forever-edit-prompt.md`.
 
-**Status, 2026-11-21 about 23:35 UTC: the storyboard is made and published, and waits for his yes or no. No film is rendered. No credits spent.**
+**Status, 2026-11-22 about 00:20 UTC: the edit (his new approach, below) is rendered and on its page, and waits for his yes or no. No credits spent. The first storyboard, the promo with the app's screens, is set aside for the Vault.**
+
+**The film's page:** https://claude.ai/artifact/57zD2YHavR5Yw6gWN5NVDs (version 2), private to him.
 
 ## The page
 
@@ -33,6 +35,19 @@ At that word: the new storyboard is made and published, https://claude.ai/artifa
 - About 23:55, on the new storyboard: "Honestly, this is good, but just make the effects grittier. Make sure it adds, I don't know, what should you add actually for like a cool effect, right? Like cinematic effect. Because yes, we're gonna add like a I don't know if we should add a gritty filter, but like I don't know, what should we add to make it better?"
 
 At that word: answered in chat with a short list and one recommendation (heavier moving grain with dust and scratches, crushed blacks, a slight colour split on the hits only, a shake and punch in, flash frames under three a second, a short blur on fast moves; no glow, no rays, no lens flare). Nothing made; it waits for his yes.
+
+- About 00:00 (22 November), to the seven effects and the choice between the film at once (A) and a four second test first (B): "let's do it"
+
+At that word, taken as A, the one recommended: the film.
+
+- **The film:** 35.2 seconds, 2,112 frames, 1080 by 1920, 60 frames a second, H.264 High, no sound stream. `release/blackpill-film.mjs` is its cut (`SHOTS`: 15 shots, each beginning on a measured hit) and its stage; `release/blackpill-film-page.mjs` makes its page.
+- **The seven effects**, all on the picture and none on the words: moving grain with dust and scratches, crushed blacks, a colour split on the hits, a shake and punch in on the hits, one bright frame on a cut, a short blur on the fast moves, a projector's flicker. The script refuses more than three bright frames in any second. Every frame is worked out from its own number, so a render is the same every time.
+- **Pictures:** the largest copy of each icon in the repository (covers and History's pictures), none on the heritage list. The Sinai icon of Christ is a larger copy of the app's own picture from Wikimedia Commons (`Spas_vsederzhitel_sinay.jpg`, a sixth century work, public domain), kept in `.promo/v1.9-video/release/blackpill-pics/`, out of git: fetch it again before a new render.
+- **Checked:** `blackpill-film.mjs --check`: all 15 shots pass checkMock at their middle. ffprobe: h264 High, 1080 by 1920, 60/1, 2,112 frames, 35.2 seconds, one stream. Looked at on a strip of the finished file at two frames a second.
+- **Two files.** The master is 252 MB (the grain is costly to encode at the finest setting) and is only in `.promo/` in this container. The page holds a copy at 4.3 megabits a second, 18.2 MB, since the page's store takes 20 MB at most: video `/_blob/6f8da27be5da604759fab30849a42596`, still `/_blob/1a9748faef531255404098b8503e36ec`. The grain is softer in that copy. A finer copy can be sent to him as a file if he asks.
+- **Not proved by ear:** the hits are the brief's, measured by script. He is the judge of the timing against the track.
+- Still open, and his: a priest's yes, the song's licence, whether the mark stays at the end.
+- Cost by my own count: the chat's context is about 330,000 tokens.
 
 The chat was started by the ad stage 1 chat at his word there, about 23:08 UTC: "start a fresh chat with it" (`docs/handoffs/ad-stage-1.md`).
 
