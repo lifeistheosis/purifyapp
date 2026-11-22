@@ -35,6 +35,7 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 "yes oush" is read as: yes, push. It is his word for main, for the email work and the three admin mends. He did not answer 3 or 2, so the look stays as built and tested, at 3.
 - 2026-11-22 16:23 UTC, with a screenshot of purifyapp.onrender.com/admin showing the site's 404 page ("This page is not in our index."): "I can't login to the admin panel"
 - 2026-11-22 17:02 UTC, with two PDFs attached ("Purify App Growth Framework" and "Enterprise Growth Strategy & Financial Model"): "this is for v2.0 and some goals we have"
+- 2026-11-22 17:09 UTC, after this chat read one of the two documents as planning a separate Catholic track: "its Eastern Orthodox based app with different LEARNING CURVES (targeting onboarding)"
 
 "do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 
@@ -145,5 +146,11 @@ His words: "this is for v2.0 and some goals we have", with two PDFs: "Purify App
 - The owner's own projection is `lib/owner/projection.ts`. The word churn does not appear in `lib/owner/`; whether it models readers leaving was not read.
 
 **For whoever plans 2.0, three cautions that need no figures:** anything that keeps a reader's religious background on the server is sensitive personal data and needs a lawyer's read first (today it stays on the device, on purpose); doctrinal content of any kind goes to the clergy queue and is public domain only (`docs/editorial-standards.md`); and a survey may never stand between a reader and cancelling.
+
+**His clarification (2026-11-22):** "its Eastern Orthodox based app with different LEARNING CURVES (targeting onboarding)". So the framework's tracks are not separate teachings: Purify teaches one faith, and a reader's background sets where they start. This chat first read the framework's table as a separate Catholic content track. That reading was wrong, and the table's wording invites it (it lists a tradition's own teaching under each track). Whoever builds from the document reads "track" as "learning curve".
+
+**That system is 1.9's roads, already live** (`lib/onboarding/flags.ts`, `ROADS_LIVE = true`). The welcome questions ask background and level (`flowSteps.ts`). The reader's type decides how Today looks (`readerType.ts`: orthodox, learning, new). The road decides the first week (`road.ts`: practicing, returning, catechumen, catholic, protestant, christian, seeker, newcomer; `week.ts`: seven steps a road, all free, each a page the app already has). The rule that keeps it one faith is in `road.ts`: no page of content knows who is reading it; a road changes the order and the first step, never what a page says. Three tests count since release day (`lib/ab/tests.ts`: account-place, plus-introduced, plus-sheet-order).
+
+**What the framework asks beyond the roads, as this chat reads it:** wording and presentation that change with the reader (against the rule above as it stands; a glossary every reader can open would keep it); introductory lessons written for a background (new teaching, so the clergy queue); and reminders and win-back messages that follow the road (the road is on the device, so either the device sends them or the road goes to the server, with the cautions above). Asked of him: whether 2.0 builds on the eight roads or regroups them, and what a curve is after week one.
 
 **Found on the way: the repository is public.** Asked of him in the chat, whether that is meant. Until he says, nothing confidential is written into it. The audit's open findings (`docs/audit/findings.yaml`) are readable by anyone while it is.
