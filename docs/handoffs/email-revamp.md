@@ -42,6 +42,7 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 - 2026-11-22 17:55 UTC, after this chat offered the rule "Know the reader on their phone; count readers only as totals": "no more local. it stays on their accounts."
 - 2026-11-22 17:59 UTC, after this chat listed what must happen before a build keeps a reader's answers with their account: "just add it in v2.0 with new terms"
 - 2026-11-22 18:01 UTC, after this chat said new terms alone do not cover readers in the EU, who need their own yes at the question: "eu users get it in their specific onboarding"
+- 2026-11-22 18:04 UTC: "and I remember we had issues dropping purify in china and that we need some type of license for China can you look into that? (also we needed a LLC to get it)"
 
 "do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 
@@ -174,3 +175,9 @@ His words: "this is for v2.0 and some goals we have", with two PDFs: "Purify App
 - The first page, private to him: https://claude.ai/artifact/Tah94bmVtwZMogfBTuVVAz ("Purify reader map"). The eight roads, photos of the real app (the questions, Today's greeting by type, each road's card on day 1), each road's seven days as rows that open the live pages, and the reason for each choice. Source and photos: `docs/plans/reader-map/`. The plan's section 7 (`docs/plans/reader-map.md`) says how the photos were taken and what they showed.
 - Photos only. No mock-up is drawn; four were offered and he was asked which comes first.
 - The native export used for the photos is in this chat's scratchpad and does not outlast the container; `shots.mjs` says how to cut it again.
+
+## China, looked into (2026-11-22, at his question)
+
+`docs/plans/china-availability.md`. In short: Purify is on Apple's store in the United States, Hong Kong, Taiwan and Macau, and not in China mainland (asked of the public store that day). Apple's own help says an app with religious content needs China's Internet Religious Information Permit; by news reports of China's 2022 rule that licence goes only to organizations set up in mainland China, and overseas organizations and those they set up there may not hold it. The LLC does not open it. One web-fetch helper read three pages for this (about 45,000 tokens); the law's translated text could not be opened.
+
+**The repository being public is the house's own rule, not a fault.** `docs/OPERATIONS.md`, section on numbers: "The repository is public." This chat asked him about it three times before reading that line; the question is closed. What follows from it stands: no numbers, no keys, nothing confidential in these files.
