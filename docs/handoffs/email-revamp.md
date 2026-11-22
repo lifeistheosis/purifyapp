@@ -44,6 +44,9 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 - 2026-11-22 18:01 UTC, after this chat said new terms alone do not cover readers in the EU, who need their own yes at the question: "eu users get it in their specific onboarding"
 - 2026-11-22 18:04 UTC: "and I remember we had issues dropping purify in china and that we need some type of license for China can you look into that? (also we needed a LLC to get it)"
 - 2026-11-22 18:08 UTC, after the note on China: "that's fine no mainland china"
+- 2026-11-22 18:14 UTC, after this chat offered two drawings (1, the EU step in onboarding; 2, the Catholic reader's first month) and asked "Which one first?": "yes"
+
+"yes" is read as: go, in the order given. The first is drawn now; the second waits until he has seen the first.
 
 "do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 
@@ -182,3 +185,5 @@ His words: "this is for v2.0 and some goals we have", with two PDFs: "Purify App
 `docs/plans/china-availability.md`. In short: Purify is on Apple's store in the United States, Hong Kong, Taiwan and Macau, and not in China mainland (asked of the public store that day). Apple's own help says an app with religious content needs China's Internet Religious Information Permit; by news reports of China's 2022 rule that licence goes only to organizations set up in mainland China, and overseas organizations and those they set up there may not hold it. The LLC does not open it. One web-fetch helper read three pages for this (about 45,000 tokens); the law's translated text could not be opened.
 
 **The repository being public is the house's own rule, not a fault.** `docs/OPERATIONS.md`, section on numbers: "The repository is public." This chat asked him about it three times before reading that line; the question is closed. What follows from it stands: no numbers, no keys, nothing confidential in these files.
+
+- **Mock-up 1, 2026-11-22:** the EU step, "Where should your answers be kept?", private to him at https://claude.ai/artifact/WSJAh3ZLSaFJWmPGkP4gxp. Made from the app's own question screen on the export (`docs/plans/reader-map/mock-eu-step.mjs`), checkMock passing all fifteen rules. It waits for his yes or no; `docs/plans/reader-map.md`, section 10. Mock-up 2 (the Catholic reader's first month) is not begun.

@@ -171,3 +171,15 @@ Said when this chat offered the rule "Know the reader on their phone; count read
 - **For the lawyer's read:** the wording of the choice, the list of countries, and age (in the EU a child's consent needs a parent's below an age each country sets between 13 and 16).
 
 **This chat's default, his to change:** a reader with no account keeps their answers on the phone until they sign in, and from then they are kept with the account. No reader is made to make an account before the questions. Asked of him and not answered yet; this is the choice that changes least.
+
+## 10. Mock-up 1: where a reader's answers are kept (2026-11-22)
+
+At his "yes" to the two drawings offered, the first of them. **The page, private to him:** https://claude.ai/artifact/WSJAh3ZLSaFJWmPGkP4gxp. It waits for his yes or no; nothing is built.
+
+- **What it is.** One step of the questions, for readers in the EU: "Where should your answers be kept?", with two answers of the same size, neither chosen: "With my account" and "On this phone only". A skip is phone only.
+- **How it was made.** `docs/plans/reader-map/mock-eu-step.mjs`, on the native export of main: the walk taps Begin, Catholic and Continue, stands on the app's own second question (a Step with two ChoiceCards), and changes only what is proposed: the title's words, a line under it as Step draws its `body`, the two cards' words, and their icons (User and Lock from `components/ui/icons`). The small line "About you" is the app's own (`onboard.level.eyebrow`).
+- **Checked.** `checkMock` passes all fifteen rules on the mock-up (the script exits 0 only then). The page passes `node docs/brand/kit/check.mjs --page`. By eye: the app's own icons, plain words, no Plus on the screen, one existing key and the rest new words.
+- **The words, new and his to pass:** title "Where should your answers be kept?"; under it "They say something of your faith, so the choice is yours. You can change it later in Settings."; "With my account", "Purify fits you on every device you sign in on"; "On this phone only", "Nothing about your faith leaves this phone".
+- **Not checked:** the wording by a lawyer; how the app knows a reader is in the EU; the other languages; the screen in Arabic by eye (checkMock's mirror rule passed).
+
+Mock-up 2, the Catholic reader's first month, is not begun: it waits until he has seen this one.
