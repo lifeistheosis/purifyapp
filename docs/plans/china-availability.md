@@ -2,6 +2,8 @@
 
 Looked into on 2026-11-22, at his question: "and I remember we had issues dropping purify in china and that we need some type of license for China can you look into that? (also we needed a LLC to get it)". Brainstorm only: nothing was changed, in the app or in the stores. This is a reading of public pages by a chat, not a lawyer's advice.
 
+**His decision, 2026-11-22 18:08 UTC: "that's fine no mainland china".** Purify is not offered in mainland China. Nothing changes in the stores: it is not listed there today. Hong Kong, Taiwan and Macau stay as they are.
+
 ## What was checked
 
 - **The repository holds no note of it.** A search of `docs/` for China, mainland and ICP found only the saints' notes. The record of the LLC is about the stores' accounts: the D-U-N-S number was what moved them from his own name to the company (`docs/1.9-build/OWNER-STEPS.md`, C0 and after).
