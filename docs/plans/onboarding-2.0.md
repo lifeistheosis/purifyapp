@@ -334,7 +334,7 @@ This chat's judgement, from what it read in the code, photographed and measured 
 
 ## What a ten is, section by section (2026-11-22)
 
-His word, about 21:50 UTC: "let's try to 10/10 each and every single section. try the best methods based on our goals."
+His word, about 21:43 UTC: "let's try to 10/10 each and every single section. try the best methods based on our goals."
 
 For each section rated above: what a ten would be, written so that it can be checked; the method, chosen by his goal (know the reader, fit Purify to what they need, lead them to the Church and to Plus); the pieces, most of them already named in this file; and the number that says it was reached. Brainstorm: nothing is built, and each piece still comes to him as a drawing. A ten in results needs readers and weeks as well as work; the targets marked "from the baseline" are set once Admin's numbers are read.
 
