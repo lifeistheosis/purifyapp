@@ -6,7 +6,9 @@ His word on the first cut, about 00:52 UTC: "Use the audio from the second clip 
 
 His word on the second cut, about 03:05 UTC: "Okay, so the edit in itself is perfect, but notice, like, what I want you to do is that for the first two sections, like where the two images of Christ come up, make it come up like how it comes up in the example video. So instead of just like floating up, it like is flat and then it stands up while also zooming in. Other than that, the video is perfect."
 
-**Status, 2026-11-22 about 03:25 UTC: the second cut stands, with the two figures in the dome now tipping and standing as the template's do; it waits for his yes or no.** 9.9 seconds, 594 frames, 1080 by 1920 at 60 frames a second, H.264. Nothing is posted. The full sound he sent at about 03:00 UTC is under the preview (see "The sound"). The files are out of git, in `.promo/v1.9-video/christ2/`, and are lost when the container goes; he has both.
+His word after that, about 03:27 UTC: "Also, I know in the example he used blue at the end. I want you to just use black or like a dark background, maybe like a glow. Just don't do blue though."
+
+**Status, 2026-11-22 about 03:45 UTC: the second cut stands, with the two figures in the dome tipping and standing as the template's do and the end dark with a white glow, no blue; it waits for his yes or no.** 9.9 seconds, 594 frames, 1080 by 1920 at 60 frames a second, H.264. Nothing is posted. The full sound he sent at about 03:00 UTC is under the preview (see "The sound"). The files are out of git, in `.promo/v1.9-video/christ2/`, and are lost when the container goes; he has both.
 
 The first cut was an HTML stage (`make.mjs`) timed by eye. It is at commit `646414ee8` with its own `assets.py` and `screens.mjs`. The second cut replaces it: the template was measured frame by frame, and the film is built from those measures.
 
@@ -50,7 +52,7 @@ How each was measured: the dome by fitting a circle to its edge; the figures by 
 | the question shot | the Sinai Pantocrator | the question over the oldest icon of Him there is |
 | the second run of faces | the same eight icons, full frame, then the window closing onto His face in the question shot | |
 | the answer shot, grey then colour | a Pantocrator on a chased gold ground (`golden`) | gold, red and blue: the turn from grey to colour is seen at once |
-| the second dome | the first again with the measured light on it | |
+| the second dome, lit in cyan and blue | the first again on black, with a soft white glow about the dome | his word: "just use black or like a dark background, maybe like a glow. Just don't do blue though" |
 
 **The figures tip and stand as the template's do** (his word on the second cut; `tilt_of`, `figure_at`). The first cut-out tips back whole about a line far below the frame and sinks into the dome's shadow; the second lies tipped back about 64 degrees at the foot of the dome and stands up in twelve frames, its head small and squat at first and growing as it comes upright. Each is one flat picture turning as a card turns: the whole of it tips, and nothing in it moves against the rest. In the second dome each figure keeps the template's own clock there (`second_dome_clock`): it holds a frame and jumps, and the second figure is in sight a frame and a half sooner.
 
@@ -71,7 +73,7 @@ Each of these is a choice, and each is his to overrule.
 1. **A word never stands on His face.** The template's words stand on the man's chin and collar. Ours stand on His neck below His beard, or on His breast, and the picture is held by that point so the word stays there however near the shot comes. So His face sits higher in the frame than the man's does.
 2. **The window opens on His breast, below His beard.** The template's opens on the man's face.
 3. **Nothing in an icon is redrawn and nothing in it is made to move.** No lit eyes (the template lights the man's eyes in the question shot), no sunglasses, no gestures. An icon moves only whole; in the dome it tips whole, as a card.
-4. **The second dome's light is a ring and pools.** The template's blue has a faint diamond pattern in it; the house allows no pattern of beams, so ours has none.
+4. **The end has no blue** (his word, 03:27 UTC). The template lights its second dome in cyan and blue: pools of cyan low at both sides, a teal and blue ring about the dome, blue coming up from the foot of the picture, cyan left at the edge of the flash, and that light on the last shot. Ours keeps the dark, the template's shapes and its times, and none of the colour: the ring is a soft white glow that grows as the template's ring grows, the dark still rises behind the second figure, the flash is white, and the last shot is the app as it is. A ring and no beams. Measured on the finished file: in the dome at the end, blue leads red and green by no more than 10 levels in 255 in any pixel. The app's own dark page keeps its own cool cast, in the window and in the last shot, as it has where it first comes. `template.json` keeps the template's light as it was measured.
 5. **The question is set a little smaller** (capitals 35 high, not 42). At the template's size a line this long would run under the buttons of the apps it is posted in.
 6. **Brightness.** The app's Bible page is black with fine letters, far darker than the template's second shot; its light is left on a little so it holds. The icon shots are still about one and a half times as bright as the template's shots after the pooled light. `edit.py ... luma` prints ours beside the template's for every frame.
 7. **60 frames a second, not 30.** The second dome keeps the template's stepping, but not its few frames that are a blend of two: ours are crisp throughout that dome.

@@ -466,68 +466,41 @@ def figure_at(which, F):
     return figure(which).warp(to_screen @ tip @ to_card @ stand, k0 * z * c * d / (d + top * sn))
 
 
-CYAN, BLUE = np.float32([0.30, 0.96, 1.0]), np.float32([0.10, 0.36, 1.0])
-POOL = np.float32([0.10, 1.0, 0.93])                                       # the second dome's cyan, as measured
-DEEP, AZURE = np.float32([0.02, 0.03, 1.0]), np.float32([0.05, 0.41, 0.95])  # its blue: deep at rest, azure in the flash
-
-# The second dome's light, read off the template point by point (template.json says how): how strong the ring about
-# the dome is, how green it is, where the dark that rises behind the second figure stands, and how much blue comes
-# up from the foot of the frame. Each by the template's own frame.
+# The second dome. The template lights it in cyan and blue (template.json has that light, point by point). His word
+# on the cut, 2026-11-22: "I want you to just use black or like a dark background, maybe like a glow. Just don't do
+# blue though." So ours keeps the dark and the template's own shapes and times, with no colour in them: the ring
+# about the dome is a soft white glow that grows as the template's ring grows, and the dark that rises behind the
+# second figure is plain dark. The template's cyan pools and the blue from the foot of its picture are left out.
 L2 = T["second_dome_light"]
-RING_I, RING_G, DARK_Y, BLUE_I, BLUE_AZ = L2["ring_strength"], L2["ring_green"], L2["dark_half_y"], L2["blue_strength"], L2["blue_to_azure"]
+RING_I, DARK_Y = L2["ring_strength"], L2["dark_half_y"]
+GLOW = 0.5                                   # how strong the white glow is, against the template's coloured ring
+GLOW_WHITE = np.float32([0.93, 0.93, 0.93])  # a plain white: no blue in it, and no gold
 
 
 def ring(r, F2):
-    """The second dome's ring: teal about the disc, turning blue further out, strongest toward the frame's sides.
-    A ring and nothing else: its light has no beams in it."""
+    """The second dome's glow: a soft ring of white about the disc, strongest toward the frame's sides, as the
+    template's ring is. A ring and nothing else: its light has no beams in it."""
     yy, xx = _grid()
     d = np.hypot(xx - DOME_C[0], yy - DOME_C[1]) - r  # how far outside the disc
     dd = np.clip(d, 0, None)
     t = np.maximum(np.exp(-(((dd - 185) / 105) ** 2)), 0.28 * np.exp(-dd / 200))
     b = np.exp(-(((dd - 295) / 80) ** 2))
     side = once("ring-side", lambda: 0.15 + 0.85 * np.clip(np.abs(xx - W / 2) / 460, 0, 1) ** 1.5)
-    i, g = tab(RING_I, F2), tab(RING_G, F2)
-    w = side * i * (d > -1)
-    return np.dstack([0.09 * t * w, g * (t + 0.1 * b) * w, (t + 0.85 * b) * w])
-
-
-def _pool_shape():
-    """Where the second dome's light pools: low, at both sides of the frame, soft, and fading again below the template's picture."""
-    def make():
-        yy, xx = _grid()
-        yb = yy - UP
-        dy = np.clip(yb - 380, 0, 580)
-        q = ((xx - 540) / 542) ** 2 + (dy / 636) ** 2
-        s3 = lambda u: np.clip(u, 0, 1) ** 2 * (3 - 2 * np.clip(u, 0, 1))
-        top = s3((yb - 150) / 350)
-        under = s3((yb - 960) / 400)
-        cyan = s3((q - 0.6) / 0.9) * top * (1 - 0.8 * under)
-        blue = s3((q - 0.75) / 0.8) * top * (1 - 0.6 * under)
-        return cyan.astype(np.float32), blue.astype(np.float32), yb
-    return once("pool-shape", make)
+    v = (t + 0.5 * b) * side * (tab(RING_I, F2) * GLOW) * (d > -1)
+    return v[..., None] * GLOW_WHITE
 
 
 def second_light(out, F2):
-    """The second dome's colour laid over the dome before the figure stands in it: the cyan pools, the dark that rises
-    with the second figure and its blue fringe, and the blue that comes up from the foot of the frame."""
-    cyan, blue, yb = _pool_shape()
-    c = (cyan * tab({235.4: 0.0, 236.4: 0.35, 237.4: 1.0}, F2))[..., None]
-    out = out * (1 - c) + POOL * c
+    """What the second dome lays over the dome before the figure stands in it: the dark that rises with the second
+    figure, as the template's does. No colour."""
+    yy, _ = _grid()
+    yb = yy - UP
     yd = tab(DARK_Y, F2)
     dark = None
     if yd < 1480:
         u = np.clip((yb - (yd - 150)) / 300, 0, 1)
         dark = u * u * (3 - 2 * u)
-        v = np.clip((yb - (yd - 330)) / 260, 0, 1)
-        fringe = (v * v * (3 - 2 * v) * (1 - dark))[..., None]
-        out = out * (1 - fringe * (1 - np.float32([0.6, 0.66, 1.0])))
         out = out * (1 - 0.92 * dark[..., None])
-    ib = tab(BLUE_I, F2)
-    if ib > 0.004:
-        az = tab(BLUE_AZ, F2)
-        col = DEEP * (1 - az) + AZURE * az
-        a = (blue * ib)[..., None]
-        out = out * (1 - a) + col * a
     return out, dark
 
 
@@ -594,12 +567,9 @@ def dome(F, second=False):
     if a > 0:
         back = F > 48  # coming back, the white is a little rose, as the template's is
         white = np.float32([1.0, 0.94, 0.98]) if back else np.float32([1.0, 1.0, 1.0])
-        if second:  # the second flash is up a frame sooner, all the way to white, and down faster
+        if second:  # the second flash is up a frame sooner, all the way to white, and down faster (the template's has cyan at its edge; ours is white)
             a = tab(L2["flash"], F)
         out = out * (1 - a) + white * a
-        if second:
-            e = once("flash-edge", lambda: _flash_edge())
-            out = out * (1 - e * a) + POOL * (e * a)
     solid = tab(T["window"]["solid"], F)
     if solid > 0:
         cx, cy, w, h, u = window_rect(F)
@@ -618,13 +588,6 @@ def dome(F, second=False):
         out = out * (1 - edge[..., None]) + 0.78 * edge[..., None]
         out = out * (1 - m[..., None]) + content * m[..., None]
     return out
-
-
-def _flash_edge():
-    yy, xx = _grid()
-    q = ((xx - W / 2) / 560) ** 2 + ((yy - H / 2) / 1010) ** 2
-    u = np.clip((q - 0.72) / 0.6, 0, 1)
-    return (u * u * (3 - 2 * u))[..., None].astype(np.float32)
 
 
 # ── The shots between the domes ──────────────────────────────────────────
@@ -888,8 +851,7 @@ def moment(F):
     if F < C["clip1a"]:
         return dome(F)
     if F >= 294:  # the app again, as the template's first shot comes again with the second dome's light on it
-        img = shot_frame("clip1a", F - SECOND)
-        return img + edge_light() * 0.85
+        return shot_frame("clip1a", F - SECOND)
     if F >= 235.4:
         f = F - SECOND
         img = dome(f, second=True)
@@ -936,16 +898,6 @@ def moment(F):
 def caption_soft(F):
     """A word goes a little soft with its picture on the hardest hit, as the template's does."""
     return tab({104.5: 0, 105: 4, 106: 2, 107: 0}, F)
-
-
-def edge_light():
-    def make():
-        yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-        e = np.minimum(np.minimum(xx, W - xx) / 300, np.minimum(yy, H - yy) / 520)
-        g = np.clip(1 - e, 0, 1) ** 2.2
-        mix = np.clip((yy / H - 0.55) * 2, 0, 1)[..., None]
-        return g[..., None] * (CYAN * (1 - mix) + BLUE * mix)
-    return once("edge-light", make)
 
 
 def fast(F):
