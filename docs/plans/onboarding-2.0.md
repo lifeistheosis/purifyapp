@@ -263,3 +263,31 @@ Each is the lesson's own page on the native export, reached as a reader reaches 
 **What the stills do not show** (the page says so): the card growing into the day in the house's motion; the card clear of the tab bar on Today; how much of a section's front page is one day's; the week's own place.
 
 They await his yes or no. With mock-ups 2 to 4 and the numbers drawing, seven drawings are waiting on him.
+
+## Decided by recommendation, at his word (2026-11-22)
+
+**His word, about 21:35 UTC, to seven drawings awaiting a yes or no and one open question: "unsure just recommended based off our principles and goals".** So this chat chose, by the principles below. Each choice is his to overturn, and anything built from them still comes to him to walk before it ships.
+
+**The principles used.** His goal of the same day (know the reader, fit Purify to what they need, lead them to the Church and to Plus). The roads' own rule (no page knows who reads it; every road outside the practicing ends at a parish and a first Liturgy). His rule for Plus (met at a lock or at the pill, never brought to the reader in the questions). Every line a reader sees is true. A measured answer before a permanent one: a large fork is tested, on the website first. A fault is mended, not tested. The house's guardrails.
+
+1. **"Your first Liturgy" stays in every week that has it.** A reader's picks may move other pages; never it, and never the road's door. *The roads' rule: it is where every road leads.*
+2. **The seven drawings: yes, as one thing, "the new first week".** The need asked first, picks that say what they do, the week as the last screen, and days that begin, are kept by Done and end on tomorrow. *His goal: it is the reader's need, heard, shown and followed for seven days.*
+3. **It is built as one fork and tested against today's first week,** on all readers together, the website first. Judged by day one kept; guarded by finishing the questions and coming back in the second week. *A measured answer before a permanent one; an extra question may cost finishes, and only a count can say.*
+4. **Three parts are not a matter of taste and need no test.** The picks' line that promises more than is given changes to a true one. The rough switch from the week's card is mended. The card's Begin is drawn clear of the tab bar. *Every line true; a fault is mended.*
+5. **Numbers begin with what needs nothing new:** by road and by first pick, from the counts that exist. The first pick says nothing of a reader's faith, so it is the first way to cut every number. *Know the reader, with the least asked of them.*
+6. **The five lines about a need go to a priest before they ship.** *The editorial rule.*
+7. **The seeker's road is chosen by the first picture card** (the Fathers, the councils or history) once the need is asked before the cards. *It keeps what the rule means today.*
+8. **A day frames the same page for every reader.** No lines are written for where a reader comes from. *The roads' rule, and his answer of the same day.*
+
+**Recommended the same way, and named apart because it touches his rule for Plus.** The one Plus card after the first week is a test that ends on 2027-02-09, and what it measures is his own rule against the card. Let it run to its end and let its count decide; add nothing else that brings Plus to a reader. He can end it with a word (one switch, `lib/onboarding/flags.ts`).
+
+**A fact that sets the date of 3.** A device is in one test on a surface at a time, and the questions are held by the account's test until 2027-02-09 (`lib/ab/tests.ts`). So the new first week is built now and its test begins when that one ends or has its readers, whichever is first; or he ends the account's test early, which loses its answer.
+
+**The order of work, as it stands now.** It replaces the first rows of the table above; rows 4 to 10 there follow unchanged.
+
+| # | What | Size | Needs before it is built |
+|---|---|---|---|
+| 0 | The two faults of the week's card on Today (the rough switch, Begin under the tab bar), each with a test that fails on today's code | small | nothing: they are faults in 1.9 as readers have it |
+| 1 | The road and the first pick tallied in Admin from counts that exist, drawn on the reader web there | medium | a design from the admin's own pieces |
+| 2 | A line in his weekly brief for each running test | small | nothing |
+| 3 | The new first week, as one fork: the need, the picks' true line, the week as the last screen, the day's frame (begins, Done, kept), the first Liturgy held, the seeker's rule | medium to large | a priest's glance at five lines; its entry in the tests' file; its place after the account's test |
