@@ -37,6 +37,7 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 - 2026-11-22 17:02 UTC, with two PDFs attached ("Purify App Growth Framework" and "Enterprise Growth Strategy & Financial Model"): "this is for v2.0 and some goals we have"
 - 2026-11-22 17:09 UTC, after this chat read one of the two documents as planning a separate Catholic track: "its Eastern Orthodox based app with different LEARNING CURVES (targeting onboarding)"
 - 2026-11-22 17:19 UTC, after this chat said 1.9's roads are the learning curves already: "ensure each section that's given to the user Is fully mapped out to we can control this spiderweb type of system we are going to create"
+- 2026-11-22 17:30 UTC, after the reader map and the ledger proposed for 2.0: "we are in brainstorm mode. we are going into mock up phase. this phase requires photos for me and mock up draws, and we can make artifacts to visualize this."
 
 "do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 
@@ -160,5 +161,6 @@ His words: "this is for v2.0 and some goals we have", with two PDFs: "Purify App
 
 - `docs/plans/reader-map.md`: the plan. Its section 1 is the map of what a reader is given today; its sections 4 and 5 are the ledger proposed for 2.0, waiting for his yes.
 - `docs/plans/reader-map.txt`: the listing, written from the rules (the questions, the type, the road, the nine first weeks, what each pick brings, the Plus card, the count).
-- `lib/onboarding/__tests__/readerMap.test.ts`: walks all 44,480 sets of answers, holds each to a whole week ending at its road's door, and fails when the written map is not the rules' own. A test only; no app code changed. On the branch, not on main.
-- Counted that day: 3,336 sets of answers with no road, 4,161 different first weeks, 0 faults; ten components read a reader's answers, three of them the road.
+- `lib/onboarding/__tests__/readerMap.test.ts`: walks all 30,024 sets of answers the screens can give, holds each to a whole week ending at its road's door, and fails when the written map is not the rules' own. A test only; no app code changed. On the branch, not on main.
+- Counted that day: 3,336 sets of answers with no road, 3,857 different first weeks, 0 faults; ten components read a reader's answers, three of them the road.
+- **A correction, the same day.** The map's first writing walked the rule files alone (44,480 sets, 4,161 weeks) and this chat told him "a Catholic who taps practicing lands on the Orthodox practicing road". No screen offers a Catholic that answer: the second question differs by the first answer, on the screen itself (`components/onboarding/OnboardingFlow.tsx`). The test now mirrors the screen and reads that file; the figures above are the corrected ones; he was told.

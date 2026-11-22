@@ -13,45 +13,41 @@ The plan it belongs to is docs/plans/reader-map.md.
   where the account's test asks it last: welcome > background > level > intent > account > handoff
   a priest in the United States, signed in: welcome > background > level > rule > role > clergyWhere > clergyJurisdiction > clergyParish > intent > reminders > handoff
 
-2. THE READER'S TYPE (how far along they are; it decides how Today looks)
+2. THE READER'S TYPE (how far along they are; it decides how Today looks). The rule; not every pair is offered on the screens, see 3.
   inquirer: new, whatever the background
   learning: learning, whatever the background
   practicing: orthodox, whatever the background
   no level: orthodox (orthodox, prefer-not, not asked); new (catholic, protestant, christian, other-faith, none)
 
-3. THE ROAD (where they come from; it decides the first week)
-  inquirer, orthodox: returning
-  inquirer, catholic: catholic
-  inquirer, protestant: protestant
-  inquirer, christian: christian
-  inquirer, other-faith: newcomer
-  inquirer, none: newcomer or seeker
-  inquirer, prefer-not: newcomer or seeker
-  inquirer, not asked: newcomer or seeker
-  learning, orthodox: catechumen
-  learning, catholic: catechumen
-  learning, protestant: catechumen
-  learning, christian: catechumen
-  learning, other-faith: catechumen
-  learning, none: catechumen
-  learning, prefer-not: catechumen
-  learning, not asked: catechumen
-  practicing, orthodox: practicing or returning
-  practicing, catholic: practicing or returning
-  practicing, protestant: practicing or returning
-  practicing, christian: practicing or returning
-  practicing, other-faith: practicing or returning
-  practicing, none: practicing or returning
-  practicing, prefer-not: practicing or returning
-  practicing, not asked: practicing or returning
-  no level, orthodox: no road
-  no level, catholic: catholic
-  no level, protestant: protestant
-  no level, christian: christian
-  no level, other-faith: newcomer
-  no level, none: newcomer or seeker
-  no level, prefer-not: no road
-  no level, not asked: no road
+3. THE ROAD (from the first two answers; it decides the first week)
+  The second question is asked in the reader's own terms, so each background is offered its own answers.
+  orthodox, practicing: practicing
+  orthodox, coming back: returning
+  orthodox, preparing: catechumen
+  orthodox, skipped: no road
+  catholic, not yet been to a church: catholic
+  catholic, going to a church: catechumen
+  catholic, skipped: catholic
+  protestant, not yet been to a church: protestant
+  protestant, going to a church: catechumen
+  protestant, skipped: protestant
+  christian, not yet been to a church: christian
+  christian, going to a church: catechumen
+  christian, skipped: christian
+  other-faith, not yet been to a church: newcomer
+  other-faith, going to a church: catechumen
+  other-faith, skipped: newcomer
+  none, not yet been to a church: newcomer or seeker
+  none, going to a church: catechumen
+  none, skipped: newcomer or seeker
+  prefer-not, completely new: newcomer or seeker
+  prefer-not, learning: catechumen
+  prefer-not, practicing: practicing
+  prefer-not, skipped: no road
+  not asked, completely new: newcomer or seeker
+  not asked, learning: catechumen
+  not asked, practicing: practicing
+  not asked, skipped: no road
 
 4. THE FIRST WEEK (seven pages, one a day; the last is the road's door)
   practicing: Your rule > Today's readings > The Psalter > The Church's year > Pray with the Fathers > Before sleep > Start with the Fathers
@@ -93,17 +89,17 @@ The plan it belongs to is docs/plans/reader-map.md.
   practicing: the new calendar, fasting strict, and asked for their rule
 
 7. THE COUNT
-  sets of answers the questions can make: 44480
+  sets of answers the screens can give (a skip is an answer too): 30024
   of them, with no road (Purify as it always was): 3336
-  practicing: 8896 sets of answers, 675 different weeks, 16 different pages, ending at Start with the Fathers
-  returning: 10008 sets of answers, 980 different weeks, 18 different pages, ending at Find a parish
+  practicing: 3336 sets of answers, 675 different weeks, 16 different pages, ending at Start with the Fathers
+  returning: 1112 sets of answers, 676 different weeks, 16 different pages, ending at Find a parish
   catechumen: 8896 sets of answers, 472 different weeks, 14 different pages, ending at Find a parish
   catholic: 2224 sets of answers, 472 different weeks, 14 different pages, ending at Find a parish
   protestant: 2224 sets of answers, 516 different weeks, 17 different pages, ending at Your first Liturgy or Find a parish
   christian: 2224 sets of answers, 602 different weeks, 15 different pages, ending at Your first Liturgy
   seeker: 1212 sets of answers, 129 different weeks, 13 different pages, ending at Your first Liturgy
   newcomer: 5460 sets of answers, 315 different weeks, 14 different pages, ending at Your first Liturgy
-  different first weeks in all: 4161
+  different first weeks in all: 3857
   weeks that are not seven pages, hold a page twice or miss their door: 0
 
 8. THE PAGES A WEEK CAN HOLD

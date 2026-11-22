@@ -63,12 +63,42 @@ const PICKS: readonly (readonly Intent[])[] = (() => {
 
 type Reader = { background: Background | null; level: Level | null; returning: boolean; picks: readonly Intent[] };
 
-/** Every reader the questions can make. Coming back after time away is asked of the practicing alone. */
+type Second = { level: Level | null; returning: boolean; says: string };
+const SKIPPED: Second = { level: null, returning: false, says: "skipped" };
+
+/**
+ * What the second question offers, by the first answer. This is decided on the screen itself
+ * (components/onboarding/OnboardingFlow.tsx, the three `step === "level"` screens), not in a rule
+ * file: the Orthodox are asked where they are now, everyone else whether they have been to an
+ * Orthodox church, and "Prefer not to say" keeps the question as it was. A test below reads that
+ * file, so a screen that offers something else is seen here.
+ */
+function offered(background: Background | null): Second[] {
+  if (background === "orthodox")
+    return [
+      { level: "practicing", returning: false, says: "practicing" },
+      { level: "practicing", returning: true, says: "coming back" },
+      { level: "learning", returning: false, says: "preparing" },
+      SKIPPED,
+    ];
+  if (background === null || background === "prefer-not")
+    return [
+      { level: "inquirer", returning: false, says: "completely new" },
+      { level: "learning", returning: false, says: "learning" },
+      { level: "practicing", returning: false, says: "practicing" },
+      SKIPPED,
+    ];
+  return [
+    { level: "inquirer", returning: false, says: "not yet been to a church" },
+    { level: "learning", returning: false, says: "going to a church" },
+    SKIPPED,
+  ];
+}
+
+/** Every reader the screens can make. */
 const READERS: readonly Reader[] = (() => {
   const out: Reader[] = [];
-  for (const background of BACKGROUNDS)
-    for (const level of ASKED_LEVELS)
-      for (const returning of level === "practicing" ? [false, true] : [false]) for (const picks of PICKS) out.push({ background, level, returning, picks });
+  for (const background of BACKGROUNDS) for (const second of offered(background)) for (const picks of PICKS) out.push({ background, level: second.level, returning: second.returning, picks });
   return out;
 })();
 
@@ -131,7 +161,7 @@ function writtenMap(): string {
     `  a priest in the United States, signed in: ${flowSteps({ startAt: "welcome", level: "practicing", role: "priest", country: "US", remindersOn: false, roads: true, signedIn: true, clergyOpen: true, accountAtEnd: false }).join(" > ")}`,
   );
 
-  out.push("", "2. THE READER'S TYPE (how far along they are; it decides how Today looks)");
+  out.push("", "2. THE READER'S TYPE (how far along they are; it decides how Today looks). The rule; not every pair is offered on the screens, see 3.");
   for (const level of ASKED_LEVELS) {
     const by = new Map<string, string[]>();
     for (const b of BACKGROUNDS) {
@@ -141,12 +171,13 @@ function writtenMap(): string {
     out.push(`  ${levelName(level)}: ${[...by].map(([t, bs]) => (by.size === 1 ? `${t}, whatever the background` : `${t} (${bs.join(", ")})`)).join("; ")}`);
   }
 
-  out.push("", "3. THE ROAD (where they come from; it decides the first week)");
-  for (const level of ASKED_LEVELS)
-    for (const background of BACKGROUNDS) {
+  out.push("", "3. THE ROAD (from the first two answers; it decides the first week)");
+  out.push("  The second question is asked in the reader's own terms, so each background is offered its own answers.");
+  for (const background of BACKGROUNDS)
+    for (const second of offered(background)) {
       const roads = new Set<string>();
-      for (const picks of PICKS) for (const returning of level === "practicing" ? [false, true] : [false]) roads.add(roadOf({ background, level, intent: picks[0] ?? null, returning }) ?? "no road");
-      out.push(`  ${levelName(level)}, ${backgroundName(background)}: ${[...roads].sort().join(" or ")}`);
+      for (const picks of PICKS) roads.add(roadOf({ background, level: second.level, intent: picks[0] ?? null, returning: second.returning }) ?? "no road");
+      out.push(`  ${backgroundName(background)}, ${second.says}: ${[...roads].sort().join(" or ")}`);
     }
 
   out.push("", "4. THE FIRST WEEK (seven pages, one a day; the last is the road's door)");
@@ -174,7 +205,7 @@ function writtenMap(): string {
   }
 
   out.push("", "7. THE COUNT");
-  out.push(`  sets of answers the questions can make: ${READERS.length}`);
+  out.push(`  sets of answers the screens can give (a skip is an answer too): ${READERS.length}`);
   out.push(`  of them, with no road (Purify as it always was): ${WEB.noRoad}`);
   let weeks = 0;
   for (const road of ROADS) {
@@ -199,7 +230,7 @@ function writtenMap(): string {
 
 describe("every reader the questions can make", () => {
   it("is given a whole week, or Purify as it always was: seven pages, none twice, ending at the road's own door", () => {
-    expect(READERS.length).toBeGreaterThan(40_000);
+    expect(READERS.length).toBeGreaterThan(30_000);
     expect(WEB.faults.slice(0, 10)).toEqual([]);
   });
 
@@ -213,6 +244,22 @@ describe("every reader the questions can make", () => {
 
   it("can reach every road", () => {
     for (const road of ROADS) expect(WEB.roads.get(road)?.readers ?? 0, road).toBeGreaterThan(0);
+  });
+});
+
+describe("the second question", () => {
+  it("is mirrored here as the screen itself asks it", () => {
+    const flow = fs.readFileSync(path.resolve(__dirname, "../../../components/onboarding/OnboardingFlow.tsx"), "utf8");
+    // Its three screens, by the first answer.
+    expect(flow).toContain('{step === "level" && roads && background === "orthodox" && (');
+    expect(flow).toContain('{step === "level" && roads && background !== "orthodox" && background !== "prefer-not" && background !== null && (');
+    expect(flow).toContain('{step === "level" && (!roads || background === "prefer-not" || background === null) && (');
+    // And what they offer between them: offered() above holds the same answers, no more and no fewer.
+    const offers = (call: string) => flow.split(call).length - 1;
+    expect(offers('chooseLevel("practicing", true)')).toBe(1);
+    expect(offers('chooseLevel("practicing")')).toBe(2);
+    expect(offers('chooseLevel("learning")')).toBe(3);
+    expect(offers('chooseLevel("inquirer")')).toBe(2);
   });
 });
 

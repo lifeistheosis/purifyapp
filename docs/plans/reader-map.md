@@ -28,14 +28,15 @@ The questions ask where a reader comes from, how far along they are, their rule 
 | Theology | `components/theology/TheologyHub.tsx` | the level | its head |
 | Settings, Your space | `components/settings/SettingsClient.tsx` | every answer | shows the answers, and changes them |
 
-**The numbers, counted by the test on 2026-11-22.** The questions can make 44,480 different sets of answers. 3,336 of them give no road, and Purify as it always was. The rest lead to 4,161 different first weeks. Every one of them has seven pages, no page twice, and ends at its road's own door: 0 faults.
+**The numbers, counted by the test on 2026-11-22.** The screens can give 30,024 different sets of answers (a skip counted as an answer). 3,336 of them give no road, and Purify as it always was. The rest lead to 3,857 different first weeks. Every one of them has seven pages, no page twice, and ends at its road's own door: 0 faults.
 
 ## 2. What the map shows
 
-- **The web is small where it is decided.** Three components read the road. The 4,161 weeks come from one rule (a reader's own picks arrange the road's seven), not from 4,161 things anyone wrote. There are nine weeks written by hand (the Protestant road has two) and 34 pages they draw on.
+- **The web is small where it is decided.** Three components read the road. The 3,857 weeks come from one rule (a reader's own picks arrange the road's seven), not from 4,161 things anyone wrote. There are nine weeks written by hand (the Protestant road has two) and 34 pages they draw on.
 - **Five pages come only when a reader picks them** (the lives of the saints, What the Orthodox believe, Fasts and feasts, Morning prayers, the Book of Job). **One page is in the list and in no week:** A path through the Fathers.
 - **Every road outside the practicing ends at a parish or a first Liturgy.** The test holds that.
-- **The level is read before the background.** A reader from any background who says they are practicing is on the practicing road or the road back. Whether a practicing Catholic or Protestant reads that question as about their own church is worth a count.
+- **The second question changes with the first answer, and that is decided on the screen, not in a rule file.** The Orthodox are asked where they are now (practicing, coming back, preparing). Everyone else is asked whether they have been to an Orthodox church (not yet, going). "Prefer not to say" keeps the old question. So a Catholic is never offered "Practicing". The first writing of this map walked the rule files alone and counted 44,480 sets of answers and 4,161 weeks, some of which no screen can give; this chat told him of one such case as if readers met it, and corrected it the same day. The test now mirrors the screen and reads `OnboardingFlow.tsx`, so a change there is seen. It is the first thing the ledger should own.
+- **Anyone already going to an Orthodox church is on the catechumen's road, whatever they come from.** A Catholic who has begun to attend gets the catechumen's week, not the Catholic one. A Catholic, Protestant or other Christian who skips the second question keeps their own road; an Orthodox reader who skips it has no road.
 - **The design note's own map (3.6) planned ten things by road.** In the code the road decides three (the third question, the first week, the Plus card) and the level or type decides the greeting and the fast. For the others (the month's thing, where the Bible opens, words explained, the saints shown first, reminders by road, the tone of the first prompts) no component reads the road.
 - **The one Plus card comes after the first week on every road.** The note planned week three for some.
 
