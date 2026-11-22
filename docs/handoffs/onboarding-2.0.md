@@ -22,7 +22,7 @@ Build what he decided for 2.0's onboarding on 2026-11-22, one piece at a time, o
 
 ## Open, each with its owner and next step
 
-- **Row 0, the two faults of the week's card: done on the branch** (`6efad5dba`; the record is `onboarding-2.0.md`, "Row 0, done on the branch"). His to say: whether the card first on Today stands (the two stills), and when it goes to main and into builds.
+- **Row 0, the two faults of the week's card: done on the branch** (`6efad5dba`; the record is `onboarding-2.0.md`, "Row 0, done on the branch"). His answer to the two stills (2026-11-22): "it looks a little stacked and 2 click here is kinda immersion ruining". Mock-up 8 answers it, one lead with one Begin (`docs/plans/reader-map/mock-today-lead.mjs`), and awaits his yes or no; a yes replaces the card's place on Today. When any of it goes to main and into builds is his word.
 - **Rows 1 to 3 of the order** (the next chat, one at a time): numbers by road and by first pick in Admin from counts that exist; a line in his brief for each test; the new first week as one fork.
 - **His to do:** read the privacy page's two drafted sentences (`reader-map.md`, section 12); name a price for a lifetime plan and make it in the stores; say whether the Plus card's test runs to 2027-02-09; clear or change the readers' email look on his desk (`lib/email/look.ts` stands at "3", so each automatic list email goes to him alone until he does); press the test send and the real send of the 1.9 email.
 - **The standard he asked for** (2026-11-22: "let's try to 10/10 each and every single section"): `onboarding-2.0.md`, "What a ten is, section by section". Each section has what a ten is, its method, its pieces and its number, and the order to take them in.

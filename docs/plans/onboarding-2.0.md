@@ -430,3 +430,17 @@ For each section rated above: what a ten would be, written so that it can be che
 Stills, a new reader's Today at 390 by 844: `docs/plans/reader-map/img/today-week-card-before.jpg` and `today-week-card-after.jpg`.
 
 **Not done, and why.** The card growing into its page (carrying its picture) is part of the day's frame, row 3. The card's close button still takes it away at once, with no motion; noted, not asked for. How this reaches readers is his word: a push to main puts it on the website at once, and the apps need new store builds.
+
+### His answer to the stills, and mock-up 8: one lead, one Begin (2026-11-22)
+
+**His word, about 22:38 UTC, looking at a new reader's Today: "to be honest it looks a little stacked and 2 click here is kinda immersion ruining."**
+
+Read as: two cards one over the other, each with its own Begin, pull the eye two ways. It is true of Today as readers have it (the lead, then the week's card) and of row 0's change as well (the week's card, then the lead): moving the card up cleared the tab bar and left the two.
+
+**Mock-up 8** (`docs/plans/reader-map/img/mock-today-lead.jpg`, by `mock-today-lead.mjs`, from the app's own Today on the branch's export; passed `checkMock`, all fifteen rules). While a step of the first week is up, it stands in the lead's own place for the hour's prayer: the lead's small line reads "Your first week · 1 of 7", its name is the step's, and its one Begin opens the step. The card's own close button stands beside the words, so a step can still be passed. The week's card is not drawn. No word is new.
+
+**Why.** One night on the screen and one thing to do, as the lead was made to be. The step is the lead's own action, so nothing is stacked and the eye is not asked to choose. Once the step is taken or passed, the lead says the hour's prayer again, as it does today.
+
+**If he says yes,** it replaces the card's new place in row 0 (the card first on Today): the week's card is no longer drawn on Today at all, and what row 0 mended in the card (the step kept only once the screen has moved) is kept in the lead. The probe asks the same two things of the lead.
+
+**Open in it.** The line the card has under a step's name ("One short prayer, said slowly...") is not drawn in the lead, which has no such line for the hour's prayer either. And while a step is up, the hour's prayer is one scroll or one tab away, not in the lead.
