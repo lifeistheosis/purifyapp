@@ -80,6 +80,11 @@ export const SHOTS = [
   { name: "The way", at: [31.16, 34.48], pic: "christ", x: 47, y: 30, z: [1.22, 1.36], grade: "colour", lit: 0.56, hits: [31.16, 32.16, 33.81], flash: true, words: W_(LINES.way, [31.16, 31.66, 32.16, 32.71, 33.26, 33.81], 104, 760) },
   { name: "The end", at: [34.48, SECONDS], mark: true },
 ];
+// His word on the second render (2026-11-22): "make the text appear longer". A quote used to arrive a line to a beat, so
+// its last line was read for a moment only. Now the whole quote, with its source, is there from its shot's first frame
+// to its last: the longest it can be read without making the film longer. (WHOLE false is the second render.)
+const WHOLE = true;
+if (WHOLE) for (const s of SHOTS) if (s.words) s.words.at = s.words.at.map(() => s.at[0]);
 // The cut is whole, in order, and never flashes more than three times in a second.
 SHOTS.forEach((s, i) => {
   if (s.at[0] !== (i ? SHOTS[i - 1].at[1] : 0)) fail(`"${s.name}" does not begin where the shot before it ends`);

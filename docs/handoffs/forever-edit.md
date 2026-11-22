@@ -66,6 +66,10 @@ At that word: the second render finished (2,112 frames, 35.2 seconds, checked by
 
 At that word: the file sent in the chat did not show for him. The copy with his track is now on the page itself (version 4), as its own player above the silent one, marked for his eyes only and not for posting: `/_blob/11256060e14e9fa89ed7712bd9cd2ffb` (the page's own picture with the track at 192 kb a second, cropped at 35.2 with a short fade, 19.2 MB). The page is private to him. It was also sent again as a file. The audio is still not in the repository.
 
+- About 00:55, on the second render with the track: "make the text appear longer"
+
+At that word (the third render): each whole quote, with its source, is on screen from its shot's first frame to its last, where it used to arrive a line to a beat (`WHOLE` in `blackpill-film.mjs`). This is my reading of "longer": on screen longer, the film's length unchanged. If he meant larger type or a longer film, it is his to say.
+
 The chat was started by the ad stage 1 chat at his word there, about 23:08 UTC: "start a fresh chat with it" (`docs/handoffs/ad-stage-1.md`).
 
 ## This overlaps with another chat
