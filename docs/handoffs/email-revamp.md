@@ -36,6 +36,7 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 - 2026-11-22 16:23 UTC, with a screenshot of purifyapp.onrender.com/admin showing the site's 404 page ("This page is not in our index."): "I can't login to the admin panel"
 - 2026-11-22 17:02 UTC, with two PDFs attached ("Purify App Growth Framework" and "Enterprise Growth Strategy & Financial Model"): "this is for v2.0 and some goals we have"
 - 2026-11-22 17:09 UTC, after this chat read one of the two documents as planning a separate Catholic track: "its Eastern Orthodox based app with different LEARNING CURVES (targeting onboarding)"
+- 2026-11-22 17:19 UTC, after this chat said 1.9's roads are the learning curves already: "ensure each section that's given to the user Is fully mapped out to we can control this spiderweb type of system we are going to create"
 
 "do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 
@@ -154,3 +155,10 @@ His words: "this is for v2.0 and some goals we have", with two PDFs: "Purify App
 **What the framework asks beyond the roads, as this chat reads it:** wording and presentation that change with the reader (against the rule above as it stands; a glossary every reader can open would keep it); introductory lessons written for a background (new teaching, so the clergy queue); and reminders and win-back messages that follow the road (the road is on the device, so either the device sends them or the road goes to the server, with the cautions above). Asked of him: whether 2.0 builds on the eight roads or regroups them, and what a curve is after week one.
 
 **Found on the way: the repository is public.** Asked of him in the chat, whether that is meant. Until he says, nothing confidential is written into it. The audit's open findings (`docs/audit/findings.yaml`) are readable by anyone while it is.
+
+## The reader map (2026-11-22, at his "ensure each section ... is fully mapped out")
+
+- `docs/plans/reader-map.md`: the plan. Its section 1 is the map of what a reader is given today; its sections 4 and 5 are the ledger proposed for 2.0, waiting for his yes.
+- `docs/plans/reader-map.txt`: the listing, written from the rules (the questions, the type, the road, the nine first weeks, what each pick brings, the Plus card, the count).
+- `lib/onboarding/__tests__/readerMap.test.ts`: walks all 44,480 sets of answers, holds each to a whole week ending at its road's door, and fails when the written map is not the rules' own. A test only; no app code changed. On the branch, not on main.
+- Counted that day: 3,336 sets of answers with no road, 4,161 different first weeks, 0 faults; ten components read a reader's answers, three of them the road.

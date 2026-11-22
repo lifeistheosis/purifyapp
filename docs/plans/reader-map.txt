@@ -1,0 +1,143 @@
+THE READER MAP
+
+What a reader is given because of who they are, written from the rules themselves
+(lib/onboarding: flowSteps, readerType, road, week, plusIntro, space). Never edited by hand:
+  READER_MAP_WRITE=1 npx vitest run lib/onboarding/__tests__/readerMap.test.ts
+The plan it belongs to is docs/plans/reader-map.md.
+
+1. THE QUESTIONS (a new reader, from the welcome, signed out)
+  inquirer: welcome > background > level > intent > handoff
+  learning: welcome > background > level > intent > handoff
+  practicing: welcome > background > level > rule > intent > handoff
+  no level: welcome > background > level > intent > handoff
+  where the account's test asks it last: welcome > background > level > intent > account > handoff
+  a priest in the United States, signed in: welcome > background > level > rule > role > clergyWhere > clergyJurisdiction > clergyParish > intent > reminders > handoff
+
+2. THE READER'S TYPE (how far along they are; it decides how Today looks)
+  inquirer: new, whatever the background
+  learning: learning, whatever the background
+  practicing: orthodox, whatever the background
+  no level: orthodox (orthodox, prefer-not, not asked); new (catholic, protestant, christian, other-faith, none)
+
+3. THE ROAD (where they come from; it decides the first week)
+  inquirer, orthodox: returning
+  inquirer, catholic: catholic
+  inquirer, protestant: protestant
+  inquirer, christian: christian
+  inquirer, other-faith: newcomer
+  inquirer, none: newcomer or seeker
+  inquirer, prefer-not: newcomer or seeker
+  inquirer, not asked: newcomer or seeker
+  learning, orthodox: catechumen
+  learning, catholic: catechumen
+  learning, protestant: catechumen
+  learning, christian: catechumen
+  learning, other-faith: catechumen
+  learning, none: catechumen
+  learning, prefer-not: catechumen
+  learning, not asked: catechumen
+  practicing, orthodox: practicing or returning
+  practicing, catholic: practicing or returning
+  practicing, protestant: practicing or returning
+  practicing, christian: practicing or returning
+  practicing, other-faith: practicing or returning
+  practicing, none: practicing or returning
+  practicing, prefer-not: practicing or returning
+  practicing, not asked: practicing or returning
+  no level, orthodox: no road
+  no level, catholic: catholic
+  no level, protestant: protestant
+  no level, christian: christian
+  no level, other-faith: newcomer
+  no level, none: newcomer or seeker
+  no level, prefer-not: no road
+  no level, not asked: no road
+
+4. THE FIRST WEEK (seven pages, one a day; the last is the road's door)
+  practicing: Your rule > Today's readings > The Psalter > The Church's year > Pray with the Fathers > Before sleep > Start with the Fathers
+  returning: A simple morning rule > Today's readings > The Jesus Prayer > The Church's year > Before sleep > The Nicene Creed > Find a parish
+  catechumen: The Trisagion Prayers > The Sign of the Cross > Your first Liturgy > The Nicene Creed > Today's readings > A simple morning rule > Find a parish
+  catholic: Start with the Fathers > First Council of Nicaea > St. Leo the Great > The Jesus Prayer > The Excommunications of 1054 > Your first Liturgy > Find a parish
+  protestant (bible): The Gospel of John > St. Ignatius of Antioch > First Council of Nicaea > What is prayer? > Council of Carthage (419) > The Council of Ephesus > Your first Liturgy
+  protestant (liturgical): The Gospel of John > First Council of Nicaea > St. Leo the Great > The Jesus Prayer > Council of Carthage (419) > Your first Liturgy > Find a parish
+  christian: The Nicene Creed > First Council of Nicaea > The Gospel of John > The Council of Chalcedon > The Estrangement of the Non-Chalcedonian Churches > The Trisagion Prayers > Your first Liturgy
+  seeker: St. Ignatius of Antioch > The Church's history > First Council of Nicaea > The councils > Start with the Fathers > The Trisagion Prayers > Your first Liturgy
+  newcomer: Start here > St. Mary of Egypt > The Gospel of John > The Nicene Creed > The Sign of the Cross > The Church's year > Your first Liturgy
+
+  A reader's own picks then arrange it (week.ts, weekFor). What each pick brings:
+  saints: The lives of the saints
+  fathers: Start with the Fathers
+  gospels: The Gospel of John
+  councils: The councils
+  history: The Church's history
+  beliefs: Start here (inquirer, no level); The Nicene Creed (learning); What the Orthodox believe (practicing)
+  liturgy: Your first Liturgy (inquirer, no level); The Trisagion Prayers (learning); The Church's year (practicing)
+  feasts: Fasts and feasts
+  prayer: A simple morning rule (inquirer, learning, no level); Morning prayers (practicing)
+  quiet: The Jesus Prayer
+  study: The Gospel of John (inquirer, learning, no level); The Book of Job (practicing)
+
+5. THE ONE PLUS CARD (on Today, once, after the first week)
+  practicing: remember
+  returning: plans
+  catechumen: plans
+  catholic: history
+  protestant: crossrefs
+  christian: crossrefs
+  seeker: history
+  newcomer: none
+
+6. WHAT THE LEVEL SETS
+  inquirer: the new calendar, fasting hidden
+  learning: the new calendar, fasting modified
+  practicing: the new calendar, fasting strict, and asked for their rule
+
+7. THE COUNT
+  sets of answers the questions can make: 44480
+  of them, with no road (Purify as it always was): 3336
+  practicing: 8896 sets of answers, 675 different weeks, 16 different pages, ending at Start with the Fathers
+  returning: 10008 sets of answers, 980 different weeks, 18 different pages, ending at Find a parish
+  catechumen: 8896 sets of answers, 472 different weeks, 14 different pages, ending at Find a parish
+  catholic: 2224 sets of answers, 472 different weeks, 14 different pages, ending at Find a parish
+  protestant: 2224 sets of answers, 516 different weeks, 17 different pages, ending at Your first Liturgy or Find a parish
+  christian: 2224 sets of answers, 602 different weeks, 15 different pages, ending at Your first Liturgy
+  seeker: 1212 sets of answers, 129 different weeks, 13 different pages, ending at Your first Liturgy
+  newcomer: 5460 sets of answers, 315 different weeks, 14 different pages, ending at Your first Liturgy
+  different first weeks in all: 4161
+  weeks that are not seven pages, hold a page twice or miss their door: 0
+
+8. THE PAGES A WEEK CAN HOLD
+  What is prayer?: /prayers/learning/what-is-prayer
+  The Jesus Prayer: /prayers/learning/jesus-prayer
+  The Trisagion Prayers: /prayers/learning/trisagion-prayers
+  The Sign of the Cross: /prayers/learning/sign-of-the-cross
+  Your first Liturgy: /start/first-liturgy
+  The Church's year: /calendar
+  The Gospel of John: /bible/john/1
+  The Book of Job: /bible/job/1  (only when a reader picks it)
+  A simple morning rule: /prayers/learning/morning-rule
+  Morning prayers: /prayers/morning  (only when a reader picks it)
+  The lives of the saints: /saints  (only when a reader picks it)
+  A path through the Fathers: /reading/paths  (in no week)
+  The councils: /councils
+  The Church's history: /history
+  Start here: /start
+  What the Orthodox believe: /theology  (only when a reader picks it)
+  Fasts and feasts: /calendar  (only when a reader picks it)
+  Start with the Fathers: /reading/paths/start
+  Pray with the Fathers: /reading/paths/prayer
+  The Nicene Creed: /prayers/creed
+  Find a parish: /parishes
+  Your rule: /prayers/personal
+  Today's readings: /prayers/today
+  The Psalter: /bible/psalms/1
+  Before sleep: /prayers/before-sleep
+  First Council of Nicaea: /councils/first-nicaea
+  The Council of Ephesus: /councils/ephesus
+  The Council of Chalcedon: /councils/chalcedon
+  Council of Carthage (419): /councils/carthage-419
+  St. Leo the Great: /saints/leo-the-great
+  St. Ignatius of Antioch: /saints/ignatius-of-antioch
+  St. Mary of Egypt: /saints/mary-of-egypt
+  The Excommunications of 1054: /history/great-schism-1054
+  The Estrangement of the Non-Chalcedonian Churches: /history/non-chalcedonian-estrangement

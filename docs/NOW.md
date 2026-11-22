@@ -53,6 +53,7 @@ Updated 2026-11-21 14:08 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 - **Xcode 27 by April 2027.** Apple's notice on build 39 (ITMS-90725): built with the iOS 26.5 SDK; from April 2027 an upload needs the iOS 27 SDK. The iOS workflow moves to a runner with Xcode 27 before 2.0's first iOS build (`docs/IOS_BUILD_SETUP.md`, its last section).
 - **iPhone Duo pictures** are then required too (from April 2027, for apps on the iOS 27.1 SDK or later).
 - **Two planning documents from him, 2026-11-22** ("this is for v2.0 and some goals we have"): a growth framework and a growth and money model. They are confidential and are NOT in this repository, because the repository is public; ask him for them. What the app already has toward them is in `docs/handoffs/email-revamp.md`, "Two documents for 2.0".
+- **The reader map** (his word, 2026-11-22: "ensure each section that's given to the user Is fully mapped out"): `docs/plans/reader-map.md`. What every reader is given today is written from the rules into `docs/plans/reader-map.txt` and held by `lib/onboarding/__tests__/readerMap.test.ts`; the ledger that would hold 2.0's learning curves is a proposal there, waiting for his yes.
 
 ## Found, and not yet on the faults list
 
