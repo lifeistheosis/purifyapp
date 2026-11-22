@@ -34,6 +34,7 @@ One design of the 1.9 release email in the new look, in `docs/plans/v1.9/email-r
 
 "yes oush" is read as: yes, push. It is his word for main, for the email work and the three admin mends. He did not answer 3 or 2, so the look stays as built and tested, at 3.
 - 2026-11-22 16:23 UTC, with a screenshot of purifyapp.onrender.com/admin showing the site's 404 page ("This page is not in our index."): "I can't login to the admin panel"
+- 2026-11-22 17:02 UTC, with two PDFs attached ("Purify App Growth Framework" and "Enterprise Growth Strategy & Financial Model"): "this is for v2.0 and some goals we have"
 
 "do all" is read by this chat as: mend all eight admin notes, on the branch. It names neither 3 nor 2 and is not read as his word to push to main.
 
@@ -127,3 +128,22 @@ Of the eight notes given to him, three were mended, three turned out wrong when 
 **The way back:** `b89b56b11` is the commit main held before.
 
 `READER_EMAIL_LOOK` is "3" on main: he did not choose between 3 and 2. So the next automatic list email (the Sunday email of 22 November) goes to him alone, and readers' automatic emails wait until he says on the owner's desk that he has seen the look. A send he presses himself is not held.
+
+## Two documents for 2.0 (2026-11-22; brainstorm only, nothing built)
+
+His words: "this is for v2.0 and some goals we have", with two PDFs: "Purify App Growth Framework" (one page) and "Enterprise Growth Strategy & Financial Model" (two pages, marked confidential).
+
+**They are not in this repository, and neither are their figures or their plans.** This repository is public (GitHub's own answer on 2026-11-22: `private=false`), and the second document is marked confidential. He has the originals; a chat that plans 2.0 asks him for them. This chat's reading of them (what they ask for, the sums checked, the risks) is in the chat itself, not here.
+
+**What the app already has toward goals of that kind** (from the code, which is public already):
+
+- First run already asks a reader's background and how far along they are (`lib/onboarding/`). The answers stay on the device and are not in the account (`state.ts`, `accountSync.ts`), and they are counted as plain totals with no session, account or address (`counting.ts`, his word of 2026-10-26).
+- Purify Plus's introduction already changes with that answer (`lib/onboarding/plusIntro.ts`).
+- The admin's menu already reorders itself by the pages he opens (`lib/admin/rail.ts`, `railFromUsage`).
+- The Traffic figures are daily buckets (`analytics_daily_buckets`, `app/api/admin/traffic/route.ts`): a month's "visitors" is its days added up, so a reader who comes every day is counted every day, and a sign-up rate over that falls as returning readers grow. No split of new readers from returning ones exists yet.
+- Lifecycle emails are in code (`lib/email/lifecycle.ts`, `lib/email/retention/`); whether they are switched on was not checked.
+- The owner's own projection is `lib/owner/projection.ts`. The word churn does not appear in `lib/owner/`; whether it models readers leaving was not read.
+
+**For whoever plans 2.0, three cautions that need no figures:** anything that keeps a reader's religious background on the server is sensitive personal data and needs a lawyer's read first (today it stays on the device, on purpose); doctrinal content of any kind goes to the clergy queue and is public domain only (`docs/editorial-standards.md`); and a survey may never stand between a reader and cancelling.
+
+**Found on the way: the repository is public.** Asked of him in the chat, whether that is meant. Until he says, nothing confidential is written into it. The audit's open findings (`docs/audit/findings.yaml`) are readable by anyone while it is.
