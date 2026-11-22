@@ -397,3 +397,36 @@ For each section rated above: what a ten would be, written so that it can be che
 6. Section 1 throughout: the ledger first, since it makes every row above cheaper to build and to hold.
 
 **Said to him with this.** A ten everywhere at once is how a plan outgrows its hands. It is reached one section at a time, each with its number, in a fresh chat.
+
+## Row 0, done on the branch: the week's card (2026-11-22)
+
+**His word, about 21:57 UTC, to this chat's advice to build in a fresh chat: "no. you already have the context you do it".** So this chat builds, section by section. Row 0 first.
+
+**What was changed** (`6efad5dba`).
+
+- **The card stays until its page moves.** A tap on Begin is now two things (`lib/onboarding/openStep.ts`): what is only counted, at once; and what takes the card off Today (the step written as taken, or Day 1 dismissed), once the card has left the screen with its page. `components/onboarding/FirstStepsNudge.tsx`.
+- **The card stands first on Today while a step is up,** above the greeting (`components/today/TodayMobileV3.tsx`). This is suggestion 2, chosen at his word of the same day ("just recommended"); it moves a card he placed under the greeting in 1.8, so the stills below are his to say no to.
+- The old test that made the whole suite red by its fixed date is mended too (`3e78a2622`, `lib/downloads/__tests__/log.test.ts`).
+
+**The proof, by the fix checklist** (`docs/OPERATIONS.md`, section 5).
+
+1. **A test that fails on the old code:** `lib/onboarding/__tests__/openStep.test.ts`, two of its five failing before the change and all passing after. And the gate's new probe, `scripts/gate/week-card.mjs`, on an export: **ten faults on the export of main, none on the export of the branch**.
+2. **Typecheck 0. The whole unit suite green:** 15,567 passed, 7 skipped, none failed. Lint clean on the changed files.
+3. **The web build passes** (`npm run build`: compiled, 6,527 pages).
+4. **The export is cut** the store builds' way (`node scripts/gate/export.mjs`).
+5. **Today, as a reader in their first week, through every mock-check rule** (`scripts/guardrail-walk.mjs --only /`, with what that reader's phone keeps): at 390 by 844, 800 by 1280 and 1032 by 1376, in English and in Arabic. Six runs, nothing failed in any.
+6. **Tapped as a reader taps:** Begin, by a finger, at 390 by 844 and 360 by 740, as three readers; Begin then Back (the step is kept once the card has left, and Today has no card that day); the card's close button (it goes, and the step is passed).
+
+**What the probe measured on the branch's export.**
+
+| | On main | On the branch |
+|---|---|---|
+| The card as Today opens (a phone of 844) | from 636 px, cut by the tab bar | from 78 to 285 px, whole |
+| Begin's foot | 822 px, under the tab bar (from 761) | 264 px |
+| A finger on Begin | opens the Bible | opens the step |
+| The card leaves Today | 4 ms after the tap, before the transition | 90 to 196 ms after it, inside the transition |
+| Today moves before the transition | yes | not at all |
+
+Stills, a new reader's Today at 390 by 844: `docs/plans/reader-map/img/today-week-card-before.jpg` and `today-week-card-after.jpg`.
+
+**Not done, and why.** The card growing into its page (carrying its picture) is part of the day's frame, row 3. The card's close button still takes it away at once, with no motion; noted, not asked for. How this reaches readers is his word: a push to main puts it on the website at once, and the apps need new store builds.

@@ -10,6 +10,8 @@ Build what he decided for 2.0's onboarding on 2026-11-22, one piece at a time, o
 
 **The first job is row 0,** a fixer's: the two faults of the week's card on Today, by the fix checklist (`docs/OPERATIONS.md`, section 5), each with a test that fails on today's code. Then sections 4 and 3 together, with section 6 beside them. How a mend reaches readers (a build, a push to main) is his word each time.
 
+**Who builds (2026-11-22, about 21:57 UTC): "no. you already have the context you do it".** The chat that planned it builds it, at his word, past its size.
+
 ## Done since the last baton
 
 - The 1.9 release email in look 3, its test send, three admin mends: on main, `b89b56b11..b88c88b4f`.
@@ -20,7 +22,7 @@ Build what he decided for 2.0's onboarding on 2026-11-22, one piece at a time, o
 
 ## Open, each with its owner and next step
 
-- **Row 0, the two faults of the week's card** (a fixer): the step is written as taken at the tap, so the card goes and Today jumps before the page moves; and Begin stands under the tab bar when Today opens. `components/onboarding/FirstStepsNudge.tsx`. Each needs a test that fails on today's code.
+- **Row 0, the two faults of the week's card: done on the branch** (`6efad5dba`; the record is `onboarding-2.0.md`, "Row 0, done on the branch"). His to say: whether the card first on Today stands (the two stills), and when it goes to main and into builds.
 - **Rows 1 to 3 of the order** (the next chat, one at a time): numbers by road and by first pick in Admin from counts that exist; a line in his brief for each test; the new first week as one fork.
 - **His to do:** read the privacy page's two drafted sentences (`reader-map.md`, section 12); name a price for a lifetime plan and make it in the stores; say whether the Plus card's test runs to 2027-02-09; clear or change the readers' email look on his desk (`lib/email/look.ts` stands at "3", so each automatic list email goes to him alone until he does); press the test send and the real send of the 1.9 email.
 - **The standard he asked for** (2026-11-22: "let's try to 10/10 each and every single section"): `onboarding-2.0.md`, "What a ten is, section by section". Each section has what a ten is, its method, its pieces and its number, and the order to take them in.
