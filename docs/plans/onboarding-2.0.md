@@ -48,6 +48,7 @@ What a million dollars of testing buys is readers to test on. Purify has a few h
 ## Asked of him (2026-11-22; his answers go here in his words)
 
 1. Which company was it, and what did they end up with: a long set of questions, the paywall at their end, a trial?
+   **2026-11-22 19:00 UTC: he sent the video.** "He Spent $1M on A/B Tests. Here's What Won.", on Mobbin's YouTube channel (video qK7WYCMvjUw; title and channel read from YouTube's public embed record). Its words were not read: YouTube refuses this cloud machine (HTTP 429), and the `/plugin` command he tried is not in a cloud session. Asked of him: its transcript pasted, or a transcript plugin added from his directory.
 2. What does he want most from a new reader's first day: a first prayer, an account, a trial begun, or coming back tomorrow?
 3. His rule is that Plus is never in the questions nor in the first week (his 111). Does it stand for 2.0, or may one honest screen that can be skipped come at the questions' end?
    **His answer, 2026-11-22 18:49 UTC: "don't show the plus on the onboarding they must run into plus feature or click on the premium pill".**
