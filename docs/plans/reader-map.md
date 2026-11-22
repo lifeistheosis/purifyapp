@@ -150,4 +150,14 @@ Said when this chat offered the rule "Know the reader on their phone; count read
 
 **What it changes in this plan.** Rule one of section 8 falls. 4F's limit becomes "kept with the account, by the reader's yes". Counts by road become possible from accounts; whether the anonymous totals also carry the road is a second decision.
 
-**Asked of him:** a reader with no account: do their answers wait on the phone until they sign in, or must every reader make an account before the questions?
+**Decided the same day: "just add it in v2.0 with new terms".** So it is in 2.0's plan, and it ships together with new terms. Still brainstorm: nothing is built.
+
+**What "with new terms" takes, in this repository.**
+
+- The privacy page (`components/legal/PrivacyText.tsx`) and the Terms say the new thing. Their wording is his to sign off (legal acceptance is a stop condition, AGENTS.md); it is drafted for his word, as 1.9's lines were.
+- The Terms' effective date moves (`lib/legal/version.ts`), so acceptance is asked again where the app asks it, and the terms email goes from Admin (`app/api/admin/email/terms`).
+- New terms tell every reader. For readers in the EU they do not stand in for the reader's own yes: keeping a person's faith has to be asked for by itself, not folded into terms (GDPR, Articles 7 and 9). One plain line and a clear choice at the question does it. The lawyer's read settles the wording. Said to him in the chat.
+
+**What 2.0 takes on for this** (a list for the plan, none of it begun): the new terms and privacy text; the line and the choice at the question; asking readers who answered before; a table under row-level security in place of the sign-in record (a migration: his sign-off on the SQL, and merging it to main runs it on production); the end of 1.9's clearing of these answers (`lib/onboarding/accountSync.ts`) and its test rewritten to the new rule (`lib/onboarding/__tests__/faithAnswers.test.ts`); the stores' data forms; and totals by road in Admin.
+
+**This chat's default, his to change:** a reader with no account keeps their answers on the phone until they sign in, and from then they are kept with the account. No reader is made to make an account before the questions. Asked of him and not answered yet; this is the choice that changes least.
