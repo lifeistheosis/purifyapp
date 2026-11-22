@@ -6,6 +6,10 @@ Written 2026-11-22 by the chat that began as the email revamp (`docs/handoffs/em
 
 Build what he decided for 2.0's onboarding on 2026-11-22, one piece at a time, on `ccr-07896cf2-bo0afd`. Brainstorm mode is his standing word: talk, plan in the repo, name the cost, and each thing drawn or built still goes to him before it ships. No push to main, no migration, no price, no legal line and no line about the faith without his word (AGENTS.md, stop conditions).
 
+**How he wants it done (2026-11-22, about 21:53 UTC): "well let's do that then. each section until it's almost 10/10 and move to the next section".** The sections, what a ten is for each, its number and the order are in `docs/plans/onboarding-2.0.md`, "What a ten is, section by section". One section at a time. A section is left when its pieces are built and walked by him and its number is being counted, and the next is begun only then.
+
+**The first job is row 0,** a fixer's: the two faults of the week's card on Today, by the fix checklist (`docs/OPERATIONS.md`, section 5), each with a test that fails on today's code. Then sections 4 and 3 together, with section 6 beside them. How a mend reaches readers (a build, a push to main) is his word each time.
+
 ## Done since the last baton
 
 - The 1.9 release email in look 3, its test send, three admin mends: on main, `b89b56b11..b88c88b4f`.
