@@ -43,7 +43,7 @@
   ]
  },
  "figure_a": {
-  "what": "the first figure: stands, then falls back into the dome, shrinking",
+  "what": "the first figure: stands, then tips back whole, like a card hinged far below the picture, until it lies nearly flat and is gone",
   "head_x": 566,
   "head_y": {
    "0": 389,
@@ -83,10 +83,67 @@
    "17": 0.36,
    "18": 0.32,
    "19": 0.29
+  },
+  "tilt": {
+   "what": "the figure is not shrinking as it goes: its head stays as wide as it was and grows shorter. It is one flat picture tipping back about a line below it, seen from far off",
+   "how": "in the second dome, where the frames are crisp, the head and the shirt were followed from frame to frame (each allowed to be squeezed in height apart from width), and a hinged card seen by a camera was fitted to their upper and lower edges: 0.4 of a pixel off on average",
+   "hinge_y": 1885,
+   "camera": 4921,
+   "upright_frame": 3,
+   "fitted": {
+    "241": [
+     0,
+     1.0
+    ],
+    "244": [
+     12,
+     1.01
+    ],
+    "245": [
+     19,
+     1.03
+    ],
+    "246": [
+     26,
+     1.04
+    ],
+    "248": [
+     43,
+     1.18
+    ]
+   },
+   "fitted_note": "by the second dome's frame: degrees tipped back, and how much larger the card itself stands",
+   "zoom_by_tilt": [
+    [
+     0,
+     1.0
+    ],
+    [
+     12,
+     1.01
+    ],
+    [
+     19,
+     1.03
+    ],
+    [
+     26,
+     1.04
+    ],
+    [
+     43,
+     1.18
+    ],
+    [
+     90,
+     1.6
+    ]
+   ],
+   "after_the_picture": "from frame 19 the head is below the template's picture; the film carries the fall on at the same 60 pixels a frame until the figure is gone in the dome's shadow"
   }
  },
  "figure_b": {
-  "what": "the second figure: rises from below, growing, and settles",
+  "what": "the second figure: lies tipped back nearly flat at the foot of the dome, then stands up whole, like a card hinged at its foot, and as it stands it comes nearer; then it settles, still growing a little",
   "head_x": 540,
   "head_y": {
    "24": 1010,
@@ -128,6 +185,91 @@
    "41": 1.0,
    "47": 1.02,
    "60": 1.02
+  },
+  "tilt": {
+   "what": "the figure does not float up: it is one flat picture lying back and standing up about a line at its foot, seen from near, so its head is small and squat at first and grows as it comes upright",
+   "how": "as for the first figure: followed in the second dome's crisp frames and fitted, 0.5 of a pixel off on average",
+   "hinge_y": 1241,
+   "camera": 893,
+   "upright_frame": 36,
+   "fitted": {
+    "260": [
+     29.1,
+     1.088
+    ],
+    "261": [
+     19.1,
+     1.087
+    ],
+    "262": [
+     15.4,
+     1.096
+    ],
+    "263": [
+     9.6,
+     1.062
+    ],
+    "265": [
+     6.6,
+     1.04
+    ],
+    "266": [
+     4.6,
+     1.04
+    ],
+    "267": [
+     2.5,
+     1.017
+    ],
+    "268": [
+     0.1,
+     0.995
+    ],
+    "270": [
+     0,
+     1.0
+    ]
+   },
+   "fitted_note": "by the second dome's frame: degrees tipped back, and how much larger the card itself stands",
+   "zoom_by_tilt": [
+    [
+     0,
+     1.0
+    ],
+    [
+     2.5,
+     1.017
+    ],
+    [
+     4.6,
+     1.04
+    ],
+    [
+     6.6,
+     1.04
+    ],
+    [
+     9.6,
+     1.062
+    ],
+    [
+     15.4,
+     1.096
+    ],
+    [
+     19.1,
+     1.087
+    ],
+    [
+     29.1,
+     1.088
+    ],
+    [
+     90,
+     1.088
+    ]
+   ],
+   "before_the_picture": "at frame 24 the head is still below the template's picture; the film begins the figure two frames sooner, flat, coming up at the same 165 pixels a frame"
   }
  },
  "flash": {
@@ -1126,5 +1268,42 @@
   "eyes_y_colour": 735,
   "note": "the picture jumps about 80 pixels up as it turns to colour, and comes into focus slowly: it is not fully sharp until about frame 229"
  },
- "luma_note": "luma_by_frame and sharpness_by_frame are the mean brightness (0 to 255) and the variance of the Laplacian at half size of each frame; edit.py's `luma` sets ours beside them"
+ "luma_note": "luma_by_frame and sharpness_by_frame are the mean brightness (0 to 255) and the variance of the Laplacian at half size of each frame; edit.py's `luma` sets ours beside them",
+ "second_dome_clock": {
+  "what": "the second dome is the first one played again, but not frame for frame: its figures hold a frame and then jump (two frames here and there are the same picture), the first figure stands longer before it tips, and the second is in sight almost a frame and a half sooner",
+  "how": "each figure's tilt, fitted in the second dome's crisp frames, was set beside the tilt the first dome's own measure gives for every frame: the table says which frame of the first dome the second dome is showing",
+  "figure_a": {
+   "0": 0,
+   "6": 3,
+   "7": 3,
+   "8": 6.0,
+   "9": 8.0,
+   "10": 9.5,
+   "11": 10.7,
+   "12": 12.15,
+   "13": 13.6,
+   "14": 14.96,
+   "15": 14.96,
+   "16": 16.6,
+   "17": 17.6,
+   "19": 19.6,
+   "23.5": 24.1
+  },
+  "figure_b": {
+   "20": 21.4,
+   "24": 25.4,
+   "25": 25.4,
+   "26": 26.4,
+   "27": 27.6,
+   "28": 28.2,
+   "29": 29.7,
+   "30": 29.7,
+   "31": 30.9,
+   "32": 32.2,
+   "33": 33.05,
+   "34": 34.5,
+   "36": 36,
+   "60": 60
+  }
+ }
 }

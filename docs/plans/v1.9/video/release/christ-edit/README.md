@@ -4,7 +4,9 @@ His word, 2026-11-22 about 00:35 UTC (in the ad stage 1 chat), with a 9.9 second
 
 His word on the first cut, about 00:52 UTC: "Use the audio from the second clip because that's the full audio, and also ensure it's one-to-one in every single aspect. For example, the part in the edit where it transitions the multiple faces, put like multiple icons of Christ and like showcase his face, and do that like effect with the faces where like kind of like blurs or warps. But yeah, like make it one-to-one with the edit. And I put you on max, so"
 
-**Status, 2026-11-22 about 02:50 UTC: the second cut is rendered and waits for his yes or no.** 9.9 seconds, 594 frames, 1080 by 1920 at 60 frames a second, H.264. Nothing is posted. The full sound he sent at about 03:00 UTC is under the preview (see "The sound"). The files are out of git, in `.promo/v1.9-video/christ2/`, and are lost when the container goes; he has both.
+His word on the second cut, about 03:05 UTC: "Okay, so the edit in itself is perfect, but notice, like, what I want you to do is that for the first two sections, like where the two images of Christ come up, make it come up like how it comes up in the example video. So instead of just like floating up, it like is flat and then it stands up while also zooming in. Other than that, the video is perfect."
+
+**Status, 2026-11-22 about 03:25 UTC: the second cut stands, with the two figures in the dome now tipping and standing as the template's do; it waits for his yes or no.** 9.9 seconds, 594 frames, 1080 by 1920 at 60 frames a second, H.264. Nothing is posted. The full sound he sent at about 03:00 UTC is under the preview (see "The sound"). The files are out of git, in `.promo/v1.9-video/christ2/`, and are lost when the container goes; he has both.
 
 The first cut was an HTML stage (`make.mjs`) timed by eye. It is at commit `646414ee8` with its own `assets.py` and `screens.mjs`. The second cut replaces it: the template was measured frame by frame, and the film is built from those measures.
 
@@ -14,9 +16,9 @@ The first cut was an HTML stage (`make.mjs`) timed by eye. It is at commit `6464
 
 | Frames | Seconds | What the template does |
 |---|---|---|
-| 0 to 19 | 0.00 to 0.63 | a black-and-white cut-out figure stands in a white dome on a starry black, then falls back into it, shrinking |
+| 0 to 19 | 0.00 to 0.63 | a black-and-white cut-out figure stands in a white dome on a starry black, then tips back whole, like a card hinged below it, until it lies nearly flat and is gone |
 | 19 to 24 | 0.63 to 0.80 | the dome stands empty, growing |
-| 24 to 43 | 0.80 to 1.43 | a second figure rises from below, drawn out by its speed, and settles large |
+| 24 to 43 | 0.80 to 1.43 | a second figure lies tipped back nearly flat at the foot of the dome and stands up whole, coming nearer as it stands, drawn out by its speed; it settles large |
 | 44 to 53 | 1.47 to 1.77 | a white flash, fullest at frame 48 |
 | 50 to 60 | 1.68 to 2.00 | a window opens over the figure, grows, and is flown through |
 | 60, 76, 91, 105 | 2.00, 2.53, 3.03, 3.50 | four shots cut on the beat, each pushing in, each hit a flash; a word on each beat |
@@ -30,7 +32,7 @@ The first cut was an HTML stage (`make.mjs`) timed by eye. It is at commit `6464
 | 236 to 293 | 7.87 to 9.77 | the dome again, the same play 234 frames later, with cyan and blue light on it and its figures crisp |
 | 294 to 296 | 9.80 to 9.90 | the first shot again, bright; the film loops |
 
-How each was measured: the dome by fitting a circle to its edge; the figures by following the head; the flash by the frame's brightness; the window by its width; the cuts by eye and by brightness; each shot's push by matching points between frames with the words masked out; the faces' cuts by eye, frame by frame; the second dome's light by sampling fixed points and setting each beside the same point 234 frames earlier; every frame's brightness and sharpness.
+How each was measured: the dome by fitting a circle to its edge; the figures by following the head, and their tipping by following head and shirt in the second dome's crisp frames and fitting a hinged card seen by a camera to them (half a pixel off on average); the flash by the frame's brightness; the window by its width; the cuts by eye and by brightness; each shot's push by matching points between frames with the words masked out; the faces' cuts by eye, frame by frame; the second dome's light by sampling fixed points and setting each beside the same point 234 frames earlier; every frame's brightness and sharpness.
 
 ## Ours
 
@@ -50,6 +52,8 @@ How each was measured: the dome by fitting a circle to its edge; the figures by 
 | the answer shot, grey then colour | a Pantocrator on a chased gold ground (`golden`) | gold, red and blue: the turn from grey to colour is seen at once |
 | the second dome | the first again with the measured light on it | |
 
+**The figures tip and stand as the template's do** (his word on the second cut; `tilt_of`, `figure_at`). The first cut-out tips back whole about a line far below the frame and sinks into the dome's shadow; the second lies tipped back about 64 degrees at the foot of the dome and stands up in twelve frames, its head small and squat at first and growing as it comes upright. Each is one flat picture turning as a card turns: the whole of it tips, and nothing in it moves against the rest. In the second dome each figure keeps the template's own clock there (`second_dome_clock`): it holds a frame and jumps, and the second figure is in sight a frame and a half sooner.
+
 **The words are Scripture, word for word, held to the app's own Bible by the script** (his choice of "Scripture"): on the five beats "I am / the way / the truth / and / the life" (John 14:6); the question "But whom say ye that I am?" (Matthew 16:15); the answer "Thou art the Christ" (Matthew 16:16). They stand where and when the template's words stand: one line in the middle of the frame, capitals 42 pixels high, white turned over on the picture's own colour. The app's sans (his word on the ad's titles). Where each verse is found stands small above the name.
 
 **The name** "Purify" stands small at the foot all through, where the template carries its maker's mark.
@@ -66,11 +70,11 @@ Each of these is a choice, and each is his to overrule.
 
 1. **A word never stands on His face.** The template's words stand on the man's chin and collar. Ours stand on His neck below His beard, or on His breast, and the picture is held by that point so the word stays there however near the shot comes. So His face sits higher in the frame than the man's does.
 2. **The window opens on His breast, below His beard.** The template's opens on the man's face.
-3. **Nothing in an icon is redrawn and nothing in it is made to move.** No lit eyes (the template lights the man's eyes in the question shot), no sunglasses, no gestures. An icon moves only whole.
+3. **Nothing in an icon is redrawn and nothing in it is made to move.** No lit eyes (the template lights the man's eyes in the question shot), no sunglasses, no gestures. An icon moves only whole; in the dome it tips whole, as a card.
 4. **The second dome's light is a ring and pools.** The template's blue has a faint diamond pattern in it; the house allows no pattern of beams, so ours has none.
 5. **The question is set a little smaller** (capitals 35 high, not 42). At the template's size a line this long would run under the buttons of the apps it is posted in.
 6. **Brightness.** The app's Bible page is black with fine letters, far darker than the template's second shot; its light is left on a little so it holds. The icon shots are still about one and a half times as bright as the template's shots after the pooled light. `edit.py ... luma` prints ours beside the template's for every frame.
-7. **60 frames a second, not 30.** A few of the template's second-dome frames are a blend of two; ours are crisp throughout that dome instead.
+7. **60 frames a second, not 30.** The second dome keeps the template's stepping, but not its few frames that are a blend of two: ours are crisp throughout that dome.
 
 ## The rules, and what no machine checked
 
@@ -106,6 +110,8 @@ python3 docs/plans/v1.9/video/release/christ-edit/edit.py . .promo/v1.9-video/ch
 python3 docs/plans/v1.9/video/release/christ-edit/edit.py . .promo/v1.9-video/christ2 luma                         # brightness and sharpness, ours beside the template's
 python3 docs/plans/v1.9/video/release/christ-edit/edit.py . .promo/v1.9-video/christ2 render [sound file [offset]] # every frame, then the files (about eight minutes on four cores)
 python3 docs/plans/v1.9/video/release/christ-edit/edit.py . .promo/v1.9-video/christ2 sound <sound file> 0.0891          # a new sound under the film already made
+python3 docs/plans/v1.9/video/release/christ-edit/edit.py . .promo/v1.9-video/christ2 frames 0 120                       # some frames again after a change to one part
+python3 docs/plans/v1.9/video/release/christ-edit/edit.py . .promo/v1.9-video/christ2 encode <sound file> 0.0891         # the files again from the frames
 ```
 
 The cut is the tables in `edit.py`: `SHOTS` (each shot's picture, the point held, its push, blur and flash by the template's frame), `FACES1` and `FACES2` (the icons in each run and how near), and the word tables. The template's file is not in the repository: it is someone else's video.

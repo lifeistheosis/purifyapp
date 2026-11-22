@@ -9,6 +9,8 @@
                                                                               ours beside the template's
   python3 edit.py <repo root> <work dir> render [sound file [offset]]         every frame, then the silent master;
                                                                               with a sound file, also a private preview
+  python3 edit.py <repo root> <work dir> frames <first> <last>                some of the film's frames again
+  python3 edit.py <repo root> <work dir> encode [sound file [offset]]         the files again from the frames
   python3 edit.py <repo root> <work dir> sound <sound file> [offset]          a new sound under the film already made
                                                                               (offset: seconds into the film at which
                                                                               the sound's first sample falls)
@@ -82,6 +84,17 @@ class Pic:
         M = np.float32([[k, 0, sx - k * ax], [0, k, sy - k * ay]])
         out = cv2.warpAffine(self.lv[L], M, size, flags=cv2.INTER_LINEAR if k <= 1.001 else cv2.INTER_CUBIC,
                              borderMode=cv2.BORDER_REPLICATE if edge else cv2.BORDER_CONSTANT, borderValue=0)
+        return out.astype(np.float32) / 255
+
+
+    def warp(self, Hm, smallest, size=(W, H)):
+        """Set the picture down through a tilt: `Hm` carries a point of the picture to the screen, `smallest` is the
+        smallest it is drawn anywhere (so a smaller copy is used and it does not shimmer). Gives floats, 0 to 1."""
+        L = 0
+        while smallest < 0.5 and L < len(self.lv) - 1:
+            smallest, L = smallest * 2, L + 1
+        Hl = Hm @ np.diag([2.0 ** L, 2.0 ** L, 1.0])
+        out = cv2.warpPerspective(self.lv[L], Hl, size, flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
         return out.astype(np.float32) / 255
 
 
@@ -324,6 +337,9 @@ FIG = {
 }
 
 
+FIG_A_GONE, FIG_B_COMES = 23.5, 22.0  # the first figure is out of sight in the dome's shadow; the second begins, flat
+
+
 def _head(name):
     ex, ey, d = eyes(name)
     return ex, ey + 0.45 * d
@@ -395,6 +411,59 @@ def figure_foot():
         u = np.clip((y - 1540) / 190, 0, 1)
         return (1 - u * u * (3 - 2 * u))[:, None]
     return once("foot", make)
+
+
+def head_y(which, F):
+    """Where the template's head is at frame F, carried on past its picture's edge at the speed it had there."""
+    t = FIG[which]["t"]["head_y"]
+    if which == "a" and F > 19:
+        return tab(t, 19) + 60.0 * (F - 19)
+    if which == "b" and F < 24:
+        return tab(t, 24) + 165.0 * (24 - F)
+    return tab(t, F)
+
+
+def tilt_of(which, F):
+    """How far back the figure is tipped at frame F (radians) and how large the card itself stands, found from where
+    the template's head is: the figure is one flat picture, hinged below and seen by a camera (template.json)."""
+    t = FIG[which]["t"]
+    tl = t["tilt"]
+    yp, d = tl["hinge_y"], tl["camera"]
+    h = yp - tab(t["head_y"], tl["upright_frame"])
+    degs, zooms = zip(*tl["zoom_by_tilt"])
+    target = head_y(which, F)
+    lo, hi = 0.0, math.radians(88)
+    for _ in range(40):
+        th = (lo + hi) / 2
+        z = float(np.interp(math.degrees(th), degs, zooms))
+        if yp - z * h * math.cos(th) * d / (d + h * math.sin(th)) < target:
+            lo = th
+        else:
+            hi = th
+    th = (lo + hi) / 2
+    return th, float(np.interp(math.degrees(th), degs, zooms))
+
+
+def figure_at(which, F):
+    """The cut-out as it stands at frame F: upright where the template's figure is upright, and tipped back whole,
+    as a card, where the template's is. The whole picture tips; nothing in it moves against the rest."""
+    t = FIG[which]["t"]
+    tl = t["tilt"]
+    k = FIG[which]["k"]
+    ax, ay = FIG[which]["anchor"]()
+    up = tl["upright_frame"]
+    if (which == "a" and F <= up) or (which == "b" and F >= up):
+        return figure(which).draw(k * tab(t["scale"], F), ax, ay, t["head_x"], tab(t["head_y"], F) + UP)
+    th, z = tilt_of(which, F)
+    k0, hx, hy0 = k * tab(t["scale"], up), t["head_x"], tab(t["head_y"], up) + UP
+    yp, d = tl["hinge_y"] + UP, tl["camera"]
+    c, sn = math.cos(th), math.sin(th)
+    stand = np.float64([[k0, 0, hx - k0 * ax], [0, k0, hy0 - k0 * ay], [0, 0, 1]])         # the cut-out set upright
+    to_card = np.float64([[1, 0, -hx], [0, -1, yp], [0, 0, 1]])                            # across, and up from the hinge
+    tip = np.float64([[z * d, 0, 0], [0, z * d * c, 0], [0, sn, d]])                       # tipped back, seen by the camera
+    to_screen = np.float64([[1, 0, hx], [0, -1, yp], [0, 0, 1]])
+    top = yp - hy0 + 300                                                                   # about the top of His halo
+    return figure(which).warp(to_screen @ tip @ to_card @ stand, k0 * z * c * d / (d + top * sn))
 
 
 CYAN, BLUE = np.float32([0.30, 0.96, 1.0]), np.float32([0.10, 0.36, 1.0])
@@ -478,15 +547,17 @@ def dome_scene(F, second):
         out = out + 0.3 * blur(np.clip(out - 0.55, 0, 1), 16)
     out = name(out, 0.5)
     for which in ("a", "b"):
-        t = FIG[which]["t"]
-        if which == "a" and F >= 19:
+        # The second dome shows each figure on its own clock: holding, jumping, and the second one in sight sooner.
+        Ff = tab(T["second_dome_clock"][f"figure_{which}"], F) if second else F
+        if which == "a" and Ff >= FIG_A_GONE:
             continue
-        if which == "b" and F < 24:
+        if which == "b" and Ff < FIG_B_COMES:
             continue
-        s = tab(t["scale"], F)
-        hy = tab(t["head_y"], F) + UP
-        ax, ay = FIG[which]["anchor"]()
-        g = figure(which).draw(FIG[which]["k"] * s, ax, ay, t["head_x"], hy)
+        g = figure_at(which, Ff)
+        # flat in the dome's shadow, a figure comes into sight and goes out of it softly
+        seen = smooth((Ff - FIG_B_COMES) / 1.5) if which == "b" else 1 - smooth((Ff - (FIG_A_GONE - 1.5)) / 1.5)
+        if seen < 0.999:
+            g = g * seen
         a = g[..., 1] * figure_foot()
         lit = g[..., 0] * figure_foot()
         if dark is not None:  # the figure's own foot sinks into the dark that rose behind it
@@ -885,10 +956,10 @@ def fast(F):
             return 4
         if 235.4 <= F < 240:
             return 8
-        if 3 <= f < 19.5 or 24 <= f < 40:
-            # as many moments as the figure travels in fours of a pixel, so its blur is smooth and never stepped
-            t = T["figure_a"] if f < 19.5 else T["figure_b"]
-            travel = abs(tab(t["head_y"], f + 0.5) - tab(t["head_y"], f - 0.5)) + 600 * abs(tab(t["scale"], f + 0.5) - tab(t["scale"], f - 0.5))
+        if 3 <= f < FIG_A_GONE or FIG_B_COMES <= f < 40:
+            # as many moments as the figure's head travels in fours of a pixel, so its blur is smooth and never stepped
+            which = "a" if f < FIG_B_COMES else "b"
+            travel = abs(head_y(which, f + 0.5) - head_y(which, f - 0.5)) * 1.3
             return int(min(36, max(2, math.ceil(travel / 4))))
         if 55.5 <= f < 60.5:
             return 30  # the window is flown through: many moments, so its blur is smooth
@@ -1017,16 +1088,23 @@ def lay_sound(audio, offset=0.0):
     return preview
 
 
-def render(audio=None, offset=0.0):
+def render_frames(a=0, b=None):
+    """Frames a to b of the film (60 a second) into the work folder; the rest are left as they are."""
     from multiprocessing import Pool
     total = int(round(TOTAL_F * FPS / TF))
+    b = total if b is None else min(total, b)
     step = 12
-    jobs = [(a, min(total, a + step)) for a in range(0, total, step)]
+    jobs = [(i, min(b, i + step)) for i in range(a, b, step)]
     done = 0
     with Pool(4) as pool:
         for k in pool.imap_unordered(render_range, jobs):
             done += k
-            print(f"  {done} of {total} frames", flush=True)
+            print(f"  {done} of {b - a} frames", flush=True)
+
+
+def encode(audio=None, offset=0.0):
+    """The silent master from the frames in the work folder; with a sound, the private preview too."""
+    total = int(round(TOTAL_F * FPS / TF))
     master = f"{HOME}/purify-christ-edit.mp4"
     common = ["-framerate", str(FPS), "-i", f"{HOME}/frames/v%05d.png", "-frames:v", str(total), "-vf", "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p",
               "-c:v", "libx264", "-profile:v", "high", "-level", "4.2", "-preset", "slower", "-crf", "15", "-colorspace", "bt709", "-color_primaries", "bt709",
@@ -1036,6 +1114,11 @@ def render(audio=None, offset=0.0):
     if audio:
         out["preview"] = lay_sound(audio, offset)
     print(json.dumps(out))
+
+
+def render(audio=None, offset=0.0):
+    render_frames()
+    encode(audio, offset)
 
 
 if __name__ == "__main__":
@@ -1053,5 +1136,9 @@ if __name__ == "__main__":
         luma(*(int(x) for x in sys.argv[4:6])) if len(sys.argv) > 5 else luma()
     elif mode == "render":
         render(sys.argv[4] if len(sys.argv) > 4 else None, float(sys.argv[5]) if len(sys.argv) > 5 else 0.0)
+    elif mode == "frames":  # some frames again, after a change to one part of the film
+        render_frames(int(sys.argv[4]), int(sys.argv[5]))
+    elif mode == "encode":
+        encode(sys.argv[4] if len(sys.argv) > 4 else None, float(sys.argv[5]) if len(sys.argv) > 5 else 0.0)
     elif mode == "sound":  # a new sound under the film already rendered
         print(lay_sound(sys.argv[4], float(sys.argv[5]) if len(sys.argv) > 5 else 0.0))
