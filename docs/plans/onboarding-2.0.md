@@ -291,3 +291,43 @@ They await his yes or no. With mock-ups 2 to 4 and the numbers drawing, seven dr
 | 1 | The road and the first pick tallied in Admin from counts that exist, drawn on the reader web there | medium | a design from the admin's own pieces |
 | 2 | A line in his weekly brief for each running test | small | nothing |
 | 3 | The new first week, as one fork: the need, the picks' true line, the week as the last screen, the day's frame (begins, Done, kept), the first Liturgy held, the seeker's rule | medium to large | a priest's glance at five lines; its entry in the tests' file; its place after the account's test |
+
+## An honest rating, and what is still missing (2026-11-22)
+
+His word, about 21:40 UTC: "how would you rate our progress and onboarding that we have right now and what can be added/revamped?"
+
+This chat's judgement, from what it read in the code, photographed and measured on 2026-11-22. It rates how the onboarding is designed and built. It cannot rate results: how many finish, keep day one or come back is in Admin, Onboarding, and this chat has not seen it.
+
+**The onboarding readers have today (1.9), out of ten.**
+
+| Part | Score | Why |
+|---|---|---|
+| The ground it stands on: rules held by tests, counts that keep a reader unnamed, no account to begin, the look | 8.5 | Rare at this size. 30,024 sets of answers walked, none with a broken week. |
+| The questions | 7 | Short, kind, asked in the reader's own terms. The third is mis-built: shelves before needs, a promise of more than three picks, the first tap choosing a road unseen. |
+| What the reader gets back at once | 4 | "Your space is ready" lists settings and fades by itself. Today looks the same on five roads, and the week's card has its button under the tab bar. |
+| The first week | 3.5 | Each day is a link, counted at the tap. The page does not know it is a day, its own button leads away from the week, and the switch is rough. |
+| After day seven | 3 | Nothing. The week stops, or ends without a word after two days passed over. No second week, no month. |
+| Knowing what works | 6 | Better than most: tests, milestones, counts by answer. Not past the questions by road, not in one picture, and too few readers for fine answers. |
+| The way to Plus | 5, unproven | Honest and calm, which fits the house. Its tests run to May 2027, and no price or trial has been tested. |
+| **As a whole** | **5.5** | A fine front door onto a hallway. The asking is good; the giving back is thin. |
+
+**The work on 2.0's onboarding so far.**
+
+| Part | Score | Why |
+|---|---|---|
+| Understanding and plan | 8.5 | Every claim read in the code or measured; the map held by a test; seven drawings from the app's own screens; the decisions and their reasons written. |
+| Built for readers | 1 | Nothing yet, by the phase's own rule. The two faults measured on Today are still what every new reader meets. |
+| The risk in it | | About ten pieces of work, one chat at a time. His words are needed for the privacy text, a price and a priest's read. The questions' test place is held until 2027-02-09. A plan this size can outgrow the hands that build it. |
+
+**What is missing from the plan, and worth adding. Brainstorm; none is begun.**
+
+- **A. After day seven.** The week ends on a closing moment ("Your first week is kept") and offers what comes next, by the reader's need: a second week, or a plan. A plan is where a reader runs into Plus by their own wish, so it is the honest place to meet it and keeps his rule. This is the largest hole.
+- **B. Reminders that need no account.** "One a day" depends on the reader remembering. Today a reminder needs an account (`onboard.reminders.needsAccount`), so most new readers have none. A calm reminder kept on the phone itself ("Day 2 is ready") is likely the largest single help to coming back. The house's rule for notifications stands: nothing that puts a clock on the reader.
+- **C. The first prayer inside the first minute.** The app's one number for onboarding is a first prayer or chapter finished. Today that is several taps and a scroll away. Day one could begin from the last screen itself.
+- **D. The door, walked.** "Your first Liturgy" is on seven of the nine weeks and "Find a parish" ends four. They are where every road leads, so they should be the best two pages in the app. Neither has been walked for this.
+- **E. A week that waits.** Two days passed over end the week without a word. It could pause and be there when the reader returns.
+- **F. A short welcome by email, by first pick,** for a reader with an account. No series was found among the automatic sends. What a reader came for is kept with the account and says nothing of their faith.
+
+**Not for this house, named so nobody proposes it:** a card to share one's own streak or week. Showing one's prayer is not the Church's way. A verse or a saint is what is shared.
+
+**What this chat would cut, if the work has to be smaller.** Keep rows 0 to 3 of the order and A and B above. Leave the longer questions, the picture on the Plus sheet and the source on the counts for after.

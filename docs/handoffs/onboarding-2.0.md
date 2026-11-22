@@ -19,6 +19,7 @@ Build what he decided for 2.0's onboarding on 2026-11-22, one piece at a time, o
 - **Row 0, the two faults of the week's card** (a fixer): the step is written as taken at the tap, so the card goes and Today jumps before the page moves; and Begin stands under the tab bar when Today opens. `components/onboarding/FirstStepsNudge.tsx`. Each needs a test that fails on today's code.
 - **Rows 1 to 3 of the order** (the next chat, one at a time): numbers by road and by first pick in Admin from counts that exist; a line in his brief for each test; the new first week as one fork.
 - **His to do:** read the privacy page's two drafted sentences (`reader-map.md`, section 12); name a price for a lifetime plan and make it in the stores; say whether the Plus card's test runs to 2027-02-09; clear or change the readers' email look on his desk (`lib/email/look.ts` stands at "3", so each automatic list email goes to him alone until he does); press the test send and the real send of the 1.9 email.
+- **Six things missing from the plan,** noted and not decided (`onboarding-2.0.md`, "An honest rating"): after day seven, reminders that need no account, a first prayer in the first minute, the door walked, a week that waits, a welcome by email. His to pick.
 - **A priest's glance:** the five lines about a need (`docs/plans/reader-map/mock-looking-for.mjs`, NEED).
 - **Mock-up 1, the EU step:** still his yes or no; it was not among the seven he left to recommendation.
 
