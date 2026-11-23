@@ -604,8 +604,9 @@ export function PhoneCalendar(p: PhoneCalendarProps) {
         </div>
       </section>
 
-      {/* The day's end, when there is one: in the page's own column, and gone whole when there is none. */}
-      <div className="mx-5 empty:hidden">{p.end}</div>
+      {/* The day's end, when there is one: in the page's own column, with the room under it that a
+          council's or a saint's page gives its own, and gone whole when there is none. */}
+      <div className="mx-5 pb-8 empty:hidden">{p.end}</div>
     </div>
   );
 }

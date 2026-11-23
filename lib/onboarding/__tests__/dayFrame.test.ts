@@ -156,7 +156,8 @@ describe("the frame", () => {
     expect(calendar).toContain("end={dayEnd} /> ); }");
     expect(calendar).toContain('<T k="calendar.fastingDisclaimer" /> </p> {dayEnd} </div> </section> </div> ); }');
     // The phone's page ends on its closing prayer; the end stands after it, and its room is gone when there is none.
-    expect(flat("components/calendar/PhoneCalendar.tsx")).toContain('{GREEK_COLOPHON} </p> </div> </section> {/* The day\'s end, when there is one: in the page\'s own column, and gone whole when there is none. */} <div className="mx-5 empty:hidden">{p.end}</div> </div> ); }');
+    expect(flat("components/calendar/PhoneCalendar.tsx")).toContain('<div className="mx-5 pb-8 empty:hidden">{p.end}</div> </div> ); }');
+    expect(flat("components/calendar/PhoneCalendar.tsx")).toMatch(/\{GREEK_COLOPHON\} <\/p> <\/div> <\/section> \{\/\* The day's end, when there is one/);
     // Only an address that begins as a framed page's does is one: a prayer and a lessons' list are not.
     expect(kindOf("/prayers/creed")).toBeNull();
     expect(kindOf("/prayers/learning/jesus-prayer")).toBe("/prayers/learning/");
