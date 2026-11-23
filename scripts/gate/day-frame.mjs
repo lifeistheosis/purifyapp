@@ -23,7 +23,11 @@
 //   6. Today then says the day is kept, with tomorrow's step by name, and offers nothing to begin;
 //   7. the page opened again that day keeps its card and does not move by itself;
 //   8. the next day tomorrow's step waits on Today, and the council's page wears nothing;
-//   9. with motion reduced, Done is answered with no motion and the card stands whole.
+//   9. with motion reduced, Done is answered with no motion and the card stands whole;
+//  10. at a tablet's size the card stands whole too, clear of the bars and of the Testers mark.
+//
+// The tap on Done is recorded frame by frame and judged by the gate's own motion check
+// (scripts/gate/frames.mjs): no cut, no jump, no flash; and with motion reduced, nothing that moves.
 //
 // Run from the repository's root on the export in out/. With --stills <dir> it keeps pictures.
 //   node scripts/gate/day-frame.mjs [--stills dir]
@@ -31,9 +35,11 @@ import fs from "node:fs";
 
 import { chromium } from "playwright";
 
-import { motionOptions, pinMotion } from "../lib/motion.mjs";
+import { assertMotion, motionOptions, pinMotion } from "../lib/motion.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 import { asAndroidShell } from "../lib/sells-plus.mjs";
+import { judgeFrames, recordFrames } from "./frames.mjs";
+import { installGate } from "./inpage.mjs";
 
 const OWN = "/opt/pw-browsers/chromium";
 const OUT = new URL("../../out", import.meta.url).pathname;
@@ -65,6 +71,11 @@ const READER = {
 const THIRD_DAY = { "purify:week": '{"at":2,"day":"2026-12-05","passed":0}' };
 /** Testers mode, as lib/onboarding/testers.ts starts it. */
 const TESTING = { "purify:testers": '{"v":1,"keys":{}}' };
+// The walk's days are set by a pinned clock, so the device's motion verdict (scripts/lib/motion.mjs)
+// is dated by that clock too: dated by the container's own it would be days old on the walk's days,
+// the app would measure the device again four seconds in, and a walk that asked for reduced motion
+// would be walked with motion on without a word. Noon of the walk's last day is never stale on any.
+const VERDICT_AT = new Date(`${NEXT_DAY}T12:00:00-05:00`).getTime();
 
 const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
 let faults = 0;
@@ -75,12 +86,13 @@ const fault = (why) => {
 const ok = (what) => console.log(`    ok   ${what}`);
 const check = (cond, good, bad) => (cond ? ok(good) : fault(bad));
 
-async function reader(keys, { motion = "on", scale = 1 } = {}) {
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: scale, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, locale: "en-US", timezoneId: "America/New_York", ...motionOptions(motion) });
+async function reader(keys, { motion = "on", scale = 1, width = 390, height = 844 } = {}) {
+  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA, locale: "en-US", timezoneId: "America/New_York", ...motionOptions(motion) });
   await pinMotion(ctx, motion);
-  await ctx.addInitScript((kept) => {
+  await ctx.addInitScript(({ kept, verdictAt }) => {
     try {
       if (!localStorage.getItem("purify:onboarded")) for (const [k, v] of Object.entries(kept)) localStorage.setItem(k, v);
+      localStorage.setItem("purify.motion.device.at", String(verdictAt));
     } catch {}
     window.__frame = { transitions: 0, seen: [], watch: false };
     const own = document.startViewTransition?.bind(document);
@@ -89,7 +101,8 @@ async function reader(keys, { motion = "on", scale = 1 } = {}) {
         window.__frame.transitions++;
         return own(update);
       };
-  }, keys);
+  }, { kept: keys, verdictAt: VERDICT_AT });
+  await installGate(ctx);
   await asAndroidShell(ctx);
   await serveLikeTheShell(ctx, OUT, {});
   return ctx;
@@ -171,6 +184,14 @@ const measure = (page) =>
     };
   });
 const apart = (a, b) => !a || !b || a.bottom <= b.top || b.bottom <= a.top || a.right <= b.left || b.right <= a.left;
+/** The tap on Done, recorded frame by frame and judged as the gate judges any tap's change. */
+const judgedDone = async (ctx, page, motion) => {
+  const cdp = await ctx.newCDPSession(page);
+  const rec = await recordFrames(page, cdp, () => tap(page, "[data-day-done]"), { moves: motion === "reduce" });
+  const v = await judgeFrames(rec, { motion });
+  await cdp.detach().catch(() => {});
+  return { frames: rec.frames.length, fails: v.fails.map((f) => `${f.kind}: ${f.detail}`), unsure: v.unsure ?? [], glides: (v.glides ?? []).length };
+};
 const toEnd = async (page) => {
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await page.waitForTimeout(900);
@@ -272,18 +293,22 @@ console.log("\n  With the frame on, the council's day");
     await page.waitForTimeout(2500);
     await toEnd(page);
     const before = await measure(page);
+    const motion = await assertMotion(page, "on");
+    check(!motion, "the app's motion is on, as a reader's phone has it", motion);
     check(before.done && before.mark.top >= before.ceiling && before.done.bottom <= before.floor, `at the page's end the line and Done stand whole between the bars (${before.mark?.top} to ${before.done?.bottom}, the bars at ${before.ceiling} and ${before.floor})`, `at the page's end Done runs to ${before.done?.bottom} with the tab bar's top at ${before.floor}`);
     check(apart(before.done, before.pill), "and clear of the Testers mark", `the Testers mark (${JSON.stringify(before.pill)}) stands over Done (${JSON.stringify(before.done)})`);
     await still(page, "day-3-done");
     await page.evaluate(() => (window.__frame.transitions = 0));
-    await tap(page, "[data-day-done]");
-    await page.waitForTimeout(2600);
+    const seenDone = await judgedDone(ctx, page, "on");
+    await page.waitForTimeout(900);
     const after = await measure(page);
     check(after.transitions > 0, "the tap was answered in the house's motion", "the button changed with a cut: no transition began");
+    check(!seenDone.fails.length && !seenDone.unsure.length, `frame by frame (${seenDone.frames} frames), the gate's motion check finds no cut, no jump and no flash`, `the gate's motion check on the tap: ${[...seenDone.fails, ...seenDone.unsure.map((u) => `unsure: ${u}`)].join("; ")}`);
     check(!after.done && !after.mark && after.kept?.words[0] === "Day 3 of 7, kept" && /^Tomorrow: /.test(after.kept.words[1] ?? ""), `the week's card stands in their place: "${after.kept?.words.join('", "')}"`, `after Done the page shows ${JSON.stringify(after.kept)}, the button ${after.done ? "still there" : "gone"}`);
     const moved = after.y - before.y;
     check(after.kept && Math.abs(after.kept.top + moved - before.mark.top) <= 2, `where the finger is: the card's head stands where the line's did${moved ? `, and the page went ${moved} with it` : ", and the page did not move"}`, `the card's head is at ${after.kept?.top} (the page moved ${moved}); the line's was at ${before.mark.top}`);
     check(after.kept && after.kept.top >= after.ceiling && after.kept.bottom <= after.floor, `the card is whole between the bars (${after.kept?.top} to ${after.kept?.bottom}, the bars at ${after.ceiling} and ${after.floor})`, `the card runs from ${after.kept?.top} to ${after.kept?.bottom} with the bars at ${after.ceiling} and ${after.floor}`);
+    check(apart(after.kept, after.pill), "and clear of the Testers mark", `the Testers mark (${JSON.stringify(after.pill)}) stands over the card (${after.kept?.top} to ${after.kept?.bottom})`);
     check(after.kept?.link === "Back to Today" && after.kept.href === "/" && after.kept.linkHit, "it offers the way back to Today, and a finger reaches it", `its link is ${JSON.stringify(after.kept?.link)} to ${after.kept?.href}, under the finger: ${after.kept?.linkHit}`);
     check(new RegExp(`"at":3,"day":"${DAY}","passed":0`).test(after.week ?? ""), "the day is kept on the device, today", `the week is ${after.week}`);
     await still(page, "day-4-kept");
@@ -324,14 +349,34 @@ console.log("\n  With motion reduced");
   const page = await open(ctx, COUNCIL, DAY);
   await toEnd(page);
   const before = await measure(page);
+  const motion = await assertMotion(page, "reduce");
+  check(!motion, "the app's motion is reduced, as on a phone it judges slow", motion);
   if (!before.done) fault("no Done at the page's end");
   else {
     await page.evaluate(() => (window.__frame.transitions = 0));
-    await tap(page, "[data-day-done]");
-    await page.waitForTimeout(1500);
+    const seenDone = await judgedDone(ctx, page, "reduce");
+    await page.waitForTimeout(600);
     const after = await measure(page);
     check(after.transitions === 0 && after.kept?.words[0] === "Day 3 of 7, kept", "Done is answered with no motion: the card stands at once", `with motion reduced ${after.transitions} transitions began; the page shows ${JSON.stringify(after.kept)}`);
+    check(!seenDone.fails.length && !seenDone.unsure.length, `frame by frame (${seenDone.frames} frames), nothing moves`, `the gate's motion check on the tap, motion reduced: ${[...seenDone.fails, ...seenDone.unsure.map((u) => `unsure: ${u}`)].join("; ")}`);
     check(after.kept && after.kept.top >= after.ceiling && after.kept.bottom <= after.floor && after.kept.linkHit, `whole between the bars (${after.kept?.top} to ${after.kept?.bottom}), its way back under the finger`, `the card runs from ${after.kept?.top} to ${after.kept?.bottom} with the bars at ${after.ceiling} and ${after.floor}; its link under the finger: ${after.kept?.linkHit}`);
+  }
+  await ctx.close();
+}
+
+console.log("\n  At a tablet's size (800 by 1280)");
+{
+  const ctx = await reader({ ...READER, ...THIRD_DAY, ...TESTING }, { width: 800, height: 1280 });
+  const page = await open(ctx, COUNCIL, DAY);
+  await toEnd(page);
+  const before = await measure(page);
+  if (!before.done) fault("no Done at the page's end");
+  else {
+    check(before.done.left === before.column.left && before.done.right < before.column.right && before.done.bottom <= before.floor && apart(before.done, before.pill), `Done stands at the column's start, no wider than a button (${before.done.left} to ${before.done.right}), clear of the bars and of the Testers mark`, `Done runs from ${before.done.left} to ${before.done.right} in a column from ${before.column.left} to ${before.column.right}; its foot at ${before.done.bottom}, the bar at ${before.floor}, the Testers mark ${JSON.stringify(before.pill)}`);
+    await tap(page, "[data-day-done]");
+    await page.waitForTimeout(2600);
+    const after = await measure(page);
+    check(after.kept && after.kept.top >= after.ceiling && after.kept.bottom <= after.floor && apart(after.kept, after.pill) && after.kept.linkHit, `the card stands whole between the bars (${after.kept?.top} to ${after.kept?.bottom}), clear of the Testers mark, its way back under the finger`, `the card runs from ${after.kept?.top} to ${after.kept?.bottom} with the bars at ${after.ceiling} and ${after.floor}; the Testers mark ${JSON.stringify(after.pill)}; its link under the finger: ${after.kept?.linkHit}`);
   }
   await ctx.close();
 }

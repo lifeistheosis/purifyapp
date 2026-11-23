@@ -36,13 +36,12 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CARD_BG } from "@/components/ui/Graphite";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { countWeekStep } from "@/lib/analytics/moreCount";
-import { cn } from "@/lib/cn";
 import { frameFits } from "@/lib/onboarding/dayFrame";
 import { readWeek, writeWeek } from "@/lib/onboarding/state";
 import { useWeekDay, type WeekDay } from "@/lib/onboarding/useWeek";
 import { localDay, stepTaken, type WeekStep } from "@/lib/onboarding/week";
 import { afterMoves, movePage } from "@/lib/ui/inPageMove";
-import { goToReadingPlace, visibleBand } from "@/lib/ui/readingPlace";
+import { goToReadingPlace, shiftToReadingPlace, visibleBand } from "@/lib/ui/readingPlace";
 
 const bare = (path: string) => path.replace(/\/+$/, "") || "/";
 
@@ -74,14 +73,14 @@ export function DayEnd({ className }: { className?: string }) {
     if (!kept || !answered.current) return;
     answered.current = false;
     let live = true;
-    // The card is taller than what it answers, so its foot can open under the bars: once the move
-    // has ended the page goes with it, as anything that opens off the screen must.
+    // The card is taller than what it answers and opens downwards, at the page's end: once the move
+    // has ended the page goes with it as far as it can, so the card stands where the button stood
+    // over the bars, whole, as anything that opens low on the screen must (lib/ui/showOpened.ts).
     void afterMoves().then(() => {
       const el = card.current;
       if (!live || !el) return;
       const band = visibleBand();
-      const at = el.getBoundingClientRect();
-      if (at.top < band.top || at.bottom > band.bottom) goToReadingPlace(el, { band });
+      if (shiftToReadingPlace(band, el.getBoundingClientRect()) > 1) goToReadingPlace(el, { band });
     });
     return () => {
       live = false;
@@ -98,42 +97,45 @@ export function DayEnd({ className }: { className?: string }) {
   };
 
   return (
-    <div data-day-end="" className={cn("border-t border-paper/10 pt-6", className)}>
-      {here.kept ? (
-        // The week's own card, as Today draws it (FirstStepsNudge.tsx), so the card that opened the day closes it.
-        <div
-          ref={card}
-          data-day-kept=""
-          className="lm-card relative overflow-hidden rounded-[22px] p-5 ring-1 ring-inset ring-premium/30 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.6)]"
-          style={CARD_BG}
-        >
-          <p className="font-sans text-caption font-semibold text-premium-ink">{t("onboard.week.kept", { n: here.index + 1 })}</p>
-          {here.tomorrow ? (
-            <p className="mt-2 font-heading text-title-sm font-bold leading-tight text-paper">{t("onboard.week.tomorrow", { title: t(here.tomorrow.titleKey) })}</p>
-          ) : null}
-          <Link
-            href="/"
-            className="tap-press mt-4 inline-flex min-h-11 items-center gap-2 rounded-pill border border-paper/22 bg-paper/[0.03] px-5 font-sans text-ui font-semibold text-paper"
+    <div data-day-end="" className={className}>
+      {/* A fine line over it, as the page parts its own sections; room under it, so it never ends against the bars. */}
+      <div className="border-t border-paper/10 pb-4 pt-6">
+        {here.kept ? (
+          // The week's own card, as Today draws it (FirstStepsNudge.tsx), so the card that opened the day closes it.
+          <div
+            ref={card}
+            data-day-kept=""
+            className="lm-card relative overflow-hidden rounded-[22px] p-5 ring-1 ring-inset ring-premium/30 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.6)]"
+            style={CARD_BG}
           >
-            {t("onboard.week.back")}
-            <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
-          </Link>
-        </div>
-      ) : (
-        <>
-          <p data-day-mark="" className="font-sans text-caption font-semibold text-paper/65">
-            {t("onboard.week.eyebrow", { n: here.index + 1 })}
-          </p>
-          <button
-            type="button"
-            data-day-done=""
-            onClick={done}
-            className="tap-press mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-pill bg-paper px-6 font-sans text-[15px] font-semibold text-night sm:w-auto sm:min-w-[280px]"
-          >
-            {t("onboard.week.done")}
-          </button>
-        </>
-      )}
+            <p className="font-sans text-caption font-semibold text-premium-ink">{t("onboard.week.kept", { n: here.index + 1 })}</p>
+            {here.tomorrow ? (
+              <p className="mt-2 font-heading text-title-sm font-bold leading-tight text-paper">{t("onboard.week.tomorrow", { title: t(here.tomorrow.titleKey) })}</p>
+            ) : null}
+            <Link
+              href="/"
+              className="tap-press mt-4 inline-flex min-h-11 items-center gap-2 rounded-pill border border-paper/22 bg-paper/[0.03] px-5 font-sans text-ui font-semibold text-paper"
+            >
+              {t("onboard.week.back")}
+              <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
+            </Link>
+          </div>
+        ) : (
+          <>
+            <p data-day-mark="" className="font-sans text-caption font-semibold text-paper/65">
+              {t("onboard.week.eyebrow", { n: here.index + 1 })}
+            </p>
+            <button
+              type="button"
+              data-day-done=""
+              onClick={done}
+              className="tap-press mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-pill bg-paper px-6 font-sans text-[15px] font-semibold text-night sm:w-auto sm:min-w-[280px]"
+            >
+              {t("onboard.week.done")}
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

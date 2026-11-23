@@ -134,7 +134,7 @@ describe("the frame", () => {
     expect(frame).toContain("answered.current = true;");
     expect(frame).toContain("if (!kept || !answered.current) return;");
     expect(frame).toContain("void afterMoves().then(() => {");
-    expect(frame).toContain("if (at.top < band.top || at.bottom > band.bottom) goToReadingPlace(el, { band });");
+    expect(frame).toContain("if (shiftToReadingPlace(band, el.getBoundingClientRect()) > 1) goToReadingPlace(el, { band });");
   });
 
   it("keeps a day only at the reader's own Done, and answers it in the house's motion", () => {
