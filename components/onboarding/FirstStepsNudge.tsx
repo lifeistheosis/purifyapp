@@ -10,11 +10,11 @@ import { reached } from "@/lib/ab/device";
 import { countWeekStep } from "@/lib/analytics/moreCount";
 import { dismissNudge, readWeek, wasOnboardedAgain, writeWeek } from "@/lib/onboarding/state";
 import { countDayOne } from "@/lib/onboarding/count";
-import { stepOpening, type StepOpening, type StepParts } from "@/lib/onboarding/openStep";
+import { firstOpening, stepOpening, type StepOpening, type StepParts } from "@/lib/onboarding/openStep";
 import { DAY_ONE_KEYS, dayOneFor, type DayOneKey } from "@/lib/onboarding/space";
 import { useDayOneShown } from "@/lib/onboarding/useDayOne";
 import { useSpace } from "@/lib/onboarding/useSpace";
-import { useWeekToday } from "@/lib/onboarding/useWeek";
+import { useWeekDay, useWeekToday } from "@/lib/onboarding/useWeek";
 import { localDay, stepPassed, stepTaken } from "@/lib/onboarding/week";
 
 /**
@@ -39,6 +39,13 @@ import { localDay, stepPassed, stepTaken } from "@/lib/onboarding/week";
  * it over, and two passed over in a row end the week quietly. Each step
  * shows its page's own name, and a line only where the app already says one
  * about that page.
+ *
+ * With the day's frame on (2.0, lib/onboarding/flags.ts, off for readers) a
+ * step is kept by the reader's own Done at the end of its page
+ * (components/onboarding/DayFrame.tsx), not by opening it. So opening writes
+ * nothing and the card waits here, and once the day is kept the card says so
+ * until tomorrow, with tomorrow's step by name: nothing leaves Today under
+ * the finger.
  */
 export function FirstStepsNudge() {
   const { t } = useTranslate();
@@ -46,8 +53,15 @@ export function FirstStepsNudge() {
   const ready = useDayOneShown();
   // With the roads on (1.9), today's step of the reader's first week.
   const week = useWeekToday();
+  // With the day's frame on (2.0): the same week, with the step kept today. Null without the frame.
+  const day = useWeekDay();
   const opening = useStepOpening();
 
+  // Kept today: the card says so until tomorrow, in place of the step.
+  if (day && day.kept != null && !week) {
+    const next = day.steps[day.kept + 1];
+    return <KeptCard eyebrow={t("onboard.week.kept", { n: day.kept + 1 })} title={next ? t("onboard.week.tomorrow", { title: t(next.titleKey) }) : null} />;
+  }
   if (!ready) return null;
   // A reader who was back when they answered is not on their first day: the
   // same card, called their next step.
@@ -79,11 +93,13 @@ export function FirstStepsNudge() {
                 ...(intent ? { intent } : {}),
               });
             }
-            countWeekStep(week.index + 1, "opened");
+            // With the frame a step can be opened again before it is kept: counted the first time.
+            if (!day || firstOpening(week.index, today(), window.localStorage)) countWeekStep(week.index + 1, "opened");
             if (week.index === 0) reached("first_step");
           },
           // Written once the card has left with its page, never at the tap (lib/onboarding/openStep.ts).
-          keep: () => writeWeek(stepTaken(readWeek(), today())),
+          // With the day's frame nothing is written here: the day is kept by the reader's Done on its page.
+          keep: day ? () => {} : () => writeWeek(stepTaken(readWeek(), today())),
         })}
       />
     );
@@ -132,6 +148,20 @@ function useStepOpening(): (parts: StepParts) => () => void {
     if (!opening.current) opening.current = stepOpening(parts);
     opening.current.tapped();
   };
+}
+
+/** The week's card once today's step is kept (2.0, the day's frame): the day, and tomorrow's step by name. Nothing to tap. */
+function KeptCard({ eyebrow, title }: { eyebrow: string; title: string | null }) {
+  return (
+    <div
+      data-first-step-kept=""
+      className="lm-card relative mb-4 overflow-hidden rounded-[22px] p-5 ring-1 ring-inset ring-premium/30 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.6)]"
+      style={CARD_BG}
+    >
+      <p className="font-sans text-caption font-semibold text-premium-ink">{eyebrow}</p>
+      {title ? <p className="mt-2 font-heading text-title-sm font-bold leading-tight text-paper">{title}</p> : null}
+    </div>
+  );
 }
 
 function isDayOneKey(key: string): key is DayOneKey {

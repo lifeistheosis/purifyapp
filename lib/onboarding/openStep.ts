@@ -56,3 +56,26 @@ export function stepOpening(parts: StepParts): StepOpening {
     },
   };
 }
+
+/** Where the device keeps the last step it counted as opened, with its day: "2:2026-11-23". */
+export const OPENED_KEY = "purify:week.opened";
+
+/**
+ * With the day's frame (2.0, ./flags.ts) a step waits on Today until the
+ * reader's own Done, so it can be opened many times in a day. Counted the
+ * first time only: true the first time this step is opened on this day, and
+ * it leaves its mark. Without storage every opening counts, which is what
+ * the count did before the frame.
+ */
+export function firstOpening(index: number, day: string, store: Pick<Storage, "getItem" | "setItem"> | null): boolean {
+  const mark = `${index}:${day}`;
+  try {
+    if (!store) return true;
+    if (store.getItem(OPENED_KEY) === mark) return false;
+    store.setItem(OPENED_KEY, mark);
+    return true;
+  } catch {
+    return true;
+  }
+}
+

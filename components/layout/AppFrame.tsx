@@ -22,6 +22,7 @@ import { AppNav } from "@/components/nav/AppNav";
 import { MobileTabBar } from "@/components/nav/MobileTabBar";
 import { NativeBackBar } from "@/components/nav/NativeBackBar";
 import { ScrollToTop } from "@/components/nav/ScrollToTop";
+import { DayEnd, DayMark } from "@/components/onboarding/DayFrame";
 import { NativeOnly, WebOnly } from "@/components/platform/PlatformGate";
 import { SyncBridge } from "@/components/profile/SyncBridge";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
@@ -87,7 +88,14 @@ export function AppFrame({ children }: { children: ReactNode }) {
               <NativeBackBar />
             </NativeOnly>
           </div>
+          {/* The day's frame (2.0, off for readers; components/onboarding/
+              DayFrame.tsx): when this page is the one today's step of a
+              reader's first week opens, the week's mark stands over it and
+              "Done for today" at its end. Each draws nothing otherwise, so
+              these mounts are unconditional and the rule lives in one place. */}
+          <DayMark />
           {children}
+          <DayEnd />
         </main>
         <div data-app-chrome className="contents">
           <WebOnly>

@@ -7,7 +7,7 @@
 
 import { useMemo, useSyncExternalStore } from "react";
 
-import { roadsEnabled } from "./flags";
+import { dayFrameEnabled, roadsEnabled } from "./flags";
 import { leanOf, roadOf, type Road } from "./road";
 import {
   ONBOARDING_EVENT,
@@ -22,7 +22,7 @@ import {
 } from "./state";
 import { TESTERS_EVENT } from "./testing";
 import { useSpace } from "./useSpace";
-import { localDay, parseWeek, stepToday, weekFor, type WeekStep } from "./week";
+import { keptToday, localDay, parseWeek, stepToday, weekFor, type WeekStep } from "./week";
 
 /** The reader's road from what the device holds, or null. */
 export function readRoad(): Road | null {
@@ -79,3 +79,40 @@ export function useWeekToday(): WeekToday | null {
     return { road, index, step: week[index] };
   }, [snap, background, level, intent, returning, intents]);
 }
+
+/** The same, with the day's frame: empty unless the frame is on for this device (./flags.ts). */
+function daySnapshot(): string {
+  return `${roadsEnabled() && isNudgeEligible() && dayFrameEnabled() ? "1" : ""}|${weekSnapshot()}`;
+}
+
+export type WeekDay = {
+  road: Road;
+  /** The reader's seven steps. */
+  steps: WeekStep[];
+  /** Today's step, from 0, while it waits to be kept: null once today's is kept or passed over, or the week is over. */
+  waiting: number | null;
+  /** The step kept today, from 0, or null. */
+  kept: number | null;
+};
+
+/**
+ * The reader's week as the day's frame reads it (2.0, ./flags.ts): the step
+ * waiting today and the step kept today. Null with the frame off, with no
+ * road, on the server and on the hydration render, so a reader without the
+ * frame has nothing of it drawn.
+ */
+export function useWeekDay(): WeekDay | null {
+  const snap = useSyncExternalStore(subscribe, daySnapshot, () => "|");
+  const { background, level, intent, returning, intents } = useSpace();
+  return useMemo(() => {
+    const cut = snap.indexOf("|");
+    if (snap.slice(0, cut) !== "1") return null;
+    const road = roadOf({ background, level, intent, returning });
+    if (!road) return null;
+    const state = parseWeek(snap.slice(cut + 1) || null);
+    const today = localDay(new Date());
+    const steps = weekFor({ road, lean: leanOf(intent), level, picks: intents.length ? intents : readIntents() });
+    return { road, steps, waiting: stepToday(state, today), kept: keptToday(state, today) };
+  }, [snap, background, level, intent, returning, intents]);
+}
+

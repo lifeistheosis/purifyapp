@@ -242,6 +242,16 @@ export function stepTaken(w: WeekState, today: string): WeekState {
   return { at: Math.min(w.at + 1, WEEK_LENGTH), day: today, passed: 0 };
 }
 
+/**
+ * The step kept today, from 0, or null: the last step behind the reader,
+ * when this is the day it was put behind them and it was not passed over.
+ * Read with the day's frame on (./flags.ts), where a step goes behind the
+ * reader at their own Done; without it the same state means only "opened".
+ */
+export function keptToday(w: WeekState, today: string): number | null {
+  return w.at > 0 && w.day === today && w.passed === 0 ? w.at - 1 : null;
+}
+
 /** The reader closed today's step unopened. */
 export function stepPassed(w: WeekState, today: string): WeekState {
   return { at: Math.min(w.at + 1, WEEK_LENGTH), day: today, passed: w.passed + 1 };

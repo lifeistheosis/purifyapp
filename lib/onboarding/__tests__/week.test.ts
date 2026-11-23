@@ -25,6 +25,7 @@ import {
   pickStep,
   stepPassed,
   stepTaken,
+  keptToday,
   stepToday,
   weekFor,
   weekOver,
@@ -248,3 +249,34 @@ describe("where a reader stands in their week", () => {
     expect(localDay(new Date(2026, 0, 5, 0, 1))).toBe("2026-01-05");
   });
 });
+
+// The day's frame (2.0): a step goes behind the reader at their own Done.
+describe("the step kept today", () => {
+  const DAY = "2026-12-06";
+
+  it("is the step just put behind the reader, on the day it was kept", () => {
+    expect(keptToday(stepTaken(NEW_WEEK, DAY), DAY)).toBe(0);
+    expect(keptToday(stepTaken({ at: 3, day: "2026-12-05", passed: 0 }, DAY), DAY)).toBe(3);
+  });
+
+  it("is none before anything is kept, on another day, and for a step passed over", () => {
+    expect(keptToday(NEW_WEEK, DAY)).toBeNull();
+    expect(keptToday(stepTaken(NEW_WEEK, "2026-12-05"), DAY)).toBeNull();
+    expect(keptToday(stepPassed(NEW_WEEK, DAY), DAY)).toBeNull();
+  });
+
+  it("stands with no step waiting: a day kept is a day with nothing more asked", () => {
+    const kept = stepTaken(NEW_WEEK, DAY);
+    expect(stepToday(kept, DAY)).toBeNull();
+    // And tomorrow the next step waits, with nothing kept yet.
+    expect(stepToday(kept, "2026-12-07")).toBe(1);
+    expect(keptToday(kept, "2026-12-07")).toBeNull();
+  });
+
+  it("names the seventh day kept when the week ends", () => {
+    const last = stepTaken({ at: 6, day: "2026-12-05", passed: 0 }, DAY);
+    expect(keptToday(last, DAY)).toBe(6);
+    expect(weekOver(last)).toBe(true);
+  });
+});
+

@@ -70,3 +70,35 @@ export const PLUS_ORDER_LIVE = true;
 export function litNow(): { roads: boolean; plusIntro: boolean; plusOrder: boolean } {
   return { roads: roadsBuilt(), plusIntro: roadsBuilt() && PLUS_INTRO_LIVE, plusOrder: PLUS_ORDER_LIVE };
 }
+
+/**
+ * The day's frame (2.0; docs/plans/onboarding-2.0.md, row 3). A day of a
+ * first week is kept by the reader's own "Done for today" at the end of its
+ * page, and no longer by the tap that opens it (the owner, 2026-11-22: "I
+ * want each day of the path actually worked on. right now it's just acts as
+ * a hyperlink to a page", a day kept by "tapping done"; and his yes of
+ * 2026-11-23 to Done at the end of the day's page, never floating over it).
+ * The page says whose day it is over its head, and after Done the week's own
+ * card stands in the button's place with tomorrow's step by name
+ * (components/onboarding/DayFrame.tsx).
+ *
+ * OFF, and it ships with 2.0 (his word, 2026-11-23). It is one part of the
+ * new first week, which is built as one fork and tested against today's
+ * first week when its test begins (his choice of 2026-11-22; the questions'
+ * test place is held until 2027-02-09). Until then a reader's week is as it
+ * was: a step is taken when it is opened. Testers mode walks the frame, and
+ * a build made with NEXT_PUBLIC_DAY_FRAME=1 has it whatever this says. It
+ * needs the roads, since it is a week's days it frames.
+ */
+export const DAY_FRAME_LIVE = false;
+
+/** The day's frame as the build has it, whoever is reading. */
+export function dayFrameBuilt(): boolean {
+  return roadsBuilt() && (DAY_FRAME_LIVE || process.env.NEXT_PUBLIC_DAY_FRAME === "1");
+}
+
+/** The day's frame on this device, now: built in, or a test under way. False on the server unless built in. */
+export function dayFrameEnabled(): boolean {
+  return dayFrameBuilt() || isTesting();
+}
+

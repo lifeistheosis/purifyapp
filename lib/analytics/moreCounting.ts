@@ -72,7 +72,11 @@ export function actOf(ruleId: string): FirstAct | null {
   return ruleId === "day:gospel" || ruleId === "day:reading" ? "chapter" : null;
 }
 
-export const STEP_DID = ["opened", "passed"] as const;
+// "kept" is the reader's own Done at the end of a day's page, sent only with
+// the day's frame on (2.0, lib/onboarding/flags.ts, off). The list takes it
+// before the privacy page says it: taking is not counting, and the frame is
+// not lit until that page's sentence about a week's step says "kept" too.
+export const STEP_DID = ["opened", "passed", "kept"] as const;
 export type StepDid = (typeof STEP_DID)[number];
 
 export const ACCOUNT_PLACES = ["questions", "card", "signup", "plus"] as const;
