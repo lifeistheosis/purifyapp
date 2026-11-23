@@ -4,25 +4,27 @@ The brief is `../edit-2-the-church.md`. This chat is session_01VuYTwaL9B8MePq2DH
 
 ## Where it stands
 
-**The storyboard is put to him and waits for his yes or no.** Nothing is filmed. The page: https://claude.ai/artifact/LmaN8bkhnrYHj9BfNiSsRo (private, his own; version 1, 22:33).
+**The film is made and put to him** (2026-11-23, about 22:45), at his yes to the storyboard. The film's page: https://claude.ai/artifact/9u3KBCTgwokQAvmuCfp5CU (private, his own). The storyboard's page: https://claude.ai/artifact/LmaN8bkhnrYHj9BfNiSsRo. The silent master and the preview were also sent to him as files in the chat.
 
-Two questions are on the page and are his to answer:
+Still his, and said on the film's page:
 
-1. Has he clips of his own (his parish, candles, icons, a censer, the app in his hand)?
-2. Is 11.92 seconds before the talking begins? He hears it; a chat cannot.
+1. Is 11.92 seconds before the talking begins? He did not answer; the film ends there as the brief set it.
+2. Has he clips of his own? He did not answer; the film is made from the stills and clips of the storyboard.
+3. A priest's yes before it is posted (`docs/editorial-standards.md`).
+4. The Mixkit licence's full text, read once in a browser.
 
 ## His words
 
 - 2026-11-23, in the promo chat, as the brief gives them: "So this one is more or less about the aesthetic, right? This one could just be an edit about Purify, Orthodox Church, just in general. So yeah, just like a crazy edit with the same style, same audio, right? But like this one's a little bit more different because there's like people talking in the back when it goes to the fighting section. We don't really need that part, but the intro part going into like before it shows them is kind of fire. Before it shows them talking, like that whole edit aesthetic, I want like a cinematic edit of us with that."
 - Then: "Start making the 2 edits."
-- In this chat: none yet.
+- In this chat, about 22:38, on the storyboard: "Story, but look, it looks nice. Finish." Taken as his yes to the storyboard as it stood and his word to make the film. He answered neither question.
 
 ## What was made (22:05 to 22:35)
 
 | File | What it is |
 |---|---|
-| `board.py` | Makes the two cut-outs and the twelve stills, 1080 by 1920, in the look. Asserts every line of Scripture against `data/bible` and reads the two labels from the app's English catalogue, every time it runs. |
-| `page.py` | Builds the storyboard's page from the design kit's own head and style. |
+| `board.py` | Makes the two cut-outs, the twelve stills and the film, 1080 by 1920, in the look. Asserts every line of Scripture against `data/bible` and reads the two labels from the app's English catalogue, every time it runs. |
+| `page.py` | Builds the storyboard's page and the film's page from the design kit's own head and style. |
 | `pictures.json` | Everything the film is made from, in the order of its shots: its page, its licence as the page states it, the day it was read, where it is used. |
 
 Out of git, in `.promo/promo-edits/edit-2/` (lost with the container; the three files above make it again): the pictures, the clips, DM Sans, the app's screens, the cut-outs, the stills and the page.
@@ -71,13 +73,29 @@ The sound was not measured in this chat and nothing was heard.
 - **Mixkit's licence text** opens in a window that was not read. Its page says the clip is free for commercial use and names the licence; that no credit is owed is known of that licence, not read today. Read it once before posting.
 - The 1080 file of the Mixkit clip needs an account; the 720 file is used and is enlarged twice over.
 
-## Before the film, at his yes
+## The film (22:38 to 22:45)
 
-- The hand's cuff is cut straight in the still; cut it along the cuff's own line.
-- One slow even move for each shot, and the two frames of blur.
-- The phone: the house's stage (`docs/plans/v1.9/video/release/film.mjs`) in place of the plain body `board.py` draws.
-- The preview with the reference's first 11.92 s of sound, marked not for posting; the silent master; the film's page.
-- A priest's yes is his to get before it is posted (`docs/editorial-standards.md`).
+`board.py film` makes every frame from the same table of shots the stills come from, and `board.py sound <the reference's file>` makes the preview. Out of git, in `.promo/promo-edits/edit-2/film/`:
+
+| File | What it is |
+|---|---|
+| `purify-the-church.mp4` | The **silent master**: 1080 by 1920, H.264, 24 fps, 286 frames, 11.917 s, 62 MB. This is what is posted, with the sound added inside TikTok from the reference itself. |
+| `purify-the-church-PREVIEW-not-for-posting.mp4` | The same picture with the reference's first 11.917 s of sound and the line "Preview. Not for posting." at its head. For him alone to judge the timing. Never posted. |
+| `purify-the-church-page.mp4`, `purify-the-church-preview-page.mp4` | Lighter copies (720 by 1280) that play on the film's page. |
+
+Measured on the finished master: 286 frames; cuts at frames 6, 48, 70, 89, 90, 91, 113, 135, 157, 178, 200, 221, 243, which are the reference's own; no colour in any frame (the spread between the three colours is 0.0). The words were asserted against `data/bible` in the same run. The render takes about a minute on four cores.
+
+How the film differs from the storyboard's stills, and from the brief:
+
+- **The clips play as they were filmed.** The reference is slowed; slowing ours would need frames made by a machine. Each still photograph and icon has one slow, even move (a push of 2 to 6 in a hundred, or a slide of some 45 pixels of the source), and none answers the sound.
+- **The hand ends at its cuff over a fall of fifty pixels into black**, not a hard line. Telling skin from sleeve by colour was tried first and left a ragged end.
+- **The phone is the plain body `board.py` draws**, as on the storyboard he said yes to, not the house's stage of `film.mjs`.
+- **The end card has no grain.**
+- The two frames of blur are the figure and then the candles, each drawn out 170 pixels down its height.
+
+The film's page passed `node docs/brand/kit/check.mjs --page` on the five palettes at the four widths. By eye on three frames of the master: no rays, no glow, no bright frame, no star, no stripe, no parchment.
+
+Not done, and why: nothing was heard, so whether the cuts sit well on the sound is his to judge on the preview.
 
 ## Cost
 
