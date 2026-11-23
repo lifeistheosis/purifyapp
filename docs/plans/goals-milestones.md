@@ -70,6 +70,8 @@ His word, verbatim, on the goals: "give me a more structured goals". (He gave on
 
 The dates of the steps come from where the number stands today, which this chat cannot read: asked of him.
 
+**His word, about 21:50 UTC:** "sure. and I'll help you with that after let's start making the promo". Taken as his yes to this structure. His numbers come after the promo. Nothing is built until he says so, and then in a fresh chat with a cap.
+
 ## What the page works out by itself (his "auto-optimize")
 
 The marks stay where he set them. Everything under them is worked out again from the events each time the page opens:

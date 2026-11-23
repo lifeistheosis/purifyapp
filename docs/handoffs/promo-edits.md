@@ -26,6 +26,23 @@ Kept by the chat he started for this on 2026-11-23 at 20:53 UTC (session_01VuYTw
 
   At that word: a structure was put to him in the chat and noted in the plan under "The structure proposed": one number, a road of six steps, a pace of 5% a week, four weekly goals set from his own last four weeks, three guardrails and a rhythm. Not yet his yes. Asked of him: how many pay today, so each step can be dated.
 
+- About 21:50: "sure. and I'll help you with that after let's start making the promo"
+
+  At that word: taken as his yes to the goals' structure, with his numbers to come after the promo; the milestones are not built until he says so, in a fresh chat. For the promo he gave no picks from the six, so a storyboard idea for a first edit was put to him from the arbiter's own first pick (below), with two choices asked: the hook and the sound.
+
+## The first edit: a storyboard idea (put to him 2026-11-23 about 21:55 UTC; not yet his yes)
+
+About 20 seconds, 1080 by 1920, a silent master. The times are those of reference 1's sound (its bass comes in at 11.1 s) and move if he picks another sound.
+
+1. **The hook, 0 to 2.1** (reference 1). One dark detail of an icon and one small line: a question. Offered: "Who is with you?" (recommended), "You think you pray alone?", "Who ran this race before you?" The question is the film's own and his to choose, as the Forever edit's hook was.
+2. **The run, 2.1 to 9.0** (reference 1's run, in reference 2's black and white). About 24 saints' faces, each sharp for a fifth of a second and melting into the next, set on the eyes as the Christ edit's faces were. One line is held for the whole run (his word on the Forever edit: "make the text appear longer"): "so great a cloud of witnesses", Hebrews 12:1.
+3. **Christ, 9.0 to 11.1** (reference 3's opening, without its glow and without its tear). Colour returns and the film slows. A slit opens on His eyes, then the icon whole, the figure cut out whole and moving apart from its ground. "Looking unto Jesus the author and finisher of our faith", Hebrews 12:2.
+4. **The breath** (reference 5). A beat of black before the bass.
+5. **The app, 11.1 to about 17** (reference 6's prints). Real screens from the export, shown as prints with a white border, each pushed in on, with clean cuts: the saint of the day, a saint's life, the prayers.
+6. **The end, about 17 to 20** (references 2 and 6). Black, Purify's mark, one line from the drop, and a long quiet fade.
+
+Kept, since he has not said otherwise: clean cuts, nothing that answers the beat, no glow, nothing drawn onto an icon, titles in the app's sans, pictures in the public domain and off the heritage list. Both verses were checked word for word in the app's own Bible (`data/bible`, Hebrews 12). Still his: a priest's yes before it is posted, since a question set beside Scripture is framing (`docs/editorial-standards.md`).
+
 ## How the references were read
 
 Each was fetched with yt-dlp into the chat's scratchpad (out of git, lost with the container; the addresses below fetch them again). `promo-edits/analyze.py` counts the cuts from the change between frames, measures the sound from its onsets and makes a strip of 80 frames; `promo-edits/strips.py` makes the closer strips of the transitions and the words. Every film was looked at on its strip.
