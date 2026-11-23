@@ -18,6 +18,10 @@ Kept by the chat he started for this on 2026-11-23 at 20:53 UTC (session_01VuYTw
 
   At that word: what the panel has today was read, and the plan was written for his yes: `docs/plans/goals-milestones.md` (his words on it are there; his private figures are left out, since this repository is public). Nothing is built. Asked of him: whether a mark is counted after the app's own costs, and his yes to a fresh chat building it. The promo still waits on his direction.
 
+- About 21:35: "are these even good goals?"
+
+  At that word: answered in the chat (right as a destination, not yet goals to steer by) with four changes proposed, noted in the plan under "His question". Asked of him: a date for the first mark, and two numbers from his panel (who pays today, and readers active in a month).
+
 ## How the references were read
 
 Each was fetched with yt-dlp into the chat's scratchpad (out of git, lost with the container; the addresses below fetch them again). `promo-edits/analyze.py` counts the cuts from the change between frames, measures the sound from its onsets and makes a strip of 80 frames; `promo-edits/strips.py` makes the closer strips of the transitions and the words. Every film was looked at on its strip.

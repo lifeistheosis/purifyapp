@@ -44,6 +44,19 @@ What is missing, and is this plan:
   - Before or after the app's own monthly costs. Proposed: after, since the ladder already knows the costs, and money that pays a server pays nobody.
   - Whether Pro, the EIKON Box membership, counts. Proposed: yes, after the cost of its box.
 
+## His question: are these good goals? (2026-11-23, about 21:35 UTC)
+
+His word, verbatim: "are these even good goals?"
+
+Answered in the chat: right as a destination (recurring money, measurable, churn counted with it), and not yet goals to steer by. Four changes were proposed. None has his yes yet.
+
+1. **A date on each mark.** Without one the page can only say when he arrives. With one it says how many paying members to gain each week, and whether this week did.
+2. **The numbers he can move are the working goals.** A mark is far off and moves slowly. Under it the page leads with the four that produce it, week by week: new readers, the share who begin a trial or a plan, the share of trials that pay, and the share who leave. A promo or an update is judged by these.
+3. **Monthly or yearly is ranked by the numbers, not by feel.** At the list prices a yearly plan pays what 7.2 months of monthly pays, and pays it on the first day. So a monthly member is worth more only if monthly members stay longer than about seven months, which the kept events will show in time. The paywall today favours yearly (the free trial and the lower price are on it), while his word puts monthly first: one should follow the other once the numbers are in. A price or a paywall is his alone to change.
+4. **Standing still has a cost.** Whatever share of monthly members leaves each month must be gained again before the number grows. The page says it plainly: "to stand still: this many new members a month".
+
+Also said: a mark that stands for a wage is counted after the app's costs, and tax comes out of it after that, which is his accountant's to size.
+
 ## What the page works out by itself (his "auto-optimize")
 
 The marks stay where he set them. Everything under them is worked out again from the events each time the page opens:
