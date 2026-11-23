@@ -22,10 +22,10 @@ style = kit[kit.index("<style>") : kit.index("</style>") + len("</style>")]
 
 STILLS = [
     ("1-the-light", "0.00 to 2.10 s", "The light",
-     "Black, one soft pool of light, and Saul on the ground before it, asking. The light grows a little, evenly, and nothing else moves.",
-     ["<b>What it is.</b> Saul alone, cut out whole from Parmigianino's painting of his conversion (Vienna, about 1527). The horse, the sky and the landscape are left out. The light is ours.",
-      "<b>Why.</b> Your word: the beginning is a light, and the man asks who it is. His question is Scripture's own, Acts 9:5. The reference opens the same way: one held picture and one small line.",
-      "<b>For the viewer.</b> A question with no answer yet is the hook. The pool is one soft light with no beams. His hand and face take the light and his legs fall into the dark."]),
+     "Second design, at your word. The road at night. A light from above the frame, lying on the ground round about Saul, and his question in the dark between.",
+     ["<b>What changed.</b> The round light in the sky is gone. No lamp is seen now: the light comes down from above the top of the frame and lies on the road about him as one soft pool. Saul is the same picture, as you asked.",
+      "<b>Why.</b> It is what Acts 9:3 says: \"there shined round about him a light from heaven\". The light is about him and above him, and he looks up into it. The first design read as a moon in a black sky.",
+      "<b>For the viewer.</b> He lies on something now, so he reads as a man thrown to the ground, not a figure floating. His question stands alone in the dark between the two lights, so it is read first. One soft light, no beams, and it grows a little, evenly."]),
     ("2-run-first", "2.10 s on", "The run: a face, sharp",
      "Zeus Ammon, a Roman marble at The Met. Scripture names Jupiter in Acts 14:12.",
      ["<b>What it is.</b> The museum's own photograph, cut from its ground and turned to hard black ink on white, as the reference's faces are. Nothing is drawn: the ink is the statue's own light and shade.",

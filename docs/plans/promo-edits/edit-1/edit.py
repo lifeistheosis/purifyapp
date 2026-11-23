@@ -126,26 +126,33 @@ def say(img, key, cy, lines=None, turned=False, size=60):
 
 # ── The light ────────────────────────────────────────────────────────────
 
-LIGHT = (560, 430)
-
-
 def the_light(F):
-    """Black, one soft pool of light, and Saul on the ground before it. The light is ours: none of the painting's sky
-    is kept. It grows a little, evenly, through the shot."""
+    """The road at night, and a light from heaven round about him (Acts 9:3). No lamp is seen: the light comes down
+    from above the frame and lies on the ground about Saul as one soft pool; the dark between holds his words. It
+    grows a little, evenly, through the shot. The light is ours: none of the painting's sky is kept. No beams."""
     u = F / LIGHT_ENDS
+    grow = 1 + 0.07 * u
     yy, xx = grid()
-    d = np.hypot(xx - LIGHT[0], yy - LIGHT[1]) / (1 + 0.08 * u)
-    glow = 0.62 * np.exp(-(d / 190) ** 2) + 0.34 * np.exp(-(d / 430) ** 2) + 0.07 * np.exp(-(d / 900) ** 2)
-    out = np.repeat(np.clip(glow, 0, 1)[..., None], 3, 2) * np.float32([1.0, 0.985, 0.96])
+    white = np.float32([1.0, 0.99, 0.975])
+    # From above: the foot of a wide light whose middle is over the top of the frame.
+    d = np.hypot((xx - W / 2) / 1.2, yy + 150) / grow
+    above = 1.0 * np.exp(-(d / 330) ** 2) + 0.22 * np.exp(-(d / 760) ** 2)
+    # On the road: the same light lying about him, seen from the side, so it is wide and low.
     s = once("saul", lambda: np.asarray(Image.open(f"{HOME}/saul.png").convert("RGBA"), dtype=np.float32) / 255)
     k = 940 / s.shape[1]
-    fig = place(s, k, s.shape[1] / 2, s.shape[0], W / 2, 1560)
-    # He is lit from the light: his hand and his face take it, and his legs fall into the dark.
-    hx, hy = W / 2 + (0.36 - 0.5) * 940, 1560 - (1 - 0.30) * s.shape[0] * k
-    lit = pool(hx + 60, hy - 120, 170, 760, 0.10)
+    fig = place(s, k, s.shape[1] / 2, s.shape[0], W / 2, 1540)
     a = fig[..., 3:4]
+    g = np.hypot((xx - W / 2 + 40) / (600 * grow), (yy - 1455) / (190 * grow))
+    road = 0.72 * np.exp(-g ** 2) + 0.12 * np.exp(-(g / 1.9) ** 2)
+    # Where he lies the road is in his shade.
+    shade = once("shade", lambda: cv2.GaussianBlur(place(s[..., 3], k, s.shape[1] / 2, s.shape[0], W / 2, 1576), (0, 0), 14))
+    road = road * (1 - 0.8 * shade * np.clip((yy - 1400) / 110, 0, 1))  # under him only, never a dark edge about him
+    out = np.clip(above + road, 0, 1)[..., None] * white
+    # He is lit from above: his hand, his face and his shoulder take the light, and his legs take less.
+    hx, hy = W / 2 + (0.36 - 0.5) * 940, 1540 - (1 - 0.30) * s.shape[0] * k
+    lit = pool(hx + 80, hy - 60, 240, 900, 0.30)
     out = out * (1 - a) + fig[..., :3] * lit * a
-    return say(out, "ask", 820)
+    return say(out, "ask", 800)
 
 
 # ── The run ──────────────────────────────────────────────────────────────
