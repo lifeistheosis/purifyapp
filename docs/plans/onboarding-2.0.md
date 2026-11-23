@@ -591,3 +591,26 @@ Section 6 of "What a ten is", built beside the rest so that each change to come 
 
 **The order from here.** Row 3, the new first week as one fork. Its first buildable part is the day's frame (it begins as a day, the reader's own Done keeps it, it ends on tomorrow), built once for every kind of page a day opens. Mock-ups 5 to 7 drew it on a lesson; a saint's page, a council and a section's front page have to be drawn before it is built once for all, and those drawings are his to say yes or no to. Beside it, the three things proposed for the doors above.
 
+## Row 3, before it is built: where the sixty-three days lead (2026-11-23)
+
+Counted from the reader map (`docs/plans/reader-map.json`, held by its test): nine weeks, sixty-three days, twenty-eight pages.
+
+**Ten of the sixty-three days open a whole section's front page,** where there is no one thing to do and no end to reach:
+
+| The page | Days | Whose |
+|---|---|---|
+| Find a parish (`/parishes`) | 4 | The last day of the returning reader, the catechumen, the Catholic and one Protestant week: the door |
+| The Church's year (`/calendar`) | 3 | Day 4 of the practicing and the returning reader, day 6 of the newcomer |
+| The councils (`/councils`) | 1 | Day 4 of the seeker |
+| The Church's history (`/history`) | 1 | Day 2 of the seeker |
+| Start here (`/start`) | 1 | Day 1 of the newcomer |
+
+The other fifty-three open one thing: a lesson, a prayer, a chapter, a saint, a council, a guide. Seven pages carry thirty of them (the first Liturgy 7, First Nicaea 5, the Creed 4, John 4, the Fathers' path 3, the Jesus Prayer 3, the Trisagion 3).
+
+**Two things have to be decided before the day's frame is built once for every page.** Each is his.
+
+1. **Where "Done for today" stands.** This chat's recommendation: at the end of the day's page, where the page's own "next" stood (mock-up 6), and never pinned over the page. A day is kept by a reader who reached its end; a button that is always in reach is the old fault again, a day counted at a tap. It follows that a day needs an end, which is the second question.
+2. **The six days on a front page that is not the door** (the Church's year three times, the councils, the Church's history, Start here) each need one thing chosen in the section's place. Which thing is an editorial choice. This chat will propose one page for each from what the library already holds, for his yes or a priest's glance, before any week is changed. The four days on Find a parish are the door, and the three things proposed for it are above.
+
+Neither is begun.
+
