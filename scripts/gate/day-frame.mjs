@@ -38,7 +38,7 @@ import { chromium } from "playwright";
 import { assertMotion, motionOptions, pinMotion } from "../lib/motion.mjs";
 import { NATIVE_UA, go, serveLikeTheShell } from "../lib/shell-server.mjs";
 import { asAndroidShell } from "../lib/sells-plus.mjs";
-import { judgeFrames, recordFrames } from "./frames.mjs";
+import { judgeFrames, recordFrames, stripOf } from "./frames.mjs";
 import { installGate } from "./inpage.mjs";
 
 const OWN = "/opt/pw-browsers/chromium";
@@ -190,6 +190,8 @@ const judgedDone = async (ctx, page, motion) => {
   const rec = await recordFrames(page, cdp, () => tap(page, "[data-day-done]"), { moves: motion === "reduce" });
   const v = await judgeFrames(rec, { motion });
   await cdp.detach().catch(() => {});
+  // With --stills, each fail's frames side by side, to see what was drawn.
+  if (STILLS) for (const [n, f] of v.fails.entries()) if (f.frames) await stripOf(rec, f.frames, `${STILLS}/done-${motion}-${f.kind}-${n}.png`);
   return { frames: rec.frames.length, fails: v.fails.map((f) => `${f.kind}: ${f.detail}`), unsure: v.unsure ?? [], glides: (v.glides ?? []).length };
 };
 const toEnd = async (page) => {

@@ -130,17 +130,18 @@ describe("the frame", () => {
     expect(frame).toContain('<p data-day-mark="" className="font-sans text-caption font-semibold text-paper/65"> {t("onboard.week.eyebrow", { n: here.index + 1 })} </p> <button');
   });
 
-  it("brings the card whole onto the screen after the reader's own Done, once the move has ended, and only then", () => {
+  it("takes the page with the card in the one move, after the reader's own Done and only then", () => {
     expect(frame).toContain("answered.current = true;");
-    expect(frame).toContain("if (!kept || !answered.current) return;");
-    expect(frame).toContain("void afterMoves().then(() => {");
-    expect(frame).toContain("if (shiftToReadingPlace(band, el.getBoundingClientRect()) > 1) goToReadingPlace(el, { band });");
+    // In the move's own change (a layout effect), at once: never a second motion after it.
+    expect(frame).toContain("useLayoutEffect(() => { if (!kept || !answered.current) return; answered.current = false;");
+    expect(frame).toContain("if (shiftToReadingPlace(band, el.getBoundingClientRect()) > 1) goToReadingPlace(el, { smooth: false, band });");
+    expect(frame).not.toContain("afterMoves");
   });
 
   it("keeps a day only at the reader's own Done, and answers it in the house's motion", () => {
     // The one place a step is written as kept with the frame on: Done's own handler.
     expect(frame.split("stepTaken(").length - 1).toBe(1);
-    expect(frame).toContain("movePage(() => writeWeek(stepTaken(readWeek(), localDay(new Date()))));");
+    expect(frame).toContain("movePage(() => writeWeek(stepTaken(readWeek(), localDay(new Date()))), { grows: [block.current], glides: piecesBefore(block.current) });");
     expect(frame).toContain('countWeekStep(here.index + 1, "kept");');
   });
 

@@ -28,7 +28,7 @@
 // this island decides on the device, and draws nothing for a reader without
 // the frame, on the server or on a hydration, or on any day but the page's.
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -40,7 +40,7 @@ import { frameFits } from "@/lib/onboarding/dayFrame";
 import { readWeek, writeWeek } from "@/lib/onboarding/state";
 import { useWeekDay, type WeekDay } from "@/lib/onboarding/useWeek";
 import { localDay, stepTaken, type WeekStep } from "@/lib/onboarding/week";
-import { afterMoves, movePage } from "@/lib/ui/inPageMove";
+import { movePage, piecesBefore } from "@/lib/ui/inPageMove";
 import { goToReadingPlace, shiftToReadingPlace, visibleBand } from "@/lib/ui/readingPlace";
 
 const bare = (path: string) => path.replace(/\/+$/, "") || "/";
@@ -64,27 +64,25 @@ export function dayOfPage(day: WeekDay | null, pathname: string | null): { index
 export function DayEnd({ className }: { className?: string }) {
   const { t } = useTranslate();
   const here = dayOfPage(useWeekDay(), usePathname());
+  const block = useRef<HTMLDivElement>(null);
   const card = useRef<HTMLDivElement>(null);
-  // Set by the reader's own Done, so the card it opens is brought whole onto the screen that once, and never on a later visit.
+  // Set by the reader's own Done, so the page goes with the card it opens that once, and never on a later visit.
   const answered = useRef(false);
   const kept = here?.kept === true;
 
-  useEffect(() => {
+  // The card is taller than what it answers, and it opens at the page's end. In the move's own
+  // change, once the card is in the page and before it is pictured, the page goes with it at once
+  // as far as it can: the card rises where the button stood and what stands over it goes up with
+  // it, in the one move (the house's way for what opens, lib/ui/showOpened.ts, catchUpOpened).
+  // Following it after the move was a second motion, and the gate's motion check read its first
+  // frame as a flash (scripts/gate/day-frame.mjs, 2026-11-23).
+  useLayoutEffect(() => {
     if (!kept || !answered.current) return;
     answered.current = false;
-    let live = true;
-    // The card is taller than what it answers and opens downwards, at the page's end: once the move
-    // has ended the page goes with it as far as it can, so the card stands where the button stood
-    // over the bars, whole, as anything that opens low on the screen must (lib/ui/showOpened.ts).
-    void afterMoves().then(() => {
-      const el = card.current;
-      if (!live || !el) return;
-      const band = visibleBand();
-      if (shiftToReadingPlace(band, el.getBoundingClientRect()) > 1) goToReadingPlace(el, { band });
-    });
-    return () => {
-      live = false;
-    };
+    const el = card.current;
+    if (!el) return;
+    const band = visibleBand();
+    if (shiftToReadingPlace(band, el.getBoundingClientRect()) > 1) goToReadingPlace(el, { smooth: false, band });
   }, [kept]);
 
   if (!here) return null;
@@ -92,14 +90,15 @@ export function DayEnd({ className }: { className?: string }) {
   const done = () => {
     answered.current = true;
     countWeekStep(here.index + 1, "kept");
-    // The line and the button give way to the card in the house's motion, never with a cut.
-    movePage(() => writeWeek(stepTaken(readWeek(), localDay(new Date()))));
+    // The line and the button give way to the card in the house's motion, never with a cut: the
+    // block grows, and what stands on the screen over it glides as the page goes with it.
+    movePage(() => writeWeek(stepTaken(readWeek(), localDay(new Date()))), { grows: [block.current], glides: piecesBefore(block.current) });
   };
 
   return (
     <div data-day-end="" className={className}>
       {/* A fine line over it, as the page parts its own sections; room under it, so it never ends against the bars. */}
-      <div className="border-t border-paper/10 pb-4 pt-6">
+      <div ref={block} className="border-t border-paper/10 pb-4 pt-6">
         {here.kept ? (
           // The week's own card, as Today draws it (FirstStepsNudge.tsx), so the card that opened the day closes it.
           <div

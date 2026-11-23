@@ -146,6 +146,40 @@ export function partsBefore(from: Element | null | undefined, max = GLIDE_MAX): 
   return out;
 }
 
+/**
+ * The same parts, in pieces no taller than the screen. A part that is taller
+ * (a whole article over something at its end) is entered, and its own parts
+ * on the screen are taken in its place, so no picture is taken of a page's
+ * length for the few lines of it the screen shows. For a change at the end
+ * of a long page that moves the page too (a day's Done answered by its card,
+ * components/onboarding/DayFrame.tsx). Never what partsBefore never takes.
+ */
+export function piecesBefore(from: Element | null | undefined, max = GLIDE_MAX): HTMLElement[] {
+  if (!from || typeof window === "undefined") return [];
+  const out: HTMLElement[] = [];
+  const screen = window.innerHeight;
+  const take = (el: HTMLElement): void => {
+    if (out.length >= max) return;
+    const cs = getComputedStyle(el);
+    if (cs.display === "none" || cs.position === "fixed" || cs.position === "sticky") return;
+    if (cs.viewTransitionName && cs.viewTransitionName !== "none") return;
+    const whole = cs.display !== "contents";
+    const r = el.getBoundingClientRect();
+    if (whole && (r.width < 1 || r.height < 1 || r.bottom < 0 || r.top > screen)) return;
+    if (whole && r.height <= screen) {
+      out.push(el);
+      return;
+    }
+    // Taller than the screen, or a box that draws nothing of its own: its parts, the nearest first.
+    for (let part = el.lastElementChild; part; part = part.previousElementSibling) take(part as HTMLElement);
+  };
+  for (let at: Element | null = from; at && at !== document.body && at.tagName !== "MAIN"; at = at.parentElement) {
+    for (let prev = at.previousElementSibling; prev && out.length < max; prev = prev.previousElementSibling) take(prev as HTMLElement);
+    if (out.length >= max) break;
+  }
+  return out;
+}
+
 function wear(parts: MoveParts): void {
   const grows = (parts.grows ?? []).filter((e): e is HTMLElement => !!e).slice(0, GROWS.length);
   const glides = parts.glides ?? partsAfter(grows[0]);
