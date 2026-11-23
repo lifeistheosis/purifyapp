@@ -34,7 +34,18 @@ Kept by the chat he started for this on 2026-11-23 at 20:53 UTC (session_01VuYTw
 
   At that word: read as the references one at a time, as he first asked ("let's go through each video"), since all six had been put to him in one message and he chose from none. Each is now sent as its own picture (a map of its parts, `promo-edits/map.py`) with its address and one question, and the next follows his answer. If he meant the two choices one at a time instead, it is his to say. The storyboard idea below stands as an idea only, until the six are gone through.
 
-## The first edit: a storyboard idea (put to him 2026-11-23 about 21:55 UTC; not yet his yes)
+- About 22:10, on video 1, his direction: "make it about the theophanies so the beginning is about like a light and the person (prophet) says something along the lines of who is this light and all the different frames from 0:2 and up until the beat is a bunch of different false gods and prophets and the. the drop is Jesus Christ. you kinda get the idea"
+
+  At that word, put to him: video 1's shape as his idea, with every word on screen Scripture's own, each checked in the app's Bible.
+  - 0 to 2 s: black, one soft light and a man on the ground before it. "Who art thou, Lord?" (Acts 9:5, Saul on the road to Damascus).
+  - 2 s to the drop at 11.1: the run of false gods in black and white, each smearing into the next, under one held line: "there be gods many, and lords many" (1 Corinthians 8:5).
+  - The drop: a hard cut to Christ's icon in full colour. "I am Jesus" (Acts 9:5, the answer to the same question).
+  - To the end: the theophanies, the Light with a face (the Transfiguration, the Pantocrator), then Purify's mark.
+  - Offered instead, if he wants a prophet and not Saul: Moses at the bush asking His name (Exodus 3:13), answered by "Before Abraham was, I am" (John 8:58).
+
+  The limit named to him, the same as on the Forever edit: the run is the idols of the old world (Baal, Zeus, Artemis, the gods of Egypt and Babylon) and Scripture's own false prophets (the prophets of Baal, Simon the sorcerer). No Muhammad and no holy figure of a living religion: it gets an account reported and puts him at risk, and the old idols give the same run. The light is a soft pool, never rays. Asked: whether that run is right. Still his: a priest's yes before it is posted. Video 2 was sent next.
+
+## The first edit: a storyboard idea (put to him 2026-11-23 about 21:55 UTC; overtaken about 22:10 by his own direction above, and kept as an idea)
 
 About 20 seconds, 1080 by 1920, a silent master. The times are those of reference 1's sound (its bass comes in at 11.1 s) and move if he picks another sound.
 
