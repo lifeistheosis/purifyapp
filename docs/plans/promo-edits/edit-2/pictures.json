@@ -1,0 +1,141 @@
+{
+ "about": "Everything promo edit 2, the Church, is filmed from, in the order of its shots. Each licence is as its own page states it on the day given. None asks for a credit (for the Mixkit clip, see its note). No living face that can be known is in any of them. No icon is held in Greece or Italy, so none is on the heritage list (lib/marketing/heritagePictures.ts). No picture was made by a machine. The files stay out of git: `file` is the name in the work folder, and a Commons picture is fetched from its page at `fetched_width`. The type is DM Sans, the app's sans, fetched from Google Fonts (Open Font License).",
+ "pictures": {
+  "lighting": {
+   "kind": "clip",
+   "what": "A hand sets a lit taper among others (Coverr, \"Lighting a candle\")",
+   "page": "https://coverr.co/videos/lighting-a-candle-cmpavpzgnk",
+   "file_from": "https://cdn.coverr.co/videos/coverr-lighting-a-candle-7332/1080p.mp4",
+   "licence": "Coverr licence: free for commercial use, no credit owed",
+   "licence_words": "All Videos published on Coverr.co can be used free for commercial and non-commercial purposes. You do not need to ask permission from or provide credit to the videographer or Coverr.co, although it is appreciated when possible.",
+   "read": "2026-11-23",
+   "file": "clips/lighting.mp4",
+   "size": "1920x1080, 23.976 fps, 22.5 s",
+   "faces": "none: a hand and a cuff",
+   "used": "shot 1, at 13.5 s"
+  },
+  "kondopoga": {
+   "kind": "photograph",
+   "what": "The icon screen of the Dormition Church at Kondopoga, Karelia (a wooden church of 1774, lost to fire in 2018), photographed in 2009",
+   "page": "https://commons.wikimedia.org/wiki/File:Interior_of_Dormition_Church_at_Kondopoga.jpg",
+   "licence": "Public domain, released by its author",
+   "licence_words": "This work has been released into the public domain by its author, AKA MBG. This applies worldwide.",
+   "read": "2026-11-23",
+   "file": "raw/kondopoga.jpg",
+   "fetched_width": 1920,
+   "faces": "none",
+   "used": "shot 2, its left half (the photograph has a seam down its middle, which the crop leaves out)"
+  },
+  "pantocrator19": {
+   "kind": "icon",
+   "what": "Christ Pantocrator, tempera on wood, late 19th century",
+   "held": "not stated on its page",
+   "page": "https://commons.wikimedia.org/wiki/File:Christ_Pantocrator_icon.jpg",
+   "licence": "Public domain, as Wikimedia Commons marks it",
+   "read": "2026-11-23",
+   "file": "raw/pantocrator19.jpg",
+   "fetched_width": 1920,
+   "used": "shots 3 and 4: the blessing hand cut whole to the cuff, then the figure cut whole with the halo",
+   "note": "An unnamed Russian painter of the late 19th century, so the maker is not known to have died before 1900; Commons marks it Public domain, and that is all this file claims for it (the Christ edit's pictures.json says the same).",
+   "halo": [
+    975,
+    650,
+    505
+   ]
+  },
+  "candles": {
+   "kind": "clip",
+   "what": "Beeswax tapers burning (Coverr, \"Burning church candles\")",
+   "page": "https://coverr.co/videos/burning-church-candles-v1y9sfoo09",
+   "file_from": "https://cdn.coverr.co/videos/coverr-burning-church-candles-4154/1080p.mp4",
+   "licence": "Coverr licence: free for commercial use, no credit owed",
+   "licence_words": "All Videos published on Coverr.co can be used free for commercial and non-commercial purposes. You do not need to ask permission from or provide credit to the videographer or Coverr.co, although it is appreciated when possible.",
+   "read": "2026-11-23",
+   "file": "clips/candles.mp4",
+   "size": "1920x1080, 23.976 fps, 13.0 s",
+   "faces": "none",
+   "used": "shot 5, at 5.2 s"
+  },
+  "censer": {
+   "kind": "photograph",
+   "what": "A censer in the Church of the Transfiguration, Brus, Serbia, photographed in 2025",
+   "page": "https://commons.wikimedia.org/wiki/File:Censer_in_the_Church_of_the_Transfiguration,_Brus.jpg",
+   "licence": "CC0 1.0",
+   "licence_words": "This file is made available under the Creative Commons CC0 1.0 Universal Public Domain Dedication.",
+   "read": "2026-11-23",
+   "file": "raw/censer.jpg",
+   "fetched_width": 1920,
+   "faces": "none",
+   "note": "The whole photograph shows new mosaics of Christ and a bishop behind the censer, whose maker may hold rights in them. The crop takes the censer and carved stone only, and none of the mosaics.",
+   "used": "shot 6, the censer alone"
+  },
+  "sihastria": {
+   "kind": "photograph",
+   "what": "The dome, chandelier and icon screen of the Church of the Nativity of Mary, Sihastria Secului Monastery, Romania, photographed in 2017; the dome carries its date, 1850",
+   "page": "https://commons.wikimedia.org/wiki/File:Iconostasis,_dome_and_chandelier_in_the_Church_of_the_Nativity_of_Mary,_Sihăstria_Secului_monstery,_Vânători-Neamț,_2017.jpg",
+   "licence": "CC0 1.0",
+   "licence_words": "This file is made available under the Creative Commons CC0 1.0 Universal Public Domain Dedication.",
+   "read": "2026-11-23",
+   "file": "raw/sihastria.jpg",
+   "fetched_width": 1920,
+   "faces": "none",
+   "used": "shot 7"
+  },
+  "priest": {
+   "kind": "clip",
+   "what": "A priest's hands on a service book (Mixkit, \"A priest stands at an alter reading a prayer\")",
+   "page": "https://mixkit.co/free-stock-video/a-priest-stands-at-an-alter-reading-a-prayer-45137/",
+   "file_from": "https://assets.mixkit.co/videos/45137/45137-720.mp4",
+   "licence": "Mixkit Stock Video Free License: commercial and non-commercial use, as its page states",
+   "licence_words": "This is a free stock video of A priest stands at an alter reading a prayer created by Lifebds that you can use in your commercial and non-commercial projects worry-free. (The page names its licence as https://mixkit.co/license/#videoFree.)",
+   "read": "2026-11-23",
+   "file": "clips/priest.mp4",
+   "size": "1280x720, 25 fps, 13.2 s (the 1080 file is refused without an account, so the picture is enlarged twice over: soft, under the grain)",
+   "faces": "none: hands, vestment and book",
+   "used": "shot 8, at 5.3 s",
+   "note": "The licence's full text opens in a window on Mixkit's site that could not be read from here on the day. That it asks for no credit is what is known of that licence, not what was read: read it once in a browser before the film is posted."
+  },
+  "vysotsky": {
+   "kind": "icon",
+   "what": "Christ Pantocrator from the Vysotsky tier, Byzantine, 1387 to 1395",
+   "held": "Tretyakov Gallery, Moscow",
+   "page": "https://commons.wikimedia.org/wiki/File:Christ_Pantocrator_from_Vysotsky_chin_(14c,_Tretyakov_gallery).jpg",
+   "licence": "Public domain, as Wikimedia Commons marks it",
+   "read": "2026-11-23",
+   "file": "raw/vysotsky.jpg",
+   "fetched_width": 1280,
+   "used": "shot 9: the Gospel open in His hand"
+  },
+  "sinai": {
+   "kind": "icon",
+   "what": "Christ Pantocrator, encaustic on panel, 6th century",
+   "held": "St Catherine's Monastery, Sinai, Egypt",
+   "page": "https://commons.wikimedia.org/wiki/File:CHRIST_PANTOCRATOR-SINAI(6th_Century).jpg",
+   "licence": "Public domain, as Wikimedia Commons marks it",
+   "read": "2026-11-23",
+   "file": "raw/sinai.jpg",
+   "fetched_width": 1920,
+   "used": "shot 10: His face",
+   "in_the_app": true
+  },
+  "today": {
+   "kind": "app screen",
+   "what": "The app's Today, a real screen of the native export of main 60c400d3f, a new reader with no Plus, Dark, Sunday 6 December 2026",
+   "page": "https://purifyapp.net",
+   "licence": "Purify's own",
+   "read": "2026-11-23",
+   "file": "screens/today-top.png",
+   "note": "Taken with docs/plans/v1.9/video/release/christ-edit/screens.mjs. The one picture on it is St Nicholas's icon, which is not on the heritage list. The phone about it is a plain dark body drawn by board.py; nothing of the interface is drawn.",
+   "used": "shot 11"
+  },
+  "mark": {
+   "kind": "mark",
+   "what": "Purify's cross (public/purify-cross-mark.png)",
+   "page": "https://purifyapp.net",
+   "licence": "Purify's own",
+   "read": "2026-11-23",
+   "file": "raw/mark.png",
+   "used": "shot 12, the end card"
+  }
+ }
+}
