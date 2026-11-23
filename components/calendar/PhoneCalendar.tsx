@@ -31,7 +31,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { memo, useCallback, useLayoutEffect, useMemo, useRef } from "react";
+import { memo, useCallback, useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
 
 import { Reference } from "@/components/bible/Reference";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -83,6 +83,12 @@ export type PhoneCalendarProps = {
   commemorationReadings: ReadingRef[];
   source: ReadingsSource | null;
   pascha: PaschaInfo;
+  /**
+   * What stands at the page's end after its own closing prayer, from the page that draws this one
+   * (CalendarClient.tsx): the day's end of a reader's first week, on the day the calendar is their
+   * step. Nothing for any other reader.
+   */
+  end?: ReactNode;
 };
 
 /** Every address this screen writes names its reckoning, so a shared link
@@ -597,6 +603,9 @@ export function PhoneCalendar(p: PhoneCalendarProps) {
           </p>
         </div>
       </section>
+
+      {/* The day's end, when there is one: in the page's own column, and gone whole when there is none. */}
+      <div className="mx-5 empty:hidden">{p.end}</div>
     </div>
   );
 }

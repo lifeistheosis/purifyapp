@@ -51,6 +51,10 @@ const page = (k: WeekStepKey) => say(WEEK_STEPS[k].titleKey);
 
 const BACKGROUNDS: readonly (Background | null)[] = [...ALL_BACKGROUNDS, null];
 const ASKED_LEVELS: readonly (Level | null)[] = [...LEVELS, null];
+/** Every road a week can be on, a Protestant reader's two leans apart: a pick can open the road's own page (week.ts, roadSaint). */
+const ROAD_LEANS: readonly { road: Road; lean: Lean; name: string }[] = ROADS.flatMap((road): { road: Road; lean: Lean; name: string }[] =>
+  road === "protestant" ? (["bible", "liturgical"] as const).map((lean) => ({ road, lean, name: `protestant (${lean})` })) : [{ road, lean: "bible", name: road }],
+);
 const levelName = (l: Level | null) => l ?? "no level";
 const backgroundName = (b: Background | null) => b ?? "not asked";
 
@@ -199,10 +203,21 @@ function writtenMap(): string {
   }
   out.push("", "  A reader's own picks then arrange it (week.ts, weekFor). What each pick brings:");
   for (const intent of INTENTS) {
+    const across = (r: { road: Road; lean: Lean }) => ASKED_LEVELS.map((level) => pickStep(intent, level, r.road, r.lean)).join(" ");
     const by = new Map<string, string[]>();
-    for (const level of ASKED_LEVELS) {
-      const p = page(pickStep(intent, level));
-      by.set(p, [...(by.get(p) ?? []), levelName(level)]);
+    if (ROAD_LEANS.every((r) => across(r) === across(ROAD_LEANS[0]))) {
+      // The same on every road: said by the reader's level, where it differs.
+      for (const level of ASKED_LEVELS) {
+        const p = page(pickStep(intent, level, ROAD_LEANS[0].road, ROAD_LEANS[0].lean));
+        by.set(p, [...(by.get(p) ?? []), levelName(level)]);
+      }
+    } else {
+      // The road's own page: said by the road.
+      for (const r of ROAD_LEANS)
+        for (const level of ASKED_LEVELS) {
+          const p = page(pickStep(intent, level, r.road, r.lean));
+          if (!by.get(p)?.includes(r.name)) by.set(p, [...(by.get(p) ?? []), r.name]);
+        }
     }
     out.push(`  ${intent}: ${[...by].map(([p, ls]) => (by.size === 1 ? p : `${p} (${ls.join(", ")})`)).join("; ")}`);
   }
@@ -332,7 +347,7 @@ function drawnMap(): string {
       picksSub: say("onboard.intent.lookingForSub"),
     },
     backgrounds,
-    picks: INTENTS.map((intent) => ({ id: intent, label: say(`onboard.intent.${intent}`), brings: [...new Set(ASKED_LEVELS.map((level) => pickStep(intent, level)))] })),
+    picks: INTENTS.map((intent) => ({ id: intent, label: say(`onboard.intent.${intent}`), brings: [...new Set(ROAD_LEANS.flatMap((r) => ASKED_LEVELS.map((level) => pickStep(intent, level, r.road, r.lean))))] })),
     roads,
     pages,
     plusCardAfterDays: PLUS_INTRO_AFTER_DAYS,
@@ -384,10 +399,14 @@ describe("the second question", () => {
 });
 
 describe("the reader map", () => {
-  it("holds in a week every page the list names, but the one named here", () => {
-    // "A path through the Fathers" is in the list of steps and in no week: no road holds it and no pick
-    // brings it. Named, so that a second page written into the list and led to by nothing is seen at once.
-    expect(ALL_STEPS.filter((k) => !WEB.met.has(k))).toEqual(["readingPaths"]);
+  it("holds in a week every page the list names, but the front pages named here", () => {
+    // Six front pages are in the list of steps and in no week. "A path through the Fathers" never was:
+    // no road holds it and no pick brings it. The other five were what a reader's own pick, or a
+    // road's day, opened; each now opens one thing (week.ts, pickStep and ROAD_WEEKS; the owner's
+    // "do all" and "Fix all 3" of 2026-11-23). They stay in the list for the Day 1 card of a reader
+    // with no road (space.ts, dayOneFor). Named, so that another page written into the list and
+    // led to by nothing is seen at once.
+    expect(ALL_STEPS.filter((k) => !WEB.met.has(k)).sort()).toEqual(["councils", "history", "readingPaths", "saintsLives", "startHere", "theology"]);
   });
 
   it("is written from the rules, and the written copy is the rules' own", () => {

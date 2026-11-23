@@ -6651,9 +6651,14 @@ html[data-reading-mode="parchment"] .ob-on-mark {
 
 /* Testers mode's mark (1.8, components/onboarding/TestersMark.tsx): at the
    foot of the screen on the reading side, over the tab bar and the player,
-   so it covers neither. Its dot glows white, and on Parchment is plain ink. */
+   so it covers neither. Its dot glows white, and on Parchment is plain ink.
+   Over today's readings' bar too, like every piece that floats over the foot
+   (--readings-flow-h, above): it stood on the bar's own words, "1 of 4" and
+   "Today's readings are read.", and a first week's readings' day, which ends
+   in that bar, is walked in Testers mode (the owner's "Fix all 3" of
+   2026-11-23). */
 .testers-mark {
- bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h) + var(--now-playing-h) + 12px);
+ bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + 12px);
 }
 /* It steps aside while a sheet is open, and comes back when the sheet closes:
    it floated over the button at the foot of the Plus sheet, the one place an

@@ -61,12 +61,12 @@ The plan it belongs to is docs/plans/reader-map.md.
   newcomer: What is prayer? > St. Mary of Egypt > The Gospel of John > The Nicene Creed > The Sign of the Cross > The Church's year > Your first Liturgy
 
   A reader's own picks then arrange it (week.ts, weekFor). What each pick brings:
-  saints: The lives of the saints
+  saints: St. Mary of Egypt (practicing, returning, catechumen, newcomer); St. Leo the Great (catholic, protestant (liturgical)); St. Ignatius of Antioch (protestant (bible), christian, seeker)
   fathers: Start with the Fathers
   gospels: The Gospel of John
-  councils: The councils
-  history: The Church's history
-  beliefs: Start here (inquirer, no level); The Nicene Creed (learning); What the Orthodox believe (practicing)
+  councils: First Council of Nicaea
+  history: Pentecost: the Descent of the Holy Spirit
+  beliefs: The Nicene Creed
   liturgy: Your first Liturgy (inquirer, no level); The Trisagion Prayers (learning); The Church's year (practicing)
   feasts: Fasts and feasts
   prayer: A simple morning rule (inquirer, learning, no level); Morning prayers (practicing)
@@ -92,14 +92,14 @@ The plan it belongs to is docs/plans/reader-map.md.
   sets of answers the screens can give (a skip is an answer too): 30024
   of them, with no road (Purify as it always was): 3336
   practicing: 3336 sets of answers, 675 different weeks, 16 different pages, ending at Start with the Fathers
-  returning: 1112 sets of answers, 676 different weeks, 16 different pages, ending at Find a parish
+  returning: 1112 sets of answers, 530 different weeks, 15 different pages, ending at Find a parish
   catechumen: 8896 sets of answers, 472 different weeks, 14 different pages, ending at Find a parish
-  catholic: 2224 sets of answers, 472 different weeks, 14 different pages, ending at Find a parish
-  protestant: 2224 sets of answers, 516 different weeks, 17 different pages, ending at Your first Liturgy or Find a parish
-  christian: 2224 sets of answers, 602 different weeks, 15 different pages, ending at Your first Liturgy
-  seeker: 1212 sets of answers, 129 different weeks, 13 different pages, ending at Your first Liturgy
-  newcomer: 5460 sets of answers, 472 different weeks, 15 different pages, ending at Your first Liturgy
-  different first weeks in all: 4014
+  catholic: 2224 sets of answers, 260 different weeks, 12 different pages, ending at Find a parish
+  protestant: 2224 sets of answers, 292 different weeks, 15 different pages, ending at Your first Liturgy or Find a parish
+  christian: 2224 sets of answers, 315 different weeks, 13 different pages, ending at Your first Liturgy
+  seeker: 1212 sets of answers, 93 different weeks, 12 different pages, ending at Your first Liturgy
+  newcomer: 5460 sets of answers, 260 different weeks, 13 different pages, ending at Your first Liturgy
+  different first weeks in all: 2897
   weeks that are not seven pages, hold a page twice or miss their door: 0
 
 8. THE PAGES A WEEK CAN HOLD
@@ -113,12 +113,12 @@ The plan it belongs to is docs/plans/reader-map.md.
   The Book of Job: /bible/job/1  (only when a reader picks it)
   A simple morning rule: /prayers/learning/morning-rule
   Morning prayers: /prayers/morning  (only when a reader picks it)
-  The lives of the saints: /saints  (only when a reader picks it)
+  The lives of the saints: /saints  (in no week)
   A path through the Fathers: /reading/paths  (in no week)
-  The councils: /councils  (only when a reader picks it)
-  The Church's history: /history  (only when a reader picks it)
-  Start here: /start  (only when a reader picks it)
-  What the Orthodox believe: /theology  (only when a reader picks it)
+  The councils: /councils  (in no week)
+  The Church's history: /history  (in no week)
+  Start here: /start  (in no week)
+  What the Orthodox believe: /theology  (in no week)
   Fasts and feasts: /calendar  (only when a reader picks it)
   Start with the Fathers: /reading/paths/start
   Pray with the Fathers: /reading/paths/prayer

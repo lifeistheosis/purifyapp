@@ -535,7 +535,9 @@
       "id": "saints",
       "label": "The saints' lives",
       "brings": [
-        "saintsLives"
+        "maryOfEgypt",
+        "leo",
+        "ignatius"
       ]
     },
     {
@@ -556,23 +558,21 @@
       "id": "councils",
       "label": "The councils",
       "brings": [
-        "councils"
+        "nicaea"
       ]
     },
     {
       "id": "history",
       "label": "Church history",
       "brings": [
-        "history"
+        "pentecost"
       ]
     },
     {
       "id": "beliefs",
       "label": "What the Orthodox believe",
       "brings": [
-        "startHere",
-        "creed",
-        "theology"
+        "creed"
       ]
     },
     {
@@ -650,8 +650,8 @@
         "does": "The Psalter by kathisma, the four Gospels a chapter a day and Proverbs in a month, with your place kept and your streak counted."
       },
       "readers": 1112,
-      "differentWeeks": 676,
-      "differentPages": 16,
+      "differentWeeks": 530,
+      "differentPages": 15,
       "weeks": [
         {
           "to": "returning",
@@ -702,8 +702,8 @@
         "does": "The great events told step by step, with a map that moves to each place as you read."
       },
       "readers": 2224,
-      "differentWeeks": 472,
-      "differentPages": 14,
+      "differentWeeks": 260,
+      "differentPages": 12,
       "weeks": [
         {
           "to": "catholic",
@@ -728,8 +728,8 @@
         "does": "See the passages a verse echoes across both Testaments, the Psalms and the prophets among them, with their words beside it, and open any of them in one tap."
       },
       "readers": 2224,
-      "differentWeeks": 516,
-      "differentPages": 17,
+      "differentWeeks": 292,
+      "differentPages": 15,
       "weeks": [
         {
           "to": "protestant:bible",
@@ -767,8 +767,8 @@
         "does": "See the passages a verse echoes across both Testaments, the Psalms and the prophets among them, with their words beside it, and open any of them in one tap."
       },
       "readers": 2224,
-      "differentWeeks": 602,
-      "differentPages": 15,
+      "differentWeeks": 315,
+      "differentPages": 13,
       "weeks": [
         {
           "to": "christian",
@@ -793,8 +793,8 @@
         "does": "The great events told step by step, with a map that moves to each place as you read."
       },
       "readers": 1212,
-      "differentWeeks": 129,
-      "differentPages": 13,
+      "differentWeeks": 93,
+      "differentPages": 12,
       "weeks": [
         {
           "to": "seeker",
@@ -815,8 +815,8 @@
       "id": "newcomer",
       "plus": null,
       "readers": 5460,
-      "differentWeeks": 472,
-      "differentPages": 15,
+      "differentWeeks": 260,
+      "differentPages": 13,
       "weeks": [
         {
           "to": "newcomer",
@@ -899,7 +899,7 @@
       "name": "The lives of the saints",
       "href": "/saints",
       "section": "Saints",
-      "when": "only when a reader picks it"
+      "when": "in no week"
     },
     "readingPaths": {
       "name": "A path through the Fathers",
@@ -911,25 +911,25 @@
       "name": "The councils",
       "href": "/councils",
       "section": "Councils",
-      "when": "only when a reader picks it"
+      "when": "in no week"
     },
     "history": {
       "name": "The Church's history",
       "href": "/history",
       "section": "Orthodox History",
-      "when": "only when a reader picks it"
+      "when": "in no week"
     },
     "startHere": {
       "name": "Start here",
       "href": "/start",
       "section": "Start here",
-      "when": "only when a reader picks it"
+      "when": "in no week"
     },
     "theology": {
       "name": "What the Orthodox believe",
       "href": "/theology",
       "section": "Theology",
-      "when": "only when a reader picks it"
+      "when": "in no week"
     },
     "feasts": {
       "name": "Fasts and feasts",
@@ -1050,7 +1050,7 @@
   "count": {
     "readers": 30024,
     "noRoad": 3336,
-    "weeks": 4014,
+    "weeks": 2897,
     "faults": 0
   }
 }

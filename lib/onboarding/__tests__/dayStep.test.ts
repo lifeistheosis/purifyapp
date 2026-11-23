@@ -107,8 +107,16 @@ describe("the Church's year, as the day opens it", () => {
     expect(stepOnDay(WEEK_STEPS.churchYear, day(2, "nicholas-the-wonderworker")).bodyKey).toBeUndefined();
   });
 
-  it("stays the calendar on a day whose lead has no page in the app", () => {
-    expect(stepOnDay(WEEK_STEPS.churchYear, day(2, null))).toBe(WEEK_STEPS.churchYear);
+  it("stays the calendar, under its own line, on a day whose lead has no page in the app: and the calendar has Done at its end", () => {
+    const stays = stepOnDay(WEEK_STEPS.churchYear, day(2, null));
+    expect(stays).toBe(WEEK_STEPS.churchYear);
+    expect(stays.href).toBe("/calendar");
+    expect((en as Record<string, string>)[stays.bodyKey!]).toBe("Today's saint, fast and readings, and the feasts ahead.");
+    // His "Fix all 3" of 2026-11-23: no day of the Church's year is taken at a tap any more.
+    expect(frameFits(stays)).toBe(true);
+    expect(keptOnPage(stays)).toBe(true);
+    expect(kindOf(stays.href)).toBe("/calendar");
+    expect(flat(PAGE_OF["/calendar"])).toContain("<DayEnd ");
   });
 
   it("stays the calendar when the lead's page is already a day of the reader's own week: no page comes twice", () => {
@@ -148,13 +156,17 @@ describe("how such a day is kept", () => {
   const readings = stepOnDay(WEEK_STEPS.readings, day(2, null));
   const year = stepOnDay(WEEK_STEPS.churchYear, day(2, "nicholas-the-wonderworker"));
 
-  it("by its key alone neither is kept on a page: on a day with nothing to lead into it is taken when opened", () => {
-    for (const key of ["readings", "churchYear"] as const) {
-      expect(FRAMED_STEPS).not.toContain(key);
-      expect(OWN_END_STEPS).not.toContain(key);
-      expect(keptOnPage(key), key).toBe(false);
-      expect(keptOnPage(WEEK_STEPS[key]), key).toBe(false);
-    }
+  it("by its key alone today's readings is kept on no page: on a day with no readings it is taken when opened", () => {
+    expect(FRAMED_STEPS).not.toContain("readings");
+    expect(OWN_END_STEPS).not.toContain("readings");
+    expect(keptOnPage("readings")).toBe(false);
+    expect(keptOnPage(WEEK_STEPS.readings)).toBe(false);
+  });
+
+  it("by its key alone the Church's year is the calendar, kept by Done at the calendar's end", () => {
+    expect(FRAMED_STEPS).toContain("churchYear");
+    expect(OWN_END_STEPS).not.toContain("churchYear");
+    expect(keptOnPage("churchYear")).toBe(true);
   });
 
   it("led into the day, the readings are kept by their walk's own Done and the Church's year by Done at its page's end", () => {
@@ -173,7 +185,9 @@ describe("how such a day is kept", () => {
     expect(dayOfPage(week({ waiting: 3 }), "/saints/nicholas-the-wonderworker/")).toEqual({ index: 3, kept: false, tomorrow: steps[4] });
     expect(dayOfPage(week({ kept: 3 }), "/saints/nicholas-the-wonderworker")).toEqual({ index: 3, kept: true, tomorrow: steps[4] });
     expect(dayOfPage(week({ waiting: 3 }), "/saints/leo-the-great")).toBeNull();
+    // Led to the lead's page, the day is not also the calendar's: one end, on one page.
     expect(dayOfPage(week({ waiting: 3 }), "/calendar")).toBeNull();
+    expect(dayOfPage(week({ kept: 3 }), "/calendar")).toBeNull();
     // The readings' day is found by no page, so nothing mounted on one can take it for its own: not
     // Done, not a prayer said on the day's page, not the mark at a chapter's end.
     for (const fits of [frameFits, ownEnd]) {

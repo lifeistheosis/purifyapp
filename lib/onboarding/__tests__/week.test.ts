@@ -24,6 +24,7 @@ import {
   localDay,
   parseWeek,
   pickStep,
+  roadSaint,
   stepPassed,
   stepTaken,
   keptToday,
@@ -155,15 +156,17 @@ describe("one reader's week", () => {
   });
 
   it("gives the second and third picks the fourth and fifth days", () => {
-    expect(week("catholic", ["fathers", "prayer", "saints"])).toEqual([
+    expect(week("catholic", ["fathers", "prayer", "gospels"])).toEqual([
       "fathersPath",
       "nicaea",
       "leo",
       "morningRule",
-      "saintsLives",
+      "gospelJohn",
       "jesusPrayer",
       "parish",
     ]);
+    // A pick the road already holds takes no day of its own: the saints are this road's St. Leo.
+    expect(week("catholic", ["fathers", "prayer", "saints"])).toEqual(["fathersPath", "nicaea", "leo", "morningRule", "jesusPrayer", "schism", "parish"]);
   });
 
   it("on the seeker's road a pick of the councils or of the Church's history is the road's own day: no front page is added, and no day is pushed off the week", () => {
@@ -186,9 +189,9 @@ describe("one reader's week", () => {
       expect(w, picks.join(",")).toContain("trisagion");
       for (const front of ["councils", "history"]) expect(w, picks.join(",")).not.toContain(front);
     }
-    // On any other road such a pick opens what it always did.
-    expect(week("catholic", ["councils"])[0]).toBe("councils");
-    expect(week("newcomer", ["history"])[0]).toBe("history");
+    // On every other road the same pick opens the same one thing (the next tests).
+    expect(week("catholic", ["councils"])[0]).toBe("nicaea");
+    expect(week("newcomer", ["history"])[0]).toBe("pentecost");
   });
 
   it("is always seven steps, no page twice, the last day the road's own, whatever was picked", () => {
@@ -214,13 +217,72 @@ describe("one reader's week", () => {
 });
 
 describe("the step a pick opens inside a week", () => {
-  it("is the Day 1 step it always opened, but for the locked plan and the study library", () => {
+  /** Every road a week can be on, a Protestant reader's two leans apart. */
+  const everyRoad = ROADS.flatMap((road): { road: Road; lean: Lean }[] => (road === "protestant" ? LEANS.map((lean) => ({ road, lean })) : [{ road, lean: "bible" }]));
+  /** A section's front page: a list or a hub, with no one thing to do and no end to reach. */
+  const FRONT_PAGES = ["/saints", "/councils", "/history", "/start", "/theology", "/reading/paths"];
+
+  // The owner's "Fix all 3" of 2026-11-23, as worded on his screen: "A reader's first pick opens
+  // one thing, not a whole section: saints = a saint, councils = Nicaea, history = Pentecost,
+  // beliefs = the Creed, feasts = the calendar with Done".
+  it("is one thing, never a section's front page, on every road and at every level", () => {
+    for (const { road, lean } of everyRoad) {
+      for (const level of [...LEVELS, null] as (Level | null)[]) {
+        for (const intent of INTENTS) {
+          const step = WEEK_STEPS[pickStep(intent, level, road, lean)];
+          expect(FRONT_PAGES, `${road} ${lean} ${level} ${intent}`).not.toContain(step.href);
+        }
+      }
+    }
+  });
+
+  it("is Nicaea for the councils, Pentecost for the Church's history, the Creed for what the Orthodox believe, and the calendar for the fasts and feasts", () => {
+    for (const { road, lean } of everyRoad) {
+      for (const level of [...LEVELS, null] as (Level | null)[]) {
+        expect(pickStep("councils", level, road, lean)).toBe("nicaea");
+        expect(pickStep("history", level, road, lean)).toBe("pentecost");
+        // At every level: no reader's week opens the study library (ROAD_WEEKS says why).
+        expect(pickStep("beliefs", level, road, lean)).toBe("creed");
+        expect(pickStep("feasts", level, road, lean)).toBe("feasts");
+      }
+    }
+    expect(WEEK_STEPS.feasts.href).toBe("/calendar");
+  });
+
+  it("is a saint for the lives of the saints: the road's own where its week holds one", () => {
+    expect(roadSaint("catholic", "bible")).toBe("leo");
+    expect(roadSaint("protestant", "liturgical")).toBe("leo");
+    expect(roadSaint("protestant", "bible")).toBe("ignatius");
+    expect(roadSaint("seeker", "bible")).toBe("ignatius");
+    expect(roadSaint("newcomer", "bible")).toBe("maryOfEgypt");
+    // A road whose week holds none is given one the app already gives another road.
+    expect(roadSaint("christian", "bible")).toBe("ignatius");
+    for (const road of ["practicing", "returning", "catechumen"] as const) expect(roadSaint(road, "bible"), road).toBe("maryOfEgypt");
+    for (const { road, lean } of everyRoad) {
+      const key = roadSaint(road, lean);
+      expect(WEEK_STEPS[key].href, `${road} ${lean}`).toMatch(/^\/saints\/[a-z-]+$/);
+      const base: readonly WeekStepKey[] = road === "protestant" ? PROTESTANT_WEEKS[lean] : ROAD_WEEKS[road];
+      const own = base.find((k) => WEEK_STEPS[k].href.startsWith("/saints/"));
+      if (own) expect(key, `${road} ${lean}`).toBe(own);
+      for (const level of [...LEVELS, null] as (Level | null)[]) expect(pickStep("saints", level, road, lean)).toBe(key);
+    }
+  });
+
+  it("moves the road's own saint to the head of the week and pushes no day off it", () => {
+    const week = (road: Road, picks: Intent[], lean: Lean = "bible") => weekFor({ road, lean, level: "inquirer", picks }).map((s) => s.key);
+    expect(week("catholic", ["saints"])).toEqual(["leo", "fathersPath", "nicaea", "jesusPrayer", "schism", "firstLiturgy", "parish"]);
+    expect(week("newcomer", ["saints"])).toEqual(["maryOfEgypt", "whatIsPrayer", "gospelJohn", "creed", "signOfCross", "churchYear", "firstLiturgy"]);
+    // And the Creed, on a road that holds it.
+    expect(week("newcomer", ["beliefs"])).toEqual(["creed", "whatIsPrayer", "maryOfEgypt", "gospelJohn", "signOfCross", "churchYear", "firstLiturgy"]);
+  });
+
+  it("is, for every other pick, the Day 1 step it always opened, but for the locked plan", () => {
     for (const level of [...LEVELS, null] as (Level | null)[]) {
       for (const intent of INTENTS) {
-        const key = pickStep(intent, level);
+        if (["saints", "councils", "history", "beliefs"].includes(intent)) continue;
+        const key = pickStep(intent, level, "catholic", "bible");
         const was = dayOneFor(level, intent);
         if (intent === "gospels") expect(key).toBe("gospelJohn");
-        else if (intent === "beliefs" && level !== "practicing") expect(["creed", "startHere"]).toContain(key);
         else if (intent === "fathers") expect(key).toBe("fathersPath");
         else if (was.href === "/walkthroughs/job") expect(key).toBe("job");
         // On a road with no level kept (they skipped before it), a reader is

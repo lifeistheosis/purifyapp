@@ -72,9 +72,12 @@ describe("which of the reader's days a page is", () => {
 });
 
 describe("which steps the frame serves", () => {
-  it("serves a council, a saint, a moment in history and a lesson of Learn to pray, and nothing else yet", () => {
+  it("serves a council, a saint, a moment in history, a lesson of Learn to pray and the calendar, and nothing else", () => {
     const fits = (Object.keys(WEEK_STEPS) as WeekStepKey[]).filter(frameFits).map((k) => WEEK_STEPS[k].href).sort();
     expect(fits).toEqual([
+      // The calendar, twice: the Church's year on a day whose lead has no page, and "Fasts and feasts".
+      "/calendar",
+      "/calendar",
       "/councils/carthage-419",
       "/councils/chalcedon",
       "/councils/ephesus",
@@ -99,14 +102,31 @@ describe("which steps the frame serves", () => {
   });
 
   it("never puts Done on a page with an end of its own, or on a list or a hub", () => {
-    for (const key of ["gospelJohn", "job", "psalter", "creed", "beforeSleep", "firstLiturgy", "parish", "councils", "history", "churchYear", "feasts", "fathersPath", "prayFathers", "readings", "yourRule", "startHere", "theology", "saintsLives", "readingPaths", "morningPrayers"] as const) {
+    for (const key of ["gospelJohn", "job", "psalter", "creed", "beforeSleep", "firstLiturgy", "parish", "councils", "history", "fathersPath", "prayFathers", "readings", "yourRule", "startHere", "theology", "saintsLives", "readingPaths", "morningPrayers"] as const) {
       expect(frameFits(key), key).toBe(false);
     }
   });
 
-  it("by its key alone leaves, taken when they are opened, only a section's front page and the calendar's own two days, which the day itself leads into (dayStep.test.ts)", () => {
+  it("by its key alone leaves, taken when they are opened, only a section's front page, which no week opens any more, and today's readings, which the day itself leads into (dayStep.test.ts)", () => {
     const open = (Object.keys(WEEK_STEPS) as WeekStepKey[]).filter((k) => !keptOnPage(k)).map((k) => WEEK_STEPS[k].href).sort();
-    expect(open).toEqual(["/calendar", "/calendar", "/councils", "/history", "/prayers/today", "/reading/paths", "/saints", "/start", "/theology"]);
+    expect(open).toEqual(["/councils", "/history", "/prayers/today", "/reading/paths", "/saints", "/start", "/theology"]);
+  });
+
+  it("serves the calendar as a page of its own: Done for today at its end, for the Church's year and for Fasts and feasts", () => {
+    // The owner's "Fix all 3" of 2026-11-23, as worded on his screen: "Church's year on a day with
+    // no saint page: the calendar gets "Done for today" at its end", and "feasts = the calendar with Done".
+    for (const key of ["churchYear", "feasts"] as const) {
+      expect(WEEK_STEPS[key].href, key).toBe("/calendar");
+      expect(frameFits(key), key).toBe(true);
+      expect(ownEnd(key), key).toBe(false);
+      expect(kindOf(WEEK_STEPS[key].href), key).toBe("/calendar");
+    }
+    const days = [WEEK_STEPS.yourRule, WEEK_STEPS.readings, WEEK_STEPS.psalter, WEEK_STEPS.churchYear, WEEK_STEPS.prayFathers, WEEK_STEPS.beforeSleep, WEEK_STEPS.fathersPath];
+    const practicing = (over: Partial<WeekDay>): WeekDay => ({ road: "practicing", steps: days, waiting: null, kept: null, ...over });
+    expect(dayOfPage(practicing({ waiting: 3 }), "/calendar/")).toEqual({ index: 3, kept: false, tomorrow: days[4] });
+    expect(dayOfPage(practicing({ kept: 3 }), "/calendar")).toEqual({ index: 3, kept: true, tomorrow: days[4] });
+    // On any other day of theirs the calendar wears nothing.
+    expect(dayOfPage(practicing({ waiting: 2 }), "/calendar")).toBeNull();
   });
 });
 
@@ -130,6 +150,13 @@ describe("the frame", () => {
     expect(flat(PAGE_OF["/councils/"])).toContain('<DayEnd className="mx-auto mt-12 w-full max-w-[820px]" /> </section>');
     expect(flat(PAGE_OF["/history/"])).toContain('<DayEnd className="mt-12" /> </div> </section>');
     expect(flat(PAGE_OF["/saints/"])).toContain('<DayEnd className="mt-8 pb-16" /> </div> </SaintInReadersLanguage>');
+    // The calendar has two shapes, a phone's and a computer's: one end, handed to each at the end of its own column.
+    const calendar = flat(PAGE_OF["/calendar"]);
+    expect(calendar).toContain('const dayEnd = <DayEnd className="mt-12" />;');
+    expect(calendar).toContain("end={dayEnd} /> ); }");
+    expect(calendar).toContain('<T k="calendar.fastingDisclaimer" /> </p> {dayEnd} </div> </section> </div> ); }');
+    // The phone's page ends on its closing prayer; the end stands after it, and its room is gone when there is none.
+    expect(flat("components/calendar/PhoneCalendar.tsx")).toContain('{GREEK_COLOPHON} </p> </div> </section> {/* The day\'s end, when there is one: in the page\'s own column, and gone whole when there is none. */} <div className="mx-5 empty:hidden">{p.end}</div> </div> ); }');
     // Only an address that begins as a framed page's does is one: a prayer and a lessons' list are not.
     expect(kindOf("/prayers/creed")).toBeNull();
     expect(kindOf("/prayers/learning/jesus-prayer")).toBe("/prayers/learning/");
@@ -244,8 +271,8 @@ describe("a day kept by its page's own end or act", () => {
       expect(ownEnd(key), key).toBe(false);
       expect(frameFits(key), key).toBe(true);
     }
-    // A section's front page is kept nowhere, taken when it is opened; and so, by their key alone, are the calendar's two days.
-    for (const key of ["churchYear", "feasts", "readings", "councils", "history", "startHere", "theology", "saintsLives", "readingPaths"] as const) expect(keptOnPage(key), key).toBe(false);
+    // A section's front page is kept nowhere, taken when it is opened; and so, by its key alone, is today's readings.
+    for (const key of ["readings", "councils", "history", "startHere", "theology", "saintsLives", "readingPaths"] as const) expect(keptOnPage(key), key).toBe(false);
   });
 
   it("each one's end is told in the file it names, and in no other", () => {

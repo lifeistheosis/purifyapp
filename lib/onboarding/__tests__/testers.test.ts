@@ -299,5 +299,16 @@ describe("the Testers mark and a sheet", () => {
     const css = readFileSync("app/globals.css", "utf8");
     expect(css).toContain('body[data-overlay-open="1"] .testers-mark { display: none; }');
   });
+
+  it("stands over today's readings' bar, as every piece that floats over the foot does", async () => {
+    // The owner's "Fix all 3" of 2026-11-23: "Testers pill moves above the readings bar". It stood
+    // on the bar's own words on a readings' day, which is walked in Testers mode.
+    const { readFileSync } = await import("node:fs");
+    const css = readFileSync("app/globals.css", "utf8").replace(/\s+/g, " ");
+    expect(css).toContain(".testers-mark { bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + 12px); }");
+    // With no bar up the room is nothing, so the mark stands where it always did.
+    expect(css).toContain("--readings-flow-h: 0px;");
+    expect(css).toContain("html.has-readings-flow { --readings-flow-h: 76px; }");
+  });
 });
 

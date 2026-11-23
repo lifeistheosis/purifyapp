@@ -24,11 +24,14 @@
 //               the step's own line promised the fast, the readings and the
 //               feasts ahead, and Today already names the day's saint once.
 //
-// A day with nothing to lead into stays as it was, taken when it is opened,
-// so no reader is left on a day that cannot be kept: a day with no readings;
-// a day whose lead has no page in the app (most days of the year have none
-// yet); and a day whose lead's page is already a day of the reader's own
-// week, since no page comes twice.
+// A day with nothing to lead into stays the page it was, so no reader is
+// left on a day that cannot be kept. The Church's year stays the calendar,
+// under its own line, on a day whose lead has no page in the app (most days
+// of the year have none yet) and on a day whose lead's page is already a day
+// of the reader's own week, since no page comes twice; the calendar has
+// "Done for today" at its own end (./dayFrame.ts, his "Fix all 3" of
+// 2026-11-23). Today's readings on a day with none stays the day's page,
+// taken when it is opened.
 //
 // Which day it is, is the device's and never the server's (an export would
 // bake the build's day in), so a step is led into the day where it is read

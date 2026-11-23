@@ -11,8 +11,8 @@
 // opening a step takes it, as before.
 //
 // With the frame on (Testers mode, which is how it is walked before its test begins):
-//   1. a day whose page the frame does not serve yet is as it was: nothing of the frame on its
-//      page, and opening takes the step;
+//   1. a reader's own first pick opens one thing (19, below); no day of a week is left whose
+//      page the frame does not serve;
 //   2. on the council's day the page's head is untouched: its own bar and title stand where they
 //      stand for every reader;
 //   3. the week's line and Done stand at the end of the page's own column and nowhere else: never
@@ -57,8 +57,11 @@
 //      frame off the step is the day's page under its own line, taken when it is opened;
 //  18. on the Church's year's day the card keeps the step's name, says no line under it, and opens
 //      the page of who leads the day, with Done at its end as on any saint's day. On a day whose
-//      lead has no page in the app the step is the calendar, taken when it is opened, as it is
-//      with the frame off: no day is left that cannot be kept.
+//      lead has no page in the app the step is the calendar under its own line, and the calendar
+//      has Done at its own end, after its closing prayer (the owner's "Fix all 3" of 2026-11-23);
+//  19. a reader's own first pick opens one thing, never a section's front page (the same word):
+//      a saint, Nicaea, Pentecost, the Creed, and for the fasts and feasts the calendar with Done;
+//  20. in Testers mode, where all of this is walked, the mark stands over the readings' bar.
 //
 // The tap on Done is recorded frame by frame and judged by the gate's own motion check
 // (scripts/gate/frames.mjs): no cut, no jump, no flash; and with motion reduced, nothing that moves.
@@ -271,24 +274,35 @@ console.log("\n  With the frame off, as every reader has it (the third day, a co
   await ctx.close();
 }
 
-console.log("\n  With the frame on (Testers mode), a day the frame does not serve (a section's front page, the reader's own first pick)");
+console.log("\n  With the frame on (Testers mode), a reader's own first pick: one thing, never a section's front page");
 {
-  const ctx = await reader({ ...READER, "purify:intent": "saints", "purify:intents": '["saints"]', ...TESTING });
-  const page = await today(ctx);
-  const c = await card(page);
-  if (!c.step || !c.href) fault(`no step on Today: ${JSON.stringify(c)}`);
-  else {
-    await begin(page);
-    await page.waitForTimeout(3000);
-    const m = await measure(page);
-    check(m.path.replace(/\/$/, "") === c.href.replace(/\/$/, "") && !m.end, `"${c.step[1]}" (${m.path}) wears nothing of the frame`, `the page ${m.path} shows the frame's end: ${JSON.stringify(m.end)}`);
-    check(/"at":1/.test(m.week ?? ""), "opening the step took it, as it always has, so the day is not left unkept", `the week is ${m.week} after opening`);
-    await page.goBack();
-    await page.waitForTimeout(2500);
-    const back = await card(page);
-    check(!back.kept, "Today does not say Done was tapped: nothing was", `Today shows the kept card: ${JSON.stringify(back.kept)}`);
+  // A Catholic reader, completely new, by what they asked for first (the owner's "Fix all 3" of
+  // 2026-11-23: saints = a saint, councils = Nicaea, history = Pentecost, beliefs = the Creed,
+  // feasts = the calendar with Done).
+  for (const [pick, asked, title, href, end] of [
+    ["saints", "the lives of the saints", "St. Leo the Great", "/saints/leo-the-great", "done"],
+    ["councils", "the councils", "First Council of Nicaea", "/councils/first-nicaea", "done"],
+    ["history", "the Church's history", "Pentecost: the Descent of the Holy Spirit", "/history/pentecost", "done"],
+    ["beliefs", "what the Orthodox believe", "The Nicene Creed", "/prayers/creed", "own"],
+    ["feasts", "the fasts and feasts", "Fasts and feasts", "/calendar", "done"],
+  ]) {
+    const ctx = await reader({ ...READER, "purify:intent": pick, "purify:intents": JSON.stringify([pick]), ...TESTING });
+    const page = await today(ctx);
+    const c = await card(page);
+    if (c.step?.[0] !== "Your first week · 1 of 7" || c.step[1] !== title || c.href?.replace(/\/$/, "") !== href) fault(`asked for ${asked} first, a reader begins at ${JSON.stringify(c.step)} (${c.href}), not at "${title}"`);
+    else {
+      await begin(page);
+      await page.waitForTimeout(3000);
+      const m = await measure(page);
+      check(m.path.replace(/\/$/, "") === href && (!m.week || /"at":0/.test(m.week)), `asked for ${asked} first, they begin at "${title}", and opening it kept nothing`, `asked for ${asked} first, Begin opened ${m.path} and the week is ${m.week}`);
+      if (end === "done") {
+        await toEnd(page);
+        const e = await measure(page);
+        check(e.mark?.words === "Your first week · 1 of 7" && e.done?.words === "Done for today" && e.done.top >= e.ceiling && e.done.bottom <= e.floor, "    with Done for today at its end, whole between the bars", `the page ends on ${JSON.stringify(e.mark)} and ${JSON.stringify(e.done)}, the bars at ${e.ceiling} and ${e.floor}`);
+      } else check(!m.end && !m.done, "    kept by its own end: nothing of the week is drawn on it", `the page shows the frame's end: ${JSON.stringify(m.end)}`);
+    }
+    await ctx.close();
   }
-  await ctx.close();
 }
 
 console.log("\n  With the frame on, the council's day");
@@ -1028,6 +1042,18 @@ console.log("\n  Today's readings' day (a practicing reader's second day)");
     const total = Number(/^1 of (\d+)/.exec(b.words?.[0] ?? "")?.[1] ?? 0);
     check(/^\/bible\//.test(b.path) && b.flow && total > 0, `the Bible's reader opens at the first reading with the walk's own bar: "${b.words?.join('", "')}"`, `the page is ${b.path}${b.hash} and the bar says ${JSON.stringify(b.words)}`);
     check(!b.frame && !b.week && /"at":1/.test(b.kept ?? ""), "it wears nothing of the week, and opening kept nothing", `the reader shows the frame: ${b.frame}, the week's words: ${b.week}; the week is ${b.kept}`);
+    // The walk runs in Testers mode: its mark stands over the readings' bar, never on the bar's own words.
+    const foot = await page.evaluate(() => {
+      const r = (x) => {
+        if (!x) return null;
+        const q = x.getBoundingClientRect();
+        return { top: Math.round(q.top), bottom: Math.round(q.bottom), left: Math.round(q.left), right: Math.round(q.right) };
+      };
+      const shell = [...document.querySelectorAll('[data-screen-edge="bottom"]')].find((x) => /\d+ of \d+/.test(x.textContent));
+      return { pill: r(document.querySelector(".testers-mark")), bar: r(shell?.firstElementChild ?? null) };
+    });
+    check(foot.pill && foot.bar && apart(foot.pill, foot.bar), `the Testers mark stands over the readings' bar, not on it (the mark ${foot.pill?.top} to ${foot.pill?.bottom}, the bar ${foot.bar?.top} to ${foot.bar?.bottom})`, `the Testers mark (${JSON.stringify(foot.pill)}) stands on the readings' bar (${JSON.stringify(foot.bar)})`);
+    await still(page, "readings-1b-bar");
     // The line under the step's name says what the walk is, and "them" only of more than one.
     check(total > 1 ? c.step[2] === "Read them in one go" : c.step.length === 2, total > 1 ? `the card's line is the app's own for this walk: "${c.step[2]}"` : "of one reading the card says no line", `of ${total} reading${total === 1 ? "" : "s"} the card says ${JSON.stringify(c.step.slice(2))}`);
     let walked = total > 0;
@@ -1127,16 +1153,47 @@ console.log("\n  The Church's year's day (a practicing reader's fourth day)");
 
   if (without == null) console.log("    (every day of the coming year has a lead with a page: the calendar's own day is not walked)");
   else {
+    // The calendar's own day (the owner's "Fix all 3" of 2026-11-23: "Church's year on a day with
+    // no saint page: the calendar gets "Done for today" at its end").
     const day = ahead(without);
-    const ctx = await reader({ ...PRACTICING, ...weekAt(3), ...TESTING });
-    const page = await today(ctx, on(without));
+    const ctx = await reader({ ...PRACTICING, ...weekAt(3), ...TESTING }, { scale: STILLS ? 2 : 1 });
+    let page = await today(ctx, on(without));
     const c = await card(page);
-    check(c.step?.[1] === "The Church's year" && c.step[2] === OWN_LINE && c.href?.replace(/\/$/, "") === CALENDAR, `on a day whose lead has no page in the app (${day}) the step is the calendar, under its own line`, `on ${day} the step is ${JSON.stringify(c.step)} (${c.href})`);
-    await begin(page);
-    await page.waitForTimeout(3000);
-    const m = await ownEndPage(page);
-    check(m.path.replace(/\/$/, "") === CALENDAR && keptOn(4, day).test(m.kept ?? "") && !m.frame && !m.week, "and it is taken when it is opened, as before: no day is left that cannot be kept", `the page is ${m.path}, the week ${m.kept}, the frame: ${m.frame}, the week's words: ${m.week}`);
+    if (c.step?.[1] !== "The Church's year" || c.step[2] !== OWN_LINE || c.href?.replace(/\/$/, "") !== CALENDAR) fault(`on ${day}, a day whose lead has no page, the step is ${JSON.stringify(c.step)} (${c.href}), not the calendar under its own line`);
+    else {
+      ok(`on a day whose lead has no page in the app (${day}) the step is the calendar, under its own line`);
+      await begin(page);
+      await page.waitForTimeout(3000);
+      const head = await measure(page);
+      check(head.path.replace(/\/$/, "") === CALENDAR && /"at":3/.test(head.week ?? ""), "Begin opened the calendar, and opening kept nothing: the day waits for the reader's own Done", `Begin opened ${head.path} and the week is ${head.week}`);
+      check(!head.done || head.done.top > 844, "Done does not stand on the first screen", `Done stands at ${head.done?.top} as the calendar opens`);
+      await toEnd(page);
+      const m = await measure(page);
+      check(m.mark?.words === "Your first week · 4 of 7" && m.done?.words === "Done for today" && m.done.top >= m.ceiling && m.done.bottom <= m.floor && apart(m.done, m.pill), `at the calendar's end, after its closing prayer, the week's line and Done stand whole between the bars, clear of the Testers mark (${m.mark?.top} to ${m.done?.bottom})`, `the calendar ends on ${JSON.stringify(m.mark)} and ${JSON.stringify(m.done)}, the bars at ${m.ceiling} and ${m.floor}, the Testers mark ${JSON.stringify(m.pill)}`);
+      check(m.after === 0 && !m.fixed, "nothing of the page follows it, and nothing of it is fixed over the page", `after the end stand ${m.after} things; fixed: ${m.fixed}`);
+      await still(page, "calendar-1-done");
+      await tap(page, "[data-day-done]");
+      await page.waitForTimeout(1600);
+      const k = await measure(page);
+      check(k.kept?.words[0] === "Day 4 of 7, kept" && k.kept.words[1] === "Tomorrow: Pray with the Fathers" && keptOn(4, day).test(k.week ?? ""), `Done keeps the day, and the week's card stands in its place: "${k.kept?.words.join('", "')}"`, `after Done the calendar shows ${JSON.stringify(k.kept)} and the week is ${k.week}`);
+      check(k.kept && k.kept.top >= k.ceiling && k.kept.bottom <= k.floor && apart(k.kept, k.pill) && k.kept.linkHit, "whole between the bars, clear of the Testers mark, its way back under the finger", `the card stands at ${JSON.stringify(k.kept)}, the bars at ${k.ceiling} and ${k.floor}`);
+      await still(page, "calendar-2-kept");
+      await page.close();
+      page = await today(ctx, on(without));
+      const kept = await card(page);
+      check(!kept.step && kept.kept?.[0] === "Day 4 of 7, kept" && kept.kept[1] === "Tomorrow: Pray with the Fathers", `Today says the day is kept: "${kept.kept?.join('", "')}"`, `Today shows ${JSON.stringify(kept)}`);
+    }
     await ctx.close();
+    {
+      // With the frame off, on the same day: as every reader has it.
+      const plainCtx = await reader({ ...PRACTICING, ...weekAt(3) });
+      const plainPage = await today(plainCtx, on(without));
+      await begin(plainPage);
+      await plainPage.waitForTimeout(3000);
+      const m = await ownEndPage(plainPage);
+      check(m.path.replace(/\/$/, "") === CALENDAR && keptOn(4, day).test(m.kept ?? "") && !m.frame && !m.week, "with the frame off, on that day, opening the calendar took the step and the calendar wears nothing of the week", `with the frame off the page is ${m.path}, the week ${m.kept}, the frame: ${m.frame}, the week's words: ${m.week}`);
+      await plainCtx.close();
+    }
   }
 }
 

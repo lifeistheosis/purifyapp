@@ -60,12 +60,20 @@
 // each opens is known only on the device, on the day, so the step itself
 // says how it is kept (WeekStep.kept), and DAY_STEPS_IN names where.
 //
-// What is left as it was, taken when it is opened: a section's front page a
-// reader's own first pick opens (the saints, the councils, the Church's
-// history, Start here, What the Orthodox believe, the reading paths' list,
-// the calendar by the pick "Fasts and feasts"), and either of the calendar's
-// two days on a day with nothing to lead into (no readings; a lead with no
-// page in the app).
+// The calendar is served as a page of its own (his "Fix all 3" of
+// 2026-11-23, as worded on his screen: "Church's year on a day with no saint
+// page: the calendar gets "Done for today" at its end", and "feasts = the
+// calendar with Done"). It is a tool more than a reading, and it was left
+// out for that; but it is the page those two days open, the step's own line
+// is true of it, and a day kept by the reader's Done is better than one
+// taken at a tap. So the Church's year on a day whose lead has no page, and
+// "Fasts and feasts", are kept at the calendar's end.
+//
+// No day of any week opens a section's front page any more: a reader's own
+// pick opens one thing (./week.ts, pickStep). The front pages' steps are
+// still named in WEEK_STEPS for the Day 1 card of a reader with no road
+// (./space.ts, dayOneFor); by its key alone such a step is taken when it is
+// opened, as is today's readings on a day with none.
 //
 // A step is served when it is named here AND its page mounts the frame's end
 // (PAGE_OF below says which file, by where the page's address begins): the
@@ -76,7 +84,7 @@
 
 import type { WeekStep, WeekStepKey } from "./week";
 
-/** The steps whose page the frame serves today: a council, a saint, a moment in history, a lesson of Learn to pray. */
+/** The steps whose page the frame serves today: a council, a saint, a moment in history, a lesson of Learn to pray, and the calendar. */
 export const FRAMED_STEPS: readonly WeekStepKey[] = [
   "nicaea",
   "ephesus",
@@ -93,6 +101,9 @@ export const FRAMED_STEPS: readonly WeekStepKey[] = [
   "trisagion",
   "signOfCross",
   "morningRule",
+  // The calendar: the Church's year on a day whose lead has no page (./dayStep.ts), and the pick "Fasts and feasts".
+  "churchYear",
+  "feasts",
 ];
 
 /** The file that draws the end of each kind of framed page, by where its address begins: where `<DayEnd />` is mounted. */
@@ -101,6 +112,7 @@ export const PAGE_OF: Readonly<Record<string, string>> = {
   "/saints/": "app/(app)/saints/[slug]/page.tsx",
   "/history/": "app/(app)/history/[slug]/page.tsx",
   "/prayers/learning/": "components/prayers/LessonEnd.tsx",
+  "/calendar": "components/calendar/CalendarClient.tsx",
 };
 
 /** Where a framed page's address begins, as PAGE_OF names it, or null. */
@@ -165,9 +177,9 @@ export function keptOnPage(of: Of): boolean {
 /**
  * The two steps that lead into the Church's own day (./dayStep.ts), and the file in which each
  * day's end is told to the week: the readings' walk by its own Done, and the page of who leads the
- * day by Done at its end, as any saint's page. Neither is in the lists above: by its key alone
- * such a step is still taken when it is opened, which is what it is on a day with nothing to lead
- * into.
+ * day by Done at its end, as any saint's page. Today's readings are in neither list above: on a
+ * day with no readings the step is taken when it is opened. The Church's year on a day whose lead
+ * has no page is the calendar, served by its key (FRAMED_STEPS).
  */
 export const DAY_STEPS_IN: Readonly<Partial<Record<WeekStepKey, string>>> = {
   readings: "components/bible/ReadingsFlowBar.tsx",

@@ -58,6 +58,7 @@ import { DayScroll } from "@/components/calendar/DayScroll";
 import { OrnamentRule } from "@/components/calendar/OrnamentRule";
 import { Colophon } from "@/components/calendar/Colophon";
 import { PhoneCalendar } from "@/components/calendar/PhoneCalendar";
+import { DayEnd } from "@/components/onboarding/DayFrame";
 import { SectionLabel } from "@/components/calendar/SectionLabel";
 import StyleToggleLink from "@/components/calendar/StyleToggleLink";
 import { T } from "@/components/i18n/T";
@@ -274,6 +275,12 @@ export function CalendarClient() {
 
   if (!view) return <CalendarSkeleton />;
 
+  // When the calendar is today's step of a reader's first week (the Church's year on a day whose
+  // lead has no page of its own, or "Fasts and feasts"), the day's end: Done for today, and then
+  // the day kept. One for both shapes of the page, at the end of each one's own column. It draws
+  // nothing for any other reader.
+  const dayEnd = <DayEnd className="mt-12" />;
+
   if (phone) {
     return (
       <PhoneCalendar
@@ -292,6 +299,7 @@ export function CalendarClient() {
         commemorationReadings={view.selectedCommemoration}
         source={view.selectedSource}
         pascha={view.pascha}
+        end={dayEnd}
       />
     );
   }
@@ -618,6 +626,7 @@ export function CalendarClient() {
           <p className="mt-3 font-sans text-caption text-paper/45 leading-[1.6]">
             <T k="calendar.fastingDisclaimer" />
           </p>
+          {dayEnd}
         </div>
       </section>
     </div>
