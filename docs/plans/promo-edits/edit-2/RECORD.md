@@ -4,7 +4,7 @@ The brief is `../edit-2-the-church.md`. This chat is session_01VuYTwaL9B8MePq2DH
 
 ## Where it stands
 
-**The film is made and put to him** (2026-11-23, about 22:41), at his yes to the storyboard. The film's page: https://claude.ai/artifact/9u3KBCTgwokQAvmuCfp5CU (private, his own). The storyboard's page: https://claude.ai/artifact/LmaN8bkhnrYHj9BfNiSsRo. The silent master and the preview were also sent to him as files in the chat.
+**The film's second cut is made and put to him** (2026-11-23, about 22:52), at his word for more effects and transitions. The first cut was put to him about 22:41. The film's page: https://claude.ai/artifact/9u3KBCTgwokQAvmuCfp5CU (private, his own). The storyboard's page: https://claude.ai/artifact/LmaN8bkhnrYHj9BfNiSsRo. The silent master and the preview were also sent to him as files in the chat.
 
 Still his, and said on the film's page:
 
@@ -18,6 +18,7 @@ Still his, and said on the film's page:
 - 2026-11-23, in the promo chat, as the brief gives them: "So this one is more or less about the aesthetic, right? This one could just be an edit about Purify, Orthodox Church, just in general. So yeah, just like a crazy edit with the same style, same audio, right? But like this one's a little bit more different because there's like people talking in the back when it goes to the fighting section. We don't really need that part, but the intro part going into like before it shows them is kind of fire. Before it shows them talking, like that whole edit aesthetic, I want like a cinematic edit of us with that."
 - Then: "Start making the 2 edits."
 - In this chat, about 22:35, on the storyboard: "Story, but look, it looks nice. Finish." Taken as his yes to the storyboard as it stood and his word to make the film. He answered neither question.
+- About 22:43, on the first cut: "Add more effects, transitions, and just make it better overall." Taken with his standing words still binding (no glow, no bright frame, no shake, no punch in on the beat, clean transitions): the additions come out of the pictures themselves and none is laid on top. What was left out, and why, is on the film's page for him to overrule.
 
 ## What was made (22:05 to 22:35)
 
@@ -97,6 +98,31 @@ The film's page passed `node docs/brand/kit/check.mjs --page` on the five palett
 
 Not done, and why: nothing was heard, so whether the cuts sit well on the sound is his to judge on the preview.
 
+## The second cut (22:43 to 22:52)
+
+Same length, same cuts, same words. `board.py` holds it all: `clip_frames`, `POOL`, `WEAVE`, `THROUGH_BLACK`, `DISSOLVES`, `SMEARS`, and shot 3's draw back in `build`. `board.py strip <frames>` makes a row of frames for looking over a transition.
+
+Added, each with its reason on the page:
+
+- **Slow motion.** The three clips at half speed: every second frame as filmed, the one between the mean of its two neighbours. This corrects the first cut's page, which said slowing needed frames made by a machine; a mean of two real frames is not that.
+- **The hand draws back into the figure** over its last six frames (64 to 69), six moments blended in each frame, to the place and size it has in the whole icon; the figure stands up about it at 70.
+- **Through black:** the church out (44 to 47), the hand in (48 to 50, its words whole from 48), the phone out (239 to 242), the film's close (283 to 285).
+- **Three dissolves** of four frames with the cut in their middle: 113 (candles into the censer), 178 (book into book), 221 (His face into the app).
+- **One more blur:** 133 to 136, the censer thrown up into the dome. The reference's own at 89 to 91 is kept.
+- **Plain cuts left:** 6, 157, 200.
+- **Film in the gate:** a weave of about a pixel, a lamp that wavers by some three in a hundred on two slow waves that are not the sound's, and one soft pool of light toward the window's corners.
+- **The words open:** A M E N from one word to the spread; CHURCH, Prayers and Today widen as their shots run. Every line still stands from its shot's first frame to its last.
+
+Left out, and said so on the page: glow, a bright frame, a shake, a punch in (his standing words); a glitch frame, light leaks, dust and scratches (laid-on stock effects); depth moves in the photographs (they need parts painted in).
+
+Measured on the finished master: 286 frames, 1080 by 1920; no colour in any frame; the brightest frame's mean is 65 in 255 (frame 155, the dome); the film's mean is 33. The first cut's blur frames were each one row too tall, which pushed every later frame down by a row or two in that file; the second cut mends it (`smear`).
+
+The stills in the work folder are now each shot's middle frame.
+
 ## Cost
 
-Not read. get_session shows no cost and no token count while this chat's first turn is still open (context_usage reads 0), so no figure can be given honestly. The brief's limit to the storyboard is $12; the promo chat or the arbiter can read this session's cost once the turn has closed. Nothing that costs his credits was used: no Higgsfield tool, no other chat, no subagent, no scheduled task.
+By get_session, read at about 22:43: **$10.06** through the first cut (the storyboard, the film, both pages), with 315,000 tokens of context. The storyboard was within its $12. The second cut is not in that figure: a turn's cost shows only once it has closed. At some 315,000 tokens each step here costs about $0.20, and the second cut took about fifteen, so expect about $13 to $14 in all; read it again before more work. The $30 line has not been passed.
+
+This chat is past the 200,000 token line of `docs/OPERATIONS.md`. A further round of changes is cheaper from a fresh chat started on this record and `board.py`.
+
+Nothing that costs his credits was used: no Higgsfield tool, no other chat, no subagent, no scheduled task.

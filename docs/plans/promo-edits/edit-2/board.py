@@ -163,6 +163,12 @@ def cut():
 
 SIZE = (W, WIN[3] - WIN[1])
 FULL = (0, 0, W, H)
+WEAVE = [0.0, 0.0]  # this frame's gate weave, in the film's pixels: the picture breathes in the gate as film does
+
+# One soft pool of light in the window: full in the middle, falling toward the corners. Never beams.
+_yy, _xx = np.mgrid[0:SIZE[1], 0:SIZE[0]].astype(np.float32)
+_r = np.hypot((_xx - SIZE[0] / 2) / (SIZE[0] / 2), (_yy - SIZE[1] / 2) / (SIZE[1] / 2)) / np.sqrt(2)
+POOL = 1 - 0.4 * np.clip((_r - 0.3) / 0.7, 0, 1) ** 2
 
 
 def light(im):
@@ -182,32 +188,52 @@ def zoom(box, s, at=None):
     return (cx - w * fx, cy - h * fy, cx + w * (1 - fx), cy + h * (1 - fy))
 
 
+def woven(box, size, out):
+    """The box moved by this frame's weave, and kept inside its picture."""
+    sx, sy = (box[2] - box[0]) / out[0], (box[3] - box[1]) / out[1]
+    x0, y0, x1, y1 = box[0] + WEAVE[0] * sx, box[1] + WEAVE[1] * sy, box[2] + WEAVE[0] * sx, box[3] + WEAVE[1] * sy
+    dx = -x0 if x0 < 0 else min(0, size[0] - x1)
+    dy = -y0 if y0 < 0 else min(0, size[1] - y1)
+    return (max(0, x0 + dx), max(0, y0 + dy), min(size[0], x1 + dx), min(size[1], y1 + dy))
+
+
 def clip_frames(name, t, n):
+    """n frames of a clip at half its speed. Every second frame is a frame as it was filmed; the one between is
+    the mean of its two neighbours, as an optical printer slows a film. No frame is made up."""
+    real = n // 2 + 2
     d = f"{WORK}/stills/_{name}"
     os.makedirs(d, exist_ok=True)
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", str(t), "-i", f"{WORK}/clips/{name}.mp4", "-frames:v", str(n), f"{d}/%03d.png"], check=True)
-    out = [light(Image.open(f"{d}/{i + 1:03d}.png")) for i in range(n)]
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", str(t), "-i", f"{WORK}/clips/{name}.mp4", "-frames:v", str(real), f"{d}/%03d.png"], check=True)
+    fr = [light(Image.open(f"{d}/{i + 1:03d}.png")) for i in range(real)]
     shutil.rmtree(d)
-    return out
+    return [fr[j // 2] if j % 2 == 0 else Image.fromarray((np.asarray(fr[j // 2]) + np.asarray(fr[j // 2 + 1])) / 2, "F") for j in range(n)]
 
 
 def windowed(src, box, **kw):
-    """The part of a picture in the box, graded, standing in the window on black."""
+    """The part of a picture in the box, graded, under the pool of light, standing in the window on black."""
     y = np.zeros((H, W), np.float32)
-    y[WIN[1]:WIN[3]] = grade(np.asarray(src.resize(SIZE, Image.LANCZOS, box=box), np.float32), **kw)
+    y[WIN[1]:WIN[3]] = grade(np.asarray(src.resize(SIZE, Image.LANCZOS, box=woven(box, src.size, SIZE)), np.float32), **kw) * POOL
     return y
 
 
-def cut_canvas(name, height, centre):
-    """A cut-out, graded, on pure black at the frame's size: its picture times its own edge."""
+def cut_piece(name, height):
+    """A cut-out, graded, times its own edge, at the height it stands in its shot; and where it lies in its icon."""
     im = Image.open(f"{WORK}/cut/{name}.png")
-    im = im.crop(im.getchannel("A").getbbox())
-    im = im.resize((round(im.width * height / im.height), height), Image.LANCZOS)
+    box = im.getchannel("A").getbbox()
+    im = im.crop(box)
+    k = height / im.height
+    im = im.resize((round(im.width * k), height), Image.LANCZOS)
     y = grade(grey(im), lift=0.02, deep=0.35) * (np.asarray(im.getchannel("A"), np.float32) / 255)
+    return Image.fromarray(y, "F"), box, k
+
+
+def on_black(piece, centre):
     full = np.zeros((H, W), np.float32)
-    x0, y0 = round(centre[0] - im.width / 2), round(centre[1] - im.height / 2)
-    full[y0:y0 + im.height, x0:x0 + im.width] = y
-    return Image.fromarray(full, "F")
+    x0, y0 = round(centre[0] - piece.width / 2), round(centre[1] - piece.height / 2)
+    xa, ya, xb, yb = max(0, x0), max(0, y0), min(W, x0 + piece.width), min(H, y0 + piece.height)
+    if xb > xa and yb > ya:
+        full[ya:yb, xa:xb] = np.asarray(piece, np.float32)[ya - y0:yb - y0, xa - x0:xb - x0]
+    return full
 
 
 def phone_canvas():
@@ -228,129 +254,198 @@ def phone_canvas():
 
 
 def moved(canvas, box):
-    return np.asarray(canvas.resize((W, H), Image.LANCZOS, box=box), np.float32)
+    return np.asarray(canvas.resize((W, H), Image.LANCZOS, box=woven(box, canvas.size, (W, H))), np.float32)
 
 
 def build():
-    """Every shot: how many frames, its picture at frame i (k from 0 to 1 across the shot), its words, its grain."""
+    """Every shot: how many frames, its picture at frame i (k from 0 to 1 across the shot), its words at k, its grain."""
     labels = hold_the_words()
     n = {name: b - a for name, a, b in SHOTS}
     bi, cap = font("700i", 27), font("500", 40)
     raw = lambda name: light(Image.open(f"{WORK}/raw/{name}.jpg"))
     shots = {}
 
-    def words(draw=None, name=True):
-        o = Image.new("L", (W, H), 0)
-        d = ImageDraw.Draw(o)
-        if name:
-            name_at_head(d)
-        if draw:
-            draw(d)
-        return np.asarray(o, np.float32) / 255
+    def words(draw=None, name=True, still=False):
+        """The shot's words at k. A line stands from its shot's first frame to its last; some open slowly as it runs."""
+        kept = {}
+
+        def at(k):
+            key = 0 if still else round(k * 400)
+            if key not in kept:
+                o = Image.new("L", (W, H), 0)
+                d = ImageDraw.Draw(o)
+                if name:
+                    name_at_head(d)
+                if draw:
+                    draw(d, k)
+                kept.clear()
+                kept[key] = np.asarray(o, np.float32) / 255
+            return kept[key]
+        return at
 
     def add(key, pic, over, amount=0.05):
         shots[key] = {"n": n[key], "pic": pic, "words": over, "grain": amount}
 
-    # 1. A hand sets a lit taper among the others, close. The clip's own movement, and the least push.
+    plain = words(still=True)
+
+    # 1. A hand sets a lit taper among the others, close. The clip's own movement, slowed, and the least push.
     f1 = clip_frames("lighting", 13.5, n["01-candle-hand"])
     b1 = (470, 0, 1280, 1080)
-    add("01-candle-hand", lambda i, k: windowed(f1[i], lerp(b1, zoom(b1, 1.01), k)), words())
+    add("01-candle-hand", lambda i, k: windowed(f1[i], lerp(b1, zoom(b1, 1.01), k)), plain)
 
     # 2. A church within, wide: one slow move toward the royal doors.
     s2 = raw("kondopoga")
-    add("02-church", lambda i, k: windowed(s2, lerp((0, 30, 1070, 1457), (60, 100, 1044, 1412), k), lift=0.03), words())
+    add("02-church", lambda i, k: windowed(s2, lerp((0, 30, 1070, 1457), (60, 100, 1044, 1412), k), lift=0.03), plain)
 
-    # 3. The blessing hand alone on black, and the entry beside it.
-    c3 = cut_canvas("hand", 900, (690, 860))
+    # 3. The blessing hand alone on black, and the entry beside it. Its last six frames draw back to where the
+    #    hand lies in the whole figure, so that the figure of shot 4 stands up about a hand already in its place.
+    hand, hbox, hk = cut_piece("hand", 900)
+    fig, fbox, fk = cut_piece("figure", 900)
+    HAND_AT, FIG_AT = (690, 860), (540, 800)
+    hand_src = (440 + (hbox[0] + hbox[2]) / 2, 1230 + (hbox[1] + hbox[3]) / 2)          # the hand's middle, in the icon's pixels
+    lands = (FIG_AT[0] + (hand_src[0] - (fbox[0] + fbox[2]) / 2) * fk, FIG_AT[1] + (hand_src[1] - (fbox[1] + fbox[3]) / 2) * fk)
+    small = fk / hk                                                                       # the hand's size in the figure, to its size alone
+    c3 = Image.fromarray(on_black(hand, HAND_AT), "F")
+    PULL = 6
 
-    def entry(d):
+    def hand_pic(i, k):
+        j = i - (n["03-hand"] - PULL) + 1
+        if j < 1:
+            return moved(c3, zoom(FULL, 1 + 0.04 * k, HAND_AT))
+        z0 = 1 + 0.04 * (n["03-hand"] - PULL - 1) / (n["03-hand"] - 1)
+        acc = np.zeros((H, W), np.float32)
+        for part in (5 / 6, 4 / 6, 3 / 6, 2 / 6, 1 / 6, 0):                               # six moments within the frame: the blur of its own speed
+            e = ((j - part) / PULL) ** 2
+            z = z0 * (small / z0) ** e
+            piece = hand.resize((max(1, round(hand.width * z)), max(1, round(hand.height * z))), Image.LANCZOS)
+            acc += on_black(piece, lerp(HAND_AT, lands, e))
+        return acc / 6
+
+    def entry(d, k):
         x = 260
         spaced(d, (x, 1010), "1.", font("700i", 46), anchor="m")
-        spaced(d, (x, 1086), WORDS["entry_word"].upper() + ".", cap, track=3, anchor="m")
+        spaced(d, (x, 1086), WORDS["entry_word"].upper() + ".", cap, track=3 + 9 * k, anchor="m")
         yy = lines(d, x, 1166, ["the pillar and ground", "of the truth"], bi, 36)
         spaced(d, (x, yy + 14), WORDS["entry"][4], font("400i", 24), anchor="m", fill=190)
-    add("03-hand", lambda i, k: moved(c3, zoom(FULL, 1 + 0.04 * k, (690, 860))), words(entry, name=False))
+    add("03-hand", hand_pic, words(entry, name=False))
 
-    # 4. He whose hand it is, whole with His halo, and the invocation; A M E N across.
-    c4 = cut_canvas("figure", 900, (540, 800))
+    # 4. He whose hand it is, whole with His halo, and the invocation; A M E N opens across the frame.
+    c4 = Image.fromarray(on_black(fig, FIG_AT), "F")
 
-    def invocation(d):
+    def invocation(d, k):
         lines(d, 64, 262, ["IN THE NAME OF THE FATHER,", "AND OF THE SON,"], bi, 36, anchor="l", track=1)
         yy = lines(d, 900, 1284, ["AND OF THE HOLY GHOST"], bi, 36, anchor="r", track=1)
         spaced(d, (900, yy + 4), WORDS["invocation"][4], font("400i", 24), anchor="r", fill=190)
-        for c, (ax, ay) in zip(WORDS["amen"][0].upper(), [(120, 1400), (385, 1436), (650, 1400), (900, 1436)]):
-            spaced(d, (ax, ay), c, font("700", 34), anchor="m")
-    add("04-figure", lambda i, k: moved(c4, zoom(FULL, 1 + 0.035 * k, (540, 800))), words(invocation, name=False))
+        near, far = [(459, 1418), (513, 1418), (567, 1418), (621, 1418)], [(120, 1400), (385, 1436), (650, 1400), (900, 1436)]
+        for c, p0, p1 in zip(WORDS["amen"][0].upper(), near, far):
+            spaced(d, lerp(p0, p1, k ** 0.6), c, font("700", 34), anchor="m")
+    add("04-figure", lambda i, k: moved(c4, zoom(FULL, 1 + 0.035 * k, FIG_AT)), words(invocation, name=False))
 
-    # 5. Candles: the clip as it was filmed, drifting a little to one side.
-    f5 = clip_frames("candles", 5.2, n["05-candles"])
-    add("05-candles", lambda i, k: windowed(f5[i], lerp((930, 0, 1740, 1080), (960, 0, 1770, 1080), k)), words())
+    # 5. Candles: the clip, slowed, drifting a little to one side.
+    f5 = clip_frames("candles", 5.2, n["05-candles"] + 2)
+    add("05-candles", lambda i, k: windowed(f5[i], lerp((930, 0, 1740, 1080), (960, 0, 1770, 1080), k)), plain)
 
     # 6. The censer: one slow move down its chains.
     s6 = raw("censer")
-    add("06-censer", lambda i, k: windowed(s6, lerp((520, 930, 1400, 2103), (520, 975, 1400, 2148), k)), words())
+    add("06-censer", lambda i, k: windowed(s6, lerp((520, 930, 1400, 2103), (520, 990, 1400, 2163), k)), plain)
 
     # 7. A dome from below: drawn in toward the dome.
     s7 = raw("sihastria")
     b7 = (160, 110, 1700, 2163)
-    add("07-dome", lambda i, k: windowed(s7, lerp(b7, zoom(b7, 1.04, (873, 692)), k), lift=0.02, deep=0.4), words())
+    add("07-dome", lambda i, k: windowed(s7, lerp(b7, zoom(b7, 1.05, (873, 692)), k), lift=0.02, deep=0.4), plain)
 
-    # 8. The service book in a priest's hands, with the app's own label for it.
-    f8 = clip_frames("priest", 5.3, n["08-book"])
+    # 8. The service book in a priest's hands, slowed, with the app's own label for it.
+    f8 = clip_frames("priest", 5.3, n["08-book"] + 2)
     b8 = (652, 0, 1192, 720)
     add("08-book", lambda i, k: windowed(f8[i], lerp(b8, zoom(b8, 1.02), k)),
-        words(lambda d: spaced(d, (1016, 300), labels["08-book"].upper(), font("700i", 30), track=3, anchor="r")))
+        words(lambda d, k: spaced(d, (1016, 300), labels["08-book"].upper(), font("700i", 30), track=3 + 5 * k, anchor="r")))
 
     # 9. The Gospel open in His hand, from the Vysotsky Pantocrator: the shot pulls back.
     s9 = raw("vysotsky")
     b9 = (560, 1040, 1280, 2000)
-    add("09-gospel", lambda i, k: windowed(s9, lerp(zoom(b9, 1.06, (920, 1450)), b9, k)), words())
+    add("09-gospel", lambda i, k: windowed(s9, lerp(zoom(b9, 1.07, (920, 1450)), b9, k)), plain)
 
     # 10. An icon's face: the Sinai Pantocrator, the app's own icon, drawn in toward His eyes.
     s10 = raw("sinai")
     b10 = (253, 180, 1453, 1780)
-    add("10-face", lambda i, k: windowed(s10, lerp(b10, zoom(b10, 1.04, (853, 955)), k)), words())
+    add("10-face", lambda i, k: windowed(s10, lerp(b10, zoom(b10, 1.05, (853, 955)), k)), plain)
 
     # 11. The app, its real Today, on a plain phone on black; the label stands beside the phone, not on its glass.
     c11, (mx, my) = phone_canvas()
     add("11-app", lambda i, k: moved(c11, lerp((0, 0, W + 2 * mx, H + 2 * my), (mx, my, W + mx, H + my), k)),
-        words(lambda d: spaced(d, (64, 640), labels["11-app"].upper(), font("700i", 30), track=3)), amount=0.03)
+        words(lambda d, k: spaced(d, (64, 640), labels["11-app"].upper(), font("700i", 30), track=3 + 5 * k)), amount=0.03)
 
     # 12. The end card on black: the name, the verse's name, the verse, the cross. Still, and without grain.
-    def end(d):
+    def end(d, k):
         spaced(d, (540, 740), "Purify", font("500", 54), anchor="m")
         spaced(d, (540, 850), WORDS["end"][4].upper(), font("500", 26), track=5, anchor="m")
         lines(d, 540, 912, ["upon this rock I will build my church;", "and the gates of hell", "shall not prevail against it"], bi, 38)
-    card = words(end, name=False)
+    card = words(end, name=False, still=True)(0).copy()
     mark = Image.open(f"{WORK}/raw/mark.png").convert("RGBA")
     mark = mark.resize((round(mark.width * 84 / mark.height), 84), Image.LANCZOS)
     x0 = (W - mark.width) // 2
     card[1076:1076 + 84, x0:x0 + mark.width] = grey(mark) * 0.96 * (np.asarray(mark.getchannel("A"), np.float32) / 255)
-    add("12-end", lambda i, k: np.zeros((H, W), np.float32), card, amount=0)
+    add("12-end", lambda i, k: np.zeros((H, W), np.float32), lambda k: card, amount=0)
     return shots, labels
 
 
+# ---------------------------------------------------------------- the film
+
 def smear(y, n=170):
     """A frame drawn out down its height, as a camera thrown past it would leave it."""
+    n += n % 2
     c = np.cumsum(np.pad(y, ((n // 2 + 1, n // 2), (0, 0)), mode="edge"), axis=0)
-    return (c[n:] - c[:-n]) / n
+    return ((c[n:] - c[:-n]) / n)[:y.shape[0]]
+
+
+# The transitions. Each is of one of four kinds, and each is where it is for a reason (RECORD.md):
+THROUGH_BLACK = {44: 0.75, 45: 0.5, 46: 0.28, 47: 0.1,       # the church sinks into the black the hand stands on,
+                 48: 0.25, 49: 0.55, 50: 0.82,                # and the hand comes up out of it (its words stand from the first frame);
+                 239: 0.8, 240: 0.55, 241: 0.3, 242: 0.1,     # the phone sinks into the end card's black;
+                 283: 0.7, 284: 0.4, 285: 0.15}               # and the film closes
+WORDS_STAY = {48, 49, 50}
+DISSOLVES = (113, 178, 221)                                   # candles into the censer, book into book, His face into the app: like into like
+SMEARS = {89: 170, 90: 170, 91: 60,                           # the reference's own blur into the Church,
+          133: 50, 134: 130, 135: 110, 136: 36}               # and once more where the camera, going down the chains, is thrown up into the dome
+# 6 (the hand into the church), 157 and 200 are plain cuts, and the hand draws back into the figure at 70 (build, shot 3).
+
+
+def where(f):
+    if f == 89:
+        return "04-figure", 18
+    if f == 90:
+        return "05-candles", 0
+    name, a, b = next(x for x in SHOTS if x[1] <= f < x[2])
+    return name, f - a
+
+
+def picture(shots, name, i):
+    s = shots[name]
+    i = min(max(i, 0), s["n"] - 1)
+    return s["pic"](i, i / (s["n"] - 1))
 
 
 def frame(shots, f):
     """Frame f of the film, as grey light."""
-    if f == 89:   # two frames of blur into the Church: the figure thrown upward,
-        s = shots["04-figure"]
-        return grain(smear(s["pic"](s["n"] - 1, 1.0)) * 0.8, f)
-    if f == 90:   # and the candles arriving
-        s = shots["05-candles"]
-        return grain(smear(s["pic"](0, 0.0)), f)
-    name, a, b = next(x for x in SHOTS if x[1] <= f < x[2])
+    WEAVE[:] = (1.3 * np.sin(f / 5.3), 1.0 * np.sin(f / 3.7 + 1.0))
+    name, i = where(f)
     s = shots[name]
-    i = f - a
-    y = s["pic"](i, i / (s["n"] - 1))
+    y = picture(shots, name, i)
+    for c in DISSOLVES:                                       # four frames about the cut, the cut in their middle
+        if c - 2 <= f <= c + 1:
+            before, after = where(c - 1)[0], where(c)[0]
+            w = (f - c + 3) / 5
+            y = picture(shots, before, f - next(a for nm, a, b in SHOTS if nm == before)) * (1 - w) + picture(shots, after, f - c) * w
+    if f in SMEARS:
+        y = smear(y, SMEARS[f])
+    if s["grain"]:                                            # the lamp of a projector is never quite steady: two slow waves, neither of them the sound's
+        y = y * (1 + 0.028 * np.sin(f * 0.86 + 0.4) + 0.018 * np.sin(f * 2.03 + 1.3))
+    gain = THROUGH_BLACK.get(f, 1.0)
+    y = y * gain
     if s["grain"]:
         y = grain(y, f, s["grain"])
-    return np.maximum(y, s["words"])   # a line stands from its shot's first frame to its last
+    over = s["words"](i / (s["n"] - 1)) if f not in (89, 90) else 0
+    return np.maximum(y, over * (1.0 if f in WORDS_STAY else gain))
 
 
 def stills():
@@ -358,7 +453,7 @@ def stills():
     os.makedirs(f"{WORK}/stills/page", exist_ok=True)
     made = {}
     for name, a, b in SHOTS:
-        made[name] = to_image(frame(shots, a)).convert("RGB")
+        made[name] = to_image(frame(shots, (a + b) // 2)).convert("RGB")   # the middle of each shot
         made[name].save(f"{WORK}/stills/{name}.png")
         made[name].resize((540, 960), Image.LANCZOS).save(f"{WORK}/stills/page/{name}.jpg", quality=84)
         print(f"  {name}: {a / FPS:5.2f} to {b / FPS:5.2f} s, {b - a} frames")
@@ -367,6 +462,18 @@ def stills():
         sheet.paste(made[name].resize((360, 640), Image.LANCZOS), ((i % 6) * 360, (i // 6) * 640))
     sheet.save(f"{WORK}/stills/sheet.jpg", quality=85)
     print("the words hold to data/bible; the labels are the app's:", labels)
+
+
+def strip():
+    """Some frames of the film in a row, small, for looking over a transition: board.py . <work> strip 62 63 64 ..."""
+    shots, _ = build()
+    fs = [int(x) for x in sys.argv[4:]]
+    row = Image.new("L", (len(fs) * 270, 480))
+    for j, f in enumerate(fs):
+        row.paste(to_image(frame(shots, f)).resize((270, 480), Image.LANCZOS), (j * 270, 0))
+    os.makedirs(f"{WORK}/film", exist_ok=True)
+    row.save(f"{WORK}/film/strip.jpg", quality=88)
+    print(f"film/strip.jpg: frames {fs}")
 
 
 MASTER, PREVIEW, SMALL = "purify-the-church.mp4", "purify-the-church-PREVIEW-not-for-posting.mp4", "purify-the-church-page.mp4"
@@ -396,12 +503,13 @@ def sound():
     note = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     spaced(ImageDraw.Draw(note), (540, 150), "Preview. Not for posting.", font("500", 30), anchor="m", fill=(255, 255, 255, 255))
     note.save(f"{WORK}/film/_note.png")
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", f"{WORK}/film/{MASTER}", "-i", f"{WORK}/film/_note.png", "-t", f"{secs:.3f}", "-i", ref,
-                    "-filter_complex", f"[0:v][1:v]overlay[v];[2:a]afade=t=out:st={secs - 0.12:.3f}:d=0.12[a]", "-map", "[v]", "-map", "[a]",
-                    "-c:v", "libx264", "-preset", "slow", "-crf", "21", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-t", f"{secs:.3f}",
-                    "-movflags", "+faststart", f"{WORK}/film/{PREVIEW}"], check=True)
+    for out, size, crf in ((PREVIEW, f"{W}:{H}", "21"), ("purify-the-church-preview-page.mp4", "720:1280", "24")):
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", f"{WORK}/film/{MASTER}", "-i", f"{WORK}/film/_note.png", "-t", f"{secs:.3f}", "-i", ref,
+                        "-filter_complex", f"[0:v][1:v]overlay,scale={size}[v];[2:a]afade=t=out:st={secs - 0.12:.3f}:d=0.12[a]", "-map", "[v]", "-map", "[a]",
+                        "-c:v", "libx264", "-preset", "slow", "-crf", crf, "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-t", f"{secs:.3f}",
+                        "-movflags", "+faststart", f"{WORK}/film/{out}"], check=True)
     os.remove(f"{WORK}/film/_note.png")
     print(f"film/{PREVIEW}")
 
 
-{"cut": cut, "stills": stills, "film": film, "sound": sound}[WHAT]()
+{"cut": cut, "stills": stills, "strip": strip, "film": film, "sound": sound}[WHAT]()

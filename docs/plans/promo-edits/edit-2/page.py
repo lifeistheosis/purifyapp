@@ -203,23 +203,36 @@ page = f"""<title>The Church storyboard</title>
 </main>
 """
 MOVES = [
-    ("0.00", "A hand sets a lit taper", "the clip as it was filmed"),
-    ("0.25", "The wooden church", "one slow move toward the royal doors"),
-    ("2.00", "The blessing hand, and the entry", "drawn in a little, whole"),
-    ("2.92", "The figure, the invocation, A M E N", "drawn in a little, whole"),
-    ("3.71", "Two frames of blur", "the figure thrown upward, the candles arriving"),
-    ("3.79", "Candles", "the clip, drifting to one side"),
-    ("4.71", "The censer", "down its chains"),
-    ("5.62", "The dome", "in toward the dome"),
-    ("6.54", "The service book, Prayers", "the clip, and the least push"),
-    ("7.42", "The Gospel in His hand", "pulling back"),
-    ("8.33", "The face of the Sinai Pantocrator", "in toward His eyes"),
-    ("9.21", "The app's Today", "the phone coming nearer"),
-    ("10.12", "The end card", "still, to 11.92"),
+    ("0.00", "A hand sets a lit taper", "the clip at half speed; a plain cut out"),
+    ("0.25", "The wooden church", "a slow move toward the royal doors; it sinks into black"),
+    ("2.00", "The blessing hand, and the entry", "comes up out of the black; then draws back to its place in the figure"),
+    ("2.92", "The figure, the invocation", "stands up about the hand; A M E N opens across the frame"),
+    ("3.71", "Blur into the Church", "the reference's own: the figure thrown upward, the candles arriving"),
+    ("3.79", "Candles", "the clip at half speed; dissolves into the censer"),
+    ("4.71", "The censer", "down its chains, then thrown up into the dome"),
+    ("5.62", "The dome", "in toward the dome; a plain cut out"),
+    ("6.54", "The service book, Prayers", "the clip at half speed; book dissolves into book"),
+    ("7.42", "The Gospel in His hand", "pulling back; a plain cut out"),
+    ("8.33", "The face of the Sinai Pantocrator", "in toward His eyes; dissolves into the app"),
+    ("9.21", "The app's Today", "the phone coming nearer; it sinks into black"),
+    ("10.12", "The end card", "still; the film closes to black over its last three frames"),
+]
+ADDED = [
+    ("Slow motion", "The three clips now run at half speed, as the reference's do. Every second frame is a frame as it was filmed, and the one between is the mean of its two neighbours, the way an optical printer slows a film. I told you on the first cut that slowing needed frames made by a machine. That was wrong: this needs none."),
+    ("The hand draws back into the figure", "The hand's last six frames carry it, blurred by its own speed, to the exact place and size it has in the whole icon. On the cut the figure stands up about it. The one transition that says something: the hand, then He whose hand it is."),
+    ("Through black", "The church sinks into the black the hand stands on, and the hand comes up out of it. The phone sinks into the end card's black. The cut-outs' black is now a place the film goes into and comes out of."),
+    ("Like into like", "Three short dissolves, four frames each with the cut in their middle: candle flames into the censer, the priest's book into the Gospel, His face into the app."),
+    ("One more blur", "The reference's own blur is kept at 3.71, and used once more where the camera, going down the censer's chains, is thrown up into the dome. The move carries on through the cut."),
+    ("Three plain cuts are left", "At 0.25, 6.54 and 8.33. A film where every cut is dressed has no clock left to hear."),
+    ("Film in the gate", "The picture weaves by about a pixel as film does in a projector, the lamp is never quite steady, and one soft pool of light falls toward the corners of the window. All three run on their own slow waves, never on the sound."),
+    ("The words open", "Every line still stands from its shot's first frame to its last. A M E N starts as one word and opens across the frame, and CHURCH, Prayers and Today widen slowly as their shots run."),
+]
+LEFT_OUT = [
+    ("Glow, a bright frame, a shake, a punch in on the beat", "Your standing words on the last three films. Say the word and any of them goes in."),
+    ("A glitch frame, light leaks, dust and scratches laid over", "Each is a stock effect laid on top, which is what reads as made by a machine."),
+    ("Depth in the photographs (a 2.5D move)", "It needs parts of the picture painted in behind what moves, and nothing here is made up."),
 ]
 FILM_CHOICES = CHOICES + [
-    ("The clips play as they were filmed",
-     "The reference is slowed down. Slowing ours would mean frames made by a machine between the real ones, so the candles and the hands move at their own pace, which is already quiet."),
     ("One slow, even move in each shot",
      "No move speeds up or slows down, and none answers the sound. An icon moves only whole: it is drawn in or let back, never bent, and nothing in it is redrawn."),
     ("The hand ends at its cuff and falls into the black",
@@ -246,8 +259,8 @@ film = f"""<title>The Church film</title>
     <span class="k-mark" role="img" aria-label="Purify"></span>
     <span class="k-eyebrow">Promo edit 2, the film</span>
     <h1>The Church</h1>
-    <p class="k-lede">11.92 seconds, black and white, cut to the reference's clock.</p>
-    <p class="k-meta">1080 by 1920, 24 frames a second, 286 frames. Made at your yes on 23 November 2026.</p>
+    <p class="k-lede">The second cut: slow motion, film in the gate, and transitions that mean something.</p>
+    <p class="k-meta">1080 by 1920, 24 frames a second, 286 frames, 11.92 seconds. 23 November 2026.</p>
   </header>
 
   <section class="k-section" aria-labelledby="s-prev">
@@ -266,6 +279,18 @@ film = f"""<title>The Church film</title>
     </figure>
   </section>
 
+  <section class="k-section" aria-labelledby="s-added">
+    <h2 id="s-added">What the second cut adds</h2>
+    <p>You asked for more effects and transitions, and for it to be better. Each thing added is here with its reason. Nothing is laid on top: every one comes out of the pictures themselves.</p>
+    <ul class="e2-list">
+{rows(ADDED, lambda a, b: f"      <li><strong>{e(a)}</strong>{e(b)}</li>")}
+    </ul>
+    <h3>Left out, and why</h3>
+    <ul class="e2-list">
+{rows(LEFT_OUT, lambda a, b: f"      <li><strong>{e(a)}</strong>{e(b)}</li>")}
+    </ul>
+  </section>
+
   <section class="k-section" aria-labelledby="s-before">
     <h2 id="s-before">Before it is posted</h2>
     <ul class="e2-list">
@@ -278,10 +303,10 @@ film = f"""<title>The Church film</title>
 
   <section class="k-section" aria-labelledby="s-shots">
     <h2 id="s-shots">The shots</h2>
-    <p>Measured on the finished file: every cut falls on the reference's own frame, and no frame holds any colour.</p>
+    <p>Measured on the finished file: 286 frames, every change of shot on the reference's own frame, no colour in any frame, and no frame brighter than a quarter of white.</p>
     <div class="k-table-wrap">
       <table class="k-table">
-        <thead><tr><th scope="col" class="k-num">From</th><th scope="col">The shot</th><th scope="col">Its move</th></tr></thead>
+        <thead><tr><th scope="col" class="k-num">From</th><th scope="col">The shot</th><th scope="col">Its move, and how it leaves</th></tr></thead>
         <tbody>
 {rows(MOVES, lambda a, b, c: f'          <tr><td class="k-num">{a}</td><td>{e(b)}</td><td>{e(c)}</td></tr>')}
         </tbody>
@@ -326,7 +351,7 @@ film = f"""<title>The Church film</title>
     </div>
     <div class="k-note">
       <span class="k-eyebrow">Checked by eye, not by a machine</span>
-      <p>No rays, no glow, no bright frame, no shake, no four-point star, no side stripe, no parchment. The dome's light is the photograph's own daylight.</p>
+      <p>No rays, no glow, no bright frame, no shake, no four-point star, no side stripe, no parchment. The pool of light is one soft pool. The dome's light is the photograph's own daylight.</p>
     </div>
   </section>
 
