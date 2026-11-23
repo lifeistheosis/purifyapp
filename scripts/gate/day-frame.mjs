@@ -757,8 +757,14 @@ console.log("\n  The guide's day (the seventh day, Your first Liturgy)");
         await asks.first().tap();
         await page.waitForTimeout(500);
       }
-      // The card's one white button: the answer on the first card, Next on the others.
+      // The card's one white button: the answer on the first card, Next on the others. A card with
+      // none is a card that did not come (2026-11-23: "After the Liturgy" was "Something went wrong"
+      // when it was opened from the foot of the card before it).
       const on = page.locator("main section button.bg-paper").last();
+      if (!(await on.count())) {
+        fault(`the guide's card at ${at} offers no way on; the page says "${(await page.evaluate(() => document.querySelector("main").innerText)).replace(/\s+/g, " ").slice(0, 90)}"`);
+        break;
+      }
       await on.scrollIntoViewIfNeeded();
       await on.tap();
       await page.waitForTimeout(1100);

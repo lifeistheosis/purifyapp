@@ -209,6 +209,13 @@ function GuideProgress({
     const strip = row.current;
     const heading = document.getElementById("liturgy-step-title");
     if (!strip || !heading || typeof IntersectionObserver === "undefined") return;
+    // Where the strip's foot stands once it is stuck, by its own style: never where it happens to
+    // stand as the card arrives. A card that arrives while the page is still far down the one
+    // before it (Next tapped at the foot of "During the Liturgy") has its strip above the screen
+    // for that moment. Read from there the margin was "--1379px", the browser refused it, and the
+    // card became "Something went wrong" (found 2026-11-23 by scripts/gate/day-frame.mjs walking
+    // the guide card by card; in 1.9 as it shipped).
+    const foot = Math.max(0, Math.round((parseFloat(getComputedStyle(strip).top) || 0) + strip.offsetHeight));
     const io = new IntersectionObserver(
       ([entry]) => {
         const top = entry.rootBounds?.top ?? 0;
@@ -216,7 +223,7 @@ function GuideProgress({
         if (gone) strip.setAttribute("data-named", "");
         else strip.removeAttribute("data-named");
       },
-      { rootMargin: `-${Math.round(strip.getBoundingClientRect().bottom)}px 0px 0px 0px`, threshold: 0 },
+      { rootMargin: `-${foot}px 0px 0px 0px`, threshold: 0 },
     );
     io.observe(heading);
     return () => io.disconnect();
