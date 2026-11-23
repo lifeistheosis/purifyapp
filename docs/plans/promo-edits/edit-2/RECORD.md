@@ -4,7 +4,7 @@ The brief is `../edit-2-the-church.md`. This chat is session_01VuYTwaL9B8MePq2DH
 
 ## Where it stands
 
-**The film is made and put to him** (2026-11-23, about 22:45), at his yes to the storyboard. The film's page: https://claude.ai/artifact/9u3KBCTgwokQAvmuCfp5CU (private, his own). The storyboard's page: https://claude.ai/artifact/LmaN8bkhnrYHj9BfNiSsRo. The silent master and the preview were also sent to him as files in the chat.
+**The film is made and put to him** (2026-11-23, about 22:41), at his yes to the storyboard. The film's page: https://claude.ai/artifact/9u3KBCTgwokQAvmuCfp5CU (private, his own). The storyboard's page: https://claude.ai/artifact/LmaN8bkhnrYHj9BfNiSsRo. The silent master and the preview were also sent to him as files in the chat.
 
 Still his, and said on the film's page:
 
@@ -17,7 +17,7 @@ Still his, and said on the film's page:
 
 - 2026-11-23, in the promo chat, as the brief gives them: "So this one is more or less about the aesthetic, right? This one could just be an edit about Purify, Orthodox Church, just in general. So yeah, just like a crazy edit with the same style, same audio, right? But like this one's a little bit more different because there's like people talking in the back when it goes to the fighting section. We don't really need that part, but the intro part going into like before it shows them is kind of fire. Before it shows them talking, like that whole edit aesthetic, I want like a cinematic edit of us with that."
 - Then: "Start making the 2 edits."
-- In this chat, about 22:38, on the storyboard: "Story, but look, it looks nice. Finish." Taken as his yes to the storyboard as it stood and his word to make the film. He answered neither question.
+- In this chat, about 22:35, on the storyboard: "Story, but look, it looks nice. Finish." Taken as his yes to the storyboard as it stood and his word to make the film. He answered neither question.
 
 ## What was made (22:05 to 22:35)
 
@@ -73,7 +73,7 @@ The sound was not measured in this chat and nothing was heard.
 - **Mixkit's licence text** opens in a window that was not read. Its page says the clip is free for commercial use and names the licence; that no credit is owed is known of that licence, not read today. Read it once before posting.
 - The 1080 file of the Mixkit clip needs an account; the 720 file is used and is enlarged twice over.
 
-## The film (22:38 to 22:45)
+## The film (22:35 to 22:41)
 
 `board.py film` makes every frame from the same table of shots the stills come from, and `board.py sound <the reference's file>` makes the preview. Out of git, in `.promo/promo-edits/edit-2/film/`:
 
