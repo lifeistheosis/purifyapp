@@ -793,17 +793,17 @@
         "does": "The great events told step by step, with a map that moves to each place as you read."
       },
       "readers": 1212,
-      "differentWeeks": 129,
-      "differentPages": 13,
+      "differentWeeks": 187,
+      "differentPages": 15,
       "weeks": [
         {
           "to": "seeker",
           "lean": null,
           "steps": [
             "ignatius",
-            "history",
+            "pentecost",
             "nicaea",
-            "councils",
+            "ephesus",
             "fathersPath",
             "trisagion",
             "firstLiturgy"
@@ -815,14 +815,14 @@
       "id": "newcomer",
       "plus": null,
       "readers": 5460,
-      "differentWeeks": 315,
-      "differentPages": 14,
+      "differentWeeks": 472,
+      "differentPages": 15,
       "weeks": [
         {
           "to": "newcomer",
           "lean": null,
           "steps": [
-            "startHere",
+            "whatIsPrayer",
             "maryOfEgypt",
             "gospelJohn",
             "creed",
@@ -911,19 +911,19 @@
       "name": "The councils",
       "href": "/councils",
       "section": "Councils",
-      "when": "in a road's own week"
+      "when": "only when a reader picks it"
     },
     "history": {
       "name": "The Church's history",
       "href": "/history",
       "section": "Orthodox History",
-      "when": "in a road's own week"
+      "when": "only when a reader picks it"
     },
     "startHere": {
       "name": "Start here",
       "href": "/start",
       "section": "Start here",
-      "when": "in a road's own week"
+      "when": "only when a reader picks it"
     },
     "theology": {
       "name": "What the Orthodox believe",
@@ -1038,13 +1038,19 @@
       "href": "/history/non-chalcedonian-estrangement",
       "section": "Orthodox History",
       "when": "in a road's own week"
+    },
+    "pentecost": {
+      "name": "Pentecost: the Descent of the Holy Spirit",
+      "href": "/history/pentecost",
+      "section": "Orthodox History",
+      "when": "in a road's own week"
     }
   },
   "plusCardAfterDays": 7,
   "count": {
     "readers": 30024,
     "noRoad": 3336,
-    "weeks": 3857,
+    "weeks": 4072,
     "faults": 0
   }
 }

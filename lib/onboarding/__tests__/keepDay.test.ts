@@ -68,3 +68,52 @@ describe("keeping a day on its page", () => {
     expect(keepDay(6, at("2026-12-06"))).toBe(false);
   });
 });
+
+describe("keeping a day whose act ends on another page", () => {
+  /** A practicing reader with no pick: Your rule, today's readings, the Psalter, the Church's year, Pray with the Fathers, before sleep, Start with the Fathers. */
+  const practicing = (testing: boolean) => {
+    store.set("purify:onboarded", "4");
+    store.set("purify:level", "practicing");
+    store.set("purify:depth", "practicing");
+    store.set("purify:background", "orthodox");
+    store.set("purify:firststeps.eligible", "1");
+    if (testing) store.set("purify:testers", JSON.stringify({ v: 1, keys: {} }));
+  };
+
+  it("keeps today's step when it is the one named, wherever the reader is", async () => {
+    const { keepDayOf } = await import("../keepDay");
+    practicing(true);
+    store.set(WEEK, JSON.stringify({ at: 1, day: "2026-12-05", passed: 0 }));
+    expect(keepDayOf("readings", at("2026-12-06"))).toBe(true);
+    expect(JSON.parse(store.get(WEEK)!)).toEqual({ at: 2, day: "2026-12-06", passed: 0 });
+    expect(counted).toEqual([[2, "kept"]]);
+    // Asked again the same day: kept once.
+    expect(keepDayOf("readings", at("2026-12-06"))).toBe(false);
+    expect(counted).toHaveLength(1);
+  });
+
+  it("keeps nothing when the step named is not today's", async () => {
+    const { keepDayOf } = await import("../keepDay");
+    practicing(true);
+    store.set(WEEK, JSON.stringify({ at: 1, day: "2026-12-05", passed: 0 }));
+    expect(keepDayOf("parish", at("2026-12-06"))).toBe(false);
+    expect(keepDayOf("yourRule", at("2026-12-06"))).toBe(false);
+    expect(JSON.parse(store.get(WEEK)!)).toEqual({ at: 1, day: "2026-12-05", passed: 0 });
+    expect(counted).toEqual([]);
+  });
+
+  it("keeps nothing for a reader without the frame: their day is taken when it is opened, as before", async () => {
+    const { keepDayOf } = await import("../keepDay");
+    practicing(false);
+    store.set(WEEK, JSON.stringify({ at: 1, day: "2026-12-05", passed: 0 }));
+    expect(keepDayOf("readings", at("2026-12-06"))).toBe(false);
+    expect(JSON.parse(store.get(WEEK)!)).toEqual({ at: 1, day: "2026-12-05", passed: 0 });
+  });
+
+  it("keeps nothing for a reader with no road, or who never came through the questions", async () => {
+    const { keepDayOf } = await import("../keepDay");
+    store.set("purify:testers", JSON.stringify({ v: 1, keys: {} }));
+    store.set(WEEK, JSON.stringify({ at: 1, day: "2026-12-05", passed: 0 }));
+    expect(keepDayOf("readings", at("2026-12-06"))).toBe(false);
+  });
+});

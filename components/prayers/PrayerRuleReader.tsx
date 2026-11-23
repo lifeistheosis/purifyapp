@@ -65,6 +65,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CampaignPrayerSteps } from "@/components/campaigns/CampaignPrayerSteps";
 import { CommemorationStep } from "@/components/prayers/service/CommemorationStep";
 import { DayKeptBy } from "@/components/onboarding/DayFrame";
+import type { WeekStepKey } from "@/lib/onboarding/week";
 import { PrayerLight } from "@/components/prayers/service/PrayerLight";
 import { ServiceHeader } from "@/components/prayers/service/ServiceHeader";
 import { PrayerStep } from "@/components/prayers/service/PrayerStep";
@@ -150,6 +151,7 @@ export function PrayerRuleReader({
   artId,
   contentLocale = "en",
   afterHead,
+  dayStep,
 }: {
   rule: Rule;
   /** When set, the head offers a bookmark that keeps the whole rule in Saved. */
@@ -162,6 +164,8 @@ export function PrayerRuleReader({
   contentLocale?: string;
   /** Stands under the head, before the first prayer (the Hours' line on bowing, MetanyLine.tsx). */
   afterHead?: ReactNode;
+  /** The step of a first week this rule's end keeps, when it is said on another page than the step opens (Your rule). */
+  dayStep?: WeekStepKey;
 }) {
   const { t, locale } = useTranslate();
   const article = useRef<HTMLElement>(null);
@@ -315,7 +319,7 @@ export function PrayerRuleReader({
       {/* When this prayer is today's step of a reader's first week (2.0, off for readers), its own
           end keeps the day (the owner's yes of 2026-11-23). This draws nothing: no retention loops
           inside prayers, so nothing of the week stands on this page (components/onboarding/DayFrame.tsx). */}
-      <DayKeptBy done={kept} />
+      <DayKeptBy done={kept} step={dayStep} />
       <article ref={article} data-prayer-reader className="relative mx-auto w-full max-w-[640px]">
         <ServiceHeader
           rule={rule}

@@ -10,8 +10,10 @@
 
 import { countWeekStep } from "@/lib/analytics/moreCount";
 
-import { readWeek, writeWeek } from "./state";
-import { localDay, stepTaken, stepToday } from "./week";
+import { dayFrameEnabled, roadsEnabled } from "./flags";
+import { leanOf, roadOf } from "./road";
+import { isNudgeEligible, readBackground, readIntent, readIntents, readLevel, readReturning, readWeek, writeWeek } from "./state";
+import { localDay, stepTaken, stepToday, weekFor, type WeekStepKey } from "./week";
 
 /** Keep today's step, if it is `index` and still waiting. Answers whether this call kept it. */
 export function keepDay(index: number, now: Date = new Date()): boolean {
@@ -21,4 +23,23 @@ export function keepDay(index: number, now: Date = new Date()): boolean {
   writeWeek(stepTaken(week, today));
   countWeekStep(index + 1, "kept");
   return true;
+}
+
+/**
+ * Keep today's step when it is the one named, wherever the reader is. For an act that ends on
+ * another page than the one the day opens: today's readings are opened from their list and read,
+ * one after another, in the Bible's reader, where their own Done is. Read from the device as the
+ * card on Today reads it (./useWeek.ts), and only with the frame on, so nothing changes for a
+ * reader without it. Answers whether this call kept it.
+ */
+export function keepDayOf(key: WeekStepKey, now: Date = new Date()): boolean {
+  if (typeof window === "undefined" || !roadsEnabled() || !isNudgeEligible() || !dayFrameEnabled()) return false;
+  const intent = readIntent();
+  const level = readLevel();
+  const road = roadOf({ background: readBackground(), level, intent, returning: readReturning() });
+  if (!road) return false;
+  const index = stepToday(readWeek(), localDay(now));
+  if (index == null) return false;
+  const week = weekFor({ road, lean: leanOf(intent), level, picks: readIntents() });
+  return week[index]?.key === key ? keepDay(index, now) : false;
 }

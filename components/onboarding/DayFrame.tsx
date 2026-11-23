@@ -35,6 +35,8 @@
 //   DayKeptAt  for a page whose end is a place: a chapter read down to its
 //            last verse. Set there, it keeps the day once that end has stood
 //            on the screen a moment. It draws nothing a reader sees.
+//   DayKeptOnTap  for a list whose act is a tap: Find a parish, kept when the
+//            reader opens a finder. It draws nothing.
 
 import { useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
@@ -171,21 +173,47 @@ export function DayEnd({ className, plain = false }: { className?: string; plain
 }
 
 /**
- * For a page with an end of its own: a prayer said through (the owner's yes of 2026-11-23, to
- * "finishing the prayer keeps the day by itself, with no extra button"). `done` is that end, told
- * by the page: the rule complete today. When it is reached on the reader's day, the day is kept,
- * and one prayed earlier the same day is kept as it is opened: it was said today.
+ * For a page with an end of its own that the page can tell: a prayer said through (the owner's yes
+ * of 2026-11-23, to "finishing the prayer keeps the day by itself, with no extra button"), the
+ * first Liturgy's guide finished, a day of a path of the Fathers marked as read. `done` is that
+ * end, told by the page. When it is reached on the reader's day, the day is kept, and a prayer
+ * said earlier the same day is kept as it is opened: it was said today.
+ *
+ * `step` names the day where its end is told on another page than the one the day opens: Your rule
+ * opens the builder, and the rule is said on its own page under it.
  *
  * It draws nothing. No retention loops inside prayers (his word of 2026-10-16,
  * components/prayers/PrayerRuleReader.tsx): nothing of the week stands on a prayer's page, the
  * prayer's own end answers as it always has, and Today says the day is kept when the reader is back.
  */
-export function DayKeptBy({ done }: { done: boolean }) {
-  const here = dayOfPage(useWeekDay(), usePathname(), ownEnd);
-  const waiting = here && !here.kept ? here.index : null;
+export function DayKeptBy({ done, step }: { done: boolean; step?: WeekStepKey }) {
+  const day = useWeekDay();
+  const here = dayOfPage(day, usePathname(), ownEnd);
+  const named = step && day && day.waiting != null && day.steps[day.waiting]?.key === step ? day.waiting : null;
+  const waiting = step ? named : here && !here.kept ? here.index : null;
   useEffect(() => {
     if (done && waiting != null) keepDay(waiting);
   }, [done, waiting]);
+  return null;
+}
+
+/**
+ * For a list whose act is a tap: Find a parish, kept when the reader opens a parish finder or the
+ * way to the first Liturgy's guide (the owner's "do all" of 2026-11-23). `on` names what counts, as
+ * a selector. The tap is heard on its way down, before the page it opens takes the screen, so the
+ * day is kept even as the reader leaves for a parish's own site. It draws nothing.
+ */
+export function DayKeptOnTap({ on }: { on: string }) {
+  const here = dayOfPage(useWeekDay(), usePathname(), ownEnd);
+  const waiting = here && !here.kept ? here.index : null;
+  useEffect(() => {
+    if (waiting == null) return;
+    const heard = (event: Event) => {
+      if (event.target instanceof Element && event.target.closest(on)) keepDay(waiting);
+    };
+    document.addEventListener("click", heard, true);
+    return () => document.removeEventListener("click", heard, true);
+  }, [on, waiting]);
   return null;
 }
 

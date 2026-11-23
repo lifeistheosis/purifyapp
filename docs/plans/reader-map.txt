@@ -57,8 +57,8 @@ The plan it belongs to is docs/plans/reader-map.md.
   protestant (bible): The Gospel of John > St. Ignatius of Antioch > First Council of Nicaea > What is prayer? > Council of Carthage (419) > The Council of Ephesus > Your first Liturgy
   protestant (liturgical): The Gospel of John > First Council of Nicaea > St. Leo the Great > The Jesus Prayer > Council of Carthage (419) > Your first Liturgy > Find a parish
   christian: The Nicene Creed > First Council of Nicaea > The Gospel of John > The Council of Chalcedon > The Estrangement of the Non-Chalcedonian Churches > The Trisagion Prayers > Your first Liturgy
-  seeker: St. Ignatius of Antioch > The Church's history > First Council of Nicaea > The councils > Start with the Fathers > The Trisagion Prayers > Your first Liturgy
-  newcomer: Start here > St. Mary of Egypt > The Gospel of John > The Nicene Creed > The Sign of the Cross > The Church's year > Your first Liturgy
+  seeker: St. Ignatius of Antioch > Pentecost: the Descent of the Holy Spirit > First Council of Nicaea > The Council of Ephesus > Start with the Fathers > The Trisagion Prayers > Your first Liturgy
+  newcomer: What is prayer? > St. Mary of Egypt > The Gospel of John > The Nicene Creed > The Sign of the Cross > The Church's year > Your first Liturgy
 
   A reader's own picks then arrange it (week.ts, weekFor). What each pick brings:
   saints: The lives of the saints
@@ -97,9 +97,9 @@ The plan it belongs to is docs/plans/reader-map.md.
   catholic: 2224 sets of answers, 472 different weeks, 14 different pages, ending at Find a parish
   protestant: 2224 sets of answers, 516 different weeks, 17 different pages, ending at Your first Liturgy or Find a parish
   christian: 2224 sets of answers, 602 different weeks, 15 different pages, ending at Your first Liturgy
-  seeker: 1212 sets of answers, 129 different weeks, 13 different pages, ending at Your first Liturgy
-  newcomer: 5460 sets of answers, 315 different weeks, 14 different pages, ending at Your first Liturgy
-  different first weeks in all: 3857
+  seeker: 1212 sets of answers, 187 different weeks, 15 different pages, ending at Your first Liturgy
+  newcomer: 5460 sets of answers, 472 different weeks, 15 different pages, ending at Your first Liturgy
+  different first weeks in all: 4072
   weeks that are not seven pages, hold a page twice or miss their door: 0
 
 8. THE PAGES A WEEK CAN HOLD
@@ -115,9 +115,9 @@ The plan it belongs to is docs/plans/reader-map.md.
   Morning prayers: /prayers/morning  (only when a reader picks it)
   The lives of the saints: /saints  (only when a reader picks it)
   A path through the Fathers: /reading/paths  (in no week)
-  The councils: /councils
-  The Church's history: /history
-  Start here: /start
+  The councils: /councils  (only when a reader picks it)
+  The Church's history: /history  (only when a reader picks it)
+  Start here: /start  (only when a reader picks it)
   What the Orthodox believe: /theology  (only when a reader picks it)
   Fasts and feasts: /calendar  (only when a reader picks it)
   Start with the Fathers: /reading/paths/start
@@ -137,3 +137,4 @@ The plan it belongs to is docs/plans/reader-map.md.
   St. Mary of Egypt: /saints/mary-of-egypt
   The Excommunications of 1054: /history/great-schism-1054
   The Estrangement of the Non-Chalcedonian Churches: /history/non-chalcedonian-estrangement
+  Pentecost: the Descent of the Holy Spirit: /history/pentecost

@@ -47,6 +47,18 @@
 // keeps the reader's checklist and day (lib/start/liturgyPlan.ts, done):
 // reaching it keeps the day.
 //
+// Days that open a list are kept by the list's own act (his "do all" of
+// 2026-11-23, to one pick for each): a path of the Fathers by its own "Mark
+// as read", Find a parish by a finder opened, Your rule by the reader's own
+// rule said through. Each of those acts was in the page already; the week
+// only hears it.
+//
+// What is left as it was, taken when it is opened: a section's front page a
+// reader's own first pick opens (the saints, the councils, the Church's
+// history, Start here, What the Orthodox believe, the reading paths' list),
+// and the two days that belong to the calendar's own day, today's readings
+// and the Church's year, which are the next pass.
+//
 // A step is served when it is named here AND its page mounts the frame's end
 // (PAGE_OF below says which file, by where the page's address begins): the
 // end stands inside the page, in the page's own column and under its own
@@ -67,6 +79,7 @@ export const FRAMED_STEPS: readonly WeekStepKey[] = [
   "maryOfEgypt",
   "schism",
   "afterChalcedon",
+  "pentecost",
   "whatIsPrayer",
   "jesusPrayer",
   "trisagion",
@@ -92,20 +105,34 @@ export function frameFits(key: WeekStepKey): boolean {
   return FRAMED_STEPS.includes(key);
 }
 
-/** The steps whose page has an end of its own that keeps the day: a prayer said through, a chapter read to its end, the first Liturgy's guide finished. */
-export const OWN_END_STEPS: readonly WeekStepKey[] = ["creed", "beforeSleep", "morningPrayers", "gospelJohn", "job", "psalter", "firstLiturgy"];
+const PRAYER = "components/prayers/PrayerRuleReader.tsx";
+const CHAPTER = "components/bible/ChapterScreen.tsx";
+const PATH = "components/reading/PathView.tsx";
 
-/** Where each kind of page tells its own end to the week, by where the page's address begins. */
-export const OWN_END_OF: Readonly<Record<string, string>> = {
-  "/prayers/": "components/prayers/PrayerRuleReader.tsx",
-  "/bible/": "components/bible/ChapterScreen.tsx",
-  "/start/first-liturgy": "components/start/liturgy/FirstLiturgyGuide.tsx",
+/**
+ * The steps kept by an end, or an act, of their own, and the file in which each is told to the
+ * week. A prayer said through; a chapter read to its end; the first Liturgy's guide finished; and,
+ * by his "do all" of 2026-11-23, days that open a list, each kept by the list's own act: a path of
+ * the Fathers by its own "Mark as read", Find a parish by a finder opened, Your rule by the
+ * reader's own rule said through. Nothing of the week is drawn on any of them.
+ */
+export const OWN_END_IN: Readonly<Partial<Record<WeekStepKey, string>>> = {
+  creed: PRAYER,
+  beforeSleep: PRAYER,
+  morningPrayers: PRAYER,
+  gospelJohn: CHAPTER,
+  job: CHAPTER,
+  psalter: CHAPTER,
+  firstLiturgy: "components/start/liturgy/FirstLiturgyGuide.tsx",
+  fathersPath: PATH,
+  prayFathers: PATH,
+  parish: "components/parishes/ParishFinderList.tsx",
+  // The page the step opens is the builder; the rule is said on its own page, under it.
+  yourRule: "components/prayers/mine/MyRuleReader.tsx",
 };
 
-/** Where an own-end page's address begins, as OWN_END_OF names it, or null. */
-export function ownEndOf(href: string): string | null {
-  return Object.keys(OWN_END_OF).find((start) => href.startsWith(start)) ?? null;
-}
+/** The steps whose day is kept by their own end or act. */
+export const OWN_END_STEPS = Object.keys(OWN_END_IN) as readonly WeekStepKey[];
 
 /** Whether this step's day is kept by its page's own end. */
 export function ownEnd(key: WeekStepKey): boolean {

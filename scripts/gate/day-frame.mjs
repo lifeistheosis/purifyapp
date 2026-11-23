@@ -41,7 +41,13 @@
 //      nothing; the end passed in half a second keeps nothing; the last verse on the screen for
 //      two seconds keeps the day, and the reader stays in the chapter;
 //  14. on the guide's day the same: opening keeps nothing, and walking the first Liturgy's guide
-//      to its own last page keeps the day, the week's seventh, with nothing of the week drawn.
+//      to its own last page keeps the day, the week's seventh, with nothing of the week drawn;
+//  15. three days that open a list are kept by the list's own act (the owner's "do all" of
+//      2026-11-23), with nothing of the week drawn: a path of the Fathers by its own "Mark as read",
+//      made once; Find a parish by a finder opened, or the way to the guide; Your rule by the
+//      reader's own rule said through, on its own page under the builder;
+//  16. three days that opened a section's front page open one thing each: the newcomer's first is
+//      the lesson What is prayer?, the seeker's are Pentecost, with Done at its end, and Ephesus.
 //
 // The tap on Done is recorded frame by frame and judged by the gate's own motion check
 // (scripts/gate/frames.mjs): no cut, no jump, no flash; and with motion reduced, nothing that moves.
@@ -253,9 +259,9 @@ console.log("\n  With the frame off, as every reader has it (the third day, a co
   await ctx.close();
 }
 
-console.log("\n  With the frame on (Testers mode), a day whose page it does not serve yet (the second day, a path)");
+console.log("\n  With the frame on (Testers mode), a day the frame does not serve (a section's front page, the reader's own first pick)");
 {
-  const ctx = await reader({ ...READER, ...SECOND_DAY, ...TESTING });
+  const ctx = await reader({ ...READER, "purify:intent": "saints", "purify:intents": '["saints"]', ...TESTING });
   const page = await today(ctx);
   const c = await card(page);
   if (!c.step || !c.href) fault(`no step on Today: ${JSON.stringify(c)}`);
@@ -264,7 +270,7 @@ console.log("\n  With the frame on (Testers mode), a day whose page it does not 
     await page.waitForTimeout(3000);
     const m = await measure(page);
     check(m.path.replace(/\/$/, "") === c.href.replace(/\/$/, "") && !m.end, `"${c.step[1]}" (${m.path}) wears nothing of the frame`, `the page ${m.path} shows the frame's end: ${JSON.stringify(m.end)}`);
-    check(/"at":2/.test(m.week ?? ""), "opening the step took it, as it always has, so the day is not left unkept", `the week is ${m.week} after opening`);
+    check(/"at":1/.test(m.week ?? ""), "opening the step took it, as it always has, so the day is not left unkept", `the week is ${m.week} after opening`);
     await page.goBack();
     await page.waitForTimeout(2500);
     const back = await card(page);
@@ -536,6 +542,19 @@ console.log("\n  A lesson's day (the first day, the Jesus Prayer)");
   await ctx.close();
 }
 
+// The reader moves down through the prayer as a hand does, a part of a screen at a time, to its end.
+const prayThrough = async (page) => {
+  for (let i = 0; i < 80; i++) {
+    const done = await page.evaluate(() => {
+      window.scrollBy(0, 260);
+      return Math.ceil(scrollY + innerHeight) >= document.documentElement.scrollHeight;
+    });
+    await page.waitForTimeout(120);
+    if (done) break;
+  }
+  await page.waitForTimeout(1500);
+};
+
 console.log("\n  A prayer's day (the second day, the Creed)");
 {
   // What the prayer's page shows of the week, and of its own end.
@@ -554,18 +573,6 @@ console.log("\n  A prayer's day (the second day, the Creed)");
         tall: document.documentElement.scrollHeight,
       };
     });
-  // The reader moves down through the prayer as a hand does, a part of a screen at a time, to its end.
-  const prayThrough = async (page) => {
-    for (let i = 0; i < 80; i++) {
-      const done = await page.evaluate(() => {
-        window.scrollBy(0, 260);
-        return Math.ceil(scrollY + innerHeight) >= document.documentElement.scrollHeight;
-      });
-      await page.waitForTimeout(120);
-      if (done) break;
-    }
-    await page.waitForTimeout(1500);
-  };
 
   {
     const ctx = await reader({ ...PRAYING, ...SECOND_DAY });
@@ -791,6 +798,161 @@ console.log("\n  The guide's day (the seventh day, Your first Liturgy)");
   await ctx.close();
 }
 
+const { "purify:intent": _pick, "purify:intents": _picks, ...NO_PICK } = READER;
+void _pick;
+void _picks;
+/** A practicing reader who chose nothing: Your rule, today's readings, the Psalter, the Church's year, Pray with the Fathers, before sleep, Start with the Fathers. */
+const PRACTICING = { ...NO_PICK, "purify:level": "practicing", "purify:depth": "practicing", "purify:background": "orthodox" };
+const weekAt = (at) => ({ "purify:week": JSON.stringify({ at, day: YESTERDAY, passed: 0 }) });
+const keptAt = (n) => new RegExp(`"at":${n},"day":"${DAY}","passed":0`);
+
+console.log("\n  A path's day (the second day, Start with the Fathers)");
+{
+  const PATH = "/reading/paths/start";
+  {
+    const ctx = await reader({ ...READER, ...weekAt(1) });
+    const page = await today(ctx);
+    await begin(page);
+    await page.waitForTimeout(3000);
+    const m = await ownEndPage(page);
+    check(m.path.replace(/\/$/, "") === PATH && /"at":2/.test(m.kept ?? ""), "with the frame off, opening the path took the step, as before", `with the frame off the page is ${m.path} and the week ${m.kept}`);
+    await ctx.close();
+  }
+  const ctx = await reader({ ...READER, ...weekAt(1), ...TESTING });
+  let page = await today(ctx);
+  const c = await card(page);
+  if (!c.step || c.href?.replace(/\/$/, "") !== PATH) fault(`today's step is ${JSON.stringify(c.step)} (${c.href}), not the path`);
+  else {
+    console.log(`    today for this reader: ${c.step[0]}, ${c.step[1]} (${c.href})`);
+    await begin(page);
+    await page.waitForTimeout(3000);
+    const opened = await ownEndPage(page);
+    check(!opened.frame && !opened.week && /"at":1/.test(opened.kept ?? ""), "the path's page wears nothing of the week, and opening it kept nothing", `the path shows the frame: ${opened.frame}, the week's words: ${opened.week}; the week is ${opened.kept}`);
+    const mark = page.locator('main button[aria-pressed="false"]').first();
+    await mark.scrollIntoViewIfNeeded();
+    await mark.tap();
+    await page.waitForTimeout(900);
+    const marked = await ownEndPage(page);
+    check(keptAt(2).test(marked.kept ?? ""), "its own \"Mark as read\" on a day of the path keeps the day", `after the mark the week is ${marked.kept}`);
+    // The mark taken back and made again: the day is kept once.
+    const read = page.locator('main button[aria-pressed="true"]').first();
+    await read.tap();
+    await page.waitForTimeout(500);
+    await page.locator('main button[aria-pressed="false"]').first().tap();
+    await page.waitForTimeout(700);
+    const again = await ownEndPage(page);
+    check(keptAt(2).test(again.kept ?? "") && !again.frame && !again.week, "taken back and made again, the day is still kept once, with nothing of the week drawn", `after a second mark the week is ${again.kept}; the frame: ${again.frame}, the week's words: ${again.week}`);
+    await page.close();
+    page = await today(ctx);
+    const kept = await card(page);
+    check(!kept.step && kept.kept?.[0] === "Day 2 of 7, kept" && kept.kept[1] === "Tomorrow: First Council of Nicaea", `Today says the day is kept: "${kept.kept?.join('", "')}"`, `Today shows ${JSON.stringify(kept)}`);
+  }
+  await ctx.close();
+}
+
+console.log("\n  Find a parish's day (the seventh day)");
+{
+  const PARISH = "/parishes";
+  for (const [what, selector] of [
+    ["a parish finder", "[data-parish-finder]"],
+    ["the way to the first Liturgy's guide", "[data-parish-guide]"],
+  ]) {
+    const ctx = await reader({ ...READER, ...weekAt(6), ...TESTING });
+    const page = await today(ctx);
+    const c = await card(page);
+    if (!c.step || c.href?.replace(/\/$/, "") !== PARISH) fault(`today's step is ${JSON.stringify(c.step)} (${c.href}), not Find a parish`);
+    else {
+      await begin(page);
+      await page.waitForTimeout(3000);
+      const opened = await ownEndPage(page);
+      check(!opened.frame && !opened.week && /"at":6/.test(opened.kept ?? ""), "the page wears nothing of the week, and opening it kept nothing", `Find a parish shows the frame: ${opened.frame}, the week's words: ${opened.week}; the week is ${opened.kept}`);
+      // A finder opens a parish's own site, outside Purify: here the tap is let through and the way out held back.
+      await page.evaluate((sel) => document.querySelector(sel).addEventListener("click", (e) => e.preventDefault(), { once: true }), selector);
+      const link = page.locator(selector).first();
+      await link.scrollIntoViewIfNeeded();
+      await link.tap();
+      await page.waitForTimeout(900);
+      const tapped = await page.evaluate(() => localStorage.getItem("purify:week"));
+      check(keptAt(7).test(tapped ?? ""), `opening ${what} keeps the day, the reader's own act`, `after opening ${what} the week is ${tapped}`);
+    }
+    await ctx.close();
+  }
+  {
+    const ctx = await reader({ ...READER, ...weekAt(6) });
+    const page = await today(ctx);
+    await begin(page);
+    await page.waitForTimeout(3000);
+    const m = await ownEndPage(page);
+    check(m.path.replace(/\/$/, "") === PARISH && /"at":7/.test(m.kept ?? ""), "with the frame off, opening Find a parish took the step, as before", `with the frame off the page is ${m.path} and the week ${m.kept}`);
+    await ctx.close();
+  }
+}
+
+console.log("\n  Your rule's day (a practicing reader's first day)");
+{
+  const BUILDER = "/prayers/personal";
+  /** A rule of the reader's own for the morning: one prayer, the Creed. */
+  const OWN_RULE = { "purify.prayers.mine": JSON.stringify({ v: 1, morning: [{ kind: "prayer", rule: "creed", prayer: "symbol-of-faith" }], evening: [], minutes: { morning: 2, evening: 0 }, updatedAt: "2026-11-20T00:00:00.000Z" }) };
+  const ctx = await reader({ ...PRACTICING, ...OWN_RULE, ...TESTING });
+  let page = await today(ctx);
+  const c = await card(page);
+  if (!c.step || c.href?.replace(/\/$/, "") !== BUILDER) fault(`today's step is ${JSON.stringify(c.step)} (${c.href}), not Your rule`);
+  else {
+    console.log(`    today for this reader: ${c.step[0]}, ${c.step[1]} (${c.href})`);
+    await begin(page);
+    await page.waitForTimeout(3000);
+    const opened = await ownEndPage(page);
+    check(opened.path.replace(/\/$/, "") === BUILDER && !opened.frame && !opened.week && (!opened.kept || /"at":0/.test(opened.kept)), "the builder wears nothing of the week, and opening it kept nothing", `Your rule shows the frame: ${opened.frame}, the week's words: ${opened.week}; the week is ${opened.kept}`);
+    await page.close();
+    page = await open(ctx, `${BUILDER}/morning`);
+    await prayThrough(page);
+    const said = await page.evaluate(() => ({ complete: document.querySelector("[data-rule-complete-words]")?.textContent.trim() ?? null, kept: localStorage.getItem("purify:week"), week: /Your first week|Done for today|of 7, kept|Tomorrow:/.test(document.querySelector("main").innerText) }));
+    check(said.complete && keptAt(1).test(said.kept ?? ""), "the reader's own rule said through, on its own page, keeps the day", `after their rule the end says ${JSON.stringify(said.complete)} and the week is ${said.kept}`);
+    check(!said.week, "with nothing of the week drawn on it", "the reader's own rule shows the week's words");
+    await page.close();
+    page = await today(ctx);
+    const kept = await card(page);
+    check(!kept.step && kept.kept?.[0] === "Day 1 of 7, kept" && kept.kept[1] === "Tomorrow: Today's readings", `Today says the day is kept: "${kept.kept?.join('", "')}"`, `Today shows ${JSON.stringify(kept)}`);
+  }
+  await ctx.close();
+}
+
+console.log("\n  Three days that opened a section's front page");
+{
+  // The newcomer's first day: the introduction's own first step.
+  {
+    const ctx = await reader({ ...NO_PICK, "purify:background": "other-faith", ...TESTING });
+    const page = await today(ctx);
+    const c = await card(page);
+    check(c.step?.[0] === "Your first week · 1 of 7" && c.step[1] === "What is prayer?" && c.href?.replace(/\/$/, "") === "/prayers/learning/what-is-prayer", `a newcomer's first day is the lesson "${c.step?.[1]}", where it was Start here`, `a newcomer's first day is ${JSON.stringify(c.step)} (${c.href})`);
+    await ctx.close();
+  }
+  // The seeker who asked for the Fathers: their path, St. Ignatius, then Pentecost, Nicaea and Ephesus.
+  const SEEKER = { ...READER, "purify:background": "none", "purify:intent": "fathers", "purify:intents": '["fathers"]' };
+  {
+    const ctx = await reader({ ...SEEKER, ...weekAt(2), ...TESTING }, { scale: STILLS ? 2 : 1 });
+    const page = await today(ctx);
+    const c = await card(page);
+    if (c.step?.[1] !== "Pentecost: the Descent of the Holy Spirit" || c.href?.replace(/\/$/, "") !== "/history/pentecost") fault(`a seeker's third day is ${JSON.stringify(c.step)} (${c.href}), not Pentecost`);
+    else {
+      await begin(page);
+      await page.waitForTimeout(3000);
+      await toEnd(page);
+      const m = await measure(page);
+      check(m.path.replace(/\/$/, "") === "/history/pentecost" && m.mark?.words === "Your first week · 3 of 7" && m.done?.words === "Done for today" && m.done.bottom <= m.floor, `a seeker's day in the Church's history is one moment, "${c.step[1]}", with Done at its end`, `Pentecost's page (${m.path}) ends on ${JSON.stringify(m.mark)} and ${JSON.stringify(m.done)}`);
+      await still(page, "pentecost-1-done");
+    }
+    await ctx.close();
+  }
+  {
+    const ctx = await reader({ ...SEEKER, ...weekAt(4), ...TESTING });
+    const page = await today(ctx);
+    const c = await card(page);
+    check(c.step?.[0] === "Your first week · 5 of 7" && c.step[1] === "The Council of Ephesus" && c.href?.replace(/\/$/, "") === "/councils/ephesus", `and their day among the councils is one council, "${c.step?.[1]}"`, `a seeker's fifth day is ${JSON.stringify(c.step)} (${c.href})`);
+    await ctx.close();
+  }
+}
+
 await browser.close();
-console.log(faults ? `\nthe day's frame: ${faults} fault${faults === 1 ? "" : "s"}` : "\nthe day's frame: a day is kept by Done at the end of its page, or by its page's own end (a prayer, a chapter, the guide), and ends on tomorrow");
+console.log(faults ? `\nthe day's frame: ${faults} fault${faults === 1 ? "" : "s"}` : "\nthe day's frame: a day is kept by Done at the end of its page, or by its page's own end or act, and ends on tomorrow");
 process.exit(faults ? 1 : 0);

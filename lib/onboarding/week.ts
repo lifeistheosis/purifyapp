@@ -38,6 +38,7 @@ export type WeekStepKey =
   | "maryOfEgypt"
   | "schism"
   | "afterChalcedon"
+  | "pentecost"
   | "creed"
   | "parish"
   | "yourRule"
@@ -107,6 +108,7 @@ export const WEEK_STEPS: Readonly<Record<WeekStepKey, WeekStep>> = {
   maryOfEgypt: named("maryOfEgypt", "/saints/mary-of-egypt"),
   schism: named("schism", "/history/great-schism-1054"),
   afterChalcedon: named("afterChalcedon", "/history/non-chalcedonian-estrangement"),
+  pentecost: named("pentecost", "/history/pentecost"),
 };
 
 export const WEEK_LENGTH = 7;
@@ -122,6 +124,16 @@ type Seven = readonly [WeekStepKey, WeekStepKey, WeekStepKey, WeekStepKey, WeekS
  * audit (docs/editorial-standards.md, clergy queue item 5). The councils'
  * own pages and the history rewritten in 1.7 carry those days until they are
  * repaired.
+ *
+ * Three days that opened a section's front page open one thing each (the
+ * owner's "do all" of 2026-11-23, to one pick for each day that opened a list
+ * or a hub): a front page has no one thing to do and no end to reach, so the
+ * day could not be kept on it. The newcomer's first day was Start here and is
+ * that page's own first step, the lesson What is prayer?; the seeker's second
+ * was the Church's history and is Pentecost, where it begins; the seeker's
+ * fourth was the councils and is Ephesus, the one after the Nicaea of the day
+ * before. A reader's own first pick can still open a front page
+ * (pickStep): that day is taken when it is opened, as before.
  */
 export const ROAD_WEEKS: Readonly<Record<Exclude<Road, "protestant">, Seven>> = {
   practicing: ["yourRule", "readings", "psalter", "churchYear", "prayFathers", "beforeSleep", "fathersPath"],
@@ -129,8 +141,8 @@ export const ROAD_WEEKS: Readonly<Record<Exclude<Road, "protestant">, Seven>> = 
   catechumen: ["trisagion", "signOfCross", "firstLiturgy", "creed", "readings", "morningRule", "parish"],
   catholic: ["fathersPath", "nicaea", "leo", "jesusPrayer", "schism", "firstLiturgy", "parish"],
   christian: ["creed", "nicaea", "gospelJohn", "chalcedon", "afterChalcedon", "trisagion", "firstLiturgy"],
-  seeker: ["ignatius", "history", "nicaea", "councils", "fathersPath", "trisagion", "firstLiturgy"],
-  newcomer: ["startHere", "maryOfEgypt", "gospelJohn", "creed", "signOfCross", "churchYear", "firstLiturgy"],
+  seeker: ["ignatius", "pentecost", "nicaea", "ephesus", "fathersPath", "trisagion", "firstLiturgy"],
+  newcomer: ["whatIsPrayer", "maryOfEgypt", "gospelJohn", "creed", "signOfCross", "churchYear", "firstLiturgy"],
 };
 
 export const PROTESTANT_WEEKS: Readonly<Record<Lean, Seven>> = {

@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import en from "@/lib/i18n/messages/en.json";
 import { dayOfPage } from "@/components/onboarding/DayFrame";
 
-import { FRAMED_STEPS, OWN_END_OF, OWN_END_STEPS, PAGE_OF, frameFits, keptOnPage, kindOf, ownEnd, ownEndOf } from "../dayFrame";
+import { FRAMED_STEPS, OWN_END_IN, OWN_END_STEPS, PAGE_OF, frameFits, keptOnPage, kindOf, ownEnd } from "../dayFrame";
 import { DAY_FRAME_LIVE } from "../flags";
 import type { WeekDay } from "../useWeek";
 import { WEEK_STEPS, type WeekStepKey } from "../week";
@@ -63,7 +63,7 @@ describe("which of the reader's days a page is", () => {
     expect(dayOfPage(week({ waiting: 0 }), "/prayers/learning/what-is-prayer")).toBeNull();
   });
 
-  it("is no framed day on a page the frame does not serve yet: a path, a prayer, the guide", () => {
+  it("is no framed day, with Done at its end, on a page kept by an end of its own: a path, a prayer, the guide", () => {
     expect(dayOfPage(week({ waiting: 1 }), "/reading/paths/start")).toBeNull();
     expect(dayOfPage(week({ waiting: 3 }), "/prayers/creed")).toBeNull();
     expect(dayOfPage(week({ kept: 3 }), "/prayers/creed")).toBeNull();
@@ -81,6 +81,7 @@ describe("which steps the frame serves", () => {
       "/councils/first-nicaea",
       "/history/great-schism-1054",
       "/history/non-chalcedonian-estrangement",
+      "/history/pentecost",
       "/prayers/learning/jesus-prayer",
       "/prayers/learning/morning-rule",
       "/prayers/learning/sign-of-the-cross",
@@ -103,9 +104,9 @@ describe("which steps the frame serves", () => {
     }
   });
 
-  it("leaves a list and a hub as they were, taken when they are opened: each needs one thing chosen first", () => {
+  it("leaves as they were, taken when they are opened, only a section's front page and the calendar's own two days", () => {
     const open = (Object.keys(WEEK_STEPS) as WeekStepKey[]).filter((k) => !keptOnPage(k)).map((k) => WEEK_STEPS[k].href).sort();
-    expect(open).toEqual(["/calendar", "/calendar", "/councils", "/history", "/parishes", "/prayers/personal", "/prayers/today", "/reading/paths", "/reading/paths/prayer", "/reading/paths/start", "/saints", "/start", "/theology"]);
+    expect(open).toEqual(["/calendar", "/calendar", "/councils", "/history", "/prayers/today", "/reading/paths", "/saints", "/start", "/theology"]);
   });
 });
 
@@ -160,8 +161,8 @@ describe("the frame", () => {
     expect(frame).toContain("movePage(() => void keepDay(here.index), { grows: [el], glides: [...piecesBefore(el), ...partsAfter(el), ...stuckOver(el)] });");
     expect(frame).not.toContain("writeWeek(");
     expect(frame).not.toContain("stepTaken(");
-    // Three places keep a day, each by keepDay: Done, an end a page tells, an end that is a place.
-    expect(frame.split("keepDay(").length - 1).toBe(3);
+    // Four places in the frame keep a day, each by keepDay: Done, an end a page tells, an end that is a place, an act that is a tap.
+    expect(frame.split("keepDay(").length - 1).toBe(4);
     // And it is kept once: the step is taken only while it is still the one waiting, and counted there.
     const keep = flat("lib/onboarding/keepDay.ts");
     expect(keep).toContain('if (stepToday(week, today) !== index) return false; writeWeek(stepTaken(week, today)); countWeekStep(index + 1, "kept"); return true;');
@@ -212,18 +213,30 @@ describe("the frame", () => {
   });
 });
 
-describe("a day kept by its page's own end", () => {
+describe("a day kept by its page's own end or act", () => {
   const frame = flat("components/onboarding/DayFrame.tsx");
-  const reader = flat(OWN_END_OF["/prayers/"]);
+  const PRAYER = "components/prayers/PrayerRuleReader.tsx";
+  const reader = flat(PRAYER);
 
-  it("is a prayer said through, a chapter read to its end, and the first Liturgy's guide finished", () => {
-    expect(OWN_END_STEPS.map((k) => WEEK_STEPS[k].href).sort()).toEqual(["/bible/job/1", "/bible/john/1", "/bible/psalms/1", "/prayers/before-sleep", "/prayers/creed", "/prayers/morning", "/start/first-liturgy"]);
+  it("is a prayer said through, a chapter read to its end, the guide finished, and three lists by their own act", () => {
+    expect(OWN_END_STEPS.map((k) => WEEK_STEPS[k].href).sort()).toEqual([
+      "/bible/job/1",
+      "/bible/john/1",
+      "/bible/psalms/1",
+      "/parishes",
+      "/prayers/before-sleep",
+      "/prayers/creed",
+      "/prayers/morning",
+      "/prayers/personal",
+      "/reading/paths/prayer",
+      "/reading/paths/start",
+      "/start/first-liturgy",
+    ]);
     for (const key of OWN_END_STEPS) {
       expect(ownEnd(key), key).toBe(true);
       // Never by Done as well: one thing is not said twice on a page.
       expect(frameFits(key), key).toBe(false);
       expect(keptOnPage(key), key).toBe(true);
-      expect(ownEndOf(WEEK_STEPS[key].href), key).not.toBeNull();
     }
     for (const key of FRAMED_STEPS) expect(ownEnd(key), key).toBe(false);
     // A lesson about praying is a lesson, not a prayer said through: it is kept by Done, never by its own end.
@@ -231,29 +244,70 @@ describe("a day kept by its page's own end", () => {
       expect(ownEnd(key), key).toBe(false);
       expect(frameFits(key), key).toBe(true);
     }
-    for (const key of ["yourRule", "readings", "parish", "churchYear"] as const) expect(keptOnPage(key), key).toBe(false);
-    // A lesson's address begins as a prayer's does, and is not one.
-    expect(ownEndOf("/prayers/creed")).toBe("/prayers/");
-    expect(ownEndOf("/councils/first-nicaea")).toBeNull();
+    // A section's front page and the Church's year are kept nowhere: taken when they are opened.
+    for (const key of ["churchYear", "feasts", "readings", "councils", "history", "startHere", "theology", "saintsLives", "readingPaths"] as const) expect(keptOnPage(key), key).toBe(false);
+  });
+
+  it("each one's end is told in the file it names, and in no other", () => {
+    const by = (tag: string) => filesUnder(["app", "components"]).filter((f) => new RegExp(`<${tag}[\\s/>]`).test(readFileSync(f, "utf8"))).sort();
+    const files = (keys: readonly WeekStepKey[]) => [...new Set(keys.map((k) => OWN_END_IN[k]!))].sort();
+    // A told end: a prayer's (the reader's own rule among them, through the same reader), the guide's, a path's.
+    expect(by("DayKeptBy")).toEqual(files(["creed", "firstLiturgy", "fathersPath"]));
+    // An end that is a place: a chapter's last verse.
+    expect(by("DayKeptAt")).toEqual(files(["gospelJohn"]));
+    // An act that is a tap: a parish finder opened.
+    expect(by("DayKeptOnTap")).toEqual(files(["parish"]));
+    for (const key of OWN_END_STEPS) expect(OWN_END_IN[key], key).toBeTruthy();
   });
 
   it("a prayer's end is told in the one prayer reader: the rule complete today", () => {
     for (const file of ["app/(app)/prayers/[planId]/page.tsx", "app/(app)/prayers/morning/page.tsx"]) expect(flat(file), file).toMatch(/RuleInReadersLanguage|PrayerRuleReader/);
     expect(flat("components/prayers/RuleInReadersLanguage.tsx")).toContain("<PrayerRuleReader");
     expect(reader.split("<DayKeptBy ").length - 1).toBe(1);
-    expect(reader).toContain("<DayKeptBy done={kept} />");
+    expect(reader).toContain("<DayKeptBy done={kept} step={dayStep} />");
     expect(reader).toContain("const kept = useSyncExternalStore(subscribe, () => isKept(rule.id), () => false);");
   });
 
+  it("Your rule opens the builder, and is kept where the reader's own rule is said, under it", () => {
+    expect(WEEK_STEPS.yourRule.href).toBe("/prayers/personal");
+    const mine = flat(OWN_END_IN.yourRule!);
+    expect(mine).toContain('dayStep="yourRule"');
+    expect(mine).toContain("<PrayerRuleReader");
+    // By the step's name, since the page is not the one the step opens.
+    expect(frame).toContain("const named = step && day && day.waiting != null && day.steps[day.waiting]?.key === step ? day.waiting : null;");
+    expect(frame).toContain("const waiting = step ? named : here && !here.kept ? here.index : null;");
+  });
+
   it("the guide's end is its own finish: the page that keeps the reader's checklist and day", () => {
-    const guide = flat(OWN_END_OF["/start/first-liturgy"]);
+    const guide = flat(OWN_END_IN.firstLiturgy!);
     expect(guide.split("<DayKeptBy ").length - 1).toBe(1);
     expect(guide).toContain("<DayKeptBy done={mounted && plan.done} />");
     expect(flat("lib/start/liturgyPlan.ts")).toContain('done: p.done || step === "ready",');
   });
 
+  it("a path of the Fathers is kept by its own Mark as read, made in this visit", () => {
+    const path = flat(OWN_END_IN.fathersPath!);
+    expect(OWN_END_IN.prayFathers).toBe(OWN_END_IN.fathersPath);
+    expect(path).toContain("const [marked, setMarked] = useState(false);");
+    expect(path).toContain("const wasRead = done.includes(i); if (!wasRead) setMarked(true);");
+    expect(path).toContain("<DayKeptBy done={marked} />");
+  });
+
+  it("Find a parish is kept as the reader opens a finder or the way to the guide", () => {
+    const list = flat(OWN_END_IN.parish!);
+    expect(list).toContain('<DayKeptOnTap on="[data-parish-finder], [data-parish-guide]" />');
+    expect(list).toContain('href={f.url} data-parish-finder=""');
+    expect(list).toContain('href="/start/first-liturgy" data-parish-guide=""');
+    const island = frame.slice(frame.indexOf("export function DayKeptOnTap("), frame.indexOf("/** How long a page's end stands"));
+    // Heard on its way down, before the page it opens takes the screen.
+    expect(island).toContain('document.addEventListener("click", heard, true);');
+    expect(island).toContain("if (event.target instanceof Element && event.target.closest(on)) keepDay(waiting);");
+    expect(island).toContain("return null; }");
+  });
+
   it("a chapter's end is a place: a mark after its last verse, before the way on to the next chapter", () => {
-    const screen = flat(OWN_END_OF["/bible/"]);
+    const screen = flat(OWN_END_IN.gospelJohn!);
+    for (const key of ["job", "psalter"] as const) expect(OWN_END_IN[key]).toBe(OWN_END_IN.gospelJohn);
     expect(screen.split("<DayKeptAt ").length - 1).toBe(1);
     expect(screen.indexOf("<DayKeptAt />")).toBeGreaterThan(screen.indexOf("book={slug} chapter={chapter} /> : reader}"));
     expect(screen.indexOf("<DayKeptAt />")).toBeLessThan(screen.indexOf("<ChapterPager slug={slug}"));
@@ -272,29 +326,23 @@ describe("a day kept by its page's own end", () => {
     expect(island).toContain('<span ref={mark} aria-hidden data-day-own-end="" className="block h-px w-full" />');
   });
 
-  it("each end is told in its own place and nowhere else", () => {
-    const told = (tag: string) => filesUnder(["app", "components"]).filter((f) => new RegExp(`<${tag}[\\s/>]`).test(readFileSync(f, "utf8"))).sort();
-    expect(told("DayKeptBy")).toEqual([OWN_END_OF["/prayers/"], OWN_END_OF["/start/first-liturgy"]].sort());
-    expect(told("DayKeptAt")).toEqual([OWN_END_OF["/bible/"]]);
-  });
-
   it("is that day only on its own page, while it waits", () => {
     expect(dayOfPage(week({ waiting: 3 }), "/prayers/creed", ownEnd)).toEqual({ index: 3, kept: false, tomorrow: steps[4] });
     expect(dayOfPage(week({ waiting: 5 }), "/start/first-liturgy/", ownEnd)).toEqual({ index: 5, kept: false, tomorrow: steps[6] });
+    expect(dayOfPage(week({ waiting: 1 }), "/reading/paths/start", ownEnd)).toEqual({ index: 1, kept: false, tomorrow: steps[2] });
     expect(dayOfPage(week({ waiting: 3 }), "/prayers/before-sleep", ownEnd)).toBeNull();
     expect(dayOfPage(week({ waiting: 2 }), "/councils/first-nicaea", ownEnd)).toBeNull();
-    expect(frame.split("const here = dayOfPage(useWeekDay(), usePathname(), ownEnd); const waiting = here && !here.kept ? here.index : null;").length - 1).toBe(2);
     expect(frame).toContain("if (done && waiting != null) keepDay(waiting);");
   });
 
-  it("draws nothing a reader sees: no retention loops inside prayers, and nothing over a chapter or the guide", () => {
-    const by = frame.slice(frame.indexOf("export function DayKeptBy("), frame.indexOf("export const KEPT_AFTER_MS"));
+  it("draws nothing a reader sees: no retention loops inside prayers, and nothing over a chapter, the guide or a list", () => {
+    const by = frame.slice(frame.indexOf("export function DayKeptBy("), frame.indexOf("export function DayKeptOnTap("));
     expect(by).toContain("return null; }");
-    expect(by).not.toMatch(/<[A-Za-z]/);
-    // Never the week's end or its words in the prayer reader, the Bible's reader or the guide.
-    for (const file of Object.values(OWN_END_OF)) {
-      expect(flat(file), file).not.toContain("<DayEnd");
-      expect(flat(file), file).not.toContain("onboard.week.");
+    expect(by.slice(by.indexOf("{ done, step }"))).not.toMatch(/<[A-Z][A-Za-z]*[\s/>]/);
+    // Never the week's end or its words where an end of its own is told.
+    for (const file of new Set(Object.values(OWN_END_IN))) {
+      expect(flat(file!), file).not.toContain("<DayEnd");
+      expect(flat(file!), file).not.toContain("onboard.week.");
     }
   });
 });

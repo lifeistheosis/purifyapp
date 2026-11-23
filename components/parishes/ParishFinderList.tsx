@@ -27,6 +27,7 @@
 import Link from "next/link";
 
 import { T } from "@/components/i18n/T";
+import { DayKeptOnTap } from "@/components/onboarding/DayFrame";
 import { Eyebrow } from "@/components/ui/Graphite";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { findersByRegion } from "@/lib/parishes/finders";
@@ -51,6 +52,10 @@ export function ParishFinderList() {
 
   return (
     <section className="bg-night px-5 md:px-8 py-10 md:py-14">
+      {/* When Find a parish is today's step of a reader's first week (2.0, off for readers), the
+          day is kept as the reader opens a finder or the way to the guide: their own act (the
+          owner's "do all" of 2026-11-23). It draws nothing (components/onboarding/DayFrame.tsx). */}
+      <DayKeptOnTap on="[data-parish-finder], [data-parish-guide]" />
       <div className="mx-auto w-full max-w-[820px]">
         <header>
           <p className="font-sans text-caption font-semibold text-paper/55">
@@ -117,6 +122,7 @@ export function ParishFinderList() {
                             this list is still here when the reader comes back. */}
                         <a
                           href={f.url}
+                          data-parish-finder=""
                           target="_blank"
                           rel="noopener noreferrer"
                           className="group flex items-center gap-4 py-4 transition-colors active:bg-paper/[0.04]"

@@ -100,6 +100,9 @@ export function MyRuleReader({ part }: { part: MyRulePart }) {
         titleKey={titleKey}
         artId={MY_RULE_IDS[part]}
         contentLocale={locale === "de" ? "de" : "en"}
+        // When Your rule is today's step of a reader's first week (2.0, off for readers), saying a
+        // rule of their own through keeps the day (the owner's "do all" of 2026-11-23).
+        dayStep="yourRule"
       />
       {composed.missing > 0 ? (
         <p className="mx-auto mt-6 max-w-[640px] font-sans text-caption text-paper/50">{t("prayers.mine.missingNote")}</p>

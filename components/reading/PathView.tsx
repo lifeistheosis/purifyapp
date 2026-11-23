@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { DayKeptBy } from "@/components/onboarding/DayFrame";
 import { pathKey as keyOf, readPathDone as readDone } from "@/lib/reading/pathProgress";
 import type { PathView as View } from "@/lib/reading/pathView";
 
@@ -31,8 +32,13 @@ export function PathView({ path }: { path: View }) {
   const [thread, setThread] = useState<number | null>(null);
   const circle = circles.circles?.[0] ?? null;
 
+  // A day marked as read in this visit: on a day of a reader's first week that opens this path
+  // (2.0, off for readers), that mark keeps the day (the owner's "do all" of 2026-11-23).
+  const [marked, setMarked] = useState(false);
+
   function toggle(i: number) {
     const wasRead = done.includes(i);
+    if (!wasRead) setMarked(true);
     const next = wasRead ? done.filter((n) => n !== i) : [...done, i].sort((a, b) => a - b);
     setDone(next);
     try {
@@ -45,6 +51,8 @@ export function PathView({ path }: { path: View }) {
 
   return (
     <section className="bg-night px-5 py-10 md:px-8 md:py-14">
+      {/* Draws nothing (components/onboarding/DayFrame.tsx). */}
+      <DayKeptBy done={marked} />
       <div className="mx-auto w-full max-w-[820px]">
         <header>
           <p className="font-sans text-caption font-semibold text-paper/55">{t("paths.title")}</p>

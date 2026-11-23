@@ -10,6 +10,7 @@ import { HISTORY_EVENTS } from "@/lib/history/events";
 import { getRuleMeta } from "@/lib/prayers/rules";
 import { PATHS } from "@/lib/reading/paths";
 import { getSaint } from "@/lib/saints/saints";
+import { START_STEPS } from "@/lib/start/steps";
 
 import { ROADS, type Lean, type Road } from "../road";
 import { INTENTS, LEVELS, dayOneFor, type Intent, type Level } from "../space";
@@ -98,6 +99,7 @@ describe("the steps a week can hold", () => {
     const title = (slug: string) => HISTORY_EVENTS.find((e) => e.slug === slug)!.title;
     expect(messages["onboard.week.schism"]).toBe(title("great-schism-1054"));
     expect(messages["onboard.week.afterChalcedon"]).toBe(title("non-chalcedonian-estrangement"));
+    expect(messages["onboard.week.pentecost"]).toBe(title("pentecost"));
   });
 });
 
@@ -129,8 +131,11 @@ describe("each road's week", () => {
     expect(PROTESTANT_WEEKS.liturgical[0]).toBe("gospelJohn");
     // "the Creed and the first councils"
     expect(ROAD_WEEKS.christian.slice(0, 2)).toEqual(["creed", "nicaea"]);
-    // "an introduction to Orthodox Christianity"
-    expect(ROAD_WEEKS.newcomer[0]).toBe("startHere");
+    // "an introduction to Orthodox Christianity": its own first step, "Begin with one short
+    // prayer", the lesson What is prayer?. It was the introduction's front page, Start here, where
+    // there is no one thing to do and no end to reach (the owner's "do all" of 2026-11-23).
+    expect(ROAD_WEEKS.newcomer[0]).toBe("whatIsPrayer");
+    expect(START_STEPS[0].href).toBe(WEEK_STEPS.whatIsPrayer.href);
   });
 });
 
