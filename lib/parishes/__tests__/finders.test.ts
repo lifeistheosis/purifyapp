@@ -168,6 +168,22 @@ describe("the page", () => {
     expect(code).not.toMatch(/<iframe|<script|next\/script/i);
   });
 
+  it("leads on to the guide to a first Liturgy, in the words the first week's card says it in", () => {
+    // Four roads end their first week here, and the page led nowhere inside
+    // Purify (docs/plans/onboarding-2.0.md, "Where the roads end"). One way
+    // on, and no word written for it: the week's own card for the guide.
+    const code = withoutComments(list);
+    expect(code).toContain('href="/start/first-liturgy"');
+    expect(code.match(/href="\/start\/first-liturgy"/g)).toHaveLength(1);
+    expect(code).toContain('<T k="onboard.day1.firstLiturgy.title" />');
+    expect(code).toContain('<T k="onboard.day1.firstLiturgy.body" />');
+    // Before the directories and the line about leaving, which is said of them.
+    expect(code.indexOf('href="/start/first-liturgy"')).toBeLessThan(code.indexOf('<T k="parishes.leaving" />'));
+    expect(code.indexOf('<T k="parishes.leaving" />')).toBeLessThan(code.indexOf("<RegionOrder"));
+    // The guide leads back here, so each door leads to the other.
+    expect(read("components", "start", "liturgy", "GuideSteps.tsx")).toContain('href: "/parishes"');
+  });
+
   it("opens each directory outside Purify", () => {
     const code = withoutComments(list);
     expect(code).toContain('target="_blank"');
@@ -190,6 +206,8 @@ describe("the words", () => {
     ["parishes.intro", ["components", "parishes", "ParishFinderList.tsx"]],
     ["parishes.leaving", ["components", "parishes", "ParishFinderList.tsx"]],
     ["nav.discover", ["components", "parishes", "ParishFinderList.tsx"]],
+    ["onboard.day1.firstLiturgy.title", ["components", "parishes", "ParishFinderList.tsx"]],
+    ["onboard.day1.firstLiturgy.body", ["components", "parishes", "ParishFinderList.tsx"]],
   ];
 
   it("has English for everything the page and its ways in say", () => {

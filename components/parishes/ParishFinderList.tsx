@@ -12,10 +12,26 @@
 // the outside sites need one. The chrome goes through <T> so it follows a
 // language switch inside the apps. Names of the bodies and the line under
 // each stay as the data has them, as a council's place and year do.
+//
+// Two things were added at the owner's yes of 2026-11-23 (docs/plans/
+// onboarding-2.0.md, "Where the roads end"), since four roads end their first
+// week on this page and it led nowhere inside Purify:
+//
+// - One card over the lists opens the guide to a first Liturgy, which is what
+//   a reader needs next once they have found a church. Its words are the
+//   week's own card for that guide, so no word is new in any language. It is
+//   the app's raised card and not a row, so it is not taken for a directory.
+// - The reader's own region stands first (./RegionOrder.tsx): the regions are
+//   still drawn here, and only their order is chosen on the device.
+
+import Link from "next/link";
 
 import { T } from "@/components/i18n/T";
 import { Eyebrow } from "@/components/ui/Graphite";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { findersByRegion } from "@/lib/parishes/finders";
+
+import { RegionOrder } from "./RegionOrder";
 
 // The mark at the end of each row: an arrow leaving to the upper right.
 // Drawn, not typed. The typed arrow is not in the subsets the app's own
@@ -46,62 +62,84 @@ export function ParishFinderList() {
           <p className="mt-5 max-w-[64ch] font-serif text-body text-paper/80 leading-[1.75]">
             <T k="parishes.intro" />
           </p>
-          <p className="mt-3 max-w-[64ch] font-sans text-detail text-paper/55 leading-[1.6]">
-            <T k="parishes.leaving" />
-          </p>
         </header>
 
-        <div className="mt-10 space-y-10">
-          {groups.map(({ region, finders }) => {
-            const headingId = `parishes-${region.id}`;
-            return (
-              // Named from its own label so each group is a landmark a screen
-              // reader can jump to, and the name stays translated.
-              <section key={region.id} aria-labelledby={headingId}>
-                {/* The house Eyebrow at level 2, not an h2 tag: globals.css
-                    sets every h1 to h6 in the heading serif at 700,
-                    unlayered, so the small sans label cannot be drawn on a
-                    real heading. This keeps the outline and the look. */}
-                <Eyebrow
-                  id={headingId}
-                  level={2}
-                  className="border-b border-paper/[0.08] pb-2 text-eyebrow tracking-[2px] text-paper/55"
-                >
-                  <T k={region.labelKey} />
-                </Eyebrow>
-                <ul className="divide-y divide-paper/[0.07]">
-                  {finders.map((f) => (
-                    <li key={f.url}>
-                      {/* A plain anchor in a new context, the way the app
-                          opens every outside page (the Footer, a history
-                          source, SoftTile's `external`). Inside the apps the
-                          shell hands an outside address to the system
-                          browser, so the directory opens outside Purify and
-                          this list is still here when the reader comes back. */}
-                      <a
-                        href={f.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group flex items-center gap-4 py-4 transition-colors active:bg-paper/[0.04]"
-                      >
-                        <span className="min-w-0 flex-1">
-                          <span lang="en" dir="ltr" className="block font-serif text-body font-semibold leading-snug text-paper/90 transition-colors group-hover:text-paper">
-                            {f.name}
+        {/* The way on, inside Purify: the guide to a first Liturgy, in the
+            words the first week's card says it in. */}
+        <Link
+          href="/start/first-liturgy"
+          data-parish-guide=""
+          className="theology-tray tap-press mt-7 flex max-w-[64ch] items-center gap-3 rounded-[20px] px-4 py-3.5"
+        >
+          <span className="min-w-0 flex-1">
+            <span className="block font-serif text-lede font-semibold leading-[25px] text-paper">
+              <T k="onboard.day1.firstLiturgy.title" />
+            </span>
+            <span className="mt-1 block font-sans text-ui leading-5 text-paper/70">
+              <T k="onboard.day1.firstLiturgy.body" />
+            </span>
+          </span>
+          <ChevronRight size={18} className="shrink-0 text-paper/45 rtl:-scale-x-100" />
+        </Link>
+
+        {/* Said of the directories, so it stands with them and not over the card. */}
+        <p className="mt-8 max-w-[64ch] font-sans text-detail text-paper/55 leading-[1.6]">
+          <T k="parishes.leaving" />
+        </p>
+
+        <div className="mt-6 space-y-10">
+          <RegionOrder ids={groups.map((g) => g.region.id)}>
+            {groups.map(({ region, finders }) => {
+              const headingId = `parishes-${region.id}`;
+              return (
+                // Named from its own label so each group is a landmark a screen
+                // reader can jump to, and the name stays translated.
+                <section key={region.id} aria-labelledby={headingId}>
+                  {/* The house Eyebrow at level 2, not an h2 tag: globals.css
+                      sets every h1 to h6 in the heading serif at 700,
+                      unlayered, so the small sans label cannot be drawn on a
+                      real heading. This keeps the outline and the look. */}
+                  <Eyebrow
+                    id={headingId}
+                    level={2}
+                    className="border-b border-paper/[0.08] pb-2 text-eyebrow tracking-[2px] text-paper/55"
+                  >
+                    <T k={region.labelKey} />
+                  </Eyebrow>
+                  <ul className="divide-y divide-paper/[0.07]">
+                    {finders.map((f) => (
+                      <li key={f.url}>
+                        {/* A plain anchor in a new context, the way the app
+                            opens every outside page (the Footer, a history
+                            source, SoftTile's `external`). Inside the apps the
+                            shell hands an outside address to the system
+                            browser, so the directory opens outside Purify and
+                            this list is still here when the reader comes back. */}
+                        <a
+                          href={f.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group flex items-center gap-4 py-4 transition-colors active:bg-paper/[0.04]"
+                        >
+                          <span className="min-w-0 flex-1">
+                            <span lang="en" dir="ltr" className="block font-serif text-body font-semibold leading-snug text-paper/90 transition-colors group-hover:text-paper">
+                              {f.name}
+                            </span>
+                            <span lang="en" dir="ltr" className="mt-1 block font-sans text-caption leading-snug text-paper/65">
+                              {f.serves}
+                            </span>
                           </span>
-                          <span lang="en" dir="ltr" className="mt-1 block font-sans text-caption leading-snug text-paper/65">
-                            {f.serves}
+                          <span aria-hidden className="shrink-0 text-paper/40 transition-colors group-hover:text-paper/70">
+                            <OutArrow />
                           </span>
-                        </span>
-                        <span aria-hidden className="shrink-0 text-paper/40 transition-colors group-hover:text-paper/70">
-                          <OutArrow />
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            );
-          })}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              );
+            })}
+          </RegionOrder>
         </div>
       </div>
     </section>
