@@ -2,7 +2,7 @@
 # plain line over every part. Made to be read on a phone, one film at a time
 # (his word, 2026-11-23: "send each one individually").
 #
-#   python3 -I docs/handoffs/promo-edits/map.py refs out      # out/map-<n>.jpg
+#   python3 -I -B docs/handoffs/promo-edits/map.py refs out   # out/map-<n>.jpg
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from analyze import probe, font

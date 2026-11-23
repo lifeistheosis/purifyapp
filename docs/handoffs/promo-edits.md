@@ -137,9 +137,12 @@ His to decide; named to him in the chat.
 ```
 python3 -m venv venv && venv/bin/pip install yt-dlp
 mkdir -p refs/1 && (cd refs/1 && ../../venv/bin/yt-dlp --write-info-json -o "v.%(ext)s" <address>)   # one folder each, 1 to 6
-python3 -I docs/handoffs/promo-edits/analyze.py all refs out      # the numbers, and out/<n>-sheet.jpg
-python3 -I docs/handoffs/promo-edits/strips.py refs out           # the closer strips
+python3 -I -B docs/handoffs/promo-edits/analyze.py all refs out   # the numbers, and out/<n>-sheet.jpg
+python3 -I -B docs/handoffs/promo-edits/strips.py refs out        # the closer strips
+python3 -I -B docs/handoffs/promo-edits/map.py refs out           # out/map-<n>.jpg, one picture a film for his phone
 ```
+
+`-B` keeps Python from leaving a `__pycache__` folder beside the scripts, which git would see as untracked.
 
 ffmpeg, numpy and Pillow are needed. The films are other people's work: they stay out of git.
 
