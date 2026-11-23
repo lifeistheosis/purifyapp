@@ -60,6 +60,8 @@ Kept by the chat he started for this on 2026-11-23 at 20:53 UTC (session_01VuYTw
 
   At that word: taken as his yes to both shapes as they were put to him, with what was offered first standing (Saul and Acts 9:5 for edit 1; stills and freely licensed clips for edit 2, with his own clips asked for on its storyboard). This chat is far past its line, so it makes no film: each edit has its one-shot prompt, `docs/plans/promo-edits/edit-1-the-light.md` and `edit-2-the-church.md`, and one fresh chat was started from each, a storyboard first for his yes, capped at $12 to the storyboard and $30 in all, sending no message here. Two chats at once is against the standing rule of one at a time; it is done at his word for two edits, and named to him so he can pause one. Videos 3 to 6 wait for his direction.
 
+  The two chats, both started at 22:05 UTC, Fable 5.2 at High as the designer's role card says: "Purify promo: edit 1, the Light" (session_01VuYTwacMjt6LkmPnjb5a2m) and "Purify promo: edit 2, the Church" (session_01VuYTwaL9B8MePq2DHwaw7z). Each keeps its own record under `docs/plans/promo-edits/edit-<n>/RECORD.md`. (The times of his words from 21:35 on are this chat's estimates and run about half an hour ahead of the clock: the two chats' start, 22:05, is the measured one.)
+
 ## The first edit: a storyboard idea (put to him 2026-11-23 about 21:55 UTC; overtaken about 22:10 by his own direction above, and kept as an idea)
 
 About 20 seconds, 1080 by 1920, a silent master. The times are those of reference 1's sound (its bass comes in at 11.1 s) and move if he picks another sound.
