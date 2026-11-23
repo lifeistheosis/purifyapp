@@ -3,12 +3,12 @@
 import { useState, type ReactNode } from "react";
 
 import type { OnboardingAdminPayload } from "@/app/api/admin/onboarding/route";
-import { BACKGROUND_WORDS, INTENT_WORDS, STEP_WORDS } from "@/lib/admin/onboardingSummary";
+import { BACKGROUND_WORDS, INTENT_WORDS, STEP_WORDS, byGroup, shareBack, type GroupRow } from "@/lib/admin/onboardingSummary";
 import { BACKGROUNDS, INTENTS } from "@/lib/onboarding/space";
 
 import { useAdminFetch } from "../adminFetch";
 import { BarChart } from "../charts";
-import { Card, KpiCard, SubTabs } from "../primitives";
+import { Card, DataTable, KpiCard, SubTabs } from "../primitives";
 import { AbTests } from "./AbTests";
 
 /**
@@ -57,6 +57,20 @@ const INTENT_LABELS: Record<string, string> = {
   study: "Study",
 };
 
+// The roads, in Admin's words (lib/onboarding/road.ts). "none" is a reader
+// whose answers lead to no road: a skip, or too little said.
+const ROAD_LABELS: Record<string, string> = {
+  practicing: "Practicing",
+  returning: "The road back",
+  catechumen: "Catechumen",
+  catholic: "Catholic",
+  protestant: "Protestant",
+  christian: "Another Christian tradition",
+  seeker: "Seeker",
+  newcomer: "Newcomer",
+  none: "No road",
+};
+
 function Quiet({ children }: { children: ReactNode }) {
   return (
     <p className="font-sans text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
@@ -71,6 +85,40 @@ function barRows(tally: Record<string, number>, order: readonly string[], labels
     .filter((k) => (tally[k] ?? 0) > 0)
     .map((k) => ({ label: labels[k] ?? k, value: tally[k] }))
     .sort((a, b) => b.value - a.value);
+}
+
+/** A share who came back, or why there is none to show yet. */
+function Back({ c }: { c: { count: number; of: number } }) {
+  const share = shareBack(c);
+  if (share === null) return <span style={{ color: "var(--adm-ink-3)" }}>{c.of ? "Too few yet" : "Not yet"}</span>;
+  return (
+    <>
+      {Math.round(share * 100)}% <span style={{ color: "var(--adm-ink-3)" }}>({c.count} of {c.of})</span>
+    </>
+  );
+}
+
+/** Finishes and returns for each road, or each first pick (2.0's plan, row 1; lib/admin/onboardingSummary.ts, byGroup). */
+function GroupTable({ rows, name, labels, csv }: { rows: GroupRow[]; name: string; labels: Record<string, string>; csv: string }) {
+  const pct = (c: { count: number; of: number }) => {
+    const share = shareBack(c);
+    return share === null ? "" : Math.round(share * 100);
+  };
+  return (
+    <DataTable<GroupRow>
+      rows={rows}
+      rowKey={(r) => r.key}
+      empty="No finishes yet."
+      csvFilename={csv}
+      columns={[
+        { key: "group", label: name, render: (r) => labels[r.key] ?? r.key, csv: (r) => labels[r.key] ?? r.key },
+        { key: "finished", label: "Finished", align: "right", render: (r) => r.finished, csv: (r) => r.finished },
+        { key: "d2", label: "Back after 2 days", align: "right", render: (r) => <Back c={r.back[2]} />, csv: (r) => pct(r.back[2]) },
+        { key: "d7", label: "After a week", align: "right", render: (r) => <Back c={r.back[7]} />, csv: (r) => pct(r.back[7]) },
+        { key: "d30", label: "After 30 days", align: "right", render: (r) => <Back c={r.back[30]} />, csv: (r) => pct(r.back[30]) },
+      ]}
+    />
+  );
 }
 
 const weekLabel = (week: string) =>
@@ -180,6 +228,28 @@ export function OnboardingTab() {
               ) : null}
             </div>
           ) : null}
+        </Card>
+      </div>
+
+      {/* By road and by first pick (2.0's plan, row 1): who finishes and who
+          comes back, from the answers each count already carries. Nothing
+          new is sent by any reader. */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card title="By road">
+          <GroupTable rows={byGroup(data, "road")} name="Road" labels={ROAD_LABELS} csv="onboarding-by-road" />
+          <div className="mt-3">
+            <Quiet>
+              Told from the answers each count already carries. A count does not say whether a practicing reader is coming back after time away, so both stand
+              under Practicing. Another Christian tradition is not counted yet, so those readers stand among the newcomers and seekers. A share
+              shows once twenty readers could have come back.
+            </Quiet>
+          </div>
+        </Card>
+        <Card title="By first pick">
+          <GroupTable rows={byGroup(data, "intent")} name="First pick" labels={INTENT_LABELS} csv="onboarding-by-first-pick" />
+          <div className="mt-3">
+            <Quiet>The first thing a reader asked for. It says nothing of their faith, so it is the first way to cut every number.</Quiet>
+          </div>
         </Card>
       </div>
 

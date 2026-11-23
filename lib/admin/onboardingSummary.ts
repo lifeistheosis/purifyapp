@@ -18,6 +18,9 @@ import {
   type CountStep,
   type ReturnDay,
 } from "@/lib/onboarding/counting";
+import { SMALLEST_CELL } from "@/lib/ab/panel";
+import { roadOf, type Road } from "@/lib/onboarding/road";
+import { BACKGROUNDS, INTENTS, LEVELS, type Background, type Intent, type Level } from "@/lib/onboarding/space";
 
 export type OnboardingRow = { name: string; props: Record<string, unknown>; ts: string };
 
@@ -45,18 +48,52 @@ export type OnboardingSummary = {
    * from before places were counted was a first pick.
    */
   picks: { first: Tally; places: Record<string, Tally> };
-  /** Those who finished, by what they said and how they came. */
-  finishedBy: { background: Tally; level: Tally; intent: Tally; platform: Tally; door: Tally; route: Tally; account: Tally };
+  /** Those who finished, by what they said and how they came; `road` is the road their answers lead to (countedRoad). */
+  finishedBy: { background: Tally; level: Tally; intent: Tally; platform: Tally; door: Tally; route: Tally; account: Tally; road: Tally };
   /** Day 1 steps opened from Today. */
   dayOne: Tally;
-  /** Came back after 2, 7 and 30 days: the count, and of how many could have. */
-  returned: Record<ReturnDay, { count: number; of: number; byBackground: Tally; byDoor: Tally }>;
+  /**
+   * Came back after 2, 7 and 30 days: the count, and of how many could have.
+   * By road and by first pick too, each with its own "of how many could
+   * have" (`ofBy`), so that a road's share is of that road's readers.
+   */
+  returned: Record<ReturnDay, { count: number; of: number; byBackground: Tally; byDoor: Tally; byRoad: Tally; byIntent: Tally; ofBy: { road: Tally; intent: Tally } }>;
   /** Finishes week by week (weeks starting Monday, UTC), by background. */
   weeks: { week: string; finished: number; byBackground: Tally }[];
   sentences: string[];
 };
 
 const DAY = 86_400_000;
+
+/** The group of a reader whose answers lead to no road: a skip, or too little said. */
+export const NO_ROAD = "none";
+
+/**
+ * The road a count's answers lead to, as far as a count can tell (2.0's plan,
+ * row 1: numbers by road from the counts that exist). The rule is the app's
+ * own (lib/onboarding/road.ts). Two things a count does not carry, so two
+ * roads cannot be told apart here:
+ *
+ * - whether a practicing reader is coming back after time away, so both stand
+ *   under "practicing";
+ * - "Another Christian tradition", which is not counted until the privacy page
+ *   says it may be (lib/onboarding/count.ts), so those readers stand among
+ *   the newcomers and the seekers, by their first pick.
+ *
+ * "returning" here is only the reader who is Orthodox by family and new to
+ * the faith. Admin's table says all of this beside the numbers.
+ */
+export function countedRoad(props: Record<string, unknown>): Road | typeof NO_ROAD {
+  const one = <T extends string>(list: readonly T[], v: unknown): T | null => (typeof v === "string" && (list as readonly string[]).includes(v) ? (v as T) : null);
+  return (
+    roadOf({
+      background: one<Background>(BACKGROUNDS, props.background),
+      level: one<Level>(LEVELS, props.level),
+      intent: one<Intent>(INTENTS, props.intent),
+      returning: false,
+    }) ?? NO_ROAD
+  );
+}
 
 function bump(t: Tally, key: unknown) {
   if (typeof key !== "string" || !key) return;
@@ -151,13 +188,13 @@ export function summarizeOnboarding(rows: OnboardingRow[], now: Date, days: numb
     COUNT_ROUTES.map((route) => [route, Object.fromEntries(ONBOARDING_STEPS.map((s) => [s, 0])) as Record<CountStep, number>]),
   ) as Record<CountRoute, Record<CountStep, number>>;
   const answers = Object.fromEntries(Object.keys(COUNT_ANSWERS).map((q) => [q, {}])) as Record<CountQuestion, Tally>;
-  const finishedBy = { background: {}, level: {}, intent: {}, platform: {}, door: {}, route: {}, account: {} } as OnboardingSummary["finishedBy"];
+  const finishedBy = { background: {}, level: {}, intent: {}, platform: {}, door: {}, route: {}, account: {}, road: {} } as OnboardingSummary["finishedBy"];
   const picks: OnboardingSummary["picks"] = { first: {}, places: {} };
   let began = 0;
   const skippedAt: Tally = {};
   const dayOne: Tally = {};
   const returned = Object.fromEntries(
-    RETURN_DAYS.map((d) => [d, { count: 0, of: 0, byBackground: {}, byDoor: {} }]),
+    RETURN_DAYS.map((d) => [d, { count: 0, of: 0, byBackground: {}, byDoor: {}, byRoad: {}, byIntent: {}, ofBy: { road: {}, intent: {} } }]),
   ) as OnboardingSummary["returned"];
   const weeks = new Map<string, { finished: number; byBackground: Tally }>();
   let finished = 0;
@@ -175,7 +212,11 @@ export function summarizeOnboarding(rows: OnboardingRow[], now: Date, days: numb
     if (r.name === "onboarding_finished") {
       for (const d of RETURN_DAYS) {
         const due = t + d * DAY;
-        if (due <= now.getTime() && due >= since) returned[d].of += 1;
+        if (due <= now.getTime() && due >= since) {
+          returned[d].of += 1;
+          bump(returned[d].ofBy.road, countedRoad(p));
+          bump(returned[d].ofBy.intent, p.intent);
+        }
       }
     }
     if (!inWindow(r)) continue;
@@ -214,6 +255,7 @@ export function summarizeOnboarding(rows: OnboardingRow[], now: Date, days: numb
         bump(finishedBy.door, p.door);
         bump(finishedBy.route, route);
         bump(finishedBy.account, p.account === true ? "yes" : "no");
+        bump(finishedBy.road, countedRoad(p));
         const w = weekOf(r.ts);
         const wk = weeks.get(w) ?? { finished: 0, byBackground: {} };
         wk.finished += 1;
@@ -230,6 +272,8 @@ export function summarizeOnboarding(rows: OnboardingRow[], now: Date, days: numb
           returned[d].count += 1;
           bump(returned[d].byBackground, p.background);
           bump(returned[d].byDoor, p.door);
+          bump(returned[d].byRoad, countedRoad(p));
+          bump(returned[d].byIntent, p.intent);
         }
         break;
       }
@@ -253,6 +297,35 @@ export function summarizeOnboarding(rows: OnboardingRow[], now: Date, days: numb
   };
   summary.sentences = sentencesFor(summary);
   return summary;
+}
+
+/** One road, or one first pick: how many finished, and how many came back of those who could have. */
+export type GroupRow = { key: string; finished: number; back: Record<ReturnDay, { count: number; of: number }> };
+
+/**
+ * The sums by road, or by first pick, as Admin's table draws them: every
+ * group that finished or could have come back, the most finishes first.
+ */
+export function byGroup(s: Pick<OnboardingSummary, "finishedBy" | "returned">, by: "road" | "intent"): GroupRow[] {
+  const came = (d: ReturnDay) => (by === "road" ? s.returned[d].byRoad : s.returned[d].byIntent);
+  const keys = new Set<string>(Object.keys(s.finishedBy[by]));
+  for (const d of RETURN_DAYS) for (const k of [...Object.keys(s.returned[d].ofBy[by]), ...Object.keys(came(d))]) keys.add(k);
+  return [...keys]
+    .map((key) => ({
+      key,
+      finished: s.finishedBy[by][key] ?? 0,
+      back: Object.fromEntries(RETURN_DAYS.map((d) => [d, { count: came(d)[key] ?? 0, of: s.returned[d].ofBy[by][key] ?? 0 }])) as GroupRow["back"],
+    }))
+    .sort((a, b) => b.finished - a.finished || a.key.localeCompare(b.key));
+}
+
+/**
+ * The share who came back, or null while fewer than twenty could have: a
+ * share of three readers is close to a description of three people, and no
+ * finding either (the tests' own rule, lib/ab/panel.ts).
+ */
+export function shareBack(c: { count: number; of: number }): number | null {
+  return c.of >= SMALLEST_CELL ? c.count / c.of : null;
 }
 
 /** The week in words, the way the owner reads it. */

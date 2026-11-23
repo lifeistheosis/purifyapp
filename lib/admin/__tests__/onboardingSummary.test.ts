@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { summarizeOnboarding, weekOf, type OnboardingRow } from "../onboardingSummary";
+import { byGroup, countedRoad, shareBack, summarizeOnboarding, weekOf, type OnboardingRow } from "../onboardingSummary";
 
 // The admin's sums of the onboarding's counts (1.8), and the week said in
 // plain sentences, the owner's "a Catholic finished" way.
@@ -119,5 +119,67 @@ describe("the onboarding's sums", () => {
 
   it("says plainly when nobody came", () => {
     expect(summarizeOnboarding([], NOW, 7).sentences).toEqual(["No reader went through the welcome questions this week."]);
+  });
+});
+
+// By road and by first pick (2.0's plan, row 1): from the counts that exist,
+// with nothing new sent by any reader.
+describe("by road and by first pick", () => {
+  it("tells the road from a count's answers by the app's own rule, and says none when too little was said", () => {
+    expect(countedRoad({ background: "catholic", level: "inquirer", intent: "quiet" })).toBe("catholic");
+    expect(countedRoad({ background: "protestant", level: "inquirer" })).toBe("protestant");
+    expect(countedRoad({ background: "catholic", level: "learning" })).toBe("catechumen");
+    expect(countedRoad({ background: "orthodox", level: "practicing" })).toBe("practicing");
+    // Orthodox by family and new to the faith: the road back.
+    expect(countedRoad({ background: "orthodox", level: "inquirer" })).toBe("returning");
+    // "Just curious": the first pick chooses between the seeker and the newcomer.
+    expect(countedRoad({ background: "none", intent: "councils" })).toBe("seeker");
+    expect(countedRoad({ background: "none", intent: "quiet" })).toBe("newcomer");
+    // Another Christian tradition is not counted, so its row has no background: by level and first pick.
+    expect(countedRoad({ level: "inquirer", intent: "fathers" })).toBe("seeker");
+    expect(countedRoad({ level: "inquirer", intent: "prayer" })).toBe("newcomer");
+    // Nothing said, or something that is no answer at all.
+    expect(countedRoad({})).toBe("none");
+    expect(countedRoad({ background: "martian", level: 4, intent: null })).toBe("none");
+  });
+
+  const many = (n: number, name: string, day: string, props: Record<string, unknown>) => Array.from({ length: n }, () => row(name, day, props));
+  const s = summarizeOnboarding(
+    [
+      // Old enough to have come back after a week, inside the window.
+      ...many(25, "onboarding_finished", "2026-11-10", { account: false, background: "catholic", level: "inquirer", intent: "quiet" }),
+      ...many(4, "onboarding_finished", "2026-11-10", { account: false, background: "protestant", level: "inquirer", intent: "gospels" }),
+      // Too new to have come back after a week.
+      ...many(3, "onboarding_finished", "2026-11-28", { account: false, background: "catholic", level: "inquirer", intent: "councils" }),
+      ...many(10, "onboarding_returned", "2026-11-17", { day: 7, background: "catholic", level: "inquirer", intent: "quiet" }),
+      ...many(2, "onboarding_returned", "2026-11-17", { day: 7, background: "protestant", level: "inquirer", intent: "gospels" }),
+    ],
+    NOW,
+    30,
+  );
+
+  it("sums finishes by road, and each road's returns against that road's own readers", () => {
+    expect(s.finishedBy.road).toEqual({ catholic: 28, protestant: 4 });
+    expect(s.returned[7].byRoad).toEqual({ catholic: 10, protestant: 2 });
+    expect(s.returned[7].ofBy.road).toEqual({ catholic: 25, protestant: 4 });
+    const rows = byGroup(s, "road");
+    expect(rows.map((r) => r.key)).toEqual(["catholic", "protestant"]);
+    expect(rows[0]).toMatchObject({ finished: 28, back: { 7: { count: 10, of: 25 } } });
+    expect(rows[1]).toMatchObject({ finished: 4, back: { 7: { count: 2, of: 4 } } });
+  });
+
+  it("sums the same by first pick", () => {
+    expect(s.returned[7].byIntent).toEqual({ quiet: 10, gospels: 2 });
+    expect(s.returned[7].ofBy.intent).toEqual({ quiet: 25, gospels: 4 });
+    const rows = byGroup(s, "intent");
+    expect(rows.map((r) => `${r.key}:${r.finished}`)).toEqual(["quiet:25", "gospels:4", "councils:3"]);
+    expect(rows[2].back[7]).toEqual({ count: 0, of: 0 });
+  });
+
+  it("shows a share only when twenty or more could have come back", () => {
+    expect(shareBack({ count: 10, of: 25 })).toBeCloseTo(0.4);
+    expect(shareBack({ count: 2, of: 4 })).toBeNull();
+    expect(shareBack({ count: 0, of: 0 })).toBeNull();
+    expect(shareBack({ count: 19, of: 20 })).toBeCloseTo(0.95);
   });
 });
