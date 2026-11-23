@@ -3,7 +3,7 @@
 
   python3 -I -B docs/plans/promo-edits/edit-2/page.py . .promo/promo-edits/edit-2
 
-Writes <work>/page/storyboard.html: the kit's own head and style, whole, and
+Writes <work>/page/storyboard.html and <work>/page/film.html: the kit's own head and style, whole, and
 this page's words. The stills are published beside it (stills/<name>.jpg),
 so the page stays light. The pictures' list is read from pictures.json.
 """
@@ -202,8 +202,143 @@ page = f"""<title>The Church storyboard</title>
   </footer>
 </main>
 """
-assert "—" not in page.split("</style>")[-1], "an em dash in the page's words"
+MOVES = [
+    ("0.00", "A hand sets a lit taper", "the clip as it was filmed"),
+    ("0.25", "The wooden church", "one slow move toward the royal doors"),
+    ("2.00", "The blessing hand, and the entry", "drawn in a little, whole"),
+    ("2.92", "The figure, the invocation, A M E N", "drawn in a little, whole"),
+    ("3.71", "Two frames of blur", "the figure thrown upward, the candles arriving"),
+    ("3.79", "Candles", "the clip, drifting to one side"),
+    ("4.71", "The censer", "down its chains"),
+    ("5.62", "The dome", "in toward the dome"),
+    ("6.54", "The service book, Prayers", "the clip, and the least push"),
+    ("7.42", "The Gospel in His hand", "pulling back"),
+    ("8.33", "The face of the Sinai Pantocrator", "in toward His eyes"),
+    ("9.21", "The app's Today", "the phone coming nearer"),
+    ("10.12", "The end card", "still, to 11.92"),
+]
+FILM_CHOICES = CHOICES + [
+    ("The clips play as they were filmed",
+     "The reference is slowed down. Slowing ours would mean frames made by a machine between the real ones, so the candles and the hands move at their own pace, which is already quiet."),
+    ("One slow, even move in each shot",
+     "No move speeds up or slows down, and none answers the sound. An icon moves only whole: it is drawn in or let back, never bent, and nothing in it is redrawn."),
+    ("The hand ends at its cuff and falls into the black",
+     "In the icon the wrist goes into the sleeve. The cut-out ends there over a short fall into black, as into shadow, so no hard line stands across the wrist."),
+    ("The end card has no grain",
+     "Pure black and clean white, so the verse is as sharp as type can be on a phone."),
+]
+film = f"""<title>The Church film</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+{fonts}
+{style}
+<style>
+.k-page {{ padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }}
+.k-figure.k-phone :is(img, video) {{ height: auto; max-width: 390px; width: 100%; margin-inline: auto; display: block; }}
+.k-page .k-figure figcaption strong {{ color: var(--k-ink); font-weight: 600; }}
+.k-page .e2-list {{ margin: var(--k-space-4) 0 0; padding-inline-start: 1.2em; max-width: var(--k-measure); }}
+.k-page .e2-list li {{ margin-block-end: var(--k-space-3); line-height: 1.55; }}
+.k-page .e2-list li strong {{ display: block; font-family: var(--k-font-sans); font-size: var(--k-text-ui); font-weight: 600; }}
+.k-page .k-table small {{ color: var(--k-ink-3); font-family: var(--k-font-sans); font-size: var(--k-text-caption); }}
+</style>
+<main class="k-page">
+  <header class="k-title k-rise">
+    <span class="k-mark" role="img" aria-label="Purify"></span>
+    <span class="k-eyebrow">Promo edit 2, the film</span>
+    <h1>The Church</h1>
+    <p class="k-lede">11.92 seconds, black and white, cut to the reference's clock.</p>
+    <p class="k-meta">1080 by 1920, 24 frames a second, 286 frames. Made at your yes on 23 November 2026.</p>
+  </header>
+
+  <section class="k-section" aria-labelledby="s-prev">
+    <h2 id="s-prev">The preview, with the sound</h2>
+    <figure class="k-figure k-phone">
+      <video src="film/preview.mp4" poster="film/poster.jpg" width="720" height="1280" controls playsinline preload="metadata"></video>
+      <figcaption><strong>Not for posting.</strong> The reference's first 11.92 seconds of sound are under it so you can judge the timing. That sound is not cleared, so this file is for you alone.</figcaption>
+    </figure>
+  </section>
+
+  <section class="k-section" aria-labelledby="s-master">
+    <h2 id="s-master">The silent master</h2>
+    <figure class="k-figure k-phone">
+      <video src="film/silent.mp4" poster="film/poster.jpg" width="720" height="1280" controls muted playsinline preload="metadata"></video>
+      <figcaption><strong>This is what is posted.</strong> A lighter copy plays here. The full file, purify-the-church.mp4 (1080 by 1920, 62 MB), is in the chat for you to save. Add the sound inside TikTok from the reference itself.</figcaption>
+    </figure>
+  </section>
+
+  <section class="k-section" aria-labelledby="s-before">
+    <h2 id="s-before">Before it is posted</h2>
+    <ul class="e2-list">
+      <li><strong>A priest's yes</strong>Scripture set beside pictures is framing. That yes is yours to get.</li>
+      <li><strong>Is 11.92 before the talking?</strong>The film ends where the fights begin in the reference. You hear where the voices come in and I cannot. If they come in sooner, tell me the second and I cut it there.</li>
+      <li><strong>One licence to read</strong>The Mixkit clip (the priest's hands) is free for commercial use by its page. Its licence's full text would not open for me; read it once.</li>
+      <li><strong>Your own clips</strong>The church, the censer and the dome are photographs with a slow move, and no one is at prayer in the film. Clips of your own would take their place.</li>
+    </ul>
+  </section>
+
+  <section class="k-section" aria-labelledby="s-shots">
+    <h2 id="s-shots">The shots</h2>
+    <p>Measured on the finished file: every cut falls on the reference's own frame, and no frame holds any colour.</p>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th scope="col" class="k-num">From</th><th scope="col">The shot</th><th scope="col">Its move</th></tr></thead>
+        <tbody>
+{rows(MOVES, lambda a, b, c: f'          <tr><td class="k-num">{a}</td><td>{e(b)}</td><td>{e(c)}</td></tr>')}
+        </tbody>
+      </table>
+    </div>
+    <figure class="k-figure k-phone">
+      <img src="stills/03-hand.jpg" width="540" height="960" alt="The blessing hand on black with the entry beside it">
+      <figcaption>The third shot, at 2.00 s: the blessing hand, and the Church named by the Apostle.</figcaption>
+    </figure>
+  </section>
+
+  <section class="k-section" aria-labelledby="s-words">
+    <h2 id="s-words">The words</h2>
+    <p>None is written for the film. The script holds each line of Scripture to the app's own Bible, word for word, every time the film is made. Each line stands from its shot's first frame to its last.</p>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th scope="col">Where</th><th scope="col">The words</th><th scope="col">From</th></tr></thead>
+        <tbody>
+{rows(WORDS, lambda a, b, c: f"          <tr><td>{e(a)}</td><td>{e(b)}</td><td>{e(c)}</td></tr>")}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="k-section" aria-labelledby="s-why">
+    <h2 id="s-why">The choices, and why</h2>
+    <ul class="e2-list">
+{rows(FILM_CHOICES, lambda a, b: f"      <li><strong>{e(a)}</strong>{e(b)}</li>")}
+    </ul>
+  </section>
+
+  <section class="k-section" aria-labelledby="s-pics">
+    <h2 id="s-pics">Pictures and clips</h2>
+    <p>Each licence is as its own page states it, read on 23 November 2026. No living face is in any of them. No icon is held in Greece or Italy. Nothing was made by a machine.</p>
+    <div class="k-table-wrap">
+      <table class="k-table">
+        <thead><tr><th scope="col">What, and where it is used</th><th scope="col">Licence</th></tr></thead>
+        <tbody>
+{pic_rows}
+        </tbody>
+      </table>
+    </div>
+    <div class="k-note">
+      <span class="k-eyebrow">Checked by eye, not by a machine</span>
+      <p>No rays, no glow, no bright frame, no shake, no four-point star, no side stripe, no parchment. The dome's light is the photograph's own daylight.</p>
+    </div>
+  </section>
+
+  <footer class="k-foot">
+    <p>Edgar, the Purify Team</p>
+    <p class="k-meta">The record is docs/plans/promo-edits/edit-2/RECORD.md</p>
+  </footer>
+</main>
+"""
 import os
 os.makedirs(f"{WORK}/page", exist_ok=True)
-open(f"{WORK}/page/storyboard.html", "w", encoding="utf8").write(page)
-print(f"{WORK}/page/storyboard.html", len(page) // 1024, "KB")
+for name, text in (("storyboard", page), ("film", film)):
+    assert "—" not in text.split("</style>")[-1], "an em dash in the page's words"
+    open(f"{WORK}/page/{name}.html", "w", encoding="utf8").write(text)
+    print(f"{WORK}/page/{name}.html", len(text) // 1024, "KB")
