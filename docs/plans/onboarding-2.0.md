@@ -643,8 +643,8 @@ Walked on the export: the end of every page a day of a first week opens, as a ne
 | The kind of page | Days | What stands at its end today | What the frame needs |
 |---|---|---|---|
 | A council (First Nicaea 5, Carthage 2, Chalcedon, Ephesus) | 9 | Links to what is near it (a heresy, a moment on the timeline) | Nothing in the way: Done is added at the end. They are long (590 to 1,398 words) |
-| A prayer (the Creed 4, Before sleep 2) | 6 | Its last line and its source | Nothing in the way |
-| A chapter (John 1 four times, Psalm 1) | 5 | The translations' note | Nothing in the way |
+| A prayer (the Creed 4, Before sleep 2) | 6 | Its last line and its source | ~~Nothing in the way~~ Corrected the same day by a read of its code: it has an end of its own (each prayer marked as it is said, then the rule's own finish). A slice of its own |
+| A chapter (John 1 four times, Psalm 1) | 5 | The translations' note | ~~Nothing in the way~~ Corrected the same day by the frame's probe: the reader opens the next chapter at its end and floats its own bars. A slice of its own |
 | A saint (Ignatius 2, Leo 2, Mary of Egypt) | 5 | Links near it, then "pray to God for us" | Nothing in the way |
 | A moment in history (1054, the Non-Chalcedonian estrangement) | 2 | Links to earlier and later | Nothing in the way. The longest days: 2,089 and 1,273 words |
 | A lesson (the Jesus Prayer 3, the Trisagion 3, a morning rule 2, the sign of the cross 2, What is prayer?) | 11 | The page's one white button, "Next lesson", and "Previous lesson" | The lesson's own button leads away from the week, so on the reader's day it gives way to Done, as mock-up 6 drew |
@@ -656,11 +656,51 @@ So forty-five of the sixty-three days open one thing with an end, and eighteen o
 **The order to build it in, each slice behind the fork's switch and dark for readers until its test begins.**
 
 1. The week's own state: a day is kept by Done and no longer by the tap. Today's card says the step until it is kept, then "kept" with tomorrow's step by name. The counts gain "kept" beside "opened".
-2. The frame itself, once, in the app's frame around every page: the week's mark over the day's page, and at its end Done, answered where the finger is by the week's card. This serves the twenty-seven days with nothing in the way.
+2. The frame itself, once, in the app's frame around every page: the week's mark over the day's page, and at its end Done, answered where the finger is by the week's card. This serves the twenty-seven days with nothing in the way. (As built it serves sixteen, and differs in four ways: the next section.)
 3. The lessons give way (eleven days).
 4. The first Liturgy's guide (seven days), and the eighteen days on a list or a hub, each with what it needs; the six that need one thing chosen come to him first.
 
 **New words, his to change** (drawn on mock-ups 5 to 7): "Done for today", "Day 1 of 7, kept", "Tomorrow:" before the next step's name, "Back to Today". They go into English first; the other nineteen languages follow in a translation pass, as the catalogues are filled.
+
+## Row 3, the day's frame: built for sixteen days (2026-11-23)
+
+**His words: "rec yes to all"** ("Done for today" at the end of the day's page, never floating over it) **and "this is all going into v2.0 so no not livr".** Built on the branch and OFF for readers (`lib/onboarding/flags.ts`, `DAY_FRAME_LIVE`); Testers mode walks it. Commits `4b8af404e`, `74d6a5ea0`, `7832075b4`, `6124726e5`, `d45e89078` and the one that carries this section. Stills from the export, as a Catholic reader on the third day of their week: `docs/plans/reader-map/img/day-done.jpg`, `day-kept.jpg`, `day-today-kept.jpg`.
+
+**What a reader with the frame has.** On a day whose page the frame serves, opening the step writes nothing. At the end of the page stand the week's own line, "Your first week · 3 of 7", and one button, "Done for today". The tap is answered where the finger is, in one motion: the week's own card rises in the button's place ("Day 3 of 7, kept", "Tomorrow: St. Leo the Great", "Back to Today") and the page above goes up with it. Today then says the day is kept, with tomorrow's step by name and nothing to begin. Opened again that day, the page keeps its card. The next day the named step waits, and the page wears nothing.
+
+**It serves sixteen of the sixty-three days, not the twenty-seven planned.** The frame's own probe and a read of each page's code took two kinds out of "nothing in the way":
+
+| The kind | Days | Why it waits for a slice of its own |
+|---|---|---|
+| A chapter | 5 | The Bible's reader opens the next chapter when its end is reached and floats its own bars over the page. The probe's first run stood the kept card under them, its way back out of reach |
+| A prayer | 6 | It has an end of its own: each prayer is marked as it is said, and the rule's own finish answers the last (`components/prayers/PrayerRuleReader.tsx`, `RuleEnd`). A second Done under it would say one thing twice |
+
+Served: a council (9 days), a saint (5), a moment in history (2). They are named one by one in `lib/onboarding/dayFrame.ts` (`FRAMED_STEPS`), with the reason each other kind waits. Any other day is as it was with the frame off, taken when it is opened, so no reader with the frame is left on a day that cannot be kept.
+
+**Four things the build changed from what was planned or drawn, and why.**
+
+1. **The week's line stands with the button, not over the page's head.** Mock-up 5 drew it on a lesson, where it took the place of the page's own "Lesson 3". A council, a saint and a moment in history open on their own picture under their own bar, and a line set above them by the frame pushed that bar down the screen (walked on the export). So the page's head is the same for every reader, and the line is said once on the page, where it is acted on. A lesson can still wear it in its own place, in the lessons' slice.
+2. **Each kind of page mounts the end itself, at the end of its own column. It is not in the app's shell.** In the shell it would be drawn under the outline of a page that has not come, and it could not line up with the page's text at a tablet's width. A test holds the two lists together: every framed step's page has a file that mounts the end once, and nothing else mounts it.
+3. **One motion, not two.** The kept card is taller than the line and the button. At first the card opened and the page then followed it, a second motion. Now the page goes with the card inside the move itself, and what stands on the screen over it glides (`piecesBefore`, `lib/ui/inPageMove.ts`: in pieces no taller than the screen, since the part over the end of a council's page is its whole article).
+4. **The bars keep their own picture.** Seen frame by frame: as the page went up, its lines were drawn over the page's own bar for a third of a second. `stuckOver` finds what stands fixed or stuck at the head of the screen and names it for the move, so the page passes under it as it does under a finger.
+
+**The checks.** Thirty-five new tests, each failing on the code before: which steps are framed and which file mounts each, which of a reader's days a page is, the pieces that glide and the bars that stand (`dayFrame.test.ts` 19, `piecesBefore.test.ts` 8, `week.test.ts` 4, `openStep.test.ts` 4). Typecheck 0. The unit suite 15,626 passed, 7 skipped, 0 failed. Lint clean on the changed files. `npm run build` green. The app export green. The gate's new probe, `scripts/gate/day-frame.mjs`: 39 of 39, three runs in a row, with touch. It walks the frame off; a day the frame does not serve; the council's day from Today to the day after; reduced motion; a tablet's size. It gives the tap on Done, frame by frame, to the gate's own motion check: no cut, no jump, no flash, and with motion reduced nothing that moves. The guardrail walk: 29 screens, nothing failed, on the council's page and Today with the day waiting and kept, at 390 by 844, 800 by 1280 and 1032 by 1376, in English and in Arabic, and on a saint's page and a moment's page in both states.
+
+**Found while proving it, the probe's own fault.** The probe pinned its clock to fixed days. That moved the page's own timeline thirteen days from the one the screen's frames are stamped on, so the gate's motion check could not tell a glide from a flash and called one in about one run of five; and it left the device's motion verdict stale, so a walk that asked for reduced motion was walked with motion on. The probe now runs today's pages on the device's own clock and reaches only the day after by a clock moved on. No other script both pins a clock and judges frames (searched).
+
+**Not done, and what each needs.**
+
+- **The four new lines are English in the other nineteen languages** ("Done for today", "Day 3 of 7, kept", "Tomorrow:", "Back to Today"). A translation pass before the frame is lit.
+- **The privacy page's sentence about a week's step.** It must say "kept" before the frame is lit; the count's closed list already takes the word, and nothing sends it yet.
+- **A finish is a moment of its own** (his note of 22 November). This is the first finish of the first week. It moves in the house's motion today; its own animation is still to be drawn with him.
+- **Seen at the end of the 1054 page.** Its own "Related in Purify" links to two studies, on the filioque and the papacy, that the week leaves out on purpose until they pass the clergy's reading (`lib/onboarding/week.ts`, `ROAD_WEEKS`). A reader on that day ends it beside those links. Nothing was changed: it is his and the clergy queue's.
+
+**The order from here, each a slice of its own behind the same switch.**
+
+1. A prayer's day (6 days). Proposed: the prayer's own finish keeps the day, with no second button. His yes or no.
+2. The lessons give way (11 days), as mock-up 6 drew.
+3. A chapter's day (5 days): how a day ends in the Bible's reader is to be drawn first.
+4. The first Liturgy's guide (7 days), and the 18 days on a list or a hub; the six front pages that need one thing chosen come to him first.
 
 ## Status, section by section (2026-11-23, about 05:00 UTC)
 
@@ -679,13 +719,15 @@ Two scores a section, by the same judge and the same measure as the rating of 22
 | 7 | The way to Plus | 5, unproven | 5, unproven | Nothing. Its two tests run to 2027-02-09 and 2027-05-05 | A lifetime price; the sheet; a plan as the step after day seven |
 | | **As a whole** | **5.5** | **about 6** | | |
 
-**His word on these, about 05:10 UTC the same day: "this is all going into v2.0 so no not livr".** Everything built since 1.9 ships with 2.0 and nothing of it goes to the main web before.
+**His word on these, 05:06 UTC the same day: "this is all going into v2.0 so no not livr".** Everything built since 1.9 ships with 2.0 and nothing of it goes to the main web before.
 
 **Built on the branch, for 2.0** (each with its tests and its checks): the week's card (`6efad5dba`), the downloads' test (`3e78a2622`), the brief's lines (`27c07bc7c`), Admin by road and first pick (`550833dfc`), Find a parish (`afef8b4f0`, `b01fec009`). The first of these mends two faults every new reader meets today.
 
 **Drawn and waiting for his yes or no:** the welcome on Today (mock-up 13, on hold by his word); the EU step (mock-up 1).
 
-**Decided and not yet built:** "Done for today" at the end of the day's page.
+**Built since this table, the same day, dark for readers:** "Done for today" at the end of the day's page, for sixteen of the sixty-three days ("Row 3, the day's frame: built for sixteen days", above). With it section 4 reads 5 on the branch; a reader's own number moves only when 2.0 ships.
+
+**Decided and not yet built:** the frame's other slices (a prayer's day, the lessons, a chapter's day, the guide, the lists and hubs).
 
 **Open, outside the sections:** the three copies of the 1.9 email in his inbox (read as three accounts; unproven until he looks at each one's "to" line); the heartbeat's call cut by a long send; the release letter's sender reading "Purify Shop".
 

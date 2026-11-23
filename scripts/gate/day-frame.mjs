@@ -50,8 +50,20 @@ if (!fs.existsSync(`${OUT}/index.html`)) {
   process.exit(1);
 }
 
-const DAY = "2026-12-06";
-const NEXT_DAY = "2026-12-07";
+// The walk's days are the device's own: today, the day before it and the day after, as the reader's
+// phone (in New York) counts them. Today's pages run on the container's own clock, never a pinned
+// one. A pinned clock moves the page's own timeline (performance.timeOrigin) away from the one the
+// screen's frames are stamped on, and the gate's motion check, which reads the two together, could
+// then no longer tell a glide from a flash: every frame of a move read as a still one (2026-11-23,
+// this probe's first runs: "something drawn for 2 frames and gone" on a line the page was carrying
+// up the screen). Only the day after is reached by a clock moved a day on, and nothing is judged
+// frame by frame there.
+const ZONE = "America/New_York";
+const dayOf = (ms) => new Intl.DateTimeFormat("en-CA", { timeZone: ZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ms));
+const A_DAY = 24 * 60 * 60 * 1000;
+const NOW = Date.now();
+const DAY = dayOf(NOW);
+const YESTERDAY = dayOf(NOW - A_DAY);
 const COUNCIL = "/councils/first-nicaea";
 /** A Catholic reader, completely new, who asked for quiet: the Jesus Prayer's lesson, the Fathers' path, then the First Council of Nicaea. */
 const READER = {
@@ -62,20 +74,19 @@ const READER = {
   "purify:intent": "quiet",
   "purify:intents": '["quiet"]',
   "purify:firststeps.eligible": "1",
-  "purify:onboarded.day": "2026-12-04",
+  "purify:onboarded.day": dayOf(NOW - 2 * A_DAY),
   "purify:fasting-rule": "hidden",
   "purify:calendar.style": "new",
   "purify:whatsNewSeen": "99",
 };
 /** Two days kept, the second yesterday: today is the third day. */
-const THIRD_DAY = { "purify:week": '{"at":2,"day":"2026-12-05","passed":0}' };
+const THIRD_DAY = { "purify:week": JSON.stringify({ at: 2, day: YESTERDAY, passed: 0 }) };
 /** Testers mode, as lib/onboarding/testers.ts starts it. */
 const TESTING = { "purify:testers": '{"v":1,"keys":{}}' };
-// The walk's days are set by a pinned clock, so the device's motion verdict (scripts/lib/motion.mjs)
-// is dated by that clock too: dated by the container's own it would be days old on the walk's days,
-// the app would measure the device again four seconds in, and a walk that asked for reduced motion
-// would be walked with motion on without a word. Noon of the walk's last day is never stale on any.
-const VERDICT_AT = new Date(`${NEXT_DAY}T12:00:00-05:00`).getTime();
+// The device's motion verdict (scripts/lib/motion.mjs) is dated a day and a half on, so it is not
+// stale on the day after either: a stale verdict is measured again four seconds in, and a walk that
+// asked for reduced motion would be walked with motion on without a word.
+const VERDICT_AT = NOW + 1.5 * A_DAY;
 
 const browser = await chromium.launch(fs.existsSync(OWN) ? { executablePath: OWN } : {});
 let faults = 0;
@@ -107,14 +118,14 @@ async function reader(keys, { motion = "on", scale = 1, width = 390, height = 84
   await serveLikeTheShell(ctx, OUT, {});
   return ctx;
 }
-async function open(ctx, path, day, hour = "09:30") {
+async function open(ctx, path, { tomorrow = false } = {}) {
   const page = await ctx.newPage();
-  await page.clock.install({ time: new Date(`${day}T${hour}:00-05:00`) });
+  if (tomorrow) await page.clock.install({ time: new Date(Date.now() + A_DAY) });
   await go(page, path, { timeout: 30000 });
   await page.waitForTimeout(3500);
   return page;
 }
-const today = (ctx, day) => open(ctx, "/", day);
+const today = (ctx, when) => open(ctx, "/", when);
 const still = async (page, name) => {
   if (STILLS) await page.screenshot({ path: `${STILLS}/${name}.png` });
 };
@@ -206,7 +217,7 @@ let plain = null;
 console.log("\n  With the frame off, as every reader has it (the third day, a council)");
 {
   const ctx = await reader({ ...READER, ...THIRD_DAY });
-  const page = await today(ctx, DAY);
+  const page = await today(ctx);
   const c = await card(page);
   if (!c.step || !c.href) fault(`no step on Today: ${JSON.stringify(c)}`);
   else {
@@ -223,7 +234,7 @@ console.log("\n  With the frame off, as every reader has it (the third day, a co
 console.log("\n  With the frame on (Testers mode), a day whose page it does not serve yet (the first day, a lesson)");
 {
   const ctx = await reader({ ...READER, ...TESTING });
-  const page = await today(ctx, DAY);
+  const page = await today(ctx);
   const c = await card(page);
   if (!c.step || !c.href) fault(`no step on Today: ${JSON.stringify(c)}`);
   else {
@@ -243,7 +254,7 @@ console.log("\n  With the frame on (Testers mode), a day whose page it does not 
 console.log("\n  With the frame on, the council's day");
 {
   const ctx = await reader({ ...READER, ...THIRD_DAY, ...TESTING }, { scale: STILLS ? 2 : 1 });
-  let page = await today(ctx, DAY);
+  let page = await today(ctx);
   const c = await card(page);
   if (!c.step || !c.href) {
     fault(`no step on Today: ${JSON.stringify(c)}`);
@@ -327,18 +338,18 @@ console.log("\n  With the frame on, the council's day");
     await page.close();
 
     // 7.
-    page = await open(ctx, COUNCIL, DAY, "15:00");
+    page = await open(ctx, COUNCIL);
     const later = await measure(page);
     check(later.kept?.words[0] === "Day 3 of 7, kept" && !later.done, "opened again that day, the page keeps its card at its end", `opened again the page shows ${JSON.stringify(later.kept)} and ${JSON.stringify(later.done)}`);
     check(later.y === 0, "and it opens at its head: the page does not move by itself", `the page opened at ${later.y}`);
     await page.close();
 
     // 8.
-    page = await today(ctx, NEXT_DAY);
+    page = await today(ctx, { tomorrow: true });
     const next = await card(page);
     check(next.step?.[0] === "Your first week · 4 of 7" && `Tomorrow: ${next.step[1]}` === after.kept?.words[1] && !next.kept, `the next day, the step named waits on Today: "${next.step?.join('", "')}"`, `the next day Today shows ${JSON.stringify(next)}`);
     await page.close();
-    page = await open(ctx, COUNCIL, NEXT_DAY);
+    page = await open(ctx, COUNCIL, { tomorrow: true });
     const old = await measure(page);
     check(!old.end, "and the council's page wears nothing: it is no longer anyone's day", `the next day the council's page shows ${JSON.stringify(old.end)}`);
   }
@@ -348,7 +359,7 @@ console.log("\n  With the frame on, the council's day");
 console.log("\n  With motion reduced");
 {
   const ctx = await reader({ ...READER, ...THIRD_DAY, ...TESTING }, { motion: "reduce" });
-  const page = await open(ctx, COUNCIL, DAY);
+  const page = await open(ctx, COUNCIL);
   await toEnd(page);
   const before = await measure(page);
   const motion = await assertMotion(page, "reduce");
@@ -369,7 +380,7 @@ console.log("\n  With motion reduced");
 console.log("\n  At a tablet's size (800 by 1280)");
 {
   const ctx = await reader({ ...READER, ...THIRD_DAY, ...TESTING }, { width: 800, height: 1280 });
-  const page = await open(ctx, COUNCIL, DAY);
+  const page = await open(ctx, COUNCIL);
   await toEnd(page);
   const before = await measure(page);
   if (!before.done) fault("no Done at the page's end");
