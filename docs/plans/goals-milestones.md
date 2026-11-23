@@ -57,6 +57,19 @@ Answered in the chat: right as a destination (recurring money, measurable, churn
 
 Also said: a mark that stands for a wage is counted after the app's costs, and tax comes out of it after that, which is his accountant's to size.
 
+## The structure proposed (his word, 2026-11-23 about 21:45 UTC)
+
+His word, verbatim, on the goals: "give me a more structured goals". (He gave one private fact about himself with it, as context. It is not recorded here.) Put to him in the chat, and not yet his yes:
+
+1. **The one number.** Recurring subscription income a week, after the store's share. Everything else on the page serves it.
+2. **The road, six steps.** The app pays its own bills (the rung already in `lib/admin/goals.ts`); a tenth of his first mark; a quarter; a half; the first mark; the second mark, which is twice the first. Each step has a plain name and shows the members it needs at the day's real mix.
+3. **The pace: 5% a week.** The number is asked to grow 5% each week, which doubles it in about 14 weeks, so each step from the quarter up is about one season. Y Combinator's yardstick for a young company doing well is 5 to 7% a week. The page shows this week's growth against it, and each step's day both at the real pace and at 5%.
+4. **The weekly goals are the four he can move:** new readers, the share who begin a trial or a plan, the share of trials that pay, the share who leave. Each week's target is his own last four weeks, bettered by 5%. Nothing is typed in, so nothing is guessed, and a target can never go stale as the pasted reports did.
+5. **Three guardrails, never traded for money:** the store's rating holds, refunds stay low, and what was free stays free (the terms' own promise). A step reached while a guardrail is broken is shown as reached with that said beside it.
+6. **A rhythm.** Monday: the number, its growth, and which of the four moved (the weekly brief's first lines, later). Fourteen days after each update: its line. Each month: the pace and the next step's day.
+
+The dates of the steps come from where the number stands today, which this chat cannot read: asked of him.
+
 ## What the page works out by itself (his "auto-optimize")
 
 The marks stay where he set them. Everything under them is worked out again from the events each time the page opens:

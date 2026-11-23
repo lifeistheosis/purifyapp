@@ -22,6 +22,10 @@ Kept by the chat he started for this on 2026-11-23 at 20:53 UTC (session_01VuYTw
 
   At that word: answered in the chat (right as a destination, not yet goals to steer by) with four changes proposed, noted in the plan under "His question". Asked of him: a date for the first mark, and two numbers from his panel (who pays today, and readers active in a month).
 
+- About 21:45, with one private fact about himself that is not recorded here: "give me a more structured goals"
+
+  At that word: a structure was put to him in the chat and noted in the plan under "The structure proposed": one number, a road of six steps, a pace of 5% a week, four weekly goals set from his own last four weeks, three guardrails and a rhythm. Not yet his yes. Asked of him: how many pay today, so each step can be dated.
+
 ## How the references were read
 
 Each was fetched with yt-dlp into the chat's scratchpad (out of git, lost with the container; the addresses below fetch them again). `promo-edits/analyze.py` counts the cuts from the change between frames, measures the sound from its onsets and makes a strip of 80 frames; `promo-edits/strips.py` makes the closer strips of the transitions and the words. Every film was looked at on its strip.
