@@ -718,7 +718,29 @@ Served: a council (9 days), a saint (5), a moment in history (2). They are named
 
 **Found by that walk, older and not of this work: noted, not mended.** In German, on Today, "2 weitere" and its dot over the readings' picture read 4.44 to 4.47 to 1 where 4.5 is needed (Light, Councils, Cappadocian), and on a council's page the link "Das Glaubensbekenntnis, Zeile für Zeile" is cut by an ellipsis. In Urdu the same line on Today reads 4.50 on Light. A plain reader with no frame has all three. And the Testers mark is cut by an ellipsis when the reader walked is "Another Christian tradition". Each is in `docs/NOW.md`, "Found, and not yet on the faults list".
 
-**Still to do before the frame is lit.** The privacy page's sentence about a week's step, saying "kept" (his to read). The other slices: the lessons (11 days), a chapter's day (5), the first Liturgy's guide (7), the lists and hubs (18). A finish as a moment of its own, drawn with him.
+**Still to do before the frame is lit.** The privacy page's sentence about a week's step, saying "kept" (his to read). The other slices: ~~the lessons (11 days)~~ (built the same day, the next section), a chapter's day (5), the first Liturgy's guide (7), the lists and hubs (18). A finish as a moment of its own, drawn with him.
+
+## Row 3, a lesson's day (2026-11-23)
+
+**His word, about 09:34 UTC, to the eleven lesson days coming next, the lesson's own "Next lesson" giving way to "Done for today": "keep going".** Commit `6329d5fdd` and the one that carries this section. Stills from the export: `docs/plans/reader-map/img/day-lesson-done.jpg`, `day-lesson-kept.jpg`.
+
+**What a reader with the frame has on a lesson's day.** A lesson of Learn to pray has an end of its own: "Lesson read", one white button, "Next lesson", and a quiet link back. That button leads away from the week. So when the lesson is today's step, its end gives way (`components/prayers/LessonEnd.tsx`): the week's line and "Done for today" stand where the one action stood, answered as on a council's page by the week's card with tomorrow's step by name. The way on to the next lesson stays, as a quiet link like the way back, so the end holds one white button. "Lesson read" is left unsaid that day: the day's end says it, and a screen says each thing once. The lesson is still marked read, as for every reader. With the frame off, and the day after, the lesson's end is as every reader has it.
+
+**So the frame serves thirty-three of the sixty-three days:** a lesson 11, a council 9, a prayer 6 (by its own end), a saint 5, a moment in history 2. The five lessons a week can hold are What is prayer?, the Jesus Prayer, the Trisagion prayers, the sign of the cross and a morning rule.
+
+**How it is built.** The five lessons join the steps kept by Done (`lib/onboarding/dayFrame.ts`). The files that mount the frame's end are named by where a page's address begins, so a prayer and a lesson, both under `/prayers`, are told apart. The frame's end can stand plain inside a page's own end, which has its own line over it and its own room under it. What follows it (the lesson's quiet links) glides in the same move as what stands over it, so nothing under the card jumps.
+
+**Differs from the drawing in one thing.** Mock-up 5 set the week's line over the lesson's title, in the place of "Lesson 3 · 5 min". As built the lesson's head is untouched and the line stands with the button, as on every other page he said yes to: one design for every day, and the lesson's own number is not lost.
+
+**The checks.** Three more tests for the lesson's end and the lists updated, each failing on the code before. Typecheck 0. The unit suite 15,639 passed, 7 skipped, 0 failed. Lint clean on the changed files. `npm run build` green. The app export green. The probe: 68 of 68, twice, the lesson's day among them (the head untouched; Done never on the first screen while the lesson arrives; one white button in the end; the way on quiet under it; "Lesson read" unsaid and the lesson marked read; the tap judged frame by frame; the quiet links keeping their place; Today kept; the day after, the lesson's own end again). The guardrail walk on the lesson's page and Today, the day waiting and kept, at 390 by 844, 800 by 1280 and 1032 by 1376, in English, Arabic and Russian: nothing failed. In German the lesson's page passes too; Today's older fault there ("2 weitere") is the one already noted.
+
+**What is left of the sixty-three days, thirty in all, and each needs a word of his first.**
+
+| The kind | Days | What has to be decided |
+|---|---|---|
+| A chapter (John 1 four times, Psalm 1) | 5 | The Bible's reader has its own bars and opens the next chapter at its end. Proposed: reaching the chapter's end keeps the day, as a prayer's end does, with nothing drawn |
+| The first Liturgy's guide | 7 | Eight parts and its own two buttons. What "done" is there: its last part reached, or the part read today |
+| A list or a hub (Find a parish 4, the Fathers' paths 4, the Church's year 3, Today's readings 3, the councils, the Church's history, Start here, Your rule) | 18 | No one thing and no end. Each needs one thing chosen as the day's step, or its own way of being kept |
 
 ## The changes, rated (2026-11-23, about 07:45 UTC)
 
@@ -737,7 +759,7 @@ Served: a council (9 days), a saint (5), a moment in history (2). They are named
 
 **What holds the number down.** Readers have none of it until 2.0 ships. The first week was still a link on 47 of the 63 days. After day seven is untouched, at 3. And the first build of "Done for today" needed three more: its line stood over the page's head and its button in the app's shell. The probe caught both before he saw them, at the cost of time.
 
-**After the rating, the same day:** a prayer's day and the day's lines in twenty languages (the section above). "Done for today" then reads 7.5: 22 of 63 days, every language. The whole stays about 6.3 until the lessons, the chapters and the lists are done.
+**After the rating, the same day:** a prayer's day and the day's lines in twenty languages, then a lesson's day (the two sections above). "Done for today" then reads 8: 33 of 63 days, every language, one design on every kind of page it serves. The first week on the branch reads 5.5 and the whole about 6.5. It stays there until the thirty days left (a chapter, the guide, the lists and hubs) are decided and built.
 
 ## Status, section by section (2026-11-23, about 05:00 UTC)
 
@@ -766,7 +788,9 @@ Two scores a section, by the same judge and the same measure as the rating of 22
 
 **Built after that, the same day:** a prayer's day (his yes), and the day's three new lines in twenty languages. The frame serves twenty-two of the sixty-three days.
 
-**Decided and not yet built:** the frame's other slices (the lessons, a chapter's day, the guide, the lists and hubs).
+**Built after that again, at his "keep going":** a lesson's day. The frame serves thirty-three of the sixty-three days.
+
+**Not yet decided, and so not built:** a chapter's day, the guide, the lists and hubs (thirty days).
 
 **Open, outside the sections:** the three copies of the 1.9 email in his inbox (read as three accounts; unproven until he looks at each one's "to" line); the heartbeat's call cut by a long send; the release letter's sender reading "Purify Shop".
 
