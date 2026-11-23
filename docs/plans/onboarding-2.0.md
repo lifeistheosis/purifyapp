@@ -575,3 +575,19 @@ Item D of "what is still missing" said the two doors had never been walked. Walk
 
 **The first Liturgy's guide is left as it is.** Its eight parts were not walked card by card here; that is the gate's walk before a build.
 
+## Rows 1 and 2, done on the branch: knowing what works (2026-11-23)
+
+Section 6 of "What a ten is", built beside the rest so that each change to come has its number before it ships. Both are on the branch and pushed; neither is on the main web until his word, and nothing a reader sees is changed.
+
+**Row 2. The weekly brief says each test's answer** (`27c07bc7c`). `lib/ab/briefLines.ts` turns the verdict Admin's panel already reaches into one word a test (Wait, the version's name, or Stop) with the panel's own sentence, how far the test has come and its last day. A running test is listed; a test whose last day fell in the week is said once more, so its end is not missed. The weekly brief draws them under "Tests", and a test that has its answer leads "Worth your attention", since only his word makes a version permanent. A day's brief says nothing of tests; a count under twenty is never shown; "not read" is said as not read. Seven new tests, two of which fail on the old brief.
+
+**Row 1. Admin, Onboarding: by road and by first pick** (`550833dfc`). `lib/admin/onboardingSummary.ts` tells a reader's road from the answers a finish and a return already carry, by the app's own rule, and sums who finished and who came back after 2, 7 and 30 days by road and by first pick, each against that group's own readers who could have come back. Two tables under the three panels, from the admin's own table piece. A share shows only once twenty could have come back. Four new tests, all failing on the old summary.
+
+**What a count cannot say, and the tables say so beside the numbers.** Whether a practicing reader is coming back after time away (both stand under Practicing). And "Another Christian tradition", which is not counted until the privacy page's sentence is agreed (`lib/onboarding/count.ts`): those readers stand among the newcomers and the seekers, by their first pick. So seven groups and "No road" can be told, where the app has eight roads.
+
+**The checks, for both.** Typecheck 0. The unit suite 15,578 passed, 7 skipped, 0 failed. Lint clean on the changed files. `npm run build` green, 6,527 pages. No page of the apps is changed, so no export was cut. The push guard passed.
+
+**Not done in row 1.** The numbers drawn on the reader web inside Admin (the web is a drawing made by a script; in Admin it needs its own component). The stages' baselines read into this file, which waits for a picture of Admin, Onboarding. The road and the source on the other counts, which wait for the privacy page.
+
+**The order from here.** Row 3, the new first week as one fork. Its first buildable part is the day's frame (it begins as a day, the reader's own Done keeps it, it ends on tomorrow), built once for every kind of page a day opens. Mock-ups 5 to 7 drew it on a lesson; a saint's page, a council and a section's front page have to be drawn before it is built once for all, and those drawings are his to say yes or no to. Beside it, the three things proposed for the doors above.
+
