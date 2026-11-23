@@ -17,17 +17,15 @@
 import { useSyncExternalStore, type ReactNode } from "react";
 
 import type { ParishRegionId } from "@/lib/parishes/finders";
-import { regionOfTimeZone, regionOrder } from "@/lib/parishes/regionFirst";
+import { loadedOn, regionOfTimeZone, regionOrder } from "@/lib/parishes/regionFirst";
 
-const path = (p: string) => p.replace(/\/+$/, "") || "/";
-
-/** True when the page now showing is the one the document itself was loaded on. */
+/** True when the page now showing is the one the document itself was loaded on (loadedOn says how). */
 function loadedOnThisPage(): boolean {
   try {
     const [first] = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
-    return !!first && path(new URL(first.name, window.location.href).pathname) === path(window.location.pathname);
+    return loadedOn(first?.name, window.location.href);
   } catch {
-    // No such record: treat it as a page opened from outside, which never reorders.
+    // No such record to ask: a page opened from outside, which never reorders.
     return true;
   }
 }

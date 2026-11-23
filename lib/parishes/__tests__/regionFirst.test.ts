@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { PARISH_REGIONS } from "@/lib/parishes/finders";
-import { regionOfTimeZone, regionOrder } from "@/lib/parishes/regionFirst";
+import { loadedOn, regionOfTimeZone, regionOrder } from "@/lib/parishes/regionFirst";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const read = (...segments: string[]) => fs.readFileSync(path.join(ROOT, ...segments), "utf8");
@@ -54,6 +54,25 @@ describe("the regions' order", () => {
 
   it("draws every region once, whichever is first", () => {
     for (const first of [...IDS, null]) expect([...regionOrder(IDS, first)].sort()).toEqual(IDS.map((_, i) => i));
+  });
+});
+
+describe("a page opened from outside", () => {
+  it("is the page the document itself was loaded on, whatever its last slash", () => {
+    expect(loadedOn("https://purifyapp.net/parishes", "https://purifyapp.net/parishes/")).toBe(true);
+    expect(loadedOn("https://localhost/parishes/", "https://localhost/parishes/")).toBe(true);
+  });
+
+  it("is not a page the reader came to from another inside Purify", () => {
+    // The apps load their document on the first page and move from there.
+    expect(loadedOn("https://localhost/", "https://localhost/parishes/")).toBe(false);
+    expect(loadedOn("https://purifyapp.net/discover", "https://purifyapp.net/parishes")).toBe(false);
+  });
+
+  it("is assumed when the browser kept no record, which is the side that never reorders", () => {
+    expect(loadedOn(undefined, "https://purifyapp.net/parishes")).toBe(true);
+    expect(loadedOn("", "https://purifyapp.net/parishes")).toBe(true);
+    expect(loadedOn("https://purifyapp.net/parishes", "not an address")).toBe(true);
   });
 });
 

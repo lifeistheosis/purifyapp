@@ -47,3 +47,21 @@ export function regionOrder(ids: readonly ParishRegionId[], first: ParishRegionI
   const at = first ? ids.indexOf(first) : -1;
   return at <= 0 ? all : [at, ...all.filter((i) => i !== at)];
 }
+
+const bare = (pathname: string) => pathname.replace(/\/+$/, "") || "/";
+
+/**
+ * Whether the page now showing is the one the document itself was loaded on:
+ * a page opened from outside (a search engine, a link, the app waking on it),
+ * which the server drew before any script ran. `loaded` is the address the
+ * browser recorded for the document's own load; with no record, the page is
+ * taken for one opened from outside, which is the side that never reorders.
+ */
+export function loadedOn(loaded: string | null | undefined, now: string): boolean {
+  if (!loaded) return true;
+  try {
+    return bare(new URL(loaded, now).pathname) === bare(new URL(now).pathname);
+  } catch {
+    return true;
+  }
+}
