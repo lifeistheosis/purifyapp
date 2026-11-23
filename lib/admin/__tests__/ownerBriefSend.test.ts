@@ -53,6 +53,7 @@ vi.mock("@/lib/admin/briefFigures", () => ({
     context: [],
     waiting: { messages: null, refunds: null, toPost: null },
     week: null,
+    tests: null,
   }),
 }));
 vi.mock("@/lib/admin/boardDraft", () => ({

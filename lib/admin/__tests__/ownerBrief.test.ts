@@ -62,6 +62,7 @@ function figures(span: BriefSpan, over: Partial<BriefFigures> = {}): BriefFigure
     context: [],
     waiting: { messages: 0, refunds: 0, toPost: 0 },
     week: null,
+    tests: null,
     ...over,
   };
 }
@@ -162,6 +163,17 @@ describe("what it says on its own", () => {
     expect(three[0]).toBe("A question in Ask a Priest has no answer yet.");
     expect(three[1]).toBe('Readers searched for "st herman" 4 times and found nothing.');
     expect(three.join(" ")).not.toMatch(/refund|Messages|posted/);
+  });
+
+  it("puts a test that has its answer first, since only his word ends it, and says nothing of one that waits", () => {
+    const waits = { id: "account-place", asks: "Where should an account be offered?", word: "Wait", line: "Learning: too few yet.", progress: "Its last day is 9 February 2027.", needsHim: false };
+    const settled = { ...waits, id: "day1-guided", word: '"guided"', line: 'Settled on "guided".', needsHim: true };
+    const ended = { ...waits, id: "sheet-order", word: "Stop", line: "Ended on its last day unsettled.", needsHim: true };
+    expect(attention(figures(spanFor(MONDAY, true), { tests: [waits] })).join(" ")).not.toMatch(/test/);
+    const three = attention(figures(spanFor(MONDAY, true), { tests: [waits, settled, ended] }));
+    expect(three[0]).toBe('The test "day1-guided" has its answer: "guided". Making it permanent is your word.');
+    expect(three[1]).toBe('The test "sheet-order" ended on its last day with no answer.');
+    expect(attention(figures(spanFor(MONDAY, true), { tests: "not read" })).join(" ")).not.toMatch(/test/);
   });
 
   it("calls a day quiet only when every figure was read and came back empty", () => {
@@ -283,6 +295,23 @@ describe("the email", () => {
     expect(day).toContain(`bgcolor="${KIT_DARK.shop}"`);
     // Each part of money said in words beside its colour.
     expect(day).toMatch(/>Purify Plus<\/td>\s*<td[^>]*>\$9\.98<\/td>/);
+  });
+
+  it("says each test's one answer on the weekly brief, with where it stands, and nothing of tests on a day's brief", () => {
+    const tests = [
+      { id: "account-place", asks: "Where should a new reader be offered an account?", word: "Wait", line: "Learning: too few yet.", progress: "Its smallest version has fewer than 20 of the 1,100 devices it needs past their second week. Its last day is 9 February 2027.", needsHim: false },
+    ];
+    const week = briefEmail(figures(spanFor(MONDAY, true), { tests }), today, LINKS, ASSETS).html;
+    expect(week).toContain(">Tests</td>");
+    expect(week).toMatch(/>Where should a new reader be offered an account\?<\/td>\s*<td[^>]*>Wait<\/td>/);
+    expect(week).toContain("Learning: too few yet. Its smallest version has fewer than 20 of the 1,100 devices it needs past their second week. Its last day is 9 February 2027.");
+    // No test running: no heading. Not read: said under Could not be read, never as nothing.
+    expect(briefEmail(figures(spanFor(MONDAY, true), { tests: [] }), today, LINKS, ASSETS).html).not.toContain(">Tests</td>");
+    const unread = briefEmail(figures(spanFor(MONDAY, true), { tests: "not read" }), today, LINKS, ASSETS).html;
+    expect(unread).not.toContain(">Tests</td>");
+    expect(unread).toMatch(/>The tests<\/td>\s*<td[^>]*>not read<\/td>/);
+    // A day's brief holds no tests, whatever it is handed.
+    expect(briefEmail(figures(spanFor(TUESDAY, false), { tests }), today, LINKS, ASSETS).html).not.toContain(">Tests</td>");
   });
 
   it("says money with its cents in one column, and one figure to a row, so the values stand in line", () => {

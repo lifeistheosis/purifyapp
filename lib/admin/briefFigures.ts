@@ -2,9 +2,13 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { testLines, type TestLine } from "@/lib/ab/briefLines";
+import { readAbRows } from "@/lib/ab/read";
+import { AB_TESTS } from "@/lib/ab/tests";
 import { getBook } from "@/lib/bible/books";
 import { SOURCE_WORD, groupErrors, type ErrorRow } from "@/lib/errors/group";
 import { screenOf, screenPath } from "@/lib/analytics/screens";
+import { litNow } from "@/lib/onboarding/flags";
 import { getAkathist } from "@/lib/prayers/akathists";
 import { getHour } from "@/lib/prayers/hours";
 import { RULES } from "@/lib/prayers/rules";
@@ -397,5 +401,19 @@ export async function readBriefFigures(admin: SupabaseClient, span: BriefSpan): 
     span.kind === "week" ? readWeek(admin, weekWindow(span)).catch(() => null) : Promise.resolve(null),
   ]);
   const waiting: Waiting = week ? week.waiting : await readWaiting(admin).catch(() => ({ messages: null, refunds: null, toPost: null }));
-  return { span, readers, plus: plusMoves(plus, span), money, opened, community, misses, errors, context, waiting, week };
+  const tests = span.kind === "week" ? await settle(readTests(span)) : null;
+  return { span, readers, plus: plusMoves(plus, span), money, opened, community, misses, errors, context, waiting, week, tests };
+}
+
+/**
+ * Each test's answer for the week (lib/ab/briefLines.ts), from the same rows
+ * Admin's panel reads (app/api/admin/ab). The day after the span's last is
+ * the day the brief is sent.
+ */
+async function readTests(span: BriefSpan): Promise<Got<TestLine[]>> {
+  const read = await readAbRows(AB_TESTS);
+  if (!read) return "not read";
+  if (read.absent) return "not kept yet";
+  const today = new Date(Date.parse(`${span.end}T00:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
+  return testLines(AB_TESTS, read.rows, { today, weekStart: span.start, lit: litNow() });
 }

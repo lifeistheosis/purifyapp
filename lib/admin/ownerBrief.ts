@@ -6,6 +6,7 @@ import type { PieceView, TodayPart } from "./briefToday";
 import { landedAt, type MoneyOrder } from "./money";
 import type { MoneyColumn } from "./moneyChart";
 import { afterStoreCents, counts, planOf, utcDay, type PlusFact } from "./plusHistory";
+import type { TestLine } from "@/lib/ab/briefLines";
 import { usd, type WeekFigures } from "./weekly";
 
 /**
@@ -165,6 +166,8 @@ export type BriefFigures = {
   waiting: Waiting;
   /** On the weekly brief, the Monday letter's own reads (lib/admin/weeklyLetter.ts): Plus from RevenueCat, the locks. */
   week: WeekFigures | null;
+  /** On the weekly brief, each test's answer for the week (lib/ab/briefLines.ts); null on a day's brief. */
+  tests: Got<TestLine[]> | null;
 };
 
 // ── Money, by the chart's own rules ────────────────────────────────────
@@ -281,6 +284,11 @@ export function workedAndNot(f: BriefFigures): { worked: string[]; not: string[]
  */
 export function attention(f: BriefFigures): string[] {
   const out: string[] = [];
+  if (f.tests && !isMiss(f.tests)) {
+    for (const t of f.tests.filter((x) => x.needsHim)) {
+      out.push(t.word === "Stop" ? `The test "${t.id}" ended on its last day with no answer.` : `The test "${t.id}" has its answer: ${t.word}. Making it permanent is your word.`);
+    }
+  }
   if (!isMiss(f.community) && f.community.questions.unanswered > 0) {
     const u = f.community.questions.unanswered;
     out.push(`${u === 1 ? "A question" : `${n(u)} questions`} in Ask a Priest ${u === 1 ? "has" : "have"} no answer yet.`);
@@ -547,6 +555,18 @@ export function briefRows(p: Pen, f: BriefFigures, today: TodayPart, links: Brie
         rows.push(label(p, "What sold Plus"));
         // One figure to a value: how often the lock was met; what was bought after it goes with the name.
         rows.push(pairs(p, l.top.map((x) => ({ words: x.bought ? `${x.name}, ${n(x.bought)} bought` : x.name, value: `${n(x.taps)} met` }))));
+      }
+    }
+
+    if (week && f.tests) {
+      if (isMiss(f.tests)) unread.push({ words: "The tests", value: missWord(f.tests), quiet: true });
+      else if (f.tests.length) {
+        rows.push(label(p, "Tests"));
+        for (const t of f.tests) {
+          // The question and the week's one answer, then where it stands in Admin's own sentence.
+          rows.push(pairs(p, [{ words: t.asks, value: t.word }]));
+          rows.push(para(p, esc(`${t.line} ${t.progress}`), 6));
+        }
       }
     }
 
