@@ -45,6 +45,17 @@ Kept by the chat he started for this on 2026-11-23 at 20:53 UTC (session_01VuYTw
 
   The limit named to him, the same as on the Forever edit: the run is the idols of the old world (Baal, Zeus, Artemis, the gods of Egypt and Babylon) and Scripture's own false prophets (the prophets of Baal, Simon the sorcerer). No Muhammad and no holy figure of a living religion: it gets an account reported and puts him at risk, and the old idols give the same run. The light is a soft pool, never rays. Asked: whether that run is right. Still his: a priest's yes before it is posted. Video 2 was sent next.
 
+- About 22:20, on video 2, his direction (he did not answer the question on video 1's run): "So this one is more or less about the aesthetic, right? This one could just be an edit about Purify, Orthodox Church, just in general. So yeah, just like a crazy edit with the same style, same audio, right? But like this one's a little bit more different because there's like people talking in the back when it goes to the fighting section. We don't really need that part, but the intro part going into like before it shows them is kind of fire. Before it shows them talking, like that whole edit aesthetic, I want like a cinematic edit of us with that."
+
+  At that word: each reference is becoming an edit of its own. **Edit 1** is video 1's shape as the theophanies (above). **Edit 2** is video 2's look as a film of Purify and the Orthodox Church. Put to him for edit 2:
+  - The look: every frame black and white, slow motion, a subject cut out on pure black with very small words beside it, a clean cut every 0.90 s.
+  - 0 to 3.8 s, the opening he likes: hands on a prayer rope, someone at prayer before the icons, then a hand or an icon's figure alone on black with a small entry beside it.
+  - 3.8 to about 10.1 s: the Church in seven slow shots on the reference's own cuts (candles, incense, a dome, the Gospel, icons' faces, the app in a hand).
+  - About 10.1 to 11.9 s: one verse in small type on black, and Purify's mark. The film ends at 11.9 s, before the reference's fights, where he hears people talking: a film that long takes only that much of the sound when it is added inside TikTok, so the talking stays out. He hears it and this chat cannot: his to correct if it begins sooner.
+  - The small words are Scripture set like the reference's dictionary entries, for example "CHURCH. the pillar and ground of the truth" (1 Timothy 3:15, checked in the app's Bible). None is written for the film.
+
+  Asked: what "us" is filmed from: his own clips (recommended), free licensed stock clips of Orthodox worship, or stills alone. No footage exists in the repository, and a picture of worship made by a machine is not proposed. Video 3 was sent next.
+
 ## The first edit: a storyboard idea (put to him 2026-11-23 about 21:55 UTC; overtaken about 22:10 by his own direction above, and kept as an idea)
 
 About 20 seconds, 1080 by 1920, a silent master. The times are those of reference 1's sound (its bass comes in at 11.1 s) and move if he picks another sound.
