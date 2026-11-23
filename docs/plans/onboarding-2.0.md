@@ -546,3 +546,32 @@ One new drawing, by the same script, at the same link (https://claude.ai/artifac
 
 **If he says yes,** the build list of mock-up 13 stands, with two additions: the sky's layers (the star's band no longer paints a flat night over the lead's own sky), and the hour's prayer as a tray whose whole face is the link, in `components/today/GreetingHeader.tsx`. A longer prayer name, and other languages, take a second line in the card; the build's tests ask that of each locale.
 
+## Where the roads end: the two doors, walked (2026-11-23)
+
+**His word, about 00:44 UTC: "while that is on hold keep working on the onboarding system and where it leads to and each of its sections"**
+
+Item D of "what is still missing" said the two doors had never been walked. Walked on the branch's export as a new reader on a 390 phone (a Catholic who has not yet been to a church). Read only; nothing is changed.
+
+| The door | Where it stands in the weeks | What a reader meets |
+|---|---|---|
+| **Your first Liturgy** (`/start/first-liturgy`) | In 7 of the 9 weeks; the last day of four (Christian, newcomer, seeker, and one of the Protestant's two) | One screen of 87 words: what the guide is, its five parts by name, "It nearly always goes well", and two buttons, "Yes, I am going" and "Not yet, just reading". "Yes" opens a guide of 8 parts that asks first which kind of church it is, shapes its last part by that answer, and keeps the reader's place and their day (`purify:firstLiturgy`), which Today then reminds them of. **It is worked on, and it is good.** |
+| **Find a parish** (`/parishes`) | The last day of four weeks (catechumen, Catholic, returning, and the other Protestant week) | A page 3,373 px tall: a short opening, then 26 directories of the jurisdictions under four regions, every one a link that leaves Purify. One button: Back. **It is a list, and for the reader whose week ends on it the week ends on a list.** |
+
+**Why the parish page is what it is, so nobody "fixes" it wrongly.** It is links out by design (`lib/parishes/finders.ts`): no list of every parish is Purify's to copy (the Assembly of Bishops' directory publishes no terms and shuts automated readers out, and the jurisdictions' own reserve their rights), which bodies are listed is his judgement, and the order inside a region is alphabetical so that it says nothing of rank. A search inside Purify waits for a permission that is his to ask for (`lib/parishes/listSwitch.ts`, off). So a better door has to be made inside "links out".
+
+**What is weak, inside that.**
+
+1. **The doors do not lead to each other.** The guide to a first Liturgy leads to Find a parish (`components/start/liturgy/GuideSteps.tsx`). Find a parish leads nowhere inside Purify: once a reader has found a church, the next thing they need is the guide, and the page does not say so.
+2. **A reader in Britain or Australia scrolls past fifteen American and Canadian directories** to reach their own. The regions stand in one order for everyone.
+3. **The one directory that answers most American readers at once** (the Assembly's, "every member jurisdiction in one search") is the first row of thirty, drawn like every other.
+4. **The week ends without a word.** On the four roads that end here, day seven opens the list and nothing closes the week. That is section 5's hole (after day seven), seen from the door.
+
+**Proposed, for his yes or no. None is begun.**
+
+- **A. The parish page hands the reader to the guide.** One row on Find a parish that opens "Your first Liturgy", in the words the week's own card already uses for it in every language ("Your first Liturgy", "What to know before you go, and what you will see, one card at a time."). No new word.
+- **B. The reader's own region first.** The four regions keep their names, their bodies and their order inside each; the one a reader's phone is set to stands first. Told from the device's own region setting, on the device, kept nowhere.
+- **C. The week's last day closes the week** (section 5, A): on these four roads the closing moment names the guide as the next step, so the hand-over does not depend on the reader finding a row.
+- **Not proposed:** any line that tells a reader which jurisdiction to choose. That is doctrinal ground and a priest's to write, if it is written at all.
+
+**The first Liturgy's guide is left as it is.** Its eight parts were not walked card by card here; that is the gate's walk before a build.
+
