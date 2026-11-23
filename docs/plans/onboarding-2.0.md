@@ -812,6 +812,16 @@ Nothing of the week is drawn on a path, on Find a parish, on a rule or in the Bi
 
 **The checks.** Thirty-one more tests, each failing on the code before. Typecheck 0. The unit suite 15,679 passed, 7 skipped, 0 failed. Lint clean on the changed files. The app export green. The probe: 122 of 122. It walks each pick as a reader would: a path's own mark, made once; a finder opened, and the row to the guide; a reader's own rule said through; the newcomer's, the seeker's and the two seekers-by-pick's days by name; a readings' day reading by reading to its Done (four readings on the day it ran, and none before the last kept the day); a Church's year day on a day with a page and on one without (2026-12-20). The guardrail walk on the final export: Pentecost's day, Ephesus's, a readings' day and a Church's year day, each waiting and kept, with Today in each state, at a phone's size and two tablets', in English and Arabic: thirty screens, nothing failed. The pages kept by their own act (a path, Find a parish, the builder) and the newcomer's lesson were walked on the build before it, where they are the same: eight screens, nothing failed. `npm run build` green.
 
+## The guide's mend, made ready for the main web (2026-11-23)
+
+**His "do all" covered it; the push to main is asked again, alone.** The mend for the guide's card that became an error page ("Row 3, a chapter's day and the guide's day") is put on the main web's own code and checked there. It is one commit, `60c400d3f`, on a local branch, `mend/guide-card`, over main's head `b88c88b4f`. It is pushed nowhere: a push to main deploys the website, and that is his word.
+
+**What it holds.** Two files and nothing else of 2.0: the strip's margin in `components/start/liturgy/FirstLiturgyGuide.tsx`, the same lines as on this branch so the two merge without a conflict, and the test over every observer margin.
+
+**Checked on main's own code.** The new test fails before and passes after. Typecheck 0. Lint clean. The website builds. On a local build walked at a phone's size, Next tapped 2,528px down "During the Liturgy": on main as it is, the error page three times of three, with the browser's own words ("rootMargin must be specified in pixels or percent"); with the mend, "After the Liturgy" three times of three and no error. The unit suite on main has one failure this does not touch: `lib/downloads/__tests__/log.test.ts`, a date in a test, mended on this branch in `3e78a2622` and left out of this mend so it stays one thing.
+
+**At his yes.** From that branch: `PURIFY_ALLOW_MAIN=1 git push origin mend/guide-card:main`, through the guard. Render deploys; the same walk is then run against purifyapp.net. The apps get the mend with their next store build, which is his. If the container that holds the commit is gone, it is made again in a minute: on `origin/main`, the guide's two hunks of `676995c49` and its test file.
+
 ## The changes, rated (2026-11-23, about 07:45 UTC)
 
 **His word: "rate our changes".** By the same judge and the same measure as the rating of 22 November: what this chat has changed since 1.9, as each stood on the branch when he asked.
