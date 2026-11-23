@@ -614,3 +614,51 @@ The other fifty-three open one thing: a lesson, a prayer, a chapter, a saint, a 
 
 Neither is begun.
 
+## The doors, A and B: built on the branch (2026-11-23)
+
+**His word, about 02:03 UTC, to two questions: "rec yes to all".** Read as yes to both (the parish page's row and the reader's own region first; "Done for today" at the end of the day's page). Not read as a yes to the welcome drawing, which he had put on hold.
+
+**What was built** (`afef8b4f0`, `b01fec009`; stills `docs/plans/reader-map/img/parish-door.jpg` for a reader in New York and `parish-door-london.jpg` for one in London).
+
+| The choice | Why, and what it does for the reader |
+|---|---|
+| One card over the lists opens "Your first Liturgy" | Once a reader has found a church, the guide is what they need next, and the page led nowhere inside Purify. Three of the four roads that end here met the guide earlier in their week, so the card is also the way back to it |
+| Its words are the first week's own card for the guide | No word is new, in any of the app's languages |
+| It is the app's raised card, not a row of the list | A row would be taken for one more directory. A card with the inside arrow reads as a way on inside Purify |
+| "These links leave Purify" now stands with the directories | It is said of them. Over the card it would have been said of the guide too |
+| The reader's own region first | A reader in Britain or Australia scrolled past fifteen American and Canadian directories. Only the regions move: the bodies in a region and their order stay, so the order still says nothing of rank |
+| Told from the phone's time zone, on the phone | Nothing is asked, kept or sent, and it is no location. A zone the page has no region for keeps the page's own order |
+| Nothing moves after the page is drawn | Reached from inside Purify, the page is in the reader's order from its first frame. Opened from outside (a link, a search engine), it keeps the page's own order for the visit: reordering it then would move the list under a finger |
+
+**The checks.** Tests: the region rule, the order, "opened from outside", the page's source held to each, and the page's own test for the way on (13 new; the unit suite 15,591 passed, 7 skipped, 0 failed). Typecheck 0, after the stale generated types that follow an app export were cleared (the trap AGENTS.md names). Lint clean. `npm run build` green. The app export cut. The guardrail walk on `/parishes`: 6 of 6 with nothing failed (390 by 844, 800 by 1280, 1032 by 1376, English and Arabic). A new probe for the gate, `scripts/gate/parish-door.mjs`, 14 of 14: the reader's region first from the first frame for New York, London, Paris, Sydney and Tokyo; the page's own order with no layout shift when the document loads on the page; the card whole on the first screen, opening the guide in the house's motion, and Back returning to where the reader was; 25 directories still opening outside Purify over https.
+
+**Found while proving it.** The probe's first run called two faults that were its own: the shell's way in loads the document on the app's first page and moves from there, so its "opened from outside" case was a move from inside. It now loads the document on the page itself. The page was right both times.
+
+**Not built.** C, the week's last day closing the week and naming the guide (section 5). A reader who opens the page from a link outside still sees the page's own order: making that right too needs the order chosen before the first frame, which wants a script in the page that the page's own test forbids today.
+
+## Row 3, the day's frame: what stands at the end of each page (2026-11-23)
+
+Walked on the export: the end of every page a day of a first week opens, as a new reader on a phone has it. Sixty-three days, twenty-eight pages. "Done for today" goes at the end of the day's page (his yes), so what already stands there decides how the frame is built.
+
+| The kind of page | Days | What stands at its end today | What the frame needs |
+|---|---|---|---|
+| A council (First Nicaea 5, Carthage 2, Chalcedon, Ephesus) | 9 | Links to what is near it (a heresy, a moment on the timeline) | Nothing in the way: Done is added at the end. They are long (590 to 1,398 words) |
+| A prayer (the Creed 4, Before sleep 2) | 6 | Its last line and its source | Nothing in the way |
+| A chapter (John 1 four times, Psalm 1) | 5 | The translations' note | Nothing in the way |
+| A saint (Ignatius 2, Leo 2, Mary of Egypt) | 5 | Links near it, then "pray to God for us" | Nothing in the way |
+| A moment in history (1054, the Non-Chalcedonian estrangement) | 2 | Links to earlier and later | Nothing in the way. The longest days: 2,089 and 1,273 words |
+| A lesson (the Jesus Prayer 3, the Trisagion 3, a morning rule 2, the sign of the cross 2, What is prayer?) | 11 | The page's one white button, "Next lesson", and "Previous lesson" | The lesson's own button leads away from the week, so on the reader's day it gives way to Done, as mock-up 6 drew |
+| The first Liturgy's guide | 7 | Its own two buttons, and eight parts behind them | Its own end is the day's end: to be decided how |
+| A list or a hub (Find a parish 4, the Fathers' paths 4, the Church's year 3, Today's readings 3, the councils, the Church's history, Start here, Your rule) | 18 | More links, or nothing | No one thing and no end. Each needs one thing chosen, or its own way of being kept |
+
+So forty-five of the sixty-three days open one thing with an end, and eighteen open a list or a hub. That is eight more than the ten counted by address alone: Today's readings, the two paths and Your rule are hubs too.
+
+**The order to build it in, each slice behind the fork's switch and dark for readers until its test begins.**
+
+1. The week's own state: a day is kept by Done and no longer by the tap. Today's card says the step until it is kept, then "kept" with tomorrow's step by name. The counts gain "kept" beside "opened".
+2. The frame itself, once, in the app's frame around every page: the week's mark over the day's page, and at its end Done, answered where the finger is by the week's card. This serves the twenty-seven days with nothing in the way.
+3. The lessons give way (eleven days).
+4. The first Liturgy's guide (seven days), and the eighteen days on a list or a hub, each with what it needs; the six that need one thing chosen come to him first.
+
+**New words, his to change** (drawn on mock-ups 5 to 7): "Done for today", "Day 1 of 7, kept", "Tomorrow:" before the next step's name, "Back to Today". They go into English first; the other nineteen languages follow in a translation pass, as the catalogues are filled.
+
