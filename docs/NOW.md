@@ -39,6 +39,7 @@ Updated 2026-11-21 14:08 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3). O
 | Purify 1.9 ad: stage 1 | session_01VuYTwdhrUStFNXC4goT9fG | Stage 1 done ($8.40, context 268,000). He talks to it directly; it waits for his answer on the font and the moving phone. Archive it once he has answered and any font change is made; stage 2 belongs in a fresh chat from its hand-over |
 | Purify email revamp: stage 1 | session_01VuYTwZsrP4zay4qyBieFAL | **Archived 2026-11-23 about 20:45 UTC at his word** ("good let's archive this chat"). It made the 1.9 release email's look, and then, at his word of 11-22 ("no. you already have the context you do it"), built 2.0's onboarding rows 0 to 3 on the branch and sent the guide's mend to the main web at his word. It ran far past its cap by his choice: $284 at its last finished turn, at 556,000 tokens of context. Its batons: `docs/handoffs/onboarding-2.0.md` (the work and what is next) and `docs/handoffs/email-revamp.md` (his every word to it). The next piece begins in a fresh chat |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository); idle, waits on his two facts |
+| Purify promo: the new edits | session_01VuYTwaR8ZjSrVP4wNc6eeM | Started by him at 20:53 UTC on 11-23 for a new promo's prompt. Six of his seven reference edits are read and measured; it waits for his direction on each. Nothing made, no credits. $2.77 at its last finished turn, context 169,000 tokens. Its baton: `docs/handoffs/promo-edits.md` |
 
 ## Spend (measured with get_session on 2026-11-20)
 
