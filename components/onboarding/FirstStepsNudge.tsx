@@ -10,6 +10,7 @@ import { reached } from "@/lib/ab/device";
 import { countWeekStep } from "@/lib/analytics/moreCount";
 import { dismissNudge, readWeek, wasOnboardedAgain, writeWeek } from "@/lib/onboarding/state";
 import { countDayOne } from "@/lib/onboarding/count";
+import { frameFits } from "@/lib/onboarding/dayFrame";
 import { firstOpening, stepOpening, type StepOpening, type StepParts } from "@/lib/onboarding/openStep";
 import { DAY_ONE_KEYS, dayOneFor, type DayOneKey } from "@/lib/onboarding/space";
 import { useDayOneShown } from "@/lib/onboarding/useDayOne";
@@ -45,7 +46,9 @@ import { localDay, stepPassed, stepTaken } from "@/lib/onboarding/week";
  * (components/onboarding/DayFrame.tsx), not by opening it. So opening writes
  * nothing and the card waits here, and once the day is kept the card says so
  * until tomorrow, with tomorrow's step by name: nothing leaves Today under
- * the finger.
+ * the finger. That holds for the steps whose page the frame serves
+ * (lib/onboarding/dayFrame.ts); any other step is taken when it is opened,
+ * as it always was, so no day is left that cannot be kept.
  */
 export function FirstStepsNudge() {
   const { t } = useTranslate();
@@ -57,8 +60,8 @@ export function FirstStepsNudge() {
   const day = useWeekDay();
   const opening = useStepOpening();
 
-  // Kept today: the card says so until tomorrow, in place of the step.
-  if (day && day.kept != null && !week) {
+  // Kept today, by the reader's own Done: the card says so until tomorrow, in place of the step.
+  if (day && day.kept != null && !week && frameFits(day.steps[day.kept].key)) {
     const next = day.steps[day.kept + 1];
     return <KeptCard eyebrow={t("onboard.week.kept", { n: day.kept + 1 })} title={next ? t("onboard.week.tomorrow", { title: t(next.titleKey) }) : null} />;
   }
@@ -69,6 +72,8 @@ export function FirstStepsNudge() {
 
   if (week) {
     const today = () => localDay(new Date());
+    // With the frame on, and a page the frame serves: this day is kept by Done on its page.
+    const framed = day != null && frameFits(week.step.key);
     return (
       <StepCard
         // A reader who is back is not in their first week: the same steps, called their next step.
@@ -94,12 +99,12 @@ export function FirstStepsNudge() {
               });
             }
             // With the frame a step can be opened again before it is kept: counted the first time.
-            if (!day || firstOpening(week.index, today(), window.localStorage)) countWeekStep(week.index + 1, "opened");
+            if (!framed || firstOpening(week.index, today(), window.localStorage)) countWeekStep(week.index + 1, "opened");
             if (week.index === 0) reached("first_step");
           },
           // Written once the card has left with its page, never at the tap (lib/onboarding/openStep.ts).
           // With the day's frame nothing is written here: the day is kept by the reader's Done on its page.
-          keep: day ? () => {} : () => writeWeek(stepTaken(readWeek(), today())),
+          keep: framed ? () => {} : () => writeWeek(stepTaken(readWeek(), today())),
         })}
       />
     );

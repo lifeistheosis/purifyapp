@@ -1,0 +1,51 @@
+// Which days the day's frame serves (2.0; ./flags.ts, DAY_FRAME_LIVE; the
+// frame itself is components/onboarding/DayFrame.tsx).
+//
+// The frame puts "Done for today" at the end of the day's page, so it fits a
+// page that is one thing with an end and has no end of its own. The end of
+// each of the twenty-eight pages a first week opens was walked on the export
+// on 2026-11-23 (docs/plans/onboarding-2.0.md, "what stands at the end of
+// each page"), and the frame's own probe and a reading of each page's code
+// took two more kinds out. The others, and why:
+//
+//   a lesson                its own white button, "Next lesson", stands at its
+//                           end and leads away from the week;
+//   a chapter               the reader opens the next chapter when its end is
+//                           reached, and floats its own bars over the page;
+//   a prayer                it has an end of its own: each prayer is marked as
+//                           it is said, and the rule's own finish answers the
+//                           last (components/prayers/PrayerRuleReader.tsx,
+//                           RuleEnd). A second Done under it would say one
+//                           thing twice: the prayer's own end is the day's;
+//   the first Liturgy's     a guide of eight parts with its own two buttons:
+//   guide                   its own end is the day's end;
+//   a list or a hub         no one thing and no end (a section's front page,
+//                           Find a parish, a path, Today's readings, Your
+//                           rule, the morning's rule with its own marks).
+//
+// Each of these is a slice of its own. Until it is built, such a day is as
+// it was with the frame off: taken when it is opened, with no Done, so no
+// reader with the frame is left on a day that cannot be kept.
+//
+// A step is served when it is named here AND its page mounts the frame's end
+// (PAGE_OF below says which file): the end stands inside the page, in the
+// page's own column and under its own loading state, so it is never drawn
+// over an outline of a page that has not come. A test holds the two together
+// (./__tests__/dayFrame.test.ts), so a new step has to be placed.
+
+import type { WeekStepKey } from "./week";
+
+/** The steps whose page the frame serves today: a council, a saint, a moment in history. */
+export const FRAMED_STEPS: readonly WeekStepKey[] = ["nicaea", "ephesus", "chalcedon", "carthage", "leo", "ignatius", "maryOfEgypt", "schism", "afterChalcedon"];
+
+/** The page file that draws each kind of framed page, by the first part of its address: where `<DayEnd />` is mounted. */
+export const PAGE_OF: Readonly<Record<string, string>> = {
+  councils: "app/(app)/councils/[slug]/page.tsx",
+  saints: "app/(app)/saints/[slug]/page.tsx",
+  history: "app/(app)/history/[slug]/page.tsx",
+};
+
+/** Whether this step's page is one the frame serves today. */
+export function frameFits(key: WeekStepKey): boolean {
+  return FRAMED_STEPS.includes(key);
+}

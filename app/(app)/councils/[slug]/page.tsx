@@ -22,6 +22,7 @@ import { fatherFaces } from "@/lib/councils/fathers";
 import { councilQuote, lineOfCouncil } from "@/lib/councils/lines";
 import { councilFocus, councilPicture, ordinalKey, placeOf } from "@/lib/councils/page";
 import { cn } from "@/lib/cn";
+import { DayEnd } from "@/components/onboarding/DayFrame";
 import { EarnedMoment } from "@/components/reader/EarnedMoment";
 import { ReadToEndMark } from "@/components/reading/ReadToEndMark";
 
@@ -357,6 +358,11 @@ export default async function CouncilProfilePage({
  {/* The moment the Councils palette is earned, here on the last page read (build 95 note 27). */}
  <EarnedMoment palette="councils" />
  </article>
+ {/* When this council is today's step of a reader's first week (2.0, off for readers): "Done for
+     today" here at its end, in the article's own column, and nothing for anyone else
+     (components/onboarding/DayFrame.tsx). After the article, whose own foot is the mark and the
+     moment above (lib/reader/__tests__/earned.test.ts). */}
+ <DayEnd className="mx-auto mt-12 w-full max-w-[820px]" />
  </section>
  </>
  );

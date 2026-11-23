@@ -13,6 +13,7 @@ import { LicensedWorksSection } from "@/components/saints/LicensedWorksSection";
 import { HymnsSection } from "@/components/saints/HymnsSection";
 import { BookmarkSaintButton } from "@/components/saints/BookmarkSaintButton";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { DayEnd } from "@/components/onboarding/DayFrame";
 import { getLicensedWorks } from "@/lib/saints/licensedWorks";
 import { heroSrc, saintHero } from "@/lib/saints/heroes";
 import { saintDoors, saintTabs } from "@/lib/saints/page";
@@ -221,6 +222,9 @@ export default async function SaintPage({ params }: { params: Params }) {
             <SaintIconsRail saintSlug={saint.slug} saintName={saint.name} />
           </ContentShell>
           <SaintIntercession saint={saint} />
+          {/* When this saint is today's step of a reader's first week (2.0, off for readers): "Done
+              for today" here at the page's end, and nothing for anyone else (components/onboarding/DayFrame.tsx). */}
+          <DayEnd className="mt-8 pb-16" />
         </div>
         </SaintInReadersLanguage>
       </section>

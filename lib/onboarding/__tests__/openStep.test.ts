@@ -61,7 +61,9 @@ describe("the week's card on Today", () => {
     // Each of the two is written once in the card, and each time as the opening's `keep`.
     expect(card.split("writeWeek(stepTaken(").length - 1).toBe(1);
     // With the day's frame (2.0) opening writes nothing: the day is kept by the reader's Done on its page.
-    expect(card).toContain("keep: day ? () => {} : () => writeWeek(stepTaken(readWeek(), today()))");
+    expect(card).toContain("keep: framed ? () => {} : () => writeWeek(stepTaken(readWeek(), today()))");
+    // And only for a step whose page the frame serves: any other is taken when it is opened, as before.
+    expect(card).toContain("const framed = day != null && frameFits(week.step.key);");
     expect(card.split("dismissNudge()").length - 1).toBe(1);
     expect(card).toContain("keep: () => dismissNudge()");
     // And the card says when it has left.
@@ -114,7 +116,7 @@ describe("a step opened again before it is kept", () => {
 
   it("is asked by the card only with the frame on, so a reader without it is counted as before", () => {
     const card = readFileSync("components/onboarding/FirstStepsNudge.tsx", "utf8").replace(/\s+/g, " ");
-    expect(card).toContain('if (!day || firstOpening(week.index, today(), window.localStorage)) countWeekStep(week.index + 1, "opened");');
+    expect(card).toContain('if (!framed || firstOpening(week.index, today(), window.localStorage)) countWeekStep(week.index + 1, "opened");');
   });
 });
 

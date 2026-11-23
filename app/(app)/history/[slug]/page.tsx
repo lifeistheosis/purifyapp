@@ -6,6 +6,7 @@ import { EventPictures } from "@/components/history/EventPictures";
 import { peopleFromSaints } from "@/components/history/EventPeople";
 import { EventRelations } from "@/components/history/EventRelations";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { DayEnd } from "@/components/onboarding/DayFrame";
 import { eraById, eventBySlug, eventParams } from "@/lib/history/events";
 import { loadEventBody } from "@/lib/history/load";
 import { eventGallery, eventPicture } from "@/lib/history/media";
@@ -96,6 +97,9 @@ export default async function HistoryEventPage({ params }: { params: Promise<{ s
           <EventHeader meta={meta} />
           <EventArticle meta={meta} body={body} people={people} pictures={gallery} />
           <EventRelations meta={meta} />
+          {/* When this moment is today's step of a reader's first week (2.0, off for readers): "Done
+              for today" here at its end, and nothing for anyone else (components/onboarding/DayFrame.tsx). */}
+          <DayEnd className="mt-12" />
         </div>
       </section>
     </>
