@@ -822,6 +822,8 @@ Nothing of the week is drawn on a path, on Find a parish, on a rule or in the Bi
 
 **At his yes.** From that branch: `PURIFY_ALLOW_MAIN=1 git push origin mend/guide-card:main`, through the guard. Render deploys; the same walk is then run against purifyapp.net. The apps get the mend with their next store build, which is his. If the container that holds the commit is gone, it is made again in a minute: on `origin/main`, the guide's two hunks of `676995c49` and its test file.
 
+**His yes, about 19:33 UTC: "ok to all and fix". Pushed and live the same hour.** Asked of purifyapp.net at a phone's size a minute before the push: the error page, with the browser's own words. Pushed at 19:35 UTC, `b88c88b4f..60c400d3f`, through the guard (every check passed). Render had it served by 19:41 UTC: the same tap, 2,528px down "During the Liturgy", brings "After the Liturgy", three times of three. The way back, if ever wanted, is a revert of `60c400d3f` on main, at his word. The store builds still hold the fault until their next build. This branch holds the same lines already, so 2.0's merge meets no conflict there; main's head is not yet in this branch.
+
 ## The changes, rated (2026-11-23, about 07:45 UTC)
 
 **His word: "rate our changes".** By the same judge and the same measure as the rating of 22 November: what this chat has changed since 1.9, as each stood on the branch when he asked.
