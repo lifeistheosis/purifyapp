@@ -23,8 +23,12 @@
 //   the words    on the sky, clear of the star's side and seated on the horizon: the date, the
 //                hour's greeting (the app's own words, today.greetingEvening, at the house's title
 //                size) and Pascha's count under it. The star's three lines are not drawn on it.
-//   the action   under the horizon, on the page's own ground: the hour's prayer and the screen's
-//                one Begin, as they are.
+//   the sky      the lead's own night sky (its field of stars and the light along its horizon,
+//                which the lead wears the rest of the year) is under the star's drawing: his word
+//                of 2026-11-23 was that the screen looked plain, the words floating on the page.
+//   the action   under the horizon, on the page's own ground: the hour's prayer in the app's own
+//                raised card, built as The Fast's card is built, with the screen's one Begin on
+//                the same row. One card for one thing.
 //   once         the saint stood in the lead and again in The Church today: he stands in The
 //                Church today. The fast stood three times (the star's band, the lead, The Fast):
 //                it stands in The Fast, which takes the star's own count and today's reading.
@@ -36,7 +40,7 @@
 // the same evening: "make sure it's spaced optimally"): on phones 360, 390 and 412 wide, with each
 // of the hour's three greetings and the star at five of its forty heights, every line starts on the
 // page's one edge, the words stay clear of the star's light and of the horizon, each greeting stays
-// on one line, and Begin is whole above the tab bar. A rule that breaks stops the page.
+// on one line, and the card with Begin is whole above the tab bar. A rule that breaks stops the page.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -102,10 +106,12 @@ function draw(greeting) {
   // The page's own ground, read here, outside the night, for the hill under the horizon.
   lead.style.setProperty("--page-ground", "var(--color-night)");
 
-  // The sky: the lead's own night with the fast's star, dark on every palette as the lead is.
+  // The sky: the lead's own night sky (its field of stars and the light along its horizon, which
+  // the lead wears the rest of the year) with the fast's star drawn over it. Dark on every palette,
+  // as the lead is.
   const sky = document.createElement("div");
   sky.className = "day-lead dark-island relative overflow-hidden";
-  band.className = "dark-island tap-press relative block min-h-[196px] overflow-hidden bg-night-deep nat-rise";
+  band.className = "dark-island tap-press relative block min-h-[196px] overflow-hidden nat-rise";
   band.setAttribute("aria-label", `${season} · ${count}`);
   bandText.remove();
   hill.removeAttribute("class");
@@ -129,9 +135,41 @@ function draw(greeting) {
   words.append(date, hello, until);
   sky.append(band, words);
 
-  // Under the horizon, on the page's own ground: the hour's prayer and the one Begin.
-  prayer.className = "px-5 pt-4";
-  lead.replaceChildren(sky, prayer);
+  // Under the horizon, on the page's own ground: the hour's prayer in the app's own raised card,
+  // built as The Fast's card is built (a small line, then the thing's name), with Begin where The
+  // Fast has its arrow. One row, and the whole card opens the prayer.
+  const [nowLine, nameLine] = prayer.querySelectorAll("p");
+  const begin = prayer.querySelector("a[data-pray-hour]");
+  const fastTitle = fastWords.children[1];
+  if (!nowLine || !nameLine || !begin || !fastTitle) return "the hour's prayer is not built as expected";
+  const card = document.createElement("a");
+  card.className = fast.className;
+  card.setAttribute("href", begin.getAttribute("href"));
+  card.setAttribute("data-pray-hour", "");
+  card.setAttribute("data-welcome-card", "");
+  const col = document.createElement("span");
+  col.className = fastWords.className;
+  const small = document.createElement("span");
+  small.className = fastEyebrow.className;
+  small.textContent = nowLine.textContent;
+  const name = document.createElement("span");
+  name.className = fastTitle.className;
+  // The name alone: with the Prayers sign beside it, as The Fast has its fish, the name took two
+  // lines on a 360 phone.
+  const nameWords = document.createElement("span");
+  nameWords.className = "min-w-0";
+  nameWords.textContent = nameLine.textContent;
+  name.append(nameWords);
+  col.append(small, name);
+  const pill = document.createElement("span");
+  pill.className = "inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-pill bg-paper px-5 font-sans text-[15px] font-semibold text-night";
+  pill.setAttribute("data-welcome-begin", "");
+  pill.append(...begin.childNodes);
+  card.append(col, pill);
+  const ground = document.createElement("div");
+  ground.className = "px-5 pt-4";
+  ground.append(card);
+  lead.replaceChildren(sky, ground);
 
   // One left edge and one right edge down the screen: the streak's words stood 4 px inside them,
   // and the rope's days 6 px more.
@@ -231,8 +269,10 @@ function measure({ greetings, days }) {
   const [date, hello, until] = words.children;
   const star = lead.querySelector(".nat-star");
   const prayer = lead.children[1];
-  const [now, title] = prayer.querySelectorAll("p");
-  const begin = prayer.querySelector("a[data-pray-hour]").getBoundingClientRect();
+  const cardEl = lead.querySelector("[data-welcome-card]");
+  const card = cardEl.getBoundingClientRect();
+  const [now, title] = cardEl.children[0].children;
+  const begin = cardEl.querySelector("[data-welcome-begin]").getBoundingClientRect();
   const streak = lead.nextElementSibling;
   const count = streak.querySelector("span span");
   const chevron = streak.querySelector("svg");
@@ -254,13 +294,16 @@ function measure({ greetings, days }) {
     return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   };
   const faults = [];
-  const edges = { date: text(date).left, hello: text(hello).left, until: text(until).left, now: text(now.querySelector("span")).left, title: text(title).left, begin: begin.left, streak: text(count).left };
+  const edges = { date: text(date).left, hello: text(hello).left, until: text(until).left, "the card": card.left, streak: text(count).left };
   for (const [k, v] of Object.entries(edges)) if (Math.abs(v - pad) > 1) faults.push(`${k} starts at ${v.toFixed(1)}, not on the edge at ${pad.toFixed(1)}`);
   const right = innerWidth - pad;
   const rope = streak.children[1].getBoundingClientRect();
   if (Math.abs(rope.left - pad) > 1 || Math.abs(rope.right - right) > 1) faults.push(`the rope runs from ${rope.left.toFixed(1)} to ${rope.right.toFixed(1)}, not from ${pad.toFixed(1)} to ${right.toFixed(1)}`);
-  for (const [k, v] of Object.entries({ begin: begin.right, streak: chevron.getBoundingClientRect().right })) if (Math.abs(v - right) > 1) faults.push(`${k} ends at ${v.toFixed(1)}, not on the edge at ${right.toFixed(1)}`);
-  if (begin.bottom > tab) faults.push(`Begin's foot at ${begin.bottom.toFixed(0)} is under the tab bar's top at ${tab.toFixed(0)}`);
+  for (const [k, v] of Object.entries({ "the card": card.right, streak: chevron.getBoundingClientRect().right })) if (Math.abs(v - right) > 1) faults.push(`${k} ends at ${v.toFixed(1)}, not on the edge at ${right.toFixed(1)}`);
+  if (card.bottom > tab) faults.push(`the card's foot at ${card.bottom.toFixed(0)} is under the tab bar's top at ${tab.toFixed(0)}`);
+  // Inside the card: Begin stands a card's padding from its end, and never under the prayer's name.
+  if (text(title).right > begin.left - 8) faults.push(`the prayer's name runs to ${text(title).right.toFixed(0)}, under Begin at ${begin.left.toFixed(0)}`);
+  if (begin.height < 44) faults.push(`Begin is ${begin.height.toFixed(0)} high`);
   let nearestStar = Infinity;
   let nearestHorizon = Infinity;
   const widths = {};
@@ -284,8 +327,6 @@ function measure({ greetings, days }) {
   }
   if (nearestHorizon < 12) faults.push(`the words stand ${nearestHorizon.toFixed(1)} px over the horizon`);
   const u = text(until);
-  const n = text(now.querySelector("span"));
-  const ti = text(title);
   const d0 = text(date);
   const h0 = text(hello);
   return {
@@ -300,12 +341,11 @@ function measure({ greetings, days }) {
       "date to the greeting": Math.round(h0.top - d0.bottom),
       "greeting to Pascha's count": Math.round(u.top - h0.bottom),
       "Pascha's count to the horizon, under its first letter": Math.round(horizon(u.left) - u.bottom),
-      "horizon to the hour's line, over its first letter": Math.round(n.top - horizon(n.left)),
-      "the hour's line to the prayer's name": Math.round(ti.top - n.bottom),
-      "the prayer's name to Begin": Math.round(begin.top - ti.bottom),
-      "Begin to the streak's words": Math.round(text(count).top - begin.bottom),
+      "horizon to the card, at the card's end": Math.round(card.top - horizon(card.left)),
+      "the card to the streak's words": Math.round(text(count).top - card.bottom),
     },
-    begin: Math.round(begin.bottom),
+    card: Math.round(card.height),
+    begin: Math.round(card.bottom),
     tab: Math.round(tab),
     lead: Math.round(lead.getBoundingClientRect().height),
   };
@@ -338,7 +378,7 @@ try {
     const m = await page.evaluate(measure, { greetings: GREETINGS, days: STAR_DAYS });
     measured[W] = m;
     console.log(`\nspacing at ${W} by ${H}: the edge at ${m.edge}, the greeting at ${m.size} (${Object.entries(m.widths).map(([g, w]) => `${g} ${w}`).join(", ")})`);
-    console.log(`  the words' nearest to the star's light: ${m.nearestStar} px; to the horizon: ${m.nearestHorizon} px; Begin's foot at ${m.begin}, the tab bar's top at ${m.tab}; the lead ${m.lead} high`);
+    console.log(`  the words' nearest to the star's light: ${m.nearestStar} px; to the horizon: ${m.nearestHorizon} px; the card ${m.card} high, its foot at ${m.begin}, the tab bar's top at ${m.tab}; the lead ${m.lead} high`);
     for (const [k, v] of Object.entries(m.gaps)) console.log(`  ${String(v).padStart(3)}  ${k}`);
     for (const f of m.faults) console.log(`  NO   ${f}`);
     if (m.faults.length) spaced = false;
@@ -368,14 +408,14 @@ const table = (heads, rows) => `<div class="k-table-wrap">
     </div>`;
 
 const NOW_ALT = "Today as it is: a dark box holding the star's band with three lines about the fast, the date, the saint of the day with the fast again, and Evening prayers with Begin.";
-const NEW_ALT = `The new first screen: a night sky across the whole width with the date, ${GREETING} and Pascha's count, the star over the horizon, and under the horizon Evening prayers with one Begin, then the streak and the verse of the day.`;
+const NEW_ALT = `The new first screen: a night sky full of stars across the whole width, with the date, ${GREETING} and Pascha's count seated on the horizon beside the star. Under the horizon one raised card: Now, 8 min, Evening prayers, and Begin on the same row. Then the streak and the verse of the day.`;
 
 const body = `<main class="k-page">
   <header class="k-title k-rise">
     <span class="k-mark" role="img" aria-label="Purify"></span>
     <span class="k-eyebrow">For 2.0, mock-up 13</span>
     <h1>A new welcome on Today</h1>
-    <p class="k-lede">No box. One sky, one greeting, one button, and each thing shown once.</p>
+    <p class="k-lede">No black box. A night sky with the greeting on it, the hour's prayer in one clean card, and each thing shown once.</p>
     <p class="k-meta">Drawn from the app's own Today as it stood on your phone: Sunday evening, day 8 of the fast, 14 days kept.</p>
   </header>
 
@@ -397,14 +437,14 @@ const body = `<main class="k-page">
     <h2>The new first screen</h2>
     <figure class="k-figure k-phone">
       ${img("mock-welcome", NEW_ALT)}
-      <figcaption>Drawn from Today's own lead. Taken away: the box, the saint's row and the star's three lines. Moved: the hour's prayer under the horizon. No word is new.</figcaption>
+      <figcaption>Drawn from Today's own lead, the lead's own night sky and The Fast's own card. Taken away: the box, the saint's row and the star's three lines. No word is new.</figcaption>
     </figure>
     ${table(["The choice", "Why, and what it does for the reader"], [
-      ["No box", "Your word. The night runs the whole width of the screen and ends in the horizon, so the top of Today is a place and not a card."],
-      ["The page begins at the horizon", "The hill under the star takes the page's own ground. What the reader does next stands on that ground: one line and one Begin."],
-      ["A greeting first", "A welcome is a greeting. The hour's own words stand largest, with the date over them and Pascha's count under them."],
-      ["The words sit on the horizon", "The sky stays open over them, and the greeting stands next to what it leads to: the hour's prayer, right under the line."],
-      ["One Begin, higher", "The hour's prayer is still the screen's one white button. It now sits in the upper half, under the thumb."],
+      ["No black box", "Your word. The night runs the whole width of the screen and ends in the horizon, so the top of Today is a place and not a card."],
+      ["A real sky", "Your word was that it looked plain. The lead's own night sky is under the star now: a field of stars and a soft light along the horizon, the sky the lead wears the rest of the year."],
+      ["The greeting sits on the horizon", "A welcome is a greeting. It stands largest, with the date over it and Pascha's count under it, beside the star and next to what it leads to."],
+      ["The prayer has a shape", "The hour's prayer stands in the app's own raised card, built as The Fast's card is built. One card for one thing, so it is not the box, and the words no longer float."],
+      ["Begin on the card's own row", "It is still the screen's one white button. On one row it is under the thumb, and the card is half the height of the old stack."],
       ["The star says nothing in words", "Its three lines made the fast a third thing in the box. The star still rises a little each day, and still opens the fast's readings."],
       ["Shorter", `The lead was ${high.before} high and is ${high.after}. The streak and the verse of the day are on the first screen.`],
     ])}
@@ -412,12 +452,13 @@ const body = `<main class="k-page">
 
   <section class="k-section">
     <h2>The spacing, measured</h2>
-    <p>Three groups, with the same air between them: the words, the hour's prayer with its Begin, and the streak.</p>
+    <p>Three groups, with the same air between them: the words on the sky, the prayer's card, and the streak.</p>
     ${table(["Between", "On a 390 phone"], Object.entries(measured[390].gaps).map(([k, v]) => [k[0].toUpperCase() + k.slice(1), `${v} px`]))}
     <ul class="k-list">
-      <li>One left edge and one right edge down the whole screen. The streak's words and the rope's seven days stood a few px inside them, and now stand on them, under the ends of Begin.</li>
+      <li>One left edge and one right edge down the whole screen: the words on the sky, the card, the streak's words and the rope's seven days.</li>
+      <li>The card is one row on every phone. A sign beside the prayer's name was tried and left out: on a 360 phone it pushed the name onto two lines.</li>
       <li>The greeting is the app's own title size. "${esc(GREETINGS[1])}", the longest of the three, stays on one line beside the star.</li>
-      <li>Measured on phones 360, 390 and 412 wide, with each of the three greetings and the star at five of its forty heights. The words never come nearer than ${Math.min(...PHONES.map(([w]) => measured[w].nearestStar))} px to the star's light or ${Math.min(...PHONES.map(([w]) => measured[w].nearestHorizon))} px to the horizon, and Begin is whole above the tab bar on all three.</li>
+      <li>Measured on phones 360, 390 and 412 wide, with each of the three greetings and the star at five of its forty heights. The words never come nearer than ${Math.min(...PHONES.map(([w]) => measured[w].nearestStar))} px to the star's light or ${Math.min(...PHONES.map(([w]) => measured[w].nearestHorizon))} px to the horizon, and the card is whole above the tab bar on all three.</li>
     </ul>
   </section>
 

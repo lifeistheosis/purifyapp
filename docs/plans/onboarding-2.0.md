@@ -524,3 +524,25 @@ The lead is 326 high. `checkMock` passed again on the new drawing, all fifteen r
 
 **Not measured.** Other languages, where a greeting can be longer than "Good afternoon": the words keep to the left 64% of the sky, as the star's band does today, and a longer greeting takes a second line upward into the open sky. A great feast's name in the greeting's place. Wide screens. Each is for the build's own tests.
 
+### Mock-up 13 redrawn: a sky and a card (2026-11-23)
+
+**His word, about 00:21 UTC: "also I still don't like the formatting on the new screen"**
+
+Two guesses had missed (the box gone, then the spacing), so he was asked what looks wrong before anything was drawn, with four plain choices. **His answer: "You decide (Recommended)" and "Looks plain, not designed"**, the choice that read: "With the box gone the words just float on the page. You want more shape: a picture, an icon or a clean card."
+
+One new drawing, by the same script, at the same link (https://claude.ai/artifact/VD5qJxi7vtNuTbCmbXJKnf):
+
+| What changed | Why |
+|---|---|
+| The lead's own night sky is under the star: its field of stars (`--sky-stars`) and the soft light along its horizon, the layers `.day-lead` already wears the rest of the year. The flat night behind the star is gone | The greeting stood on an almost empty dark. Now it stands on a picture, and the picture is the app's own |
+| The hour's prayer stands in the app's own raised card (`.theology-tray`), built as The Fast's card is built: a small line, the name, and Begin where The Fast has its arrow | The words under the horizon floated on the page. One card for one thing gives them a shape, and it is not the box: the box was black and held three things |
+| Begin is on the card's own row, a pill at its end, and the whole card opens the prayer | The card is 79 high where the old stack of line, name and full-width button was 124. Begin is still the screen's one white button |
+
+**Tried and left out.** The Prayers tab's sign beside the prayer's name, as The Fast has its fish: on a 360 phone it pushed "Evening prayers" onto two lines and the card to 102 high. The name alone holds one row on 360, 390 and 412.
+
+**Measured again** (the probe in the script, three phones, three greetings, the star at five heights): the lead is 292 high (506 as readers have it, 326 in the drawing before this one). On a 390 phone: the sky open over the date 81; date to greeting 7; greeting to Pascha's count 3; Pascha's count to the horizon 28; the horizon to the card 25; the card to the streak's words 27. The words on the sky, the card, the streak's words and the rope share one left edge and one right edge. The words never come nearer than 21 px to the star's light or 14 px to the horizon. `checkMock` passed, all fifteen rules, and the page passed the kit's check.
+
+**What stays as it was drawn before:** no box, the night across the whole screen ending in the star's own horizon, the hill in the page's own ground, the greeting seated on the horizon with the date over it and Pascha's count under it, the saint and the fast each said once in The Church today, no word new.
+
+**If he says yes,** the build list of mock-up 13 stands, with two additions: the sky's layers (the star's band no longer paints a flat night over the lead's own sky), and the hour's prayer as a tray whose whole face is the link, in `components/today/GreetingHeader.tsx`. A longer prayer name, and other languages, take a second line in the card; the build's tests ask that of each locale.
+
