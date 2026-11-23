@@ -793,8 +793,8 @@
         "does": "The great events told step by step, with a map that moves to each place as you read."
       },
       "readers": 1212,
-      "differentWeeks": 187,
-      "differentPages": 15,
+      "differentWeeks": 129,
+      "differentPages": 13,
       "weeks": [
         {
           "to": "seeker",
@@ -1050,7 +1050,7 @@
   "count": {
     "readers": 30024,
     "noRoad": 3336,
-    "weeks": 4072,
+    "weeks": 4014,
     "faults": 0
   }
 }

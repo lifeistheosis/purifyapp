@@ -53,11 +53,19 @@
 // rule said through. Each of those acts was in the page already; the week
 // only hears it.
 //
+// The two days that name the Church's own day are led into it on the day
+// (./dayStep.ts, by the same "do all"): today's readings are the readings
+// themselves, read one after another and kept by that walk's own Done; the
+// Church's year is the page of who leads the day, with Done at its end. What
+// each opens is known only on the device, on the day, so the step itself
+// says how it is kept (WeekStep.kept), and DAY_STEPS_IN names where.
+//
 // What is left as it was, taken when it is opened: a section's front page a
 // reader's own first pick opens (the saints, the councils, the Church's
-// history, Start here, What the Orthodox believe, the reading paths' list),
-// and the two days that belong to the calendar's own day, today's readings
-// and the Church's year, which are the next pass.
+// history, Start here, What the Orthodox believe, the reading paths' list,
+// the calendar by the pick "Fasts and feasts"), and either of the calendar's
+// two days on a day with nothing to lead into (no readings; a lead with no
+// page in the app).
 //
 // A step is served when it is named here AND its page mounts the frame's end
 // (PAGE_OF below says which file, by where the page's address begins): the
@@ -66,7 +74,7 @@
 // come. A test holds the two together (./__tests__/dayFrame.test.ts), so a
 // new step has to be placed.
 
-import type { WeekStepKey } from "./week";
+import type { WeekStep, WeekStepKey } from "./week";
 
 /** The steps whose page the frame serves today: a council, a saint, a moment in history, a lesson of Learn to pray. */
 export const FRAMED_STEPS: readonly WeekStepKey[] = [
@@ -100,9 +108,15 @@ export function kindOf(href: string): string | null {
   return Object.keys(PAGE_OF).find((start) => href.startsWith(start)) ?? null;
 }
 
-/** Whether this step's page is one the frame serves today. */
-export function frameFits(key: WeekStepKey): boolean {
-  return FRAMED_STEPS.includes(key);
+/** A step as a week holds it, or as the day opens it (./dayStep.ts), or its key alone. */
+type Of = WeekStepKey | Pick<WeekStep, "key" | "kept">;
+const keyOf = (of: Of): WeekStepKey => (typeof of === "string" ? of : of.key);
+/** How the day itself says the step is kept, where it leads into the Church's day. */
+const saidBy = (of: Of): WeekStep["kept"] => (typeof of === "string" ? undefined : of.kept);
+
+/** Whether this step's page is one the frame serves today, with Done at its end. */
+export function frameFits(of: Of): boolean {
+  return saidBy(of) === "done" || FRAMED_STEPS.includes(keyOf(of));
 }
 
 const PRAYER = "components/prayers/PrayerRuleReader.tsx";
@@ -135,11 +149,27 @@ export const OWN_END_IN: Readonly<Partial<Record<WeekStepKey, string>>> = {
 export const OWN_END_STEPS = Object.keys(OWN_END_IN) as readonly WeekStepKey[];
 
 /** Whether this step's day is kept by its page's own end. */
-export function ownEnd(key: WeekStepKey): boolean {
-  return OWN_END_STEPS.includes(key);
+export function ownEnd(of: Of): boolean {
+  return OWN_END_STEPS.includes(keyOf(of));
 }
 
-/** Whether this step's day is kept on its page, by Done or by the page's own end, and so not when it is opened. */
-export function keptOnPage(key: WeekStepKey): boolean {
-  return frameFits(key) || ownEnd(key);
+/**
+ * Whether this step's day is kept by the reader's own act, and so not when it is opened: by Done at
+ * its page's end, by the page's own end, or by the Done of the walk it starts (today's readings,
+ * which no page finds as its day: ./dayStep.ts).
+ */
+export function keptOnPage(of: Of): boolean {
+  return frameFits(of) || ownEnd(of) || saidBy(of) === "walk";
 }
+
+/**
+ * The two steps that lead into the Church's own day (./dayStep.ts), and the file in which each
+ * day's end is told to the week: the readings' walk by its own Done, and the page of who leads the
+ * day by Done at its end, as any saint's page. Neither is in the lists above: by its key alone
+ * such a step is still taken when it is opened, which is what it is on a day with nothing to lead
+ * into.
+ */
+export const DAY_STEPS_IN: Readonly<Partial<Record<WeekStepKey, string>>> = {
+  readings: "components/bible/ReadingsFlowBar.tsx",
+  churchYear: PAGE_OF["/saints/"],
+};

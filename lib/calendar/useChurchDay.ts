@@ -71,8 +71,13 @@ export type ChurchDay = {
   pascha: PaschaInfo;
 };
 
-/** The Church's day for a civil day, in the reader's reckoning. */
-function churchDayOf(today: Date, style: CalStyle): ChurchDay {
+/**
+ * The Church's day for a civil day, in the reader's reckoning. Exported for
+ * a reader that needs it only on some days and asks from inside its own
+ * memo (lib/onboarding/useWeek.ts): it is still derived here and nowhere
+ * else.
+ */
+export function churchDayOf(today: Date, style: CalStyle): ChurchDay {
   const lookup = shiftForStyle(today, style);
   // On the civil day, as before: both calendars reckon Pascha alike, so
   // shifting the readings would move the Paschal cycle twice. The official

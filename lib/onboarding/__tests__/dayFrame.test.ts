@@ -104,7 +104,7 @@ describe("which steps the frame serves", () => {
     }
   });
 
-  it("leaves as they were, taken when they are opened, only a section's front page and the calendar's own two days", () => {
+  it("by its key alone leaves, taken when they are opened, only a section's front page and the calendar's own two days, which the day itself leads into (dayStep.test.ts)", () => {
     const open = (Object.keys(WEEK_STEPS) as WeekStepKey[]).filter((k) => !keptOnPage(k)).map((k) => WEEK_STEPS[k].href).sort();
     expect(open).toEqual(["/calendar", "/calendar", "/councils", "/history", "/prayers/today", "/reading/paths", "/saints", "/start", "/theology"]);
   });
@@ -244,7 +244,7 @@ describe("a day kept by its page's own end or act", () => {
       expect(ownEnd(key), key).toBe(false);
       expect(frameFits(key), key).toBe(true);
     }
-    // A section's front page and the Church's year are kept nowhere: taken when they are opened.
+    // A section's front page is kept nowhere, taken when it is opened; and so, by their key alone, are the calendar's two days.
     for (const key of ["churchYear", "feasts", "readings", "councils", "history", "startHere", "theology", "saintsLives", "readingPaths"] as const) expect(keptOnPage(key), key).toBe(false);
   });
 

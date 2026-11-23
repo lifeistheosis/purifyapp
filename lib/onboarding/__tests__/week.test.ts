@@ -166,6 +166,31 @@ describe("one reader's week", () => {
     ]);
   });
 
+  it("on the seeker's road a pick of the councils or of the Church's history is the road's own day: no front page is added, and no day is pushed off the week", () => {
+    // A reader is a seeker because one of these three was the first thing they asked for (road.ts).
+    expect(week("seeker", ["fathers"])).toEqual(["fathersPath", "ignatius", "pentecost", "nicaea", "ephesus", "trisagion", "firstLiturgy"]);
+    expect(week("seeker", ["councils"])).toEqual(["nicaea", "ignatius", "pentecost", "ephesus", "fathersPath", "trisagion", "firstLiturgy"]);
+    expect(week("seeker", ["history"])).toEqual(["pentecost", "ignatius", "nicaea", "ephesus", "fathersPath", "trisagion", "firstLiturgy"]);
+    // Whatever the order of those three answers: the same seven days, none of them a section's
+    // front page, and the lesson on prayer among them.
+    const days = [...ROAD_WEEKS.seeker].sort();
+    for (const picks of [
+      ["fathers", "councils", "history"],
+      ["councils", "history", "fathers"],
+      ["history", "fathers", "councils"],
+      ["councils", "fathers"],
+      ["history", "councils"],
+    ] as Intent[][]) {
+      const w = week("seeker", picks);
+      expect([...w].sort(), picks.join(",")).toEqual(days);
+      expect(w, picks.join(",")).toContain("trisagion");
+      for (const front of ["councils", "history"]) expect(w, picks.join(",")).not.toContain(front);
+    }
+    // On any other road such a pick opens what it always did.
+    expect(week("catholic", ["councils"])[0]).toBe("councils");
+    expect(week("newcomer", ["history"])[0]).toBe("history");
+  });
+
   it("is always seven steps, no page twice, the last day the road's own, whatever was picked", () => {
     for (const road of ROADS) {
       for (const level of [...LEVELS, null] as (Level | null)[]) {

@@ -7,6 +7,11 @@
 
 import { useMemo, useSyncExternalStore } from "react";
 
+import { churchDayOf } from "@/lib/calendar/useChurchDay";
+import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
+import { useTodayAtOnce } from "@/lib/calendar/useToday";
+
+import { leadsIntoDay, stepOnDay } from "./dayStep";
 import { dayFrameEnabled, roadsEnabled } from "./flags";
 import { leanOf, roadOf, type Road } from "./road";
 import {
@@ -87,7 +92,7 @@ function daySnapshot(): string {
 
 export type WeekDay = {
   road: Road;
-  /** The reader's seven steps. */
+  /** The reader's seven steps. Today's is as the day opens it, where it leads into the Church's day (./dayStep.ts). */
   steps: WeekStep[];
   /** Today's step, from 0, while it waits to be kept: null once today's is kept or passed over, or the week is over. */
   waiting: number | null;
@@ -104,6 +109,10 @@ export type WeekDay = {
 export function useWeekDay(): WeekDay | null {
   const snap = useSyncExternalStore(subscribe, daySnapshot, () => "|");
   const { background, level, intent, returning, intents } = useSpace();
+  // The device's own day and the reader's calendar, for a step that leads into the Church's day.
+  // Known in the first frame wherever a page is drawn on the device, and never on the server.
+  const churchDay = useTodayAtOnce();
+  const [style] = useCalendarStyleDefault();
   return useMemo(() => {
     const cut = snap.indexOf("|");
     if (snap.slice(0, cut) !== "1") return null;
@@ -112,7 +121,17 @@ export function useWeekDay(): WeekDay | null {
     const state = parseWeek(snap.slice(cut + 1) || null);
     const today = localDay(new Date());
     const steps = weekFor({ road, lean: leanOf(intent), level, picks: intents.length ? intents : readIntents() });
-    return { road, steps, waiting: stepToday(state, today), kept: keptToday(state, today) };
-  }, [snap, background, level, intent, returning, intents]);
+    const waiting = stepToday(state, today);
+    const kept = keptToday(state, today);
+    // Only today's step, waiting or kept, and only when it names the day: the Church's day is
+    // worked out on two days of a week at most, and on no page of any other day.
+    const at = waiting ?? kept;
+    if (at != null && churchDay && leadsIntoDay(steps[at])) {
+      const day = churchDayOf(churchDay, style);
+      const readings = day.readings.length + day.ordinaryReadings.length + day.commemorationReadings.length;
+      steps[at] = stepOnDay(steps[at], { readings, saint: day.headlineSaint?.slug ?? null }, steps);
+    }
+    return { road, steps, waiting, kept };
+  }, [snap, background, level, intent, returning, intents, churchDay, style]);
 }
 

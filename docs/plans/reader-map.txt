@@ -97,9 +97,9 @@ The plan it belongs to is docs/plans/reader-map.md.
   catholic: 2224 sets of answers, 472 different weeks, 14 different pages, ending at Find a parish
   protestant: 2224 sets of answers, 516 different weeks, 17 different pages, ending at Your first Liturgy or Find a parish
   christian: 2224 sets of answers, 602 different weeks, 15 different pages, ending at Your first Liturgy
-  seeker: 1212 sets of answers, 187 different weeks, 15 different pages, ending at Your first Liturgy
+  seeker: 1212 sets of answers, 129 different weeks, 13 different pages, ending at Your first Liturgy
   newcomer: 5460 sets of answers, 472 different weeks, 15 different pages, ending at Your first Liturgy
-  different first weeks in all: 4072
+  different first weeks in all: 4014
   weeks that are not seven pages, hold a page twice or miss their door: 0
 
 8. THE PAGES A WEEK CAN HOLD

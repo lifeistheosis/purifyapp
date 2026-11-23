@@ -53,6 +53,13 @@ export type WeekStep = {
   titleKey: string;
   /** A line the app already says about the page, where it has one. */
   bodyKey?: string;
+  /**
+   * Set only by the day itself (./dayStep.ts), on a step that leads into the
+   * Church's own day: how that day is kept. "done" by Done at the end of the
+   * page it opens; "walk" by the Done of the walk it starts, which is on no
+   * page of its own. No step of a week is written with it here.
+   */
+  kept?: "done" | "walk";
 };
 
 const dayOne = (key: Exclude<DayOneKey, "gospelsPlan">, href: string): WeekStep => ({
@@ -132,8 +139,14 @@ type Seven = readonly [WeekStepKey, WeekStepKey, WeekStepKey, WeekStepKey, WeekS
  * that page's own first step, the lesson What is prayer?; the seeker's second
  * was the Church's history and is Pentecost, where it begins; the seeker's
  * fourth was the councils and is Ephesus, the one after the Nicaea of the day
- * before. A reader's own first pick can still open a front page
- * (pickStep): that day is taken when it is opened, as before.
+ * before. On the seeker's road a reader's own pick of the councils or of
+ * the Church's history is that road's own day (ROAD_DAY_FOR). On any other
+ * road a reader's own first pick can still open a front page (pickStep):
+ * that day is taken when it is opened, as before.
+ *
+ * Two days name the Church's own day, today's readings and the Church's
+ * year. What each opens is decided on the day, on the device (./dayStep.ts):
+ * the readings themselves, and the page of who leads the day.
  */
 export const ROAD_WEEKS: Readonly<Record<Exclude<Road, "protestant">, Seven>> = {
   practicing: ["yourRule", "readings", "psalter", "churchYear", "prayFathers", "beforeSleep", "fathersPath"],
@@ -186,6 +199,23 @@ export function pickStep(intent: Intent, level: Level | null): WeekStepKey {
 }
 
 /**
+ * On the seeker's road two days stand for a section a reader may have asked
+ * for by name: the First Council of Nicaea for the councils, Pentecost for
+ * the Church's history. A reader is on that road because the Fathers, the
+ * councils or history were the first thing they asked for (./road.ts), and
+ * its week once held those two sections' front pages as days of its own, so
+ * a pick of either "moved nothing but itself". Each of those days is now one
+ * thing (ROAD_WEEKS), and the pick is still the road's own day: it leads the
+ * week, no front page is added to it, and no other day is pushed off its
+ * end. Left as it was, a seeker who asked for the councils or for history
+ * first was given the front page and both of the new days, and lost the
+ * lesson on prayer (found 2026-11-23, before this was pushed).
+ */
+const ROAD_DAY_FOR: Readonly<Partial<Record<Road, Readonly<Partial<Record<WeekStepKey, WeekStepKey>>>>>> = {
+  seeker: { councils: "nicaea", history: "pentecost" },
+};
+
+/**
  * One reader's week: the road's seven, arranged by what they asked for.
  *
  * "The order you tap is the order Purify puts them in" (the line under "What
@@ -200,7 +230,11 @@ export function weekFor(o: { road: Road; lean: Lean; level: Level | null; picks:
   const same = (a: WeekStep, b: WeekStep) => a.href === b.href;
   let body = base.slice(0, WEEK_LENGTH - 1).map((k) => WEEK_STEPS[k]);
 
-  const [first, second, third] = o.picks.map((p) => WEEK_STEPS[pickStep(p, o.level)]);
+  const own = ROAD_DAY_FOR[o.road] ?? {};
+  const [first, second, third] = o.picks.map((p) => {
+    const key = pickStep(p, o.level);
+    return WEEK_STEPS[own[key] ?? key];
+  });
   if (first && !same(first, last)) body = [first, ...body.filter((s) => !same(s, first))];
   const held = (s: WeekStep) => same(s, last) || body.some((b) => same(b, s));
   if (second && !held(second)) body.splice(3, 0, second);

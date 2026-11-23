@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Close } from "@/components/ui/icons/Close";
@@ -8,6 +8,9 @@ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { CARD_BG } from "@/components/ui/Graphite";
 import { reached } from "@/lib/ab/device";
 import { countWeekStep } from "@/lib/analytics/moreCount";
+import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
+import { churchDayOf } from "@/lib/calendar/useChurchDay";
+import { useTodayAtOnce } from "@/lib/calendar/useToday";
 import { dismissNudge, readWeek, wasOnboardedAgain, writeWeek } from "@/lib/onboarding/state";
 import { countDayOne } from "@/lib/onboarding/count";
 import { keptOnPage } from "@/lib/onboarding/dayFrame";
@@ -17,6 +20,7 @@ import { useDayOneShown } from "@/lib/onboarding/useDayOne";
 import { useSpace } from "@/lib/onboarding/useSpace";
 import { useWeekDay, useWeekToday } from "@/lib/onboarding/useWeek";
 import { localDay, stepPassed, stepTaken } from "@/lib/onboarding/week";
+import { dayWalk, hrefOf, startReadingsFlow } from "@/lib/readings/flow";
 
 /**
  * "Your Day 1": the first step the onboarding handoff chose for this reader
@@ -49,6 +53,11 @@ import { localDay, stepPassed, stepTaken } from "@/lib/onboarding/week";
  * the finger. That holds for the steps whose page the frame serves
  * (lib/onboarding/dayFrame.ts); any other step is taken when it is opened,
  * as it always was, so no day is left that cannot be kept.
+ *
+ * Two steps name the Church's own day, and with the frame the card opens
+ * the day itself (lib/onboarding/dayStep.ts): Today's readings starts the
+ * day's readings as one walk and opens the first of them, and the Church's
+ * year opens the page of who leads the day. The card keeps each step's name.
  */
 export function FirstStepsNudge() {
   const { t } = useTranslate();
@@ -59,9 +68,16 @@ export function FirstStepsNudge() {
   // With the day's frame on (2.0): the same week, with the step kept today. Null without the frame.
   const day = useWeekDay();
   const opening = useStepOpening();
+  // Today's step as the card opens it: with the frame, as the day itself opens it (lib/onboarding/dayStep.ts).
+  const weekStep = week ? (day && day.waiting === week.index ? day.steps[week.index] : week.step) : null;
+  // The day's readings, for the one step that is them: the walk the card starts, in the order Today lists them.
+  const readingsDay = weekStep?.key === "readings" && weekStep.kept === "walk";
+  const churchDay = useTodayAtOnce();
+  const [style] = useCalendarStyleDefault();
+  const walk = useMemo(() => (readingsDay && churchDay ? dayWalk(churchDayOf(churchDay, style)) : []), [readingsDay, churchDay, style]);
 
   // Kept today on its own page, by the reader's Done or by a prayer's own end: the card says so until tomorrow, in place of the step.
-  if (day && day.kept != null && !week && keptOnPage(day.steps[day.kept].key)) {
+  if (day && day.kept != null && !week && keptOnPage(day.steps[day.kept])) {
     const next = day.steps[day.kept + 1];
     return <KeptCard eyebrow={t("onboard.week.kept", { n: day.kept + 1 })} title={next ? t("onboard.week.tomorrow", { title: t(next.titleKey) }) : null} />;
   }
@@ -70,17 +86,36 @@ export function FirstStepsNudge() {
   // same card, called their next step.
   const again = wasOnboardedAgain();
 
-  if (week) {
+  if (week && weekStep) {
+    const step = weekStep;
     const today = () => localDay(new Date());
     // With the frame on, and a day that is kept on its page (by Done at its end, or by a prayer's own end): not here.
-    const framed = day != null && keptOnPage(week.step.key);
+    const framed = day != null && keptOnPage(step);
+    const open = opening({
+      count: () => {
+        if (week.index === 0 && isDayOneKey(step.key)) {
+          countDayOne(step.key, {
+            ...(background ? { background } : {}),
+            ...(level ? { level } : {}),
+            ...(intent ? { intent } : {}),
+          });
+        }
+        // With the frame a step can be opened again before it is kept: counted the first time.
+        if (!framed || firstOpening(week.index, today(), window.localStorage)) countWeekStep(week.index + 1, "opened");
+        if (week.index === 0) reached("first_step");
+      },
+      // Written once the card has left with its page, never at the tap (lib/onboarding/openStep.ts).
+      // With the day's frame nothing is written here: the day is kept by the reader's Done on its page.
+      keep: framed ? () => {} : () => writeWeek(stepTaken(readWeek(), today())),
+    });
     return (
       <StepCard
         // A reader who is back is not in their first week: the same steps, called their next step.
         eyebrow={again ? t("onboard.returning.nextEyebrow") : t("onboard.week.eyebrow", { n: week.index + 1 })}
-        title={t(week.step.titleKey)}
-        body={week.step.bodyKey ? t(week.step.bodyKey) : null}
-        href={week.step.href}
+        title={t(step.titleKey)}
+        body={step.bodyKey ? t(step.bodyKey) : null}
+        // The day's readings open at the first of them, as Today's own Read all does.
+        href={walk.length ? hrefOf(walk[0]) : step.href}
         // Closed unopened: this step is passed over, and the next comes tomorrow.
         onDismiss={() => {
           countWeekStep(week.index + 1, "passed");
@@ -89,23 +124,18 @@ export function FirstStepsNudge() {
         // The first step is the Day 1 the counts have always taken, where it
         // is one of theirs. The days after it are not counted: their sentence
         // on the privacy page is not agreed (notes/onboarding-fable.md, 5.2).
-        onOpen={opening({
-          count: () => {
-            if (week.index === 0 && isDayOneKey(week.step.key)) {
-              countDayOne(week.step.key, {
-                ...(background ? { background } : {}),
-                ...(level ? { level } : {}),
-                ...(intent ? { intent } : {}),
-              });
-            }
-            // With the frame a step can be opened again before it is kept: counted the first time.
-            if (!framed || firstOpening(week.index, today(), window.localStorage)) countWeekStep(week.index + 1, "opened");
-            if (week.index === 0) reached("first_step");
-          },
-          // Written once the card has left with its page, never at the tap (lib/onboarding/openStep.ts).
-          // With the day's frame nothing is written here: the day is kept by the reader's Done on its page.
-          keep: framed ? () => {} : () => writeWeek(stepTaken(readWeek(), today())),
-        })}
+        //
+        // The day's readings are started as one walk at each tap, before the
+        // first of them opens, so the Bible's reader has its bar and its Done
+        // from its first frame: that Done keeps the day.
+        onOpen={
+          walk.length
+            ? () => {
+                startReadingsFlow(walk);
+                open();
+              }
+            : open
+        }
       />
     );
   }

@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { FlowBarShell as Shell } from "@/components/flow/FlowBarShell";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { localBookNames, referenceIn } from "@/lib/bible/books";
+import { keepDayOf } from "@/lib/onboarding/keepDay";
 import {
   finishReadingsFlow,
   goToReading,
@@ -109,6 +110,10 @@ export function ReadingsFlowBar({ book, chapter }: { book: string; chapter: numb
           type="button"
           onClick={() => {
             finishReadingsFlow();
+            // On the day of a reader's first week that is today's readings, this Done is the
+            // day's own end (lib/onboarding/dayStep.ts; the owner's "do all" of 2026-11-23).
+            // Nothing of the week is drawn here: Today says the day is kept.
+            keepDayOf("readings");
             softTick();
             setFinished(true);
           }}

@@ -56,12 +56,14 @@ const bare = (path: string) => path.replace(/\/+$/, "") || "/";
 
 /**
  * Which of the reader's days this page is: the step waiting today, or the one kept today. Only for a
- * step `fits` takes: one the frame serves by default, or one kept by its page's own end.
+ * step `fits` takes: one the frame serves by default, or one kept by its page's own end. A step that
+ * leads into the Church's day is here as the day opens it (lib/onboarding/dayStep.ts): the Church's
+ * year is the page of who leads the day, with Done at its end like any saint's.
  */
 export function dayOfPage(
   day: WeekDay | null,
   pathname: string | null,
-  fits: (key: WeekStepKey) => boolean = frameFits,
+  fits: (step: WeekStep) => boolean = frameFits,
 ): { index: number; kept: boolean; tomorrow: WeekStep | null } | null {
   if (!day || !pathname) return null;
   for (const [index, kept] of [
@@ -69,7 +71,7 @@ export function dayOfPage(
     [day.kept, true],
   ] as const) {
     const step = index != null ? day.steps[index] : null;
-    if (index != null && step && fits(step.key) && bare(step.href) === bare(pathname)) {
+    if (index != null && step && fits(step) && bare(step.href) === bare(pathname)) {
       return { index, kept, tomorrow: day.steps[index + 1] ?? null };
     }
   }
