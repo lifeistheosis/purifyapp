@@ -30,6 +30,10 @@ Kept by the chat he started for this on 2026-11-23 at 20:53 UTC (session_01VuYTw
 
   At that word: taken as his yes to the goals' structure, with his numbers to come after the promo; the milestones are not built until he says so, in a fresh chat. For the promo he gave no picks from the six, so a storyboard idea for a first edit was put to him from the arbiter's own first pick (below), with two choices asked: the hook and the sound.
 
+- About 22:00, to the storyboard idea and its two choices: "send each one individually"
+
+  At that word: read as the references one at a time, as he first asked ("let's go through each video"), since all six had been put to him in one message and he chose from none. Each is now sent as its own picture (a map of its parts, `promo-edits/map.py`) with its address and one question, and the next follows his answer. If he meant the two choices one at a time instead, it is his to say. The storyboard idea below stands as an idea only, until the six are gone through.
+
 ## The first edit: a storyboard idea (put to him 2026-11-23 about 21:55 UTC; not yet his yes)
 
 About 20 seconds, 1080 by 1920, a silent master. The times are those of reference 1's sound (its bass comes in at 11.1 s) and move if he picks another sound.
