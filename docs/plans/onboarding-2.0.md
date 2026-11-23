@@ -679,7 +679,9 @@ Two scores a section, by the same judge and the same measure as the rating of 22
 | 7 | The way to Plus | 5, unproven | 5, unproven | Nothing. Its two tests run to 2027-02-09 and 2027-05-05 | A lifetime price; the sheet; a plan as the step after day seven |
 | | **As a whole** | **5.5** | **about 6** | | |
 
-**Built on the branch and not on the main web** (each with its tests and its checks): the week's card (`6efad5dba`), the downloads' test (`3e78a2622`), the brief's lines (`27c07bc7c`), Admin by road and first pick (`550833dfc`), Find a parish (`afef8b4f0`, `b01fec009`). The first of these mends two faults every new reader meets today.
+**His word on these, about 05:10 UTC the same day: "this is all going into v2.0 so no not livr".** Everything built since 1.9 ships with 2.0 and nothing of it goes to the main web before.
+
+**Built on the branch, for 2.0** (each with its tests and its checks): the week's card (`6efad5dba`), the downloads' test (`3e78a2622`), the brief's lines (`27c07bc7c`), Admin by road and first pick (`550833dfc`), Find a parish (`afef8b4f0`, `b01fec009`). The first of these mends two faults every new reader meets today.
 
 **Drawn and waiting for his yes or no:** the welcome on Today (mock-up 13, on hold by his word); the EU step (mock-up 1).
 
@@ -687,5 +689,5 @@ Two scores a section, by the same judge and the same measure as the rating of 22
 
 **Open, outside the sections:** the three copies of the 1.9 email in his inbox (read as three accounts; unproven until he looks at each one's "to" line); the heartbeat's call cut by a long send; the release letter's sender reading "Purify Shop".
 
-**Waiting on him:** when the branch's built pieces go to the main web; the welcome, yes or no; the "to" line; a picture of Admin, Onboarding, for the baselines; a read of the two privacy sentences; a priest's glance at the five lines about a need; a lifetime price.
+**Waiting on him:** the welcome, yes or no; the "to" line; a picture of Admin, Onboarding, for the baselines; a read of the two privacy sentences; a priest's glance at the five lines about a need; a lifetime price.
 
