@@ -742,6 +742,41 @@ Served: a council (9 days), a saint (5), a moment in history (2). They are named
 | The first Liturgy's guide | 7 | Eight parts and its own two buttons. What "done" is there: its last part reached, or the part read today |
 | A list or a hub (Find a parish 4, the Fathers' paths 4, the Church's year 3, Today's readings 3, the councils, the Church's history, Start here, Your rule) | 18 | No one thing and no end. Each needs one thing chosen as the day's step, or its own way of being kept |
 
+## Row 3, a chapter's day and the guide's day (2026-11-23)
+
+**His word, about 15:07 UTC, to "for Bible chapters and the Liturgy guide, should reaching the end keep the day by itself, with nothing extra drawn": "yes".** Commits `855bb915d`, `676995c49` and the one that carries this section. Stills from the export: `docs/plans/reader-map/img/day-guide-ready.jpg` (the guide's last page, with nothing of the week on it) and `day-week-last-kept.jpg` (Today after the seventh day).
+
+**A chapter's day.** The Bible's reader floats its own bars over the page and opens the next chapter when its end is reached, so a button at that end would stand under them and on the way into another chapter. On a chapter's day (the Gospel of John, Job, the first psalm) a mark at the end of the verses keeps the day once the last verse has stood on the screen two seconds, over the bars, while the page is seen: as long as a lesson's end before the lesson counts as read. Passing it on the way somewhere else keeps nothing. The mark draws nothing a reader sees, and is not in the page at all on any day but the reader's own. A psalm short enough to stand whole on one screen is kept two seconds after it is opened; that is the same rule, and no stricter one was asked for.
+
+**The guide's day.** The first Liturgy's guide is a flow of its own with its own finish, the page that keeps the reader's checklist and day. Reaching that page keeps the day; no card before it does. A reader who finished the guide on an earlier day has the day kept as the guide is opened.
+
+**Nothing of the week is drawn on either,** as on a prayer's page. Today says the day is kept when the reader is back. With the frame off, as every reader has it, nothing changes.
+
+**So the frame serves forty-five of the sixty-three days:** a lesson 11, a council 9, the guide 7, a prayer 6, a saint 5, a chapter 5, a moment in history 2. Twenty-five by Done, twenty by the page's own end.
+
+**Found by the probe: a fault in 1.9 as it shipped, mended on the branch** (`676995c49`). Walking the guide card by card, Next tapped at the foot of "During the Liturgy" opened "Something went wrong" in place of "After the Liturgy". The strip under the guide's bar built its observer's margin from its own place on the screen; a new card arrives while the page is still far down the card before it, the strip stood 1,379px above the screen for that moment, the margin read "--1379px", and the browser refuses it. "Try again" on that page brings the card, so a reader is not stopped, but every reader on a phone who reads "During the Liturgy" to its foot meets the error page once. The margin is now where the strip's foot stands once it is stuck, by its own style. A test holds every observer margin in app, components and lib to a height, a style or a value held at nothing or more (`lib/ui/__tests__/observerMargins.test.ts`); the five others were sound. The same code is on main. **His to say:** whether this one mend goes to the main web before 2.0; by his word of 05:06 nothing does unless he says so.
+
+**The checks.** Nine more tests (the own-end days 5 more, the observer margins 4), each failing on the code before. Typecheck 0. The unit suite 15,648 passed, 7 skipped, 0 failed. Lint clean on the changed files. `npm run build` green. The app export green. The probe: 81 of 81, twice. It walks a chapter's day (opening keeps nothing; the end passed in half a second keeps nothing; the end rested at keeps the day and the reader stays in the chapter) and the guide's day (card by card to its last page; no card before it keeps the day). The guardrail walk on the chapter's page, the guide and Today after each, at a phone's size and two tablets', in English and Arabic: sixteen screens, nothing failed.
+
+**What the week's last day looks like, and what it shows is missing.** After the seventh day Today says "Day 7 of 7, kept" and nothing more: a card with one line (`day-week-last-kept.jpg`). There is no tomorrow to name. This is where the closing moment of section 5 belongs, the one that names what comes after the week. It is not designed.
+
+## The eighteen days left: one pick for each, for his yes or no (2026-11-23)
+
+Each opens a list or a hub today, where there is no one thing and no end. Read on the code the same day. The first four need nothing new: the page already has an act of its own that can keep the day. The last four change what a day opens, so they change the week he arranged.
+
+| # | The day | Days | Today it opens | The pick | What it needs |
+|---|---|---|---|---|---|
+| 1 | Today's readings | 3 | A list of the day's prayers and readings | Kept by the readings' own Done: "Read them in one go" ends on "Today's readings are read." | Nothing new: the flow and its Done exist |
+| 2 | The Fathers' paths (Start with the Fathers 3, Pray with the Fathers 1) | 4 | A path's page: seven days of readings | Kept by the path's own "Mark as read" on a day of the path | Nothing new |
+| 3 | Find a parish | 4 | The finders by region, the reader's own first | Kept when the reader opens a parish finder, or the row to the first Liturgy's guide: their own act | Nothing new |
+| 4 | Your rule | 1 | The reader's own rule | Kept by saying their rule through, as any prayer is | Nothing new. A reader with no rule yet makes one first |
+| 5 | Start here | 1 | A hub of seven first steps | The day becomes the hub's own first step, "Begin with one short prayer": the lesson What is prayer?, with Done at its end | Changes the newcomer's first day |
+| 6 | The councils | 1 | The councils' front page | The day becomes one council: Ephesus (this reader had Nicaea the day before) | Changes the seeker's fourth day |
+| 7 | The Church's history | 1 | The timeline's front page | The day becomes one moment: Pentecost | Changes the seeker's second day; one new step name, in his words |
+| 8 | The Church's year | 3 | The calendar | The hardest: the calendar is a tool, not a reading. Proposed: the day's own saint or feast, on its own page with Done at its end; on a day with no such page, as today | His call. The page differs every day, so it cannot be walked once and trusted |
+
+**If all eight are yes,** every one of the sixty-three days has a way of being kept on its page, but for a day of the Church's year that falls where the day has no page of its own; that one stays as it is today.
+
 ## The changes, rated (2026-11-23, about 07:45 UTC)
 
 **His word: "rate our changes".** By the same judge and the same measure as the rating of 22 November: what this chat has changed since 1.9, as each stood on the branch when he asked.
@@ -759,7 +794,7 @@ Served: a council (9 days), a saint (5), a moment in history (2). They are named
 
 **What holds the number down.** Readers have none of it until 2.0 ships. The first week was still a link on 47 of the 63 days. After day seven is untouched, at 3. And the first build of "Done for today" needed three more: its line stood over the page's head and its button in the app's shell. The probe caught both before he saw them, at the cost of time.
 
-**After the rating, the same day:** a prayer's day and the day's lines in twenty languages, then a lesson's day (the two sections above). "Done for today" then reads 8: 33 of 63 days, every language, one design on every kind of page it serves. The first week on the branch reads 5.5 and the whole about 6.5. It stays there until the thirty days left (a chapter, the guide, the lists and hubs) are decided and built.
+**After the rating, the same day:** a prayer's day and the day's lines in twenty languages, then a lesson's day (the two sections above). "Done for today" then reads 8: 33 of 63 days, every language, one design on every kind of page it serves. The first week on the branch reads 5.5 and the whole about 6.5. It stays there until the thirty days left (a chapter, the guide, the lists and hubs) are decided and built. **Later the same day, at his "yes":** a chapter's day and the guide's day. The frame serves 45 of the 63 days; the first week on the branch reads 6 and the whole about 6.7. One fault of 1.9 was found and mended on the way (the guide's card that became an error page).
 
 ## Status, section by section (2026-11-23, about 05:00 UTC)
 
@@ -790,7 +825,9 @@ Two scores a section, by the same judge and the same measure as the rating of 22
 
 **Built after that again, at his "keep going":** a lesson's day. The frame serves thirty-three of the sixty-three days.
 
-**Not yet decided, and so not built:** a chapter's day, the guide, the lists and hubs (thirty days).
+**Built after that, at his "yes":** a chapter's day and the guide's day, each kept by its own end. The frame serves forty-five of the sixty-three days.
+
+**Not yet decided, and so not built:** the eighteen days that open a list or a hub. One pick for each is in "The eighteen days left".
 
 **Open, outside the sections:** the three copies of the 1.9 email in his inbox (read as three accounts; unproven until he looks at each one's "to" line); the heartbeat's call cut by a long send; the release letter's sender reading "Purify Shop".
 
