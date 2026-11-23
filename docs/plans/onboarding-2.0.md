@@ -777,6 +777,41 @@ Each opens a list or a hub today, where there is no one thing and no end. Read o
 
 **If all eight are yes,** every one of the sixty-three days has a way of being kept on its page, but for a day of the Church's year that falls where the day has no page of its own; that one stays as it is today.
 
+## The eighteen days: the eight picks, built (2026-11-23)
+
+**His word, about 17:38 UTC, to two questions put together (send the guide's mend to the main web now or with 2.0; and one pick for each of the eighteen list days): "do all".** Read as yes to all eight picks, built on the branch for 2.0, and yes to the mend being made ready for the main web. It is not read as his word to push to main: that is asked again, alone (the section after this one). Commits `552789c07`, `7f4b6fd32` and the one that carries this section. Stills from the export: `docs/plans/reader-map/img/day-readings-today.jpg`, `day-year-today.jpg`, `day-year-done.jpg`, `day-pentecost-done.jpg`.
+
+| # | The day | Days | What it is now | How the day is kept |
+|---|---|---|---|---|
+| 1 | Today's readings | 3 | The day's readings themselves: the card starts them as one walk and opens the first | By that walk's own Done, in the Bible's reader |
+| 2 | The Fathers' paths | 4 | As it was | By the path's own "Mark as read", made in this visit |
+| 3 | Find a parish | 4 | As it was | By a parish finder opened, or the row to the first Liturgy's guide |
+| 4 | Your rule | 1 | As it was: the step opens the builder | By the reader's own rule said through, on its own page under the builder |
+| 5 | Start here | 1 | The lesson What is prayer? | By Done at its end, as any lesson |
+| 6 | The councils | 1 | The Council of Ephesus | By Done at its end |
+| 7 | The Church's history | 1 | Pentecost | By Done at its end |
+| 8 | The Church's year | 3 | The page of who leads the day | By Done at its end, as any saint's page. On a day whose lead has no page: the calendar, taken when it is opened |
+
+Nothing of the week is drawn on a path, on Find a parish, on a rule or in the Bible's reader. Today says the day is kept when the reader is back. With the frame off, as every reader has it, every one of these days is as it was.
+
+**What the picks did not say, found on the code.**
+
+- **Today's readings opened the day's prayers, and on a phone that page does not show the readings at all.** So with the frame the card starts the walk Today's own "Read all" starts and opens its first reading. The line under the step's name was "The saint, the fast and the readings for today.", which the readings do not hold; the card says the app's own line for this walk, "Read them in one go", and of one reading it says no line. A day with no readings stays as it was.
+- **The Church's year is the page of who leads the day as the calendar itself names them:** a feast if the day has one, else its first saint. **142 of the 366 days have such a page** (the new calendar: November, December, January and August are almost whole, and each of the other eight months has three to nine such days). On the other 224 the day is the calendar, taken when it is opened, so no day is left that cannot be kept. The card keeps the step's name and says no line under it: its own promised the fast, the readings and the feasts ahead, and Today already names the day's saint once. If the lead's page is already a day of the reader's own week (St. Mary of Egypt, for a newcomer on her day), the day is the calendar too: no page comes twice.
+- **What each of the two opens is decided on the phone, on the day** (`lib/onboarding/dayStep.ts`), where the week is read for the frame. It adds nothing to the app's size: the calendar is already loaded on every page, measured on the export.
+- **The readings' day is found by no page.** A prayer said on the day's page, or a chapter's end, cannot take it for its own day (`lib/onboarding/__tests__/dayStep.test.ts`).
+- **A seeker's own pick.** A reader is on the seeker's road because the Fathers, the councils or history were the first thing they asked for. Once the road's two front-page days were Pentecost and Ephesus, a pick of the councils or of history put the front page back at the head of the week and pushed the lesson on prayer off its end. Found on the way to the second build, before anything was pushed. The pick is now the road's own day for it, Nicaea or Pentecost, as it "moved nothing but itself" before: every seeker has the same seven days, none of them a front page.
+- **The newcomer's first day.** The line under their pill promises "an introduction to Orthodox Christianity", and the day was that introduction's front page. It is now the introduction's own first step, "Begin with one short prayer": the lesson What is prayer?.
+- **Pentecost's page awaits a priest's read,** as thirty-six of the forty history pages do, the two already in first weeks among them.
+
+**So every one of the sixty-three days has a way of being kept:** thirty by Done at the page's end (a lesson 12, a council 10, a saint 5, a moment 3), thirty by the page's own end or act (the guide 7, a prayer 6, a chapter 5, a path 4, Find a parish 4, the readings 3, Your rule 1), and the three days of the Church's year by Done on the day's own page, on a day that has one.
+
+**What is still taken when it is opened.** On every road but the seeker's, a reader's own first pick can open a section's front page: the saints, the councils, the Church's history, Start here or the studies' library, the calendar by "Fasts and feasts". And the Church's year on a day with no page. Each is his to decide; none is begun.
+
+**Seen on the way, older than this work, not mended.** In Testers mode the mark covers the left of whatever floats at the foot of the Bible's reader: the chapter pill, and the readings' bar on a readings' day (its Next and Done stay clear, on the right). On Pentecost's page "Paul's missions" stands twice in The chain of events, under "What flowed from it" and under "Later". The week names Pentecost by its page's full name, so the card of the day before reads "Tomorrow: Pentecost: the Descent of the Holy Spirit", with two colons; the page's own bar says "Pentecost" alone, and the card could: his to say. And on a readings' day and a Church's year day Today holds two doors to one thing, the week's card and Today's own (Read all; the day's lead): that is what the picks ask for, said here so it is known.
+
+**The checks.** Thirty-one more tests, each failing on the code before. Typecheck 0. The unit suite 15,679 passed, 7 skipped, 0 failed. Lint clean on the changed files. The app export green. The probe: 122 of 122. It walks each pick as a reader would: a path's own mark, made once; a finder opened, and the row to the guide; a reader's own rule said through; the newcomer's, the seeker's and the two seekers-by-pick's days by name; a readings' day reading by reading to its Done (four readings on the day it ran, and none before the last kept the day); a Church's year day on a day with a page and on one without (2026-12-20). The guardrail walk on the final export: Pentecost's day, Ephesus's, a readings' day and a Church's year day, each waiting and kept, with Today in each state, at a phone's size and two tablets', in English and Arabic: thirty screens, nothing failed. The pages kept by their own act (a path, Find a parish, the builder) and the newcomer's lesson were walked on the build before it, where they are the same: eight screens, nothing failed. `npm run build` green.
+
 ## The changes, rated (2026-11-23, about 07:45 UTC)
 
 **His word: "rate our changes".** By the same judge and the same measure as the rating of 22 November: what this chat has changed since 1.9, as each stood on the branch when he asked.
@@ -794,7 +829,7 @@ Each opens a list or a hub today, where there is no one thing and no end. Read o
 
 **What holds the number down.** Readers have none of it until 2.0 ships. The first week was still a link on 47 of the 63 days. After day seven is untouched, at 3. And the first build of "Done for today" needed three more: its line stood over the page's head and its button in the app's shell. The probe caught both before he saw them, at the cost of time.
 
-**After the rating, the same day:** a prayer's day and the day's lines in twenty languages, then a lesson's day (the two sections above). "Done for today" then reads 8: 33 of 63 days, every language, one design on every kind of page it serves. The first week on the branch reads 5.5 and the whole about 6.5. It stays there until the thirty days left (a chapter, the guide, the lists and hubs) are decided and built. **Later the same day, at his "yes":** a chapter's day and the guide's day. The frame serves 45 of the 63 days; the first week on the branch reads 6 and the whole about 6.7. One fault of 1.9 was found and mended on the way (the guide's card that became an error page).
+**After the rating, the same day:** a prayer's day and the day's lines in twenty languages, then a lesson's day (the two sections above). "Done for today" then reads 8: 33 of 63 days, every language, one design on every kind of page it serves. The first week on the branch reads 5.5 and the whole about 6.5. It stays there until the thirty days left (a chapter, the guide, the lists and hubs) are decided and built. **Later the same day, at his "yes":** a chapter's day and the guide's day. The frame serves 45 of the 63 days; the first week on the branch reads 6 and the whole about 6.7. One fault of 1.9 was found and mended on the way (the guide's card that became an error page). **Later again, at his "do all":** the eighteen list days, one pick for each. All sixty-three days can be kept; the first week on the branch reads 6.5 and the whole about 7. What holds it there: the week still ends on a bare line, the welcome is on hold, and readers have none of it until 2.0.
 
 ## Status, section by section (2026-11-23, about 05:00 UTC)
 
@@ -827,7 +862,7 @@ Two scores a section, by the same judge and the same measure as the rating of 22
 
 **Built after that, at his "yes":** a chapter's day and the guide's day, each kept by its own end. The frame serves forty-five of the sixty-three days.
 
-**Not yet decided, and so not built:** the eighteen days that open a list or a hub. One pick for each is in "The eighteen days left".
+**Built after that, at his "do all" (about 17:38 UTC):** the eighteen days that opened a list or a hub, one pick for each ("The eighteen days: the eight picks, built"). Every one of the sixty-three days has a way of being kept, but the Church's year on a day whose lead has no page. Section 4 reads 6.5 on the branch and the whole about 7; a reader's own number moves only when 2.0 ships.
 
 **Open, outside the sections:** the three copies of the 1.9 email in his inbox (read as three accounts; unproven until he looks at each one's "to" line); the heartbeat's call cut by a long send; the release letter's sender reading "Purify Shop".
 
