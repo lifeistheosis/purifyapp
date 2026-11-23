@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import en from "@/lib/i18n/messages/en.json";
 import { dayOfPage } from "@/components/onboarding/DayFrame";
 
-import { FRAMED_STEPS, PAGE_OF, frameFits } from "../dayFrame";
+import { FRAMED_STEPS, OWN_END_IN, OWN_END_STEPS, PAGE_OF, frameFits, keptOnPage, ownEnd } from "../dayFrame";
 import { DAY_FRAME_LIVE } from "../flags";
 import type { WeekDay } from "../useWeek";
 import { WEEK_STEPS, type WeekStepKey } from "../week";
@@ -139,10 +139,14 @@ describe("the frame", () => {
   });
 
   it("keeps a day only at the reader's own Done, and answers it in the house's motion", () => {
-    // The one place a step is written as kept with the frame on: Done's own handler.
-    expect(frame.split("stepTaken(").length - 1).toBe(1);
-    expect(frame).toContain("movePage(() => writeWeek(stepTaken(readWeek(), localDay(new Date()))), { grows: [el], glides: [...piecesBefore(el), ...stuckOver(el)] });");
-    expect(frame).toContain('countWeekStep(here.index + 1, "kept");');
+    // Done's own handler keeps the day, inside the move; nothing else in the frame writes a week.
+    expect(frame).toContain("movePage(() => void keepDay(here.index), { grows: [el], glides: [...piecesBefore(el), ...stuckOver(el)] });");
+    expect(frame).not.toContain("writeWeek(");
+    expect(frame).not.toContain("stepTaken(");
+    expect(frame.split("keepDay(").length - 1).toBe(2);
+    // And it is kept once: the step is taken only while it is still the one waiting, and counted there.
+    const keep = flat("lib/onboarding/keepDay.ts");
+    expect(keep).toContain('if (stepToday(week, today) !== index) return false; writeWeek(stepTaken(week, today)); countWeekStep(index + 1, "kept"); return true;');
   });
 
   it("stands at the end of the page and never over it: nothing of it is fixed or sticky", () => {
@@ -156,18 +160,82 @@ describe("the frame", () => {
     expect(hook).toContain("useSyncExternalStore(subscribe, daySnapshot, () => \"|\")");
   });
 
-  it("says its four lines in the app's own words file", () => {
+  it("says its three new lines in the app's own words file, and the way back in words the app already had", () => {
     const words = en as Record<string, string>;
     expect(words["onboard.week.done"]).toBe("Done for today");
     expect(words["onboard.week.kept"]).toBe("Day {n} of 7, kept");
     expect(words["onboard.week.tomorrow"]).toBe("Tomorrow: {title}");
-    expect(words["onboard.week.back"]).toBe("Back to Today");
-    for (const key of ["onboard.week.done", "onboard.week.kept", "onboard.week.tomorrow", "onboard.week.back", "onboard.week.eyebrow"]) expect(frame, key).toContain(`"${key}"`);
+    // "Back to Today" was the Catechism's already, in every language: no second key for the same words.
+    expect(words["catechism.backToToday"]).toBe("Back to Today");
+    expect(words["onboard.week.back"]).toBeUndefined();
+    for (const key of ["onboard.week.done", "onboard.week.kept", "onboard.week.tomorrow", "catechism.backToToday", "onboard.week.eyebrow"]) expect(frame, key).toContain(`"${key}"`);
+  });
+
+  it("says them in every language the app speaks, each with the same blanks to fill", () => {
+    const blanks = (v: string) => (v.match(/\{[a-zA-Z0-9_]+\}/g) ?? []).sort().join(",");
+    const english = en as Record<string, string>;
+    const files = readdirSync("lib/i18n/messages").filter((f) => f.endsWith(".json") && f !== "en.json");
+    expect(files).toHaveLength(20);
+    for (const file of files) {
+      const words = JSON.parse(src(join("lib/i18n/messages", file))) as Record<string, string>;
+      for (const key of ["onboard.week.done", "onboard.week.kept", "onboard.week.tomorrow", "catechism.backToToday", "onboard.week.eyebrow"]) {
+        expect(words[key], `${file} ${key}`).toBeTruthy();
+        expect(words[key], `${file} ${key}`).not.toBe(english[key]);
+        expect(blanks(words[key]), `${file} ${key}`).toBe(blanks(english[key]));
+        expect(words[key], `${file} ${key}`).not.toContain("\u2014");
+      }
+    }
   });
 
   it("wears the week's own card once the day is kept, as Today draws it", () => {
     const card = "lm-card relative overflow-hidden rounded-[22px] p-5 ring-1 ring-inset ring-premium/30 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.6)]";
     expect(frame).toContain(card);
     expect(flat("components/onboarding/FirstStepsNudge.tsx")).toContain(card.replace("relative overflow-hidden", "relative mb-4 overflow-hidden"));
+  });
+});
+
+describe("a prayer's day", () => {
+  const frame = flat("components/onboarding/DayFrame.tsx");
+  const reader = flat(OWN_END_IN);
+
+  it("is kept by the prayer's own end: the Creed, the prayers before sleep, the morning's prayers", () => {
+    expect(OWN_END_STEPS.map((k) => WEEK_STEPS[k].href).sort()).toEqual(["/prayers/before-sleep", "/prayers/creed", "/prayers/morning"]);
+    for (const key of OWN_END_STEPS) {
+      expect(ownEnd(key), key).toBe(true);
+      // Never by Done as well: one thing is not said twice on a page.
+      expect(frameFits(key), key).toBe(false);
+      expect(keptOnPage(key), key).toBe(true);
+    }
+    for (const key of FRAMED_STEPS) expect(ownEnd(key), key).toBe(false);
+    // A lesson about praying is a lesson, not a prayer said through.
+    for (const key of ["jesusPrayer", "morningRule", "trisagion", "yourRule", "readings"] as const) expect(keptOnPage(key), key).toBe(false);
+  });
+
+  it("each of its pages is read in the one prayer reader, where the end is told", () => {
+    for (const file of ["app/(app)/prayers/[planId]/page.tsx", "app/(app)/prayers/morning/page.tsx"]) expect(flat(file), file).toMatch(/RuleInReadersLanguage|PrayerRuleReader/);
+    expect(flat("components/prayers/RuleInReadersLanguage.tsx")).toContain("<PrayerRuleReader");
+    expect(reader.split("<DayKeptBy ").length - 1).toBe(1);
+    // The end it is told is the rule complete today, the mark the prayer's own finish sets.
+    expect(reader).toContain("<DayKeptBy done={kept} />");
+    expect(reader).toContain("const kept = useSyncExternalStore(subscribe, () => isKept(rule.id), () => false);");
+    const mounts = filesUnder(["app", "components"]).filter((f) => /<DayKeptBy[\s/>]/.test(readFileSync(f, "utf8")));
+    expect(mounts).toEqual([OWN_END_IN]);
+  });
+
+  it("is that day only on its own page, while it waits", () => {
+    expect(dayOfPage(week({ waiting: 3 }), "/prayers/creed", ownEnd)).toEqual({ index: 3, kept: false, tomorrow: steps[4] });
+    expect(dayOfPage(week({ waiting: 3 }), "/prayers/before-sleep", ownEnd)).toBeNull();
+    expect(dayOfPage(week({ waiting: 2 }), "/councils/first-nicaea", ownEnd)).toBeNull();
+    expect(frame).toContain("const here = dayOfPage(useWeekDay(), usePathname(), ownEnd); const waiting = here && !here.kept ? here.index : null;");
+    expect(frame).toContain("if (done && waiting != null) keepDay(waiting);");
+  });
+
+  it("draws nothing on a prayer's page: no retention loops inside prayers", () => {
+    const island = frame.slice(frame.indexOf("export function DayKeptBy("));
+    expect(island).toContain("return null; }");
+    // Not a tag in it, and never the week's end or its words in the prayer reader.
+    expect(island).not.toMatch(/<[A-Za-z]/);
+    expect(reader).not.toContain("<DayEnd");
+    expect(reader).not.toContain("onboard.week.");
   });
 });

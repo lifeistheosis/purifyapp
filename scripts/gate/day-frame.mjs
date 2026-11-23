@@ -24,7 +24,12 @@
 //   7. the page opened again that day keeps its card and does not move by itself;
 //   8. the next day tomorrow's step waits on Today, and the council's page wears nothing;
 //   9. with motion reduced, Done is answered with no motion and the card stands whole;
-//  10. at a tablet's size the card stands whole too, clear of the bars and of the Testers mark.
+//  10. at a tablet's size the card stands whole too, clear of the bars and of the Testers mark;
+//  11. on a prayer's day (the owner's yes of 2026-11-23: the prayer's own finish keeps the day, with
+//      no second button) the prayer's page wears nothing of the week, before its end or after it;
+//      opening keeps nothing; the reader moving down through the prayer to its end keeps the day,
+//      once; and Today then says so, with tomorrow's step by name. With the frame off, opening the
+//      prayer takes the step, as before.
 //
 // The tap on Done is recorded frame by frame and judged by the gate's own motion check
 // (scripts/gate/frames.mjs): no cut, no jump, no flash; and with motion reduced, nothing that moves.
@@ -79,6 +84,11 @@ const READER = {
   "purify:calendar.style": "new",
   "purify:whatsNewSeen": "99",
 };
+/** Another Christian tradition, completely new, who asked for quiet: the Jesus Prayer's lesson, then the Creed, then the First Council of Nicaea. */
+const PRAYING = { ...READER, "purify:background": "christian" };
+const CREED = "/prayers/creed";
+/** One day kept, yesterday: today is the second day, a prayer. */
+const SECOND_DAY = { "purify:week": JSON.stringify({ at: 1, day: YESTERDAY, passed: 0 }) };
 /** Two days kept, the second yesterday: today is the third day. */
 const THIRD_DAY = { "purify:week": JSON.stringify({ at: 2, day: YESTERDAY, passed: 0 }) };
 /** Testers mode, as lib/onboarding/testers.ts starts it. */
@@ -394,6 +404,107 @@ console.log("\n  At a tablet's size (800 by 1280)");
   await ctx.close();
 }
 
+console.log("\n  A prayer's day (the second day, the Creed)");
+{
+  // What the prayer's page shows of the week, and of its own end.
+  const prayer = (page) =>
+    page.evaluate(() => {
+      const main = document.querySelector("main");
+      const words = main.innerText;
+      const end = document.querySelector("[data-rule-end]");
+      return {
+        path: location.pathname,
+        frame: !!document.querySelector("[data-day-end], [data-day-done], [data-day-kept], [data-day-mark]"),
+        week: /Your first week|Done for today|of 7, kept|Tomorrow:/.test(words),
+        complete: end?.querySelector("[data-rule-complete-words]")?.textContent.trim() ?? null,
+        kept: localStorage.getItem("purify:week"),
+        y: Math.round(scrollY),
+        tall: document.documentElement.scrollHeight,
+      };
+    });
+  // The reader moves down through the prayer as a hand does, a part of a screen at a time, to its end.
+  const prayThrough = async (page) => {
+    for (let i = 0; i < 80; i++) {
+      const done = await page.evaluate(() => {
+        window.scrollBy(0, 260);
+        return Math.ceil(scrollY + innerHeight) >= document.documentElement.scrollHeight;
+      });
+      await page.waitForTimeout(120);
+      if (done) break;
+    }
+    await page.waitForTimeout(1500);
+  };
+
+  {
+    const ctx = await reader({ ...PRAYING, ...SECOND_DAY });
+    const page = await today(ctx);
+    const c = await card(page);
+    if (!c.step || c.href?.replace(/\/$/, "") !== CREED) fault(`with the frame off, today's step is ${JSON.stringify(c.step)} (${c.href}), not the Creed`);
+    else {
+      await begin(page);
+      await page.waitForTimeout(3000);
+      const m = await prayer(page);
+      check(/"at":2/.test(m.kept ?? "") && !m.frame && !m.week, "with the frame off, opening the prayer took the step, as before, and its page wears nothing of the week", `with the frame off the week is ${m.kept}; the page shows the frame: ${m.frame}, the week's words: ${m.week}`);
+    }
+    await ctx.close();
+  }
+
+  const ctx = await reader({ ...PRAYING, ...SECOND_DAY, ...TESTING });
+  let page = await today(ctx);
+  const c = await card(page);
+  if (!c.step || c.href?.replace(/\/$/, "") !== CREED) {
+    fault(`today's step is ${JSON.stringify(c.step)} (${c.href}), not the Creed`);
+  } else {
+    console.log(`    today for this reader: ${c.step[0]}, ${c.step[1]} (${c.href})`);
+    await begin(page);
+    await page.waitForTimeout(3000);
+    const opened = await prayer(page);
+    check(opened.path.replace(/\/$/, "") === CREED && !opened.frame && !opened.week, "the prayer's page wears nothing of the week: no line, no Done, no card", `the prayer's page shows the frame: ${opened.frame}, the week's words: ${opened.week}`);
+    check(/"at":1/.test(opened.kept ?? "") && !opened.complete, "opening it kept nothing, and the prayer is not yet said", `after opening the week is ${opened.kept} and the prayer's end says ${JSON.stringify(opened.complete)}`);
+
+    await page.goBack();
+    await page.waitForTimeout(2500);
+    const waits = await card(page);
+    check(waits.step?.[1] === c.step[1] && !waits.kept, "back on Today before the prayer is said, the card waits with the same step", `Today shows ${JSON.stringify(waits)}`);
+
+    await begin(page);
+    await page.waitForTimeout(2500);
+    await prayThrough(page);
+    const said = await prayer(page);
+    check(said.complete === "Glory to God. The rule is complete for today.", `moving down through the prayer to its end, the prayer's own end answers: "${said.complete}"`, `at the prayer's end (${said.y} of ${said.tall}) its end says ${JSON.stringify(said.complete)}`);
+    check(new RegExp(`"at":2,"day":"${DAY}","passed":0`).test(said.kept ?? ""), "and the day is kept on the device, by that end alone", `the week is ${said.kept}`);
+    check(!said.frame && !said.week, "still nothing of the week on the prayer's page: no retention loop inside a prayer", `after its end the prayer's page shows the frame: ${said.frame}, the week's words: ${said.week}`);
+    await still(page, "prayer-1-said");
+
+    // Told again (the page read on, the store heard twice): the day is kept once.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await prayThrough(page);
+    const again = await prayer(page);
+    check(new RegExp(`"at":2,"day":"${DAY}","passed":0`).test(again.kept ?? ""), "read through again, the day is still kept once", `after a second reading the week is ${again.kept}`);
+    await page.close();
+
+    page = await today(ctx);
+    const kept = await card(page);
+    check(!kept.step && kept.kept?.[0] === "Day 2 of 7, kept" && kept.kept[1] === "Tomorrow: First Council of Nicaea" && kept.keptLinks === 0, `Today says the day is kept: "${kept.kept?.join('", "')}", with nothing to begin`, `Today shows ${JSON.stringify(kept)}`);
+    await still(page, "prayer-2-today-kept");
+    await page.close();
+
+    page = await today(ctx, { tomorrow: true });
+    const next = await card(page);
+    check(next.step?.[0] === "Your first week · 3 of 7" && next.step[1] === "First Council of Nicaea" && !next.kept, `the next day, the step named waits on Today: "${next.step?.join('", "')}"`, `the next day Today shows ${JSON.stringify(next)}`);
+  }
+  await ctx.close();
+
+  // A prayer said earlier the same day is kept as its page is opened: it was said today.
+  {
+    const ctx2 = await reader({ ...PRAYING, ...SECOND_DAY, ...TESTING, "purify.prayers.creed.dates": JSON.stringify([DAY]) });
+    const page2 = await open(ctx2, CREED);
+    const m = await prayer(page2);
+    check(new RegExp(`"at":2,"day":"${DAY}","passed":0`).test(m.kept ?? "") && m.complete, "a prayer already said today keeps the day as its page is opened", `opened already said, the week is ${m.kept} and the prayer's end says ${JSON.stringify(m.complete)}`);
+    await ctx2.close();
+  }
+}
+
 await browser.close();
-console.log(faults ? `\nthe day's frame: ${faults} fault${faults === 1 ? "" : "s"}` : "\nthe day's frame: a day is kept by Done at the end of its page, and ends on tomorrow");
+console.log(faults ? `\nthe day's frame: ${faults} fault${faults === 1 ? "" : "s"}` : "\nthe day's frame: a day is kept by Done at the end of its page or by a prayer's own end, and ends on tomorrow");
 process.exit(faults ? 1 : 0);

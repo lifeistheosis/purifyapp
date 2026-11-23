@@ -12,11 +12,6 @@
 //                           end and leads away from the week;
 //   a chapter               the reader opens the next chapter when its end is
 //                           reached, and floats its own bars over the page;
-//   a prayer                it has an end of its own: each prayer is marked as
-//                           it is said, and the rule's own finish answers the
-//                           last (components/prayers/PrayerRuleReader.tsx,
-//                           RuleEnd). A second Done under it would say one
-//                           thing twice: the prayer's own end is the day's;
 //   the first Liturgy's     a guide of eight parts with its own two buttons:
 //   guide                   its own end is the day's end;
 //   a list or a hub         no one thing and no end (a section's front page,
@@ -26,6 +21,16 @@
 // Each of these is a slice of its own. Until it is built, such a day is as
 // it was with the frame off: taken when it is opened, with no Done, so no
 // reader with the frame is left on a day that cannot be kept.
+//
+// A prayer is kept another way (the owner's yes of 2026-11-23, to "on a
+// prayer day, should finishing the prayer keep the day by itself, with no
+// extra button"). It has an end of its own: each prayer is marked as the
+// reader moves down through it, and the rule's own finish answers the last
+// (components/prayers/PrayerRuleReader.tsx, service/RuleEnd.tsx). A second
+// Done under it would say one thing twice. So on a prayer's day that end
+// keeps the day (OWN_END_STEPS), and nothing of the week is drawn on the
+// prayer's page at all: no retention loops inside prayers (his word of
+// 2026-10-16). Today says the day is kept when the reader is back.
 //
 // A step is served when it is named here AND its page mounts the frame's end
 // (PAGE_OF below says which file): the end stands inside the page, in the
@@ -48,4 +53,20 @@ export const PAGE_OF: Readonly<Record<string, string>> = {
 /** Whether this step's page is one the frame serves today. */
 export function frameFits(key: WeekStepKey): boolean {
   return FRAMED_STEPS.includes(key);
+}
+
+/** The steps whose page has an end of its own that keeps the day: a prayer said through. */
+export const OWN_END_STEPS: readonly WeekStepKey[] = ["creed", "beforeSleep", "morningPrayers"];
+
+/** Where a prayer's end is told to the week: the one reader every prayer's page is read in. */
+export const OWN_END_IN = "components/prayers/PrayerRuleReader.tsx";
+
+/** Whether this step's day is kept by its page's own end. */
+export function ownEnd(key: WeekStepKey): boolean {
+  return OWN_END_STEPS.includes(key);
+}
+
+/** Whether this step's day is kept on its page, by Done or by the page's own end, and so not when it is opened. */
+export function keptOnPage(key: WeekStepKey): boolean {
+  return frameFits(key) || ownEnd(key);
 }

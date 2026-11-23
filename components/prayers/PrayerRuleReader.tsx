@@ -64,6 +64,7 @@ import { Fragment, useMemo, useRef, useState, useSyncExternalStore, type ReactNo
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CampaignPrayerSteps } from "@/components/campaigns/CampaignPrayerSteps";
 import { CommemorationStep } from "@/components/prayers/service/CommemorationStep";
+import { DayKeptBy } from "@/components/onboarding/DayFrame";
 import { PrayerLight } from "@/components/prayers/service/PrayerLight";
 import { ServiceHeader } from "@/components/prayers/service/ServiceHeader";
 import { PrayerStep } from "@/components/prayers/service/PrayerStep";
@@ -311,6 +312,10 @@ export function PrayerRuleReader({
           (service/PrayerLight.tsx; globals.css, .prayer-light). The icon
           itself heads the page. */}
       <PrayerLight />
+      {/* When this prayer is today's step of a reader's first week (2.0, off for readers), its own
+          end keeps the day (the owner's yes of 2026-11-23). This draws nothing: no retention loops
+          inside prayers, so nothing of the week stands on this page (components/onboarding/DayFrame.tsx). */}
+      <DayKeptBy done={kept} />
       <article ref={article} data-prayer-reader className="relative mx-auto w-full max-w-[640px]">
         <ServiceHeader
           rule={rule}

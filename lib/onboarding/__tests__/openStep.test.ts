@@ -63,7 +63,7 @@ describe("the week's card on Today", () => {
     // With the day's frame (2.0) opening writes nothing: the day is kept by the reader's Done on its page.
     expect(card).toContain("keep: framed ? () => {} : () => writeWeek(stepTaken(readWeek(), today()))");
     // And only for a step whose page the frame serves: any other is taken when it is opened, as before.
-    expect(card).toContain("const framed = day != null && frameFits(week.step.key);");
+    expect(card).toContain("const framed = day != null && keptOnPage(week.step.key);");
     expect(card.split("dismissNudge()").length - 1).toBe(1);
     expect(card).toContain("keep: () => dismissNudge()");
     // And the card says when it has left.

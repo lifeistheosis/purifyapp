@@ -27,33 +27,43 @@
 // knows nothing of who reads it (the roads' rule, lib/onboarding/road.ts):
 // this island decides on the device, and draws nothing for a reader without
 // the frame, on the server or on a hydration, or on any day but the page's.
+//
+//   DayKeptBy  for a page with an end of its own, a prayer said through (the
+//            owner's yes of 2026-11-23): when that end is reached on the
+//            reader's day, the day is kept. It draws nothing.
 
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CARD_BG } from "@/components/ui/Graphite";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
-import { countWeekStep } from "@/lib/analytics/moreCount";
-import { frameFits } from "@/lib/onboarding/dayFrame";
-import { readWeek, writeWeek } from "@/lib/onboarding/state";
+import { frameFits, ownEnd } from "@/lib/onboarding/dayFrame";
+import { keepDay } from "@/lib/onboarding/keepDay";
 import { useWeekDay, type WeekDay } from "@/lib/onboarding/useWeek";
-import { localDay, stepTaken, type WeekStep } from "@/lib/onboarding/week";
+import type { WeekStep, WeekStepKey } from "@/lib/onboarding/week";
 import { movePage, piecesBefore, stuckOver } from "@/lib/ui/inPageMove";
 import { goToReadingPlace, shiftToReadingPlace, visibleBand } from "@/lib/ui/readingPlace";
 
 const bare = (path: string) => path.replace(/\/+$/, "") || "/";
 
-/** Which of the reader's days this page is, if it is one the frame serves: the step waiting today, or the one kept today. */
-export function dayOfPage(day: WeekDay | null, pathname: string | null): { index: number; kept: boolean; tomorrow: WeekStep | null } | null {
+/**
+ * Which of the reader's days this page is: the step waiting today, or the one kept today. Only for a
+ * step `fits` takes: one the frame serves by default, or one kept by its page's own end.
+ */
+export function dayOfPage(
+  day: WeekDay | null,
+  pathname: string | null,
+  fits: (key: WeekStepKey) => boolean = frameFits,
+): { index: number; kept: boolean; tomorrow: WeekStep | null } | null {
   if (!day || !pathname) return null;
   for (const [index, kept] of [
     [day.waiting, false],
     [day.kept, true],
   ] as const) {
     const step = index != null ? day.steps[index] : null;
-    if (index != null && step && frameFits(step.key) && bare(step.href) === bare(pathname)) {
+    if (index != null && step && fits(step.key) && bare(step.href) === bare(pathname)) {
       return { index, kept, tomorrow: day.steps[index + 1] ?? null };
     }
   }
@@ -89,12 +99,12 @@ export function DayEnd({ className }: { className?: string }) {
 
   const done = () => {
     answered.current = true;
-    countWeekStep(here.index + 1, "kept");
     // The line and the button give way to the card in the house's motion, never with a cut: the
     // block grows, what stands on the screen over it glides as the page goes with it, and the bars
-    // at the head of the screen keep their own picture, so the page passes under them.
+    // at the head of the screen keep their own picture, so the page passes under them. The day is
+    // kept once, even by a second tap that lands while the first is being pictured (keepDay).
     const el = block.current;
-    movePage(() => writeWeek(stepTaken(readWeek(), localDay(new Date()))), { grows: [el], glides: [...piecesBefore(el), ...stuckOver(el)] });
+    movePage(() => void keepDay(here.index), { grows: [el], glides: [...piecesBefore(el), ...stuckOver(el)] });
   };
 
   return (
@@ -117,7 +127,8 @@ export function DayEnd({ className }: { className?: string }) {
               href="/"
               className="tap-press mt-4 inline-flex min-h-11 items-center gap-2 rounded-pill border border-paper/22 bg-paper/[0.03] px-5 font-sans text-ui font-semibold text-paper"
             >
-              {t("onboard.week.back")}
+              {/* The way back in the words the app already has for it, in every language (the Catechism's card on Today). */}
+              {t("catechism.backToToday")}
               <ChevronRight size={14} aria-hidden className="shrink-0 rtl:-scale-x-100" />
             </Link>
           </div>
@@ -139,4 +150,23 @@ export function DayEnd({ className }: { className?: string }) {
       </div>
     </div>
   );
+}
+
+/**
+ * For a page with an end of its own: a prayer said through (the owner's yes of 2026-11-23, to
+ * "finishing the prayer keeps the day by itself, with no extra button"). `done` is that end, told
+ * by the page: the rule complete today. When it is reached on the reader's day, the day is kept,
+ * and one prayed earlier the same day is kept as it is opened: it was said today.
+ *
+ * It draws nothing. No retention loops inside prayers (his word of 2026-10-16,
+ * components/prayers/PrayerRuleReader.tsx): nothing of the week stands on a prayer's page, the
+ * prayer's own end answers as it always has, and Today says the day is kept when the reader is back.
+ */
+export function DayKeptBy({ done }: { done: boolean }) {
+  const here = dayOfPage(useWeekDay(), usePathname(), ownEnd);
+  const waiting = here && !here.kept ? here.index : null;
+  useEffect(() => {
+    if (done && waiting != null) keepDay(waiting);
+  }, [done, waiting]);
+  return null;
 }

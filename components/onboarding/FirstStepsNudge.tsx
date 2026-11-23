@@ -10,7 +10,7 @@ import { reached } from "@/lib/ab/device";
 import { countWeekStep } from "@/lib/analytics/moreCount";
 import { dismissNudge, readWeek, wasOnboardedAgain, writeWeek } from "@/lib/onboarding/state";
 import { countDayOne } from "@/lib/onboarding/count";
-import { frameFits } from "@/lib/onboarding/dayFrame";
+import { keptOnPage } from "@/lib/onboarding/dayFrame";
 import { firstOpening, stepOpening, type StepOpening, type StepParts } from "@/lib/onboarding/openStep";
 import { DAY_ONE_KEYS, dayOneFor, type DayOneKey } from "@/lib/onboarding/space";
 import { useDayOneShown } from "@/lib/onboarding/useDayOne";
@@ -60,8 +60,8 @@ export function FirstStepsNudge() {
   const day = useWeekDay();
   const opening = useStepOpening();
 
-  // Kept today, by the reader's own Done: the card says so until tomorrow, in place of the step.
-  if (day && day.kept != null && !week && frameFits(day.steps[day.kept].key)) {
+  // Kept today on its own page, by the reader's Done or by a prayer's own end: the card says so until tomorrow, in place of the step.
+  if (day && day.kept != null && !week && keptOnPage(day.steps[day.kept].key)) {
     const next = day.steps[day.kept + 1];
     return <KeptCard eyebrow={t("onboard.week.kept", { n: day.kept + 1 })} title={next ? t("onboard.week.tomorrow", { title: t(next.titleKey) }) : null} />;
   }
@@ -72,8 +72,8 @@ export function FirstStepsNudge() {
 
   if (week) {
     const today = () => localDay(new Date());
-    // With the frame on, and a page the frame serves: this day is kept by Done on its page.
-    const framed = day != null && frameFits(week.step.key);
+    // With the frame on, and a day that is kept on its page (by Done at its end, or by a prayer's own end): not here.
+    const framed = day != null && keptOnPage(week.step.key);
     return (
       <StepCard
         // A reader who is back is not in their first week: the same steps, called their next step.
