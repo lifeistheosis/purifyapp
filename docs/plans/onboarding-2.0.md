@@ -662,3 +662,30 @@ So forty-five of the sixty-three days open one thing with an end, and eighteen o
 
 **New words, his to change** (drawn on mock-ups 5 to 7): "Done for today", "Day 1 of 7, kept", "Tomorrow:" before the next step's name, "Back to Today". They go into English first; the other nineteen languages follow in a translation pass, as the catalogues are filled.
 
+## Status, section by section (2026-11-23, about 05:00 UTC)
+
+**His word: "status on everything?", "(I.e)", "section #1: #/10 etc"**
+
+Two scores a section, by the same judge and the same measure as the rating of 22 November. **Live** is what a reader has today on the main web and in the stores' builds. **Branch** is what is built, checked and pushed on `ccr-07896cf2-bo0afd`, waiting for his word to ship. Checked with git before this was written: none of this chat's work is on main.
+
+| # | Section | Live | Branch | What moved on the branch | What is next |
+|---|---|---|---|---|---|
+| 1 | The ground it stands on | 8.5 | 8.5 | The unit suite's failing test mended; two new probes for the gate (the week's card, the parish door). One fault found and not mended: the heartbeat's call is cut while it finishes a long send | The ledger; "Walk as" for a tester; the four open faults |
+| 2 | The questions | 7 | 7 | Nothing built. Drawn: the need asked first, picks that say what they do (mock-ups 2 and 3) | The picks' line that promises more than is given (needs no test; its words are his). The rest waits for the questions' test place, 2027-02-09 |
+| 3 | What the reader gets back at once | 4 | 5 | The week's card stands first on Today, whole and clear of the tab bar, and its page opens smoothly (row 0) | The welcome (mock-up 13: drawn three times, on hold). The week as the last screen. A first prayer inside the first minute |
+| 4 | The first week | 3.5 | 4.5 | The same two faults mended. The door: Find a parish leads on to the first Liturgy's guide and puts the reader's own region first | The day's frame, "Done for today" (his yes; four slices, planned, not begun). Eighteen days that open a list or a hub |
+| 5 | After day seven | 3 | 3 | Nothing built. Noted: a closing moment for the week, which names the next step | All of it |
+| 6 | Knowing what works | 6 | 7.5 | Admin, Onboarding, by road and by first pick. The weekly brief says each test's answer | Admin's baselines read into this file (needs a picture of Admin). The numbers on the reader web in Admin. The road on the other counts, after the privacy sentence |
+| 7 | The way to Plus | 5, unproven | 5, unproven | Nothing. Its two tests run to 2027-02-09 and 2027-05-05 | A lifetime price; the sheet; a plan as the step after day seven |
+| | **As a whole** | **5.5** | **about 6** | | |
+
+**Built on the branch and not on the main web** (each with its tests and its checks): the week's card (`6efad5dba`), the downloads' test (`3e78a2622`), the brief's lines (`27c07bc7c`), Admin by road and first pick (`550833dfc`), Find a parish (`afef8b4f0`, `b01fec009`). The first of these mends two faults every new reader meets today.
+
+**Drawn and waiting for his yes or no:** the welcome on Today (mock-up 13, on hold by his word); the EU step (mock-up 1).
+
+**Decided and not yet built:** "Done for today" at the end of the day's page.
+
+**Open, outside the sections:** the three copies of the 1.9 email in his inbox (read as three accounts; unproven until he looks at each one's "to" line); the heartbeat's call cut by a long send; the release letter's sender reading "Purify Shop".
+
+**Waiting on him:** when the branch's built pieces go to the main web; the welcome, yes or no; the "to" line; a picture of Admin, Onboarding, for the baselines; a read of the two privacy sentences; a priest's glance at the five lines about a need; a lifetime price.
+
