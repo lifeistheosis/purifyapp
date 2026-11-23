@@ -2,7 +2,7 @@
 
 The brief is `../edit-1-the-light.md`. This chat is session_01VuYTwacMjt6LkmPnjb5a2m, started 2026-11-23 at 22:05 UTC from that file.
 
-**Status, 2026-11-23 about 22:55 UTC: he finds the other frames weak (his word below). A plan to make them again is put to him with its cost, and nothing more is made until he answers. No video is made.**
+**Status, 2026-11-23 about 22:44 UTC: he finds the other frames weak (his word below). A plan to make them again is put to him with its cost, and nothing more is made until he answers. No video is made.**
 
 The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 
@@ -11,9 +11,9 @@ The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 - 2026-11-23, in the promo chat, on the reference: "make it about the theophanies so the beginning is about like a light and the person (prophet) says something along the lines of who is this light and all the different frames from 0:2 and up until the beat is a bunch of different false gods and prophets and the. the drop is Jesus Christ. you kinda get the idea"
 - 2026-11-23, in the promo chat: "Start making the 2 edits."
 - In this chat, 2026-11-23 about 22:41 UTC, on the storyboard's first still: "Do a different design for the background for the \"Who Art Thou, Lord.\" But I like the image of the prophet."
-- In this chat, about 22:52 UTC, after the opening's second design: "The other frames could definitely use way better images and editing."
+- In this chat, about 22:43 UTC, after the opening's second design: "The other frames could definitely use way better images and editing."
 
-## His word on the other frames, and the plan put to him (about 22:55 UTC)
+## His word on the other frames, and the plan put to him (about 22:44 UTC)
 
 What is weak, as this chat reads its own stills:
 
@@ -60,7 +60,7 @@ Choices made here, each his to overrule (the page gives the reason for each):
 4. The end begins at frame 1144 (19.07 s), the reference's last cut, not about 19.5: the mark then has 0.9 s.
 5. Recommended to him: yes to the last line (John 8:12); no to Scripture's false prophets in the run.
 
-## The opening's second design (2026-11-23 about 22:50 UTC, at his word above)
+## The opening's second design (2026-11-23 about 22:42 UTC, at his word above)
 
 Saul's picture is kept as it was. The background is new, one version: the round light in a black sky is gone, and no lamp is seen. The light comes down from above the top of the frame and lies on the road round about him as one soft pool (Acts 9:3: "there shined round about him a light from heaven"), with the road in his shade where he lies, and his question in the dark between. No beams. `the_light` in `edit.py` is the second design; the first is at commit `69e26ed7`. The page's first still and its reasons were changed to match, the kit's check passed again, and the page was published again at the same link.
 
@@ -81,6 +81,6 @@ Saul's picture is kept as it was. The background is new, one version: the round 
 
 Read with get_session, which shows the cost at the last finished turn.
 
-- The storyboard (the first turn, 22:05 to 22:42 UTC): **$10.26**, within the $12 set for it. 288,000 tokens of context at its end.
+- The storyboard (the first turn, 22:05 to 22:40 UTC): **$10.26**, within the $12 set for it. 288,000 tokens of context at its end.
 - The opening's second design (the second turn): get_session still read $10.26 during the third turn, so this turn's own cost is not shown yet; by the count of its calls it is about $2 to $3, which is this chat's estimate and not a reading.
 - The line to ask him at is $30 in all.
