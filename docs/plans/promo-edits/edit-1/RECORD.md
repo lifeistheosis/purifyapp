@@ -2,7 +2,7 @@
 
 The brief is `../edit-1-the-light.md`. This chat is session_01VuYTwacMjt6LkmPnjb5a2m, started 2026-11-23 at 22:05 UTC from that file.
 
-**Status, 2026-11-23 about 22:50 UTC: the storyboard is published with the opening's second design, and waits for his yes or no. No video is made.**
+**Status, 2026-11-23 about 22:55 UTC: he finds the other frames weak (his word below). A plan to make them again is put to him with its cost, and nothing more is made until he answers. No video is made.**
 
 The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 
@@ -11,6 +11,24 @@ The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 - 2026-11-23, in the promo chat, on the reference: "make it about the theophanies so the beginning is about like a light and the person (prophet) says something along the lines of who is this light and all the different frames from 0:2 and up until the beat is a bunch of different false gods and prophets and the. the drop is Jesus Christ. you kinda get the idea"
 - 2026-11-23, in the promo chat: "Start making the 2 edits."
 - In this chat, 2026-11-23 about 22:41 UTC, on the storyboard's first still: "Do a different design for the background for the \"Who Art Thou, Lord.\" But I like the image of the prophet."
+- In this chat, about 22:52 UTC, after the opening's second design: "The other frames could definitely use way better images and editing."
+
+## His word on the other frames, and the plan put to him (about 22:55 UTC)
+
+What is weak, as this chat reads its own stills:
+
+1. **The run.** The faces are museum heads pushed through a filter. The ink is blotchy, several are bearded heads that read alike, every one is framed the same way, and an emperor's portrait does not say "false god" at a glance. The reference's faces are real ink drawings, each framed differently and large.
+2. **The drop.** The icon is whole and flat, with the line across His breast. It does not hit.
+3. **The theophanies.** Each is a small rectangle on black, which reads as a slide show. The Christ edit, which he called perfect, filled the frame with a detail of each icon and pooled the light on His face.
+4. **The end.** The mark is small.
+
+The plan, not started:
+
+- **The run from old engravings, not filtered photographs.** Public-domain engravings and woodcuts of the idols Scripture and the old world name (Baal, Moloch, Dagon, Ashtoreth, Diana of the Ephesians, Jupiter, Mercurius, the gods of Egypt and Assyria) are ink drawings already, so they sit in the reference's look with no filter, and each is plainly an idol. The best of the statues stay beside them, cut cleaner and from larger files. Each face framed its own way, large, as the reference frames its faces.
+- **The drop and the theophanies as the Christ edit made them:** each icon filling the frame as a detail, held on His face, the light pooled, one slow even move. The Transfiguration held on Christ in His light.
+- **The end** with the mark larger.
+
+Cost named to him: about $7 to $10 for the eight stills again, which would bring the chat to about $21 to $23 of the $30 line.
 
 ## What was measured (the reference, again, frame by frame)
 
@@ -64,5 +82,5 @@ Saul's picture is kept as it was. The background is new, one version: the round 
 Read with get_session, which shows the cost at the last finished turn.
 
 - The storyboard (the first turn, 22:05 to 22:42 UTC): **$10.26**, within the $12 set for it. 288,000 tokens of context at its end.
-- The opening's second design (the second turn): not read yet; the next turn reads it and writes it here. Two stills were looked at, with no subagent, no other chat and no video.
+- The opening's second design (the second turn): get_session still read $10.26 during the third turn, so this turn's own cost is not shown yet; by the count of its calls it is about $2 to $3, which is this chat's estimate and not a reading.
 - The line to ask him at is $30 in all.
