@@ -14,6 +14,10 @@ Kept by the chat he started for this on 2026-11-23 at 20:53 UTC (session_01VuYTw
 
   At that word: the six that could be fetched were read (below) and put to him in the chat, each with what it would mean for Purify and where it meets a rule of his. He has given no direction yet.
 
+- 21:20, a second job for this chat: "Okay, so 2 actual things that I want finished with the rest of our limit. The first one is to make promo, obviously, and the other one is to incorporate our new goals list." He described milestones of his own for the admin panel, counted from subscriptions, and said the panel "feels like a terminal". He did not answer the two questions on the references.
+
+  At that word: what the panel has today was read, and the plan was written for his yes: `docs/plans/goals-milestones.md` (his words on it are there; his private figures are left out, since this repository is public). Nothing is built. Asked of him: whether a mark is counted after the app's own costs, and his yes to a fresh chat building it. The promo still waits on his direction.
+
 ## How the references were read
 
 Each was fetched with yt-dlp into the chat's scratchpad (out of git, lost with the container; the addresses below fetch them again). `promo-edits/analyze.py` counts the cuts from the change between frames, measures the sound from its onsets and makes a strip of 80 frames; `promo-edits/strips.py` makes the closer strips of the transitions and the words. Every film was looked at on its strip.
@@ -112,7 +116,7 @@ ffmpeg, numpy and Pillow are needed. The films are other people's work: they sta
 
 ## Cost
 
-By get_session at about 21:10 UTC on 2026-11-23: $2.77 at the last finished turn, with 169,000 tokens of context, most of it the six films' strips. The weekly limit reads allowed_warning and resets 2026-11-27 08:00 UTC. The film itself belongs to a fresh chat started from the prompt, not to this one.
+By get_session at 21:24 UTC on 2026-11-23: $7.03 at the last finished turn, with 265,000 tokens of context (the worker restarted once between turns). That is past the 200,000 line, so this chat talks and plans and builds nothing: the film and the milestones each go to a fresh chat from their own file. Earlier, at about 21:10: $2.77 and 169,000 tokens, most of it the six films' strips. The weekly limit reads allowed_warning and resets 2026-11-27 08:00 UTC. The film itself belongs to a fresh chat started from the prompt, not to this one.
 
 ## Open
 
