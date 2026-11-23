@@ -4,7 +4,7 @@ The brief is `../edit-2-the-church.md`. This chat is session_01VuYTwaL9B8MePq2DH
 
 ## Where it stands
 
-**The film's second cut is made and put to him** (2026-11-23, about 22:52), at his word for more effects and transitions. The first cut was put to him about 22:41. The film's page: https://claude.ai/artifact/9u3KBCTgwokQAvmuCfp5CU (private, his own). The storyboard's page: https://claude.ai/artifact/LmaN8bkhnrYHj9BfNiSsRo. The silent master and the preview were also sent to him as files in the chat.
+**The film's second cut is made and put to him** (2026-11-23, about 22:50), at his word for more effects and transitions. The first cut was put to him about 22:41. The film's page: https://claude.ai/artifact/9u3KBCTgwokQAvmuCfp5CU (private, his own). The storyboard's page: https://claude.ai/artifact/LmaN8bkhnrYHj9BfNiSsRo. The silent master and the preview were also sent to him as files in the chat.
 
 Still his, and said on the film's page:
 
@@ -98,7 +98,7 @@ The film's page passed `node docs/brand/kit/check.mjs --page` on the five palett
 
 Not done, and why: nothing was heard, so whether the cuts sit well on the sound is his to judge on the preview.
 
-## The second cut (22:43 to 22:52)
+## The second cut (22:43 to 22:50)
 
 Same length, same cuts, same words. `board.py` holds it all: `clip_frames`, `POOL`, `WEAVE`, `THROUGH_BLACK`, `DISSOLVES`, `SMEARS`, and shot 3's draw back in `build`. `board.py strip <frames>` makes a row of frames for looking over a transition.
 
