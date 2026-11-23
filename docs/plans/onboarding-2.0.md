@@ -806,7 +806,7 @@ Nothing of the week is drawn on a path, on Find a parish, on a rule or in the Bi
 
 **So every one of the sixty-three days has a way of being kept:** thirty by Done at the page's end (a lesson 12, a council 10, a saint 5, a moment 3), thirty by the page's own end or act (the guide 7, a prayer 6, a chapter 5, a path 4, Find a parish 4, the readings 3, Your rule 1), and the three days of the Church's year by Done on the day's own page, on a day that has one.
 
-**What is still taken when it is opened.** On every road but the seeker's, a reader's own first pick can open a section's front page: the saints, the councils, the Church's history, Start here or the studies' library, the calendar by "Fasts and feasts". And the Church's year on a day with no page. Each is his to decide; none is begun.
+**What is still taken when it is opened.** On every road but the seeker's, a reader's own first pick can open a section's front page: the saints, the councils, the Church's history, Start here or the studies' library, the calendar by "Fasts and feasts". And the Church's year on a day with no page. Each is his to decide; none is begun. **Decided and built the same evening:** "The three open notes, fixed", below.
 
 **Seen on the way, older than this work, not mended.** In Testers mode the mark covers the left of whatever floats at the foot of the Bible's reader: the chapter pill, and the readings' bar on a readings' day (its Next and Done stay clear, on the right). On Pentecost's page "Paul's missions" stands twice in The chain of events, under "What flowed from it" and under "Later". The week names Pentecost by its page's full name, so the card of the day before reads "Tomorrow: Pentecost: the Descent of the Holy Spirit", with two colons; the page's own bar says "Pentecost" alone, and the card could: his to say. And on a readings' day and a Church's year day Today holds two doors to one thing, the week's card and Today's own (Read all; the day's lead): that is what the picks ask for, said here so it is known.
 
@@ -823,6 +823,34 @@ Nothing of the week is drawn on a path, on Find a parish, on a rule or in the Bi
 **At his yes.** From that branch: `PURIFY_ALLOW_MAIN=1 git push origin mend/guide-card:main`, through the guard. Render deploys; the same walk is then run against purifyapp.net. The apps get the mend with their next store build, which is his. If the container that holds the commit is gone, it is made again in a minute: on `origin/main`, the guide's two hunks of `676995c49` and its test file.
 
 **His yes, about 19:33 UTC: "ok to all and fix". Pushed and live the same hour.** Asked of purifyapp.net at a phone's size a minute before the push: the error page, with the browser's own words. Pushed at 19:35 UTC, `b88c88b4f..60c400d3f`, through the guard (every check passed). Render had it served by 19:41 UTC: the same tap, 2,528px down "During the Liturgy", brings "After the Liturgy", three times of three. The way back, if ever wanted, is a revert of `60c400d3f` on main, at his word. The store builds still hold the fault until their next build. This branch holds the same lines already, so 2.0's merge meets no conflict there; main's head is not yet in this branch.
+
+## The three open notes, fixed (2026-11-23)
+
+**His words.** About 19:33 UTC, to the four notes and two questions that came with the eight picks: "ok to all and fix". Asked at once what "fix" covered, with the cost named (one more build round, one to two hours of machine time, off for readers until 2.0), he chose **"Fix all 3 (Recommended)"**, worded on his screen as: "1) Church's year on a day with no saint page: the calendar gets "Done for today" at its end. 2) A reader's first pick opens one thing, not a whole section: saints = a saint, councils = Nicaea, history = Pentecost, beliefs = the Creed, feasts = the calendar with Done. 3) Testers pill moves above the readings bar." Commits `aa3e029fe`, `aa7ce8164` and the one that carries this section. Stills from the export: `docs/plans/reader-map/img/day-calendar-done.jpg`, `day-calendar-kept.jpg`, `day-readings-bar.jpg`.
+
+**1. The calendar has an end.** The calendar is served as a page of its own: "Done for today" stands at its end, after its closing prayer on a phone and under its notes on a computer. One end, handed to each of the page's two shapes. So the Church's year on a day whose lead has no page (224 days of 366) is kept by the reader's own Done, under the step's own line, which is true of the calendar. No day of the Church's year is taken at a tap any more.
+
+**2. A reader's own pick opens one thing.**
+
+| The pick | It opened | It opens now | How the day is kept |
+|---|---|---|---|
+| The lives of the saints | The saints' front page | The road's own saint: St. Leo the Great (Catholic; a Protestant who leans to the liturgy), St. Ignatius of Antioch (the seeker; a Protestant who leans to Scripture), St. Mary of Egypt (the newcomer) | Done at its end |
+| The councils | The councils' front page | The First Council of Nicaea | Done at its end |
+| The Church's history | The timeline's front page | Pentecost | Done at its end |
+| What the Orthodox believe | Start here; the Creed for a reader who is learning; the study library for the practicing | The Nicene Creed, at every level | By its own end, said through |
+| Fasts and feasts | The calendar | The calendar | Done at the calendar's end |
+
+A pick the road already holds "moves nothing but itself", as it always did: the road's own saint, council or Creed comes to the head of the week and no day is pushed off its end. The seeker's rule of the build before is this rule now, for every road.
+
+**Decided inside his yes, each his to change.** Four roads hold no saint (the practicing, those coming back, the catechumens, another Christian tradition): the first three are given St. Mary of Egypt and the last St. Ignatius of Antioch, saints the app already gives another road. The Church's history is Pentecost on every road, not the road's own moment: a Catholic reader's week keeps the Excommunications of 1054 where he put it, fifth, and does not open on it. The Creed at every level means a practicing reader who asks what the Orthodox believe is no longer sent to the study library, five of whose seven studies do not pass the provenance audit: no week opens that library now.
+
+**3. The Testers mark stands over the readings' bar,** as every piece that floats over the foot does. With no bar up it stands where it always did. It still covers the left of the chapter pill on any chapter, as before: its place at the foot is a choice of its own, noted in `docs/NOW.md`.
+
+**What it comes to.** No day of any first week opens a section's front page: the reader map says of each front page "in no week". The different first weeks the rules can make fall from 4,014 to 2,897, since several picks now land on a day the road already had. One thing is still taken when it is opened: today's readings on a day with no readings, and no such day is known.
+
+**A count to know of.** The first step was counted as "Day 1" only where it was one of the Day 1 card's own steps, and the saints', the councils', the timeline's and Start here's front pages were. Their picks now open pages that are not, so that old count no longer hears those four picks. The week's own count (opened, kept, by day) hears every day, and Admin's tables by road and by first pick are untouched.
+
+**The checks.** Seven more tests, each failing on the code before. Typecheck 0. The unit suite 15,686 passed, 7 skipped, 0 failed. Lint clean on the changed files. The app export green. The probe: 137 of 137. It walks each pick as its own reader (St. Leo, Nicaea and Pentecost with Done at their end; the Creed with nothing of the week drawn; the fasts and feasts to the calendar's Done), the calendar's own day on a day whose lead has no page (2026-12-20: opening keeps nothing, Done at the end keeps the day, Today says so; with the frame off, as before), and the Testers mark over the readings' bar. Its first run measured Done two pixels over the Testers mark at the calendar's end on a phone, where a council's page leaves twenty-seven: the end was given the room other pages give theirs (`aa7ce8164`), and the export, the probe and the walk were run again. The guardrail walk on the final export: the calendar with Done waiting and kept, at a phone's size and two tablets', in English and Arabic, with Today in each state, and a pick's saint, council and Creed: twenty screens, nothing failed. `npm run build` green.
 
 ## The changes, rated (2026-11-23, about 07:45 UTC)
 
@@ -875,6 +903,8 @@ Two scores a section, by the same judge and the same measure as the rating of 22
 **Built after that, at his "yes":** a chapter's day and the guide's day, each kept by its own end. The frame serves forty-five of the sixty-three days.
 
 **Built after that, at his "do all" (about 17:38 UTC):** the eighteen days that opened a list or a hub, one pick for each ("The eighteen days: the eight picks, built"). Every one of the sixty-three days has a way of being kept, but the Church's year on a day whose lead has no page. Section 4 reads 6.5 on the branch and the whole about 7; a reader's own number moves only when 2.0 ships.
+
+**Built after that, at his "ok to all and fix" and "Fix all 3" (about 19:38 UTC):** the calendar's own end, a reader's own pick that opens one thing, the Testers mark over the readings' bar ("The three open notes, fixed"). No day of any week opens a front page, and every day is kept by the reader's own act. Section 4 reads 7 on the branch. The same word sent the guide's mend to the main web, the one thing of all this that readers have today.
 
 **Open, outside the sections:** the three copies of the 1.9 email in his inbox (read as three accounts; unproven until he looks at each one's "to" line); the heartbeat's call cut by a long send; the release letter's sender reading "Purify Shop".
 
