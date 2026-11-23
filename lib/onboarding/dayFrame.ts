@@ -8,8 +8,6 @@
 // each page"), and the frame's own probe and a reading of each page's code
 // took two more kinds out. The others, and why:
 //
-//   a lesson                its own white button, "Next lesson", stands at its
-//                           end and leads away from the week;
 //   a chapter               the reader opens the next chapter when its end is
 //                           reached, and floats its own bars over the page;
 //   the first Liturgy's     a guide of eight parts with its own two buttons:
@@ -22,6 +20,16 @@
 // it was with the frame off: taken when it is opened, with no Done, so no
 // reader with the frame is left on a day that cannot be kept.
 //
+// A lesson is served too, another way round (the owner's "keep going" of
+// 2026-11-23, to "the lesson's Next lesson button gives way to Done for
+// today"). Its own end holds one white button, "Next lesson", which leads
+// away from the week. So on the reader's day the lesson's end itself gives
+// way (components/prayers/LessonEnd.tsx): the frame's end stands where that
+// button stood, the way on to the next lesson stays as a quiet link, as the
+// way back already was, and the lesson's own "Lesson read" is left unsaid,
+// since the day's end says it. For every other reader the lesson is as it
+// was.
+//
 // A prayer is kept another way (the owner's yes of 2026-11-23, to "on a
 // prayer day, should finishing the prayer keep the day by itself, with no
 // extra button"). It has an end of its own: each prayer is marked as the
@@ -33,22 +41,44 @@
 // 2026-10-16). Today says the day is kept when the reader is back.
 //
 // A step is served when it is named here AND its page mounts the frame's end
-// (PAGE_OF below says which file): the end stands inside the page, in the
-// page's own column and under its own loading state, so it is never drawn
-// over an outline of a page that has not come. A test holds the two together
-// (./__tests__/dayFrame.test.ts), so a new step has to be placed.
+// (PAGE_OF below says which file, by where the page's address begins): the
+// end stands inside the page, in the page's own column and under its own
+// loading state, so it is never drawn over an outline of a page that has not
+// come. A test holds the two together (./__tests__/dayFrame.test.ts), so a
+// new step has to be placed.
 
 import type { WeekStepKey } from "./week";
 
-/** The steps whose page the frame serves today: a council, a saint, a moment in history. */
-export const FRAMED_STEPS: readonly WeekStepKey[] = ["nicaea", "ephesus", "chalcedon", "carthage", "leo", "ignatius", "maryOfEgypt", "schism", "afterChalcedon"];
+/** The steps whose page the frame serves today: a council, a saint, a moment in history, a lesson of Learn to pray. */
+export const FRAMED_STEPS: readonly WeekStepKey[] = [
+  "nicaea",
+  "ephesus",
+  "chalcedon",
+  "carthage",
+  "leo",
+  "ignatius",
+  "maryOfEgypt",
+  "schism",
+  "afterChalcedon",
+  "whatIsPrayer",
+  "jesusPrayer",
+  "trisagion",
+  "signOfCross",
+  "morningRule",
+];
 
-/** The page file that draws each kind of framed page, by the first part of its address: where `<DayEnd />` is mounted. */
+/** The file that draws the end of each kind of framed page, by where its address begins: where `<DayEnd />` is mounted. */
 export const PAGE_OF: Readonly<Record<string, string>> = {
-  councils: "app/(app)/councils/[slug]/page.tsx",
-  saints: "app/(app)/saints/[slug]/page.tsx",
-  history: "app/(app)/history/[slug]/page.tsx",
+  "/councils/": "app/(app)/councils/[slug]/page.tsx",
+  "/saints/": "app/(app)/saints/[slug]/page.tsx",
+  "/history/": "app/(app)/history/[slug]/page.tsx",
+  "/prayers/learning/": "components/prayers/LessonEnd.tsx",
 };
+
+/** Where a framed page's address begins, as PAGE_OF names it, or null. */
+export function kindOf(href: string): string | null {
+  return Object.keys(PAGE_OF).find((start) => href.startsWith(start)) ?? null;
+}
 
 /** Whether this step's page is one the frame serves today. */
 export function frameFits(key: WeekStepKey): boolean {

@@ -2,9 +2,10 @@
 // yes of 2026-11-23 to "Done for today" at the end of the day's page). Asked of the export in out/,
 // as a reader in their first week on the Android shell at phone size, with real touch.
 //
-// The frame serves a council, a saint and a moment in history (lib/onboarding/dayFrame.ts says why
-// not the others yet), so the reader walked is on the third day of a week whose third step is a
-// council: a Catholic reader, completely new, who asked for quiet.
+// The frame serves a council, a saint, a moment in history and a lesson, and a prayer is kept by its
+// own end (lib/onboarding/dayFrame.ts says why not the others yet). The reader walked is a Catholic
+// reader, completely new, who asked for quiet: a lesson on the first day, a path on the second, a
+// council on the third.
 //
 // With the frame off, as every reader has it: the day's page wears nothing of the frame, and
 // opening a step takes it, as before.
@@ -29,7 +30,12 @@
 //      no second button) the prayer's page wears nothing of the week, before its end or after it;
 //      opening keeps nothing; the reader moving down through the prayer to its end keeps the day,
 //      once; and Today then says so, with tomorrow's step by name. With the frame off, opening the
-//      prayer takes the step, as before.
+//      prayer takes the step, as before;
+//  12. on a lesson's day (the owner's "keep going" of 2026-11-23) the lesson's own end gives way:
+//      the week's line and Done stand where its one white button stood, the way on to the next
+//      lesson is a quiet link, "Lesson read" is left unsaid while the lesson is still marked read,
+//      and Done is answered as on a council's page, the quiet links keeping their place. With the
+//      frame off, and the day after, the lesson's end is as every reader has it.
 //
 // The tap on Done is recorded frame by frame and judged by the gate's own motion check
 // (scripts/gate/frames.mjs): no cut, no jump, no flash; and with motion reduced, nothing that moves.
@@ -241,9 +247,9 @@ console.log("\n  With the frame off, as every reader has it (the third day, a co
   await ctx.close();
 }
 
-console.log("\n  With the frame on (Testers mode), a day whose page it does not serve yet (the first day, a lesson)");
+console.log("\n  With the frame on (Testers mode), a day whose page it does not serve yet (the second day, a path)");
 {
-  const ctx = await reader({ ...READER, ...TESTING });
+  const ctx = await reader({ ...READER, ...SECOND_DAY, ...TESTING });
   const page = await today(ctx);
   const c = await card(page);
   if (!c.step || !c.href) fault(`no step on Today: ${JSON.stringify(c)}`);
@@ -252,7 +258,7 @@ console.log("\n  With the frame on (Testers mode), a day whose page it does not 
     await page.waitForTimeout(3000);
     const m = await measure(page);
     check(m.path.replace(/\/$/, "") === c.href.replace(/\/$/, "") && !m.end, `"${c.step[1]}" (${m.path}) wears nothing of the frame`, `the page ${m.path} shows the frame's end: ${JSON.stringify(m.end)}`);
-    check(/"at":1/.test(m.week ?? ""), "opening the step took it, as it always has, so the day is not left unkept", `the week is ${m.week} after opening`);
+    check(/"at":2/.test(m.week ?? ""), "opening the step took it, as it always has, so the day is not left unkept", `the week is ${m.week} after opening`);
     await page.goBack();
     await page.waitForTimeout(2500);
     const back = await card(page);
@@ -404,6 +410,126 @@ console.log("\n  At a tablet's size (800 by 1280)");
   await ctx.close();
 }
 
+console.log("\n  A lesson's day (the first day, the Jesus Prayer)");
+{
+  const LESSON = "/prayers/learning/jesus-prayer";
+  // The lesson's own end: what it says, what is white in it, and where its links stand.
+  const ending = (page) =>
+    page.evaluate(() => {
+      const end = document.querySelector("[data-lesson-end]");
+      const r = (x) => {
+        if (!x) return null;
+        const b = x.getBoundingClientRect();
+        return { top: Math.round(b.top), bottom: Math.round(b.bottom), left: Math.round(b.left), right: Math.round(b.right) };
+      };
+      const white = (x) => {
+        const m = /rgba?\(([^)]+)\)/.exec(getComputedStyle(x).backgroundColor);
+        const [red, green, blue, alpha = "1"] = m ? m[1].split(",").map((v) => v.trim()) : [0, 0, 0, "0"];
+        return Number(alpha) > 0.9 && Math.min(Number(red), Number(green), Number(blue)) > 200;
+      };
+      const links = end ? [...end.querySelectorAll("a, button")] : [];
+      const on = end?.querySelector("[data-lesson-on]") ?? null;
+      const h1 = document.querySelector("main h1");
+      return {
+        path: location.pathname,
+        h1: h1 ? { words: h1.textContent.trim(), top: Math.round(h1.getBoundingClientRect().top + scrollY) } : null,
+        over: h1?.previousElementSibling?.textContent.trim() ?? null,
+        whites: links.filter(white).map((x) => x.textContent.trim()),
+        names: links.map((x) => x.textContent.trim()),
+        read: end?.querySelector('[role="status"]')?.textContent.trim() ?? null,
+        on: on ? { words: on.textContent.trim(), href: on.getAttribute("href"), ...r(on) } : null,
+        marked: /jesus-prayer/.test(localStorage.getItem("purify.learning.read") ?? ""),
+      };
+    });
+
+  // As every reader has it.
+  let plainLesson = null;
+  {
+    const ctx = await reader(READER);
+    const page = await today(ctx);
+    const c = await card(page);
+    if (!c.step || c.href?.replace(/\/$/, "") !== LESSON) fault(`with the frame off, today's step is ${JSON.stringify(c.step)} (${c.href}), not the lesson`);
+    else {
+      await begin(page);
+      await page.waitForTimeout(3000);
+      const m = await measure(page);
+      await toEnd(page);
+      await page.waitForTimeout(2600);
+      plainLesson = await ending(page);
+      check(/"at":1/.test(m.week ?? "") && !m.end, "with the frame off, opening the lesson took the step, as before, and it wears nothing of the frame", `with the frame off the week is ${m.week} and the page shows ${JSON.stringify(m.end)}`);
+      check(plainLesson.whites.length === 1 && /^Next lesson: /.test(plainLesson.whites[0]) && plainLesson.read === "Lesson read", `its end is the lesson's own: "${plainLesson.read}", then one white button, "${plainLesson.whites[0]}"`, `with the frame off the lesson's end shows ${JSON.stringify(plainLesson)}`);
+    }
+    await ctx.close();
+  }
+
+  const ctx = await reader({ ...READER, ...TESTING }, { scale: STILLS ? 2 : 1 });
+  let page = await today(ctx);
+  const c = await card(page);
+  if (!c.step || c.href?.replace(/\/$/, "") !== LESSON) {
+    fault(`today's step is ${JSON.stringify(c.step)} (${c.href}), not the lesson`);
+  } else {
+    console.log(`    today for this reader: ${c.step[0]}, ${c.step[1]} (${c.href})`);
+    await page.evaluate(() => {
+      window.__frame.seen = [];
+      window.__frame.watch = true;
+      const tick = () => {
+        const d = document.querySelector("[data-day-done]");
+        if (d) window.__frame.seen.push(Math.round(d.getBoundingClientRect().top));
+        if (window.__frame.watch) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    await begin(page);
+    await page.waitForTimeout(3000);
+    const seen = await page.evaluate(() => {
+      window.__frame.watch = false;
+      return { frames: window.__frame.seen.length, highest: window.__frame.seen.length ? Math.min(...window.__frame.seen) : null };
+    });
+    const p = await measure(page);
+    const head = await ending(page);
+    check(p.path.replace(/\/$/, "") === LESSON && /"at":0/.test(p.week ?? '"at":0'), `Begin opened the lesson (${p.path}), and opening kept nothing`, `Begin opened ${p.path}; the week is ${p.week}`);
+    check(plainLesson && head.h1?.top === plainLesson.h1?.top && head.over === plainLesson.over, `the lesson's head is untouched: "${head.over}" over "${head.h1?.words}", as for every reader`, `the lesson's head reads ${JSON.stringify(head.over)} at ${head.h1?.top}; for every reader ${JSON.stringify(plainLesson?.over)} at ${plainLesson?.h1?.top}`);
+    check(seen.frames > 0 && seen.highest > 844, `Done never stood on the first screen while the lesson arrived (${seen.frames} frames, never above ${seen.highest})`, `while the lesson arrived Done stood at ${seen.highest} (${seen.frames} frames read)`);
+
+    await toEnd(page);
+    await page.waitForTimeout(2600);
+    const before = await measure(page);
+    const e = await ending(page);
+    check(before.mark?.words === "Your first week · 1 of 7" && before.done?.words === "Done for today", `the lesson's end gives way: "${before.mark?.words}", then "${before.done?.words}"`, `the lesson's end shows ${JSON.stringify(before.mark)} and ${JSON.stringify(before.done)}`);
+    check(e.whites.length === 1 && e.whites[0] === "Done for today", "Done is the one white button in it", `the white buttons in the lesson's end: ${JSON.stringify(e.whites)}`);
+    check(e.on && /^Next lesson: /.test(e.on.words) && e.on.top >= before.done.bottom, `the way on stays, as a quiet link under it: "${e.on?.words}"`, `the way on is ${JSON.stringify(e.on)}; Done ends at ${before.done?.bottom}`);
+    check(e.read === null && e.marked, "\"Lesson read\" is left unsaid, and the lesson is marked read all the same", `the lesson's end says ${JSON.stringify(e.read)}; marked read on the device: ${e.marked}`);
+    check(before.done.bottom <= before.floor && apart(before.done, before.pill), `Done stands whole over the bars, clear of the Testers mark (${before.done.top} to ${before.done.bottom})`, `Done runs to ${before.done.bottom} with the tab bar at ${before.floor} and the Testers mark ${JSON.stringify(before.pill)}`);
+    await still(page, "lesson-1-done");
+
+    await page.evaluate(() => (window.__frame.transitions = 0));
+    const seenDone = await judgedDone(ctx, page, "on");
+    await page.waitForTimeout(900);
+    const after = await measure(page);
+    const e2 = await ending(page);
+    check(after.transitions > 0 && !seenDone.fails.length && !seenDone.unsure.length, `the tap is answered in the house's motion, and frame by frame (${seenDone.frames} frames) the gate's motion check finds no cut, no jump and no flash`, `the tap on Done: ${after.transitions} transitions; the gate's motion check: ${[...seenDone.fails, ...seenDone.unsure.map((u) => `unsure: ${u}`)].join("; ") || "nothing"}`);
+    check(!after.done && after.kept?.words[0] === "Day 1 of 7, kept" && after.kept.words[1] === "Tomorrow: Start with the Fathers", `the week's card stands in their place: "${after.kept?.words.join('", "')}"`, `after Done the lesson's end shows ${JSON.stringify(after.kept)}`);
+    check(after.kept && after.kept.top >= after.ceiling && after.kept.bottom <= after.floor && apart(after.kept, after.pill) && after.kept.linkHit, `whole between the bars (${after.kept?.top} to ${after.kept?.bottom}), clear of the Testers mark, its way back under the finger`, `the card runs from ${after.kept?.top} to ${after.kept?.bottom} with the bars at ${after.ceiling} and ${after.floor}; the Testers mark ${JSON.stringify(after.pill)}; its link under the finger: ${after.kept?.linkHit}`);
+    check(e2.on && e2.on.words === e.on?.words && e2.whites.length === 0 && e2.read === null, "the lesson's quiet links keep their place under it, and nothing in the end is white", `after Done the lesson's end shows ${JSON.stringify(e2)}`);
+    check(new RegExp(`"at":1,"day":"${DAY}","passed":0`).test(after.week ?? ""), "the day is kept on the device, today", `the week is ${after.week}`);
+    await still(page, "lesson-2-kept");
+    await page.close();
+
+    page = await today(ctx);
+    const kept = await card(page);
+    check(!kept.step && kept.kept?.[0] === "Day 1 of 7, kept" && kept.kept[1] === "Tomorrow: Start with the Fathers", `Today says the day is kept: "${kept.kept?.join('", "')}"`, `Today shows ${JSON.stringify(kept)}`);
+    await page.close();
+
+    page = await open(ctx, LESSON, { tomorrow: true });
+    await toEnd(page);
+    await page.waitForTimeout(1200);
+    const old = await measure(page);
+    const e3 = await ending(page);
+    check(!old.end && e3.whites.length === 1 && /^Next lesson: /.test(e3.whites[0]), "the day after, the lesson's end is every reader's again: its own white button, nothing of the frame", `the day after the lesson's end shows ${JSON.stringify(e3)} and the frame ${JSON.stringify(old.end)}`);
+  }
+  await ctx.close();
+}
+
 console.log("\n  A prayer's day (the second day, the Creed)");
 {
   // What the prayer's page shows of the week, and of its own end.
@@ -514,5 +640,5 @@ console.log("\n  A prayer's day (the second day, the Creed)");
 }
 
 await browser.close();
-console.log(faults ? `\nthe day's frame: ${faults} fault${faults === 1 ? "" : "s"}` : "\nthe day's frame: a day is kept by Done at the end of its page or by a prayer's own end, and ends on tomorrow");
+console.log(faults ? `\nthe day's frame: ${faults} fault${faults === 1 ? "" : "s"}` : "\nthe day's frame: a day is kept by Done at the end of its page, a lesson's among them, or by a prayer's own end, and ends on tomorrow");
 process.exit(faults ? 1 : 0);

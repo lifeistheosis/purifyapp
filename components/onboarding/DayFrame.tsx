@@ -43,7 +43,7 @@ import { frameFits, ownEnd } from "@/lib/onboarding/dayFrame";
 import { keepDay } from "@/lib/onboarding/keepDay";
 import { useWeekDay, type WeekDay } from "@/lib/onboarding/useWeek";
 import type { WeekStep, WeekStepKey } from "@/lib/onboarding/week";
-import { movePage, piecesBefore, stuckOver } from "@/lib/ui/inPageMove";
+import { movePage, partsAfter, piecesBefore, stuckOver } from "@/lib/ui/inPageMove";
 import { goToReadingPlace, shiftToReadingPlace, visibleBand } from "@/lib/ui/readingPlace";
 
 const bare = (path: string) => path.replace(/\/+$/, "") || "/";
@@ -70,8 +70,21 @@ export function dayOfPage(
   return null;
 }
 
-/** At the page's end: whose day this is and Done for today, and then the day kept, with tomorrow's step by name. */
-export function DayEnd({ className }: { className?: string }) {
+/**
+ * Whether this page is a day of the reader's the frame serves, waiting or kept today. For a page
+ * whose own end gives way to the frame's on that day (a lesson, components/prayers/LessonEnd.tsx):
+ * it asks here, so the page and the frame's end answer as one.
+ */
+export function useDayHere(): boolean {
+  return dayOfPage(useWeekDay(), usePathname()) !== null;
+}
+
+/**
+ * At the page's end: whose day this is and Done for today, and then the day kept, with tomorrow's
+ * step by name. `plain` inside a page's own end, which has its own line over it and its own room
+ * under it (a lesson's).
+ */
+export function DayEnd({ className, plain = false }: { className?: string; plain?: boolean }) {
   const { t } = useTranslate();
   const here = dayOfPage(useWeekDay(), usePathname());
   const block = useRef<HTMLDivElement>(null);
@@ -100,17 +113,18 @@ export function DayEnd({ className }: { className?: string }) {
   const done = () => {
     answered.current = true;
     // The line and the button give way to the card in the house's motion, never with a cut: the
-    // block grows, what stands on the screen over it glides as the page goes with it, and the bars
-    // at the head of the screen keep their own picture, so the page passes under them. The day is
-    // kept once, even by a second tap that lands while the first is being pictured (keepDay).
+    // block grows, what stands on the screen over it glides as the page goes with it, what follows
+    // it (a lesson's quiet links) glides to where it then stands, and the bars at the head of the
+    // screen keep their own picture, so the page passes under them. The day is kept once, even by
+    // a second tap that lands while the first is being pictured (keepDay).
     const el = block.current;
-    movePage(() => void keepDay(here.index), { grows: [el], glides: [...piecesBefore(el), ...stuckOver(el)] });
+    movePage(() => void keepDay(here.index), { grows: [el], glides: [...piecesBefore(el), ...partsAfter(el), ...stuckOver(el)] });
   };
 
   return (
     <div data-day-end="" className={className}>
       {/* A fine line over it, as the page parts its own sections; room under it, so it never ends against the bars. */}
-      <div ref={block} className="border-t border-paper/10 pb-4 pt-6">
+      <div ref={block} className={plain ? undefined : "border-t border-paper/10 pb-4 pt-6"}>
         {here.kept ? (
           // The week's own card, as Today draws it (FirstStepsNudge.tsx), so the card that opened the day closes it.
           <div

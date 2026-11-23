@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import en from "@/lib/i18n/messages/en.json";
 import { dayOfPage } from "@/components/onboarding/DayFrame";
 
-import { FRAMED_STEPS, OWN_END_IN, OWN_END_STEPS, PAGE_OF, frameFits, keptOnPage, ownEnd } from "../dayFrame";
+import { FRAMED_STEPS, OWN_END_IN, OWN_END_STEPS, PAGE_OF, frameFits, keptOnPage, kindOf, ownEnd } from "../dayFrame";
 import { DAY_FRAME_LIVE } from "../flags";
 import type { WeekDay } from "../useWeek";
 import { WEEK_STEPS, type WeekStepKey } from "../week";
@@ -56,8 +56,14 @@ describe("which of the reader's days a page is", () => {
     expect(dayOfPage(week({ waiting: 6 }), "/history/great-schism-1054")).toEqual({ index: 6, kept: false, tomorrow: null });
   });
 
-  it("is no framed day on a page the frame does not serve yet: a lesson, a path, a prayer, the guide", () => {
-    expect(dayOfPage(week({ waiting: 0 }), "/prayers/learning/jesus-prayer")).toBeNull();
+  it("is a lesson's day on the lesson's own page", () => {
+    expect(dayOfPage(week({ waiting: 0 }), "/prayers/learning/jesus-prayer/")).toEqual({ index: 0, kept: false, tomorrow: steps[1] });
+    expect(dayOfPage(week({ kept: 0 }), "/prayers/learning/jesus-prayer")).toEqual({ index: 0, kept: true, tomorrow: steps[1] });
+    // Another lesson, read on the same day, is no one's day.
+    expect(dayOfPage(week({ waiting: 0 }), "/prayers/learning/what-is-prayer")).toBeNull();
+  });
+
+  it("is no framed day on a page the frame does not serve yet: a path, a prayer, the guide", () => {
     expect(dayOfPage(week({ waiting: 1 }), "/reading/paths/start")).toBeNull();
     expect(dayOfPage(week({ waiting: 3 }), "/prayers/creed")).toBeNull();
     expect(dayOfPage(week({ kept: 3 }), "/prayers/creed")).toBeNull();
@@ -66,7 +72,7 @@ describe("which of the reader's days a page is", () => {
 });
 
 describe("which steps the frame serves", () => {
-  it("serves a council, a saint and a moment in history, and nothing else yet", () => {
+  it("serves a council, a saint, a moment in history and a lesson of Learn to pray, and nothing else yet", () => {
     const fits = (Object.keys(WEEK_STEPS) as WeekStepKey[]).filter(frameFits).map((k) => WEEK_STEPS[k].href).sort();
     expect(fits).toEqual([
       "/councils/carthage-419",
@@ -75,6 +81,11 @@ describe("which steps the frame serves", () => {
       "/councils/first-nicaea",
       "/history/great-schism-1054",
       "/history/non-chalcedonian-estrangement",
+      "/prayers/learning/jesus-prayer",
+      "/prayers/learning/morning-rule",
+      "/prayers/learning/sign-of-the-cross",
+      "/prayers/learning/trisagion-prayers",
+      "/prayers/learning/what-is-prayer",
       "/saints/ignatius-of-antioch",
       "/saints/leo-the-great",
       "/saints/mary-of-egypt",
@@ -86,8 +97,8 @@ describe("which steps the frame serves", () => {
     expect(new Set(FRAMED_STEPS).size).toBe(FRAMED_STEPS.length);
   });
 
-  it("leaves every other step as it was: a lesson, a chapter, a prayer with its own end, the guide, a section's front, a path", () => {
-    for (const key of ["jesusPrayer", "morningRule", "gospelJohn", "psalter", "creed", "beforeSleep", "firstLiturgy", "parish", "councils", "history", "churchYear", "fathersPath", "readings", "yourRule", "startHere", "morningPrayers"] as const) {
+  it("leaves every other step as it was: a chapter, a prayer with its own end, the guide, a section's front, a path", () => {
+    for (const key of ["gospelJohn", "job", "psalter", "creed", "beforeSleep", "firstLiturgy", "parish", "councils", "history", "churchYear", "feasts", "fathersPath", "prayFathers", "readings", "yourRule", "startHere", "theology", "saintsLives", "readingPaths", "morningPrayers"] as const) {
       expect(frameFits(key), key).toBe(false);
     }
   });
@@ -102,20 +113,21 @@ describe("the frame", () => {
 
   it("is mounted by each kind of page it serves, once, at the end of the page's own column", () => {
     // Every framed step's page has a file that mounts the end, so a step named with no mount is not served by accident.
-    for (const key of FRAMED_STEPS) {
-      const kind = WEEK_STEPS[key].href.split("/")[1];
-      expect(PAGE_OF[kind], `${key} opens ${WEEK_STEPS[key].href}`).toBeDefined();
-    }
+    for (const key of FRAMED_STEPS) expect(kindOf(WEEK_STEPS[key].href), `${key} opens ${WEEK_STEPS[key].href}`).not.toBeNull();
     for (const [kind, file] of Object.entries(PAGE_OF)) {
       const page = flat(file);
       expect(page.split("<DayEnd ").length - 1, file).toBe(1);
-      expect(FRAMED_STEPS.some((key) => WEEK_STEPS[key].href.split("/")[1] === kind), kind).toBe(true);
+      expect(FRAMED_STEPS.some((key) => kindOf(WEEK_STEPS[key].href) === kind), kind).toBe(true);
     }
     // After the council's article, whose own foot is the read-to-end mark and the moment a palette is earned.
-    expect(flat(PAGE_OF.councils)).toContain('<EarnedMoment palette="councils" /> </article> {/* When this council is today\'s step');
-    expect(flat(PAGE_OF.councils)).toContain('<DayEnd className="mx-auto mt-12 w-full max-w-[820px]" /> </section>');
-    expect(flat(PAGE_OF.history)).toContain('<DayEnd className="mt-12" /> </div> </section>');
-    expect(flat(PAGE_OF.saints)).toContain('<DayEnd className="mt-8 pb-16" /> </div> </SaintInReadersLanguage>');
+    expect(flat(PAGE_OF["/councils/"])).toContain('<EarnedMoment palette="councils" /> </article> {/* When this council is today\'s step');
+    expect(flat(PAGE_OF["/councils/"])).toContain('<DayEnd className="mx-auto mt-12 w-full max-w-[820px]" /> </section>');
+    expect(flat(PAGE_OF["/history/"])).toContain('<DayEnd className="mt-12" /> </div> </section>');
+    expect(flat(PAGE_OF["/saints/"])).toContain('<DayEnd className="mt-8 pb-16" /> </div> </SaintInReadersLanguage>');
+    // Only an address that begins as a framed page's does is one: a prayer and a lessons' list are not.
+    expect(kindOf("/prayers/creed")).toBeNull();
+    expect(kindOf("/prayers/learning/jesus-prayer")).toBe("/prayers/learning/");
+    expect(kindOf("/councils")).toBeNull();
   });
 
   it("is mounted nowhere else: not in the app's shell, where it would be drawn over a page that has not come", () => {
@@ -140,7 +152,7 @@ describe("the frame", () => {
 
   it("keeps a day only at the reader's own Done, and answers it in the house's motion", () => {
     // Done's own handler keeps the day, inside the move; nothing else in the frame writes a week.
-    expect(frame).toContain("movePage(() => void keepDay(here.index), { grows: [el], glides: [...piecesBefore(el), ...stuckOver(el)] });");
+    expect(frame).toContain("movePage(() => void keepDay(here.index), { grows: [el], glides: [...piecesBefore(el), ...partsAfter(el), ...stuckOver(el)] });");
     expect(frame).not.toContain("writeWeek(");
     expect(frame).not.toContain("stepTaken(");
     expect(frame.split("keepDay(").length - 1).toBe(2);
@@ -207,8 +219,12 @@ describe("a prayer's day", () => {
       expect(keptOnPage(key), key).toBe(true);
     }
     for (const key of FRAMED_STEPS) expect(ownEnd(key), key).toBe(false);
-    // A lesson about praying is a lesson, not a prayer said through.
-    for (const key of ["jesusPrayer", "morningRule", "trisagion", "yourRule", "readings"] as const) expect(keptOnPage(key), key).toBe(false);
+    // A lesson about praying is a lesson, not a prayer said through: it is kept by Done, never by its own end.
+    for (const key of ["jesusPrayer", "morningRule", "trisagion", "signOfCross", "whatIsPrayer"] as const) {
+      expect(ownEnd(key), key).toBe(false);
+      expect(frameFits(key), key).toBe(true);
+    }
+    for (const key of ["yourRule", "readings", "gospelJohn", "firstLiturgy"] as const) expect(keptOnPage(key), key).toBe(false);
   });
 
   it("each of its pages is read in the one prayer reader, where the end is told", () => {
@@ -237,5 +253,35 @@ describe("a prayer's day", () => {
     expect(island).not.toMatch(/<[A-Za-z]/);
     expect(reader).not.toContain("<DayEnd");
     expect(reader).not.toContain("onboard.week.");
+  });
+});
+
+describe("a lesson's day", () => {
+  const end = flat(PAGE_OF["/prayers/learning/"]);
+
+  it("the lesson's own end gives way: the frame's end stands where its one white button stood", () => {
+    expect(end).toContain("const day = useDayHere();");
+    expect(end).toContain('{day ? ( <> <DayEnd plain className="mb-2 w-full" />');
+    // Inside the lesson's own end, which has its own line over it and its own room under it.
+    const frame = flat("components/onboarding/DayFrame.tsx");
+    expect(frame).toContain('<div ref={block} className={plain ? undefined : "border-t border-paper/10 pb-4 pt-6"}>');
+    expect(frame).toContain("export function useDayHere(): boolean { return dayOfPage(useWeekDay(), usePathname()) !== null; }");
+  });
+
+  it("keeps the way on as a quiet link, like the way back: no second white button on the reader's day", () => {
+    const quiet = 'const quiet = "tap-press inline-flex min-h-11 max-w-full items-center gap-1 font-sans text-detail text-paper/60 hover:text-paper";';
+    expect(end).toContain(quiet);
+    const days = end.slice(end.indexOf("{day ? ( <>"), end.indexOf(") : next ? ("));
+    expect(days).toContain('<Link href={next ? `/prayers/learning/${next.id}` : "/prayers/personal"} data-lesson-on="" className={quiet}>');
+    expect(days).not.toContain("bg-paper");
+    // The way back wears the same quiet look, for every reader.
+    expect(end).toContain("<Link href={`/prayers/learning/${prev.id}`} className={quiet}>");
+    // And for every other reader the lesson's one action is as it was.
+    expect(end.split("rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night").length - 1).toBe(2);
+  });
+
+  it("leaves Lesson read unsaid on that day, while the lesson is still marked read", () => {
+    expect(end).toContain("{isRead && !day ? (");
+    expect(end).toContain("timer = window.setTimeout(() => markLessonRead(id), READ_AFTER_MS);");
   });
 });
