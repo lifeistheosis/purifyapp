@@ -2,7 +2,7 @@
 
 The state of the work, in one page. The arbiter rewrites this at each change of state and keeps it to one page: history goes to the log (`docs/1.9-build/HANDOFF.md`) and his words to `docs/1.9-build/BRAINSTORM.md`. The NOW of the 1.9 build is kept whole in `docs/1.9-build/NOW-to-2026-11-20.md`; it is very long, so read a line of it only when a step needs it.
 
-Updated 2026-11-21 14:08 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
+Updated 2026-11-21 14:08 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3). On 2026-11-23 at 20:45 UTC the email revamp chat, as it was archived at his word, brought three things here up to date and no others: the main web's line, the branch's line, and its own row in the roster with its cost.
 
 ## How we work (his word, 2026-11-20; CLAUDE.md, "The new system")
 
@@ -13,9 +13,9 @@ Updated 2026-11-21 14:08 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 
 ## The state
 
-- **Android:** 1.9 in the store is build 101, from main 6700c2e65 (11-17). The main web serves main b89b56b11 since 11-21: 6700c2e65 plus the Supabase fix alone.
+- **Android:** 1.9 in the store is build 101, from main 6700c2e65 (11-17). The main web serves main 60c400d3f since 19:41 UTC on 11-23: b89b56b11 (6700c2e65 plus the Supabase fix), then the 1.9 release email's look 3 with three admin mends (to b88c88b4f), then the mend of the first Liturgy's guide at his word. The store builds do not have that mend yet.
 - **iOS:** the App Store still served 1.8 at 16:19 UTC on 11-20. The build he had submitted for 1.9 was run 37 of 11-13 (6193982d5), four days and 1,024 files behind Android's. At his word, run 39 was built from main 6700c2e65 and has been on TestFlight since 16:50 UTC.
-- **The branch** `ccr-07896cf2-bo0afd` is ahead of main with Heart alone, What's New's line and Gate 6c's fix round (57 code files, no migration, nothing under app/api, nothing native). It has not been checked as a whole.
+- **The branch** `ccr-07896cf2-bo0afd` is ahead of main with Heart alone, What's New's line and Gate 6c's fix round (57 code files, no migration, nothing under app/api, nothing native). It has not been checked as a whole. Since 11-22 it also holds 2.0's onboarding work, dark for readers and each piece checked by the fix checklist: `docs/handoffs/onboarding-2.0.md`.
 - **Store pictures:** the 41 of 11-12 (`docs/plans/v1.9/store/`), saved in 256 colours and never taken again after Today and the journal changed. He has the 16 for iOS, and eight resized to 1179 by 2556 for the medium display slot (`docs/plans/v1.9/store/medium-1179x2556/`, with Apple's sizes of the day).
 - **The 1.9 ad** (`docs/plans/v1.9/video/AD.md`): stage 1 is done, and revised at his word in the ad chat: the test of 6.95 seconds (scenes 1 and 2, the moving phone), its title now in the app's sans and its ground moving (his words there at about 20:27 and 20:36 UTC), on its page https://claude.ai/artifact/4YMJMQmXcX6HSC7fxZJd6X (version 3). Its hand-over, with his words, is `docs/handoffs/ad-stage-1.md`.
 
@@ -27,7 +27,7 @@ Updated 2026-11-21 14:08 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 2. **The ad:** his yes or no on the revised test (the moving phone, the new title face, the moving ground). Stage 2, six more scenes, only on his yes, in a fresh chat, priced from stage 1's measured cost.
 3. **The store pictures:** A (use the 11-12 set) or B (a retake from the release code in full colour, with the medium size added; medium cost).
 4. **The release email** passes its check since 02:20 UTC on 11-21 (the stale preview check is mended; the hand-over's A3). He has its picture. It should be sent from Admin, Email, only once the App Store serves 1.9.
-5. **The email revamp** (his word of 11-21, `docs/plans/v1.9/email-revamp/BRIEF.md`): stage 1, one design of the 1.9 release email, is with its own capped chat. It waits for his yes or no on that design; the sender changes only in stage 2.
+5. **The email revamp** (his word of 11-21, `docs/plans/v1.9/email-revamp/BRIEF.md`): stage 1 is on main (look 3, with "Send a test to me"), and he sent the 1.9 release on 11-22. His to do: look at the "to" line of the three copies that reached him, and clear or change the readers' email look on his desk (`lib/email/look.ts`). Stage 2, the sender, is not begun. The rest of what waits on him from that chat: `docs/handoffs/onboarding-2.0.md`, "His to do".
 6. **From the hand-over:** which of R6, R2b and R2c are done; whether the reading of the new system above is right; the order of `docs/PLAN-after-1.9.md`.
 7. **Rotation:** should the arbiter move to a fresh chat at about 150,000 tokens of context? The arbiter recommends yes (see Spend).
 
@@ -37,7 +37,7 @@ Updated 2026-11-21 14:08 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 |---|---|---|
 | Arbiter 15 | session_01VuYTwacqkyCMKTighQY7o3 | The one chat since 15:30 UTC on 11-20. At 337,000 tokens of context by 18:26, so it ends when he starts the next arbiter from this page |
 | Purify 1.9 ad: stage 1 | session_01VuYTwdhrUStFNXC4goT9fG | Stage 1 done ($8.40, context 268,000). He talks to it directly; it waits for his answer on the font and the moving phone. Archive it once he has answered and any font change is made; stage 2 belongs in a fresh chat from its hand-over |
-| Purify email revamp: stage 1 | session_01VuYTwZsrP4zay4qyBieFAL | One job at his choice of 2026-11-21: one design of the 1.9 release email for his yes (`docs/plans/v1.9/email-revamp/BRIEF.md`); capped at about $12 (60 tool calls or 150,000 tokens of its own count); he talks to it directly and it sends the arbiter nothing; its hand-over will be `docs/handoffs/email-revamp.md`; archive it once he has answered |
+| Purify email revamp: stage 1 | session_01VuYTwZsrP4zay4qyBieFAL | **Archived 2026-11-23 about 20:45 UTC at his word** ("good let's archive this chat"). It made the 1.9 release email's look, and then, at his word of 11-22 ("no. you already have the context you do it"), built 2.0's onboarding rows 0 to 3 on the branch and sent the guide's mend to the main web at his word. It ran far past its cap by his choice: $284 at its last finished turn, at 556,000 tokens of context. Its batons: `docs/handoffs/onboarding-2.0.md` (the work and what is next) and `docs/handoffs/email-revamp.md` (his every word to it). The next piece begins in a fresh chat |
 | Company guide | session_01VuYTwcFgb1g1Py4mRbRNrD | LLCs, tax, Florida (no repository); idle, waits on his two facts |
 
 ## Spend (measured with get_session on 2026-11-20)
@@ -46,6 +46,7 @@ Updated 2026-11-21 14:08 UTC by Arbiter 15 (session_01VuYTwacqkyCMKTighQY7o3).
 - **The ad chat:** $8.40 for stage 1 in all (context 268,000 tokens), $6.51 of it in its first 12 minutes.
 - **The rate these two give** (worked out from their numbers, not read from a price list): about $0.50 for a million tokens read from the cache, $10 for a million written to it, $25 for a million written as output. So every step costs about $0.05 for each 100,000 tokens of context, and coming back after more than an hour writes the whole context again, about $1 for each 100,000.
 - **What follows:** keep a chat short. Rotate the arbiter at about 150,000 tokens (his yes pending). A worker's price must count its fixed start (about 47,000 tokens of tools and rules), and a cap is better set in dollars read from get_session than in guessed tokens.
+- **The email revamp chat, which became the 2.0 onboarding builder:** $284 from 11-21 to 20:39 UTC on 11-23, as read at its last finished turn (context 556,000 tokens; 2.06 million tokens written as output; 504 million read from the cache). A long history is re-read at every step, as section 2 of OPERATIONS says: here that was most of the cost.
 - **The meter:** get_session shows a chat's cost only after a turn ends; inside a turn it shows the last finished turn. The weekly limit read "allowed" at 18:26 UTC and resets 2026-11-27 08:00 UTC.
 
 ## For 2.0 (his word, 2026-11-20: "for when we built v2.0 keep this in mind")
