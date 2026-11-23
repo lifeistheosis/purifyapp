@@ -449,7 +449,7 @@ console.log("\n  A prayer's day (the second day, the Creed)");
     await ctx.close();
   }
 
-  const ctx = await reader({ ...PRAYING, ...SECOND_DAY, ...TESTING });
+  const ctx = await reader({ ...PRAYING, ...SECOND_DAY, ...TESTING }, { scale: STILLS ? 2 : 1 });
   let page = await today(ctx);
   const c = await card(page);
   if (!c.step || c.href?.replace(/\/$/, "") !== CREED) {
@@ -495,12 +495,20 @@ console.log("\n  A prayer's day (the second day, the Creed)");
   }
   await ctx.close();
 
-  // A prayer said earlier the same day is kept as its page is opened: it was said today.
+  // A prayer that is not today's step keeps nothing of the week. And one said earlier the same day
+  // keeps the day as its page is opened: it was said today.
   {
-    const ctx2 = await reader({ ...PRAYING, ...SECOND_DAY, ...TESTING, "purify.prayers.creed.dates": JSON.stringify([DAY]) });
-    const page2 = await open(ctx2, CREED);
+    const ctx2 = await reader({ ...PRAYING, ...TESTING });
+    let page2 = await open(ctx2, CREED);
+    await prayThrough(page2);
+    const other = await prayer(page2);
+    check(other.complete && (!other.kept || /"at":0/.test(other.kept)), "on a day that is not the prayer's (the first day, a lesson), saying it keeps nothing of the week", `said on another day, the prayer's end says ${JSON.stringify(other.complete)} and the week is ${other.kept}`);
+    // The same reader with the first day kept yesterday: today is the Creed's day, and the Creed is said already.
+    await page2.evaluate((week) => localStorage.setItem("purify:week", week), SECOND_DAY["purify:week"]);
+    await page2.close();
+    page2 = await open(ctx2, CREED);
     const m = await prayer(page2);
-    check(new RegExp(`"at":2,"day":"${DAY}","passed":0`).test(m.kept ?? "") && m.complete, "a prayer already said today keeps the day as its page is opened", `opened already said, the week is ${m.kept} and the prayer's end says ${JSON.stringify(m.complete)}`);
+    check(new RegExp(`"at":2,"day":"${DAY}","passed":0`).test(m.kept ?? "") && m.complete && !m.frame && !m.week, "a prayer already said today keeps the day as its page is opened, its end at rest", `opened already said, the week is ${m.kept} and the prayer's end says ${JSON.stringify(m.complete)}`);
     await ctx2.close();
   }
 }

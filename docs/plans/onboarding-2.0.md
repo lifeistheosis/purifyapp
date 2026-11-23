@@ -690,17 +690,54 @@ Served: a council (9 days), a saint (5), a moment in history (2). They are named
 
 **Not done, and what each needs.**
 
-- **The four new lines are English in the other nineteen languages** ("Done for today", "Day 3 of 7, kept", "Tomorrow:", "Back to Today"). A translation pass before the frame is lit.
+- ~~The four new lines are English in the other nineteen languages.~~ Done the same day, in twenty languages (there are twenty beside English, not nineteen): the section after this one.
 - **The privacy page's sentence about a week's step.** It must say "kept" before the frame is lit; the count's closed list already takes the word, and nothing sends it yet.
 - **A finish is a moment of its own** (his note of 22 November). This is the first finish of the first week. It moves in the house's motion today; its own animation is still to be drawn with him.
 - **Seen at the end of the 1054 page.** Its own "Related in Purify" links to two studies, on the filioque and the papacy, that the week leaves out on purpose until they pass the clergy's reading (`lib/onboarding/week.ts`, `ROAD_WEEKS`). A reader on that day ends it beside those links. Nothing was changed: it is his and the clergy queue's.
 
 **The order from here, each a slice of its own behind the same switch.**
 
-1. A prayer's day (6 days). Proposed: the prayer's own finish keeps the day, with no second button. His yes or no.
+1. A prayer's day (6 days). Proposed: the prayer's own finish keeps the day, with no second button. His yes, 2026-11-23, and built the same day: the section after this one.
 2. The lessons give way (11 days), as mock-up 6 drew.
 3. A chapter's day (5 days): how a day ends in the Bible's reader is to be drawn first.
 4. The first Liturgy's guide (7 days), and the 18 days on a list or a hub; the six front pages that need one thing chosen come to him first.
+
+## Row 3, a prayer's day, and the day's lines in every language (2026-11-23)
+
+**His word, about 07:38 UTC, to the three stills and to the question about a prayer's day: "sure finalize yes and rate our changes".** Read as: yes to the stills, so the day's end as built is the design for 2.0; yes, a prayer's own finish keeps a prayer's day; make it final; and rate what has been changed (the next section). Not read as a word to light it for readers: all of it ships with 2.0. Commit `e0c1fe85c` and the one that carries this section. Stills from the export: `docs/plans/reader-map/img/day-prayer-said.jpg`, `day-prayer-today-kept.jpg`.
+
+**A prayer's day.** With the frame on, the Creed, the prayers before sleep and the morning's prayers are kept on their own page: opening writes nothing, and the prayer's own end keeps the day (the rule complete today, the mark its finish already sets). Nothing of the week is drawn on the prayer's page, before its end or after it: no retention loops inside prayers, his word of 2026-10-16. The prayer's end answers as it always has ("Glory to God. The rule is complete for today."), and Today says "Day 2 of 7, kept" with tomorrow's step by name when the reader is back. A prayer said earlier the same day keeps the day as its page is opened. One said on a day that is not its own keeps nothing of the week. With the frame off nothing changes.
+
+**So the frame serves twenty-two of the sixty-three days:** a council 9, a prayer 6, a saint 5, a moment in history 2.
+
+**Kept once.** `lib/onboarding/keepDay.ts` takes today's step only while it is still the one waiting, and counts it there. A second tap on Done that lands while the first is being pictured, or a prayer's end told twice, takes nothing more off the week. Done's own handler keeps the day by it too.
+
+**The words.** "Back to Today" was the Catechism's already, in every language, so the kept card says it by that key and the new key is gone. The three lines that are new ("Done for today", "Day {n} of 7, kept", "Tomorrow: {title}") are written in the twenty other languages from each catalogue's own words for done, day, kept, tomorrow and today, passed through the catalogues' checked merge (`scripts/i18n-batch.mjs`) and set in each file in its own order. They are a model's, as the catalogues' other lines are: no reader of each language has read them. A step's own name stays as the app has it (a saint's and a council's name are English in every language).
+
+**The checks.** Nine more tests (the prayer's day 4, kept once 4, the twenty languages 1), each failing on the code before. Typecheck 0. The unit suite 15,635 passed, 7 skipped, 0 failed. Lint clean on the changed files. `npm run build` green. The app export green. The probe: 51 of 51, three runs in a row, the prayer's day among them (nothing of the week on the prayer's page; opening keeps nothing; its end keeps the day once; a second reading keeps nothing more; Today says so; the next day the named step waits). The guardrail walk on the day's end and Today in Arabic, German, Russian, French, Urdu and Hungarian, and on the prayer's page and Today on a prayer's day: nothing of the frame's or of the day's failed.
+
+**Found by that walk, older and not of this work: noted, not mended.** In German, on Today, "2 weitere" and its dot over the readings' picture read 4.44 to 4.47 to 1 where 4.5 is needed (Light, Councils, Cappadocian), and on a council's page the link "Das Glaubensbekenntnis, Zeile für Zeile" is cut by an ellipsis. In Urdu the same line on Today reads 4.50 on Light. A plain reader with no frame has all three. And the Testers mark is cut by an ellipsis when the reader walked is "Another Christian tradition". Each is in `docs/NOW.md`, "Found, and not yet on the faults list".
+
+**Still to do before the frame is lit.** The privacy page's sentence about a week's step, saying "kept" (his to read). The other slices: the lessons (11 days), a chapter's day (5), the first Liturgy's guide (7), the lists and hubs (18). A finish as a moment of its own, drawn with him.
+
+## The changes, rated (2026-11-23, about 07:45 UTC)
+
+**His word: "rate our changes".** By the same judge and the same measure as the rating of 22 November: what this chat has changed since 1.9, as each stood on the branch when he asked.
+
+| The change | Score | Why |
+|---|---|---|
+| The week's card on Today, two faults mended | 8.5 | Every new reader meets both today. Mended, tested, walked. A mend, not a new thing |
+| Find a parish | 8 | Small and exact: no new words, the reader's own region first, nothing asked or kept |
+| The tests' answers in the weekly brief | 7.5 | One word a test, each week. No test has an answer yet, so it is unproven |
+| "Done for today" | 7 | The best-made piece: one motion, measured frame by frame. But 16 of 63 days, in English alone |
+| Admin, by road and by first pick | 7 | Who finishes and who comes back. It cannot tell practicing from coming back, and its baselines are not read |
+| The welcome on Today | 5 | Drawn three times and still "plain, not designed". On hold |
+
+**Onboarding as a whole: 5.5 as readers have it, about 6.3 on the branch.**
+
+**What holds the number down.** Readers have none of it until 2.0 ships. The first week was still a link on 47 of the 63 days. After day seven is untouched, at 3. And the first build of "Done for today" needed three more: its line stood over the page's head and its button in the app's shell. The probe caught both before he saw them, at the cost of time.
+
+**After the rating, the same day:** a prayer's day and the day's lines in twenty languages (the section above). "Done for today" then reads 7.5: 22 of 63 days, every language. The whole stays about 6.3 until the lessons, the chapters and the lists are done.
 
 ## Status, section by section (2026-11-23, about 05:00 UTC)
 
@@ -727,7 +764,9 @@ Two scores a section, by the same judge and the same measure as the rating of 22
 
 **Built since this table, the same day, dark for readers:** "Done for today" at the end of the day's page, for sixteen of the sixty-three days ("Row 3, the day's frame: built for sixteen days", above). With it section 4 reads 5 on the branch; a reader's own number moves only when 2.0 ships.
 
-**Decided and not yet built:** the frame's other slices (a prayer's day, the lessons, a chapter's day, the guide, the lists and hubs).
+**Built after that, the same day:** a prayer's day (his yes), and the day's three new lines in twenty languages. The frame serves twenty-two of the sixty-three days.
+
+**Decided and not yet built:** the frame's other slices (the lessons, a chapter's day, the guide, the lists and hubs).
 
 **Open, outside the sections:** the three copies of the 1.9 email in his inbox (read as three accounts; unproven until he looks at each one's "to" line); the heartbeat's call cut by a long send; the release letter's sender reading "Purify Shop".
 
