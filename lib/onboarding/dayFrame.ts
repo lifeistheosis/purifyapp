@@ -8,10 +8,6 @@
 // each page"), and the frame's own probe and a reading of each page's code
 // took two more kinds out. The others, and why:
 //
-//   a chapter               the reader opens the next chapter when its end is
-//                           reached, and floats its own bars over the page;
-//   the first Liturgy's     a guide of eight parts with its own two buttons:
-//   guide                   its own end is the day's end;
 //   a list or a hub         no one thing and no end (a section's front page,
 //                           Find a parish, a path, Today's readings, Your
 //                           rule, the morning's rule with its own marks).
@@ -39,6 +35,17 @@
 // keeps the day (OWN_END_STEPS), and nothing of the week is drawn on the
 // prayer's page at all: no retention loops inside prayers (his word of
 // 2026-10-16). Today says the day is kept when the reader is back.
+//
+// A chapter and the first Liturgy's guide are kept the same way (his yes of
+// 2026-11-23, to "for Bible chapters and the Liturgy guide, should reaching
+// the end keep the day by itself, with nothing extra drawn"). The Bible's
+// reader floats its own bars over the page and opens the next chapter when
+// its end is reached, so a button at that end would stand under them and on
+// the way into another chapter: the day is kept when the chapter's last
+// verse has stood on the screen a moment (DayKeptAt, at the end of the
+// verses). The guide is a flow of its own with its own finish, the page that
+// keeps the reader's checklist and day (lib/start/liturgyPlan.ts, done):
+// reaching it keeps the day.
 //
 // A step is served when it is named here AND its page mounts the frame's end
 // (PAGE_OF below says which file, by where the page's address begins): the
@@ -85,11 +92,20 @@ export function frameFits(key: WeekStepKey): boolean {
   return FRAMED_STEPS.includes(key);
 }
 
-/** The steps whose page has an end of its own that keeps the day: a prayer said through. */
-export const OWN_END_STEPS: readonly WeekStepKey[] = ["creed", "beforeSleep", "morningPrayers"];
+/** The steps whose page has an end of its own that keeps the day: a prayer said through, a chapter read to its end, the first Liturgy's guide finished. */
+export const OWN_END_STEPS: readonly WeekStepKey[] = ["creed", "beforeSleep", "morningPrayers", "gospelJohn", "job", "psalter", "firstLiturgy"];
 
-/** Where a prayer's end is told to the week: the one reader every prayer's page is read in. */
-export const OWN_END_IN = "components/prayers/PrayerRuleReader.tsx";
+/** Where each kind of page tells its own end to the week, by where the page's address begins. */
+export const OWN_END_OF: Readonly<Record<string, string>> = {
+  "/prayers/": "components/prayers/PrayerRuleReader.tsx",
+  "/bible/": "components/bible/ChapterScreen.tsx",
+  "/start/first-liturgy": "components/start/liturgy/FirstLiturgyGuide.tsx",
+};
+
+/** Where an own-end page's address begins, as OWN_END_OF names it, or null. */
+export function ownEndOf(href: string): string | null {
+  return Object.keys(OWN_END_OF).find((start) => href.startsWith(start)) ?? null;
+}
 
 /** Whether this step's day is kept by its page's own end. */
 export function ownEnd(key: WeekStepKey): boolean {

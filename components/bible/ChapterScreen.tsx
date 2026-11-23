@@ -31,6 +31,7 @@ import { SourceList, marked, type ListedSource } from "@/components/citations/Ma
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { T } from "@/components/i18n/T";
 import { BIBLE_START_SIZE, ReaderFocusButton, ReaderFocusController, ReaderPrefsProvider } from "@/components/reader/ReaderPrefs";
+import { DayKeptAt } from "@/components/onboarding/DayFrame";
 import { KeepDay } from "@/components/streak/KeepDay";
 import type { BibleBook, NamedPassageId } from "@/lib/bible/books";
 import { openBooks } from "@/lib/bible/booksSheet";
@@ -433,6 +434,12 @@ export function ChapterScreen({
                 ) : null}
 
                 {downloaded ? <DownloadedChapter bible={downloaded.bible} text={downloaded.text} book={slug} chapter={chapter} /> : reader}
+
+                {/* When this chapter is today's step of a reader's first week (2.0, off for readers), the
+                    day is kept once its last verse has stood on the screen a moment (the owner's yes of
+                    2026-11-23). Nothing is drawn, and for any other reader nothing is here at all
+                    (components/onboarding/DayFrame.tsx). */}
+                <DayKeptAt />
 
                 <ChapterPager slug={slug} chapter={chapter} v={licensedId ?? undefined} />
 

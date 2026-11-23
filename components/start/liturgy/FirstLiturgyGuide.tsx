@@ -19,6 +19,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { DayKeptBy } from "@/components/onboarding/DayFrame";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
@@ -102,6 +103,10 @@ export function FirstLiturgyGuide() {
 
   return (
     <section className="bg-night px-5 pb-16 md:px-8" aria-labelledby="liturgy-step-title">
+      {/* When the guide is today's step of a reader's first week (2.0, off for readers), finishing
+          it keeps the day (the owner's yes of 2026-11-23): its own last page, which keeps the
+          reader's checklist and day. This draws nothing (components/onboarding/DayFrame.tsx). */}
+      <DayKeptBy done={mounted && plan.done} />
       <div className="mx-auto w-full max-w-[640px]">
         {/* The page's own name for a computer's screen reader, where the
             phone's top bar (and its h1) is hidden; the card's heading leads

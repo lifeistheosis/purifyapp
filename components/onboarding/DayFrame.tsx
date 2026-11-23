@@ -28,9 +28,13 @@
 // this island decides on the device, and draws nothing for a reader without
 // the frame, on the server or on a hydration, or on any day but the page's.
 //
-//   DayKeptBy  for a page with an end of its own, a prayer said through (the
-//            owner's yes of 2026-11-23): when that end is reached on the
-//            reader's day, the day is kept. It draws nothing.
+//   DayKeptBy  for a page with an end of its own that the page can tell: a
+//            prayer said through, the first Liturgy's guide finished (the
+//            owner's two yeses of 2026-11-23). When that end is reached on
+//            the reader's day, the day is kept. It draws nothing.
+//   DayKeptAt  for a page whose end is a place: a chapter read down to its
+//            last verse. Set there, it keeps the day once that end has stood
+//            on the screen a moment. It draws nothing a reader sees.
 
 import { useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
@@ -183,4 +187,41 @@ export function DayKeptBy({ done }: { done: boolean }) {
     if (done && waiting != null) keepDay(waiting);
   }, [done, waiting]);
   return null;
+}
+
+/** How long a page's end stands on the screen before its day counts as kept: as long as a lesson's before it counts as read. */
+export const KEPT_AFTER_MS = 2000;
+
+/**
+ * For a page whose end is a place: a chapter read down to its last verse (the owner's yes of
+ * 2026-11-23, to "should reaching the end keep the day by itself, with nothing extra drawn"). Set
+ * at that end, it keeps the day once the end has stood on the screen two seconds while the page is
+ * seen, clear of the bars at the foot: scrolling past it on the way somewhere else keeps nothing.
+ *
+ * It draws nothing a reader sees, and is not in the page at all on any day but the reader's own.
+ */
+export function DayKeptAt() {
+  const here = dayOfPage(useWeekDay(), usePathname(), ownEnd);
+  const waiting = here && !here.kept ? here.index : null;
+  const mark = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const el = mark.current;
+    if (!el || waiting == null || typeof IntersectionObserver === "undefined") return;
+    let timer: number | undefined;
+    const seen = new IntersectionObserver(
+      ([entry]) => {
+        window.clearTimeout(timer);
+        if (entry.isIntersecting && document.visibilityState === "visible") timer = window.setTimeout(() => keepDay(waiting), KEPT_AFTER_MS);
+      },
+      // Over the bars at the foot of the screen, where a reader can see it.
+      { rootMargin: "0px 0px -15% 0px" },
+    );
+    seen.observe(el);
+    return () => {
+      seen.disconnect();
+      window.clearTimeout(timer);
+    };
+  }, [waiting]);
+  if (waiting == null) return null;
+  return <span ref={mark} aria-hidden data-day-own-end="" className="block h-px w-full" />;
 }

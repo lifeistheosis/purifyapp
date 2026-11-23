@@ -35,7 +35,13 @@
 //      the week's line and Done stand where its one white button stood, the way on to the next
 //      lesson is a quiet link, "Lesson read" is left unsaid while the lesson is still marked read,
 //      and Done is answered as on a council's page, the quiet links keeping their place. With the
-//      frame off, and the day after, the lesson's end is as every reader has it.
+//      frame off, and the day after, the lesson's end is as every reader has it;
+//  13. on a chapter's day (the owner's yes of 2026-11-23: reaching the end keeps the day by itself,
+//      with nothing extra drawn) the Bible's reader wears nothing of the week; opening keeps
+//      nothing; the end passed in half a second keeps nothing; the last verse on the screen for
+//      two seconds keeps the day, and the reader stays in the chapter;
+//  14. on the guide's day the same: opening keeps nothing, and walking the first Liturgy's guide
+//      to its own last page keeps the day, the week's seventh, with nothing of the week drawn.
 //
 // The tap on Done is recorded frame by frame and judged by the gate's own motion check
 // (scripts/gate/frames.mjs): no cut, no jump, no flash; and with motion reduced, nothing that moves.
@@ -639,6 +645,146 @@ console.log("\n  A prayer's day (the second day, the Creed)");
   }
 }
 
+// What a page with an end of its own shows of the week: nothing, on any day.
+const ownEndPage = (page) =>
+  page.evaluate(() => {
+    const main = document.querySelector("main");
+    const mark = document.querySelector("[data-day-own-end]");
+    return {
+      path: location.pathname,
+      hash: location.hash,
+      frame: !!document.querySelector("[data-day-end], [data-day-done], [data-day-kept], [data-day-mark]"),
+      week: /Your first week|Done for today|of 7, kept|Tomorrow:/.test(main.innerText),
+      mark: mark ? { top: Math.round(mark.getBoundingClientRect().top + scrollY), tall: Math.round(mark.getBoundingClientRect().height) } : null,
+      kept: localStorage.getItem("purify:week"),
+    };
+  });
+
+console.log("\n  A chapter's day (the fourth day, the Gospel of John)");
+{
+  const CHAPTER = "/bible/john/1";
+  const FOURTH_DAY = { "purify:week": JSON.stringify({ at: 3, day: YESTERDAY, passed: 0 }) };
+  {
+    const ctx = await reader({ ...PRAYING, ...FOURTH_DAY });
+    const page = await today(ctx);
+    const c = await card(page);
+    if (!c.step || c.href?.replace(/\/$/, "") !== CHAPTER) fault(`with the frame off, today's step is ${JSON.stringify(c.step)} (${c.href}), not the chapter`);
+    else {
+      await begin(page);
+      await page.waitForTimeout(3000);
+      const m = await ownEndPage(page);
+      check(/"at":4/.test(m.kept ?? "") && !m.mark && !m.frame && !m.week, "with the frame off, opening the chapter took the step, as before, and nothing of the week is in its page", `with the frame off the week is ${m.kept}; the page holds the mark: ${JSON.stringify(m.mark)}, the frame: ${m.frame}, the week's words: ${m.week}`);
+    }
+    await ctx.close();
+  }
+
+  const ctx = await reader({ ...PRAYING, ...FOURTH_DAY, ...TESTING }, { scale: STILLS ? 2 : 1 });
+  let page = await today(ctx);
+  const c = await card(page);
+  if (!c.step || c.href?.replace(/\/$/, "") !== CHAPTER) {
+    fault(`today's step is ${JSON.stringify(c.step)} (${c.href}), not the chapter`);
+  } else {
+    console.log(`    today for this reader: ${c.step[0]}, ${c.step[1]} (${c.href})`);
+    await begin(page);
+    await page.waitForTimeout(3000);
+    const opened = await ownEndPage(page);
+    check(opened.path.replace(/\/$/, "") === CHAPTER && !opened.frame && !opened.week, "the Bible's reader wears nothing of the week: no line, no Done, no card", `the chapter's page shows the frame: ${opened.frame}, the week's words: ${opened.week}`);
+    check(/"at":3/.test(opened.kept ?? "") && opened.mark && opened.mark.top > 844 && opened.mark.tall <= 1, `opening it kept nothing; its end is ${opened.mark?.top} down the page, marked by nothing a reader sees`, `after opening the week is ${opened.kept}; the end's mark: ${JSON.stringify(opened.mark)}`);
+
+    // The end passed on the way somewhere else: on the screen for half a second, then gone.
+    await page.evaluate(() => document.querySelector("[data-day-own-end]").scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(500);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(2800);
+    const passed = await ownEndPage(page);
+    check(/"at":3/.test(passed.kept ?? ""), "the end passed in half a second keeps nothing", `after passing the end the week is ${passed.kept}`);
+
+    // Read down to the last verse, and rest there.
+    await page.evaluate(() => document.querySelector("[data-day-own-end]").scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(2900);
+    const read = await ownEndPage(page);
+    check(new RegExp(`"at":4,"day":"${DAY}","passed":0`).test(read.kept ?? ""), "the last verse on the screen for two seconds keeps the day", `after resting at the end the week is ${read.kept}`);
+    check(read.path.replace(/\/$/, "") === CHAPTER && !read.frame && !read.week && !read.mark, "the reader stays in the chapter, still with nothing of the week on it, and the mark is gone", `after the day is kept the page is ${read.path}; the frame: ${read.frame}, the week's words: ${read.week}, the mark: ${JSON.stringify(read.mark)}`);
+    await still(page, "chapter-1-read");
+    await page.close();
+
+    page = await today(ctx);
+    const kept = await card(page);
+    check(!kept.step && kept.kept?.[0] === "Day 4 of 7, kept" && kept.kept[1] === "Tomorrow: The Council of Chalcedon" && kept.keptLinks === 0, `Today says the day is kept: "${kept.kept?.join('", "')}"`, `Today shows ${JSON.stringify(kept)}`);
+  }
+  await ctx.close();
+}
+
+console.log("\n  The guide's day (the seventh day, Your first Liturgy)");
+{
+  const GUIDE = "/start/first-liturgy";
+  const SEVENTH_DAY = { "purify:week": JSON.stringify({ at: 6, day: YESTERDAY, passed: 0 }) };
+  {
+    const ctx = await reader({ ...PRAYING, ...SEVENTH_DAY });
+    const page = await today(ctx);
+    const c = await card(page);
+    if (!c.step || c.href?.replace(/\/$/, "") !== GUIDE) fault(`with the frame off, today's step is ${JSON.stringify(c.step)} (${c.href}), not the guide`);
+    else {
+      await begin(page);
+      await page.waitForTimeout(3000);
+      const m = await ownEndPage(page);
+      check(/"at":7/.test(m.kept ?? "") && !m.frame && !m.week, "with the frame off, opening the guide took the step, as before", `with the frame off the week is ${m.kept}; the frame: ${m.frame}, the week's words: ${m.week}`);
+    }
+    await ctx.close();
+  }
+
+  const ctx = await reader({ ...PRAYING, ...SEVENTH_DAY, ...TESTING }, { scale: STILLS ? 2 : 1 });
+  let page = await today(ctx);
+  const c = await card(page);
+  if (!c.step || c.href?.replace(/\/$/, "") !== GUIDE) {
+    fault(`today's step is ${JSON.stringify(c.step)} (${c.href}), not the guide`);
+  } else {
+    console.log(`    today for this reader: ${c.step[0]}, ${c.step[1]} (${c.href})`);
+    await begin(page);
+    await page.waitForTimeout(3000);
+    const opened = await ownEndPage(page);
+    check(opened.path.replace(/\/$/, "") === GUIDE && !opened.frame && !opened.week && /"at":6/.test(opened.kept ?? ""), "the guide wears nothing of the week, and opening it kept nothing", `the guide shows the frame: ${opened.frame}, the week's words: ${opened.week}; the week is ${opened.kept}`);
+
+    // Walk the guide as a reader does: say yes, choose a kind of church, then on through each part to its last page.
+    const cards = [];
+    for (let i = 0; i < 14; i++) {
+      const at = await page.evaluate(() => location.hash || "#intro");
+      cards.push(at);
+      if (at === "#ready") break;
+      const asks = page.locator('main [role="radio"]');
+      if ((await asks.count()) && !(await page.locator('main [role="radio"][aria-checked="true"]').count())) {
+        await asks.first().scrollIntoViewIfNeeded();
+        await asks.first().tap();
+        await page.waitForTimeout(500);
+      }
+      // The card's one white button: the answer on the first card, Next on the others.
+      const on = page.locator("main section button.bg-paper").last();
+      await on.scrollIntoViewIfNeeded();
+      await on.tap();
+      await page.waitForTimeout(1100);
+      // Short of its last page, the day is not kept.
+      const mid = await page.evaluate(() => ({ hash: location.hash, kept: localStorage.getItem("purify:week") }));
+      if (mid.hash !== "#ready" && !/"at":6/.test(mid.kept ?? "")) {
+        fault(`the day was kept at ${mid.hash}, short of the guide's last page: ${mid.kept}`);
+        break;
+      }
+    }
+    await page.waitForTimeout(800);
+    const done = await ownEndPage(page);
+    check(done.hash === "#ready" && cards.length >= 8, `the guide walked to its own last page, card by card (${cards.length - 1} cards before it)`, `the walk ended at ${done.hash} after ${cards.join(", ")}`);
+    check(new RegExp(`"at":7,"day":"${DAY}","passed":0`).test(done.kept ?? ""), "its last page keeps the day, the week's seventh, and no card before it did", `at the guide's last page the week is ${done.kept}`);
+    check(!done.frame && !done.week, "with nothing of the week drawn on it", `the guide's last page shows the frame: ${done.frame}, the week's words: ${done.week}`);
+    await still(page, "guide-1-ready");
+    await page.close();
+
+    page = await today(ctx);
+    const kept = await card(page);
+    check(!kept.step && kept.kept?.[0] === "Day 7 of 7, kept" && kept.kept.length === 1 && kept.keptLinks === 0, `Today says the week's last day is kept: "${kept.kept?.join('", "')}"`, `Today shows ${JSON.stringify(kept)}`);
+    await still(page, "guide-2-today-kept");
+  }
+  await ctx.close();
+}
+
 await browser.close();
-console.log(faults ? `\nthe day's frame: ${faults} fault${faults === 1 ? "" : "s"}` : "\nthe day's frame: a day is kept by Done at the end of its page, a lesson's among them, or by a prayer's own end, and ends on tomorrow");
+console.log(faults ? `\nthe day's frame: ${faults} fault${faults === 1 ? "" : "s"}` : "\nthe day's frame: a day is kept by Done at the end of its page, or by its page's own end (a prayer, a chapter, the guide), and ends on tomorrow");
 process.exit(faults ? 1 : 0);
