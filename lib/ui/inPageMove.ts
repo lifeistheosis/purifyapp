@@ -180,6 +180,47 @@ export function piecesBefore(from: Element | null | undefined, max = GLIDE_MAX):
   return out;
 }
 
+/** How far down the screen, as a share of it, what stands over the page at its head is looked for. */
+export const HEAD_SHARE = 0.25;
+
+/**
+ * What stands fixed or stuck over the page at the head of the screen: a
+ * page's own bar, a row pinned under it. For a move in which the page goes
+ * up the screen (piecesBefore). The browser draws every part with a name
+ * over what has none, so the lines gliding up were drawn over the bar they
+ * pass under when a finger moves the page (seen frame by frame on a
+ * council's page, 2026-11-23: the bar's title under a line of the page for a
+ * third of a second). Given a name too, a bar keeps its own picture and its
+ * own place in the order things are drawn, and the page passes under it.
+ *
+ * Found where they stand, under points across the head of the screen, so no
+ * page has to say which bars it wears. Never what holds `from`, never a part
+ * already named (the tab bar, the website's header: globals.css).
+ */
+export function stuckOver(from: Element | null | undefined, max = 6): HTMLElement[] {
+  if (!from || typeof window === "undefined" || typeof document.elementsFromPoint !== "function") return [];
+  const out: HTMLElement[] = [];
+  const seen = new Set<Element>();
+  const width = window.innerWidth;
+  const reach = window.innerHeight * HEAD_SHARE;
+  for (let y = 8; y < reach && out.length < max; y += 24) {
+    for (const x of [width * 0.12, width * 0.5, width * 0.88]) {
+      for (const hit of document.elementsFromPoint(x, y)) {
+        for (let el: Element | null = hit; el && el !== document.body && el !== document.documentElement; el = el.parentElement) {
+          if (seen.has(el)) break;
+          seen.add(el);
+          const cs = getComputedStyle(el);
+          if (cs.position !== "fixed" && cs.position !== "sticky") continue;
+          if (cs.viewTransitionName && cs.viewTransitionName !== "none") continue;
+          if (el.contains(from) || out.length >= max) continue;
+          out.push(el as HTMLElement);
+        }
+      }
+    }
+  }
+  return out;
+}
+
 function wear(parts: MoveParts): void {
   const grows = (parts.grows ?? []).filter((e): e is HTMLElement => !!e).slice(0, GROWS.length);
   const glides = parts.glides ?? partsAfter(grows[0]);

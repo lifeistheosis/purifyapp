@@ -11,7 +11,7 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { piecesBefore } from "../inPageMove";
+import { HEAD_SHARE, piecesBefore, stuckOver } from "../inPageMove";
 
 type El = {
   tagName: string;
@@ -116,5 +116,55 @@ describe("the pieces on the screen over a part at the end of a long page", () =>
     el(-4000, 5000, [column], { tagName: "MAIN" });
     expect(piecesBefore(end as unknown as Element, 5)).toHaveLength(5);
     expect(piecesBefore(null)).toEqual([]);
+  });
+});
+
+describe("what stands over the page at the head of the screen", () => {
+  type Box = { name: string; position?: string; vt?: string; parentElement: Box | null; contains: (x: unknown) => boolean };
+  const box = (name: string, parent: Box | null, more: Partial<Box> = {}): Box => ({ name, parentElement: parent, contains: () => false, ...more });
+
+  /** A screen 390 by 844 whose points answer from `under.at(x, y)`: the boxes under that point, the nearest first. */
+  function screen() {
+    const html = box("html", null);
+    const bodyBox = box("body", html);
+    const under: { at: (x: number, y: number) => Box[] } = { at: () => [] };
+    vi.stubGlobal("window", { innerWidth: 390, innerHeight: 844 });
+    vi.stubGlobal("document", { body: bodyBox, documentElement: html, elementsFromPoint: (x: number, y: number) => under.at(x, y) });
+    vi.stubGlobal("getComputedStyle", (e: Box) => ({ position: e.position ?? "static", viewTransitionName: e.vt ?? "none" }));
+    return { bodyBox, under };
+  }
+
+  it("finds the page's bar and a row pinned under it, each once, and nothing that only lies under them", () => {
+    const { bodyBox, under } = screen();
+    const main = box("main", bodyBox);
+    const words = box("words", main);
+    const bar = box("bar", main, { position: "sticky" });
+    const title = box("title", bar);
+    const pin = box("pin", main, { position: "fixed" });
+    const door = box("door", pin);
+    under.at = (_x, y) => (y < 51 ? [title, bar, words, main] : y < 107 ? [door, pin, words, main] : [words, main]);
+    const from = box("end", main);
+    expect(stuckOver(from as unknown as Element).map((e) => (e as unknown as Box).name)).toEqual(["bar", "pin"]);
+  });
+
+  it("leaves what is named already, and what holds the part itself", () => {
+    const { bodyBox, under } = screen();
+    const tabs = box("tabs", bodyBox, { position: "fixed", vt: "tab-bar" });
+    const sheet = box("sheet", bodyBox, { position: "fixed", contains: () => true });
+    under.at = () => [tabs, sheet];
+    expect(stuckOver(box("end", sheet) as unknown as Element)).toEqual([]);
+  });
+
+  it("looks only across the head of the screen, and is empty with nothing to start from", () => {
+    const { bodyBox, under } = screen();
+    const ys: number[] = [];
+    under.at = (_x, y) => {
+      ys.push(y);
+      return [];
+    };
+    expect(stuckOver(box("end", bodyBox) as unknown as Element)).toEqual([]);
+    expect(Math.max(...ys)).toBeLessThan(844 * HEAD_SHARE);
+    expect(Math.min(...ys)).toBe(8);
+    expect(stuckOver(null)).toEqual([]);
   });
 });

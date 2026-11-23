@@ -141,7 +141,7 @@ describe("the frame", () => {
   it("keeps a day only at the reader's own Done, and answers it in the house's motion", () => {
     // The one place a step is written as kept with the frame on: Done's own handler.
     expect(frame.split("stepTaken(").length - 1).toBe(1);
-    expect(frame).toContain("movePage(() => writeWeek(stepTaken(readWeek(), localDay(new Date()))), { grows: [block.current], glides: piecesBefore(block.current) });");
+    expect(frame).toContain("movePage(() => writeWeek(stepTaken(readWeek(), localDay(new Date()))), { grows: [el], glides: [...piecesBefore(el), ...stuckOver(el)] });");
     expect(frame).toContain('countWeekStep(here.index + 1, "kept");');
   });
 

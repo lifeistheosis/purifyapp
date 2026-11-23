@@ -40,7 +40,7 @@ import { frameFits } from "@/lib/onboarding/dayFrame";
 import { readWeek, writeWeek } from "@/lib/onboarding/state";
 import { useWeekDay, type WeekDay } from "@/lib/onboarding/useWeek";
 import { localDay, stepTaken, type WeekStep } from "@/lib/onboarding/week";
-import { movePage, piecesBefore } from "@/lib/ui/inPageMove";
+import { movePage, piecesBefore, stuckOver } from "@/lib/ui/inPageMove";
 import { goToReadingPlace, shiftToReadingPlace, visibleBand } from "@/lib/ui/readingPlace";
 
 const bare = (path: string) => path.replace(/\/+$/, "") || "/";
@@ -91,8 +91,10 @@ export function DayEnd({ className }: { className?: string }) {
     answered.current = true;
     countWeekStep(here.index + 1, "kept");
     // The line and the button give way to the card in the house's motion, never with a cut: the
-    // block grows, and what stands on the screen over it glides as the page goes with it.
-    movePage(() => writeWeek(stepTaken(readWeek(), localDay(new Date()))), { grows: [block.current], glides: piecesBefore(block.current) });
+    // block grows, what stands on the screen over it glides as the page goes with it, and the bars
+    // at the head of the screen keep their own picture, so the page passes under them.
+    const el = block.current;
+    movePage(() => writeWeek(stepTaken(readWeek(), localDay(new Date()))), { grows: [el], glides: [...piecesBefore(el), ...stuckOver(el)] });
   };
 
   return (
