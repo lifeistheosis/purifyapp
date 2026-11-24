@@ -97,7 +97,7 @@ describe("admin pages", () => {
   it("starts the rail as he picked it: Daily, When needed, and a quiet Tools line", () => {
     const ops = ADMIN_PAGE_GROUPS.filter((g) => g.mode === "ops");
     expect(ops.map((g) => [g.group, g.pages.map((p) => p.label), Boolean(g.quiet)])).toEqual([
-      ["Daily", ["Home", "Traffic", "Money", "Users"], false],
+      ["Daily", ["Home", "Traffic", "Money", "Readers"], false],
       ["When needed", ["Orders", "Messages", "Catalogue"], false],
       ["Tools", ["Releases", "Content", "Community", "EIKON Box", "Services", "Audit log"], true],
     ]);
@@ -109,7 +109,7 @@ describe("admin pages", () => {
       ["Home", "waiting"],
       ["Traffic", "live"],
       ["Money", "revenue"],
-      ["Users", "signups"],
+      ["Readers", "signups"],
     ]);
     // Only the Daily pages carry one.
     for (const p of ADMIN_PAGES.filter((x) => !daily.includes(x))) expect(p.figure, p.id).toBeUndefined();
@@ -184,7 +184,7 @@ describe("admin pages", () => {
     // A retired id reads as the view it lands on, so the usage readout of
     // his old weeks still says where he was.
     // Users holds one view since the carts moved to Orders (2026-11-10).
-    expect(viewLabel("verification")).toBe("Users");
+    expect(viewLabel("verification")).toBe("Readers");
     expect(viewLabel("carts")).toBe("Orders: Live carts");
     expect(viewLabel("nope")).toBe("nope");
   });

@@ -146,7 +146,7 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
       },
       {
         id: "users",
-        label: "Users",
+        label: "Readers",
         sentence: "Every account. Find one, then do everything from their card.",
         figure: "signups",
         views: [

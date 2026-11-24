@@ -99,7 +99,7 @@ describe("the rail as he picked it", () => {
     const rail = pickedRail();
     expectWhole(rail);
     expect(labels(rail)).toEqual([
-      ["Home", "Traffic", "Money", "Users"],
+      ["Home", "Traffic", "Money", "Readers"],
       ["Orders", "Messages", "Catalogue"],
       ["Releases", "Content", "Community", "EIKON Box", "Services", "Audit log"],
     ]);
@@ -152,7 +152,7 @@ describe("railFromUsage", () => {
     const rail = railFromUsage(HIS_WEEK);
     expectWhole(rail);
     expect(labels(rail)).toEqual([
-      ["Home", "Traffic", "Money", "Users"],
+      ["Home", "Traffic", "Money", "Readers"],
       ["Orders", "Messages", "Catalogue"],
       ["Releases", "Content", "Community", "EIKON Box", "Services", "Audit log"],
     ]);
