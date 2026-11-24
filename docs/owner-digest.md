@@ -37,3 +37,9 @@ Saved as network secrets on his personal cloud environment (the proxy adds them;
 - `api.revenuecat.com`: a RevenueCat v2 secret key, read only. Project `proj2ed00c93`. `GET /v2/projects/proj2ed00c93/metrics/overview` gives MRR, 28-day revenue, active subscriptions and trials, new customers, active users.
 
 What a chat reports from these is analysis, not the books: the accounting record for tax is the bank's statements and receipts in accounting software, checked by a CPA.
+
+## One command
+
+`node scripts/owner-report.mjs` reads all three (the digest, RevenueCat, Mercury) and prints one report: readers and Plus, revenue, and the bank by month and by kind of cost (hosting, database, store payouts, developer accounts, AI tools and the rest; `CATEGORIES` in the script, tested in `lib/owner/__tests__/ownerReport.test.ts`). It runs itself again with `NODE_USE_ENV_PROXY=1`, since Node's fetch does not use the proxy that holds the keys without it. A source that fails is named; the rest still print. CLAUDE.md tells every chat to run it when he asks.
+
+Known gap: the bank is empty until the stores' payouts and the bills move to Mercury (his step, after Apple and Google move his accounts from personal to his company).
