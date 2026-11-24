@@ -8,6 +8,10 @@
    production build failed on it (2026-09-26). Excluded, it takes 23s and
    the output is byte for byte the same. */
 @source not "../.claude";
+/* docs/ holds no class the app uses, and its prose can name one Tailwind cannot parse
+   (a fasting-colour class with <kind> in it, docs/handoffs/updates-98q.md, broke every compile;
+   docs/handoffs/admin-milestones.md). His yes, 2026-11-24. */
+@source not "../docs";
 
 /* Motion follows one switch: `data-motion` on <html>, "reduce" or "full".
    lib/ui/motionPrepaint.ts sets it before the first paint and
