@@ -37,8 +37,9 @@ END = 1144        # 19.07 s: the reference's last cut before its white frame; ou
 # The last, Ingres's Jupiter, is set eye for eye on the icon that follows the drop: the same place and the same size,
 # so the cut turns the false face into the true one.
 # The gods are the ones known at a glance (his word, 2026-11-24: "Use recognizable pagans").
-RUN = [("poseidon", 3600, (540, 480)), ("athene", 2700, (540, 640)), ("thor", 1700, (540, 640)), ("ra", 2000, (540, 560)),
-       ("calf", 3000, (540, 400)), ("semele", 4600, (540, 760)), ("jupiter", "eyes", None)]
+# Buddha stands among them at his word of 2026-11-24, given three times after the risk to the account was named to him.
+RUN = [("poseidon", 3600, (540, 480)), ("athene", 2700, (540, 640)), ("buddha", 2400, (540, 500)), ("thor", 1700, (540, 640)),
+       ("ra", 2000, (540, 560)), ("calf", 3000, (540, 400)), ("semele", 4600, (540, 760)), ("jupiter", "eyes", None)]
 RUN_POOL = (380, 1250, 0.24)  # the light pooled on the face, the rest let fall
 WORDS_CLEAR = 1230  # below this line of the frame the run is clean white, for its words
 EYE_Y = 700       # where the eyes stand in every face, so the gaze holds still through the run
@@ -288,7 +289,7 @@ if __name__ == "__main__":
             save(F, f"{sys.argv[4]}/{name}.jpg", 720)
             print(f"  {name}: frame {F}, {F / FPS:.2f} s")
         # The run's gods so far, each as it stands in the film: one sheet, two across.
-        cells = [Image.fromarray((np.clip(say(plate(i), "gods", 1320, ["there be gods many,", "and lords many"]), 0, 1) * 255).astype(np.uint8)).resize((360, 640), Image.LANCZOS) for i in range(len(RUN) - 1)]
+        cells = [Image.fromarray((np.clip(say(plate(i), "gods", 1320, ["there be gods many,", "and lords many"]), 0, 1) * 255).astype(np.uint8)).resize((360, 640), Image.LANCZOS) for i in list(range(len(RUN) - 1)) + [len(RUN_CUTS) - 1]]
         sheet = Image.new("RGB", (720, 640 * ((len(cells) + 1) // 2)), (0, 0, 0))
         for n, c in enumerate(cells):
             sheet.paste(c, (360 * (n % 2), 640 * (n // 2)))
