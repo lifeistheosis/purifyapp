@@ -58,6 +58,8 @@ export type DigestInputs = {
     estimatedMrrCents: number;
   };
   shop: { paidOrders30: number; paidRevenueCents30: number };
+  /** Monthly running costs and where they came from (lib/admin/goals.server.ts, monthlyCosts). Null: not read. */
+  costs: { monthlyCents: number; from: "bank" | "lines" } | null;
   /** Which outside sources this server holds a key for, so a chat can check Render's setup. */
   sources: { revenuecat: boolean; mercury: boolean; stripe: boolean };
 };
@@ -72,6 +74,8 @@ export type Digest = DigestInputs & {
     newAccountsChangePct: number | null;
     sessionsChangePct: number | null;
     pageviewsPerSession: number;
+    /** Net Plus revenue (list price less the stores' 15%) over the running costs, in percent. Null: costs not read. */
+    costsCoveredPct: number | null;
   };
 };
 
@@ -89,6 +93,7 @@ export function buildDigest(i: DigestInputs): Digest {
       sessionsChangePct: change(i.readers.sessions7, i.readers.sessionsPrev7),
       pageviewsPerSession:
         i.readers.sessions7 > 0 ? Math.round((i.readers.pageviews7 / i.readers.sessions7) * 10) / 10 : 0,
+      costsCoveredPct: i.costs ? pct(Math.round(i.plus.estimatedMrrCents * 0.85), i.costs.monthlyCents) : null,
     },
   };
 }
@@ -101,7 +106,7 @@ export function buildDigest(i: DigestInputs): Digest {
 export function digestHasNoPersonalData(d: unknown): boolean {
   const walk = (v: unknown, key: string): boolean => {
     if (typeof v === "number" || typeof v === "boolean" || v === null) return true;
-    if (typeof v === "string") return key === "generatedAt" && !Number.isNaN(Date.parse(v));
+    if (typeof v === "string") return (key === "generatedAt" && !Number.isNaN(Date.parse(v))) || (key === "from" && (v === "bank" || v === "lines"));
     if (typeof v === "object") {
       return Object.entries(v as Record<string, unknown>).every(
         ([k, x]) => !k.includes("@") && k.length <= 40 && walk(x, k),

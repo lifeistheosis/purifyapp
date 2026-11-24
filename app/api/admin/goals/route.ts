@@ -24,7 +24,7 @@ export async function GET() {
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const read = await readGoals(createAdminClient());
   if (!read.ok) return NextResponse.json({ error: read.error }, { status: read.status });
-  return NextResponse.json({ data: read.data, marksSaved: read.marksSaved, costsRead: read.costsRead });
+  return NextResponse.json({ data: read.data, marksSaved: read.marksSaved, costsRead: read.costsRead, costsFrom: read.costsFrom });
 }
 
 /** What a save may change: his marks, the email's switch, or both. */

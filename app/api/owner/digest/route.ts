@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
+import { monthlyCosts } from "@/lib/admin/goals.server";
 import { estimatedMrrCents } from "@/lib/premium/mrr";
 import { notOwnTestOrdersFilter } from "@/lib/admin/testOrders";
 import { buildDigest, digestTokenMatches, type DigestInputs } from "@/lib/owner/digest";
@@ -58,7 +59,7 @@ export async function GET(req: NextRequest) {
       total, new7, newPrev7, new30,
       sessions7, sessionsPrev7,
       views7Rows,
-      subs, cancelling, billingIssue, orders,
+      subs, cancelling, billingIssue, orders, costs,
     ] = await Promise.all([
       count(admin.from("profiles").select("id", head)),
       count(admin.from("profiles").select("id", head).gte("joined_at", d7)),
@@ -75,6 +76,7 @@ export async function GET(req: NextRequest) {
       pageAll<{ total_cents: number }>((a, b) =>
         admin.from("shop_orders").select("total_cents").eq("payment_status", "paid")
           .gte("created_at", d30).or(notOwnTestOrdersFilter()).order("id").range(a, b)),
+      monthlyCosts(admin, new Date(now)),
     ]);
 
     const inputs: DigestInputs = {
@@ -106,6 +108,7 @@ export async function GET(req: NextRequest) {
         paidOrders30: orders.length,
         paidRevenueCents30: orders.reduce((s, o) => s + (o.total_cents ?? 0), 0),
       },
+      costs: costs ? { monthlyCents: costs.cents, from: costs.from.source } : null,
       sources: {
         revenuecat: !!process.env.REVENUECAT_V2_API_KEY && !!process.env.REVENUECAT_PROJECT_ID,
         mercury: !!process.env.MERCURY_API_TOKEN,
