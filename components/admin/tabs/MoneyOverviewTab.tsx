@@ -29,6 +29,7 @@ import { SENSITIVE } from "@/lib/admin/streamer";
 import { formatPrice } from "@/lib/shop/format";
 
 import { Est, Figure, GoLabel, Panel, PanelLink, Quiet, Segmented } from "../daily/parts";
+import { BankPanel } from "../money/BankPanel";
 import { MoneyColumnsChart } from "../money/MoneyColumnsChart";
 import { Email } from "../primitives";
 
@@ -359,6 +360,9 @@ export function MoneyOverviewTab() {
           )}
         </Panel>
       </div>
+
+      {/* The bank, owner only: renders nothing for any other admin. */}
+      <BankPanel />
 
       {/* Each view as one line with its headline; the line opens the view. */}
       <ul className="divide-y rounded-[8px] border px-4" style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel)" }}>

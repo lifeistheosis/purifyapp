@@ -106,6 +106,11 @@ export async function GET(req: NextRequest) {
         paidOrders30: orders.length,
         paidRevenueCents30: orders.reduce((s, o) => s + (o.total_cents ?? 0), 0),
       },
+      sources: {
+        revenuecat: !!process.env.REVENUECAT_V2_API_KEY && !!process.env.REVENUECAT_PROJECT_ID,
+        mercury: !!process.env.MERCURY_API_TOKEN,
+        stripe: !!process.env.STRIPE_SECRET_KEY,
+      },
     };
     return NextResponse.json(buildDigest(inputs), { headers: noStore });
   } catch (e) {

@@ -43,3 +43,10 @@ What a chat reports from these is analysis, not the books: the accounting record
 `node scripts/owner-report.mjs` reads all three (the digest, RevenueCat, Mercury) and prints one report: readers and Plus, revenue, and the bank by month and by kind of cost (hosting, database, store payouts, developer accounts, AI tools and the rest; `CATEGORIES` in the script, tested in `lib/owner/__tests__/ownerReport.test.ts`). It runs itself again with `NODE_USE_ENV_PROXY=1`, since Node's fetch does not use the proxy that holds the keys without it. A source that fails is named; the rest still print. CLAUDE.md tells every chat to run it when he asks.
 
 Known gap: the bank is empty until the stores' payouts and the bills move to Mercury (his step, after Apple and Google move his accounts from personal to his company).
+
+## In the admin panel (2026-11-24, his "reflects the newest data autonomously")
+
+- **The bank** on Money's Overview: Mercury's balances, this month in, out and kept by kind, and the newest eight lines (`components/admin/money/BankPanel.tsx`, `app/api/owner/bank`, `lib/owner/mercury.server.ts`). Owner only (OWNER_EMAILS): other admins get 403 and the panel renders nothing. Read when the tab opens and kept ten minutes on the server. Needs `MERCURY_API_TOKEN` on Render, a read-only Mercury token (a second one, made for Render, so either can be turned off alone). Unset: "The bank is not connected on this server."
+- **RevenueCat** was already in the panel (Money's Plus figure, `lib/billing/revenuecatMetrics.ts`), live when Render holds `REVENUECAT_V2_API_KEY` and `REVENUECAT_PROJECT_ID` (`proj2ed00c93`).
+- The digest's `sources` says which of RevenueCat, Mercury and Stripe this server holds a key for (booleans only), so a chat can check Render's setup without his panel.
+- The bank's kinds are `lib/owner/bank.mjs`, shared with `scripts/owner-report.mjs`, so the panel and the report agree.

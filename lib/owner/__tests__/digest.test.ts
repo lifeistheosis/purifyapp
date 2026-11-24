@@ -28,6 +28,7 @@ const inputs: DigestInputs = {
     cancelling: 5, billingIssue: 1, estimatedMrrCents: 22977,
   },
   shop: { paidOrders30: 0, paidRevenueCents30: 0 },
+  sources: { revenuecat: true, mercury: false, stripe: true },
 };
 
 describe("buildDigest", () => {

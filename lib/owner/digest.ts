@@ -58,6 +58,8 @@ export type DigestInputs = {
     estimatedMrrCents: number;
   };
   shop: { paidOrders30: number; paidRevenueCents30: number };
+  /** Which outside sources this server holds a key for, so a chat can check Render's setup. */
+  sources: { revenuecat: boolean; mercury: boolean; stripe: boolean };
 };
 
 export type Digest = DigestInputs & {
