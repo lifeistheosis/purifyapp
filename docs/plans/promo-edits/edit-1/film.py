@@ -5,7 +5,7 @@
   node docs/brand/kit/check.mjs --page <work dir>/film-page/index.html
 
 It takes the kit's fonts and style whole, the stills `edit.py board` made (<work dir>/board) and a small copy of the
-preview (<work dir>/film/page.mp4). None of those files is in git. This is the page of the second cut.
+preview (<work dir>/film/page.mp4). None of those files is in git. This is the page of the third cut.
 """
 import json
 import os
@@ -19,7 +19,7 @@ PICS = json.load(open(os.path.join(HERE, "pictures.json")))["pictures"]
 kit = open(f"{ROOT}/docs/brand/kit/artifact-template.html", encoding="utf8").read()
 links = "\n".join(re.findall(r"<link [^>]+>", kit.split("<style>")[0]))
 style = kit[kit.index("<style>") : kit.index("</style>") + len("</style>")]
-USED = ["1-the-light", "2-run-first", "3-run-melt", "4-whip", "4b-the-gods", "5-before-the-drop", "5b-the-change", "6-the-drop", "7-transfiguration",
+USED = ["1a-the-light-comes", "1-the-light", "2-run-first", "3-run-melt", "4-whip", "4b-the-gods", "5-before-the-drop", "5b-the-change", "6-the-drop", "7-transfiguration",
         "7b-the-whip", "8-light-of-the-world", "9-the-end"]
 GODS = ("Neptune (Copley), Athena (Klimt), Mars (Velázquez), Proserpine (Rossetti). Pan (Vrubel), Bellona (Rembrandt), Jupiter (Moreau), Circe (Waterhouse). "
         "Nebuchadnezzar (Blake), Hygieia (Klimt), Vulcan (Rubens), Buddha (Redon). Pharaoh (Alma-Tadema), Athena (Stuck), Bacchus (Solomon), Juno (Rembrandt). "
@@ -50,7 +50,7 @@ body = f"""<title>The Light film</title>
     <span class="k-mark" role="img" aria-label="Purify"></span>
     <span class="k-eyebrow">Promo edit 1</span>
     <h1>The Light</h1>
-    <p class="k-lede">The film, second cut, for your yes or no.</p>
+    <p class="k-lede">The film, third cut, for your yes or no.</p>
     <p class="k-meta">20 seconds, cut to the reference. Made again at your word.</p>
   </header>
 
@@ -66,16 +66,18 @@ body = f"""<title>The Light film</title>
 
   <section class="k-section" aria-labelledby="s-changed">
     <h2 id="s-changed">What changed, at your word</h2>
-    <p><b>The effects are one to one.</b> I measured every change of picture in the reference, frame by frame: when it starts, how many frames it takes, and what kind it is. Ours now makes each one the same way on the same frames: 32 melts in the run, three whips, a fade from light to dark on the drop, then fades, blurs, plain cuts and one stutter among the icons.</p>
-    <p><b>Changes of picture are added.</b> The first cut had melts in the run and plain cuts everywhere else. Now a picture changes on a plain cut only where the reference's does.</p>
-    <p><b>No pagan's picture comes twice.</b> The run is 36 pictures and every one is a different painting. Twenty-six are new.</p>
-    <p><b>Every face is at the middle.</b> Each god or pagan is held on the face, at the same place on the screen every time, so the eye never has to look for it.</p>
+    <p><b>The opening moves.</b> The light comes down on Saul in the first third of a second and goes on growing. The camera goes slowly toward him, and he is a little nearer than the road, so the picture has depth. Why: a held picture gives the eye nothing to follow in the first two seconds, and that is when a viewer decides to stay. His question stands still above him the whole time.</p>
+    <p><b>The film is rough before the drop.</b> Coarse grain, specks of dust and a hair now and then, a lamp that is not quite steady, and a picture that drifts a few pixels, as old film does in its gate. The paintings keep their colour, but about a third of it is taken out, the darks are deeper, the paint is crisper and the corners fall in. Why: it is the look of a black pill edit, and it makes the world before Christ dark and worn.</p>
+    <p><b>It clears on the drop.</b> Over the same six frames where the false light fades into His halo, the roughness goes. He stands steady and in full colour, under a light grain only. Why: the turn from the worn world to Him is the hit, and an icon is not dirtied. Say the word and the icons take the full grit too.</p>
+    <p><b>What it still holds to.</b> Your earlier words: nothing answers the beat, nothing flashes, no colour is split and nothing glows. The drift is slow and runs through the whole first half. It is not a shake on the beat. Say the word and it comes out.</p>
+    <p><b>From the second cut, unchanged.</b> Every change of picture is the reference's own kind on its own frames, the run is 36 different paintings, and every face is at the middle.</p>
   </section>
 
   <section class="k-section" aria-labelledby="s-light">
     <h2 id="s-light">The light</h2>
-{still("1-the-light", "Still from the film: the light.", "0.00 to 2.10 s. Saul on the road, and his question: Who art thou, Lord? (Acts 9:5).")}
-    <p>The road at night. A light from above the frame lies on the ground round about Saul (Acts 9:3), and his question stands in the dark between. It is one held picture, as the reference's opening is, and it gives way in a soft blur of three frames, as the reference's does.</p>
+{still("1a-the-light-comes", "Still from the film: the first frame, the light only beginning.", "0.03 s. The first frame: the light is only beginning, and he is still in the dark.")}
+{still("1-the-light", "Still from the film: the light whole, and the camera nearer.", "1.97 s. The light whole and grown, and the camera nearer. His question: Who art thou, Lord? (Acts 9:5).")}
+    <p>The road at night. A light from above the frame comes down and lies on the ground round about Saul (Acts 9:3), and his question stands in the dark between. The reference's opening is one held picture. Ours moves now, at your word. It still gives way in a soft blur of three frames, as the reference's does. The light is one soft pool. There are no beams.</p>
   </section>
 
   <section class="k-section" aria-labelledby="s-run">
@@ -108,7 +110,7 @@ body = f"""<title>The Light film</title>
 {still("8-light-of-the-world", "Still from the film: the last line.", "17.67 s. The Holy Face of Novgorod, with the last line: I am the light of the world (John 8:12).")}
     <p><b>What it is.</b> The Light has a face. Fourteen shots of ten icons of Him, each filling the frame, held on Him, with one slow even move. They change as the reference's shots change there: three fades, a long whip, two blurs, pictures that go soft before a plain cut, plain cuts, and one stutter, where the next icon shows for two frames before it comes to stay.</p>
     <p><b>The last line.</b> It is in, as on the board. Say the word and it comes out.</p>
-    <p><b>An icon is never touched.</b> A change of picture works on the whole picture, as a camera would. Nothing in an icon is redrawn.</p>
+    <p><b>An icon is never touched.</b> A change of picture works on the whole picture, as a camera would. The light grain after the drop lies over the whole frame, as it does on film. Nothing in an icon is redrawn.</p>
   </section>
 
   <section class="k-section" aria-labelledby="s-end">
@@ -120,14 +122,16 @@ body = f"""<title>The Light film</title>
     <h2 id="s-not">Where ours is not the reference's</h2>
     <p><b>No pull from the middle.</b> The reference draws two of its changes out from the middle of the picture. On a bright painting that makes lines of light like rays, and you have ruled rays out, so ours are whips there. Say the word and the pulls go in.</p>
     <p><b>No white frame at the end.</b> The reference goes to white and then to black. Ours goes straight to black.</p>
-    <p><b>Nothing is added.</b> No flash, no shake and no glow, and the reference has none of them in these places either.</p>
+    <p><b>The opening moves and the film is rough.</b> Both are yours. The reference's opening is a held picture, and its copy from TikTok shows no grain.</p>
+    <p><b>Still not added.</b> No flash, no shake on the beat, no colour split and no glow.</p>
   </section>
 
   <section class="k-section" aria-labelledby="s-open">
     <h2 id="s-open">Still open</h2>
     <p>A line on every other way, in Scripture's own words, is offered and not added: "no man cometh unto the Father, but by me" (John 14:6).</p>
     <p>Four faces are smaller or softer than the rest, because they are small in their paintings: Neptune, Apollo, Thor and the golden calf.</p>
-    <p>I cannot play video, so I checked this cut on stills taken from the finished file: every picture of the run, each kind of change, and each icon. You are the first to see it move.</p>
+    <p>TikTok squeezes every upload hard, and grain is the first thing it smooths. I made the grain coarse so that more of it lives, and tried a squeezed copy: it stays rough, but softer than in your file.</p>
+    <p>I cannot play video, so I checked this cut on stills taken from the finished file: the opening at its start, its middle and its end, pictures of the run, the drop and the icons. You are the first to see it move.</p>
   </section>
 
   <section class="k-section" aria-labelledby="s-pictures">

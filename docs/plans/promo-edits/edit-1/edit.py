@@ -5,7 +5,8 @@ The film is 1080 by 1920 at 60 frames a second and 1199 frames long, the referen
 frame here is the same frame there. Every change of picture is the reference's, measured frame by frame: when it
 starts, how many frames it takes, and what kind it is (a melt, a whip, a fade, a blur, a plain cut). Every
 word is Scripture, held to data/bible each run. No picture is redrawn: each is placed whole, larger than the frame,
-with its light pooled; a change of picture works on whole pictures only.
+with its light pooled; a change of picture works on whole pictures only. Before the drop the film itself is rough
+(grain, dust, an unsteady gate and lamp, thinned colour); on the drop it clears.
 
   python3 docs/plans/promo-edits/edit-1/edit.py <repo root> <work dir> still <frame> <out.png>
   python3 docs/plans/promo-edits/edit-1/edit.py <repo root> <work dir> board <out dir>     # stills, and a sheet of the gods
@@ -205,25 +206,28 @@ def write(img, line, share=1.0):
 def the_light(F):
     """The road at night, and a light from heaven round about him (Acts 9:3). No lamp is seen: the light comes down
     from above the frame and lies on the ground about Saul as one soft pool; the dark between holds his words. It
-    grows a little, evenly, through the shot. The light is ours: none of the painting's sky is kept. No beams."""
-    grow = 1 + 0.07 * F / RUN_CUTS[0]
+    moves (his word, 2026-11-24: "make the intro move"): the light comes, quickly at first and whole within a
+    second, and goes on growing; and the camera goes slowly toward him, he a little nearer than the road, the top
+    of him keeping its place under the words. The light is ours: none of the painting's sky is kept. No beams."""
+    u = min(1.0, F / RUN_CUTS[0])
+    come = 0.35 + 0.65 * (1 - (1 - min(1.0, F / 42)) ** 3)
+    grow = 0.90 + 0.22 * u
+    near, far = 0.95 + 0.09 * u, 0.97 + 0.05 * u
     yy, xx = grid()
-
-    def figure():
-        s = np.asarray(Image.open(f"{HOME}/saul.png").convert("RGBA"), dtype=np.float32) / 255
-        k = 940 / s.shape[1]
-        fig = place(s, k, s.shape[1] / 2, s.shape[0], W / 2, 1540)
-        # Where he lies the road is in his shade: under him only, never a dark edge about him.
-        shade = cv2.GaussianBlur(place(s[..., 3], k, s.shape[1] / 2, s.shape[0], W / 2, 1576), (0, 0), 14) * np.clip((yy - 1400) / 110, 0, 1)
-        # He is lit from above: his hand, his face and his shoulder take the light, and his legs take less.
-        hx, hy = W / 2 + (0.36 - 0.5) * 940, 1540 - (1 - 0.30) * s.shape[0] * k
-        return fig[..., :3] * pool(hx + 80, hy - 60, 240, 900, 0.30), fig[..., 3:4], shade
-    lit, a, shade = once("saul", figure)
+    s = once("saul", lambda: np.asarray(Image.open(f"{HOME}/saul.png").convert("RGBA"), dtype=np.float32) / 255)
+    k, top = 940 / s.shape[1], 1540 - 940 * s.shape[0] / s.shape[1]
+    hx = W / 2 + (0.36 - 0.5) * 940                 # under his raised hand: the point the camera goes toward
+    down = lambda y, z: top + (y - top) * z         # a height of the still picture, as the push moves it
+    fig = place(s, k * near, 0.36 * s.shape[1], 0, hx, top)
+    # Where he lies the road is in his shade: under him only, never a dark edge about him.
+    shade = cv2.GaussianBlur(place(s[..., 3], k * near, 0.36 * s.shape[1], 0, hx, top + 36 * near), (0, 0), 14) * np.clip((yy - down(1400, near)) / 110, 0, 1)
+    # He is lit from above: his hand, his face and his shoulder take the light, and his legs take less.
+    lit, a = fig[..., :3] * pool(hx + 80 * near, down(1031, near), 240 * near, 900 * near, 0.30) * come, fig[..., 3:4]
     d = np.hypot((xx - W / 2) / 1.2, yy + 150) / grow                      # from above: the foot of a wide light
     above = 1.0 * np.exp(-(d / 330) ** 2) + 0.22 * np.exp(-(d / 760) ** 2)
-    g = np.hypot((xx - W / 2 + 40) / (600 * grow), (yy - 1455) / (190 * grow))  # on the road: the same light, wide and low
+    g = np.hypot((xx - hx - (W / 2 - 40 - hx) * far) / (600 * grow * far), (yy - down(1455, far)) / (190 * grow * far))  # on the road: the same light, wide and low
     road = (0.72 * np.exp(-g ** 2) + 0.12 * np.exp(-(g / 1.9) ** 2)) * (1 - 0.8 * shade)
-    out = np.clip(above + road, 0, 1)[..., None] * np.float32([1.0, 0.99, 0.975])
+    out = np.clip((above + road) * come, 0, 1)[..., None] * np.float32([1.0, 0.99, 0.975])
     return out * (1 - a) + lit * a
 
 
@@ -334,23 +338,119 @@ def change(kind, A, B, u, k):
     return whip(X, 320 * bell, kind == "whip-v"), cross
 
 
-def frame(F):
-    words()
+# ── The grit (his word, 2026-11-24: "more gritty effects (like a black pill edit)") ──
+# Before the drop the film itself is rough: its colour thinned, its darks deep and its paint crisp, its corners
+# fallen in, the gate unsteady, the lamp unsteady, coarse grain, specks of dust. On the drop it clears over the
+# reference's own fade: He stands steady and in full colour, under a light grain only. All of it is the film's own
+# roughness, laid on whole frames: none of it answers the beat, nothing flashes, no colour is split, nothing glows,
+# and nothing in a picture is redrawn. The words are written after the picture is worn, so they stand still.
+THIN, DEEP, CRISP = 0.30, 0.38, 0.35   # at full grit: the colour taken out, the depth of the curve, the crispness added
+CORNERS = (560, 1180, 0.50)            # the corners let fall: whole within the first, down to this share at the second
+GRAIN, GRAIN_AFTER = 0.105, 0.028      # the grain before the drop, and the light grain on the icons after it
+WEAVE, FLICKER, DUST = 3.2, 0.04, 0.7  # the gate's wander in pixels, the lamp's as a share, specks to a frame of film
+
+
+def rough(F):
+    """How rough a frame is: whole until the drop, cleared over the reference's own fade there."""
+    return 1 - smooth((F - DROP[0] + 1) / (DROP[1] - DROP[0] + 2))
+
+
+def chance():
+    """What is left to chance, from one seed, so every render is the same film: the gate's wander, the lamp's
+    flicker and ten plates of grain. The film runs at thirty a second inside our sixty (each of its frames is held
+    for two of ours), as grain on film does, and it halves what the encoder has to carry."""
+    def make():
+        r = np.random.default_rng(95)
+        n = TOTAL // 2 + 1
+        t = np.arange(n) / 30
+        slow = lambda f1, f2, ph: (np.sin(2 * np.pi * (f1 * t + ph)) + 0.6 * np.sin(2 * np.pi * (f2 * t + 2.3 * ph))) / 1.6
+        weave = WEAVE * (0.8 * np.stack([slow(0.83, 2.1, 0.1), slow(0.67, 1.7, 0.45)], 1) + 0.22 * r.standard_normal((n, 2)))
+        flick = FLICKER * (0.5 * slow(1.3, 3.7, 0.3) + 0.5 * np.clip(r.standard_normal(n), -1.6, 1.6) / 1.6)
+
+        def plate():  # grain in clumps of two to four pixels, with a little finer: it has to live through TikTok's own encoder
+            parts = [cv2.resize(r.standard_normal((H // d, W // d), dtype=np.float32), (W, H), interpolation=cv2.INTER_CUBIC) for d in (2, 4)]
+            parts.append(cv2.GaussianBlur(r.standard_normal((H, W), dtype=np.float32), (0, 0), 0.7))
+            p = sum(w * q / q.std() for w, q in zip((0.45, 0.52, 0.28), parts))
+            return (p / p.std())[..., None]
+        return weave, flick, [plate() for _ in range(10)]
+    return once("chance", make)
+
+
+def worn(img, F):
+    """The picture of a frame, before its words, as the rough film holds it."""
+    g = rough(F)
+    if g <= 0:
+        return img
+    wx, wy = chance()[0][F // 2] * g
+    img = cv2.warpAffine(img, np.float32([[1, 0, wx], [0, 1, wy]]), (W, H), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
+    soft = cv2.resize(cv2.GaussianBlur(cv2.resize(img, (W // 4, H // 4), interpolation=cv2.INTER_AREA), (0, 0), 4), (W, H), interpolation=cv2.INTER_LINEAR)
+    img = np.clip(img + CRISP * g * (img - soft), 0, 1)
+    L = (img @ np.float32([0.2126, 0.7152, 0.0722]))[..., None]
+    img = L + (img - L) * (1 - THIN * g)
+    img = img - DEEP * g * np.sin(2 * np.pi * img) / (2 * np.pi)
+    r0, r1, low = CORNERS
+    return img * pool(W / 2, H * 0.47, r0, r1, 1 - (1 - low) * g)
+
+
+def dust(p, g):
+    """Specks, and a hair now and then, each on one frame of the film: dark ones and light ones."""
+    r = np.random.default_rng(9500 + p)
+    n, marks = r.poisson(DUST * g), [np.zeros((H, W), np.uint8), np.zeros((H, W), np.uint8)]
+    for _ in range(n):
+        m, x, y = marks[int(r.random() < 0.6)], r.uniform(0, W), r.uniform(0, H)
+        if r.random() < 0.2:
+            pts = np.cumsum(np.vstack([[x, y], r.normal(0, 9, (int(r.integers(4, 9)), 2))]), 0)
+            cv2.polylines(m, [pts.astype(np.int32)], False, 255, 1, cv2.LINE_AA)
+        else:
+            cv2.ellipse(m, (int(x), int(y)), (int(r.integers(2, 7)), int(r.integers(1, 5))), float(r.uniform(0, 180)), 0, 360, 255, -1, cv2.LINE_AA)
+    return [cv2.GaussianBlur(m, (0, 0), 0.8).astype(np.float32)[..., None] / 255 for m in marks] if n else None
+
+
+def film(img, F):
+    """The finished frame as the film carries it: the lamp's flicker and the dust before the drop, and the grain.
+    The end is clean: black and the mark."""
+    if F >= END:
+        return img
+    g, p = rough(F), F // 2
+    _, flick, plates = chance()
+    if g > 0:
+        img = img * (1 + flick[p] * g)
+        specks = dust(p, g)
+        if specks:
+            img = img * (1 - 0.85 * specks[0]) + 0.5 * specks[1] * (1 - img)
+    img = np.clip(img, 0, 1)
+    L = img.mean(2, keepdims=True)
+    P = plates[p * 7 % 10]
+    P = np.roll(P[::-1] if p & 1 else P, (p * 389 % H, p * 173 % W), (0, 1))
+    return img + (GRAIN_AFTER + (GRAIN - GRAIN_AFTER) * g) * (0.55 + 0.45 * 4 * L * (1 - L)) * P
+
+
+def picture(F):
+    """The picture of a frame before its words, and the lines to lay on it with how much of each."""
     k = max(i for i, b in enumerate(BEGINS) if b <= F)
     c, line = CHANGES[k], SHOTS[k][4]
     if not c or F > c[1]:
-        return write(draw(k, F), line)
+        return draw(k, F), [(line, 1.0)]
     a, b, kind = c
     u, before = (F - a + 1) / (b - a + 2), SHOTS[k - 1][4]
     A = draw(k - 1, F)
     if kind == "out":       # the picture goes soft and a little dark, then a plain cut
-        return write(cv2.GaussianBlur(A, (0, 0), 0.5 + 26 * u * u) * (1 - 0.35 * u), before)
+        return cv2.GaussianBlur(A, (0, 0), 0.5 + 26 * u * u) * (1 - 0.35 * u), [(before, 1.0)]
     B = draw(k, F)
     if kind == "stutter":   # the next picture shows for two frames, the last comes back for two, then one gives way
         s = (1.0, 1.0, 0.0, 0.0, 0.4, 0.8)[F - a]
-        return write(write(A * (1 - s) + B * s, before, 1 - s), line, s)
+        return A * (1 - s) + B * s, [(before, 1 - s), (line, s)]
     X, s = change(kind, A, B, u, k)
-    return write(X, line) if before == line else write(write(X, before, 1 - s), line, s)
+    return X, [(line, 1.0)] if before == line else [(before, 1 - s), (line, s)]
+
+
+def frame(F):
+    words()
+    X, lines = picture(F)
+    X = worn(X, F)
+    for line, share in lines:
+        X = write(X, line, share)
+    return film(X, F)
 
 
 def u8(img):
@@ -364,16 +464,16 @@ def save(F, path, width=W):
     im.save(path, quality=88)
 
 
-def render(out, ref=None):
+def render(out, ref=None, first=0, last=TOTAL):
     """Every frame, straight into the encoder: the silent master, and with the reference's file a preview with its
     sound under the same picture. The preview is for the owner alone, never for posting, and never in the repository."""
     os.makedirs(out, exist_ok=True)
     master = f"{out}/purify-the-light.mp4"
     enc = subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-an",
-                            "-vf", "scale=in_range=full:out_range=tv:out_color_matrix=bt709,format=yuv420p", "-c:v", "libx264", "-preset", "slow", "-crf", "15",
+                            "-vf", "scale=in_range=full:out_range=tv:out_color_matrix=bt709,format=yuv420p", "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-tune", "grain", "-maxrate", "26M", "-bufsize", "52M",
                             "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv", "-movflags", "+faststart", master],
                            stdin=subprocess.PIPE)
-    for F in range(TOTAL):
+    for F in range(first, last):
         enc.stdin.write(u8(frame(F)).tobytes())
         if F % 150 == 0:
             print(f"  frame {F}", flush=True)
@@ -385,7 +485,7 @@ def render(out, ref=None):
 
 
 # Stills for the film's page: one moment of each part, and of each kind of change.
-BOARD = [("1-the-light", 60), ("2-run-first", 133), ("3-run-melt", 174), ("4-whip", 596), ("5-before-the-drop", 668), ("5b-the-change", 677),
+BOARD = [("1a-the-light-comes", 2), ("1-the-light", 118), ("2-run-first", 133), ("3-run-melt", 174), ("4-whip", 596), ("5-before-the-drop", 668), ("5b-the-change", 677),
          ("6-the-drop", 692), ("7-transfiguration", 752), ("7b-the-whip", 772), ("8-light-of-the-world", 1060), ("9-the-end", 1160)]
 
 if __name__ == "__main__":
@@ -394,13 +494,15 @@ if __name__ == "__main__":
         save(int(sys.argv[4]), sys.argv[5])
     elif cmd == "render":
         render(sys.argv[4], sys.argv[5] if len(sys.argv) > 5 else None)
+    elif cmd == "clip":  # a part of the film, to try it: <out dir> <first frame> <last frame>
+        render(sys.argv[4], None, int(sys.argv[5]), int(sys.argv[6]))
     elif cmd == "board":
         os.makedirs(sys.argv[4], exist_ok=True)
         for name, F in BOARD:
             save(F, f"{sys.argv[4]}/{name}.jpg", 720)
             print(f"  {name}: frame {F}, {F / FPS:.2f} s")
         # Every picture of the run as it stands in the film, in order: one sheet, four across.
-        cells = [Image.fromarray(u8(write(god(i, SHOTS[1 + i][3]), LINE_GODS))).resize((180, 320), Image.LANCZOS) for i in range(36)]
+        cells = [Image.fromarray(u8(film(write(worn(god(i, SHOTS[1 + i][3]), 600), LINE_GODS), 600))).resize((180, 320), Image.LANCZOS) for i in range(36)]
         sheet = Image.new("RGB", (720, 320 * 9), (0, 0, 0))
         for n, c in enumerate(cells):
             sheet.paste(c, (180 * (n % 4), 320 * (n // 4)))
