@@ -482,7 +482,7 @@ function Levels({ data, next, onOpen }: { data: GoalsData; next: GoalStep | null
             : `${count.format(s.moreMembers ?? 0)} more members${s.byPace ? `, by ${dayWords(s.byPace, data.today)}` : ""}`;
         return (
           <li key={s.id} className="border-t first:border-t-0" style={{ borderColor: "var(--adm-line)" }}>
-            <button type="button" onClick={() => onOpen(s.id)} className="flex w-full items-start gap-3 py-3 text-start" aria-current={isNext ? "step" : undefined}>
+            <button type="button" onClick={() => onOpen(s.id)} className="flex min-h-11 w-full items-start gap-3 py-3 text-start" aria-current={isNext ? "step" : undefined}>
               <span className="mt-0.5 grid size-6 shrink-0 place-items-center">
                 {done ? (
                   <Seal size={22} style={{ color: "var(--adm-ink)" }} />
