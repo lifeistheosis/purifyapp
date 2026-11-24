@@ -12,7 +12,7 @@ The worker chat for one job: his own milestones in the panel, with the Goals pag
 
 2026-11-24, on the second drawing, about 11:00 UTC: "I want to see more milestone bars/ achievement designs". Taken as one version that shows the milestones as bars and achievements (version 3 at the same link), not a set of options.
 
-2026-11-24, on the third drawing, about 11:20 UTC: "now ensure each goal has its own screen and animation". Done for the six milestones (version 4 at the same link). The four weekly goals (what moves it) do not have screens of their own yet; if he meant them too, the same screen takes them.
+2026-11-24, on the third drawing, about 15:15 UTC: "now ensure each goal has its own screen and animation". Done for the six milestones (version 4 at the same link). The four weekly goals (what moves it) do not have screens of their own yet; if he meant them too, the same screen takes them.
 
 ## Where it stands
 
