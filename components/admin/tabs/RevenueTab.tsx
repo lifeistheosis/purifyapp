@@ -201,7 +201,7 @@ function RevenuePanel() {
             : null
         }
       />
-      <Disclosure title="Every figure" hint="The five cards, the note on Plus, the run-rate">
+      <Disclosure title="Every figure" hint="The four cards, the note on Plus, the run-rate">
       <div className="space-y-4 px-3 pb-3 md:px-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
@@ -243,16 +243,6 @@ function RevenuePanel() {
                 `${data.shop.keptOrderCount} paid · ${data.shop.pendingOrderCount} pending · ${data.shop.cancelledOrderCount} cancelled${data.shop.refundedOrderCount > 0 ? ` · ${data.shop.refundedOrderCount} refunded` : ""}`
               : undefined
           }
-        />
-        <StatCard
-          label="Donations"
-          // NOT MEASURED IS NOT ZERO. donations_monthly is a manual snapshot
-          // table with no rows on production, so a bare $0 claimed donations
-          // came in and totalled nothing. They were never recorded at all.
-          value={
-            data ? (data.donations.recorded ? money(data.donations.totalCents) : "Not recorded") : "—"
-          }
-          hint={data && !data.donations.recorded ? "no snapshot yet" : "all-time"}
         />
         <StatCard
           label={data && !data.subscriptions.estimated ? "Subs MRR · real" : "Subs MRR · est."}

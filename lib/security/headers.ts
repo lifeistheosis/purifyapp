@@ -32,7 +32,7 @@ export function buildCsp(nonce: string): string {
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
     // Tailwind 4 + next/font inject inline <style> tags; allow them.
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https://*.supabase.co https://*.buymeacoffee.com https://img.buymeacoffee.com",
+    "img-src 'self' data: blob: https://*.supabase.co",
     "font-src 'self' data:",
     // Self-hosted prayer audio (e.g. the prayer-rope anthem), and the Bible
     // read aloud, whose recordings are in Purify's own bucket (1.8,
