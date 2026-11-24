@@ -2,7 +2,7 @@
 
 The brief is `../edit-1-the-light.md`. This chat is session_01VuYTwacMjt6LkmPnjb5a2m, started 2026-11-23 at 22:05 UTC from that file.
 
-**Status, 2026-11-24 about 02:29 UTC: the film's second cut is made and put to him for his yes or no, at the film's page (https://claude.ai/artifact/PBVETgo9CqoLQzRNbZuzvY). The silent master and the preview with the reference's sound were sent to him in the chat. Nothing is posted. $43.59 at the last reading, taken before the last renders; about $48 by this chat's count.**
+**Status, 2026-11-24 about 03:07 UTC: the film's third cut (the opening moves, and the film is rough before the drop) is made and put to him for his yes or no, at the film's page (https://claude.ai/artifact/PBVETgo9CqoLQzRNbZuzvY, Version 3). The silent master and the preview with the reference's sound were sent to him in the chat. Nothing is posted. $54.90 at the last reading, taken before the last steps; about $57 by this chat's count.**
 
 The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 
@@ -98,6 +98,32 @@ If he wants the brief's rule itself lifted, that is his to settle with the arbit
 **After the drop:** 14 shots of the ten icons, each filling the frame, held on Him, one slow even move, changing as the reference's shots change there.
 
 **Checked.** Measured on the files: H.264, 1080 by 1920, 60 frames a second, 1,199 frames, 19.983 s; the master 74.4 MB and silent. Two sheets of frames from the encoded master were looked at. The first render showed Thor, the calf and Circe off their faces, faces too high where a canvas's top was near, and a pull drawing lines of light out of an icon: each was mended and the film rendered again, and the second sheet showed all 36 on their faces. The page passed the kit's check. The film was not seen in motion by this chat, and he was told.
+
+## The film's third cut (2026-11-24, about 02:38 to 03:07 UTC)
+
+**His word**, in this chat, about 02:38 UTC, on the second cut: "make the intro move and have more gritty effects (like a black pill edit)"
+
+**The opening moves** (`the_light` in `edit.py`). The light comes: 35 parts in 100 at the first frame, quickly at first, whole by frame 42 (0.7 s), and it goes on growing through the shot (0.90 to 1.12 of its size). The camera goes toward Saul: he grows from 0.95 to 1.04 of his size in the second cut and the road's light from 0.97 to 1.02, so he is a little nearer than the road. The push is about the top of the figure, so he never rises into his words (the top of him stands 8 pixels under "Acts 9:5"). His question stands still the whole shot. The light is still one soft pool; no beams.
+
+**The grit** (`rough`, `chance`, `worn`, `dust`, `film`). Before the drop the film itself is rough, on whole frames only:
+
+- the picture, before its words: a gate that wanders 3.2 pixels, slowly, with a little jitter; crispness added (0.35, at a quarter of the size); 30 parts in 100 of the colour taken out, so the paintings stay in colour as he asked on 24 November; an S curve (0.38) that deepens the darks; the corners let fall to half;
+- the finished frame: a lamp that wanders 4 parts in 100; specks of dust, a fifth of them hairs, 0.7 to a frame of film; and grain of 0.105 in clumps of two to four pixels.
+- The film's own frames are held for two of ours (thirty a second), as grain on film is, and it halves what the encoder carries. All of it comes from one seed, so every render is the same film.
+- **On the drop it clears**, over the reference's own fade (675 to 680): after it only a grain of 0.028 lies on the icons, steady and in full colour, and the end is clean. This chat's choice, for two reasons given to him: the turn from the worn world to Him is the hit, and an icon is not dirtied. He was asked whether the icons should take the full grit.
+- The words are written after the picture is worn, so they do not wander; the grain lies over them.
+
+**Held to, from his earlier words.** Nothing answers the beat, no bright frame, no colour split, no glow. The gate's wander is slow and runs through the whole first half; it is not a shake on the beat. It was named to him with the offer to take it out.
+
+**The reference.** Its opening is one held picture, and three close crops of its copy from TikTok (1.87 Mbit a second) show no grain. Both changes are his, and the page says so under "Where ours is not the reference's".
+
+**TikTok's squeeze, tried.** Two seconds of the run (frames 240 to 360) were encoded again at 3.5 Mbit a second as a stand-in for TikTok's own encoder: the grain goes soft and blotchy and the roughness stays. So the grain was made coarser (more of the four-pixel clumps) before the render. Told to him on the page.
+
+**The files.** The master: 65,700,426 bytes, H.264, 1080 by 1920, 60 frames a second, 1,199 frames, 19.983 s, silent, 26.3 Mbit a second (crf 18 with x264's grain tuning, held under 26 Mbit so the file stays near the second cut's size). The preview: 65,948,416 bytes, the same picture with the reference's sound. The page's copy: 720 by 1280, two passes at 5.2 Mbit a second, 12,766,118 bytes. The render ran 02:56:28 to about 03:03 UTC. The second cut's two files are kept, out of git, at `.promo/promo-edits/edit-1/vault/cut-2/`.
+
+**Checked.** Before the render: twelve frames from the stage and two close crops. After it, from the encoded master: frames 1, 20, 100, 126, 300, 596, 668, 678, 700, 900, 1100 and 1160, and three close crops (the opening, the run, the Sinai icon). The page passed the kit's check on the five palettes at 360, 390, 412 and 1032. The film was not seen in motion by this chat, and he was told.
+
+**Put to him.** The page at the same link (Version 3), the two files in the chat, and two questions: yes or what should change, and whether the icons take the full grit.
 
 ## The fourth board (2026-11-24, 00:40 to about 00:46 UTC, at his "ok")
 
@@ -206,4 +232,5 @@ Read with get_session, which shows the cost at the last finished turn.
 - By get_session at 01:38 UTC: **$31.34** at the last finished turn, the one that stopped at the Demiurge. So the $30 line had already been passed before he was asked: this chat's own count ($29.5) was too low, because a turn costs mostly what is thought and written, and that was undercounted. He was told.
 - The first cut of the film: no reading of its own.
 - By get_session at 02:28 UTC: **$43.59** at the last finished turn, which ended about 02:01, before the choosing of the faces and the last two renders. By this chat's count the second cut is about $12 and the whole about $48. It had named about $10 for the second cut and about $45 in all, so it ran over both, and he was told.
+- By get_session at 03:06 UTC: **$54.90** at the last finished turn, which ended 02:58 with the third cut's render running. The second cut came to about $46 to $47 in all, near the $48 said to him. The third cut is about $8 so far and about $10 to $11 with its last steps, so about $57 in all. No cost was named to him before the third cut was made: he asked for it straight after he was told the total, and it was made at once. He was told the total again with the film.
 - The line to ask him at is $30 in all.
