@@ -20,11 +20,11 @@ import { Figure, Panel, PanelLink, Quiet } from "../daily/parts";
 const usd = (c: number) => formatPrice(c, "usd");
 const n = new Intl.NumberFormat("en-US");
 
-export function LevelPanel({ level, onOpen }: { level: Level | null; onOpen?: () => void }) {
+export function LevelPanel({ level, onOpen, failed = false }: { level: Level | null; onOpen?: () => void; failed?: boolean }) {
   if (!level) {
     return (
       <Panel title="Level 1: Purify pays its own bills">
-        <Quiet>Reading.</Quiet>
+        <Quiet>{failed ? "Level 1 could not be read just now." : "Reading."}</Quiet>
       </Panel>
     );
   }
