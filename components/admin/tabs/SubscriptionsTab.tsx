@@ -11,6 +11,7 @@ import { Donut, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 import { LocksPanel } from "./LocksPanel";
 import { PlusOverTime } from "../subscriptions/PlusOverTime";
+import { MemberCounts } from "../subscriptions/MemberCounts";
 
 type Subs = {
   activePlus: number;
@@ -99,55 +100,12 @@ function SummaryPanel() {
           zero subscribers.
         </p>
       ) : null}
-      {/* PAYING LEADS, and that is the whole point of this row.
-          It used to open with "Active Plus", which on production is 16 while
-          only 3 of those accounts are billed: 13 are comps. An operator
-          reading the first card saw a subscriber base five times the real
-          one. The comp figure existed, in a bySource chart several cards
-          further down, which is not where anyone looks first.
+      {/* Paying leads, one line names the rest, and the nine cards are in the
+          fold (MemberCounts; step 2 of docs/plans/admin-levels-rework.md).
           Paying + Comped + Gifted + Grandfathered, with the owner's own,
           test purchases and free trials, always equals Active Plus;
-          a test in lib/entitlements/__tests__/adminStats.test.ts holds that. */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <StatCard
-          label="Paying"
-          value={data?.paidPlus ?? "—"}
-          accent
-          hint="billed, incl. Pro"
-        />
-        <StatCard
-          label="Comped"
-          value={data?.compedPlus ?? "—"}
-          hint="admin grants"
-        />
-        <StatCard
-          label="Gifted"
-          value={data?.giftedPlus ?? "—"}
-          hint="redeemed gifts"
-        />
-        <StatCard
-          label="Grandfathered"
-          value={data?.legacyPlus ?? "—"}
-          hint="kept at the paywall launch"
-        />
-        <StatCard
-          label="Active Plus"
-          value={data?.activePlus ?? "—"}
-          hint="everyone with Plus"
-        />
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {data?.trialsKnown ? (
-          <StatCard label="In a free trial" value={data.trialPlus ?? 0} hint="Plus, nothing paid yet" />
-        ) : null}
-        <StatCard label="Active Pro" value={data?.activePro ?? "—"} hint="members" />
-        <StatCard label="Plus only" value={data?.plusOnly ?? "—"} />
-        <StatCard
-          label="Supporters"
-          value={data?.supporters ?? "—"}
-          hint="lifetime sync"
-        />
-      </div>
+          lib/entitlements/__tests__/adminStats.test.ts holds that. */}
+      <MemberCounts data={data} />
 
       <div className="grid gap-6 md:grid-cols-2">
         <ChartFrame
