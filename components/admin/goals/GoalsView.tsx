@@ -2,28 +2,26 @@
 
 import { useState, type ReactNode } from "react";
 
-import { Disclosure, StatusDot, ToolbarButton, type StatusTone } from "../primitives";
+import { StatusDot, ToolbarButton, type StatusTone } from "../primitives";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { useReducedMotion } from "@/lib/ui/motion";
 
 /**
  * The Goals page, the calm way (his word of 2026-11-23: the panel "feels like
  * a terminal ... very codey"; the plan is docs/plans/goals-milestones.md).
  *
- * What it shows, in order, each thing once:
+ * What it shows, in order, each thing once, made minimal at his word of
+ * 2026-11-24 ("make the design more simplified and minimalist"):
  *
- *   the number      what members bring in a week after the stores' share,
- *                   its growth on last week against the 5% asked, and one
- *                   line of progress to the next step by name
- *   three facts     paying now (monthly and yearly), this week (joined and
- *                   left), and the next step's day
- *   the four        the weekly goals he can move, each against his own last
- *                   four weeks bettered by 5%, the one lever, and what
- *                   standing still costs
- *   the road        the six steps, reached ones quiet, the next one plain
- *   by update       each release's line, newest first
- *   the guardrails  never traded for money
- *   folded          monthly and yearly, Extra (the shop), this hour, the
- *                   Bible licence, and his two marks
+ *   the number      what members bring in a week, its growth on last week
+ *                   against the 5% aim, and one line to the next step
+ *   three facts     paying now, this week, the next step's day
+ *   what moves it   the four weekly goals against his own last four weeks
+ *                   bettered by 5%, and the one lever
+ *   the road        the six steps, one line each
+ *   more            quiet rows that open in place: by update, monthly and
+ *                   yearly (with what standing still costs), the guardrails,
+ *                   Extra (the shop), this hour, the Bible licence, his marks
  *
  * Presentational: everything it says comes in `data`, worked out elsewhere
  * from the kept events. It writes the words and formats the figures, and it
@@ -155,6 +153,11 @@ export function dayWords(iso: string, today: string): string {
 }
 
 // ── The page ─────────────────────────────────────────────────────────────
+//
+// Minimal, at his word of 2026-11-24 ("make the design more simplified and
+// minimalist"): the number leads, the rest whispers. Labels are small and
+// grey, rows carry one line where one will do, and everything that is not
+// read every day is a quiet row that opens in place.
 
 export function GoalsView({
   data,
@@ -173,54 +176,55 @@ export function GoalsView({
   const next = data.steps.find((s) => s.reachedOn === null) ?? null;
   const reached = data.justReached ? data.steps.find((s) => s.id === data.justReached) ?? null : null;
   const early = data.enoughOn !== null;
+  const total = data.mix.monthlyCents + data.mix.yearlyCents;
+  const broke = [
+    data.rating.held === false ? "Rating fell" : null,
+    data.refunds.low ? null : "Refunds high",
+  ].filter(Boolean);
 
   return (
-    <div className="space-y-9 font-sans">
+    <div className="font-sans">
       {banner}
 
       <TheNumber data={data} next={next} reached={reached} />
 
-      <Facts data={data} next={next} />
+      <ul className="mt-10" aria-label="Three facts">
+        <Facts data={data} next={next} />
+      </ul>
 
-      <TheFour data={data} />
+      <Block label="What moves it">
+        <TheFour data={data} />
+      </Block>
 
-      <TheRoad data={data} />
+      <Block label="The road">
+        <TheRoad data={data} />
+      </Block>
 
-      <ByUpdate data={data} />
-
-      <Guardrails data={data} />
-
-      <div className="space-y-2.5">
-        <Disclosure title="Monthly and yearly" hint="The mix, who left in 30 days, and the early signs">
-          <MonthlyAndYearly data={data} next={next} early={early} />
-        </Disclosure>
-        <Disclosure title="Extra" hint="Shop sales, kept apart from the number">
-          {data.extra ? (
-            <p className="text-[15px] leading-relaxed" style={{ color: "var(--adm-ink)" }}>
-              {money(data.extra.monthCents)} this month after fees, from {count.format(data.extra.orders)}{" "}
-              {data.extra.orders === 1 ? "order" : "orders"}.{" "}
-              <span style={{ color: "var(--adm-ink-2)" }}>Not counted in the number or the road.</span>
+      <Block label="More">
+        <div>
+          <Fold title="By update">
+            <ByUpdate data={data} />
+          </Fold>
+          <Fold title="Monthly and yearly" value={total > 0 ? `${share(data.mix.monthlyCents / total)} monthly` : undefined}>
+            <MonthlyAndYearly data={data} next={next} early={early} />
+          </Fold>
+          <Fold title="Guardrails" value={broke.length ? broke.join(", ") : "All hold"}>
+            <Guardrails data={data} />
+          </Fold>
+          <Fold title="Extra" value={data.extra ? `${money(data.extra.monthCents)} this month` : "None this month"}>
+            <p className="text-[14px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
+              {data.extra
+                ? `Shop sales, from ${count.format(data.extra.orders)} ${data.extra.orders === 1 ? "order" : "orders"}, after fees. Never counted in the number.`
+                : "Shop sales are kept apart from the number."}
             </p>
-          ) : (
-            <p className="text-[15px]" style={{ color: "var(--adm-ink-2)" }}>
-              No shop sales this month.
-            </p>
-          )}
-        </Disclosure>
-        {hourly ? (
-          <Disclosure title="This hour" hint="The hourly goals and their notices, as before">
-            {hourly}
-          </Disclosure>
-        ) : null}
-        {licence ? (
-          <Disclosure title="The Bible licence" hint="API.Bible's limits, as before">
-            {licence}
-          </Disclosure>
-        ) : null}
-        <Disclosure title="Your marks" hint="The road is made from them">
-          <Marks marks={data.marks} onSave={onSaveMarks} />
-        </Disclosure>
-      </div>
+          </Fold>
+          {hourly ? <Fold title="This hour">{hourly}</Fold> : null}
+          {licence ? <Fold title="Bible licence">{licence}</Fold> : null}
+          <Fold title="Your marks">
+            <Marks marks={data.marks} onSave={onSaveMarks} />
+          </Fold>
+        </div>
+      </Block>
     </div>
   );
 }
@@ -232,64 +236,55 @@ function TheNumber({ data, next, reached }: { data: GoalsData; next: GoalStep | 
   const toGo = next ? Math.max(0, next.weeklyCents - data.weeklyCents) : 0;
   const pct = next && next.weeklyCents > 0 ? Math.min(100, Math.round((data.weeklyCents / next.weeklyCents) * 100)) : 100;
 
-  let growth: string;
-  if (data.enoughOn) {
-    growth = `After the stores' share, from who pays now. Its growth shows once four full weeks are kept, on ${dayWords(data.enoughOn, data.today)}.`;
-  } else if (data.growth === null) {
-    growth = "After the stores' share.";
-  } else {
+  let growth: string | null = null;
+  if (data.enoughOn) growth = `Growth shows from ${dayWords(data.enoughOn, data.today)}.`;
+  else if (data.growth !== null) {
     const g = Math.round(Math.abs(data.growth) * 100);
-    const way = data.growth >= 0 ? `Up ${g}%` : `Down ${g}%`;
-    growth = `After the stores' share. ${way} on last week; the pace asked is 5%.`;
+    growth = `${data.growth >= 0 ? "Up" : "Down"} ${g}% on last week. Aim 5% a week.`;
   }
 
   return (
     <section aria-label="What members bring in">
       {reached ? (
         // A step reached is a moment of its own: it rises in once, on the
-        // house's curve, over the time the board's own entrances take, and
-        // simply stands there with Motion off.
+        // house's curve, and simply stands there with Motion off.
         <div
-          className="mb-6 flex items-start gap-3 border-b pb-5"
-          style={{
-            borderColor: "var(--adm-line)",
-            animation: reduced ? undefined : "adm-rise 700ms var(--adm-ease) backwards",
-          }}
+          className="mb-8 flex items-start gap-3"
+          style={{ animation: reduced ? undefined : "adm-rise 700ms var(--adm-ease) backwards" }}
         >
-          <StatusDot tone="good" className="mt-[9px]" />
+          <StatusDot tone="good" className="mt-[8px]" />
           <div className="min-w-0">
-            <p className="text-[19px] font-semibold leading-snug" style={{ color: "var(--adm-ink)" }}>
+            <p className="text-[16px] font-semibold leading-snug" style={{ color: "var(--adm-ink)" }}>
               {reached.id === "bills" ? "The app pays its own bills now" : `You reached ${lowerFirst(reached.name)}`}
             </p>
-            <p className="mt-1 text-[14px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
-              The number has held over {money(reached.weeklyCents)} a week for four weeks running.
+            <p className="mt-0.5 text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
+              Held four weeks running.
             </p>
           </div>
         </div>
       ) : null}
 
-      <p className="text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
-        Week of {dayWords(data.week, data.today)}
-      </p>
-      <h2 className="mt-3 text-[15px]" style={{ color: "var(--adm-ink-2)", fontWeight: 400 }}>
-        What members bring in
+      <h2 className="text-[13px]" style={{ color: "var(--adm-ink-3)", fontWeight: 500 }}>
+        Members bring in
       </h2>
       <p className="mt-1 flex items-baseline gap-2" style={{ color: "var(--adm-ink)" }}>
-        <span className="text-[56px] font-semibold leading-none tracking-[-0.035em] tabular-nums">
+        <span className="text-[60px] leading-none tracking-[-0.04em] tabular-nums" style={{ fontWeight: 500 }}>
           {money(data.weeklyCents)}
         </span>
         <span className="text-[17px]" style={{ color: "var(--adm-ink-2)" }}>
           a week
         </span>
       </p>
-      <p className="mt-3 text-[14px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
-        {growth}
-      </p>
+      {growth ? (
+        <p className="mt-2.5 text-[14px]" style={{ color: "var(--adm-ink-2)" }}>
+          {growth}
+        </p>
+      ) : null}
 
       {next ? (
-        <div className="mt-6">
+        <div className="mt-8">
           <div className="flex items-baseline justify-between gap-3">
-            <p className="text-[15px] font-semibold" style={{ color: "var(--adm-ink)" }}>
+            <p className="text-[14px] font-semibold" style={{ color: "var(--adm-ink)" }}>
               Next: {next.name}
             </p>
             <p className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
@@ -306,7 +301,7 @@ function TheNumber({ data, next, reached }: { data: GoalsData; next: GoalStep | 
           </div>
         </div>
       ) : (
-        <p className="mt-6 text-[15px] font-semibold" style={{ color: "var(--adm-ink)" }}>
+        <p className="mt-8 text-[14px] font-semibold" style={{ color: "var(--adm-ink)" }}>
           Every step is reached.
         </p>
       )}
@@ -318,91 +313,73 @@ function TheNumber({ data, next, reached }: { data: GoalsData; next: GoalStep | 
 
 function Facts({ data, next }: { data: GoalsData; next: GoalStep | null }) {
   const paying = data.paying.monthly + data.paying.yearly;
-  let when: { value: string; sub: string | null };
-  if (!next) when = { value: "reached", sub: null };
-  else if (data.enoughOn || next.byFive === null) when = { value: "not enough weeks yet", sub: null };
+  let when: { value: string; note?: string };
+  if (!next) when = { value: "reached" };
+  else if (data.enoughOn || next.byFive === null) when = { value: "not enough weeks yet" };
   else
     when = {
-      value: next.byPace ? `about ${dayWords(next.byPace, data.today)}` : "not at this pace",
-      sub:
-        (data.paceCents !== null && data.paceCents > 0
-          ? `At your pace, ${money(data.paceCents)} more each week. `
-          : "The number has not grown over the last four weeks. ") +
-        `At 5% a week, ${dayWords(next.byFive, data.today)}.`,
+      value: next.byPace ? dayWords(next.byPace, data.today) : "not at this pace",
+      note: `${dayWords(next.byFive, data.today)} at 5% a week`,
     };
-
   return (
-    <ul aria-label="Three facts">
-      <Row name="Paying now" value={`${count.format(paying)} ${paying === 1 ? "member" : "members"}`}>
-        {count.format(data.paying.monthly)} monthly, {count.format(data.paying.yearly)} yearly
-      </Row>
+    <>
+      <Row
+        name="Paying now"
+        nameNote={`${count.format(data.paying.monthly)} monthly, ${count.format(data.paying.yearly)} yearly`}
+        value={count.format(paying)}
+      />
       <Row name="This week" value={`${count.format(data.thisWeek.joined)} joined, ${count.format(data.thisWeek.left)} left`} />
-      <Row name={next ? "Next step by" : "The road"} value={when.value}>
-        {when.sub}
-      </Row>
-    </ul>
+      <Row name={next ? "Next step by" : "The road"} value={when.value} valueNote={when.note} />
+    </>
   );
 }
 
-// ── The four that move it ────────────────────────────────────────────────
+// ── What moves it: the four ──────────────────────────────────────────────
 
-const MOVER_WORDS: Record<Mover["id"], { name: string; of: string | null; less: boolean }> = {
-  readers: { name: "New readers", of: null, less: false },
-  begin: { name: "Begin a trial or a plan", of: "of new readers", less: false },
-  pay: { name: "Trials that pay", of: "of trials that ended", less: false },
-  leave: { name: "Members who leave", of: "of paying members", less: true },
+const MOVER_WORDS: Record<Mover["id"], { name: string; of: string; less: boolean }> = {
+  readers: { name: "New readers", of: "", less: false },
+  begin: { name: "Start a trial or plan", of: " of new readers", less: false },
+  pay: { name: "Trials that pay", of: " of trials", less: false },
+  leave: { name: "Members who leave", of: " of members", less: true },
 };
 
 const LEVER_WORDS: Record<NonNullable<GoalsData["lever"]>, string> = {
-  joining: "Right now, more joining would move the day most.",
-  leaving: "Right now, fewer leaving would move the day most.",
-  monthly: "Right now, more of them choosing monthly would move the day most.",
+  joining: "More joining would help most now.",
+  leaving: "Fewer leaving would help most now.",
+  monthly: "More choosing monthly would help most now.",
 };
 
 function TheFour({ data }: { data: GoalsData }) {
+  if (data.movers === null)
+    return (
+      <p className="text-[14px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
+        Not enough weeks yet. Aims begin {data.enoughOn ? dayWords(data.enoughOn, data.today) : "after four full weeks"}.
+      </p>
+    );
   return (
-    <Section
-      title="The four that move it"
-      sentence="This week against your aims. Each aim is your own last four weeks, bettered by 5%."
-    >
-      {data.movers === null ? (
-        <p className="text-[15px] leading-relaxed" style={{ color: "var(--adm-ink)" }}>
-          Not enough weeks yet. The aims begin {data.enoughOn ? `on ${dayWords(data.enoughOn, data.today)}` : "once four full weeks are kept"}.
+    <>
+      {data.lever ? (
+        <p className="mb-1.5 text-[14px]" style={{ color: "var(--adm-ink)" }}>
+          {LEVER_WORDS[data.lever]}
         </p>
-      ) : (
-        <>
-          {data.lever ? (
-            <p className="mb-2 text-[15px] font-medium leading-snug" style={{ color: "var(--adm-ink)" }}>
-              {LEVER_WORDS[data.lever]}
-            </p>
-          ) : null}
-          <ul>
-            {data.movers.map((m) => {
-              const w = MOVER_WORDS[m.id];
-              const fmt = m.id === "readers" ? count.format(Math.round(m.value)) : share(m.value);
-              const aim = m.id === "readers" ? count.format(Math.round(m.aim)) : share(m.aim);
-              const met = w.less ? m.value <= m.aim : m.value >= m.aim;
-              return (
-                <Row
-                  key={m.id}
-                  name={w.name}
-                  value={fmt}
-                  state={{ tone: met ? "good" : "wait", word: met ? "Met" : "Not yet" }}
-                >
-                  {w.less ? `Aim under ${aim}` : `Aim ${aim}`}
-                  {w.of ? ` ${w.of}.` : "."}
-                  {m.id === "leave" && data.standStill !== null ? (
-                    <span className="mt-1 block" style={{ color: "var(--adm-ink-2)" }}>
-                      To stand still: about {count.format(data.standStill)} new members a month.
-                    </span>
-                  ) : null}
-                </Row>
-              );
-            })}
-          </ul>
-        </>
-      )}
-    </Section>
+      ) : null}
+      <ul>
+        {data.movers.map((m) => {
+          const w = MOVER_WORDS[m.id];
+          const fmt = (v: number) => (m.id === "readers" ? count.format(Math.round(v)) : share(v));
+          const met = w.less ? m.value <= m.aim : m.value >= m.aim;
+          return (
+            <Row
+              key={m.id}
+              name={w.name}
+              nameNote={`aim ${w.less ? "under " : ""}${fmt(m.aim)}${w.of}`}
+              value={fmt(m.value)}
+              state={{ tone: met ? "good" : "wait", word: met ? "Met" : "Not yet" }}
+            />
+          );
+        })}
+      </ul>
+    </>
   );
 }
 
@@ -411,123 +388,105 @@ function TheFour({ data }: { data: GoalsData }) {
 function TheRoad({ data }: { data: GoalsData }) {
   const next = data.steps.find((s) => s.reachedOn === null);
   return (
-    <Section
-      title="The road"
-      sentence="Six steps to your second mark. A step is reached once the number holds it for four weeks running."
-    >
-      <ol>
-        {data.steps.map((s) => {
-          const isNext = s === next;
-          const done = s.reachedOn !== null;
-          let sub: string;
-          if (done) sub = s.id === data.justReached ? "Reached this week." : `Reached ${dayWords(s.reachedOn as string, data.today)}.`;
-          else if (s.weeklyCents <= data.weeklyCents)
-            sub = `${isNext ? "Next. " : ""}Over it now; held ${s.heldWeeks} of the 4 weeks it needs.`;
-          else if (isNext)
-            sub = `Next. About ${count.format(s.moreMembers ?? 0)} more members at today's mix.`;
-          else {
-            sub = `About ${count.format(s.moreMembers ?? 0)} more members.`;
-            if (s.byPace && s.byFive)
-              sub += ` By ${dayWords(s.byPace, data.today)} at your pace; by ${dayWords(s.byFive, data.today)} at 5% a week.`;
-            else if (s.byFive) sub += ` By ${dayWords(s.byFive, data.today)} at 5% a week.`;
-          }
-          return (
-            <li
-              key={s.id}
-              className="flex gap-3 border-t py-3.5 first:border-t-0 first:pt-1"
-              style={{ borderColor: "var(--adm-line)" }}
-              aria-current={isNext ? "step" : undefined}
-            >
-              <StatusDot tone={done ? "good" : isNext ? "wait" : "idle"} className="mt-[8px]" />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-baseline justify-between gap-3">
-                  <p
-                    className={"text-[15px] leading-snug" + (isNext ? " font-semibold" : "")}
-                    style={{ color: done ? "var(--adm-ink-2)" : "var(--adm-ink)" }}
-                  >
-                    {s.name}
-                  </p>
-                  <p className="shrink-0 text-[14px] tabular-nums" style={{ color: done ? "var(--adm-ink-3)" : "var(--adm-ink-2)" }}>
-                    {money(s.weeklyCents)} a week
-                  </p>
-                </div>
-                <p className="mt-1 text-[13.5px] leading-snug" style={{ color: "var(--adm-ink-3)" }}>
-                  {sub}
+    <ol>
+      {data.steps.map((s) => {
+        const isNext = s === next;
+        const done = s.reachedOn !== null;
+        let note: string | null = null;
+        if (done) note = s.id === data.justReached ? "reached this week" : `reached ${dayWords(s.reachedOn as string, data.today)}`;
+        else {
+          if (s.weeklyCents <= data.weeklyCents) note = `held ${s.heldWeeks} of 4 weeks`;
+          else if (isNext) note = `${count.format(s.moreMembers ?? 0)} more members`;
+          else
+            note = `${count.format(s.moreMembers ?? 0)} more members${s.byPace ? `, by ${dayWords(s.byPace, data.today)}` : ""}`;
+        }
+        return (
+          <li
+            key={s.id}
+            className="flex min-h-11 items-start gap-3 border-t py-3 first:border-t-0"
+            style={{ borderColor: "var(--adm-line)" }}
+            aria-current={isNext ? "step" : undefined}
+          >
+            <StatusDot tone={done ? "good" : isNext ? "wait" : "idle"} className="mt-[7px]" />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline justify-between gap-3">
+                <p
+                  className={"text-[15px] leading-snug" + (isNext ? " font-semibold" : "")}
+                  style={{ color: done ? "var(--adm-ink-3)" : isNext ? "var(--adm-ink)" : "var(--adm-ink-2)" }}
+                >
+                  {s.name}
+                </p>
+                <p className="shrink-0 text-[14px] tabular-nums" style={{ color: done ? "var(--adm-ink-3)" : "var(--adm-ink-2)" }}>
+                  {money(s.weeklyCents)} a week
                 </p>
               </div>
-            </li>
-          );
-        })}
-      </ol>
-    </Section>
+              {note ? (
+                <p className="mt-0.5 text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
+                  {note}
+                </p>
+              ) : null}
+            </div>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
-// ── By update ────────────────────────────────────────────────────────────
+// ── Folded: by update ────────────────────────────────────────────────────
 
 function ByUpdate({ data }: { data: GoalsData }) {
   return (
-    <Section title="By update" sentence="What each update brought, newest first. The newest fills in as its days pass.">
-      <ul>
-        {data.releases.map((r) => {
-          const days = Math.round((Date.parse(`${data.today}T00:00:00Z`) - Date.parse(`${r.from}T00:00:00Z`)) / DAY_MS);
-          const when = r.to
-            ? `${dayWords(r.from, data.today)} to ${dayWords(r.to, data.today)}`
-            : `since ${dayWords(r.from, data.today)}, ${days} ${days === 1 ? "day" : "days"}`;
-          const parts = [`${count.format(r.joined)} joined and ${count.format(r.left)} left.`];
-          const tail = [
-            r.leftAMonth !== null ? `${share(r.leftAMonth)} left a month` : null,
-            r.trialsPaid !== null ? `${share(r.trialsPaid)} of trials paid` : null,
-          ].filter(Boolean);
-          if (tail.length) parts.push(`${capFirst(tail.join(", and "))}.`);
-          return (
-            <li key={r.version} className="border-t py-3.5 first:border-t-0 first:pt-1" style={{ borderColor: "var(--adm-line)" }}>
-              <div className="flex items-baseline justify-between gap-3">
-                <p className="text-[15px] font-semibold" style={{ color: "var(--adm-ink)" }}>
-                  {r.version}
-                </p>
-                <p className="text-end text-[13.5px]" style={{ color: "var(--adm-ink-3)" }}>
-                  {when}
-                </p>
-              </div>
-              <p className="mt-1 text-[14px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
-                {parts.join(" ")}
+    <ul>
+      {data.releases.map((r) => {
+        const days = Math.round((Date.parse(`${data.today}T00:00:00Z`) - Date.parse(`${r.from}T00:00:00Z`)) / DAY_MS);
+        const when = r.to
+          ? `${dayWords(r.from, data.today)} to ${dayWords(r.to, data.today)}`
+          : `since ${dayWords(r.from, data.today)}, ${days} ${days === 1 ? "day" : "days"}`;
+        const tail = [
+          r.leftAMonth !== null ? `${share(r.leftAMonth)} left a month` : null,
+          r.trialsPaid !== null ? `${share(r.trialsPaid)} of trials paid` : null,
+        ].filter(Boolean);
+        return (
+          <li key={r.version} className="border-t py-3 first:border-t-0 first:pt-0" style={{ borderColor: "var(--adm-line)" }}>
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="text-[15px] font-semibold" style={{ color: "var(--adm-ink)" }}>
+                {r.version}
               </p>
-            </li>
-          );
-        })}
-      </ul>
-    </Section>
+              <p className="text-end text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
+                {when}
+              </p>
+            </div>
+            <p className="mt-0.5 text-[14px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
+              {count.format(r.joined)} joined, {count.format(r.left)} left.{tail.length ? ` ${capFirst(tail.join(", "))}.` : ""}
+            </p>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
-// ── The guardrails ───────────────────────────────────────────────────────
+// ── Folded: the guardrails ───────────────────────────────────────────────
 
 function Guardrails({ data }: { data: GoalsData }) {
   const { rating, refunds } = data;
   return (
-    <Section title="What we never trade for money">
-      <ul>
-        <Row
-          name="The store's rating holds"
-          value={rating.stars === null ? "not read" : `${rating.stars.toFixed(1)} of 5`}
-          state={rating.held === null ? undefined : { tone: rating.held ? "good" : "bad", word: rating.held ? "Holds" : "Fell" }}
-        >
-          On {rating.store}
-          {rating.held === null ? "." : rating.held ? ", as last month." : ", lower than last month."}
-        </Row>
-        <Row
-          name="Refunds stay low"
-          value={`${count.format(refunds.count)} this month`}
-          state={{ tone: refunds.low ? "good" : "bad", word: refunds.low ? "Low" : "High" }}
-        >
-          Of {count.format(refunds.payments)} payments.
-        </Row>
-        <Row name="What was free stays free">
-          The terms promise it. No number can show it, so it is kept by hand.
-        </Row>
-      </ul>
-    </Section>
+    <ul>
+      <Row
+        name="Store rating"
+        nameNote={rating.held === null ? `On ${rating.store}` : `On ${rating.store}, ${rating.held ? "as last month" : "lower than last month"}`}
+        value={rating.stars === null ? "not read" : `${rating.stars.toFixed(1)} of 5`}
+        state={rating.held === null ? undefined : { tone: rating.held ? "good" : "bad", word: rating.held ? "Holds" : "Fell" }}
+      />
+      <Row
+        name="Refunds"
+        nameNote={`Of ${count.format(refunds.payments)} payments this month`}
+        value={count.format(refunds.count)}
+        state={{ tone: refunds.low ? "good" : "bad", word: refunds.low ? "Low" : "High" }}
+      />
+      <Row name="What was free stays free" nameNote="Kept by hand: no number can show it." />
+    </ul>
   );
 }
 
@@ -538,63 +497,45 @@ function MonthlyAndYearly({ data, next, early }: { data: GoalsData; next: GoalSt
   const total = mix.monthlyCents + mix.yearlyCents;
   const monthlyShare = total > 0 ? mix.monthlyCents / total : 0;
   const m = Math.round(monthlyShare * 100);
+  const left = (x: { left: number; of: number }) => `${count.format(x.left)} of ${count.format(x.of)} left in 30 days`;
   return (
-    <div className="space-y-5">
-      <div>
-        <div className="flex h-2 w-full gap-[3px]" role="img" aria-label={`Monthly ${m}%, yearly ${100 - m}% of the number`}>
-          {m > 0 ? <div className="h-full rounded-full" style={{ width: `${m}%`, background: "var(--adm-ink)" }} /> : null}
-          {m < 100 ? <div className="h-full flex-1 rounded-full" style={{ background: "var(--adm-ink-3)" }} /> : null}
-        </div>
-        <ul className="mt-2">
-          <Row name="Monthly" value={`${money(mix.monthlyCents)} a week`}>
-            {share(monthlyShare)} of the number, from {count.format(data.paying.monthly)} members.
-          </Row>
-          <Row name="Yearly" value={`${money(mix.yearlyCents)} a week`}>
-            {share(1 - monthlyShare)} of the number, from {count.format(data.paying.yearly)} members.
-          </Row>
-        </ul>
+    <div className="space-y-4">
+      <div className="flex h-2 w-full gap-[3px]" role="img" aria-label={`Monthly ${m}%, yearly ${100 - m}% of the number`}>
+        {m > 0 ? <div className="h-full rounded-full" style={{ width: `${m}%`, background: "var(--adm-ink)" }} /> : null}
+        {m < 100 ? <div className="h-full flex-1 rounded-full" style={{ background: "var(--adm-ink-3)" }} /> : null}
+      </div>
+      <ul>
+        <Row
+          name={`Monthly, ${count.format(data.paying.monthly)} members`}
+          nameNote={early || !mix.leftMonthly ? undefined : left(mix.leftMonthly)}
+          value={`${money(mix.monthlyCents)} a week`}
+        />
+        <Row
+          name={`Yearly, ${count.format(data.paying.yearly)} members`}
+          nameNote={early || !mix.leftYearly ? undefined : left(mix.leftYearly)}
+          value={`${money(mix.yearlyCents)} a week`}
+        />
+      </ul>
+      <div className="space-y-1.5 text-[14px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
         {mix.monthlyShareBefore !== null ? (
-          <p className="mt-2 text-[14px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
+          <p>
             {monthlyShare >= mix.monthlyShareBefore ? "Monthly is growing faster" : "Yearly is growing faster"}: monthly was{" "}
-            {share(mix.monthlyShareBefore)} of the number a month ago.
+            {share(mix.monthlyShareBefore)} a month ago.
           </p>
         ) : null}
-      </div>
-
-      <div>
-        <h3 className="text-[14px] font-semibold" style={{ color: "var(--adm-ink)" }}>
-          Who left in the last 30 days
-        </h3>
-        {early || (!mix.leftMonthly && !mix.leftYearly) ? (
-          <p className="mt-1 text-[14px]" style={{ color: "var(--adm-ink-2)" }}>
-            Not enough weeks yet.
+        {data.standStill !== null ? <p>To stand still: about {count.format(data.standStill)} new members a month.</p> : null}
+        {next && mix.allMonthly !== null && mix.allYearly !== null ? (
+          <p>
+            {next.name} needs {count.format(mix.allMonthly)} more if all were monthly, {count.format(mix.allYearly)} if all
+            were yearly.
           </p>
-        ) : (
-          <ul className="mt-1">
-            {mix.leftMonthly ? (
-              <Row name="Monthly members" value={share(mix.leftMonthly.left / Math.max(1, mix.leftMonthly.of))}>
-                {count.format(mix.leftMonthly.left)} of {count.format(mix.leftMonthly.of)}.
-              </Row>
-            ) : null}
-            {mix.leftYearly ? (
-              <Row name="Yearly members" value={share(mix.leftYearly.left / Math.max(1, mix.leftYearly.of))}>
-                {count.format(mix.leftYearly.left)} of {count.format(mix.leftYearly.of)}.
-              </Row>
-            ) : null}
-          </ul>
-        )}
-        <p className="mt-2 text-[14px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
-          Early signs this month: {count.format(mix.renewalOff)} turned renewal off, and {count.format(mix.cardFailed)}{" "}
+        ) : null}
+        <p>
+          Early signs: {count.format(mix.renewalOff)} turned renewal off, {count.format(mix.cardFailed)}{" "}
           {mix.cardFailed === 1 ? "card" : "cards"} failed.
         </p>
+        <p style={{ color: "var(--adm-ink-3)" }}>Each member counts at their own price, after the stores&apos; share.</p>
       </div>
-
-      {next && mix.allMonthly !== null && mix.allYearly !== null ? (
-        <p className="text-[14px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
-          If every new member were monthly, {lowerFirst(next.name)} would need {count.format(mix.allMonthly)} more members;
-          if every one were yearly, {count.format(mix.allYearly)}.
-        </p>
-      ) : null}
     </div>
   );
 }
@@ -685,54 +626,80 @@ function Marks({ marks, onSave }: { marks: GoalMark[]; onSave?: (marks: GoalMark
 
 // ── Pieces ───────────────────────────────────────────────────────────────
 
-/** A part of the page: a heading in words, one sentence, and its rows. A hairline above, never down an edge. */
-function Section({ title, sentence, children }: { title: string; sentence?: string; children: ReactNode }) {
+/** A part of the page: a small grey label and what it holds. Space sets it apart, not a box or a rule. */
+function Block({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <section className="border-t pt-6" style={{ borderColor: "var(--adm-line)" }}>
-      <h2 className="text-[19px] font-semibold leading-tight tracking-[-0.01em]" style={{ color: "var(--adm-ink)" }}>
-        {title}
+    <section className="mt-10" aria-label={label}>
+      <h2 className="mb-1.5 text-[13px]" style={{ color: "var(--adm-ink-3)", fontWeight: 500 }}>
+        {label}
       </h2>
-      {sentence ? (
-        <p className="mt-1.5 text-[14px] leading-snug" style={{ color: "var(--adm-ink-3)" }}>
-          {sentence}
-        </p>
-      ) : null}
-      <div className="mt-3">{children}</div>
+      {children}
     </section>
   );
 }
 
-/** One quiet figure: its name at the start, its value at the end, a line under it, and its state in a dot and a word. */
+/** A quiet row that opens in place: no box, a hairline between, the house's chevron. */
+function Fold({ title, value, children }: { title: string; value?: string; children: ReactNode }) {
+  return (
+    <details className="group border-t first:border-t-0" style={{ borderColor: "var(--adm-line)" }}>
+      <summary className="flex min-h-[52px] cursor-pointer list-none items-center gap-3 [&::-webkit-details-marker]:hidden">
+        <span className="min-w-0 flex-1 text-[15px]" style={{ color: "var(--adm-ink)" }}>
+          {title}
+        </span>
+        {value ? (
+          <span className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
+            {value}
+          </span>
+        ) : null}
+        <ChevronDown size={16} className="shrink-0 transition-transform duration-200 group-open:rotate-180" style={{ color: "var(--adm-ink-3)" }} />
+      </summary>
+      <div className="pb-5 pt-1">{children}</div>
+    </details>
+  );
+}
+
+/**
+ * One quiet figure: its name at the start with a small note under it, its
+ * value at the end with a small note or its state (a dot and a word) under it.
+ */
 function Row({
   name,
+  nameNote,
   value,
+  valueNote,
   state,
-  children,
 }: {
   name: string;
+  nameNote?: string;
   value?: string;
+  valueNote?: string;
   state?: { tone: StatusTone; word: string };
-  children?: ReactNode;
 }) {
   return (
-    <li className="border-t py-3 first:border-t-0" style={{ borderColor: "var(--adm-line)" }}>
-      <div className="flex items-baseline justify-between gap-3">
-        <p className="min-w-0 text-[15px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
+    <li className="flex items-start justify-between gap-3 border-t py-3 first:border-t-0" style={{ borderColor: "var(--adm-line)" }}>
+      <div className="min-w-0">
+        <p className="text-[15px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
           {name}
         </p>
-        {value ? (
-          <p className="shrink-0 text-end text-[16px] font-semibold tabular-nums" style={{ color: "var(--adm-ink)" }}>
-            {value}
+        {nameNote ? (
+          <p className="mt-0.5 text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
+            {nameNote}
           </p>
         ) : null}
       </div>
-      {children || state ? (
-        <div className="mt-1 flex items-baseline justify-between gap-3">
-          <div className="min-w-0 text-[13.5px] leading-snug" style={{ color: "var(--adm-ink-3)" }}>
-            {children}
-          </div>
-          {state ? (
-            <span className="inline-flex shrink-0 items-center gap-[7px] text-[13px] font-medium" style={{ color: "var(--adm-ink)" }}>
+      {value || state ? (
+        <div className="shrink-0 text-end">
+          {value ? (
+            <p className="text-[15px] font-semibold tabular-nums leading-snug" style={{ color: "var(--adm-ink)" }}>
+              {value}
+            </p>
+          ) : null}
+          {valueNote ? (
+            <p className="mt-0.5 text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
+              {valueNote}
+            </p>
+          ) : state ? (
+            <span className="mt-1 inline-flex items-center gap-[7px] text-[13px] font-medium" style={{ color: "var(--adm-ink)" }}>
               <StatusDot tone={state.tone} />
               {state.word}
             </span>

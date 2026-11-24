@@ -8,11 +8,13 @@ The worker chat for one job: his own milestones in the panel, with the Goals pag
 
 2026-11-24, about 09:25 UTC, opening this chat: "Make the drawing of the Goals page first, give me the link, and stop for my yes or no. Send no message to any other chat."
 
+2026-11-24, on the first drawing, about 09:55 UTC: "more simplified." Then "the drawing". Then, about 10:00 UTC: "im saying make the design more simplified and minimalist". Taken as a no to the first drawing and the direction for the second, which replaced it at the same link. Replies to him are in simplified mode (short, plain, emojis welcome) until he says otherwise.
+
 ## Where it stands
 
-**Waiting for his yes or no on the drawing.** Nothing past the drawing is built: no measure, no route for the marks, and the real Goals tab (`components/admin/tabs/GoalsTab.tsx`) is unchanged.
+**Waiting for his yes or no on the second drawing** (the first, busier one he sent back for "more simplified and minimalist"; it is in the artifact's history as version 1 and in commit `58e3352c`). Nothing past the drawing is built: no measure, no route for the marks, and the real Goals tab (`components/admin/tabs/GoalsTab.tsx`) is unchanged.
 
-- The drawing, a private artifact: https://claude.ai/artifact/S4FhycWThzkyV6uMWHWdMh (the page at 390 in the panel's dark theme, what it shows and where, a reason for each choice, its other states, what was checked, and two questions).
+- The drawing, a private artifact: https://claude.ai/artifact/S4FhycWThzkyV6uMWHWdMh, version 2 (the page at 390 in the panel's dark theme, a reason for each choice, its other states, and two questions).
 
 ## What was built (on the branch, for the drawing)
 
@@ -20,19 +22,17 @@ The worker chat for one job: his own milestones in the panel, with the Goals pag
 - `components/admin/goals/GoalsPreview.tsx`: three sample states (mid-road, the first weeks, the week a step is reached), every number made up and consistent with the others. It wears the panel's light theme when checkMock puts the reader's Light palette on `<html>`, and the panel's dark for the other four, in the preview only.
 - `app/admin/goals-preview/page.tsx`: the preview route, the posture of `app/admin/charts-preview` (dev only, a 404 to anyone but an admin in production, reads nothing). `?state=full | first-weeks | reached`, `?theme=dark | light`.
 
-What the page shows, top to bottom, each thing once:
+What the page shows, top to bottom, each thing once (the second drawing, minimal: no boxes, small grey labels, one line per row, space between parts):
 
-1. The number: what members bring in a week after the stores' share; growth on last week against the 5% asked; one line to the next step by name (or "held N of 4 weeks" when the number is over a step not yet held).
-2. Three facts: paying now (monthly, yearly); this week (joined, left); the next step's day at his pace (the last four weeks' average gain a week, in dollars) and at 5% a week.
-3. The four that move it: new readers, the share who begin a trial or a plan, the share of trials that pay, the share who leave; each against his last four weeks bettered by 5% (less for who leave); the one lever; "to stand still: about N new members a month".
-4. The road: six steps, reached ones quiet with their day, the next plain with its members at today's mix, the rest with members and both days (a day past half a year shows only its month).
-5. By update: each release's line, newest first (joined, left, the share who left a month, trials that paid).
-6. What we never trade for money: the store's rating, refunds (dot and word), and what was free stays free (words only, no meter).
-7. Folded: Monthly and yearly (the mix, who left in 30 days by plan, the early signs, the two ends), Extra (the shop), This hour (`HourlyGoals`, as it is), The Bible licence (`ApiLimitsPanel`, as it is), Your marks (two rows, name and dollars a week, and Save marks). `ApiLimitBanner` stays first on the page, as today.
+1. The number: "Members bring in", the figure a week, growth on last week against the 5% aim, and one line to the next step by name (or "held N of 4 weeks" when the number is over a step not yet held).
+2. Three facts: paying now (with monthly and yearly under it), this week (joined, left), the next step's day at his pace with the 5% day under it.
+3. What moves it: the one lever in a line, then the four (new readers, start a trial or plan, trials that pay, members who leave), each with its aim under its name and a dot and a word (Met, Not yet).
+4. The road: six steps, one line each with its amount a week; under each a short note (reached and its day; held N of 4 weeks; N more members; the day at his pace for the far ones). The 5% day shows for the next step only, in the facts.
+5. More, quiet rows that open in place (no box, a hairline between, the house's chevron): By update; Monthly and yearly (value: the monthly share; inside: the mix, who left in 30 days by plan, what standing still costs, the two ends, the early signs, how a member counts); Guardrails (value: "All hold", or what broke); Extra (value: the shop this month); This hour (`HourlyGoals`); Bible licence (`ApiLimitsPanel`); Your marks (two rows, name and dollars a week, Save marks). `ApiLimitBanner` stays first on the page.
 
 ## What was proved, and how
 
-- checkMock (`scripts/mock-check.mjs`) on the preview at 390 with touch, all four states (mid-road, first weeks, reached, three folds opened by real taps), on the five palettes: every rule passes. Its first run caught the two amount fields at 25px tall inside a 44px box; they are 44px now.
+- checkMock (`scripts/mock-check.mjs`) on the preview at 390 with touch, all four states (mid-road, first weeks, reached, and five More rows opened by real taps), on the five palettes: every rule passes, on both drawings. Its first run caught the two amount fields at 25px tall inside a 44px box; they are 44px.
 - The kit's check on the artifact page (`node docs/brand/kit/check.mjs --page`): passes on the five palettes at 360, 390, 412 and 1032, no parchment, no sideways scroll.
 - The preview at 390: no sideways scroll; no page error (the 403s are the hourly goals and the licence asking their real routes with no session, inside closed folds).
 - `npm run typecheck`: 0. eslint on the three new files: clean.
@@ -68,4 +68,4 @@ Still to ask when the step needs it: whether Pro (the EIKON Box membership) coun
 
 ## Cost
 
-get_session reports neither cost nor context size here. An estimate for the drawing: one turn, about 120,000 tokens of context at the end.
+get_session reports neither cost nor context size here. An estimate: about 145,000 tokens of context after the second drawing, $5 to $15 in all by the token count (the price per token is not shown).

@@ -40,7 +40,7 @@ const FULL: GoalsData = {
   paying: { monthly: 180, yearly: 95 },
   thisWeek: { joined: 19, left: 3 },
   steps: [
-    step({ id: "bills", name: "The app pays its own bills", weeklyCents: 5_300, reachedOn: "2026-12-14" }),
+    step({ id: "bills", name: "Pays its own bills", weeklyCents: 5_300, reachedOn: "2026-12-14" }),
     step({ id: "tenth", name: "A tenth of the way", weeklyCents: 15_000, reachedOn: "2027-01-18" }),
     step({ id: "quarter", name: "A quarter of the way", weeklyCents: 37_500, reachedOn: "2027-02-22" }),
     step({ id: "half", name: "Halfway", weeklyCents: 75_000, moreMembers: 169, byPace: "2027-06-14", byFive: "2027-05-10" }),
@@ -92,7 +92,7 @@ const FIRST_WEEKS: GoalsData = {
   paying: { monthly: 80, yearly: 38 },
   thisWeek: { joined: 4, left: 1 },
   steps: [
-    step({ id: "bills", name: "The app pays its own bills", weeklyCents: 5_300, heldWeeks: 1 }),
+    step({ id: "bills", name: "Pays its own bills", weeklyCents: 5_300, heldWeeks: 1 }),
     step({ id: "tenth", name: "A tenth of the way", weeklyCents: 15_000, heldWeeks: 1 }),
     step({ id: "quarter", name: "A quarter of the way", weeklyCents: 37_500, moreMembers: 102 }),
     step({ id: "half", name: "Halfway", weeklyCents: 75_000, moreMembers: 321 }),
