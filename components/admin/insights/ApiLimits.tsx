@@ -81,7 +81,7 @@ export function readingsFrom(d: ApiLimitsPayload): LimitReading[] {
     // check has to take the pessimistic end: being under the limit on your
     // most generous count is not being under the limit.
     readUsageLimit("mau", "Monthly active users", d.mau.ceiling, API_BIBLE_LIMITS.monthlyActiveUsers),
-    readMonetization(d.monetized),
+    readMonetization(d.monetized, d.apiBibleLive),
   ];
 }
 

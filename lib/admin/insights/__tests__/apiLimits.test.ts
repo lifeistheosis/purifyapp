@@ -70,6 +70,9 @@ describe("readMonetization", () => {
 
   it("is fine when nothing is sold", () => {
     expect(readMonetization(false).status).toBe("ok");
+    // API.Bible switched off: a paying app is no licence question (2026-11-24).
+    expect(readMonetization(true, false).status).toBe("ok");
+    expect(readMonetization(true, true).status).toBe("breached");
   });
 
   it("never expresses itself as a ratio", () => {

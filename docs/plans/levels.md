@@ -26,6 +26,10 @@ A draft for his yes. The Goals tab already holds the ladder these levels sit on 
 - **Done when:** the same three-month rule.
 - The work is planned when Level 1 is in sight.
 
+## What waits for the levels
+
+- **API.Bible (NIV, NKJV, NLT).** Switched off (`LICENSED_BIBLE`), and its licence warning with it. His word, 2026-11-24: "We're going to use their API when we have enough funding to sustain ourselves and have extra income, right? So probably like level 2 is when we're gonna be able to pay for that. Maybe even level 3, but we'll talk about that." Its enterprise terms are a cost to add to the running costs before it is switched on.
+
 ## Open, for him
 
 1. Level 2's number.
