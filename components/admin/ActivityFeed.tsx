@@ -364,7 +364,7 @@ function MobileToast({
       className="pointer-events-none fixed inset-x-0 top-[calc(var(--adm-topbar-h,69px)+8px)] z-[45] flex justify-center px-3 md:hidden"
     >
       <div
-        className="flex max-w-[min(94vw,420px)] items-center gap-2.5 overflow-hidden rounded-[var(--adm-radius-sm)] border py-2.5 pl-0 pr-3.5"
+        className="flex max-w-[min(94vw,420px)] items-center gap-3 overflow-hidden rounded-[var(--adm-radius-sm)] border py-2.5 pl-2.5 pr-3.5"
         style={{
           background: "var(--adm-panel)",
           borderColor: "var(--adm-line)",
@@ -379,9 +379,8 @@ function MobileToast({
             : "adm-activity-in 460ms cubic-bezier(0.16,1,0.3,1)",
         }}
       >
-        <span aria-hidden className="w-[3px] shrink-0 self-stretch" style={{ background: look.ring }} />
         <span
-          className="ml-2 grid h-7 min-w-7 shrink-0 place-items-center rounded-[var(--adm-radius-sm)] px-1.5 font-sans text-[13px] font-semibold tabular-nums"
+          className="grid h-7 min-w-7 shrink-0 place-items-center rounded-[var(--adm-radius-sm)] px-1.5 font-sans text-[13px] font-semibold tabular-nums"
           style={{
             background: `color-mix(in oklab, ${look.ring}, transparent 84%)`,
             color: look.tint,
@@ -449,12 +448,13 @@ function ActivityPill({
           in its own right, which is what this is. It also gives the sentence
           its full width back instead of spending it on two round ends.
 
-          The colour is a left stripe rather than a full border. A ring in the
-          kind's colour around every card made four of them look like four
-          errors; a stripe carries the same information and lets the card sit
-          quietly until it is read. */}
+          The kind's colour is in the badge's tint and the card's soft lift,
+          never a stripe down its edge (his word, 2026-11-24: "that vertical
+          line, is actually a vibe coded design"; lib/ui/__tests__/
+          noStripeBars.test.ts). A ring in the kind's colour around every card
+          made four of them look like four errors. */}
       <div
-        className="flex items-stretch gap-2.5 overflow-hidden rounded-[var(--adm-radius-sm)] border py-0 pl-0 pr-3.5"
+        className="flex items-stretch gap-3 overflow-hidden rounded-[var(--adm-radius-sm)] border py-0 pl-2.5 pr-3.5"
         style={{
           background: "var(--adm-panel)",
           borderColor: "var(--adm-line)",
@@ -472,12 +472,9 @@ function ActivityPill({
             : "adm-activity-in 460ms cubic-bezier(0.16,1,0.3,1)",
         }}
       >
-        {/* The stripe. Full height, so it reads as the card's own edge rather
-            than as a decoration sitting inside it. */}
-        <span aria-hidden className="w-[3px] shrink-0" style={{ background: look.ring }} />
         <span
           aria-hidden
-          className="my-2.5 ml-2 grid h-7 min-w-7 shrink-0 place-items-center rounded-[var(--adm-radius-sm)] px-1.5 font-sans text-[13px] font-semibold tabular-nums"
+          className="my-2.5 grid h-7 min-w-7 shrink-0 place-items-center rounded-[var(--adm-radius-sm)] px-1.5 font-sans text-[13px] font-semibold tabular-nums"
           style={{
             background: `color-mix(in oklab, ${look.ring}, transparent 84%)`,
             color: look.tint,
