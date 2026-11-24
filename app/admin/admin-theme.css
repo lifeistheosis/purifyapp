@@ -229,6 +229,22 @@
   --adm-money-back: var(--adm-ink-3);
   --adm-money-all: var(--adm-ink);
 
+  /* ── The Goals game's tiers (components/admin/goals/GoalsView.tsx) ────
+     His word, 2026-11-24: "make the design nice and incorporate colors. the
+     high tier (gold). and green for easy stuff. and other colors usually
+     applied to certain tiers". Five tiers as games colour them, easiest to
+     highest: green, blue, purple, orange, gold. On his Goals page alone. Gold
+     is allowed here because the panel is his own (lib/ui/__tests__/
+     noGold.test.ts walks no admin file); the reader app keeps his rule of
+     2026-10-28. Each clears 4.5:1 as text on every surface of its theme, and a
+     tier is never told by its colour alone: its level and its name go with
+     it. lib/admin/__tests__/adminTheme.test.ts holds both. */
+  --adm-tier-1: #3fcf74;
+  --adm-tier-2: #5aa8ff;
+  --adm-tier-3: #b78cff;
+  --adm-tier-4: #ff9a4d;
+  --adm-tier-5: #f4c542;
+
   /* Skeleton highlight. */
   --adm-skeleton-hi: #262626;
 
@@ -824,6 +840,14 @@
   --adm-money-shop: #2a78d6;
   --adm-money-plus: #008300;
   --adm-money-box: #d55181;
+
+  /* The Goals game's five tiers on white: the same hues, deep enough to read
+     as text on every light surface. */
+  --adm-tier-1: #19733a;
+  --adm-tier-2: #1f5fc0;
+  --adm-tier-3: #6b3fc4;
+  --adm-tier-4: #a34a00;
+  --adm-tier-5: #7d5c00;
 
   --adm-skeleton-hi: #e3e3e3;
   /* The dialog overlay carries no backdrop-blur (see

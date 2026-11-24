@@ -167,6 +167,13 @@ describe("admin theme contrast", () => {
   // the chart tells apart has a hue (the shop blue, Plus green, the EIKON Box
   // magenta); refunds and anything it cannot tell apart stay grey and ink.
   const MONEY_HUE = ["--adm-money-shop", "--adm-money-plus", "--adm-money-box"];
+  // Five more, on his Goals page alone, by his word of 2026-11-24: "make the
+  // design nice and incorporate colors. the high tier (gold). and green for
+  // easy stuff. and other colors usually applied to certain tiers". The tiers
+  // of his goals game, easiest to highest: green, blue, purple, orange, gold.
+  // Gold is his own exception for his own panel; the reader app keeps his
+  // rule of 2026-10-28 (lib/ui/__tests__/noGold.test.ts walks no admin file).
+  const TIER_HUE = ["--adm-tier-1", "--adm-tier-2", "--adm-tier-3", "--adm-tier-4", "--adm-tier-5"];
 
   it("has no hue in either palette but the live green and Money's three", () => {
     for (const [theme, tokens] of THEMES) {
@@ -177,7 +184,7 @@ describe("admin theme contrast", () => {
           expect(c.g > c.r * 1.5 && c.g > c.b * 1.5, `${theme}: ${name} is ${raw}, which is not the live green`).toBe(true);
           continue;
         }
-        if (MONEY_HUE.includes(name)) continue;
+        if (MONEY_HUE.includes(name) || TIER_HUE.includes(name)) continue;
         expect(
           c.r === c.g && c.g === c.b,
           `${theme}: ${name} is ${raw}, which is not a grey`,
@@ -190,6 +197,37 @@ describe("admin theme contrast", () => {
   // source apart), none is the yellow, gold or amber he ruled out in 1.7.1
   // (no hue from orange to yellow-green, 20 to 80 degrees), the three sit far
   // apart round the wheel, and each clears 3:1 on the card, as a mark must.
+  it("gives the Goals game five tiers, each a real hue apart from the others and readable as text on every surface", () => {
+    const hue = ({ r, g, b }: Rgb) => {
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      const d = max - min;
+      const s = max === 0 ? 0 : d / max;
+      if (d === 0) return { h: 0, s };
+      const h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+      return { h: (h * 60 + 360) % 360, s };
+    };
+    for (const [theme, tokens] of THEMES) {
+      const hues = TIER_HUE.map((name) => {
+        const c = parseColor(tokens[name]);
+        expect(c, `${theme}: ${name} is not set`).toBeTruthy();
+        const { h, s } = hue(c as Rgb);
+        expect(s, `${theme}: ${name} is ${tokens[name]}, which reads as grey`).toBeGreaterThan(0.4);
+        for (const surface of SURFACES) {
+          const ratio = contrast(c as Rgb, color(tokens, surface));
+          expect(Number(ratio.toFixed(2)), `${theme}: ${name} on ${surface}`).toBeGreaterThanOrEqual(TEXT_MIN);
+        }
+        return h;
+      });
+      for (let i = 0; i < hues.length; i++) {
+        for (let j = i + 1; j < hues.length; j++) {
+          const apart = Math.min(Math.abs(hues[i] - hues[j]), 360 - Math.abs(hues[i] - hues[j]));
+          expect(apart, `${theme}: ${TIER_HUE[i]} and ${TIER_HUE[j]} are too close a hue`).toBeGreaterThanOrEqual(15);
+        }
+      }
+    }
+  });
+
   it("gives Money's sources three hues apart, never yellow or gold, each readable on the card", () => {
     const hue = ({ r, g, b }: Rgb) => {
       const [R, G, B] = [r / 255, g / 255, b / 255];
