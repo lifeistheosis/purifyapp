@@ -1,0 +1,103 @@
+import "server-only";
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
+
+import patches from "@/data/changelog/patches.json";
+import { userIdByEmail } from "@/lib/admin/accountEmails";
+import { milestones, type GoalMark, type GoalsData } from "@/lib/admin/milestones";
+import { readPlusFacts } from "@/lib/admin/plusEvents.server";
+import { withoutOwnTestOrders } from "@/lib/admin/testOrders";
+import { DEVELOPER_EMAILS } from "@/lib/dev/developer";
+import { readSavedNow } from "@/lib/marketing/storeRatingsLive";
+
+/**
+ * Everything the Goals page counts, read once for the page's route
+ * (app/api/admin/goals) and for the goal email (lib/admin/goalMail.ts): the
+ * kept events, his marks and the email switch (site_settings, one key), the
+ * app's monthly costs, the releases, new accounts by day, the store's rating
+ * and the shop this month. A source that cannot be read is left out of what it
+ * feeds, never guessed.
+ */
+
+export const GOALS_KEY = "goals_marks";
+
+export const GoalsSetting = z.object({
+  marks: z
+    .array(
+      z.object({
+        name: z.string().trim().min(1).max(40),
+        weeklyCents: z.number().int().min(100).max(100_000_000),
+      }),
+    )
+    .max(2)
+    .default([]),
+  /** The email when he hits a goal. On unless he turns it off. */
+  mail: z.boolean().default(true),
+});
+export type GoalsSettingValue = z.infer<typeof GoalsSetting>;
+
+export function readSetting(value: unknown): GoalsSettingValue {
+  const parsed = GoalsSetting.safeParse(value ?? {});
+  return parsed.success ? parsed.data : { marks: [], mail: true };
+}
+
+const DAY_MS = 86_400_000;
+
+export type GoalsRead =
+  | { ok: true; data: GoalsData; setting: GoalsSettingValue; marksSaved: boolean; costsRead: boolean }
+  | { ok: false; status: number; error: string };
+
+export async function readGoals(admin: SupabaseClient, now: Date = new Date()): Promise<GoalsRead> {
+  const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+  const [plus, settingRow, costsRes, rating, ownerIds, orders] = await Promise.all([
+    readPlusFacts(admin, "1970-01-01T00:00:00Z"),
+    admin.from("site_settings").select("value").eq("key", GOALS_KEY).maybeSingle(),
+    admin.from("expense_lines").select("monthly_cents, active"),
+    readSavedNow().catch(() => null),
+    Promise.all(DEVELOPER_EMAILS.map((e) => userIdByEmail(e).catch(() => null))).then(
+      (ids) => new Set(ids.filter((id): id is string => !!id)),
+    ),
+    admin.from("shop_orders").select("email, total_cents, payment_status, paid_at").eq("payment_status", "paid").gte("paid_at", monthStart),
+  ]);
+
+  if (plus.state !== "ok") {
+    return plus.state === "absent"
+      ? { ok: false, status: 503, error: "The kept events (public.plus_events) are not on this database yet." }
+      : { ok: false, status: 503, error: "The kept events could not be read just now." };
+  }
+
+  let signupsByDay: Map<string, number> | null = null;
+  if (plus.since) {
+    const days = Math.min(800, Math.ceil((now.getTime() - Date.parse(plus.since)) / DAY_MS) + 8);
+    const { data, error } = await admin.rpc("analytics_daily_buckets", {
+      p_since: new Date(now.getTime() - days * DAY_MS).toISOString(),
+      p_days: days,
+    });
+    if (!error && Array.isArray(data)) {
+      signupsByDay = new Map((data as { day: string; signups: number | string }[]).map((r) => [String(r.day).slice(0, 10), Number(r.signups) || 0]));
+    }
+  }
+
+  const costs = costsRes.error
+    ? 0
+    : ((costsRes.data ?? []) as { monthly_cents: number | null; active: boolean | null }[])
+        .filter((r) => r.active !== false)
+        .reduce((n, r) => n + (r.monthly_cents ?? 0), 0);
+  const shop = orders.error ? null : withoutOwnTestOrders((orders.data ?? []) as { email: string | null; total_cents: number | null }[]);
+  const setting = settingRow.error ? { marks: [] as GoalMark[], mail: true } : readSetting(settingRow.data?.value);
+
+  const data = milestones({
+    facts: plus.facts,
+    since: plus.since,
+    now,
+    ownerIds,
+    marks: setting.marks,
+    monthlyCostsCents: costs,
+    releases: (patches as { version: string; date: string }[]).map((p) => ({ version: p.version, date: p.date })),
+    signupsByDay,
+    rating: rating?.ok && rating.value.play ? { stars: rating.value.play.rating, store: "Google Play" } : null,
+    extra: shop ? { monthCents: shop.reduce((n, o) => n + (o.total_cents ?? 0), 0), orders: shop.length } : null,
+  });
+  return { ok: true, data: { ...data, mail: setting.mail }, setting, marksSaved: !settingRow.error && !!settingRow.data, costsRead: !costsRes.error };
+}

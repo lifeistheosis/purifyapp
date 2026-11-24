@@ -129,6 +129,7 @@ export function GoalsView({
   hourly,
   licence,
   onSaveMarks,
+  onSaveMail,
 }: {
   data: GoalsData;
   /** Above everything when it has something to say (the Bible licence's breach). */
@@ -136,6 +137,8 @@ export function GoalsView({
   hourly?: ReactNode;
   licence?: ReactNode;
   onSaveMarks?: (marks: GoalMark[]) => Promise<string | null> | void;
+  /** The goal email's switch. */
+  onSaveMail?: (on: boolean) => Promise<string | null> | void;
 }) {
   const next = data.steps.find((s) => s.reachedOn === null) ?? null;
   const reached = data.justReached ? data.steps.find((s) => s.id === data.justReached) ?? null : null;
@@ -211,7 +214,7 @@ export function GoalsView({
           {hourly ? <Fold title="This hour">{hourly}</Fold> : null}
           {licence ? <Fold title="Bible licence">{licence}</Fold> : null}
           <Fold title="Your marks" value={data.marks.length ? undefined : "Not set"} open={data.marks.length === 0}>
-            <Marks marks={data.marks} onSave={onSaveMarks} />
+            <Marks marks={data.marks} onSave={onSaveMarks} mail={data.mail !== false} onSaveMail={onSaveMail} />
           </Fold>
         </div>
       </Block>
@@ -804,7 +807,18 @@ function MonthlyAndYearly({ data, next, early }: { data: GoalsData; next: GoalSt
 
 // ── Folded: his marks ────────────────────────────────────────────────────
 
-function Marks({ marks, onSave }: { marks: GoalMark[]; onSave?: (marks: GoalMark[]) => Promise<string | null> | void }) {
+function Marks({
+  marks,
+  onSave,
+  mail,
+  onSaveMail,
+}: {
+  marks: GoalMark[];
+  onSave?: (marks: GoalMark[]) => Promise<string | null> | void;
+  mail: boolean;
+  onSaveMail?: (on: boolean) => Promise<string | null> | void;
+}) {
+  const [mailOn, setMailOn] = useState(mail);
   const start = [0, 1].map((i) => ({
     name: marks[i]?.name ?? (i === 0 ? "The first mark" : "The second mark"),
     dollars: marks[i] ? String(Math.round(marks[i].weeklyCents / 100)) : "",
@@ -889,6 +903,23 @@ function Marks({ marks, onSave }: { marks: GoalMark[]; onSave?: (marks: GoalMark
           {said}
         </p>
       ) : null}
+      <div className="mt-6 flex items-center justify-between gap-3 border-t pt-4" style={{ borderColor: "var(--adm-line)" }}>
+        <p className="text-[15px]" style={{ color: "var(--adm-ink)" }}>
+          Email me when I hit a goal
+        </p>
+        <ToolbarButton
+          variant={mailOn ? "chosen" : "default"}
+          onClick={async () => {
+            if (!onSaveMail) return;
+            const next = !mailOn;
+            const error = await onSaveMail(next);
+            if (error) setSaid(error);
+            else setMailOn(next);
+          }}
+        >
+          {mailOn ? "On" : "Off"}
+        </ToolbarButton>
+      </div>
     </div>
   );
 }

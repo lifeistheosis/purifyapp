@@ -857,7 +857,8 @@ export function milestone(how) {
       goalHit(p, m),
       `<tr><td align="center" style="padding:36px 0 8px;text-align:center">${button(p, { href: "https://purifyapp.net/admin#tab=goals", text: "Open your goals" })}</td></tr>`,
     ],
-    foot: `<p style="margin:0">${quietButton(p, { href: "https://purifyapp.net/unsubscribe", text: "Unsubscribe" })}</p>`,
+    // His own mail, as the owner's brief is: no reader's Unsubscribe. Its switch is on his Goals page.
+    foot: `<p style="margin:0">${quietButton(p, { href: "https://purifyapp.net/admin#tab=goals", text: "Turn these off" })}</p>`,
   });
 }
 

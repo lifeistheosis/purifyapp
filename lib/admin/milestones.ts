@@ -120,6 +120,8 @@ export type GoalsData = {
   badges: { id: string; name: string; how: string; earnedOn: string | null; /** 1 (easy, green) to 5 (gold). */ tier: number }[];
   /** Personal bests, each a real figure and the day it was set. */
   records: { name: string; value: number; unit: "money" | "count" | "weeks" | "share"; on: string | null; isNew: boolean }[];
+  /** The email when he hits a goal: on unless he turns it off (set by the route, not counted). */
+  mail?: boolean;
 };
 
 
@@ -488,4 +490,10 @@ export function milestones(input: MilestonesInput): GoalsData {
     badges,
     records,
   };
+}
+
+/** The goals an email is for: reached within the last fortnight, so the first run never mails old news. */
+export function goalsToMail(steps: readonly GoalStep[], now: Date, withinDays = 14): GoalStep[] {
+  const since = now.getTime() - withinDays * DAY_MS;
+  return steps.filter((s) => s.reachedOn !== null && Date.parse(`${s.reachedOn}T00:00:00Z`) >= since);
 }

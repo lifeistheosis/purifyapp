@@ -46,5 +46,20 @@ export function GoalsTab() {
     );
   }
 
-  return <GoalsView data={live.data.data} banner={<ApiLimitBanner />} hourly={<HourlyGoals />} licence={<ApiLimitsPanel />} onSaveMarks={save} />;
+  const saveMail = async (mail: boolean) => {
+    const error = await patchJson("/api/admin/goals", { mail }, "POST");
+    if (!error) live.refresh();
+    return error;
+  };
+
+  return (
+    <GoalsView
+      data={live.data.data}
+      banner={<ApiLimitBanner />}
+      hourly={<HourlyGoals />}
+      licence={<ApiLimitsPanel />}
+      onSaveMarks={save}
+      onSaveMail={saveMail}
+    />
+  );
 }

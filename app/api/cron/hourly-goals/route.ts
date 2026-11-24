@@ -1,3 +1,4 @@
+import { sendGoalMail } from "@/lib/admin/goalMail";
 import { NextResponse, after, type NextRequest } from "next/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -141,6 +142,18 @@ export async function GET(req: NextRequest) {
       }
     } catch (e) {
       console.error("[cron/hourly-goals] reminders failed", e instanceof Error ? e.message : String(e));
+    }
+  });
+
+  // The goal email (lib/admin/goalMail.ts, his word of 2026-11-24: "build the
+  // sender"): once for each goal he reaches, after the response like the
+  // reminders, so it never holds this run open and never stops it.
+  after(async () => {
+    try {
+      const run = await sendGoalMail(createAdminClient(), new Date());
+      if (run.sent.length) console.log("[cron/hourly-goals] goal email", JSON.stringify(run));
+    } catch (e) {
+      console.error("[cron/hourly-goals] goal email failed", e instanceof Error ? e.message : String(e));
     }
   });
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { milestones, payingAt, periodOf, weeklyValueCents, type MilestonesInput } from "../milestones";
+import { goalsToMail, milestones, payingAt, periodOf, weeklyValueCents, type GoalStep, type MilestonesInput } from "../milestones";
 import type { PlusFact } from "../plusHistory";
 
 /**
@@ -158,5 +158,14 @@ describe("the four quests", () => {
     // One left in each of the four weeks before: a quarter of the share each time, bettered by 5% the other way.
     const weeks = [0, 1, 2, 3].map((w) => 1 / (55 - w));
     expect(leave?.aim).toBeCloseTo((weeks.reduce((a, b) => a + b, 0) / 4) * 0.95, 6);
+  });
+});
+
+describe("which goals the email is for", () => {
+  const step = (id: GoalStep["id"], reachedOn: string | null): GoalStep => ({ id, name: id, weeklyCents: 1, reachedOn, heldWeeks: 0, moreMembers: null, byPace: null, byFive: null });
+  it("mails a goal reached in the last fortnight, never an old one, never one not reached", () => {
+    const now = new Date("2027-03-04T12:00:00Z");
+    const steps = [step("bills", "2026-12-14"), step("tenth", "2027-02-22"), step("quarter", "2027-03-01"), step("half", null)];
+    expect(goalsToMail(steps, now).map((s) => s.id)).toEqual(["tenth", "quarter"]);
   });
 });

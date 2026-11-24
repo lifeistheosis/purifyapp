@@ -42,6 +42,14 @@ The worker chat for one job: his own milestones in the panel, with the Goals pag
 
 2026-11-24, about 17:32 UTC: "new font but this is fine". Taken as his yes to the goal email, with a new face for the goal: "You hit halfway" is now the system's own sans, bold and close (36px, -0.02em), since an email fetches no font; the Purify wordmark at the top stays as the house sets it. The email check passes (version 14 at the link).
 
+2026-11-24, about 17:40 UTC: "build the sender". **Built, on this branch:**
+- `lib/admin/goalMail.ts`, `sendGoalMail()`: reads his goals (`readGoals`), takes each goal reached in the last fortnight (`goalsToMail` in milestones.ts: never old news, never one not reached), and sends him the goal email once through the email ledger (`sendEmailOnce`, key `goal_hit:<step>:<amount>`, so a goal mailed is never mailed again and a changed mark is a new goal), to the first address in ADMIN_EMAILS as the owner's brief goes, and not at all when he has turned it off.
+- `lib/email/goalHit.ts`: the live letter, made with the live email pieces and held to the kit's `milestone()` character for character (`lib/email/__tests__/goalHit.test.ts`). Its mark is `public/email/level-1.png` to `level-5.png` (the native export prunes `public/email` pictures, so the apps never carry them). His own mail, as the brief is: no reader's Unsubscribe; its foot's button, "Turn these off", opens his Goals page.
+- The switch: "Email me when I hit a goal", under More, Your marks, on by default; kept beside his marks in the same `site_settings` key (`mail`). The route's POST takes his marks, the switch, or both. `lib/admin/goals.server.ts` now reads every source once for both the page's route and the sender.
+- The hook: `app/api/cron/hourly-goals` runs it after it answers (`after()`, as the prayer reminders do), so it never holds that run open or stops it.
+
+**Proved:** 20 tests (the counting, which goals are mailed, the live letter against the approved one, the house's other letters), typecheck, eslint, and checkMock on the page with the switch (every state, both themes). **Not run:** the whole unit suite, the website build with these routes, and a real send. **To send for real it needs:** the merge to the main web (his word), the hourly heartbeat running there (CRON_SECRET set; the Hourly goals panel shows it), ADMIN_EMAILS with his address first, and his two marks typed in.
+
 **Proved:** the 11 tests; typecheck and eslint on every new file; the push guard on the push. **Not run:** the whole unit suite (he stopped it part way to change the email), the website build with the new route, and a walk of the real tab with real numbers (the tab needs his session; the preview walks the same page on samples). **Waiting on him:** his two marks, typed into Your marks; whether Pro counts; and his word before anything goes to the main web.
 
 ## Where it stands
