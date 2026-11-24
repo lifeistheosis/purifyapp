@@ -126,7 +126,25 @@ export function readUsageLimit(
  * expressed as a ratio, because rendering "1 of 1" beside two usage bars would
  * invite reading it as a meter with room left on it.
  */
-export function readMonetization(monetized: boolean | null): LimitReading {
+export function readMonetization(monetized: boolean | null, inUse = true): LimitReading {
+  // NOT IN USE, NO CONDITION. The free tier's non-commercial condition binds
+  // an app that calls API.Bible. With LICENSED_BIBLE off nothing is fetched
+  // from it (lib/bible/api-bible.ts), so a paying member is no licence
+  // question. His word, 2026-11-24: the warning "should be removed because we
+  // don't actually use their API anymore. We're going to use their API when
+  // we have enough funding", at Level 2 or 3 (docs/plans/levels.md). Switched
+  // back on, the condition is judged exactly as before.
+  if (!inUse) {
+    return {
+      id: "monetization",
+      label: "Monetization",
+      used: null,
+      limit: null,
+      ratio: null,
+      status: "ok",
+      detail: "API.Bible is switched off (LICENSED_BIBLE is not on), so nothing is fetched from it and its licence condition does not apply.",
+    };
+  }
   // NULL IS A THIRD ANSWER, and dropping it was the whole bug. The route sends
   // `monetized: null` when the entitlements or shop_orders read fails, and its
   // own comment says "'we could not check' and 'no money has changed hands'
