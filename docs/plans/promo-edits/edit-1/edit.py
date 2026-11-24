@@ -31,14 +31,23 @@ DROP = 671        # 11.183 s: the first frame the sound's low band (under 120 Hz
 MELT = 5          # frames a face takes to become the next (the reference's smears take three to six)
 END = 1144        # 19.07 s: the reference's last cut before its white frame; ours goes to black and the mark
 
-# The run's faces, in order; the run uses as many as there are shots, round again. (picture, how far apart the eyes
-# stand on the screen.) It opens and closes on the emperor: the last false god before the drop is a man.
-RUN = [("augustus", 300), ("zeusammon", 250), ("amun", 320), ("smiting", 270), ("serapis", 245)]
+# The run, in order; it uses as many as there are shots, round again, and always ends on the last.
+#   a statue:  (picture, how far apart its eyes stand on the screen)            its eyes are set on (540, EYE_Y)
+#   a print:   (picture, how wide the whole print is on the screen, where its held point stands)
+# Each is framed its own way and large, as the reference frames its faces. The last, Zeus Ammon, is set eye for eye on
+# the icon that follows the drop: the same place and the same size, so the cut turns one face into the other.
+RUN = [("adramelech", 1180, (540, 690)), ("moloch", 1750, (540, 610)), ("dagon", 1500, (560, 600)), ("amun", 320), ("diana", 1120, (540, 360)),
+       ("serapis", 245), ("augustus", 290), ("zeusammon", 214)]
 WORDS_CLEAR = 1230  # below this line of the frame the run is clean white, for its words
-EYE_Y = 740       # where the eyes stand in every face, so the gaze holds still through the run
+EYE_Y = 700       # where the eyes stand in every face, so the gaze holds still through the run
 
-# After the drop, on the reference's own cuts: (first frame, picture, width on screen, middle y, push by its end).
-AFTER = [(671, "sinai", 1080, None, 1.05), (739, "transfig", 1000, 900, 1.05), (1013, "novgorod", 940, 760, 1.04)]
+# After the drop, on the reference's own cuts. Every icon fills the frame, as the Christ edit's do: (first frame,
+# picture, the point of it that is held (as shares of its width and height, or "eyes"), where on the frame that point
+# stands, how wide the whole icon is on the screen, the push by the shot's end, the pooled light (r0, r1, low)).
+AFTER = [(671, "sinai", "eyes", (540, 700), 1500, 1.06, (330, 1150, 0.16)),
+         (739, "transfig", (0.5, 0.215), (540, 418), 1400, 1.05, (380, 1500, 0.34)),
+         (1013, "novgorod", "eyes", (540, 560), 1750, 1.05, (420, 1060, 0.04))]
+LINES = {"sinai": ("answer", 1390, 72), "novgorod": ("light", 1400, 60)}  # a word never stands on His face
 
 _cache = {}
 
@@ -157,17 +166,32 @@ def the_light(F):
 
 # ── The run ──────────────────────────────────────────────────────────────
 
+def entry(i):
+    return RUN[-1] if i >= len(RUN_CUTS) - 1 else RUN[i % (len(RUN) - 1)]
+
+
 def plate(i):
-    name, D = RUN[i % len(RUN)]
+    e = entry(i)
+    name = e[0]
     def make():
-        ink = np.asarray(Image.open(f"{HOME}/ink/{name}.png"), dtype=np.float32) / 255
-        (lx, ly), (rx, ry) = PICS[name]["eyes"]
-        p = place(ink, D / math.hypot(rx - lx, ry - ly), (lx + rx) / 2, (ly + ry) / 2, W / 2, EYE_Y, ground=1.0)
-        # Below the chin the ink is let go into the white ground, so the words stand on clean white. Nothing is drawn.
         yy, _ = grid()
+        if len(e) == 2:      # a statue: the museum's photograph as ink (assets.py), set on its eyes
+            ink = np.asarray(Image.open(f"{HOME}/ink/{name}.png"), dtype=np.float32) / 255
+            (lx, ly), (rx, ry) = PICS[name]["eyes"]
+            p = place(ink, e[1] / math.hypot(rx - lx, ry - ly), (lx + rx) / 2, (ly + ry) / 2, W / 2, EYE_Y, ground=1.0)
+        else:                # a print: ink already. Its paper is taken to white and its ink to black; nothing is drawn.
+            g = np.asarray(Image.open(f"{HOME}/raw/{name}.jpg").convert("L"), dtype=np.float32) / 255
+            k = e[1] / g.shape[1]
+            fx, fy = PICS[name]["focus"]
+            p = place(g, k, fx * g.shape[1], fy * g.shape[0], e[2][0], e[2][1], ground=float(np.percentile(g, 90)))
+            p = cv2.GaussianBlur(p, (0, 0), max(0.5, 0.45 * k))
+            lo, hi = float(np.percentile(g, 3)), float(np.percentile(g, 85))
+            p = np.clip((p - lo) / (hi - lo), 0, 1)
+            p = np.clip((p - 0.55) * 3.2 + 0.5, 0, 1)
+        # Below WORDS_CLEAR the ink is let go into the white ground, so the words stand on clean white.
         keep = 1 - np.clip((yy - WORDS_CLEAR + 150) / 150, 0, 1) ** 2
         return 1 - (1 - p) * keep
-    return once(("plate", name, D), make)
+    return once(("plate", e), make)
 
 
 def flow(i, j):
@@ -177,18 +201,27 @@ def flow(i, j):
         small = lambda p: cv2.GaussianBlur(cv2.resize((p * 255).astype(np.uint8), (270, 480), interpolation=cv2.INTER_AREA), (0, 0), 2)
         f = cv2.calcOpticalFlowFarneback(small(plate(i)), small(plate(j)), None, 0.5, 4, 41, 4, 7, 1.5, 0)
         return cv2.resize(cv2.GaussianBlur(f, (0, 0), 6), (W, H), interpolation=cv2.INTER_CUBIC) * 4.0
-    return once(("flow", i % len(RUN), j % len(RUN)), make)
+    return once(("flow", entry(i), entry(j)), make)
 
 
 def melt(i, j, u):
-    """One face melting into the next: each whole picture follows the flow part of the way, laid over the other,
-    soft in its middle. Set on the eyes, so the gaze holds still. Nothing in either face is drawn."""
+    """One picture melting into the next, in ink: each whole picture follows the flow part of the way and both are
+    laid over each other as ink on one sheet, black staying black, never a grey fade; the whole is drawn out a
+    little from its middle, as the reference's smears are. Nothing in either picture is drawn."""
     f = flow(i, j) * 1.5
     yy, xx = grid()
     A = cv2.remap(plate(i), xx - u * f[..., 0], yy - u * f[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
     B = cv2.remap(plate(j), xx + (1 - u) * f[..., 0], yy + (1 - u) * f[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
-    g = cv2.GaussianBlur(A * (1 - u) + B * u, (0, 0), 0.6 + 2.6 * math.sin(math.pi * u))
-    return np.clip((g - 0.5) * (1 + 1.6 * math.sin(math.pi * u)) + 0.5, 0, 1)  # the melt stays ink: black and white, not grey
+    ink = np.maximum((1 - A) * min(1.0, 2 * (1 - u)), (1 - B) * min(1.0, 2 * u))
+    w = math.sin(math.pi * u)
+    # Drawn out from the middle: the mean of the sheet at a few sizes about the eyes' place. One smooth pull, no beams.
+    acc = np.zeros_like(ink)
+    steps = [1 + 0.04 * w * (t / 7 - 1) for t in range(15)]
+    for z in steps:
+        M = np.float32([[z, 0, W / 2 * (1 - z)], [0, z, EYE_Y * (1 - z)]])
+        acc += cv2.warpAffine(ink, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+    g = 1 - acc / len(steps)
+    return np.clip((g - 0.5) * (1 + 0.8 * w) + 0.5, 0, 1)
 
 
 def the_run(F):
@@ -206,21 +239,20 @@ def the_run(F):
 
 def icon_shot(F):
     k = max(n for n, s in enumerate(AFTER) if s[0] <= F)
-    start, name, width, cy, z1 = AFTER[k]
+    start, name, held, (dx, dy), width, z1, (r0, r1, low) = AFTER[k]
     stop = AFTER[k + 1][0] if k + 1 < len(AFTER) else END
     im = rgb(name)
-    z = 1 + (z1 - 1) * (F - start) / (stop - start)  # one slow even move
-    s = width / im.shape[1] * z
-    if name == "sinai":
-        # His icon whole, filling the frame, held by His eyes; its light pooled on His face, the edges let fall.
+    if held == "eyes":
         (lx, ly), (rx, ry) = PICS[name]["eyes"]
-        ex, ey = (lx + rx) / 2, (ly + ry) / 2
-        k0 = width / im.shape[1]
-        out = place(im, s, ex, ey, ex * k0, ey * k0) * pool(ex * k0, ey * k0, 360, 1250, 0.30)
-        return say(out, "answer", 1010, size=72)
-    out = place(im, s, im.shape[1] / 2, im.shape[0] / 2, W / 2, cy)
-    if name == "novgorod":
-        out = say(out, "light", 1420)
+        sx, sy = (lx + rx) / 2, (ly + ry) / 2
+    else:
+        sx, sy = held[0] * im.shape[1], held[1] * im.shape[0]
+    z = 1 + (z1 - 1) * (F - start) / (stop - start)  # one slow even move, toward Him
+    # The icon whole and unaltered, larger than the frame, held by Him; its light pooled on Him and the rest let fall.
+    out = place(im, width / im.shape[1] * z, sx, sy, dx, dy) * pool(dx, dy, r0, r1, low)
+    if name in LINES:
+        key, y, size = LINES[name]
+        out = say(out, key, y, size=size)
     return out
 
 
@@ -228,9 +260,9 @@ def the_end(F):
     """Black and Purify's mark, still."""
     def make():
         m = np.asarray(Image.open(f"{HOME}/mark.png").convert("RGBA"), dtype=np.float32) / 255
-        fig = place(m, 1.25, m.shape[1] / 2, m.shape[0] / 2, W / 2, 880)
+        fig = place(m, 2.0, m.shape[1] / 2, m.shape[0] / 2, W / 2, 820)
         out = fig[..., :3] * fig[..., 3:4]
-        t = text_mask(["Purify"], 1180, 58, 600)
+        t = text_mask(["Purify"], 1250, 76, 600)
         return out * (1 - t) + 0.97 * t
     return once("end", make)
 

@@ -17,9 +17,10 @@ def info(ii):
 for line in sys.argv[1:]:
     if line.startswith('?'):
         name,q=line[1:].split('|')
-        r=json.loads(raw(API+'action=query&generator=search&gsrnamespace=6&gsrlimit=4&gsrsearch='+urllib.parse.quote(q)+'&prop=imageinfo&iiprop=url|size|extmetadata&iiurlwidth=330'))
+        r=json.loads(raw(API+'action=query&generator=search&gsrnamespace=6&gsrlimit=5&gsrsearch='+urllib.parse.quote(q+' filetype:bitmap')+'&prop=imageinfo&iiprop=url|size|extmetadata&iiurlwidth=330'))
         for k,p in enumerate(sorted((r.get('query') or {}).get('pages',{}).values(),key=lambda p:p.get('index',0))):
             d=info(p['imageinfo'][0]); d['title']=p['title']; R[f'{name}{k}']=d
+            if 'thumb.wikimedia.org' not in d['thumb']: continue   # a page of a scanned book: its host turns scripts away
             time.sleep(1.5); open(f'cand/{name}{k}.jpg','wb').write(raw(d['thumb'])); print(f'{name}{k}',d['licence'],f"{d['w']}x{d['h']}",p['title'][:80])
     else:
         name,title,width=line.split('|')

@@ -1,5 +1,5 @@
 {
- "about": "The pictures of promo edit 1, the Light. Every file was fetched from Wikimedia Commons on 2026-11-23 at the width given ('fetched_width'); 'licence' is what that page states. A statue's photograph is the museum's own, released CC0 under its Open Access policy (The Met's own record marks each isPublicDomain: true; 'museum_page' is that record). The icons and the painting are faithful photographs of flat works long out of copyright, marked Public domain on Commons. None is held in Greece or Italy (lib/marketing/heritagePictures.ts). 'eyes' is where the eyes are in the fetched file, read off by hand: the eye at the viewer's left first. The files themselves are out of git.",
+ "about": "The pictures of promo edit 1, the Light. Every file was fetched from Wikimedia Commons on 2026-11-23 at the width given ('fetched_width'); 'licence' is what that page states. A statue's photograph is the museum's own, released CC0 under its Open Access policy (The Met's own record marks each isPublicDomain: true; 'museum_page' is that record). The icons and the painting are faithful photographs of flat works long out of copyright, marked Public domain on Commons. None is held in Greece or Italy (lib/marketing/heritagePictures.ts). 'eyes' is where the eyes are in the fetched file, read off by hand: the eye at the viewer's left first. The files themselves are out of git. From 2026-11-24, at his word that the pagans can be any kind of picture, the run also takes old engravings: flat printed works long out of copyright, marked Public domain on Commons. They are ink already and are not put through the ink filter. 'focus' is the point of the print that is held, as shares of its width and height.",
  "pictures": {
   "saul": {
    "what": "The Conversion of Saint Paul, by Parmigianino, oil on canvas, about 1527",
@@ -9,6 +9,54 @@
    "fetched_width": 1920,
    "used": "the light: Saul alone, cut out whole from the ground, the horse and the landscape left out"
   },
+  "adramelech": {
+   "what": "Adramelech (2 Kings 17:31), engraving after Louis Le Breton, from Collin de Plancy's Dictionnaire infernal, Paris, 1863",
+   "held": "A printed book (the copy shown is the Bibliothèque nationale de France's, on Gallica)",
+   "page": "https://commons.wikimedia.org/wiki/File:Dictionnaire_infernal_-_Adrammelech.jpg",
+   "licence": "Public domain",
+   "fetched_width": 500,
+   "focus": [
+    0.5,
+    0.47
+   ],
+   "used": "the run"
+  },
+  "moloch": {
+   "what": "Moloch (Leviticus 18:21, Acts 7:43), engraving after Louis Le Breton, from Collin de Plancy's Dictionnaire infernal, Paris, 1863",
+   "held": "A printed book (the copy shown is the Bibliothèque nationale de France's, on Gallica)",
+   "page": "https://commons.wikimedia.org/wiki/File:Ill_dict_infernal_p0486_moloch.jpg",
+   "licence": "Public domain",
+   "fetched_width": 960,
+   "focus": [
+    0.59,
+    0.215
+   ],
+   "used": "the run"
+  },
+  "dagon": {
+   "what": "The fish-god of Nimrud, called Dagon (1 Samuel 5:2), wood engraving after Layard's drawing, from Illustrerad verldshistoria, Stockholm, 1875",
+   "held": "A printed book",
+   "page": "https://commons.wikimedia.org/wiki/File:Illustrerad_Verldshistoria_band_I_Ill_032.jpg",
+   "licence": "Public domain",
+   "fetched_width": 960,
+   "focus": [
+    0.42,
+    0.115
+   ],
+   "used": "the run"
+  },
+  "diana": {
+   "what": "Diana of the Ephesians (Acts 19:28), wood engraving from Sarah Amelia Scull's Greek Mythology Systematized, Philadelphia, 1880",
+   "held": "A printed book",
+   "page": "https://commons.wikimedia.org/wiki/File:Diana_of_Ephesus.png",
+   "licence": "Public domain",
+   "fetched_width": 500,
+   "focus": [
+    0.5,
+    0.14
+   ],
+   "used": "the run"
+  },
   "augustus": {
    "what": "Marble portrait of the emperor Augustus, Roman, about 14 to 37 AD",
    "held": "The Metropolitan Museum of Art, New York (07.286.115)",
@@ -16,8 +64,17 @@
    "page": "https://commons.wikimedia.org/wiki/File:Marble_portrait_of_the_emperor_Augustus_MET_DP331249.jpg",
    "licence": "CC0",
    "fetched_width": 1920,
-   "eyes": [[726, 1348], [1184, 1348]],
-   "used": "the run: its first face and its last, the frame before the drop"
+   "eyes": [
+    [
+     726,
+     1348
+    ],
+    [
+     1184,
+     1348
+    ]
+   ],
+   "used": "the run"
   },
   "zeusammon": {
    "what": "Marble head of Zeus Ammon, Roman, about 120 to 160 AD",
@@ -26,8 +83,17 @@
    "page": "https://commons.wikimedia.org/wiki/File:Marble_head_of_Zeus_Ammon_MET_DP265183.jpg",
    "licence": "CC0",
    "fetched_width": 1280,
-   "eyes": [[537, 566], [714, 566]],
-   "used": "the run"
+   "eyes": [
+    [
+     537,
+     566
+    ],
+    [
+     714,
+     566
+    ]
+   ],
+   "used": "the run: its last face, the frame before the drop, set eye for eye on the icon that follows"
   },
   "amun": {
    "what": "Head of the god Amun, Egypt, about 1328 to 1318 BC",
@@ -36,7 +102,16 @@
    "page": "https://commons.wikimedia.org/wiki/File:Head_of_the_god_Amun_MET_DT11639.jpg",
    "licence": "CC0",
    "fetched_width": 1920,
-   "eyes": [[743, 1185], [1202, 1185]],
+   "eyes": [
+    [
+     743,
+     1185
+    ],
+    [
+     1202,
+     1185
+    ]
+   ],
    "used": "the run"
   },
   "smiting": {
@@ -46,8 +121,17 @@
    "page": "https://commons.wikimedia.org/wiki/File:Smiting_god,_wearing_an_Egyptian_atef_crown_MET_DP370818.jpg",
    "licence": "CC0",
    "fetched_width": 1920,
-   "eyes": [[856, 737], [998, 737]],
-   "used": "the run"
+   "eyes": [
+    [
+     856,
+     737
+    ],
+    [
+     998,
+     737
+    ]
+   ],
+   "used": "not used since his word on the frames (2026-11-23); kept for the film if wanted"
   },
   "serapis": {
    "what": "Silver bust of Serapis, Roman, 2nd century AD",
@@ -56,7 +140,16 @@
    "page": "https://commons.wikimedia.org/wiki/File:Silver_bust_of_Serapis_MET_DT6658.jpg",
    "licence": "CC0",
    "fetched_width": 1920,
-   "eyes": [[878, 525], [1021, 525]],
+   "eyes": [
+    [
+     878,
+     525
+    ],
+    [
+     1021,
+     525
+    ]
+   ],
    "used": "the run"
   },
   "sinai": {
@@ -66,7 +159,16 @@
    "licence": "Public domain",
    "in_the_app": true,
    "fetched_width": 1920,
-   "eyes": [[716, 958], [990, 950]],
+   "eyes": [
+    [
+     716,
+     958
+    ],
+    [
+     990,
+     950
+    ]
+   ],
    "used": "the drop"
   },
   "transfig": {
@@ -83,7 +185,16 @@
    "page": "https://commons.wikimedia.org/wiki/File:Спас_Нерукотворный_-_Google_Art_Project.jpg",
    "licence": "Public domain",
    "fetched_width": 1920,
-   "eyes": [[816, 919], [1151, 910]],
+   "eyes": [
+    [
+     816,
+     919
+    ],
+    [
+     1151,
+     910
+    ]
+   ],
    "used": "the theophanies, under the last line"
   }
  }

@@ -26,46 +26,49 @@ STILLS = [
      ["<b>What changed.</b> The round light in the sky is gone. No lamp is seen now: the light comes down from above the top of the frame and lies on the road about him as one soft pool. Saul is the same picture, as you asked.",
       "<b>Why.</b> It is what Acts 9:3 says: \"there shined round about him a light from heaven\". The light is about him and above him, and he looks up into it. The first design read as a moon in a black sky.",
       "<b>For the viewer.</b> He lies on something now, so he reads as a man thrown to the ground, not a figure floating. His question stands alone in the dark between the two lights, so it is read first. One soft light, no beams, and it grows a little, evenly."]),
-    ("2-run-first", "2.10 s on", "The run: a face, sharp",
-     "Zeus Ammon, a Roman marble at The Met. Scripture names Jupiter in Acts 14:12.",
-     ["<b>What it is.</b> The museum's own photograph, cut from its ground and turned to hard black ink on white, as the reference's faces are. Nothing is drawn: the ink is the statue's own light and shade.",
-      "<b>Why.</b> Your word: false god after false god until the beat. Each stands sharp for about a quarter of a second, on the reference's own cuts: 36 faces from 2.10 s to the drop.",
-      "<b>The line.</b> \"there be gods many, and lords many\", 1 Corinthians 8:5, held for the whole run. Below the chin the ink is let go into the white, so the words always stand on clean white."]),
-    ("3-run-melt", "2.90 s", "The run: one face melting into the next",
-     "Amun of Egypt becoming a Canaanite smiting god, the kind of figure made for Baal. The middle frame of a melt of five frames.",
-     ["<b>What it is.</b> The Christ edit's melt: both whole pictures laid over each other, each following the other part of the way. It stays black and white, never grey.",
-      "<b>Why.</b> The reference smears each face into the next over three to six frames. Every face is set on its eyes, so the gaze holds still while the gods change.",
-      "<b>For the viewer.</b> Many faces, one stare. None of them holds."]),
-    ("4-run-sharp", "3.28 s", "The run: another face",
-     "Serapis, a Roman silver bust at The Met.",
-     ["<b>Why this still.</b> So you can judge the ink on a dark metal as well as on white marble. Every face is given the same share of ink, so bronze, silver and stone sit together in one run."]),
+    ("2-run-first", "2.10 s on", "The run: an idol, sharp",
+     "Second design, at your word. Moloch (Leviticus 18:21, Acts 7:43), an engraving of 1863.",
+     ["<b>What changed.</b> The run is now old engravings beside the best of the statues. An engraving is ink already, so nothing is put through a filter, and each one is plainly an idol. The first design was museum heads that looked alike.",
+      "<b>Why.</b> Your word: the pagans can be any kind of picture. Each is framed its own way and large, as the reference frames its faces, on the reference's own cuts: 36 from 2.10 s to the drop.",
+      "<b>One thing to know.</b> This Moloch and one other (Adramelech) are from a French dictionary of demons, the Dictionnaire infernal. Say if you would rather not take pictures from that book.",
+      "<b>The line.</b> \"there be gods many, and lords many\", 1 Corinthians 8:5, held for the whole run, on clean white under the picture."]),
+    ("3-run-melt", "2.90 s", "The run: one melting into the next",
+     "The fish-god of Nimrud, called Dagon (1 Samuel 5:2), becoming Amun of Egypt. The middle frame of a melt of five frames.",
+     ["<b>What changed.</b> The melt is ink laid over ink, so black stays black. The first design faded through grey. The whole is drawn out a little from its middle, as the reference's smears are.",
+      "<b>For the viewer.</b> One god turns into the next before the eye can rest on it. None of them holds."]),
+    ("4-run-sharp", "3.28 s", "The run: another idol",
+     "Diana of the Ephesians (Acts 19:28), a wood engraving of 1880.",
+     ["<b>Why her.</b> Scripture names her, and she was not in the first design: no open museum photograph was found, and an engraving is allowed now.",
+      "<b>Why whole.</b> Her shape is what makes her known at once, so she is shown from her crown to her waist and not as a face."]),
     ("5-before-the-drop", "11.17 s", "The last frame before the drop",
-     "The emperor Augustus, a Roman marble at The Met.",
-     ["<b>Why him last.</b> The run opens and closes on an emperor worshipped as a god. The last false god before Christ is a man who was called one. The next frame is God who became man.",
-      "<b>Why no melt here.</b> The run ends on a plain hard cut. Nothing flashes and nothing shakes."]),
+     "Zeus Ammon, a Roman marble at The Met. Scripture names Jupiter in Acts 14:12.",
+     ["<b>What changed.</b> The last false god is now set eye for eye on the icon that follows: the same place on the screen and the same size. Look at this still and the next one together.",
+      "<b>Why.</b> On the bass the false face becomes the true one without the eyes moving. That is the edit's one big cut, and nothing flashes or shakes to make it."]),
     ("6-the-drop", "11.18 s, the drop", "Jesus Christ",
-     "The Sinai Pantocrator, whole, in full colour, with the answer: \"I am Jesus\", Acts 9:5.",
-     ["<b>What it is.</b> The app's own icon, filling the frame, its light pooled on His face and the edges let fall. One slow even move toward Him. The icon moves only whole and nothing in it is redrawn.",
-      "<b>Why.</b> Your word: the drop is Jesus Christ. The turn from white ink to colour on the bass is the whole hit. The answer is the same verse as the question.",
-      "<b>The line.</b> On His breast, below His beard. A word never stands on His face. No glow behind it."]),
+     "The Sinai Pantocrator in full colour, with the answer: \"I am Jesus\", Acts 9:5.",
+     ["<b>What changed.</b> His face fills the frame, as in the Christ edit you called perfect. The first design showed the whole panel, flat. The light is pooled on His face and the edges are let fall. One slow even move toward Him.",
+      "<b>Why.</b> Your word: the drop is Jesus Christ. The turn from white ink to colour on the bass is the hit. The answer is the same verse as the question.",
+      "<b>The line.</b> Under His beard. A word never stands on His face. No glow behind it. The icon moves only whole and nothing in it is redrawn."]),
     ("7-transfiguration", "12.32 s on", "The theophanies: the Transfiguration",
-     "The Transfiguration, attributed to Theophanes the Greek, about 1403 (Tretyakov Gallery). Whole, on black, one slow even move.",
-     ["<b>Why.</b> The Light has a face. This is the feast of that light, and the brief names it first.",
+     "The Transfiguration, attributed to Theophanes the Greek, about 1403 (Tretyakov Gallery).",
+     ["<b>What changed.</b> It fills the frame and is held on Christ, with the light pooled on Him. The first design was a small panel on black, which read as a slide show.",
+      "<b>Why.</b> The Light has a face. This is the feast of that light.",
       "<b>One thing to know.</b> This icon has its own painted lines of light around Him. They are the icon's, and nothing in an icon is redrawn, so they stay. If you would rather have none in the film, say so and another icon of Him takes this place."]),
     ("8-light-of-the-world", "16.88 s on", "The last line",
      "The Holy Face of Novgorod, 12th century (Tretyakov Gallery), with \"I am the light of the world\", John 8:12.",
-     ["<b>What it is.</b> The one more line the brief leaves to you. It stands under the icon on the black, not on His face.",
-      "<b>Why.</b> It closes the circle: the film opens on a light with no name and ends with Him naming Himself as that light.",
-      "<b>Between this and the last still.</b> The other icons of Him from the Christ edit, each on one of the reference's cuts, each with one slow even move."]),
+     ["<b>What changed.</b> His face fills the frame. The light falls away to dark at the foot, and the line stands there, under His beard.",
+      "<b>Why.</b> It closes the circle: the film opens on a light with no name and ends with Him naming Himself as that light. This line is yours to say yes or no to.",
+      "<b>Between the last still and this one.</b> The other icons of Him from the Christ edit, each on one of the reference's cuts, each filling the frame with one slow even move."]),
     ("9-the-end", "19.07 s to the end", "The end",
      "Black and Purify's mark, still. No white frame.",
-     ["<b>Why 19.07 and not 19.5.</b> It is the reference's last cut. From there the mark has nine tenths of a second to be read. From 19.5 it would have less than half a second."]),
+     ["<b>What changed.</b> The mark is larger.",
+      "<b>Why 19.07 and not 19.5.</b> It is the reference's last cut. From there the mark has nine tenths of a second to be read. From 19.5 it would have less than half a second."]),
 ]
 
-MORE = ("Found and marked CC0, to be fetched at your yes: from The Met, heads of Apollo, Athena, Dionysos and a goddess, statuettes of Jupiter, "
-        "Mercury and Zeus Serapis, a second Amun, the human-headed winged lion of Assyria, a relief from Nimrud, an enthroned Canaanite god, and the "
-        "emperors Caligula, Caracalla, Lucius Verus, Antoninus Pius and Trebonianus Gallus; from Cleveland, a head of Apollo, Osiris, the Apis bull, "
-        "an Assyrian protective spirit, and the emperors Trajan, Balbinus and Nero recut as Vespasian.")
+MORE = ("In the run now: Adramelech, Moloch, the fish-god called Dagon and Diana as engravings, with Amun, Serapis, Augustus and Zeus Ammon as statues. "
+        "Found and waiting to be fetched at your yes: Odin as Georg von Rosen drew him in 1886, the Jupiter of Olympia as it was drawn in 1814, "
+        "and from The Met and Cleveland (all CC0) Apollo, Athena, Dionysos, Jupiter, Mercury, the winged lion of Assyria, a Canaanite god on his throne, "
+        "Osiris, the Apis bull, and the emperors Caligula, Caracalla, Trajan and Nero. Wikimedia lets a script take only a few files an hour, so the rest come in slowly.")
 
 
 def figure(name, when, title, caption, reasons):
@@ -96,7 +99,7 @@ body = f"""<title>The Light storyboard</title>
     <span class="k-eyebrow">Promo edit 1</span>
     <h1>The Light</h1>
     <p class="k-lede">The storyboard, for your yes or no.</p>
-    <p class="k-meta">Nine stills from the real stage. No video is made yet.</p>
+    <p class="k-meta">Nine stills from the real stage, made again at your word. No video is made yet.</p>
   </header>
 
   <section class="k-section" aria-labelledby="s-shape">
@@ -132,15 +135,15 @@ body = f"""<title>The Light storyboard</title>
 
   <section class="k-section" aria-labelledby="s-open">
     <h2 id="s-open">What is not done yet</h2>
-    <p>The stills show five of the run's faces. The film needs about thirty. {MORE}</p>
-    <p>Not found as open museum photographs: Diana (Acts 19:28), and the north's Odin and Thor. I would leave them out before using a picture that asks for a credit.</p>
+    <p>The film needs about thirty pictures in the run, and eight are in. {MORE}</p>
+    <p>Not found yet: Baal and Astarte under their own names, and Thor.</p>
     <p>No living religion and no living person stands in the run, and none will.</p>
     <p>The other opening that was offered (Moses at the bush) is not drawn. Saul stands, as chosen.</p>
     <p>At your yes: the film, a silent master to save, and one preview with the reference's sound for you alone, marked not for posting. A priest's yes is still yours to get before it is posted. It is for the separate edits account, not a paid ad and not the store pages.</p>
   </section>
 
   <section class="k-section" aria-labelledby="s-pictures">
-    <h2 id="s-pictures">The pictures in these stills</h2>
+    <h2 id="s-pictures">The pictures so far</h2>
     <div class="k-table-wrap">
       <table class="k-table">
         <caption>Each licence is what the picture's own page states. None is held in Greece or Italy. No picture is made by a machine. The pages are listed in the repository, in the edit's pictures.json.</caption>

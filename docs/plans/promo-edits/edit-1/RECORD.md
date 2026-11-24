@@ -2,7 +2,7 @@
 
 The brief is `../edit-1-the-light.md`. This chat is session_01VuYTwacMjt6LkmPnjb5a2m, started 2026-11-23 at 22:05 UTC from that file.
 
-**Status, 2026-11-23 about 22:44 UTC: he finds the other frames weak (his word below). A plan to make them again is put to him with its cost, and nothing more is made until he answers. No video is made.**
+**Status, 2026-11-24 about 00:17 UTC: the second board is published at the same link (the run from old engravings, the icons filling the frame, the last idol set eye for eye on Christ's icon) and waits for his yes or no. No video is made.**
 
 The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 
@@ -12,6 +12,7 @@ The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 - 2026-11-23, in the promo chat: "Start making the 2 edits."
 - In this chat, 2026-11-23 about 22:41 UTC, on the storyboard's first still: "Do a different design for the background for the \"Who Art Thou, Lord.\" But I like the image of the prophet."
 - In this chat, about 22:43 UTC, after the opening's second design: "The other frames could definitely use way better images and editing."
+- In this chat, 2026-11-24 about 00:02 UTC, to the plan below: "the pagans can be wharever type of icon (they don't matter for traditionalism )". Taken as yes to the plan and to engravings: the pagans' pictures can be of any kind.
 
 ## His word on the other frames, and the plan put to him (about 22:44 UTC)
 
@@ -29,6 +30,17 @@ The plan, not started:
 - **The end** with the mark larger.
 
 Cost named to him: about $7 to $10 for the eight stills again, which would bring the chat to about $21 to $23 of the $30 line.
+
+## The second board (2026-11-24, 00:03 to about 00:17 UTC, at his word above)
+
+- **The run.** Four engravings came in beside four statues: Adramelech and Moloch (Le Breton, Dictionnaire infernal, 1863), the fish-god of Nimrud called Dagon (after Layard, 1875), Diana of the Ephesians (1880). A print is ink already: its paper is taken to white and its ink to black and nothing else is done to it. Each picture is framed its own way (`RUN` in `edit.py`). The Canaanite smiting god left the stills.
+- **The melt** is ink laid over ink, black staying black, drawn out a little from its middle, as the reference's smears are. The first faded through grey.
+- **The last idol and the drop.** Zeus Ammon closes the run in place of Augustus, set eye for eye on the Sinai icon that follows: the same place and the same size.
+- **The icons fill the frame,** as the Christ edit's do, each held on Him with the light pooled: the Sinai face, the Transfiguration held on Christ, the Holy Face with the light let fall to dark at the foot, where the last line stands under His beard.
+- **The end:** the mark larger.
+- Named to him on the page: two of the engravings are from a dictionary of demons, and he may refuse the book; the Transfiguration's own painted lines of light stay unless he says otherwise.
+- Found and not usable yet: von Rosen's Odin (1886) and the Jupiter of Olympia (1814) are on Commons only at sizes whose full files its host refused today (429, with a wait of up to ten minutes asked). They are for the film, when the host allows.
+- The kit's check passed again on the page; three sheets of the new stills were looked at.
 
 ## What was measured (the reference, again, frame by frame)
 
@@ -82,5 +94,6 @@ Saul's picture is kept as it was. The background is new, one version: the round 
 Read with get_session, which shows the cost at the last finished turn.
 
 - The storyboard (the first turn, 22:05 to 22:40 UTC): **$10.26**, within the $12 set for it. 288,000 tokens of context at its end.
-- The opening's second design (the second turn): get_session still read $10.26 during the third turn, so this turn's own cost is not shown yet; by the count of its calls it is about $2 to $3, which is this chat's estimate and not a reading.
+- By get_session at 00:03 UTC on 2026-11-24: **$11.86** at the last finished turn, so the opening's second design and the plan together were about $1.60.
+- The second board (the fourth turn): not read yet; the next turn reads it and writes it here.
 - The line to ask him at is $30 in all.

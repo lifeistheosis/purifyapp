@@ -24,7 +24,7 @@ from PIL import Image
 ROOT, HOME = sys.argv[1], sys.argv[2]
 HERE = os.path.dirname(os.path.abspath(__file__))
 PICS = json.load(open(os.path.join(HERE, "pictures.json")))["pictures"]
-RUN = [n for n, p in PICS.items() if p["used"].startswith("the run")]
+RUN = [n for n, p in PICS.items() if "eyes" in p and "museum_page" in p]  # the statues; the engravings are ink already
 os.makedirs(f"{HOME}/ink", exist_ok=True)
 _session = {}
 
