@@ -7,7 +7,8 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { SENSITIVE } from "@/lib/admin/streamer";
-import { Card, DataTable, Pill, Select, StatCard, Toolbar, ToolbarButton } from "../primitives";
+import { Card, DataTable, Disclosure, Pill, Select, StatCard, Toolbar, ToolbarButton } from "../primitives";
+import { CostsLead } from "../money/CostsLead";
 import { BarChart } from "../charts";
 import {
   CADENCES,
@@ -346,6 +347,266 @@ export function SustainabilityTab() {
 
   return (
     <div className="space-y-6">
+      {/* Costs leads: what Purify spends a month, then the lines that make it
+          up, where a cost is added. The /support goal and the donations it
+          counts fold below (his yes, 2026-11-24, the page-by-page step of
+          docs/plans/admin-levels-rework.md). The donations chart stays whole. */}
+      <CostsLead monthlyCents={data.monthlyExpenseCents} activeLines={data.expenses.filter((e) => e.active).length} />
+
+      <Card
+        title={`Expense lines · ${data.expenses.length}`}
+        subtitle={
+          data.expensesFromFallback
+            ? `Falling back to data/support/support.ts, because the expense_lines table is empty. /support is publishing these ${data.expenses.length} committed lines and saying so. Adopt them to take over.`
+            : "Lives on /support. Edits propagate without a redeploy."
+        }
+        action={
+          <Toolbar>
+            {pendingOrder && (
+              <ToolbarButton
+                variant="primary"
+                onClick={() => saveOrder(pendingOrder)}
+                loading={savingOrder}
+                title="Write the new order to the database and to /support"
+              >
+                {savingOrder ? "Saving order" : "Save order"}
+              </ToolbarButton>
+            )}
+            {pendingOrder && (
+              <ToolbarButton onClick={() => setPendingOrder(null)}>
+                Discard order
+              </ToolbarButton>
+            )}
+            {data.expensesFromFallback && (
+              <ToolbarButton
+                variant="primary"
+                onClick={adoptAll}
+                loading={adopting}
+                title="Write all committed lines into the table as real rows"
+              >
+                {adopting ? "Adopting" : `Adopt all ${data.expenses.length}`}
+              </ToolbarButton>
+            )}
+            <ToolbarButton
+              variant="primary"
+              onClick={() => {
+                setAdding(true);
+                setEditing(null);
+              }}
+            >
+              + Add line
+            </ToolbarButton>
+          </Toolbar>
+        }
+      >
+        {data.expensesUnavailable && (
+          <p
+            className="mb-3 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-detail"
+            style={{
+              borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",
+              background: "color-mix(in oklab, var(--adm-critical), transparent 92%)",
+              color: "var(--adm-critical)",
+            }}
+          >
+            The cost lines could not be read. This is not an empty table, so
+            nothing here is offering to rebuild it. /support is still serving
+            whatever it last had.
+          </p>
+        )}
+        {adding && (
+          <ExpenseEditor
+            initial={{
+              id: 0,
+              label: "",
+              monthly_cents: 0,
+              amount_cents: 0,
+              // Monthly, which is what every line meant before this column
+              // existed, so a new row behaves exactly as it always has.
+              cadence: "monthly",
+              note: "",
+              category: "",
+              active: true,
+              // The END of the ladder. This used to be the row COUNT, which
+              // ties an existing value the first time any row is deleted:
+              // nine rows numbered 0..8, delete the one at 3, and the next new
+              // line is handed 8 against the 8 already there.
+              sort_order:
+                data.expenses.reduce((m, e) => Math.max(m, e.sort_order), -1) + 1,
+            }}
+            onSave={saveExpense}
+            onCancel={() => setAdding(false)}
+          />
+        )}
+        <DataTable
+          rows={pendingOrder ?? data.expenses}
+          rowKey={(r) => String(r.id)}
+          csvFilename="expense-lines.csv"
+          // Drag, or Up and Down, or a keyboard. All three land here.
+          //
+          // Fallback rows are excluded: they have negative ids and do not exist
+          // in the table yet, so there is nothing to renumber and a reorder
+          // would be discarded the moment they were adopted.
+          reorder={{
+            name: (r) => r.label,
+            canMove: (r) => r.id > 0,
+            onReorder: (next) => {
+              setOrderFailed(null);
+              setPendingOrder(next);
+            },
+          }}
+          columns={[
+            {
+              key: "label",
+              label: "Line",
+              render: (r) => (
+                <div>
+                  <p className="font-semibold text-paper">{r.label}</p>
+                  {r.note && <p className="text-eyebrow text-paper/50 mt-0.5">{r.note}</p>}
+                </div>
+              ),
+              csv: (r) => r.label,
+            },
+            {
+              key: "category",
+              label: "Category",
+              render: (r) => r.category ?? "None",
+              csv: (r) => r.category ?? "",
+            },
+            {
+              key: "monthly",
+              label: "Monthly",
+              align: "right",
+              // The monthly figure stays the headline, because it is what both
+              // totals sum and what the goal is measured against. The billed
+              // figure sits under it whenever the two differ, so a $2/mo line
+              // that is really a $24 invoice says so on the row rather than
+              // only inside the editor.
+              render: (r) => (
+                <div>
+                  <p className="tabular-nums">{usd(r.monthly_cents)}</p>
+                  {r.cadence !== "monthly" && (
+                    <p className="text-eyebrow text-paper/50 mt-0.5 tabular-nums">
+                      {usd(r.amount_cents)}{" "}
+                      {r.cadence === "yearly" ? "a year" : "one time"}
+                    </p>
+                  )}
+                </div>
+              ),
+              csv: (r) => r.monthly_cents / 100,
+            },
+            {
+              key: "cadence",
+              label: "Billed",
+              render: (r) =>
+                r.cadence === "monthly" ? (
+                  <Pill tone="neutral">Monthly</Pill>
+                ) : r.cadence === "yearly" ? (
+                  <Pill tone="gold">Yearly</Pill>
+                ) : (
+                  <Pill tone="rose">One time</Pill>
+                ),
+              csv: (r) => r.cadence,
+            },
+            {
+              key: "active",
+              label: "",
+              render: (r) =>
+                r.active ? (
+                  <Pill tone="emerald">Active</Pill>
+                ) : (
+                  <Pill tone="neutral">Hidden</Pill>
+                ),
+            },
+            {
+              key: "actions",
+              label: "",
+              // A fallback row used to render an inert "Fallback" pill, so the
+              // panel showed nine correct lines and let you edit none of them
+              // while "Add line" started blank. The only way to take over was
+              // to retype all nine.
+              //
+              // Editing one now writes it as a real row: saveExpense already
+              // drops a negative id, which turns the upsert into an insert. The
+              // word is "Adopt" rather than "Edit" because that is what the
+              // button does, and calling it Edit would imply the committed
+              // file is what changes.
+              render: (r) =>
+                r.id > 0 ? (
+                  <Toolbar>
+                    <ToolbarButton onClick={() => setEditing(r)}>Edit</ToolbarButton>
+                    <ToolbarButton variant="danger" onClick={() => deleteExpense(r.id)}>
+                      Delete
+                    </ToolbarButton>
+                  </Toolbar>
+                ) : (
+                  <Toolbar>
+                    <ToolbarButton
+                      onClick={() => setEditing(r)}
+                      title="Write this committed line into the database as a real, editable row"
+                    >
+                      Adopt
+                    </ToolbarButton>
+                  </Toolbar>
+                ),
+            },
+          ]}
+        />
+        {(saveFailed || orderFailed) && (
+          <p
+            className="mt-3 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-detail"
+            style={{
+              borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",
+              background: "color-mix(in oklab, var(--adm-critical), transparent 92%)",
+              color: "var(--adm-critical)",
+            }}
+          >
+            {saveFailed ?? orderFailed}
+          </p>
+        )}
+        {pendingOrder && (
+          <p className="mt-3 font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
+            This order is not saved yet. /support still shows the old one.
+          </p>
+        )}
+        {adoptFailed && adoptFailed.length > 0 && (
+          <p
+            className="mb-3 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-detail"
+            style={{
+              borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",
+              background: "color-mix(in oklab, var(--adm-critical), transparent 92%)",
+              color: "var(--adm-critical)",
+            }}
+          >
+            {adoptFailed.length} line{adoptFailed.length === 1 ? "" : "s"} did not
+            save: {adoptFailed.join(", ")}. Everything else is in. Add these with
+            Add line.
+          </p>
+        )}
+        {editing && (
+          <ExpenseEditor
+            // KEYED, so switching rows remounts the editor.
+            //
+            // ExpenseEditor seeds all six of its fields from `initial` in
+            // useState initialisers, which run once per mount, and there is no
+            // resync effect. The {editing && ...} slot holds a fixed child
+            // position, so clicking Edit on a second row while the first was
+            // open re-rendered the SAME instance and every field kept row A's
+            // values. Save then spreads fresh row B and overwrites each user
+            // field with stale row A, which is what made it land on the wrong
+            // record rather than being a harmless no-op.
+            //
+            // The Adopt button takes the same path, so adopting while an edit
+            // was open inserted a new row carrying the previous row's label
+            // and amount.
+            key={editing.id}
+            initial={editing}
+            onSave={saveExpense}
+            onCancel={() => setEditing(null)}
+          />
+        )}
+      </Card>
+      <Disclosure title="Donations and the /support goal" hint="The goal /support publishes, what came in, and the shortfall">
+        <div className="space-y-6 px-3 pb-3 md:px-4">
       {!data.current.live && (
         <Card title="BMC unreachable" accent>
           <p className="font-sans text-detail text-paper/75">
@@ -562,6 +823,8 @@ export function SustainabilityTab() {
         />
       </div>
 
+        </div>
+      </Disclosure>
       <Card
         title="12-month donations history"
         subtitle="From donations_monthly snapshots. Empty if the daily cron hasn’t run."
@@ -581,259 +844,6 @@ export function SustainabilityTab() {
               }))}
             />
           </div>
-        )}
-      </Card>
-
-      <Card
-        title={`Expense lines · ${data.expenses.length}`}
-        subtitle={
-          data.expensesFromFallback
-            ? `Falling back to data/support/support.ts, because the expense_lines table is empty. /support is publishing these ${data.expenses.length} committed lines and saying so. Adopt them to take over.`
-            : "Lives on /support. Edits propagate without a redeploy."
-        }
-        action={
-          <Toolbar>
-            {pendingOrder && (
-              <ToolbarButton
-                variant="primary"
-                onClick={() => saveOrder(pendingOrder)}
-                loading={savingOrder}
-                title="Write the new order to the database and to /support"
-              >
-                {savingOrder ? "Saving order" : "Save order"}
-              </ToolbarButton>
-            )}
-            {pendingOrder && (
-              <ToolbarButton onClick={() => setPendingOrder(null)}>
-                Discard order
-              </ToolbarButton>
-            )}
-            {data.expensesFromFallback && (
-              <ToolbarButton
-                variant="primary"
-                onClick={adoptAll}
-                loading={adopting}
-                title="Write all committed lines into the table as real rows"
-              >
-                {adopting ? "Adopting" : `Adopt all ${data.expenses.length}`}
-              </ToolbarButton>
-            )}
-            <ToolbarButton
-              variant="primary"
-              onClick={() => {
-                setAdding(true);
-                setEditing(null);
-              }}
-            >
-              + Add line
-            </ToolbarButton>
-          </Toolbar>
-        }
-      >
-        {data.expensesUnavailable && (
-          <p
-            className="mb-3 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-detail"
-            style={{
-              borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",
-              background: "color-mix(in oklab, var(--adm-critical), transparent 92%)",
-              color: "var(--adm-critical)",
-            }}
-          >
-            The cost lines could not be read. This is not an empty table, so
-            nothing here is offering to rebuild it. /support is still serving
-            whatever it last had.
-          </p>
-        )}
-        {adding && (
-          <ExpenseEditor
-            initial={{
-              id: 0,
-              label: "",
-              monthly_cents: 0,
-              amount_cents: 0,
-              // Monthly, which is what every line meant before this column
-              // existed, so a new row behaves exactly as it always has.
-              cadence: "monthly",
-              note: "",
-              category: "",
-              active: true,
-              // The END of the ladder. This used to be the row COUNT, which
-              // ties an existing value the first time any row is deleted:
-              // nine rows numbered 0..8, delete the one at 3, and the next new
-              // line is handed 8 against the 8 already there.
-              sort_order:
-                data.expenses.reduce((m, e) => Math.max(m, e.sort_order), -1) + 1,
-            }}
-            onSave={saveExpense}
-            onCancel={() => setAdding(false)}
-          />
-        )}
-        <DataTable
-          rows={pendingOrder ?? data.expenses}
-          rowKey={(r) => String(r.id)}
-          csvFilename="expense-lines.csv"
-          // Drag, or Up and Down, or a keyboard. All three land here.
-          //
-          // Fallback rows are excluded: they have negative ids and do not exist
-          // in the table yet, so there is nothing to renumber and a reorder
-          // would be discarded the moment they were adopted.
-          reorder={{
-            name: (r) => r.label,
-            canMove: (r) => r.id > 0,
-            onReorder: (next) => {
-              setOrderFailed(null);
-              setPendingOrder(next);
-            },
-          }}
-          columns={[
-            {
-              key: "label",
-              label: "Line",
-              render: (r) => (
-                <div>
-                  <p className="font-semibold text-paper">{r.label}</p>
-                  {r.note && <p className="text-eyebrow text-paper/50 mt-0.5">{r.note}</p>}
-                </div>
-              ),
-              csv: (r) => r.label,
-            },
-            {
-              key: "category",
-              label: "Category",
-              render: (r) => r.category ?? "—",
-              csv: (r) => r.category ?? "",
-            },
-            {
-              key: "monthly",
-              label: "Monthly",
-              align: "right",
-              // The monthly figure stays the headline, because it is what both
-              // totals sum and what the goal is measured against. The billed
-              // figure sits under it whenever the two differ, so a $2/mo line
-              // that is really a $24 invoice says so on the row rather than
-              // only inside the editor.
-              render: (r) => (
-                <div>
-                  <p className="tabular-nums">{usd(r.monthly_cents)}</p>
-                  {r.cadence !== "monthly" && (
-                    <p className="text-eyebrow text-paper/50 mt-0.5 tabular-nums">
-                      {usd(r.amount_cents)}{" "}
-                      {r.cadence === "yearly" ? "a year" : "one time"}
-                    </p>
-                  )}
-                </div>
-              ),
-              csv: (r) => r.monthly_cents / 100,
-            },
-            {
-              key: "cadence",
-              label: "Billed",
-              render: (r) =>
-                r.cadence === "monthly" ? (
-                  <Pill tone="neutral">Monthly</Pill>
-                ) : r.cadence === "yearly" ? (
-                  <Pill tone="gold">Yearly</Pill>
-                ) : (
-                  <Pill tone="rose">One time</Pill>
-                ),
-              csv: (r) => r.cadence,
-            },
-            {
-              key: "active",
-              label: "",
-              render: (r) =>
-                r.active ? (
-                  <Pill tone="emerald">Active</Pill>
-                ) : (
-                  <Pill tone="neutral">Hidden</Pill>
-                ),
-            },
-            {
-              key: "actions",
-              label: "",
-              // A fallback row used to render an inert "Fallback" pill, so the
-              // panel showed nine correct lines and let you edit none of them
-              // while "Add line" started blank. The only way to take over was
-              // to retype all nine.
-              //
-              // Editing one now writes it as a real row: saveExpense already
-              // drops a negative id, which turns the upsert into an insert. The
-              // word is "Adopt" rather than "Edit" because that is what the
-              // button does, and calling it Edit would imply the committed
-              // file is what changes.
-              render: (r) =>
-                r.id > 0 ? (
-                  <Toolbar>
-                    <ToolbarButton onClick={() => setEditing(r)}>Edit</ToolbarButton>
-                    <ToolbarButton variant="danger" onClick={() => deleteExpense(r.id)}>
-                      Delete
-                    </ToolbarButton>
-                  </Toolbar>
-                ) : (
-                  <Toolbar>
-                    <ToolbarButton
-                      onClick={() => setEditing(r)}
-                      title="Write this committed line into the database as a real, editable row"
-                    >
-                      Adopt
-                    </ToolbarButton>
-                  </Toolbar>
-                ),
-            },
-          ]}
-        />
-        {(saveFailed || orderFailed) && (
-          <p
-            className="mt-3 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-detail"
-            style={{
-              borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",
-              background: "color-mix(in oklab, var(--adm-critical), transparent 92%)",
-              color: "var(--adm-critical)",
-            }}
-          >
-            {saveFailed ?? orderFailed}
-          </p>
-        )}
-        {pendingOrder && (
-          <p className="mt-3 font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
-            This order is not saved yet. /support still shows the old one.
-          </p>
-        )}
-        {adoptFailed && adoptFailed.length > 0 && (
-          <p
-            className="mb-3 rounded-[var(--adm-radius-sm)] border px-3 py-2 font-sans text-detail"
-            style={{
-              borderColor: "color-mix(in oklab, var(--adm-critical), transparent 60%)",
-              background: "color-mix(in oklab, var(--adm-critical), transparent 92%)",
-              color: "var(--adm-critical)",
-            }}
-          >
-            {adoptFailed.length} line{adoptFailed.length === 1 ? "" : "s"} did not
-            save: {adoptFailed.join(", ")}. Everything else is in. Add these with
-            Add line.
-          </p>
-        )}
-        {editing && (
-          <ExpenseEditor
-            // KEYED, so switching rows remounts the editor.
-            //
-            // ExpenseEditor seeds all six of its fields from `initial` in
-            // useState initialisers, which run once per mount, and there is no
-            // resync effect. The {editing && ...} slot holds a fixed child
-            // position, so clicking Edit on a second row while the first was
-            // open re-rendered the SAME instance and every field kept row A's
-            // values. Save then spreads fresh row B and overwrites each user
-            // field with stale row A, which is what made it land on the wrong
-            // record rather than being a harmless no-op.
-            //
-            // The Adopt button takes the same path, so adopting while an edit
-            // was open inserted a new row carrying the previous row's label
-            // and amount.
-            key={editing.id}
-            initial={editing}
-            onSave={saveExpense}
-            onCancel={() => setEditing(null)}
-          />
         )}
       </Card>
     </div>
