@@ -17,6 +17,7 @@ Open `index.html` to see it. One version of each, no variants.
 | `reader.html` | The reader email, with the Sunday email as its sample. The monthly note and a release letter are built from the same pieces. |
 | `reader-nativity-fast.html` | The same email in the Nativity Fast (15 November to 24 December). |
 | `brief.html` | The owner's brief, with three small charts drawn in the email itself. |
+| `milestone.html` | The owner's email when one of his milestones is reached (2026-11-24, for his yes): the number, the milestones as bars, what is next, one button. Made-up numbers. |
 | `img/` | The pictures the emails show: the mark, the night, the night cards' pictures (`hero-*.jpg`), the calendar's fast marks (`fast-*.png`), a feast's cross (`feast-cross.png`) and the button's arrow. All written by `build.mjs` from the app's own files. A file ending `-ink.png` or `-light.png` is the same mark in a light page's ink: only the check's own drawing shows it, and no email names it. |
 | `shots/` | Each email as a mail client draws it, for the page. |
 | `faces/` | Two open faces the stills are drawn in, since this machine has neither Georgia nor a phone's sans: Gelasio, made to Georgia's widths, and Roboto, Android's own. For the pictures and the check only. No email fetches a font. |

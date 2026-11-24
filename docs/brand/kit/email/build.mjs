@@ -795,6 +795,86 @@ export function brief(how) {
 }
 
 
+// ── A milestone reached ────────────────────────────────────────────────────
+// The owner's email when one of his milestones is reached (his word,
+// 2026-11-24: "and now email updates whenever one gets hit"), the Goals page's
+// own milestones set for a letter (components/admin/goals/GoalsView.tsx).
+// Every figure below is made up for the drawing; his marks and his numbers
+// live in the database and are never written into the repository.
+
+const MILESTONE = {
+  date: "Monday, May 17",
+  name: "Halfway",
+  amount: "$750 a week",
+  number: "$780 a week",
+  growth: "Up 4% on last week.",
+  steps: [
+    { name: "Pays its own bills", pct: 100 },
+    { name: "A tenth of the way", pct: 100 },
+    { name: "A quarter of the way", pct: 100 },
+    { name: "Halfway", pct: 100, now: true },
+    { name: "The first mark", pct: 52 },
+    { name: "The second mark", pct: 26 },
+  ],
+  next: "Next is the first mark, $1,500 a week: about 426 more members, by September at your pace.",
+};
+
+/** One figure, large in the page's serif, with a line under it. */
+const oneFigure = (p, value, note) => `<tr><td style="padding:6px 0 0">
+  <p${p.c({ fg: "ink", cls: "e-fig" }, `margin:0;font-family:${SERIF};font-size:40px;line-height:46px;`)}>${esc(value)}</p>
+  ${note ? `<p${p.c({ fg: "quiet" }, `margin:6px 0 0;font-family:${SANS};font-size:14px;line-height:20px;`)}>${esc(note)}</p>` : ""}
+</td></tr>`;
+
+/**
+ * The milestones as the Goals page draws them: a name, where it stands at the
+ * end ("Reached", "Reached today", or its share), and a bar of how far the
+ * number has come towards it, on a track of the hairline. Reached ones are
+ * whole and in the ink; the ones ahead in the chart's quieter mark.
+ */
+function milestoneBars(p, list) {
+  const { c, bgcolor } = p;
+  const row = (x) => {
+    const done = x.pct >= 100;
+    const w = Math.max(2, Math.min(100, x.pct));
+    const slot = done ? "ink" : "mark";
+    const value = x.now ? "Reached today" : done ? "Reached" : `${x.pct}%`;
+    return `<tr><td style="padding:12px 0 0">
+      <table ${TABLE} width="100%"><tr>
+        <td width="100%"${c({ fg: done ? "ink" : "body" }, `font-family:${SERIF};font-size:17px;line-height:24px;${x.now ? "font-weight:700;" : ""}`)}>${esc(x.name)}</td>
+        <td${c({ fg: done ? "ink" : "quiet" }, `white-space:nowrap;font-family:${SANS};font-size:15px;line-height:24px;font-weight:600;`)}>${esc(value)}</td>
+      </tr></table>
+      <table ${TABLE} width="100%" dir="ltr" role="img" aria-label="${esc(x.name)}: ${esc(value)}" style="border-collapse:separate;margin:6px 0 0"><tr>
+        <td width="${w}%" height="6"${bgcolor(slot)}${c({ bg: slot }, `width:${w}%;height:6px;font-size:0;line-height:0;border-radius:3px;`)}>&nbsp;</td>
+        ${w < 100 ? `<td height="6"${bgcolor("line")}${c({ bg: "line" }, "height:6px;font-size:0;line-height:0;border-radius:3px;")}>&nbsp;</td>` : ""}
+      </tr></table>
+    </td></tr>`;
+  };
+  return `<tr><td><table ${TABLE} width="100%">${list.map(row).join("\n")}</table></td></tr>`;
+}
+
+export function milestone(how) {
+  wear(1);
+  const p = pen(how, PALETTES.Dark.wears);
+  const m = MILESTONE;
+  return shell(p, {
+    title: `You reached ${m.name.toLowerCase()}`,
+    preheader: `${m.amount}, held four weeks running.`,
+    kind: "A milestone",
+    rows: [
+      opening(p, { eyebrow: m.date, title: `You reached ${m.name.toLowerCase()}`, sub: `Held ${m.amount} for four weeks running.` }),
+      label(p, "Members bring in"),
+      oneFigure(p, m.number, m.growth),
+      label(p, "Milestones"),
+      milestoneBars(p, m.steps),
+      para(p, esc(m.next), 22),
+      `<tr><td style="padding:26px 0 0">${button(p, { href: "https://purifyapp.net/admin#tab=goals", text: "Open your goals" })}</td></tr>`,
+    ],
+    foot: `<p style="margin:0">This email comes once for each milestone, when it has held four weeks running. It is made for the owner and goes to no reader.</p>
+  <p style="margin:18px 0 0">${quietButton(p, { href: "https://purifyapp.net/unsubscribe", text: "Unsubscribe" })}</p>
+  <p style="margin:8px 0 0">${link(p, "https://purifyapp.net/admin", "Open the panel")}</p>`,
+  });
+}
+
 // ── The retention emails ────────────────────────────────────────────────
 // Three kinds, each on the same look and each one thing with one button (his
 // word, 2026-11-13: "perfect let's build and I say yes or no to the design").
@@ -1103,6 +1183,7 @@ export const EMAILS = [
   { file: "reader.html", name: "The reader email", make: reader },
   { file: "reader-nativity-fast.html", name: "The reader email in the Nativity Fast", make: readerNativityFast },
   { file: "brief.html", name: "The owner's brief", make: brief },
+  { file: "milestone.html", name: "A milestone reached", make: milestone },
   // The retention emails. `round: 2`: drawn, and measured, in the faces a mail app has (wearFaces).
   { file: "first-week-1.html", name: "The first week, day 1", make: (how) => firstWeek(how, 1), round: 2 },
   { file: "first-week-3.html", name: "The first week, day 3", make: (how) => firstWeek(how, 3), round: 2 },
