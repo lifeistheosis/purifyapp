@@ -1,0 +1,31 @@
+plugins { id "com.android.application" }
+
+// The owner's own admin app: a Trusted Web Activity over https://purifyapp.net/admin.
+// Signed with a key kept outside the repo (docs/plans/admin-app.md).
+android {
+    namespace "net.purifyapp.admin"
+    compileSdk 35
+    defaultConfig {
+        applicationId "net.purifyapp.admin"
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName "1.0"
+    }
+    signingConfigs {
+        release {
+            storeFile file(System.getenv("ADMIN_KEYSTORE") ?: "missing.jks")
+            storePassword System.getenv("ADMIN_KEYSTORE_PASSWORD")
+            keyAlias "admin"
+            keyPassword System.getenv("ADMIN_KEYSTORE_PASSWORD")
+        }
+    }
+    buildTypes {
+        release { minifyEnabled false; signingConfig signingConfigs.release }
+    }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
+
+dependencies {
+    implementation "com.google.androidbrowserhelper:androidbrowserhelper:2.5.0"
+}
