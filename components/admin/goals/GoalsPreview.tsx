@@ -31,7 +31,7 @@ const step = (s: Partial<GoalStep> & Pick<GoalStep, "id" | "name" | "weeklyCents
 
 /** A Monday some way ahead, mid-road: three steps reached, Halfway next. */
 const FULL: GoalsData = {
-  today: "2027-03-01",
+  today: "2027-03-04",
   week: "2027-03-01",
   enoughOn: null,
   weeklyCents: 46_490,
@@ -78,6 +78,26 @@ const FULL: GoalsData = {
     { name: "The first mark", weeklyCents: 150_000 },
     { name: "The second mark", weeklyCents: 300_000 },
   ],
+  streak: { weeks: 6, best: 9 },
+  daysLeft: 4,
+  perfectWeeks: 3,
+  badges: [
+    { id: "first", name: "First member", how: "Your first paying member", earnedOn: "2026-11-11" },
+    { id: "hundred", name: "100 members", how: "100 paying at once", earnedOn: "2027-01-09" },
+    { id: "perfect", name: "Perfect week", how: "All four quests in one week", earnedOn: "2027-02-07" },
+    { id: "streak", name: "Hot streak", how: "Four weeks of growth in a row", earnedOn: "2027-02-14" },
+    { id: "record", name: "Record week", how: "Beat your best week", earnedOn: "2027-03-01" },
+    { id: "monthly", name: "Monthly first", how: "Monthly is 70% of the number", earnedOn: "2027-02-22" },
+    { id: "keeper", name: "Keeper", how: "Under 1% leaving four weeks running", earnedOn: null },
+    { id: "refunds", name: "Clean month", how: "A month with no refunds", earnedOn: null },
+    { id: "five-hundred", name: "500 members", how: "500 paying at once", earnedOn: null },
+  ],
+  records: [
+    { name: "Best week", value: 46_490, unit: "money", on: "2027-03-01", isNew: true },
+    { name: "Most joined in a week", value: 24, unit: "count", on: "2027-02-08", isNew: false },
+    { name: "Longest streak", value: 9, unit: "weeks", on: "2027-01-18", isNew: false },
+    { name: "Fewest leaving in a month", value: 0.038, unit: "share", on: "2027-01-31", isNew: false },
+  ],
 };
 
 /** The first fortnight after the events began: no rate, no day, no aims, said plainly. */
@@ -116,6 +136,14 @@ const FIRST_WEEKS: GoalsData = {
     allYearly: null,
   },
   extra: { monthCents: 4_800, orders: 2 },
+  streak: { weeks: 0, best: 0 },
+  daysLeft: 6,
+  perfectWeeks: 0,
+  badges: FULL.badges.map((b) => (b.id === "first" ? b : { ...b, earnedOn: null })),
+  records: [
+    { name: "Best week", value: 20_164, unit: "money", on: "2026-11-23", isNew: true },
+    { name: "Most joined in a week", value: 5, unit: "count", on: "2026-11-16", isNew: false },
+  ],
 };
 
 /** The Monday a step is reached: its moment at the head. */

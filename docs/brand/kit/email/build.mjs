@@ -844,17 +844,17 @@ function achievement(p, m) {
   const between = (lit) =>
     `<td valign="middle" style="padding:0 5px"><table ${TABLE} width="100%"><tr><td height="2" bgcolor="${lit ? NIGHT.ink : NIGHT.line}" style="height:2px;font-size:0;line-height:0;background-color:${lit ? NIGHT.ink : NIGHT.line}">&nbsp;</td></tr></table></td>`;
   const road = m.steps.map((x, i) => stop(x) + (i < m.steps.length - 1 ? between(m.steps[i + 1].reached) : "")).join("");
-  const words = `Milestones: ${reached} of ${m.steps.length} reached. ${m.steps.map((x) => `${x.name}, ${x.now ? "reached today" : x.reached ? "reached" : "ahead"}`).join("; ")}.`;
+  const words = `Levels: ${reached} of ${m.steps.length} reached. ${m.steps.map((x) => `${x.name}, ${x.now ? "reached today" : x.reached ? "reached" : "ahead"}`).join("; ")}.`;
   return `<tr><td style="padding:24px 0 0">
   <table ${TABLE} width="100%" class="dark-island" bgcolor="${NIGHT.ground}" style="border-collapse:separate;background-color:${NIGHT.ground};border:1px solid ${NIGHT.line};border-radius:22px">
   <tr><td style="padding:26px 22px 24px">
-    <p${say(`margin:0;font-family:${SANS};font-size:13px;line-height:18px;font-weight:600;`, NIGHT.quiet)}>A milestone reached</p>
+    <p${say(`margin:0;font-family:${SANS};font-size:13px;line-height:18px;font-weight:600;`, NIGHT.quiet)}>Level ${reached} reached</p>
     <h1 class="e-title"${say(`margin:8px 0 0;font-family:${SERIF};font-size:36px;line-height:42px;font-weight:700;`, NIGHT.ink)}>${esc(m.name)}</h1>
     <p${say(`margin:10px 0 0;font-family:${SERIF};font-style:italic;font-size:17px;line-height:26px;`, NIGHT.words)}>Held ${esc(m.amount)} for four weeks running.</p>
     <table ${TABLE} width="100%" dir="ltr" role="img" aria-label="${esc(words)}" style="margin:26px 0 0"><tr>${road}</tr></table>
     <table ${TABLE} width="100%" style="margin:10px 0 0"><tr>
-      <td${say(`font-family:${SANS};font-size:13px;line-height:18px;`, NIGHT.quiet)}>${reached} of ${m.steps.length} reached</td>
-      <td${say(`text-align:right;text-align:end;font-family:${SANS};font-size:13px;line-height:18px;`, NIGHT.quiet)}>Next: ${esc(m.next.name.toLowerCase())}</td>
+      <td${say(`font-family:${SANS};font-size:13px;line-height:18px;`, NIGHT.quiet)}>Level ${reached} of ${m.steps.length}</td>
+      <td${say(`text-align:right;text-align:end;font-family:${SANS};font-size:13px;line-height:18px;`, NIGHT.quiet)}>Next: level ${reached + 1}</td>
     </tr></table>
     <table ${TABLE} width="100%"><tr><td height="24" style="height:24px;font-size:0;line-height:0">&nbsp;</td></tr></table>
     ${button(p, { href: "https://purifyapp.net/admin#tab=goals", text: "Open your goals", island: true })}
@@ -885,17 +885,17 @@ export function milestone(how) {
   const p = pen(how, PALETTES.Dark.wears);
   const m = MILESTONE;
   return shell(p, {
-    title: `You reached ${m.name.toLowerCase()}`,
+    title: `Level ${m.steps.filter((x) => x.reached).length}: ${m.name}`,
     preheader: `${m.name}: ${m.amount}, held four weeks running.`,
     kind: m.date,
     rows: [
       achievement(p, m),
-      label(p, "Members bring in", 34),
+      label(p, "XP: what members bring in", 34),
       oneFigure(p, m.number, m.growth),
-      label(p, "Next", 30),
+      label(p, `Next: level ${m.steps.filter((x) => x.reached).length + 1}`, 30),
       nextMilestone(p, m.next),
     ],
-    foot: `<p style="margin:0">This email comes once for each milestone, when it has held four weeks running. It is made for the owner and goes to no reader.</p>
+    foot: `<p style="margin:0">This email comes once for each level, when its milestone has held four weeks running. It is made for the owner and goes to no reader.</p>
   <p style="margin:18px 0 0">${quietButton(p, { href: "https://purifyapp.net/unsubscribe", text: "Unsubscribe" })}</p>
   <p style="margin:8px 0 0">${link(p, "https://purifyapp.net/admin", "Open the panel")}</p>`,
   });

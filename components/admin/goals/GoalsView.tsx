@@ -4,33 +4,39 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNo
 
 import { StatusDot, ToolbarButton, type StatusTone } from "../primitives";
 import { FinishMoment } from "@/components/flow/FinishMoment";
+import { Candle } from "@/components/ui/icons/Candle";
 import { Check } from "@/components/ui/icons/Check";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { Lock } from "@/components/ui/icons/Lock";
 import { Seal } from "@/components/ui/icons/Seal";
+import { Star } from "@/components/ui/icons/Star";
 import { useReducedMotion } from "@/lib/ui/motion";
 
 /**
  * The Goals page, the calm way (his word of 2026-11-23: the panel "feels like
  * a terminal ... very codey"; the plan is docs/plans/goals-milestones.md).
  *
- * What it shows, in order, each thing once, made minimal at his word of
- * 2026-11-24 ("make the design more simplified and minimalist"), with the
- * milestones shown as bars and achievements at his next word that day ("I
- * want to see more milestone bars/ achievement designs"):
+ * What it shows, in order. Made minimal at his word of 2026-11-24 ("make the
+ * design more simplified and minimalist"), the milestones as bars and
+ * achievements ("I want to see more milestone bars/ achievement designs"),
+ * each with a screen of its own ("ensure each goal has its own screen and
+ * animation"), and then a game, for him alone ("gamify this system honestly
+ * (extreme) so I can actually have fun doing this (only gamify the goals for
+ * me)"). Every number in the game is a real one:
  *
- *   a finish        the week a step is reached, the app's own finish moment
- *   the number      what members bring in a week, and its growth on last
- *                   week against the 5% aim
- *   milestones      each step reached as an achievement (the house's seal
- *                   and its day); the next step's bar, what it needs and
- *                   its day; a bar for every step ahead
- *   this week       paying now, joined and left
- *   what moves it   the four weekly goals against his own last four weeks
- *                   bettered by 5%, and the one lever
- *   more            quiet rows that open in place: by update, monthly and
- *                   yearly (with what standing still costs), the guardrails,
- *                   Extra (the shop), this hour, the Bible licence, his marks
+ *   a finish        the week a level is reached, the app's own finish moment
+ *   player card     his level (milestones held), the XP (what members bring
+ *                   in a week) and its bar to the next level, his streak
+ *                   (weeks in a row the number grew), this week's members
+ *   quests          the four weekly goals against his own last four weeks
+ *                   bettered by 5%, the one lever, and perfect weeks
+ *   levels          the six milestones: reached (the seal), next, locked
+ *   badges          real events, earned on a day or with how to earn them
+ *   records         his personal bests
+ *   more            quiet rows that open in place: seasons (by update),
+ *                   monthly and yearly, the guardrails, Extra (the shop),
+ *                   this hour, the Bible licence, his marks
  *
  * Presentational: everything it says comes in `data`, worked out elsewhere
  * from the kept events. It writes the words and formats the figures, and it
@@ -120,6 +126,16 @@ export type GoalsData = {
   };
   extra: { monthCents: number; orders: number } | null;
   marks: GoalMark[];
+  /** Weeks in a row the number has grown on the week before, and the longest such run. */
+  streak: { weeks: number; best: number };
+  /** Days left in this week, today included (weeks run Monday to Sunday, UTC). */
+  daysLeft: number;
+  /** Weeks with all four quests met. */
+  perfectWeeks: number;
+  /** Badges: each for a real event in the kept numbers, earned on a day or not yet. */
+  badges: { id: string; name: string; how: string; earnedOn: string | null }[];
+  /** Personal bests, each a real figure and the day it was set. */
+  records: { name: string; value: number; unit: "money" | "count" | "weeks" | "share"; on: string | null; isNew: boolean }[];
 };
 
 // ── Words for the figures ────────────────────────────────────────────────
@@ -210,33 +226,40 @@ export function GoalsView({
       {banner}
 
       {reached ? (
-        // A step reached is a moment of its own: the app's own finish (the
+        // A level reached is a moment of its own: the app's own finish (the
         // circle lands, the check draws itself), once, at the head of the page
         // for the week it is reached. Still with Motion off.
         <FinishMoment
           className="mb-10"
-          title={reached.id === "bills" ? "The app pays its own bills" : `You reached ${lowerFirst(reached.name)}`}
-          line={`Held ${money(reached.weeklyCents)} a week for four weeks running.`}
+          title={`Level ${data.steps.indexOf(reached) + 1} reached`}
+          line={`${reached.name}: held ${money(reached.weeklyCents)} a week for four weeks running.`}
         />
       ) : null}
 
-      <TheNumber data={data} />
+      <PlayerCard data={data} next={next} />
 
-      <Block label="Milestones" aside={`${data.steps.filter((s) => s.reachedOn !== null).length} of ${data.steps.length} reached`}>
-        <Milestones data={data} next={next} onOpen={open} />
+      <Block
+        label="This week's quests"
+        aside={data.movers ? `${data.movers.filter(questMet).length} of 4 done, ${data.daysLeft} ${data.daysLeft === 1 ? "day" : "days"} left` : undefined}
+      >
+        <Quests data={data} />
       </Block>
 
-      <ul className="mt-10" aria-label="This week">
-        <Facts data={data} />
-      </ul>
+      <Block label="Levels" aside={`${data.steps.filter((s) => s.reachedOn !== null).length} of ${data.steps.length}`}>
+        <Levels data={data} next={next} onOpen={open} />
+      </Block>
 
-      <Block label="What moves it">
-        <TheFour data={data} />
+      <Block label="Badges" aside={`${data.badges.filter((b) => b.earnedOn).length} of ${data.badges.length}`}>
+        <Badges data={data} />
+      </Block>
+
+      <Block label="Records">
+        <Records data={data} />
       </Block>
 
       <Block label="More">
         <div>
-          <Fold title="By update">
+          <Fold title="Seasons" value={data.releases[0] ? `${data.releases[0].version} now` : undefined}>
             <ByUpdate data={data} />
           </Fold>
           <Fold title="Monthly and yearly" value={total > 0 ? `${share(data.mix.monthlyCents / total)} monthly` : undefined}>
@@ -263,50 +286,101 @@ export function GoalsView({
   );
 }
 
-// ── The number ───────────────────────────────────────────────────────────
+// ── The player card ──────────────────────────────────────────────────────
+//
+// The game, at his word of 2026-11-24 ("gamify this system honestly (extreme)
+// so I can actually have fun doing this (only gamify the goals for me)").
+// Honest: the XP is the real number, what members bring in a week; a level is
+// a milestone held four weeks running and is kept once earned; the XP can fall
+// when members leave, and the bar shows it. Nothing here is a point made up.
 
-function TheNumber({ data }: { data: GoalsData }) {
+function PlayerCard({ data, next }: { data: GoalsData; next: GoalStep | null }) {
+  const level = data.steps.filter((s) => s.reachedOn !== null).length;
+  const current = level > 0 ? data.steps[level - 1] : null;
+  const pct = next ? pctOf(data, next) : 100;
+  const toGo = next ? Math.max(0, next.weeklyCents - data.weeklyCents) : 0;
   let growth: string | null = null;
   if (data.enoughOn) growth = `Growth shows from ${dayWords(data.enoughOn, data.today)}.`;
-  else if (data.growth !== null) {
-    const g = Math.round(Math.abs(data.growth) * 100);
-    growth = `${data.growth >= 0 ? "Up" : "Down"} ${g}% on last week. Aim 5% a week.`;
-  }
+  else if (data.growth !== null) growth = `${data.growth >= 0 ? "Up" : "Down"} ${Math.round(Math.abs(data.growth) * 100)}% on last week.`;
   return (
-    <section aria-label="What members bring in">
-      <h2 className="text-[13px]" style={{ color: "var(--adm-ink-3)", fontWeight: 500 }}>
-        Members bring in
-      </h2>
-      <p className="mt-1 flex items-baseline gap-2" style={{ color: "var(--adm-ink)" }}>
-        <span className="text-[60px] leading-none tracking-[-0.04em] tabular-nums" style={{ fontWeight: 500 }}>
+    <section
+      aria-label="Your level"
+      className="rounded-[var(--adm-radius-lg)] border p-5"
+      style={{ background: "var(--adm-panel-2)", borderColor: "var(--adm-line-strong)" }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[13px]" style={{ color: "var(--adm-ink-3)", fontWeight: 500 }}>
+            Level {level} of {data.steps.length}
+          </p>
+          <h2 className="mt-0.5 text-[22px] font-semibold leading-tight" style={{ color: "var(--adm-ink)" }}>
+            {current ? current.name : "Your first level is next"}
+          </h2>
+        </div>
+        <p className="inline-flex shrink-0 items-center gap-1.5 text-[14px] font-semibold tabular-nums" style={{ color: "var(--adm-ink)" }}>
+          <Candle size={20} style={{ color: data.streak.weeks > 0 ? "var(--adm-ink)" : "var(--adm-ink-3)" }} />
+          {data.streak.weeks} {data.streak.weeks === 1 ? "week" : "weeks"}
+          <span className="sr-only"> growing in a row</span>
+        </p>
+      </div>
+
+      <p className="mt-5 text-[13px]" style={{ color: "var(--adm-ink-3)", fontWeight: 500 }}>
+        XP: what members bring in
+      </p>
+      <p className="mt-0.5 flex items-baseline gap-2" style={{ color: "var(--adm-ink)" }}>
+        <span className="text-[44px] leading-none tracking-[-0.035em] tabular-nums" style={{ fontWeight: 500 }}>
           {money(data.weeklyCents)}
         </span>
-        <span className="text-[17px]" style={{ color: "var(--adm-ink-2)" }}>
+        <span className="text-[16px]" style={{ color: "var(--adm-ink-2)" }}>
           a week
         </span>
       </p>
       {growth ? (
-        <p className="mt-2.5 text-[14px]" style={{ color: "var(--adm-ink-2)" }}>
+        <p className="mt-2 text-[13px]" style={{ color: "var(--adm-ink-2)" }}>
           {growth}
         </p>
       ) : null}
+
+      {next ? (
+        <>
+          <FillBar pct={pct} label={`${pct}% of the way to level ${data.steps.indexOf(next) + 1}`} />
+          <div className="mt-2 flex items-baseline justify-between gap-3 text-[13px]">
+            <p style={{ color: "var(--adm-ink-2)" }}>
+              Level {data.steps.indexOf(next) + 1}: {next.name}
+            </p>
+            <p className="shrink-0 tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
+              {toGo > 0 ? `${money(toGo)} to go` : `held ${next.heldWeeks} of 4 weeks`}
+            </p>
+          </div>
+        </>
+      ) : (
+        <p className="mt-4 text-[14px] font-semibold" style={{ color: "var(--adm-ink)" }}>
+          Every level is reached.
+        </p>
+      )}
+
+      <p className="mt-4 border-t pt-3 text-[13px] tabular-nums" style={{ borderColor: "var(--adm-line-strong)", color: "var(--adm-ink-2)" }}>
+        {count.format(data.paying.monthly + data.paying.yearly)} members, {count.format(data.thisWeek.joined)} joined and{" "}
+        {count.format(data.thisWeek.left)} left this week
+      </p>
     </section>
   );
 }
 
-// ── Three facts ──────────────────────────────────────────────────────────
-
-function Facts({ data }: { data: GoalsData }) {
-  const paying = data.paying.monthly + data.paying.yearly;
+/** The XP bar: it fills to where the number stands as the page opens, on the house's curve. Still with Motion off. */
+function FillBar({ pct, label }: { pct: number; label: string }) {
+  const fill = useRef<HTMLSpanElement>(null);
+  const reduced = useReducedMotion();
+  useEffect(() => {
+    const el = fill.current;
+    if (!el || reduced || typeof el.animate !== "function") return;
+    const run = el.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 900, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "backwards" });
+    return () => run.cancel();
+  }, [pct, reduced]);
   return (
-    <>
-      <Row
-        name="Paying now"
-        nameNote={`${count.format(data.paying.monthly)} monthly, ${count.format(data.paying.yearly)} yearly`}
-        value={count.format(paying)}
-      />
-      <Row name="This week" value={`${count.format(data.thisWeek.joined)} joined, ${count.format(data.thisWeek.left)} left`} />
-    </>
+    <span className="mt-4 block h-2.5 w-full overflow-hidden rounded-full" style={{ background: "var(--adm-line)" }} role="img" aria-label={label}>
+      <span ref={fill} className="block h-full origin-left rounded-full rtl:origin-right" style={{ width: `${pct}%`, background: "var(--adm-accent)" }} />
+    </span>
   );
 }
 
@@ -325,13 +399,25 @@ const LEVER_WORDS: Record<NonNullable<GoalsData["lever"]>, string> = {
   monthly: "More choosing monthly would help most now.",
 };
 
-function TheFour({ data }: { data: GoalsData }) {
+/** A quest is met when this week's figure reaches its aim (stays under it, for who leave). */
+const questMet = (m: Mover) => (MOVER_WORDS[m.id].less ? m.value <= m.aim : m.value >= m.aim);
+
+/** How near a quest is to its aim, 0 to 100: for who leave, how near the share is to coming under it. */
+const questPct = (m: Mover) =>
+  MOVER_WORDS[m.id].less
+    ? m.value <= m.aim
+      ? 100
+      : Math.round((m.aim / m.value) * 100)
+    : Math.min(100, Math.round((m.value / Math.max(m.aim, 1e-9)) * 100));
+
+function Quests({ data }: { data: GoalsData }) {
   if (data.movers === null)
     return (
       <p className="text-[14px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
-        Not enough weeks yet. Aims begin {data.enoughOn ? dayWords(data.enoughOn, data.today) : "after four full weeks"}.
+        Not enough weeks yet. Quests begin {data.enoughOn ? dayWords(data.enoughOn, data.today) : "after four full weeks"}.
       </p>
     );
+  const done = data.movers.filter(questMet).length;
   return (
     <>
       {data.lever ? (
@@ -343,140 +429,149 @@ function TheFour({ data }: { data: GoalsData }) {
         {data.movers.map((m) => {
           const w = MOVER_WORDS[m.id];
           const fmt = (v: number) => (m.id === "readers" ? count.format(Math.round(v)) : share(v));
-          const met = w.less ? m.value <= m.aim : m.value >= m.aim;
+          const met = questMet(m);
           return (
-            <Row
-              key={m.id}
-              name={w.name}
-              nameNote={`aim ${w.less ? "under " : ""}${fmt(m.aim)}${w.of}`}
-              value={fmt(m.value)}
-              state={{ tone: met ? "good" : "wait", word: met ? "Met" : "Not yet" }}
-            />
+            <li key={m.id} className="flex items-start gap-3 border-t py-3 first:border-t-0" style={{ borderColor: "var(--adm-line)" }}>
+              <span className="mt-0.5 grid size-5 shrink-0 place-items-center">
+                {met ? (
+                  <Check size={18} strokeWidth={2.2} className="check-draw finish-draw" style={{ color: "var(--adm-ink)" }} />
+                ) : (
+                  <StatusDot tone="wait" />
+                )}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-baseline justify-between gap-3">
+                  <span className="text-[15px] leading-snug" style={{ color: met ? "var(--adm-ink)" : "var(--adm-ink-2)" }}>
+                    {w.name}
+                    <span className="sr-only">{met ? ", done" : ", not yet"}</span>
+                  </span>
+                  <span className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink)" }}>
+                    <span className="font-semibold">{fmt(m.value)}</span>
+                    <span style={{ color: "var(--adm-ink-3)" }}>
+                      {" "}
+                      / {w.less ? "under " : ""}
+                      {fmt(m.aim)}
+                    </span>
+                  </span>
+                </span>
+                <Bar pct={questPct(m)} label={`${w.name}: ${questPct(m)}% of the aim`} />
+              </span>
+            </li>
           );
         })}
       </ul>
+      <p className="mt-3 flex items-center gap-2 text-[13px]" style={{ color: "var(--adm-ink-2)" }}>
+        <Star size={16} style={{ color: "var(--adm-ink)" }} />
+        {done === 4
+          ? `A perfect week: all four done. That makes ${data.perfectWeeks + 1}.`
+          : `${data.perfectWeeks} perfect ${data.perfectWeeks === 1 ? "week" : "weeks"} so far. All four by Sunday makes it ${data.perfectWeeks + 1}.`}
+      </p>
     </>
   );
 }
 
-// ── Milestones ───────────────────────────────────────────────────────────
+// ── Levels ───────────────────────────────────────────────────────────────
 //
-// The road as milestones (his word, 2026-11-24: "I want to see more milestone
-// bars/ achievement designs"). Each step reached is an achievement, marked
-// with the house's seal and its day. The next step leads with its own bar,
-// what it still needs and its day. Every step ahead keeps a bar of how far
-// the number has come towards it.
+// The six milestones as levels: each reached keeps the house's seal and its
+// day; the next is open, with what it needs (its bar is the XP bar above);
+// the ones after it are locked, each with its own bar. Each opens its screen.
 
-function Milestones({ data, next, onOpen }: { data: GoalsData; next: GoalStep | null; onOpen: (id: GoalStepId) => void }) {
-  const done = data.steps.filter((s) => s.reachedOn !== null);
-  const ahead = data.steps.filter((s) => s.reachedOn === null && s !== next);
-  const pct = (s: GoalStep) => pctOf(data, s);
-
+function Levels({ data, next, onOpen }: { data: GoalsData; next: GoalStep | null; onOpen: (id: GoalStepId) => void }) {
   return (
-    <div>
-      {done.length ? (
-        <ul aria-label="Reached">
-          {done.map((s) => (
-            <li key={s.id} className="border-t first:border-t-0" style={{ borderColor: "var(--adm-line)" }}>
-              <button type="button" onClick={() => onOpen(s.id)} className="flex min-h-11 w-full items-center gap-3 py-2.5 text-start">
-                <Seal size={22} className="shrink-0" style={{ color: "var(--adm-ink)" }} />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[15px] leading-snug" style={{ color: "var(--adm-ink)" }}>
-                    {s.name}
+    <ol>
+      {data.steps.map((s, i) => {
+        const done = s.reachedOn !== null;
+        const isNext = s === next;
+        const over = !done && s.weeklyCents <= data.weeklyCents;
+        const note = done
+          ? s.id === data.justReached
+            ? "Reached this week"
+            : `Reached ${dayWords(s.reachedOn as string, data.today)}`
+          : over
+            ? `Held ${s.heldWeeks} of 4 weeks${s.byPace ? `, reached ${dayWords(s.byPace, data.today)} if it holds` : ""}`
+            : `${count.format(s.moreMembers ?? 0)} more members${s.byPace ? `, by ${dayWords(s.byPace, data.today)}` : ""}`;
+        return (
+          <li key={s.id} className="border-t first:border-t-0" style={{ borderColor: "var(--adm-line)" }}>
+            <button type="button" onClick={() => onOpen(s.id)} className="flex w-full items-start gap-3 py-3 text-start" aria-current={isNext ? "step" : undefined}>
+              <span className="mt-0.5 grid size-6 shrink-0 place-items-center">
+                {done ? (
+                  <Seal size={22} style={{ color: "var(--adm-ink)" }} />
+                ) : isNext ? (
+                  <StatusDot tone="wait" />
+                ) : (
+                  <Lock size={17} style={{ color: "var(--adm-ink-3)" }} />
+                )}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-baseline justify-between gap-3">
+                  <span className={"text-[15px] leading-snug" + (isNext ? " font-semibold" : "")} style={{ color: done || isNext ? "var(--adm-ink)" : "var(--adm-ink-2)" }}>
+                    <span style={{ color: "var(--adm-ink-3)" }}>Level {i + 1}</span> {s.name}
+                    {!done && !isNext ? <span className="sr-only">, locked</span> : null}
                   </span>
-                  <span className="block text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
-                    {s.id === data.justReached ? "Reached this week" : `Reached ${dayWords(s.reachedOn as string, data.today)}`}
+                  <span className="shrink-0 text-[14px] tabular-nums" style={{ color: done ? "var(--adm-ink-2)" : "var(--adm-ink-3)" }}>
+                    {money(s.weeklyCents)}
                   </span>
                 </span>
-                <span className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
-                  {money(s.weeklyCents)} a week
+                {!done && !isNext ? <Bar pct={pctOf(data, s)} label={`${pctOf(data, s)}% of the way to level ${i + 1}`} /> : null}
+                <span className="mt-1 block text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
+                  {note}
                 </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+              </span>
+            </button>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
 
-      {next ? (
-        <button type="button" onClick={() => onOpen(next.id)} className={"block w-full text-start " + (done.length ? "mt-5" : "mt-1")} aria-current="step">
-          <span className="flex items-baseline justify-between gap-3">
-            <span className="text-[17px] font-semibold leading-snug" style={{ color: "var(--adm-ink)" }}>
-              {next.name}
-            </span>
-            <span className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
-              {money(next.weeklyCents)} a week
-            </span>
-          </span>
-          <Bar pct={pct(next)} label={next.name} thick />
-          <NextNotes data={data} next={next} pct={pct(next)} />
-        </button>
-      ) : (
-        <p className="mt-4 text-[15px] font-semibold" style={{ color: "var(--adm-ink)" }}>
-          Every milestone is reached.
-        </p>
-      )}
+// ── Badges and records ───────────────────────────────────────────────────
 
-      {ahead.length ? (
-        <ul className="mt-4" aria-label="Ahead">
-          {ahead.map((s) => {
-            const over = s.weeklyCents <= data.weeklyCents;
-            const note = over
-              ? `Held ${s.heldWeeks} of 4 weeks${s.byPace ? `, reached ${dayWords(s.byPace, data.today)} if it holds` : ""}`
-              : `${pct(s)}%, ${count.format(s.moreMembers ?? 0)} more members${s.byPace ? `, by ${dayWords(s.byPace, data.today)}` : ""}`;
-            return (
-              <li key={s.id} className="border-t" style={{ borderColor: "var(--adm-line)" }}>
-                <button type="button" onClick={() => onOpen(s.id)} className="block w-full py-3 text-start">
-                  <span className="flex items-baseline justify-between gap-3">
-                    <span className="text-[15px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
-                      {s.name}
-                    </span>
-                    <span className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-3)" }}>
-                      {money(s.weeklyCents)} a week
-                    </span>
-                  </span>
-                  <Bar pct={pct(s)} label={s.name} />
-                  <span className="mt-1.5 block text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
-                    {note}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
-    </div>
+function Badges({ data }: { data: GoalsData }) {
+  return (
+    <ul className="grid grid-cols-3 gap-2">
+      {data.badges.map((b) => {
+        const earned = b.earnedOn !== null;
+        return (
+          <li
+            key={b.id}
+            className="flex min-h-[124px] flex-col items-center rounded-[var(--adm-radius)] border px-2 py-3 text-center"
+            style={{ borderColor: earned ? "var(--adm-line-strong)" : "var(--adm-line)", background: earned ? "var(--adm-panel-2)" : "transparent" }}
+          >
+            {earned ? <Seal size={30} style={{ color: "var(--adm-ink)" }} /> : <Lock size={24} className="my-[3px]" style={{ color: "var(--adm-ink-3)" }} />}
+            <span className="mt-2 text-[13px] font-semibold leading-tight" style={{ color: earned ? "var(--adm-ink)" : "var(--adm-ink-2)" }}>
+              {b.name}
+            </span>
+            <span className="mt-1 text-[12px] leading-snug" style={{ color: "var(--adm-ink-3)" }}>
+              {earned ? (b.earnedOn === data.week || (b.earnedOn as string) >= data.week ? "Earned this week" : dayWords(b.earnedOn as string, data.today)) : b.how}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function Records({ data }: { data: GoalsData }) {
+  const fmt = (r: GoalsData["records"][number]) =>
+    r.unit === "money" ? `${money(r.value)} a week` : r.unit === "share" ? share(r.value) : r.unit === "weeks" ? `${count.format(r.value)} weeks` : count.format(r.value);
+  return (
+    <ul>
+      {data.records.map((r) => (
+        <Row
+          key={r.name}
+          name={r.name}
+          nameNote={r.isNew ? "New record this week" : r.on ? dayWords(r.on, data.today) : undefined}
+          value={fmt(r)}
+          state={r.isNew ? { tone: "good", word: "New" } : undefined}
+        />
+      ))}
+    </ul>
   );
 }
 
 const pctOf = (data: GoalsData, s: GoalStep) =>
   s.weeklyCents > 0 ? Math.min(100, Math.round((data.weeklyCents / s.weeklyCents) * 100)) : 100;
-
-/** Under the next milestone's bar: what it still needs at the start, its day at the end. */
-function NextNotes({ data, next, pct }: { data: GoalsData; next: GoalStep; pct: number }) {
-  const toGo = Math.max(0, next.weeklyCents - data.weeklyCents);
-  const need =
-    toGo > 0
-      ? [`${pct}%, ${money(toGo)} to go`, `About ${count.format(next.moreMembers ?? 0)} more members`]
-      : [`Held ${next.heldWeeks} of 4 weeks`, null];
-  const when =
-    toGo === 0
-      ? [next.byPace ? `${dayWords(next.byPace, data.today)} if it holds` : "Holding", null]
-      : data.enoughOn || next.byFive === null
-      ? ["Not enough weeks yet", null]
-      : [next.byPace ? `By ${dayWords(next.byPace, data.today)}` : "Not at this pace", `${dayWords(next.byFive, data.today)} at 5% a week`];
-  return (
-    <span className="mt-2 grid grid-cols-[1fr_auto] gap-x-3 text-[13px] leading-snug">
-      <span style={{ color: "var(--adm-ink-2)" }}>{need[0]}</span>
-      <span className="text-end" style={{ color: "var(--adm-ink-2)" }}>
-        {when[0]}
-      </span>
-      <span style={{ color: "var(--adm-ink-3)" }}>{need[1]}</span>
-      <span className="text-end" style={{ color: "var(--adm-ink-3)" }}>
-        {when[1]}
-      </span>
-    </span>
-  );
-}
 
 /** A milestone's bar: how far the number has come towards it. The next one's is thicker. */
 function Bar({ pct, label, thick }: { pct: number; label: string; thick?: boolean }) {
@@ -526,7 +621,7 @@ function GoalScreen({ data, step, onBack }: { data: GoalsData; step: GoalStep; o
         Goals
       </button>
       <p className="mt-6 text-[13px]" style={{ color: "var(--adm-ink-3)", fontWeight: 500 }}>
-        Milestone {data.steps.indexOf(step) + 1} of {data.steps.length}
+        Level {data.steps.indexOf(step) + 1} of {data.steps.length}
       </p>
       <h2 className="mt-1 text-[34px] font-semibold leading-tight tracking-[-0.02em]" style={{ color: "var(--adm-ink)" }}>
         {step.name}
@@ -898,4 +993,3 @@ function Row({
 }
 
 const capFirst = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const lowerFirst = (s: string) => (/^(The|A|An) /.test(s) || /^Halfway/.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s);

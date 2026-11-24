@@ -20,11 +20,13 @@ The worker chat for one job: his own milestones in the panel, with the Goals pag
 
 2026-11-24, about 15:36 UTC, on the email: "make a better design". Redrawn (version 6 at the link): the milestone on the night card (as Today's lead and the retention emails stand), the whole road as six stops on one line, the one button on the card, then two quiet facts (the number, and the next milestone with its bar).
 
+2026-11-24, about 15:47 UTC: "gamify this system honestly (extreme) so I can actually have fun doing this (only gamify the goals for me)". Drawn (version 7 at the link): the Goals page as a game for him alone, every number in it real. Levels are the six milestones (a level is his once its milestone holds four weeks, and he keeps it); the XP is the real number, what members bring in a week, and can fall when members leave; the player card (level, the XP and its bar to the next level, which fills on the house's curve as the page opens, the streak by the house's candle, this week's members); this week's quests (the four, each with a bar toward its aim and the days left; all four in a week is a perfect week); the level map (seal, next, lock, each opening its own screen, which now says "Level N of 6"); badges for real events (locked ones say how to earn them); personal records; Seasons (by update) under More. The level-up email says "Level 4 reached". `GoalsData` gained `streak`, `daysLeft`, `perfectWeeks`, `badges` and `records`: each must come from the kept events at the build, and a badge or record that cannot be read from them is left out, never guessed.
+
 ## Where it stands
 
-**Waiting for his yes or no on the sixth drawing** (version 6 at the link, the email redrawn: the minimal page, the milestones as bars and achievements, a screen of its own for each milestone, and the email when one is reached). The earlier ones are the artifact's versions 1 to 4 and commits `58e3352c`, `0121babc`, `a773bd14` and `46cd9063`. He said not to worry about this chat's size (his word above).
+**Waiting for his yes or no on the seventh drawing** (version 7 at the link: the Goals page as a game for him, with each level's screen and the level-up email). The earlier ones are the artifact's versions 1 to 6 and the commits before this one.
 
-- The drawing, a private artifact: https://claude.ai/artifact/S4FhycWThzkyV6uMWHWdMh, version 6 (the page at 390 in the panel's dark theme, a reason for each choice, its other states, and two questions).
+- The drawing, a private artifact: https://claude.ai/artifact/S4FhycWThzkyV6uMWHWdMh, version 7 (the page at 390 in the panel's dark theme, a reason for each choice, its other states, and two questions).
 
 ## What was built (on the branch, for the drawing)
 
@@ -45,7 +47,7 @@ Each milestone opens its own screen (`GoalScreen` in GoalsView.tsx), at a tap on
 
 ## What was proved, and how
 
-- checkMock (`scripts/mock-check.mjs`) on the preview at 390 with touch, all four states (mid-road, first weeks, reached, and five More rows opened by real taps), on the five palettes: every rule passes, on all four drawings (the third with the finish moment on the panel's dark and light). Each milestone's screen, opened by a tap from a scrolled page (Halfway, a quarter of the way, the second mark): every rule passes with `{ pixels: true }` (the ring's centre words measured on their pixels), and Back returns to the same scroll position (250 to 250). Its first run caught the two amount fields at 25px tall inside a 44px box; they are 44px.
+- checkMock (`scripts/mock-check.mjs`) on the preview at 390 with touch, all four states (mid-road, first weeks, reached, and five More rows opened by real taps), on the five palettes: every rule passes, on all four drawings (the third with the finish moment on the panel's dark and light). Each milestone's screen, opened by a tap from a scrolled page (Halfway, a quarter of the way, the second mark): every rule passes with `{ pixels: true }` (the ring's centre words measured on their pixels), and Back returns to the same scroll position. On the game (version 7) the check passes on every state, the five More rows opened by taps, and each level's screen with pixels; Back returned to where each level was tapped (581, 509, 745). The walk's first Back check was wrong (it read the place before the tap scrolled the level into view) and was fixed, not the page. Its first run caught the two amount fields at 25px tall inside a 44px box; they are 44px.
 - The kit's check on the artifact page (`node docs/brand/kit/check.mjs --page`): passes on the five palettes at 360, 390, 412 and 1032, no parchment, no sideways scroll.
 - The preview at 390: no sideways scroll; no page error (the 403s are the hourly goals and the licence asking their real routes with no session, inside closed folds).
 - `npm run typecheck`: 0. eslint on the three new files: clean.
