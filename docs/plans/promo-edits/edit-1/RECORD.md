@@ -2,7 +2,7 @@
 
 The brief is `../edit-1-the-light.md`. This chat is session_01VuYTwacMjt6LkmPnjb5a2m, started 2026-11-23 at 22:05 UTC from that file.
 
-**Status, 2026-11-24 about 00:35 UTC: he asked for Buddha, Muhammad and the like in the run. That is not made (the brief's own rule, below); the old world's best known gods are offered in their place and nothing more is made until he answers. The third board stands at the link. No video is made. $21.74 of the $30 line.**
+**Status, 2026-11-24 about 00:46 UTC: the fourth board is published at the same link (the run as the old world's gods known at a glance) and waits for his yes or no. No video is made. $21.74 at the last reading, about $25 by this chat's count; the film passes the $30 line and is not started without his yes to the board.**
 
 The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 
@@ -21,6 +21,15 @@ The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 Not made. The brief says it in its own words: never Muhammad in any form, and never a holy figure, founder or leader of a living religion, "It gets an account reported and puts him at risk, and the old idols give the same run. If he asks for one of these, say why not in two lines and offer the old world's instead." This chat holds to that and would hold to it without the brief: a picture of Muhammad shown as a false god can bring threats to him in person, and both get the account and the app reported and taken down.
 
 What he is asking for underneath is that the pagans be known at a glance, which the third board's paintings are not to most viewers. Offered in their place, and waiting for his word: the old world's gods that everyone knows by sight (Zeus, Poseidon, Athena, Thor, Odin, Anubis, Ra, the golden calf, a Caesar), each from its best known picture.
+- In this chat, 2026-11-24 about 00:39 UTC, to the list offered in place of Buddha and Muhammad and to the question on passing $30 once the board has his yes: "ok"
+
+## The fourth board (2026-11-24, 00:40 to about 00:46 UTC, at his "ok")
+
+- **The run is the gods known at a glance,** still paintings in colour, each held on the god: Neptune (Copley, The Return of Neptune, about 1754, The Met, CC0), Athena (Klimt), Thor (Winge), Ra-Horakhty (the tomb of Nefertari, Egypt's own painting, since no Western one shows him as he is known), the golden calf (Poussin, 1633 to 1634, the National Gallery), Jupiter (Moreau), and Ingres's Jupiter to close, eye for eye on the Sinai icon.
+- The page has a sheet of all six as they stand in the film (`4b-the-gods.jpg`, made by `edit.py board`).
+- From the list he said ok to, not in yet: Odin and a Caesar (no painting in colour came up; the searches gave a marble bust's engraving for Caesar and nothing for Odin), and Anubis (the known tomb painting came up only 500 wide, too small to fill a phone). They are for the film.
+- Moreau's Jupiter was moved so the figure at his knee falls in the dark foot.
+- The kit's check passed again; two sheets were looked at.
 
 ## His word on the other frames, and the plan put to him (about 22:44 UTC)
 
@@ -115,4 +124,5 @@ Read with get_session, which shows the cost at the last finished turn.
 - By get_session at 00:03 UTC on 2026-11-24: **$11.86** at the last finished turn, so the opening's second design and the plan together were about $1.60.
 - By get_session at 00:22 UTC: **$19.42** at the last finished turn, so the second board was $7.56 (the cache had gone cold and was written again, which this chat had not counted on).
 - By get_session at 00:35 UTC: **$21.74** at the last finished turn, so the third board was $2.32.
+- The fourth board (the seventh turn): not read yet. Eight calls on a warm cache; this chat's count is about $3, so about $25 in all.
 - The line to ask him at is $30 in all.

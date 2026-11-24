@@ -9,6 +9,42 @@
    "fetched_width": 1920,
    "used": "the light: Saul alone, cut out whole from the ground, the horse and the landscape left out"
   },
+  "poseidon": {
+   "what": "The Return of Neptune, by John Singleton Copley, oil on canvas, about 1754",
+   "held": "The Metropolitan Museum of Art, New York",
+   "page": "https://commons.wikimedia.org/wiki/File:The_Return_of_Neptune_MET_DT201337.jpg",
+   "licence": "CC0",
+   "fetched_width": 1920,
+   "focus": [
+    0.37,
+    0.22
+   ],
+   "used": "the run"
+  },
+  "calf": {
+   "what": "The Adoration of the Golden Calf, by Nicolas Poussin, oil on canvas, 1633 to 1634",
+   "held": "The National Gallery, London",
+   "page": "https://commons.wikimedia.org/wiki/File:The_Adoration_of_the_Golden_Calf_%E2%80%93_Nicolas_Poussin.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "focus": [
+    0.3,
+    0.19
+   ],
+   "used": "the run"
+  },
+  "ra": {
+   "what": "Ra-Horakhty enthroned, a wall painting in the tomb of Nefertari, about 1255 BC (a photograph of the painted wall)",
+   "held": "In the tomb, Valley of the Queens, Luxor, Egypt",
+   "page": "https://commons.wikimedia.org/wiki/File:Maler_der_Grabkammer_der_Nefertari_001.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "focus": [
+    0.5,
+    0.24
+   ],
+   "used": "the run"
+  },
   "athene": {
    "what": "Pallas Athene, by Gustav Klimt, oil on canvas, 1898",
    "held": "Wien Museum, Vienna",
