@@ -22,6 +22,7 @@
  * so in words.
  */
 
+import { DayByDay } from "../traffic/DayByDay";
 import { useEffect, useMemo, useState } from "react";
 
 import {
@@ -492,17 +493,13 @@ function VisitorsChart() {
         </>
       )}
       <div className="mt-3">
-        <Disclosure title="Every day, as a table">
-          <DataTable
-            rows={daily.slice().reverse()}
-            rowKey={(r) => r.date}
+        {/* Day by day, for a person (his word, 2026-11-24): the same days and
+            the same two exports, one plain row each (DayByDay). */}
+        <Disclosure title="Day by day" hint={`The last 7 days; all ${daily.length} one tap away`}>
+          <DayByDay
+            rows={daily}
+            today={new Date().toISOString().slice(0, 10)}
             csvFilename={`traffic-${all ? "all" : `${range}d`}.csv`}
-            columns={[
-              { key: "date", label: "Day", render: (r) => r.date, csv: (r) => r.date },
-              { key: "visitors", label: "Visitors", align: "right", render: (r) => n(r.visitors), csv: (r) => r.visitors },
-              { key: "views", label: "Page views", align: "right", render: (r) => n(r.views), csv: (r) => r.views },
-              { key: "signups", label: "Signups", align: "right", render: (r) => n(r.signups), csv: (r) => r.signups },
-            ]}
           />
         </Disclosure>
       </div>
