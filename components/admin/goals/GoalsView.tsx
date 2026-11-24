@@ -182,7 +182,11 @@ export function dayWords(iso: string, today: string): string {
 // tier (gold). and green for easy stuff. and other colors usually applied to
 // certain tiers". Five tiers as games colour them, each a token of the
 // panel's theme (app/admin/admin-theme.css) with a value for dark and light,
-// and each always with its name or its level beside it.
+// and each always with its name or its level beside it. Then, the same day:
+// "I want to the whole system to be majority white and black. and only in
+// specific areas it's colored". So the colour lives in three places only: the
+// road's six segments, the seal of a badge earned, and the check of a quest
+// done (green, the easy tier). Everything else is the panel's ink.
 
 const TIERS = [
   { name: "Easy", color: "var(--adm-tier-1)" },
@@ -321,7 +325,6 @@ function Head({ data, next, reached }: { data: GoalsData; next: GoalStep | null;
   const current = level > 0 ? data.steps[level - 1] : null;
   const tier = tierOfLevel(level);
   const nextLevel = next ? data.steps.indexOf(next) + 1 : null;
-  const nextTier = nextLevel ? tierOfLevel(nextLevel) : tier;
   const toGo = next ? Math.max(0, next.weeklyCents - data.weeklyCents) : 0;
   let growth: string | null = null;
   if (data.enoughOn) growth = `Growth shows from ${dayWords(data.enoughOn, data.today)}.`;
@@ -331,7 +334,7 @@ function Head({ data, next, reached }: { data: GoalsData; next: GoalStep | null;
   return (
     <section aria-label="Your level">
       {reached ? (
-        <p role="status" className="mb-4 text-[14px] font-semibold" style={{ color: tier.color, animation: rise }}>
+        <p role="status" className="mb-4 text-[14px] font-semibold" style={{ color: "var(--adm-ink)", animation: rise }}>
           Level {level} reached this week. {reached.name}, held four weeks running.
         </p>
       ) : null}
@@ -340,14 +343,14 @@ function Head({ data, next, reached }: { data: GoalsData; next: GoalStep | null;
         <span
           aria-hidden
           className="text-[88px] leading-[0.8] tabular-nums"
-          style={{ fontFamily: "var(--font-display-serif)", color: level > 0 ? tier.color : "var(--adm-ink-3)", animation: reached ? rise : undefined }}
+          style={{ fontFamily: "var(--font-display-serif)", color: level > 0 ? "var(--adm-ink)" : "var(--adm-ink-3)", animation: reached ? rise : undefined }}
         >
           {level}
         </span>
         <div className="min-w-0 pb-1">
           <p className="text-[13px]" style={{ color: "var(--adm-ink-3)", fontWeight: 500 }}>
             <span className="sr-only">Level {level} of {data.steps.length}, </span>
-            {level > 0 ? <span style={{ color: tier.color }}>{tier.name}</span> : "No level yet"}
+            {level > 0 ? tier.name : "No level yet"}
           </p>
           <h2 className="mt-0.5 text-[20px] font-semibold leading-tight" style={{ color: "var(--adm-ink)" }}>
             {current ? current.name : "Your first level is next"}
@@ -365,7 +368,7 @@ function Head({ data, next, reached }: { data: GoalsData; next: GoalStep | null;
           </span>
         </p>
         <p className="inline-flex shrink-0 items-center gap-1.5 text-[13px] tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
-          <Candle size={17} style={{ color: data.streak.weeks > 0 ? "var(--adm-tier-4)" : "var(--adm-ink-3)" }} />
+          <Candle size={17} style={{ color: data.streak.weeks > 0 ? "var(--adm-ink)" : "var(--adm-ink-3)" }} />
           {data.streak.weeks} {data.streak.weeks === 1 ? "week" : "weeks"} growing
         </p>
       </div>
@@ -379,7 +382,7 @@ function Head({ data, next, reached }: { data: GoalsData; next: GoalStep | null;
         {next ? (
           <>
             {toGo > 0 ? `${money(toGo)} to ` : `Held ${next.heldWeeks} of 4 weeks at `}
-            <span className="font-semibold" style={{ color: nextTier.color }}>
+            <span className="font-semibold" style={{ color: "var(--adm-ink)" }}>
               level {nextLevel}, {next.name}
             </span>
             .
@@ -441,7 +444,7 @@ function Road({ data, fresh }: { data: GoalsData; fresh: number | null }) {
           <span
             key={s.id}
             className="flex-1 text-[11.5px] tabular-nums"
-            style={{ color: s.reachedOn ? tierOfLevel(i + 1).color : "var(--adm-ink-3)", fontWeight: s.reachedOn ? 600 : 400 }}
+            style={{ color: s.reachedOn ? "var(--adm-ink)" : "var(--adm-ink-3)", fontWeight: s.reachedOn ? 600 : 400 }}
           >
             {i + 1}
           </span>
@@ -521,14 +524,14 @@ function Quests({ data }: { data: GoalsData }) {
                     </span>
                   </span>
                 </span>
-                <Bar pct={questPct(m)} color="var(--adm-tier-1)" label={`${w.name}: ${questPct(m)}% of the aim`} />
+                <Bar pct={questPct(m)} color="var(--adm-ink)" label={`${w.name}: ${questPct(m)}% of the aim`} />
               </span>
             </li>
           );
         })}
       </ul>
       <p className="mt-3 flex items-center gap-2 text-[13px]" style={{ color: "var(--adm-ink-2)" }}>
-        <Star size={16} style={{ color: "var(--adm-tier-5)" }} />
+        <Star size={16} style={{ color: "var(--adm-ink)" }} />
         {done === 4
           ? `A perfect week: all four done. That makes ${data.perfectWeeks + 1}.`
           : `${data.perfectWeeks} perfect ${data.perfectWeeks === 1 ? "week" : "weeks"} so far. All four by Sunday makes it ${data.perfectWeeks + 1}.`}
@@ -563,9 +566,9 @@ function Levels({ data, next, onOpen }: { data: GoalsData; next: GoalStep | null
             <button type="button" onClick={() => onOpen(s.id)} className="flex w-full items-start gap-3 py-3 text-start" aria-current={isNext ? "step" : undefined}>
               <span className="mt-0.5 grid size-6 shrink-0 place-items-center">
                 {done ? (
-                  <Seal size={22} style={{ color: tier.color }} />
+                  <Seal size={22} style={{ color: "var(--adm-ink)" }} />
                 ) : isNext ? (
-                  <span className="block size-3 rounded-full border-2" style={{ borderColor: tier.color }} />
+                  <span className="block size-3 rounded-full border-2" style={{ borderColor: "var(--adm-ink)" }} />
                 ) : (
                   <Lock size={17} style={{ color: "var(--adm-ink-3)" }} />
                 )}
@@ -573,7 +576,7 @@ function Levels({ data, next, onOpen }: { data: GoalsData; next: GoalStep | null
               <span className="min-w-0 flex-1">
                 <span className="flex items-baseline justify-between gap-3">
                   <span className={"text-[15px] leading-snug" + (isNext ? " font-semibold" : "")} style={{ color: done || isNext ? "var(--adm-ink)" : "var(--adm-ink-2)" }}>
-                    <span className="font-semibold" style={{ color: tier.color }}>Level {i + 1}</span> {s.name}
+                    <span style={{ color: "var(--adm-ink-3)" }}>Level {i + 1}</span> {s.name}
                     {!done && !isNext ? <span className="sr-only">, locked</span> : null}
                   </span>
                   <span className="shrink-0 text-[14px] tabular-nums" style={{ color: done ? "var(--adm-ink-2)" : "var(--adm-ink-3)" }}>
@@ -581,7 +584,7 @@ function Levels({ data, next, onOpen }: { data: GoalsData; next: GoalStep | null
                   </span>
                 </span>
                 <span className="mt-1 block text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
-                  <span style={{ color: tier.color }}>{tier.name}.</span> {note}
+                  {tier.name}. {note}
                 </span>
               </span>
             </button>
@@ -603,7 +606,7 @@ function Badges({ data }: { data: GoalsData }) {
         return (
           <li key={b.id} className="flex min-h-[128px] flex-col items-center px-1 py-3 text-center">
             {earned ? <Seal size={30} style={{ color: tier.color }} /> : <Lock size={24} className="my-[3px]" style={{ color: "var(--adm-ink-3)" }} />}
-            <span className="mt-1.5 text-[11.5px] font-semibold" style={{ color: tier.color }}>
+            <span className="mt-1.5 text-[11.5px] font-semibold" style={{ color: "var(--adm-ink-3)" }}>
               {tier.name}
             </span>
             <span className="mt-0.5 text-[13px] font-semibold leading-tight" style={{ color: earned ? "var(--adm-ink)" : "var(--adm-ink-2)" }}>
@@ -630,7 +633,7 @@ function Records({ data }: { data: GoalsData }) {
           name={r.name}
           nameNote={r.isNew ? "New record this week" : r.on ? dayWords(r.on, data.today) : undefined}
           value={fmt(r)}
-          state={r.isNew ? { tone: "good", word: "New", color: "var(--adm-tier-5)" } : undefined}
+          state={r.isNew ? { tone: "good", word: "New" } : undefined}
         />
       ))}
     </ul>
@@ -688,7 +691,7 @@ function GoalScreen({ data, step, onBack }: { data: GoalsData; step: GoalStep; o
         <ChevronLeft size={18} className="rtl:-scale-x-100" />
         Goals
       </button>
-      <p className="mt-6 text-[13px]" style={{ color: tier.color, fontWeight: 600 }}>
+      <p className="mt-6 text-[13px]" style={{ color: "var(--adm-ink-3)", fontWeight: 500 }}>
         Level {data.steps.indexOf(step) + 1} of {data.steps.length} · {tier.name}
       </p>
       <h2 className="mt-1 text-[34px] font-semibold leading-tight tracking-[-0.02em]" style={{ color: "var(--adm-ink)" }}>
@@ -698,10 +701,10 @@ function GoalScreen({ data, step, onBack }: { data: GoalsData; step: GoalStep; o
         {money(step.weeklyCents)} a week
       </p>
 
-      <Ring pct={pct} color={tier.color} label={step.name} onDone={landed}>
+      <Ring pct={pct} color="var(--adm-accent)" label={step.name} onDone={landed}>
         {done ? (
           ringDone || reduced ? (
-            <Check size={52} strokeWidth={2} className="check-draw finish-draw" style={{ color: tier.color }} />
+            <Check size={52} strokeWidth={2} className="check-draw finish-draw" style={{ color: "var(--adm-ink)" }} />
           ) : null
         ) : (
           <>

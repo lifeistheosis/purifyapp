@@ -26,11 +26,13 @@ The worker chat for one job: his own milestones in the panel, with the Goals pag
 
 2026-11-24, about 16:12 UTC, with a still of the level-up and the player card: "new card design that looks vibe coded". Redrawn (version 9 at the link): no card and no circle. The head sits on the page: the level as a large numeral in the house's display serif (`--font-display-serif`) in its tier's colour, the tier named beside the level's name; the XP and the streak; and the road, six segments numbered under them, each filled in its tier's colour as far as the number has come towards that level, which is the one picture and carries the bars the level list had. A level reached this week is its line in its colour at the top, its numeral rising in and its segment filling (no check circle). The badges lost their boxes and coloured edges. Every check passed again (all states, the More rows, each level's screen with pixels, Back).
 
+2026-11-24, about 16:15 UTC: "I want to the whole system to be majority white and black. and only in specific areas it's colored". Redrawn (version 10 at the link): the page is the panel's black and white again, and the tier colours live in three places only: the road's six segments, the seal of a badge earned, and the green check of a quest done. The numeral, the labels, the quest bars, the level list, the records, the streak and each level's screen are ink. The tiers are still named in words everywhere they were. Every check passed again.
+
 ## Where it stands
 
-**Waiting for his yes or no on the ninth drawing** (version 9 at the link: the game in five tier colours with no card, the level numeral and the road, each level's screen and the level-up email). The earlier ones are the artifact's versions 1 to 6 and the commits before this one.
+**Waiting for his yes or no on the tenth drawing** (version 10 at the link: the game in black and white, colour only on the road, earned badges and done quests; no card; each level's screen; the level-up email). The earlier ones are the artifact's versions 1 to 6 and the commits before this one.
 
-- The drawing, a private artifact: https://claude.ai/artifact/S4FhycWThzkyV6uMWHWdMh, version 9 (the page at 390 in the panel's dark theme, a reason for each choice, its other states, and two questions).
+- The drawing, a private artifact: https://claude.ai/artifact/S4FhycWThzkyV6uMWHWdMh, version 10 (the page at 390 in the panel's dark theme, a reason for each choice, its other states, and two questions).
 
 ## What was built (on the branch, for the drawing)
 
