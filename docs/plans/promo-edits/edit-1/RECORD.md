@@ -2,7 +2,7 @@
 
 The brief is `../edit-1-the-light.md`. This chat is session_01VuYTwacMjt6LkmPnjb5a2m, started 2026-11-23 at 22:05 UTC from that file.
 
-**Status, 2026-11-24 about 00:59 UTC: at his fourth word Buddha is added to the run (this chat changed its answer on him, and says why below). Muhammad is still not made. The fourth board with Buddha is published at the same link and waits for his yes or no. No video is made. $24.30 at the last reading, about $26 to $27 by this chat's count.**
+**Status, 2026-11-24 about 01:07 UTC: at his word ("use art, not statues or old drawings") every pagan in the run is now a painting: Buddha is John La Farge's painting of the Great Buddha, and Ra's wall painting is out. Muhammad is not made. The board is published at the same link and waits for his yes or no. No video is made. By this chat's count it stands near $29 of the $30 line, so nothing more is made without his word.**
 
 The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 
@@ -44,6 +44,16 @@ If he wants the brief's rule itself lifted, that is his to settle with the arbit
 - **The picture:** Seated Buddha, gilt bronze, China, Ming dynasty, 1500s, the Cleveland Museum of Art (1970.149.1), the museum's own photograph, CC0, taken from its open-access host. He is third in the run and is still 4 on the page. The sheet of the run's gods now has eight, Ingres's Jupiter among them.
 - **On Muhammad the answer stands, and it is this chat's own, not only the brief's.** A picture of him is the one thing in the film that can get someone hurt, whatever is meant by it. Also said to him: he is a prophet to his people and not a god, so a run of gods is not his place. The offer of a line of Scripture in his picture's place stands and is now call 4 on the page (John 14:6 or 1 John 4:1).
 - The kit's check passed again on the page; one sheet was looked at.
+- In this chat, 2026-11-24 about 01:00 UTC, on the board with Buddha as a bronze: "Again, use art, not statues or old drawings."
+
+## His word on art, and the change (01:00 to about 01:07 UTC)
+
+- **Buddha is a painting now:** The Great Statue of Amida Buddha at Kamakura, Known as the Daibutsu, from the Priest's Garden, by John La Farge, watercolour, 1887, The Met, CC0 (its Commons page names the painter, the year and the medium, read by a script). Held on his face. The Cleveland bronze's photograph is out; its row is kept as `buddha-statue`, marked not used.
+- **Ra is out.** His picture was Egypt's own wall painting, taken to be the "old drawing" of his word and not Western art. No Western painting of Ra came up.
+- Also found and not used: Odilon Redon's Buddha (offered to him as the other choice), a second Redon too pale to read, Bridgman's procession of the sacred bull (only 1,000 wide), and four Asian paintings at Cleveland (not Western).
+- `plate` in `edit.py` now keeps a painting covering the frame, so no edge of a canvas shows.
+- The run on the board: Neptune (Copley), Athena (Klimt), Buddha (La Farge), Thor (Winge), the golden calf (Poussin), Jupiter (Moreau), and Ingres's Jupiter to close.
+- The kit's check passed again; two sheets were looked at.
 
 ## The fourth board (2026-11-24, 00:40 to about 00:46 UTC, at his "ok")
 
@@ -147,5 +157,5 @@ Read with get_session, which shows the cost at the last finished turn.
 - By get_session at 00:22 UTC: **$19.42** at the last finished turn, so the second board was $7.56 (the cache had gone cold and was written again, which this chat had not counted on).
 - By get_session at 00:35 UTC: **$21.74** at the last finished turn, so the third board was $2.32.
 - By get_session at 00:53 UTC: **$24.30** at the last finished turn, so the fourth board and the two answers after it were $2.56 together.
-- Buddha's addition (the eleventh turn): not read yet. Seven calls on a warm cache; this chat's count is about $2, so about $26 to $27 in all.
+- Buddha's addition and his change to a painting (the eleventh and twelfth turns): get_session at 01:00 UTC still read $24.30, so neither is read yet. From the earlier readings this chat now reckons a turn by what it writes and thinks, not by its calls: about $2 each, so near $29 in all. The next turn reads it.
 - The line to ask him at is $30 in all.

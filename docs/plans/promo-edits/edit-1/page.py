@@ -28,7 +28,7 @@ STILLS = [
       "<b>For the viewer.</b> He lies on something now, so he reads as a man thrown to the ground, not a figure floating. His question stands alone in the dark between the two lights, so it is read first. One soft light, no beams, and it grows a little, evenly."]),
     ("2-run-first", "2.22 s", "The run: a god, sharp",
      "Fourth design, at your word. Neptune, the Romans' Poseidon, from The Return of Neptune by John Singleton Copley, about 1754 (The Met).",
-     ["<b>What changed.</b> Your word: recognizable pagans. The run is now the old world's gods that are known at a glance: the trident, the helmet, the hammer, the falcon's head, the golden calf. Still paintings in colour, each filling the frame and held on the god.",
+     ["<b>What changed.</b> Your word: recognizable pagans. The run is now the old world's gods that are known at a glance: the trident, the helmet, the hammer, the golden calf. Still paintings in colour, each filling the frame and held on the god.",
       "<b>Why.</b> A viewer has a quarter of a second for each one. A god he knows lands. One he has to work out does not.",
       "<b>The line.</b> \"there be gods many, and lords many\", 1 Corinthians 8:5, held for the whole run, in white where the picture's light falls away.",
       "<b>One thing to know.</b> Every picture here is free to use, by what its own page states, so nobody can claim the video. Each is held on the god, so the unclothed figures beside some of them stay out of the frame or in the dark."]),
@@ -37,17 +37,18 @@ STILLS = [
      ["<b>What it is.</b> The Christ edit's melt, the one you called perfect: both whole pictures laid over each other, each following the other part of the way, soft in the middle.",
       "<b>For the viewer.</b> One god turns into the next before the eye can rest on it. None of them holds."]),
     ("4-run-sharp", "2.75 s", "The run: Buddha",
-     "Added at your word. A seated Buddha, China, Ming dynasty, 1500s (The Cleveland Museum of Art).",
-     ["<b>What changed.</b> You asked for Buddha and gave your reason, and on him you are right. In kind he stands in this run as Zeus and Ra do, so he is in.",
-      "<b>The risk, named once more and then left to you.</b> His followers are living people, so this frame can get the video reported. That is a risk to the account, and it is yours to take.",
-      "<b>The picture.</b> The museum's own photograph, released free to use. He is held on his face like the others, with the light pooled there."]),
+     "Changed at your word: a painting, not a statue. The Great Buddha of Kamakura, painted by John La Farge in 1887 (The Met).",
+     ["<b>What changed.</b> You asked for art, not statues or old drawings. Buddha is now a painting by a Western painter, held on his face like the others. The museum photograph of a bronze is gone.",
+      "<b>Why this one.</b> It is one of the best known Buddhas in the world, so he is known at a glance, and it is a painting in colour, as you asked for all the pagans.",
+      "<b>The other one found.</b> Odilon Redon's Buddha, a standing figure in a robe beside a tree. It is the more famous painting, but he is harder to know at a glance. Say the word and it takes this place.",
+      "<b>The risk, as before.</b> His followers are living people, so this frame can get the video reported. That is the account's risk, and yours to take."]),
     ("4b-the-gods", "2.10 s to the drop", "The run's gods so far",
-     "Each as it stands in the film. First row: Neptune (Copley) and Athena (Klimt). Second: Buddha (Ming dynasty) and Thor (Winge). Third: Ra (the tomb of Nefertari) and the golden calf (Poussin). Fourth: Jupiter (Moreau) and Jupiter (Ingres), who closes the run.",
-     ["<b>From your list.</b> Zeus, Poseidon, Athena, Thor, Ra, the golden calf and now Buddha are in.",
-      "<b>Not in yet.</b> Odin, Anubis and a Caesar. Odin and a Caesar did not come up in colour, and Anubis came up only too small to fill a phone. I would bring them in for the film.",
-      "<b>Ra.</b> He is Egypt's own painting, from the tomb of Nefertari. No Western painting shows him as the world knows him.",
+     "Each as it stands in the film, and each a painting. Top: Neptune (Copley) and Athena (Klimt). Middle: Buddha (La Farge) and Thor (Winge). Bottom: the golden calf (Poussin) and Jupiter (Moreau). Ingres's Jupiter closes the run, in the next still.",
+     ["<b>From your list.</b> Zeus, Poseidon, Athena, Thor, the golden calf and Buddha are in, every one a painting.",
+      "<b>Ra is out.</b> He was Egypt's own wall painting, which reads as an old drawing and is not Western art. No Western painting of him came up. One painting of Egypt's worship was found, Frederick Bridgman's procession of the sacred bull, but only in a small file. I would bring it in for the film from a larger one.",
+      "<b>Not in yet.</b> Odin, Anubis and a Caesar. No painting of them came up.",
       "<b>Thor.</b> The hammer, the lightning and the red are what make him known at once, so he is shown to the waist and not as a face.",
-      "<b>Who is not here.</b> Muhammad. A picture of him is the one thing in this that can get someone hurt, whatever is meant by it, so I will not make one. He is also a prophet to his people and not a god, so a run of gods is not his place. The belief can be said in Scripture's own words: see your calls below."], (720, 2560)),
+      "<b>Who is not here.</b> Muhammad. A picture of him is the one thing in this that can get someone hurt, whatever is meant by it, so I will not make one. He is also a prophet to his people and not a god, so a run of gods is not his place. The belief can be said in Scripture's own words: see your calls below."], (720, 1920)),
     ("5-before-the-drop", "11.17 s", "The last frame before the drop",
      "Jupiter, from Jupiter and Thetis by Ingres, 1811 (Musée Granet, Aix-en-Provence). Scripture names Jupiter in Acts 14:12.",
      ["<b>What it is.</b> The last false god is set eye for eye on the icon that follows: the same place on the screen and the same size. Look at this still and the next one together.",
@@ -74,7 +75,7 @@ STILLS = [
       "<b>Why 19.07 and not 19.5.</b> It is the reference's last cut. From there the mark has nine tenths of a second to be read. From 19.5 it would have less than half a second."]),
 ]
 
-MORE = ("Eight are in. The same gods will come again from other famous paintings, since Zeus, Poseidon and Athena have many, "
+MORE = ("Seven are in. The same gods will come again from other famous paintings, since Zeus, Poseidon and Athena have many, "
         "with Odin, Anubis and a Caesar added. Name any god or painting you want in it and I will look for it.")
 
 
@@ -106,7 +107,7 @@ body = f"""<title>The Light storyboard</title>
     <span class="k-eyebrow">Promo edit 1</span>
     <h1>The Light</h1>
     <p class="k-lede">The storyboard, for your yes or no.</p>
-    <p class="k-meta">Nine stills from the real stage. The run is made a fourth time, and Buddha is added, at your word. No video is made yet.</p>
+    <p class="k-meta">Nine stills from the real stage. The run is made a fourth time, with Buddha as a painting, at your word. No video is made yet.</p>
   </header>
 
   <section class="k-section" aria-labelledby="s-shape">

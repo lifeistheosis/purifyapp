@@ -28,9 +28,14 @@ for line in sys.argv[1:]:
         if os.path.exists(f'raw/{name}.jpg') and name in R: continue
         r=json.loads(raw(API+'action=query&generator=search&gsrnamespace=6&gsrlimit=8&gsrsearch='+urllib.parse.quote(q+' filetype:bitmap')+'&prop=imageinfo&iiprop=url|size|extmetadata&iiurlwidth=1920'))
         yes=[m for m in must.lower().split(',') if not m.startswith('-')]; no=[m[1:] for m in must.lower().split(',') if m.startswith('-')]
-        ps=[p for p in (r.get('query') or {}).get('pages',{}).values() if all(m in p['title'].lower() for m in yes) and not any(m in p['title'].lower() for m in no) and 'thumb.wikimedia.org' in p['imageinfo'][0]['thumburl']]
+        ps=[p for p in (r.get('query') or {}).get('pages',{}).values() if all(m in p['title'].lower() for m in yes) and not any(m in p['title'].lower() for m in no)]
         if not ps: print(name,'NOTHING FOUND'); continue
         p=max(ps,key=lambda p:p['imageinfo'][0]['width'])
+        for w in (1280,960,500,330):   # a file under 1920 wide: the widest standard step under its own width
+            if 'thumb.wikimedia.org' in p['imageinfo'][0]['thumburl']: break
+            time.sleep(1.5)
+            p=list(json.loads(raw(API+'action=query&titles='+urllib.parse.quote(p['title'])+f'&prop=imageinfo&iiprop=url|size|extmetadata&iiurlwidth={w}'))['query']['pages'].values())[0]
+        if 'thumb.wikimedia.org' not in p['imageinfo'][0]['thumburl']: print(name,'TOO SMALL',p['title'][:70]); continue
         d=info(p['imageinfo'][0]); d['title']=p['title']; R[name]=d
         time.sleep(1.5); open(f'raw/{name}.jpg','wb').write(raw(d['thumb'])); print(name,d['licence'],f"{d['w']}x{d['h']} at {d['tw']}",p['title'][:90])
     else:

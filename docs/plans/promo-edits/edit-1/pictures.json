@@ -1,5 +1,5 @@
 {
- "about": "The pictures of promo edit 1, the Light. Every file was fetched from Wikimedia Commons on 2026-11-23 at the width given ('fetched_width'); 'licence' is what that page states. A statue's photograph is the museum's own, released CC0 under its Open Access policy (The Met's own record marks each isPublicDomain: true; 'museum_page' is that record). The icons and the painting are faithful photographs of flat works long out of copyright, marked Public domain on Commons. None is held in Greece or Italy (lib/marketing/heritagePictures.ts). 'eyes' is where the eyes are in the fetched file, read off by hand: the eye at the viewer's left first. The files themselves are out of git. From 2026-11-24, at his word that the pagans can be any kind of picture, the run also takes old engravings: flat printed works long out of copyright, marked Public domain on Commons. They are ink already and are not put through the ink filter. 'focus' is the point of the print that is held, as shares of its width and height. From his word of 2026-11-24 (\"ensure its colored and western high quality art\"), the run is Western paintings in colour. Each is long out of copyright and marked Public domain on Commons, though he said that need not hold for the pagans. On 2026-11-24, at his word given three times after the risk to the account was named to him, a Buddha stands in the run: the Cleveland Museum of Art's own photograph, released CC0 under its Open Access policy.",
+ "about": "The pictures of promo edit 1, the Light. Every file was fetched from Wikimedia Commons on 2026-11-23 at the width given ('fetched_width'); 'licence' is what that page states. A statue's photograph is the museum's own, released CC0 under its Open Access policy (The Met's own record marks each isPublicDomain: true; 'museum_page' is that record). The icons and the painting are faithful photographs of flat works long out of copyright, marked Public domain on Commons. None is held in Greece or Italy (lib/marketing/heritagePictures.ts). 'eyes' is where the eyes are in the fetched file, read off by hand: the eye at the viewer's left first. The files themselves are out of git. From 2026-11-24, at his word that the pagans can be any kind of picture, the run also takes old engravings: flat printed works long out of copyright, marked Public domain on Commons. They are ink already and are not put through the ink filter. 'focus' is the point of the print that is held, as shares of its width and height. From his word of 2026-11-24 (\"ensure its colored and western high quality art\"), the run is Western paintings in colour. Each is long out of copyright and marked Public domain on Commons, though he said that need not hold for the pagans. On 2026-11-24, at his word given three times after the risk to the account was named to him, a Buddha stands in the run: the Cleveland Museum of Art's own photograph, released CC0 under its Open Access policy. Later the same day, at his word (\"use art, not statues or old drawings\"), Buddha became a painting (the Great Buddha of Kamakura as John La Farge painted it, The Met, CC0) and Ra's wall painting left the run.",
  "pictures": {
   "saul": {
    "what": "The Conversion of Saint Paul, by Parmigianino, oil on canvas, about 1527",
@@ -43,9 +43,21 @@
     0.5,
     0.24
    ],
-   "used": "the run"
+   "used": "not used since his word of 2026-11-24 (art, not statues or old drawings)"
   },
   "buddha": {
+   "what": "The Great Statue of Amida Buddha at Kamakura, Known as the Daibutsu, from the Priest's Garden, by John La Farge, watercolour, 1887",
+   "held": "The Metropolitan Museum of Art, New York",
+   "page": "https://commons.wikimedia.org/wiki/File:The_Great_Statue_of_Amida_Buddha_at_Kamakura,_Known_as_the_Daibutsu,_from_the_Priest%27s_Garden_MET_DT93.jpg",
+   "licence": "CC0",
+   "fetched_width": 1920,
+   "focus": [
+    0.6,
+    0.22
+   ],
+   "used": "the run, at his word of 2026-11-24"
+  },
+  "buddha-statue": {
    "what": "Seated Buddha, China, Ming dynasty, 1500s (gilt bronze)",
    "held": "The Cleveland Museum of Art (1970.149.1)",
    "museum_page": "https://clevelandart.org/art/1970.149.1",
@@ -56,7 +68,7 @@
     0.49,
     0.35
    ],
-   "used": "the run, at his word of 2026-11-24"
+   "used": "not used since his word of 2026-11-24 (art, not statues)"
   },
   "athene": {
    "what": "Pallas Athene, by Gustav Klimt, oil on canvas, 1898",
