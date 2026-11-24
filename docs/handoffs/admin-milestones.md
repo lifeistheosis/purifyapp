@@ -14,6 +14,8 @@ The worker chat for one job: his own milestones in the panel, with the Goals pag
 
 2026-11-24, on the third drawing, about 15:15 UTC: "now ensure each goal has its own screen and animation". Done for the six milestones (version 4 at the same link). The four weekly goals (what moves it) do not have screens of their own yet; if he meant them too, the same screen takes them.
 
+2026-11-24, about 15:28 UTC: "and now email updates whenever one gets hit". Not built here: this chat was past its size line. It is the fresh chat's, after the page (see Next, 5).
+
 ## Where it stands
 
 **Waiting for his yes or no on the fourth drawing** (version 4 at the link: the minimal page, the milestones as bars and achievements, and a screen of its own for each milestone). The earlier ones are the artifact's versions 1 to 3 and commits `58e3352c`, `0121babc` and `a773bd14`. **This chat is past its size line** (about 200,000 tokens): at his yes, a fresh chat builds the rest from this file.
@@ -68,6 +70,7 @@ Still to ask when the step needs it: whether Pro (the EIKON Box membership) coun
 2. The marks: one admin route (zod, the rate limit, the service role), kept in `site_settings` under one key. No migration.
 3. The page: `GoalsTab` renders `GoalsView` from a route that returns `GoalsData`, with `ApiLimitBanner`, `HourlyGoals` and `ApiLimitsPanel` in their places. Add the quiet focus for the marks' fields (`adm-quiet-field`: a tap shows the house's fine edge, the keyboard keeps its ring); the panel's own `.adm input:focus-visible` ring outranks the house rule, so it needs its own line in `app/admin/admin-theme.css`.
 4. Proof: typecheck, the unit tests, lint, the web build (after the Tailwind fix), the page walked at phone width with real touch through the preview, and checkMock again.
+5. **An email to him whenever a milestone is reached** (his word above). Drawn first from the kit's emails (`docs/brand/kit/email/`, Dark, phone first), with a reason for each choice, for his yes before anything sends. What it holds: the milestone's name, "reached" and its day, held four weeks running, the number now, and the next milestone with its bar. Sent once per milestone (a record of what was sent, in `site_settings` beside the marks, so no migration), by whatever runs the panel's hourly notices (`HourlyGoals`'s `cronConfigured`) or the weekly brief (`lib/admin/ownerBrief.ts`); find the panel's email sender before adding one. To be asked: to him alone (proposed), or more people too; and whether his phone gets the same notice (in the brief's "after it stands" list). Sending email is outward-facing: his yes on the design and the trigger first.
 
 ## Noted for the rest of the panel (not this job, nothing changed)
 
