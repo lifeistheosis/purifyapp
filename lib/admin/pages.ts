@@ -136,9 +136,12 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
         figure: "revenue",
         views: [
           { tab: "overview", label: "Overview" },
-          { tab: "revenue", label: "Revenue" },
-          { tab: "subscriptions", label: "Subscriptions" },
-          { tab: "costs", label: "Costs" },
+          // One entry for Money (his yes, 2026-11-24, step 2 of
+          // docs/plans/admin-levels-rework.md): Overview's own lines open
+          // these three, each with its headline; their #tab= links still land.
+          { tab: "revenue", label: "Revenue", folded: true },
+          { tab: "subscriptions", label: "Subscriptions", folded: true },
+          { tab: "costs", label: "Costs", folded: true },
         ],
       },
       {
