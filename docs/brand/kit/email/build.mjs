@@ -145,6 +145,11 @@ function wearing(k, app) {
     shop: v["k-money-shop"], // money's three hues: --k-money-*
     plus: v["k-money-plus"],
     box: v["k-money-box"],
+    tier1: v["k-tier-1"], // the goals game's tiers (--k-tier-*): the level-up email's road alone
+    tier2: v["k-tier-2"],
+    tier3: v["k-tier-3"],
+    tier4: v["k-tier-4"],
+    tier5: v["k-tier-5"],
   };
 }
 
@@ -795,6 +800,68 @@ export function brief(how) {
 }
 
 
+// ── A milestone reached ────────────────────────────────────────────────────
+// The owner's email when one of his milestones is reached (his word,
+// 2026-11-24: "and now email updates whenever one gets hit"), the Goals page's
+// own milestones set for a letter (components/admin/goals/GoalsView.tsx).
+// Every figure below is made up for the drawing; his marks and his numbers
+// live in the database and are never written into the repository.
+
+const MILESTONE = {
+  date: "Monday, May 17",
+  level: 4,
+  // The level's tier, 1 (Easy, green) to 5 (Mythic, gold): the colour of its mark.
+  tier: 4,
+  name: "Halfway",
+  amount: "$750 a week",
+};
+
+/**
+ * The goal hit, celebrated, and nothing to explain it (his word, 2026-11-24:
+ * "make it straight to the point on whatever it's about. the admin panel does
+ * the explaining. the email does the showcasing", and then: "im referring to
+ * the individual goal (checkmark or confetti's or trophy symbol) congratulations
+ * you hit etc"). The app's own check in a circle of the level's tier colour (a
+ * picture, so it is round in every mail app), "Congratulations", the goal by
+ * its name, its level and its amount. Centred: it is a moment, not a report.
+ * The goal is set in the sans, bold and close, at his word the same day ("new
+ * font but this is fine"): a mail app fetches no font, so it is the system's
+ * own sans, as the rest of the letter's labels are.
+ */
+function goalHit(p, m) {
+  const { c } = p;
+  const mark = inked(
+    p,
+    (src, cls, show) => `<img class="${cls}" src="${src}" width="96" height="96" alt="" style="${show}border:0;outline:none;margin:0 auto">`,
+    `img/level-${m.tier}.png`,
+    `img/level-${m.tier}-light.png`,
+  );
+  return `<tr><td align="center" style="padding:52px 0 0;text-align:center">
+  ${mark}
+  <p${c({ fg: "quiet" }, `margin:26px 0 0;font-family:${SANS};font-size:15px;line-height:20px;font-weight:600;`)}>Congratulations</p>
+  <h1${c({ fg: "ink", cls: "e-title" }, `margin:8px 0 0;font-family:${SANS};font-size:36px;line-height:42px;font-weight:700;letter-spacing:-0.02em;`)}>You hit ${esc(/^(The|A|An) /.test(m.name) || m.name === "Halfway" ? m.name.charAt(0).toLowerCase() + m.name.slice(1) : m.name)}</h1>
+  <p${c({ fg: "quiet" }, `margin:10px 0 0;font-family:${SANS};font-size:15px;line-height:22px;`)}>Level ${m.level} · ${esc(m.amount)}</p>
+</td></tr>`;
+}
+
+
+export function milestone(how) {
+  wear(1);
+  const p = pen(how, PALETTES.Dark.wears);
+  const m = MILESTONE;
+  return shell(p, {
+    title: `You hit ${m.name}`,
+    preheader: `Congratulations: level ${m.level}, ${m.amount}.`,
+    kind: m.date,
+    rows: [
+      goalHit(p, m),
+      `<tr><td align="center" style="padding:36px 0 8px;text-align:center">${button(p, { href: "https://purifyapp.net/admin#tab=goals", text: "Open your goals" })}</td></tr>`,
+    ],
+    // His own mail, as the owner's brief is: no reader's Unsubscribe. Its switch is on his Goals page.
+    foot: `<p style="margin:0">${quietButton(p, { href: "https://purifyapp.net/admin#tab=goals", text: "Turn these off" })}</p>`,
+  });
+}
+
 // ── The retention emails ────────────────────────────────────────────────
 // Three kinds, each on the same look and each one thing with one button (his
 // word, 2026-11-13: "perfect let's build and I say yes or no to the design").
@@ -1103,6 +1170,7 @@ export const EMAILS = [
   { file: "reader.html", name: "The reader email", make: reader },
   { file: "reader-nativity-fast.html", name: "The reader email in the Nativity Fast", make: readerNativityFast },
   { file: "brief.html", name: "The owner's brief", make: brief },
+  { file: "milestone.html", name: "A milestone reached", make: milestone },
   // The retention emails. `round: 2`: drawn, and measured, in the faces a mail app has (wearFaces).
   { file: "first-week-1.html", name: "The first week, day 1", make: (how) => firstWeek(how, 1), round: 2 },
   { file: "first-week-3.html", name: "The first week, day 3", make: (how) => firstWeek(how, 3), round: 2 },
@@ -1161,6 +1229,28 @@ async function crossInInk(b, to) {
   await page.waitForTimeout(200);
   await page.screenshot({ path: to, omitBackground: true });
   await page.close();
+}
+
+/**
+ * A goal's mark for the email: a circle in its tier's colour with the app's own
+ * check (components/ui/icons/Check) in it, drawn as one picture so it is round
+ * in every mail app. One for each tier, for Dark (a dark check on the tier's
+ * light colour) and for the check's drawing on the clean light (a white check
+ * on the tier's deep colour).
+ */
+export async function goalMarks(b) {
+  const img = path.join(HERE, "img");
+  const { inner } = appIcon("Check");
+  const draw = async (bg, ink, to) => {
+    const page = await b.newPage({ viewport: { width: 96, height: 96 }, deviceScaleFactor: 2 });
+    await page.setContent(`<!doctype html><html><body style="margin:0;background:transparent"><div style="width:96px;height:96px;border-radius:50%;background:${bg};display:grid;place-items:center"><svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="${ink}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">${inner}</svg></div></body></html>`);
+    await page.screenshot({ path: to, omitBackground: true, clip: { x: 0, y: 0, width: 96, height: 96 } });
+    await page.close();
+  };
+  for (let n = 1; n <= 5; n++) {
+    await draw(SENT[`tier${n}`], NIGHT.ground, path.join(img, `level-${n}.png`));
+    await draw(PALETTES.Light.wears[`tier${n}`], "#ffffff", path.join(img, `level-${n}-light.png`));
+  }
 }
 
 /** One of the app's own icons (components/ui/icons), read from its source and drawn in one colour on nothing. */
@@ -1244,6 +1334,7 @@ async function pictures(b) {
   fs.copyFileSync(path.join(ROOT, "public/purify-cross-mark.png"), path.join(img, "cross.png"));
   fs.copyFileSync(path.join(ROOT, "public/saints/icons/paisius-velichkovsky.v3.jpg"), path.join(img, "paisius-velichkovsky.jpg"));
   await crossInInk(b, path.join(img, "cross-ink.png"));
+  await goalMarks(b);
   // The night on the days an email here shows: the fast's first day, and a week in.
   for (const day of new Set([FAST_DAY, LETTERS["fast-opening"].letter.about.day, LETTERS["fast-week"].letter.about.day])) await nightPicture(b, day, path.join(img, `nativity-night-${String(day).padStart(2, "0")}.png`));
 }

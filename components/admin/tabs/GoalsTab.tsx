@@ -2,43 +2,64 @@
 
 import { ApiLimitBanner, ApiLimitsPanel } from "../insights/ApiLimits";
 import { HourlyGoals } from "../HourlyGoals";
+import { patchJson } from "../adminFetch";
+import { GoalsView } from "../goals/GoalsView";
+import type { GoalMark, GoalsData } from "@/lib/admin/milestones";
+import { useLiveData } from "@/lib/admin/useLiveData";
 
 /**
- * Goals: live targets only.
+ * Goals: his milestones as a game, for him alone (docs/handoffs/admin-milestones.md).
  *
- * ── What used to be here, and why it is gone ────────────────────────────
+ * The page is components/admin/goals/GoalsView.tsx, drawn for his yes and
+ * said yes to on 2026-11-24; its figures come from /api/admin/goals, counted
+ * by lib/admin/milestones.ts from the kept events. The hourly goals and the
+ * Bible licence, which this tab carried before, stay: the licence's banner
+ * first when it has something to say, the two panels folded under More.
  *
- * This tab carried two kinds of goal. The hourly goals below read live
- * analytics. Everything else, the Overall grade, the streaks, the "start with
- * a set derived from your own data" proposals and the goals table, was graded
- * against series pasted in from a Play Console CSV.
- *
- * The CSV import was removed on 2026-09-01 because those exports describe
- * days that have already finished while the rest of the panel measures live
- * analytics. But removing the import left its output in place: the grades
- * kept rendering against the last report ever pasted, which ended on
- * 2026-08-28, and labelled that "Today" and "This week". A stale grade that
- * looks current is worse than no grade, so on 2026-09-13, at the owner's
- * instruction, every CSV-derived element came off this tab along with the
- * Growth tab that displayed the same data.
- *
- * The stored goals and the imported series were NOT deleted. They live behind
- * /api/admin/insights. Retiring a display is reversible; deleting the rows
- * would not be. The Calendar's metric picker was the last place they were
- * still offered, and stopped offering them on 2026-09-19: eighteen columns
- * from an August export, none of which has had a point since.
+ * The daily, weekly and monthly goals graded against pasted Play Console
+ * reports came off this tab on 2026-09-13 (their rows are kept, behind
+ * /api/admin/insights); nothing here reads them.
  */
+
+type Payload = { data: GoalsData; marksSaved: boolean; costsRead: boolean };
+
 export function GoalsTab() {
+  // Read every five minutes: a goal moves by the day, not by the second.
+  const live = useLiveData<Payload>("/api/admin/goals", 300_000);
+
+  const save = async (marks: GoalMark[]) => {
+    const error = await patchJson("/api/admin/goals", { marks }, "POST");
+    if (!error) live.refresh();
+    return error;
+  };
+
+  if (!live.data) {
+    return (
+      <div className="space-y-5 font-sans">
+        <ApiLimitBanner />
+        <p className="text-[15px]" style={{ color: "var(--adm-ink-2)" }}>
+          {live.failing ? "Your goals could not be read just now. They try again by themselves." : "Reading your goals."}
+        </p>
+        <HourlyGoals />
+        <ApiLimitsPanel />
+      </div>
+    );
+  }
+
+  const saveMail = async (mail: boolean) => {
+    const error = await patchJson("/api/admin/goals", { mail }, "POST");
+    if (!error) live.refresh();
+    return error;
+  };
+
   return (
-    <div className="space-y-5">
-      {/* First thing on the page, because a licence breach outranks a KPI. */}
-      <ApiLimitBanner />
-
-      {/* The hour you are in. Live analytics, per-event timestamps, so it can
-          answer "how is this hour going", which a daily report never could. */}
-      <HourlyGoals />
-
-      <ApiLimitsPanel />
-    </div>
+    <GoalsView
+      data={live.data.data}
+      banner={<ApiLimitBanner />}
+      hourly={<HourlyGoals />}
+      licence={<ApiLimitsPanel />}
+      onSaveMarks={save}
+      onSaveMail={saveMail}
+    />
   );
 }

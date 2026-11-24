@@ -83,6 +83,13 @@
   --k-money-plus: #008300;
   --k-money-box: #d55181;
 
+  /* ── The goals game's tiers, his own panel's (app/admin/admin-theme.css, --adm-tier-*) ── */
+  --k-tier-1: #3fcf74;      /* Easy, green */
+  --k-tier-2: #5aa8ff;      /* Rare, blue */
+  --k-tier-3: #b78cff;      /* Epic, purple */
+  --k-tier-4: #ff9a4d;      /* Legendary, orange */
+  --k-tier-5: #f4c542;      /* Mythic, gold: his own exception, for his own goals only */
+
   color-scheme: dark;
 }
 
@@ -106,6 +113,11 @@
   --k-ink-2-share: 90%;
   --k-ink-3-share: 80%;     /* about --color-ink-soft: 5.0:1 on the card */
   --k-money-shop: #2a78d6;  /* admin-theme.css 824 */
+  --k-tier-1: #19733a;      /* the tiers on white, as admin-theme.css's light block */
+  --k-tier-2: #1f5fc0;
+  --k-tier-3: #6b3fc4;
+  --k-tier-4: #a34a00;
+  --k-tier-5: #7d5c00;
   color-scheme: light;
 }
 

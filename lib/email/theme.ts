@@ -212,6 +212,11 @@ export const KIT_SLOTS = [
   "shop",
   "plus",
   "box",
+  "tier1",
+  "tier2",
+  "tier3",
+  "tier4",
+  "tier5",
 ] as const;
 
 export type KitSlot = (typeof KIT_SLOTS)[number];
@@ -244,6 +249,15 @@ export const KIT_DARK: KitWears = {
   shop: "#3987e5",
   plus: "#008300",
   box: "#d55181",
+  // The goals game's tiers (his word, 2026-11-24), for the owner's level-up
+  // email alone (docs/brand/kit/email/milestone.html): the kit's --k-tier-*,
+  // as the panel's --adm-tier-* (app/admin/admin-theme.css). The fifth is
+  // gold, his own exception for his own goals (lib/ui/__tests__/noGold.test.ts).
+  tier1: "#3fcf74",
+  tier2: "#5aa8ff",
+  tier3: "#b78cff",
+  tier4: "#ff9a4d",
+  tier5: "#f4c542",
 };
 
 /** The Nativity card's night: Dark's own well and its ink's shares, as the card is in the app (`dark-island`). */
