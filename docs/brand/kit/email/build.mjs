@@ -824,6 +824,9 @@ const MILESTONE = {
  * you hit etc"). The app's own check in a circle of the level's tier colour (a
  * picture, so it is round in every mail app), "Congratulations", the goal by
  * its name, its level and its amount. Centred: it is a moment, not a report.
+ * The goal is set in the sans, bold and close, at his word the same day ("new
+ * font but this is fine"): a mail app fetches no font, so it is the system's
+ * own sans, as the rest of the letter's labels are.
  */
 function goalHit(p, m) {
   const { c } = p;
@@ -836,7 +839,7 @@ function goalHit(p, m) {
   return `<tr><td align="center" style="padding:52px 0 0;text-align:center">
   ${mark}
   <p${c({ fg: "quiet" }, `margin:26px 0 0;font-family:${SANS};font-size:15px;line-height:20px;font-weight:600;`)}>Congratulations</p>
-  <h1${c({ fg: "ink", cls: "e-title" }, `margin:8px 0 0;font-family:${SERIF};font-size:34px;line-height:40px;font-weight:700;`)}>You hit ${esc(/^(The|A|An) /.test(m.name) || m.name === "Halfway" ? m.name.charAt(0).toLowerCase() + m.name.slice(1) : m.name)}</h1>
+  <h1${c({ fg: "ink", cls: "e-title" }, `margin:8px 0 0;font-family:${SANS};font-size:36px;line-height:42px;font-weight:700;letter-spacing:-0.02em;`)}>You hit ${esc(/^(The|A|An) /.test(m.name) || m.name === "Halfway" ? m.name.charAt(0).toLowerCase() + m.name.slice(1) : m.name)}</h1>
   <p${c({ fg: "quiet" }, `margin:10px 0 0;font-family:${SANS};font-size:15px;line-height:22px;`)}>Level ${m.level} · ${esc(m.amount)}</p>
 </td></tr>`;
 }

@@ -40,13 +40,15 @@ The worker chat for one job: his own milestones in the panel, with the Goals pag
 
 2026-11-24, about 16:51 UTC, on that email: "no that design is ugly im referring to the individual goal (checkmark or confetti's or trophy symbol) congratulations you hit etc)". Redrawn (version 13 at the link): the email is now the one goal hit, celebrated and centred: the app's own check in a circle of the level's tier colour (a picture, `img/level-1.png` to `level-5.png` and their `-light` twins for the check's drawing, made by `goalMarks()` in `build.mjs` from `components/ui/icons/Check`, so it is round in every mail app), "Congratulations", "You hit halfway", "Level 4 · $750 a week", one button, Unsubscribe. 4.3KB; the email check passes (every rule, both screen schemes, the heritage list, each picture under 100KB). Every other picture was left as it was: only the ten marks were drawn.
 
+2026-11-24, about 17:32 UTC: "new font but this is fine". Taken as his yes to the goal email, with a new face for the goal: "You hit halfway" is now the system's own sans, bold and close (36px, -0.02em), since an email fetches no font; the Purify wordmark at the top stays as the house sets it. The email check passes (version 14 at the link).
+
 **Proved:** the 11 tests; typecheck and eslint on every new file; the push guard on the push. **Not run:** the whole unit suite (he stopped it part way to change the email), the website build with the new route, and a walk of the real tab with real numbers (the tab needs his session; the preview walks the same page on samples). **Waiting on him:** his two marks, typed into Your marks; whether Pro counts; and his word before anything goes to the main web.
 
 ## Where it stands
 
-**His yes (version 10); the email now the congratulations for the one goal hit (version 13); the page built for real on this branch** (below). The main web waits for his word. The earlier ones are the artifact's versions 1 to 6 and the commits before this one.
+**His yes (version 10); the email now the congratulations for the one goal hit, his yes with a new face for the goal (version 14); the page built for real on this branch** (below). The main web waits for his word. The earlier ones are the artifact's versions 1 to 6 and the commits before this one.
 
-- The drawing, a private artifact: https://claude.ai/artifact/S4FhycWThzkyV6uMWHWdMh, version 13 (the page at 390 in the panel's dark theme, a reason for each choice, its other states, and two questions).
+- The drawing, a private artifact: https://claude.ai/artifact/S4FhycWThzkyV6uMWHWdMh, version 14 (the page at 390 in the panel's dark theme, a reason for each choice, its other states, and two questions).
 
 ## What was built (on the branch, for the drawing)
 
