@@ -3,22 +3,28 @@
 import { useState, type ReactNode } from "react";
 
 import { StatusDot, ToolbarButton, type StatusTone } from "../primitives";
+import { FinishMoment } from "@/components/flow/FinishMoment";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
-import { useReducedMotion } from "@/lib/ui/motion";
+import { Seal } from "@/components/ui/icons/Seal";
 
 /**
  * The Goals page, the calm way (his word of 2026-11-23: the panel "feels like
  * a terminal ... very codey"; the plan is docs/plans/goals-milestones.md).
  *
  * What it shows, in order, each thing once, made minimal at his word of
- * 2026-11-24 ("make the design more simplified and minimalist"):
+ * 2026-11-24 ("make the design more simplified and minimalist"), with the
+ * milestones shown as bars and achievements at his next word that day ("I
+ * want to see more milestone bars/ achievement designs"):
  *
- *   the number      what members bring in a week, its growth on last week
- *                   against the 5% aim, and one line to the next step
- *   three facts     paying now, this week, the next step's day
+ *   a finish        the week a step is reached, the app's own finish moment
+ *   the number      what members bring in a week, and its growth on last
+ *                   week against the 5% aim
+ *   milestones      each step reached as an achievement (the house's seal
+ *                   and its day); the next step's bar, what it needs and
+ *                   its day; a bar for every step ahead
+ *   this week       paying now, joined and left
  *   what moves it   the four weekly goals against his own last four weeks
  *                   bettered by 5%, and the one lever
- *   the road        the six steps, one line each
  *   more            quiet rows that open in place: by update, monthly and
  *                   yearly (with what standing still costs), the guardrails,
  *                   Extra (the shop), this hour, the Bible licence, his marks
@@ -43,7 +49,7 @@ export type GoalStep = {
   heldWeeks: number;
   /** More paying members it needs at today's mix; null once reached. */
   moreMembers: number | null;
-  /** The day it is reached at the last four weeks' pace; null without one. */
+  /** The day it is reached at the last four weeks' pace; null without one. For a step the number already stands over, the day its four weeks are up. */
   byPace: string | null;
   /** The day it is reached at 5% a week; null without four weeks. */
   byFive: string | null;
@@ -186,18 +192,29 @@ export function GoalsView({
     <div className="font-sans">
       {banner}
 
-      <TheNumber data={data} next={next} reached={reached} />
+      {reached ? (
+        // A step reached is a moment of its own: the app's own finish (the
+        // circle lands, the check draws itself), once, at the head of the page
+        // for the week it is reached. Still with Motion off.
+        <FinishMoment
+          className="mb-10"
+          title={reached.id === "bills" ? "The app pays its own bills" : `You reached ${lowerFirst(reached.name)}`}
+          line={`Held ${money(reached.weeklyCents)} a week for four weeks running.`}
+        />
+      ) : null}
 
-      <ul className="mt-10" aria-label="Three facts">
-        <Facts data={data} next={next} />
+      <TheNumber data={data} />
+
+      <Block label="Milestones" aside={`${data.steps.filter((s) => s.reachedOn !== null).length} of ${data.steps.length} reached`}>
+        <Milestones data={data} next={next} />
+      </Block>
+
+      <ul className="mt-10" aria-label="This week">
+        <Facts data={data} />
       </ul>
 
       <Block label="What moves it">
         <TheFour data={data} />
-      </Block>
-
-      <Block label="The road">
-        <TheRoad data={data} />
       </Block>
 
       <Block label="More">
@@ -231,39 +248,15 @@ export function GoalsView({
 
 // ── The number ───────────────────────────────────────────────────────────
 
-function TheNumber({ data, next, reached }: { data: GoalsData; next: GoalStep | null; reached: GoalStep | null }) {
-  const reduced = useReducedMotion();
-  const toGo = next ? Math.max(0, next.weeklyCents - data.weeklyCents) : 0;
-  const pct = next && next.weeklyCents > 0 ? Math.min(100, Math.round((data.weeklyCents / next.weeklyCents) * 100)) : 100;
-
+function TheNumber({ data }: { data: GoalsData }) {
   let growth: string | null = null;
   if (data.enoughOn) growth = `Growth shows from ${dayWords(data.enoughOn, data.today)}.`;
   else if (data.growth !== null) {
     const g = Math.round(Math.abs(data.growth) * 100);
     growth = `${data.growth >= 0 ? "Up" : "Down"} ${g}% on last week. Aim 5% a week.`;
   }
-
   return (
     <section aria-label="What members bring in">
-      {reached ? (
-        // A step reached is a moment of its own: it rises in once, on the
-        // house's curve, and simply stands there with Motion off.
-        <div
-          className="mb-8 flex items-start gap-3"
-          style={{ animation: reduced ? undefined : "adm-rise 700ms var(--adm-ease) backwards" }}
-        >
-          <StatusDot tone="good" className="mt-[8px]" />
-          <div className="min-w-0">
-            <p className="text-[16px] font-semibold leading-snug" style={{ color: "var(--adm-ink)" }}>
-              {reached.id === "bills" ? "The app pays its own bills now" : `You reached ${lowerFirst(reached.name)}`}
-            </p>
-            <p className="mt-0.5 text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
-              Held four weeks running.
-            </p>
-          </div>
-        </div>
-      ) : null}
-
       <h2 className="text-[13px]" style={{ color: "var(--adm-ink-3)", fontWeight: 500 }}>
         Members bring in
       </h2>
@@ -280,47 +273,14 @@ function TheNumber({ data, next, reached }: { data: GoalsData; next: GoalStep | 
           {growth}
         </p>
       ) : null}
-
-      {next ? (
-        <div className="mt-8">
-          <div className="flex items-baseline justify-between gap-3">
-            <p className="text-[14px] font-semibold" style={{ color: "var(--adm-ink)" }}>
-              Next: {next.name}
-            </p>
-            <p className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
-              {toGo > 0 ? `${money(toGo)} to go` : `held ${next.heldWeeks} of 4 weeks`}
-            </p>
-          </div>
-          <div
-            className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full"
-            style={{ background: "var(--adm-panel-2)" }}
-            role="img"
-            aria-label={`${pct}% of the way to ${next.name}`}
-          >
-            <div className="h-full rounded-full" style={{ width: `${pct}%`, background: "var(--adm-accent)" }} />
-          </div>
-        </div>
-      ) : (
-        <p className="mt-8 text-[14px] font-semibold" style={{ color: "var(--adm-ink)" }}>
-          Every step is reached.
-        </p>
-      )}
     </section>
   );
 }
 
 // ── Three facts ──────────────────────────────────────────────────────────
 
-function Facts({ data, next }: { data: GoalsData; next: GoalStep | null }) {
+function Facts({ data }: { data: GoalsData }) {
   const paying = data.paying.monthly + data.paying.yearly;
-  let when: { value: string; note?: string };
-  if (!next) when = { value: "reached" };
-  else if (data.enoughOn || next.byFive === null) when = { value: "not enough weeks yet" };
-  else
-    when = {
-      value: next.byPace ? dayWords(next.byPace, data.today) : "not at this pace",
-      note: `${dayWords(next.byFive, data.today)} at 5% a week`,
-    };
   return (
     <>
       <Row
@@ -329,7 +289,6 @@ function Facts({ data, next }: { data: GoalsData; next: GoalStep | null }) {
         value={count.format(paying)}
       />
       <Row name="This week" value={`${count.format(data.thisWeek.joined)} joined, ${count.format(data.thisWeek.left)} left`} />
-      <Row name={next ? "Next step by" : "The road"} value={when.value} valueNote={when.note} />
     </>
   );
 }
@@ -383,53 +342,129 @@ function TheFour({ data }: { data: GoalsData }) {
   );
 }
 
-// ── The road ─────────────────────────────────────────────────────────────
+// ── Milestones ───────────────────────────────────────────────────────────
+//
+// The road as milestones (his word, 2026-11-24: "I want to see more milestone
+// bars/ achievement designs"). Each step reached is an achievement, marked
+// with the house's seal and its day. The next step leads with its own bar,
+// what it still needs and its day. Every step ahead keeps a bar of how far
+// the number has come towards it.
 
-function TheRoad({ data }: { data: GoalsData }) {
-  const next = data.steps.find((s) => s.reachedOn === null);
+function Milestones({ data, next }: { data: GoalsData; next: GoalStep | null }) {
+  const done = data.steps.filter((s) => s.reachedOn !== null);
+  const ahead = data.steps.filter((s) => s.reachedOn === null && s !== next);
+  const pct = (s: GoalStep) => (s.weeklyCents > 0 ? Math.min(100, Math.round((data.weeklyCents / s.weeklyCents) * 100)) : 100);
+
   return (
-    <ol>
-      {data.steps.map((s) => {
-        const isNext = s === next;
-        const done = s.reachedOn !== null;
-        let note: string | null = null;
-        if (done) note = s.id === data.justReached ? "reached this week" : `reached ${dayWords(s.reachedOn as string, data.today)}`;
-        else {
-          if (s.weeklyCents <= data.weeklyCents) note = `held ${s.heldWeeks} of 4 weeks`;
-          else if (isNext) note = `${count.format(s.moreMembers ?? 0)} more members`;
-          else
-            note = `${count.format(s.moreMembers ?? 0)} more members${s.byPace ? `, by ${dayWords(s.byPace, data.today)}` : ""}`;
-        }
-        return (
-          <li
-            key={s.id}
-            className="flex min-h-11 items-start gap-3 border-t py-3 first:border-t-0"
-            style={{ borderColor: "var(--adm-line)" }}
-            aria-current={isNext ? "step" : undefined}
-          >
-            <StatusDot tone={done ? "good" : isNext ? "wait" : "idle"} className="mt-[7px]" />
-            <div className="min-w-0 flex-1">
-              <div className="flex items-baseline justify-between gap-3">
-                <p
-                  className={"text-[15px] leading-snug" + (isNext ? " font-semibold" : "")}
-                  style={{ color: done ? "var(--adm-ink-3)" : isNext ? "var(--adm-ink)" : "var(--adm-ink-2)" }}
-                >
+    <div>
+      {done.length ? (
+        <ul aria-label="Reached">
+          {done.map((s) => (
+            <li key={s.id} className="flex min-h-11 items-center gap-3 border-t py-2.5 first:border-t-0" style={{ borderColor: "var(--adm-line)" }}>
+              <Seal size={22} className="shrink-0" style={{ color: "var(--adm-ink)" }} />
+              <div className="min-w-0 flex-1">
+                <p className="text-[15px] leading-snug" style={{ color: "var(--adm-ink)" }}>
                   {s.name}
                 </p>
-                <p className="shrink-0 text-[14px] tabular-nums" style={{ color: done ? "var(--adm-ink-3)" : "var(--adm-ink-2)" }}>
-                  {money(s.weeklyCents)} a week
+                <p className="text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
+                  {s.id === data.justReached ? "Reached this week" : `Reached ${dayWords(s.reachedOn as string, data.today)}`}
                 </p>
               </div>
-              {note ? (
-                <p className="mt-0.5 text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
+              <p className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
+                {money(s.weeklyCents)} a week
+              </p>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      {next ? (
+        <div className={done.length ? "mt-5" : "mt-1"} aria-current="step">
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="text-[17px] font-semibold leading-snug" style={{ color: "var(--adm-ink)" }}>
+              {next.name}
+            </p>
+            <p className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
+              {money(next.weeklyCents)} a week
+            </p>
+          </div>
+          <Bar pct={pct(next)} label={next.name} thick />
+          <NextNotes data={data} next={next} pct={pct(next)} />
+        </div>
+      ) : (
+        <p className="mt-4 text-[15px] font-semibold" style={{ color: "var(--adm-ink)" }}>
+          Every milestone is reached.
+        </p>
+      )}
+
+      {ahead.length ? (
+        <ul className="mt-4" aria-label="Ahead">
+          {ahead.map((s) => {
+            const over = s.weeklyCents <= data.weeklyCents;
+            const note = over
+              ? `Held ${s.heldWeeks} of 4 weeks${s.byPace ? `, reached ${dayWords(s.byPace, data.today)} if it holds` : ""}`
+              : `${pct(s)}%, ${count.format(s.moreMembers ?? 0)} more members${s.byPace ? `, by ${dayWords(s.byPace, data.today)}` : ""}`;
+            return (
+              <li key={s.id} className="border-t py-3" style={{ borderColor: "var(--adm-line)" }}>
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="text-[15px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
+                    {s.name}
+                  </p>
+                  <p className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-3)" }}>
+                    {money(s.weeklyCents)} a week
+                  </p>
+                </div>
+                <Bar pct={pct(s)} label={s.name} />
+                <p className="mt-1.5 text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
                   {note}
                 </p>
-              ) : null}
-            </div>
-          </li>
-        );
-      })}
-    </ol>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+/** Under the next milestone's bar: what it still needs at the start, its day at the end. */
+function NextNotes({ data, next, pct }: { data: GoalsData; next: GoalStep; pct: number }) {
+  const toGo = Math.max(0, next.weeklyCents - data.weeklyCents);
+  const need =
+    toGo > 0
+      ? [`${pct}%, ${money(toGo)} to go`, `About ${count.format(next.moreMembers ?? 0)} more members`]
+      : [`Held ${next.heldWeeks} of 4 weeks`, null];
+  const when =
+    toGo === 0
+      ? [next.byPace ? `${dayWords(next.byPace, data.today)} if it holds` : "Holding", null]
+      : data.enoughOn || next.byFive === null
+      ? ["Not enough weeks yet", null]
+      : [next.byPace ? `By ${dayWords(next.byPace, data.today)}` : "Not at this pace", `${dayWords(next.byFive, data.today)} at 5% a week`];
+  return (
+    <div className="mt-2 grid grid-cols-[1fr_auto] gap-x-3 text-[13px] leading-snug">
+      <p style={{ color: "var(--adm-ink-2)" }}>{need[0]}</p>
+      <p className="text-end" style={{ color: "var(--adm-ink-2)" }}>
+        {when[0]}
+      </p>
+      <p style={{ color: "var(--adm-ink-3)" }}>{need[1]}</p>
+      <p className="text-end" style={{ color: "var(--adm-ink-3)" }}>
+        {when[1]}
+      </p>
+    </div>
+  );
+}
+
+/** A milestone's bar: how far the number has come towards it. The next one's is thicker. */
+function Bar({ pct, label, thick }: { pct: number; label: string; thick?: boolean }) {
+  return (
+    <div
+      className={(thick ? "mt-3 h-2" : "mt-2 h-1") + " w-full overflow-hidden rounded-full"}
+      style={{ background: "var(--adm-line)" }}
+      role="img"
+      aria-label={`${pct}% of the way to ${label}`}
+    >
+      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: thick ? "var(--adm-accent)" : "var(--adm-ink-2)" }} />
+    </div>
   );
 }
 
@@ -627,12 +662,19 @@ function Marks({ marks, onSave }: { marks: GoalMark[]; onSave?: (marks: GoalMark
 // ── Pieces ───────────────────────────────────────────────────────────────
 
 /** A part of the page: a small grey label and what it holds. Space sets it apart, not a box or a rule. */
-function Block({ label, children }: { label: string; children: ReactNode }) {
+function Block({ label, aside, children }: { label: string; aside?: string; children: ReactNode }) {
   return (
     <section className="mt-10" aria-label={label}>
-      <h2 className="mb-1.5 text-[13px]" style={{ color: "var(--adm-ink-3)", fontWeight: 500 }}>
-        {label}
-      </h2>
+      <div className="mb-1.5 flex items-baseline justify-between gap-3">
+        <h2 className="text-[13px]" style={{ color: "var(--adm-ink-3)", fontWeight: 500 }}>
+          {label}
+        </h2>
+        {aside ? (
+          <p className="text-[13px] tabular-nums" style={{ color: "var(--adm-ink-3)" }}>
+            {aside}
+          </p>
+        ) : null}
+      </div>
       {children}
     </section>
   );
