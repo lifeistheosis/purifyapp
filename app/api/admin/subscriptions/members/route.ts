@@ -32,7 +32,7 @@ export async function GET() {
   const { data: ents } = await pageAllSettled((from, to) =>
     admin
       .from("entitlements")
-      .select("user_id, plus_until, pro_until, plus_source, is_supporter")
+      .select("user_id, plus_until, pro_until, plus_source, is_supporter, auto_renew")
       .or(`plus_until.gt.${nowIso},pro_until.gt.${nowIso}`)
       .order("user_id")
       .range(from, to),
@@ -44,6 +44,7 @@ export async function GET() {
     pro_until: string | null;
     plus_source: string | null;
     is_supporter: boolean | null;
+    auto_renew: boolean | null;
   }[];
 
   // Names from the profiles mirror (display_name); emails from auth — the
@@ -95,8 +96,31 @@ export async function GET() {
       // Next billing = the active period end.
       nextBilling: isPro ? r.pro_until : r.plus_until,
       startDate: null as string | null,
+      // Set to end: renewal turned off in the store (docs/plans/keep-members.md, step 1).
+      setToEnd: r.auto_renew === false,
+      endReason: null as string | null,
     };
   });
+
+  // Why each member set to end is leaving, as the store told RevenueCat: the
+  // newest CANCELLATION kept for them (plus_events, kept since 1.9). Read only
+  // for those few; a failed read leaves the reason blank.
+  const ending = members.filter((m) => m.setToEnd).map((m) => m.userId);
+  if (ending.length > 0) {
+    const { data: cancels } = await admin
+      .from("plus_events")
+      .select("user_id, reason, event_at")
+      .eq("type", "CANCELLATION")
+      .in("user_id", ending)
+      .order("event_at", { ascending: false });
+    const seen = new Set<string>();
+    for (const c of (cancels ?? []) as { user_id: string; reason: string | null }[]) {
+      if (seen.has(c.user_id)) continue;
+      seen.add(c.user_id);
+      const m = members.find((x) => x.userId === c.user_id);
+      if (m) m.endReason = c.reason;
+    }
+  }
 
   // Enrich start dates from RevenueCat when configured and the list is small
   // enough to fan out politely.
