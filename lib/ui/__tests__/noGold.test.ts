@@ -58,6 +58,9 @@ const ALLOWED: Record<string, string> = {
   // among them. Their looks are listed in lib/share/verseCard.ts, whose warm
   // ones are orange and olive and so need no place here; the drawing has gold.
   "lib/share/drawVerseCard.ts": "the quote share pictures' looks, drawn: the Fire look's embers and the candle's rim",
+  // His own goals game (his word of 2026-11-24: "the high tier (gold)"), in the
+  // owner's level-up email alone; the panel's own tiers are in the admin, not walked.
+  "lib/email/theme.ts": "the goals game's top tier (Mythic, --k-tier-5), gold at his word of 2026-11-24, in the owner's level-up email alone",
   // His own exception for the highlighter.
   "lib/bible/highlightPalette.ts":
     "the yellow highlighter, his word of 2026-10-19: 'bring back yellow highlight option (just for highlighting text)'",

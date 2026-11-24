@@ -145,6 +145,11 @@ function wearing(k, app) {
     shop: v["k-money-shop"], // money's three hues: --k-money-*
     plus: v["k-money-plus"],
     box: v["k-money-box"],
+    tier1: v["k-tier-1"], // the goals game's tiers (--k-tier-*): the level-up email's road alone
+    tier2: v["k-tier-2"],
+    tier3: v["k-tier-3"],
+    tier4: v["k-tier-4"],
+    tier5: v["k-tier-5"],
   };
 }
 
@@ -804,19 +809,15 @@ export function brief(how) {
 
 const MILESTONE = {
   date: "Monday, May 17",
+  level: 4,
+  tier: "Legendary",
   name: "Halfway",
   amount: "$750 a week",
   number: "$780 a week",
   growth: "Up 4% on last week.",
-  steps: [
-    { name: "Pays its own bills", reached: true },
-    { name: "A tenth of the way", reached: true },
-    { name: "A quarter of the way", reached: true },
-    { name: "Halfway", reached: true, now: true },
-    { name: "The first mark", reached: false },
-    { name: "The second mark", reached: false },
-  ],
-  next: { name: "The first mark", amount: "$1,500 a week", pct: 52, line: "About 426 more members, by September at your pace." },
+  // How far the number has come towards each level, as the page's road draws it.
+  road: [100, 100, 100, 100, 52, 26],
+  next: { level: 5, name: "The first mark", toGo: "$720", line: "About 426 more members, by September at your pace." },
 };
 
 /** One figure, large in the page's serif, with a line under it. */
@@ -826,57 +827,56 @@ const oneFigure = (p, value, note) => `<tr><td style="padding:6px 0 0">
 </td></tr>`;
 
 /**
- * The milestone on the night, as Today's card stands (lead() above, the
- * retention emails' card): a small line, the milestone's name large, what it
- * took in italics, then the whole road as six stops on one line, the ones
- * reached filled, the one reached today larger, the ones ahead open, and the
- * email's one button. The night is dark on every palette (`dark-island`).
+ * The level reached, as the Goals page opens (components/admin/goals/
+ * GoalsView.tsx, Head): a small line, the level as a numeral in the serif, its
+ * tier and its name, and what it took in italics. No card: his word on the
+ * page's card, 2026-11-24, "new card design that looks vibe coded".
  */
-function achievement(p, m) {
-  const say = (style, colour) => ` style="${style}color:${colour};"`;
-  const reached = m.steps.filter((x) => x.reached).length;
-  const stop = (x) => {
-    const size = x.now ? 22 : 14;
-    const fill = x.reached;
-    const inner = fill ? size : size - 4;
-    return `<td width="${size}" valign="middle" style="width:${size}px;min-width:${size}px"><table ${TABLE} width="${size}" style="border-collapse:separate;width:${size}px"><tr><td width="${inner}" height="${inner}" bgcolor="${fill ? NIGHT.ink : NIGHT.ground}" style="width:${inner}px;height:${inner}px;font-size:0;line-height:0;border-radius:${size / 2}px;background-color:${fill ? NIGHT.ink : NIGHT.ground};${fill ? "" : `border:2px solid ${NIGHT.quiet};`}">&nbsp;</td></tr></table></td>`;
-  };
-  const between = (lit) =>
-    `<td valign="middle" style="padding:0 5px"><table ${TABLE} width="100%"><tr><td height="2" bgcolor="${lit ? NIGHT.ink : NIGHT.line}" style="height:2px;font-size:0;line-height:0;background-color:${lit ? NIGHT.ink : NIGHT.line}">&nbsp;</td></tr></table></td>`;
-  const road = m.steps.map((x, i) => stop(x) + (i < m.steps.length - 1 ? between(m.steps[i + 1].reached) : "")).join("");
-  const words = `Levels: ${reached} of ${m.steps.length} reached. ${m.steps.map((x) => `${x.name}, ${x.now ? "reached today" : x.reached ? "reached" : "ahead"}`).join("; ")}.`;
-  return `<tr><td style="padding:24px 0 0">
-  <table ${TABLE} width="100%" class="dark-island" bgcolor="${NIGHT.ground}" style="border-collapse:separate;background-color:${NIGHT.ground};border:1px solid ${NIGHT.line};border-radius:22px">
-  <tr><td style="padding:26px 22px 24px">
-    <p${say(`margin:0;font-family:${SANS};font-size:13px;line-height:18px;font-weight:600;`, NIGHT.quiet)}>Level ${reached} reached</p>
-    <h1 class="e-title"${say(`margin:8px 0 0;font-family:${SERIF};font-size:36px;line-height:42px;font-weight:700;`, NIGHT.ink)}>${esc(m.name)}</h1>
-    <p${say(`margin:10px 0 0;font-family:${SERIF};font-style:italic;font-size:17px;line-height:26px;`, NIGHT.words)}>Held ${esc(m.amount)} for four weeks running.</p>
-    <table ${TABLE} width="100%" dir="ltr" role="img" aria-label="${esc(words)}" style="margin:26px 0 0"><tr>${road}</tr></table>
-    <table ${TABLE} width="100%" style="margin:10px 0 0"><tr>
-      <td${say(`font-family:${SANS};font-size:13px;line-height:18px;`, NIGHT.quiet)}>Level ${reached} of ${m.steps.length}</td>
-      <td${say(`text-align:right;text-align:end;font-family:${SANS};font-size:13px;line-height:18px;`, NIGHT.quiet)}>Next: level ${reached + 1}</td>
-    </tr></table>
-    <table ${TABLE} width="100%"><tr><td height="24" style="height:24px;font-size:0;line-height:0">&nbsp;</td></tr></table>
-    ${button(p, { href: "https://purifyapp.net/admin#tab=goals", text: "Open your goals", island: true })}
-  </td></tr>
-  </table>
+function levelOpening(p, m) {
+  const { c } = p;
+  return `<tr><td style="padding:34px 0 0">
+  <p${c({ fg: "quiet" }, `margin:0;font-family:${SANS};font-size:13px;line-height:18px;font-weight:600;`)}>Level ${m.level} reached</p>
+  <table ${TABLE} style="margin:10px 0 0"><tr>
+    <td valign="bottom"${c({ fg: "ink" }, `padding:0 16px 0 0;font-family:${SERIF};font-size:96px;line-height:80px;`)}>${m.level}</td>
+    <td valign="bottom" style="padding:0 0 4px">
+      <p${c({ fg: "quiet" }, `margin:0;font-family:${SANS};font-size:13px;line-height:18px;`)}>${esc(m.tier)}</p>
+      <h1${c({ fg: "ink", cls: "e-title" }, `margin:2px 0 0;font-family:${SERIF};font-size:30px;line-height:36px;font-weight:700;`)}>${esc(m.name)}</h1>
+    </td>
+  </tr></table>
+  <p${c({ fg: "body" }, `margin:16px 0 0;font-family:${SERIF};font-style:italic;font-size:17px;line-height:26px;`)}>Held ${esc(m.amount)} for four weeks running.</p>
 </td></tr>`;
 }
 
-/** The next milestone: its name and amount, its bar on a track of the hairline, and what it needs. */
-function nextMilestone(p, n) {
+/**
+ * The road, as the page draws it: six segments, one a level, each filled in its
+ * tier's colour as far as the number has come towards that level, on a track of
+ * the hairline, the level's number under it. The colour lives here and nowhere
+ * else in the email (his word, 2026-11-24: "majority white and black. and only
+ * in specific areas it's colored"). Each colour is the goals game's own tier
+ * (--k-tier-*), and the words under the road say the same in numbers.
+ */
+function levelRoad(p, road) {
   const { c, bgcolor } = p;
-  const w = Math.max(2, Math.min(100, n.pct));
-  return `<tr><td style="padding:4px 0 0">
-  <table ${TABLE} width="100%"><tr>
-    <td width="100%"${c({ fg: "ink" }, `font-family:${SERIF};font-size:20px;line-height:28px;`)}>${esc(n.name)}</td>
-    <td${c({ fg: "quiet" }, `white-space:nowrap;font-family:${SANS};font-size:15px;line-height:28px;`)}>${esc(n.amount)}</td>
-  </tr></table>
-  <table ${TABLE} width="100%" dir="ltr" role="img" aria-label="${n.pct}% of the way to ${esc(n.name.toLowerCase())}" style="border-collapse:separate;margin:10px 0 0"><tr>
-    <td width="${w}%" height="8"${bgcolor("ink")}${c({ bg: "ink" }, `width:${w}%;height:8px;font-size:0;line-height:0;border-radius:4px;`)}>&nbsp;</td>
-    ${w < 100 ? `<td height="8"${bgcolor("line")}${c({ bg: "line" }, "height:8px;font-size:0;line-height:0;border-radius:4px;")}>&nbsp;</td>` : ""}
-  </tr></table>
-  <p${c({ fg: "body" }, `margin:10px 0 0;font-family:${SANS};font-size:15px;line-height:22px;`)}>${n.pct}% there. ${esc(n.line)}</p>
+  const allow = (n) =>
+    ` data-mock-allow="palette${n >= 4 ? " gold" : ""}" data-mock-why="a tier of his goals game (--k-tier-${n}, app/admin/admin-theme.css --adm-tier-${n})${n >= 4 ? ", gold and orange at his word of 2026-11-24, his own" : ""}"`;
+  const tierOf = (i) => Math.min(i + 1, 5);
+  const seg = (pct, i) => {
+    const n = tierOf(i);
+    const slot = `tier${n}`;
+    const w = Math.max(0, Math.min(100, pct));
+    const fill = w > 0 ? `<td width="${w}%" height="10"${bgcolor(slot)}${allow(n)}${c({ bg: slot }, `width:${w}%;height:10px;font-size:0;line-height:0;`)}>&nbsp;</td>` : "";
+    const rest = w < 100 ? `<td height="10"${bgcolor("line")}${c({ bg: "line" }, "height:10px;font-size:0;line-height:0;")}>&nbsp;</td>` : "";
+    return `<td width="15%" valign="middle" style="width:15%"><table ${TABLE} width="100%" style="border-collapse:separate;border-radius:3px;overflow:hidden"><tr>${fill}${rest}</tr></table></td>`;
+  };
+  const gap = `<td width="2%" style="width:2%;font-size:0;line-height:0">&nbsp;</td>`;
+  const num = (pct, i) =>
+    `<td width="15%"${c({ fg: pct >= 100 ? "ink" : "quiet" }, `width:15%;padding:6px 0 0;font-family:${SANS};font-size:12px;line-height:16px;${pct >= 100 ? "font-weight:600;" : ""}`)}>${i + 1}</td>`;
+  const words = road.map((pct, i) => `level ${i + 1} ${pct >= 100 ? "reached" : `${pct}%`}`).join(", ");
+  return `<tr><td style="padding:28px 0 0">
+  <table ${TABLE} width="100%" dir="ltr" role="img" aria-label="The road: ${esc(words)}">
+    <tr>${road.map(seg).join(gap)}</tr>
+    <tr>${road.map(num).join(gap)}</tr>
+  </table>
 </td></tr>`;
 }
 
@@ -885,15 +885,16 @@ export function milestone(how) {
   const p = pen(how, PALETTES.Dark.wears);
   const m = MILESTONE;
   return shell(p, {
-    title: `Level ${m.steps.filter((x) => x.reached).length}: ${m.name}`,
+    title: `Level ${m.level}: ${m.name}`,
     preheader: `${m.name}: ${m.amount}, held four weeks running.`,
     kind: m.date,
     rows: [
-      achievement(p, m),
-      label(p, "XP: what members bring in", 34),
+      levelOpening(p, m),
+      levelRoad(p, m.road),
+      label(p, "XP: what members bring in", 30),
       oneFigure(p, m.number, m.growth),
-      label(p, `Next: level ${m.steps.filter((x) => x.reached).length + 1}`, 30),
-      nextMilestone(p, m.next),
+      para(p, `${esc(m.next.toGo)} to level ${m.next.level}, ${esc(m.next.name.toLowerCase())}. ${esc(m.next.line)}`, 18),
+      `<tr><td style="padding:26px 0 0">${button(p, { href: "https://purifyapp.net/admin#tab=goals", text: "Open your goals" })}</td></tr>`,
     ],
     foot: `<p style="margin:0">This email comes once for each level, when its milestone has held four weeks running. It is made for the owner and goes to no reader.</p>
   <p style="margin:18px 0 0">${quietButton(p, { href: "https://purifyapp.net/unsubscribe", text: "Unsubscribe" })}</p>

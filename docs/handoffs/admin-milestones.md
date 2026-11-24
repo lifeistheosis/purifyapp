@@ -28,11 +28,13 @@ The worker chat for one job: his own milestones in the panel, with the Goals pag
 
 2026-11-24, about 16:15 UTC: "I want to the whole system to be majority white and black. and only in specific areas it's colored". Redrawn (version 10 at the link): the page is the panel's black and white again, and the tier colours live in three places only: the road's six segments, the seal of a badge earned, and the green check of a quest done. The numeral, the labels, the quest bars, the level list, the records, the streak and each level's screen are ink. The tiers are still named in words everywhere they were. Every check passed again.
 
+2026-11-24, about 16:24 UTC: "sure push this (and update the email design)". **Taken as his yes to the design (version 10) and to the three proposals shown with it: his marks are counted after the app's own monthly costs, a level is reached once its milestone holds four weeks running, and the level-up email goes to him alone.** "push this" is taken as: build the page for real and push it to this branch; the main web still waits for his own word, since a push to main deploys. The email was redrawn to match the page (version 11 at the link): no card, "Level 4 reached", the level as a numeral in the serif with its tier and name, what it took in italics, the road of six segments in the tier colours (the email's one place with colour), the XP, what is next, one button. The tier colours entered the kit as `--k-tier-1` to `--k-tier-5` in `docs/brand/kit/tokens.css` (dark and light, naming admin-theme.css) and the email palette's `tier1` to `tier5` slots in `build.mjs`; `node docs/brand/kit/check.mjs --write` refreshed the kit's template; the kit's whole check passes (the page and every email, five palettes, four widths), gold and orange allowed by name on the road alone. Not done: the claude.ai design system's `tokens.json` (the kit's README asks it to follow `tokens.css`); it is his artifact, so it waits for his word.
+
 ## Where it stands
 
-**Waiting for his yes or no on the tenth drawing** (version 10 at the link: the game in black and white, colour only on the road, earned badges and done quests; no card; each level's screen; the level-up email). The earlier ones are the artifact's versions 1 to 6 and the commits before this one.
+**His yes (version 10), and the email redrawn to match (version 11). Building the page for real** (see Next). The earlier ones are the artifact's versions 1 to 6 and the commits before this one.
 
-- The drawing, a private artifact: https://claude.ai/artifact/S4FhycWThzkyV6uMWHWdMh, version 10 (the page at 390 in the panel's dark theme, a reason for each choice, its other states, and two questions).
+- The drawing, a private artifact: https://claude.ai/artifact/S4FhycWThzkyV6uMWHWdMh, version 11 (the page at 390 in the panel's dark theme, a reason for each choice, its other states, and two questions).
 
 ## What was built (on the branch, for the drawing)
 
