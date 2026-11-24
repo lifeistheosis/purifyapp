@@ -21,7 +21,7 @@ export const dynamic = "force-dynamic";
  * KEPT LIGHT ON SUPABASE'S EGRESS (the free quota's date, docs/NOW.md item 0).
  * Counts are head requests, which move no rows. The only rows read are the
  * entitlements (a few hundred, through subscriptionStats, as the admin's own
- * tabs read them), the signed-in sessions' user ids and the week's page view
+ * tabs read them), the week's page view
  * counts (one number a row), and the month's paid orders (none at present).
  * It is read when he asks, not on a schedule.
  */
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
     const [
       total, new7, newPrev7, new30,
       sessions7, sessionsPrev7,
-      signed7Rows, signedPrev7Rows, views7Rows,
+      views7Rows,
       subs, cancelling, billingIssue, orders,
     ] = await Promise.all([
       count(admin.from("profiles").select("id", head)),
@@ -66,12 +66,6 @@ export async function GET(req: NextRequest) {
       count(admin.from("profiles").select("id", head).gte("joined_at", d30)),
       count(admin.from("analytics_sessions").select("session_id", head).gte("last_seen", d7)),
       count(admin.from("analytics_sessions").select("session_id", head).gte("last_seen", d14).lt("last_seen", d7)),
-      pageAll<{ user_id: string }>((a, b) =>
-        admin.from("analytics_sessions").select("user_id").not("user_id", "is", null)
-          .gte("last_seen", d7).order("session_id").range(a, b)),
-      pageAll<{ user_id: string }>((a, b) =>
-        admin.from("analytics_sessions").select("user_id").not("user_id", "is", null)
-          .gte("last_seen", d14).lt("last_seen", d7).order("session_id").range(a, b)),
       pageAll<{ pageviews: number }>((a, b) =>
         admin.from("analytics_sessions").select("pageviews").gte("last_seen", d7)
           .order("session_id").range(a, b)),
@@ -87,8 +81,9 @@ export async function GET(req: NextRequest) {
       generatedAt: nowIso,
       accounts: { total, new7, newPrev7, new30 },
       readers: {
-        signedIn7: new Set(signed7Rows.map((r) => r.user_id)).size,
-        signedInPrev7: new Set(signedPrev7Rows.map((r) => r.user_id)).size,
+        // Not recorded: /api/track never writes analytics_sessions.user_id.
+        signedIn7: null,
+        signedInPrev7: null,
         sessions7,
         sessionsPrev7,
         pageviews7: views7Rows.reduce((s, r) => s + (r.pageviews ?? 0), 0),
