@@ -3,7 +3,7 @@
 
 The film is 1080 by 1920 at 60 frames a second and 1199 frames long, the reference's own length and clock, so a
 frame here is the same frame there. Every change of picture is the reference's, measured frame by frame: when it
-starts, how many frames it takes, and what kind it is (a melt, a whip, a pull, a fade, a blur, a plain cut). Every
+starts, how many frames it takes, and what kind it is (a melt, a whip, a fade, a blur, a plain cut). Every
 word is Scripture, held to data/bible each run. No picture is redrawn: each is placed whole, larger than the frame,
 with its light pooled; a change of picture works on whole pictures only.
 
@@ -35,9 +35,10 @@ RUN_CHANGES = [(125, 127), (140, 142), (156, 159), (172, 176), (189, 193), (204,
                (429, 432), (437, 440), (446, 450), (453, 458), (462, 467), (470, 472), (480, 484), (487, 492), (495, 500), (503, 508),
                (512, 517), (521, 526), (534, 536), (568, 571), (594, 599), (628, 632)]
 # Its kinds: the held picture gives way in a soft blur; its ink faces melt one into the next; its last three changes
-# before the drop are a whip down, a whip across and a pull from the middle. Its last four shots move: nearer, nearer,
-# farther, and the last one farther still (shares of its size a second).
-RUN_KINDS = ["blur"] + ["melt"] * 32 + ["whip-v", "whip-h", "zoom"]
+# before the drop are a whip down, a whip across and a pull from the middle; ours are whips all three, since a pull
+# from the middle draws lines of light out of a bright picture, and the house keeps no rays. Its last four shots
+# move: nearer, nearer, farther, and the last one farther still (shares of its size a second).
+RUN_KINDS = ["blur"] + ["melt"] * 32 + ["whip-v", "whip-h", "whip-v"]
 PUSH = {32: 0.076, 33: 0.019, 34: -0.041, 35: -0.139}
 DROP = (675, 680)  # the bass comes in at 671; the reference fades from light to dark over these frames, and so do we
 END = 1144         # its last cut; ours goes to black and the mark, which fades where the reference fades (1177 to 1183)
@@ -45,8 +46,8 @@ END = 1144         # its last cut; ours goes to black and the mark, which fades 
 # ── The run: 36 pictures, no picture twice (his word, 2026-11-24) ────────
 # Each is a painting in colour, held on the face of its god or pagan, the face at the middle of the screen. The
 # order is each picture's "run" in pictures.json; the last is the Demiurge, its disc of light set on His halo.
-EYE = (540, 880)        # where the middle of the eyes stands, so the face is at the middle of the screen
-EYES_APART, MAX_UP = 240, 2.6  # how far apart the eyes stand, unless that would show the file at more than MAX_UP its size
+FACE_AT = (540, 860)          # where the middle of the face stands: the middle of the screen, a little above it for the words
+FACE_WIDE, MAX_UP = 540, 2.6  # how wide the face stands, unless that would show the file at more than MAX_UP its size
 RUN = [n for _, n in sorted((p["run"], n) for n, p in PICS.items() if "run" in p)]
 LAST = "urizen"
 RUN_POOL = (360, 1250, 0.24)  # the light pooled on the face, the rest let fall
@@ -62,7 +63,7 @@ SOFT = (340, 1200, 0.20)
 ICONS = [(675, DROP + ("fade",), "sinai", "eyes", SINAI_AT, ("wide", SINAI_WIDE), 1.04, (330, 1150, 0.16), LINE_ANSWER),
          (706, (704, 706, "fade"), "sinai", "eyes", (540, 600), ("wide", 1180), 1.03, (300, 1250, 0.22), LINE_ANSWER),
          (739, (738, 739, "fade"), "transfig", (0.5, 0.215), (540, 418), ("wide", 1400), 1.04, (380, 1500, 0.34), None),
-         (772, (765, 780, "zoom"), "zlatye", "eyes", (540, 700), ("eyes", 390), 1.02, SOFT, None),
+         (772, (765, 780, "whip-h"), "zlatye", "eyes", (540, 700), ("eyes", 390), 1.02, SOFT, None),
          (790, (788, 790, "blur"), "ushakov", "eyes", (540, 700), ("eyes", 330), 1.02, SOFT, None),
          (807, (806, 807, "blur"), "rublev", "eyes", (540, 700), ("eyes", 380), 1.04, SOFT, None),
          (841, (836, 840, "out"), "vysotsky", "eyes", (540, 700), ("eyes", 170), 1.03, SOFT, None),
@@ -70,7 +71,7 @@ ICONS = [(675, DROP + ("fade",), "sinai", "eyes", SINAI_AT, ("wide", SINAI_WIDE)
          (918, None, "golden", "eyes", (540, 700), ("eyes", 240), 1.02, SOFT, None),
          (930, None, "yaroe", "eyes", (540, 780), ("eyes", 250), 1.02, SOFT, None),
          (946, (940, 945, "stutter"), "ushakov", "eyes", (540, 760), ("eyes", 460), 1.03, SOFT, None),
-         (977, (974, 976, "zoom-out"), "zlatye", "eyes", (540, 760), ("eyes", 520), 1.03, SOFT, None),
+         (977, (974, 976, "out"), "zlatye", "eyes", (540, 760), ("eyes", 520), 1.03, SOFT, None),
          (1013, (1008, 1012, "out"), "novgorod", "eyes", (540, 560), ("wide", 1750), 1.05, (420, 1060, 0.04), LINE_LIGHT),
          (1112, None, "sinai", "eyes", (540, 760), ("eyes", 380), 1.03, (330, 1150, 0.16), None)]
 
@@ -120,6 +121,19 @@ def cover(shape, k, sx, sy, dx, dy):
     """A picture always covers the frame: the held point gives way a little before an edge of the canvas shows."""
     ih, iw = shape[:2]
     return min(max(dx, W - k * (iw - sx)), k * sx), min(max(dy, H - k * (ih - sy)), k * sy)
+
+
+def edge(shape, k, sx, sy, dx, dy, soft=240):
+    """Where an edge of the canvas would show in the frame, the picture is let fall to dark before it: a soft
+    shade, never a line."""
+    ih, iw = shape[:2]
+    yy, xx = grid()
+    x0, y0 = dx - k * sx, dy - k * sy
+    m = np.ones((H, W), np.float32)
+    for near, far in ((yy - y0, y0 > 0), (y0 + k * ih - yy, y0 + k * ih < H), (xx - x0, x0 > 0), (x0 + k * iw - xx, x0 + k * iw < W)):
+        if far:
+            m *= np.clip(near / soft, 0, 1)
+    return (m * m * (3 - 2 * m))[..., None]
 
 
 def shrunk(name, k):
@@ -230,23 +244,26 @@ def god(i, F):
             sx, sy, r = p["disc"]
             k = hr * k0 / r
             dx, dy = SINAI_AT[0] + (hx - (ax + bx) / 2) * k0, SINAI_AT[1] + (hy - (ay + by) / 2) * k0
-        else:
-            if "eyes" in p:
-                (lx, ly), (rx, ry) = p["eyes"]
-                sx, sy, d = (lx + rx) / 2, (ly + ry) / 2, math.hypot(rx - lx, ry - ly)
-            else:  # a head with no pair of eyes to the viewer: its middle, and a measure standing for the eyes
-                sx, sy, d = p["face"]
-            k, (dx, dy) = min(EYES_APART, MAX_UP * d) / d, EYE
+        else:  # the face: its middle and its width in the file, found by find/faces.py or marked by hand
+            sx, sy, fw = p["face"]
+            k, (dx, dy) = max(min(FACE_WIDE / fw, MAX_UP), W / im.shape[1], H / im.shape[0]), FACE_AT
         k *= z
-        dx, dy = cover(im.shape, k, sx, sy, dx, dy)
+        if name == LAST:
+            dx, dy = cover(im.shape, k, sx, sy, dx, dy)
         out = place(im, k, sx, sy, dx, dy)
+        if name != LAST:  # the face keeps its place even where that brings an edge of the canvas into the frame
+            out = out * edge(im.shape, k, sx, sy, dx, dy)
         if k > 1.2:  # a painting shown larger than its file is made a little crisper; nothing in it is drawn
             out = np.clip(out + 0.6 * (out - cv2.GaussianBlur(out, (0, 0), 2.2 * k)), 0, 1)
         out = out * pool(dx, dy, *RUN_POOL)
         yy, _ = grid()
         foot = np.clip((yy - 1060) / 380, 0, 1)
         return out * (1 - 0.55 * foot * foot * (3 - 2 * foot))[..., None]  # the foot let fall further, where the words stand
-    return make() if rate else once(("god", i), make)
+    if rate:
+        return make()
+    out = once(("god", i), make)
+    _cache.pop(("rgb", name), None)  # a still picture's file is not needed again
+    return out
 
 
 def icon(n, F):
@@ -289,17 +306,6 @@ def whip(img, n, down):
     return img if n < 3 else cv2.blur(img, (1, n) if down else (n, 1), borderType=cv2.BORDER_REFLECT)
 
 
-def pull(img, s, cx, cy, steps=14):
-    """Drawn out from a point: the mean of the whole picture at a run of sizes. One smooth pull, never beams."""
-    if s < 0.004:
-        return img
-    acc = np.zeros_like(img)
-    for t in range(steps):
-        z = 1 + s * t / (steps - 1)
-        acc += cv2.warpAffine(img, np.float32([[z, 0, cx * (1 - z)], [0, z, cy * (1 - z)]]), (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
-    return acc / steps
-
-
 def melt(A, B, u, k):
     """One picture melting into the next, as the Christ edit's faces do: each whole picture follows the flow part of
     the way, laid over the other, soft in its middle."""
@@ -324,9 +330,8 @@ def change(kind, A, B, u, k):
     X = A * (1 - cross) + B * cross
     if kind == "blur":
         return cv2.GaussianBlur(X, (0, 0), 0.5 + 13 * bell), cross
-    if kind in ("whip-v", "whip-h"):
-        return whip(X, 320 * bell, kind == "whip-v"), cross
-    return pull(X, 0.25 * bell, W / 2, (EYE[1] if k < 37 else SINAI_AT[1])), cross  # "zoom"
+    assert kind in ("whip-v", "whip-h"), kind
+    return whip(X, 320 * bell, kind == "whip-v"), cross
 
 
 def frame(F):
@@ -340,8 +345,6 @@ def frame(F):
     A = draw(k - 1, F)
     if kind == "out":       # the picture goes soft and a little dark, then a plain cut
         return write(cv2.GaussianBlur(A, (0, 0), 0.5 + 26 * u * u) * (1 - 0.35 * u), before)
-    if kind == "zoom-out":  # the picture is drawn out from its middle, then a plain cut
-        return write(pull(A, 0.25 * u, W / 2, SINAI_AT[1]), before)
     B = draw(k, F)
     if kind == "stutter":   # the next picture shows for two frames, the last comes back for two, then one gives way
         s = (1.0, 1.0, 0.0, 0.0, 0.4, 0.8)[F - a]
@@ -383,7 +386,7 @@ def render(out, ref=None):
 
 # Stills for the film's page: one moment of each part, and of each kind of change.
 BOARD = [("1-the-light", 60), ("2-run-first", 133), ("3-run-melt", 174), ("4-whip", 596), ("5-before-the-drop", 668), ("5b-the-change", 677),
-         ("6-the-drop", 692), ("7-transfiguration", 752), ("7b-the-pull", 772), ("8-light-of-the-world", 1060), ("9-the-end", 1160)]
+         ("6-the-drop", 692), ("7-transfiguration", 752), ("7b-the-whip", 772), ("8-light-of-the-world", 1060), ("9-the-end", 1160)]
 
 if __name__ == "__main__":
     cmd = sys.argv[3]

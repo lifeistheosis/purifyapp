@@ -2,7 +2,7 @@
 
 The brief is `../edit-1-the-light.md`. This chat is session_01VuYTwacMjt6LkmPnjb5a2m, started 2026-11-23 at 22:05 UTC from that file.
 
-**Status, 2026-11-24 about 01:39 UTC: the film is made and put to him for his yes or no. Its page (private, his): https://claude.ai/artifact/PBVETgo9CqoLQzRNbZuzvY. The silent master and a preview with the reference's sound were sent to him in the chat. Nothing is posted. The storyboard's page stays at its own link. $31.34 at the last reading, taken before the film; about $35 by this chat's count.**
+**Status, 2026-11-24 about 02:29 UTC: the film's second cut is made and put to him for his yes or no, at the film's page (https://claude.ai/artifact/PBVETgo9CqoLQzRNbZuzvY). The silent master and the preview with the reference's sound were sent to him in the chat. Nothing is posted. $43.59 at the last reading, taken before the last renders; about $48 by this chat's count.**
 
 The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 
@@ -78,6 +78,26 @@ If he wants the brief's rule itself lifted, that is his to settle with the arbit
 - **Named to him again on the page:** a priest's yes before posting, above all for the Demiurge frame; the account's risk for Buddha; that it is for the separate edits account, not a paid ad or the store pages.
 - **The files** are out of git, in `.promo/promo-edits/edit-1/film/`, and were sent to him in the chat (`purify-the-light.mp4`, `purify-the-light-PREVIEW-not-for-posting.mp4`).
 - **To make it again:** fetch each page in `pictures.json` into `<work>/raw` (`find/fetch.py`), then `assets.py . <work>` (Saul, the font, the mark), `edit.py . <work> render <work>/film <the reference's file>`, `edit.py . <work> board <work>/board`, a small copy of the preview as `<work>/film/page.mp4`, and `film.py . <work>`. `page.py` is the storyboard's page as it stood at 01:08; `film.py` is the film's.
+- In this chat, 2026-11-24 about 01:42 UTC, on the first cut: "Make sure the effects are 1-to-1 and add like transitions, and don't reuse the same images of the pagans. Make sure it's unique every single time. And make sure the face of the false god or the pagan is like focused on their face at the center of the screen."
+
+## The film's second cut (2026-11-24, 01:42 to about 02:29 UTC)
+
+**The reference's changes of picture, measured** (its frames, 60 a second; strips of the frames about each change were looked at once, and each shot's own move was fitted from one of its frames to another):
+
+- Its run's shots stand still. Each change takes three to six frames (`RUN_CHANGES` in `edit.py`) and is a melt: one face drawn into the next. The opening gives way in three frames (125 to 127).
+- Its last four shots before the drop move: 7.6 and 1.9 parts in 100 nearer a second, then 4.1 and 13.9 farther. The changes into the last three are a whip down (566 to 571), a whip across (594 to 599) and a pull from the middle with a bright smear (628 to 632).
+- **It does not cut on the bass.** The bass comes in at 671; the picture fades from a white face to a dark scene over 675 to 680.
+- After the drop: fades at 704 to 706 and 738 to 739, one long smear 765 to 780, soft changes at 788 to 790 and 806 to 807, shots that go soft before a plain cut (836 to 840, 869 to 873, 974 to 976, 1008 to 1012), plain cuts at 918, 930, 1112 and 1144, one stutter at 939 to 945 (the next picture for two frames, the last for two, then it gives way), and the end: white by 1177, black by 1183. No shake and no flash anywhere but that white.
+
+**Ours** makes each change the same way on the same frames (`RUN_KINDS`, `ICONS`, `CHANGES`), with three differences, each named to him on the page: whips in place of the two pulls from the middle, since a pull draws lines of light out of a bright painting and the house keeps no rays; no white frame at the end; the opening's line above the man, not across him. The line of a shot is laid on after the change, so it stays still and sharp.
+
+**The run is 36 different paintings**, 26 of them new (`run` in `pictures.json`). Sixty-two were searched for on Commons in two rounds; the rest were wrong files (a ship's plan, a butterfly, ornaments, engravings), too small to fill a phone, photographs that ask for a credit (not used), or showed an unclothed figure at the face (not used). Vermeer's Diana, her face turned away and in shadow, gave way to Redon's Buddha, so Buddha stands twice, and he was told. The Demiurge is last.
+
+**Each is held on the face** (`face` in `pictures.json`): found by `find/faces.py` (OpenCV's YuNet, its model from OpenCV's own zoo) and chosen by eye off numbered sheets; Thor, Pan, the golden calf, Circe and Ingres's Jupiter were marked by hand. The face's middle stands at the same point of the screen every time, 540 wide unless that would show the file at more than 2.6 times its size. Where an edge of the canvas would come into the frame, the picture is let fall to dark before it (`edge`). The last four move as the reference's do; the Demiurge pulls back until his disc of light is the size of the Sinai halo and in its place, and fades into it on the reference's frames.
+
+**After the drop:** 14 shots of the ten icons, each filling the frame, held on Him, one slow even move, changing as the reference's shots change there.
+
+**Checked.** Measured on the files: H.264, 1080 by 1920, 60 frames a second, 1,199 frames, 19.983 s; the master 74.4 MB and silent. Two sheets of frames from the encoded master were looked at. The first render showed Thor, the calf and Circe off their faces, faces too high where a canvas's top was near, and a pull drawing lines of light out of an icon: each was mended and the film rendered again, and the second sheet showed all 36 on their faces. The page passed the kit's check. The film was not seen in motion by this chat, and he was told.
 
 ## The fourth board (2026-11-24, 00:40 to about 00:46 UTC, at his "ok")
 
@@ -184,5 +204,6 @@ Read with get_session, which shows the cost at the last finished turn.
 - Buddha's addition and his change to a painting (the eleventh and twelfth turns): get_session at 01:00 UTC still read $24.30, so neither is read yet. From the earlier readings this chat now reckons a turn by what it writes and thinks, not by its calls: about $2 each, so near $29 in all. The next turn reads it.
 - At 01:09 UTC get_session still read $24.30 and showed a turn opened at 00:53, so its figure has stopped moving. This chat's own count after the try at the Demiurge is about $29.5. He is asked before anything more is made.
 - By get_session at 01:38 UTC: **$31.34** at the last finished turn, the one that stopped at the Demiurge. So the $30 line had already been passed before he was asked: this chat's own count ($29.5) was too low, because a turn costs mostly what is thought and written, and that was undercounted. He was told.
-- The film (the fourteenth turn): not read yet; about $3 to $4 by this chat's count, so about $35 in all.
+- The first cut of the film: no reading of its own.
+- By get_session at 02:28 UTC: **$43.59** at the last finished turn, which ended about 02:01, before the choosing of the faces and the last two renders. By this chat's count the second cut is about $12 and the whole about $48. It had named about $10 for the second cut and about $45 in all, so it ran over both, and he was told.
 - The line to ask him at is $30 in all.

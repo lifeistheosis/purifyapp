@@ -1,5 +1,5 @@
 {
- "about": "The pictures of promo edit 1, the Light. Every file was fetched from Wikimedia Commons on 2026-11-23 at the width given ('fetched_width'); 'licence' is what that page states. A statue's photograph is the museum's own, released CC0 under its Open Access policy (The Met's own record marks each isPublicDomain: true; 'museum_page' is that record). The icons and the painting are faithful photographs of flat works long out of copyright, marked Public domain on Commons. None is held in Greece or Italy (lib/marketing/heritagePictures.ts). 'eyes' is where the eyes are in the fetched file, read off by hand: the eye at the viewer's left first. The files themselves are out of git. From 2026-11-24, at his word that the pagans can be any kind of picture, the run also takes old engravings: flat printed works long out of copyright, marked Public domain on Commons. They are ink already and are not put through the ink filter. 'focus' is the point of the print that is held, as shares of its width and height. From his word of 2026-11-24 (\"ensure its colored and western high quality art\"), the run is Western paintings in colour. Each is long out of copyright and marked Public domain on Commons, though he said that need not hold for the pagans. On 2026-11-24, at his word given three times after the risk to the account was named to him, a Buddha stands in the run: the Cleveland Museum of Art's own photograph, released CC0 under its Open Access policy. Later the same day, at his word (\"use art, not statues or old drawings\"), Buddha became a painting (the Great Buddha of Kamakura as John La Farge painted it, The Met, CC0) and Ra's wall painting left the run. For the film (2026-11-24, at his word \"make the edit now\"): Pan and Mars joined the run, Ingres's Jupiter stayed in it, and the run closes on William Blake's Ancient of Days, the Demiurge he asked for. 'disc' is its disc of light in the fetched file (middle x, y and radius, read off by eye), set on the Sinai icon's halo ('halo', the Christ edit's own measure). The seven icons after the drop are the Christ edit's, with its own eye marks.",
+ "about": "The pictures of promo edit 1, the Light. Every file was fetched from Wikimedia Commons on 2026-11-23 at the width given ('fetched_width'); 'licence' is what that page states. A statue's photograph is the museum's own, released CC0 under its Open Access policy (The Met's own record marks each isPublicDomain: true; 'museum_page' is that record). The icons and the painting are faithful photographs of flat works long out of copyright, marked Public domain on Commons. None is held in Greece or Italy (lib/marketing/heritagePictures.ts). 'eyes' is where the eyes are in the fetched file, read off by hand: the eye at the viewer's left first. The files themselves are out of git. From 2026-11-24, at his word that the pagans can be any kind of picture, the run also takes old engravings: flat printed works long out of copyright, marked Public domain on Commons. They are ink already and are not put through the ink filter. 'focus' is the point of the print that is held, as shares of its width and height. From his word of 2026-11-24 (\"ensure its colored and western high quality art\"), the run is Western paintings in colour. Each is long out of copyright and marked Public domain on Commons, though he said that need not hold for the pagans. On 2026-11-24, at his word given three times after the risk to the account was named to him, a Buddha stands in the run: the Cleveland Museum of Art's own photograph, released CC0 under its Open Access policy. Later the same day, at his word (\"use art, not statues or old drawings\"), Buddha became a painting (the Great Buddha of Kamakura as John La Farge painted it, The Met, CC0) and Ra's wall painting left the run. For the film (2026-11-24, at his word \"make the edit now\"): Pan and Mars joined the run, Ingres's Jupiter stayed in it, and the run closes on William Blake's Ancient of Days, the Demiurge he asked for. 'disc' is its disc of light in the fetched file (middle x, y and radius, read off by eye), set on the Sinai icon's halo ('halo', the Christ edit's own measure). The seven icons after the drop are the Christ edit's, with its own eye marks. For the film's second cut (2026-11-24, his word: \"don't reuse the same images of the pagans. Make sure it's unique every single time\", and each face \"at the center of the screen\"): the run is 35 different paintings and the Demiurge. 'face' is the face held, its middle (x, y) and its width in the fetched file, found by find/faces.py (OpenCV's YuNet) and chosen by eye, or marked by hand (Thor if not found, Pan, the golden calf, Ingres's Jupiter); 'run' is the picture's place in the run. Thor, the golden calf and Circe were marked by hand off a gridded sheet after the first try missed them; Vermeer's Diana gave way to Redon's Buddha.",
  "pictures": {
   "saul": {
    "what": "The Conversion of Saint Paul, by Parmigianino, oil on canvas, about 1527",
@@ -19,19 +19,31 @@
     0.37,
     0.22
    ],
-   "used": "the run"
+   "used": "the run",
+   "face": [
+    737,
+    216,
+    75
+   ],
+   "run": 1
   },
   "calf": {
    "what": "The Adoration of the Golden Calf, by Nicolas Poussin, oil on canvas, 1633 to 1634",
    "held": "The National Gallery, London",
    "page": "https://commons.wikimedia.org/wiki/File:The_Adoration_of_the_Golden_Calf_%E2%80%93_Nicolas_Poussin.jpg",
    "licence": "Public domain",
-   "fetched_width": 1920,
+   "fetched_width": 3840,
    "focus": [
     0.3,
     0.19
    ],
-   "used": "the run"
+   "used": "the run",
+   "face": [
+    1657,
+    592,
+    110
+   ],
+   "run": 32
   },
   "ra": {
    "what": "Ra-Horakhty enthroned, a wall painting in the tomb of Nefertari, about 1255 BC (a photograph of the painted wall)",
@@ -55,7 +67,13 @@
     0.6,
     0.22
    ],
-   "used": "the run, at his word of 2026-11-24"
+   "used": "the run",
+   "face": [
+    990,
+    752,
+    421
+   ],
+   "run": 34
   },
   "buddha-statue": {
    "what": "Seated Buddha, China, Ming dynasty, 1500s (gilt bronze)",
@@ -80,19 +98,31 @@
     0.4,
     0.24
    ],
-   "used": "the run"
+   "used": "the run",
+   "face": [
+    667,
+    421,
+    360
+   ],
+   "run": 2
   },
   "thor": {
    "what": "Thor's Fight with the Giants, by Mårten Eskil Winge, oil on canvas, 1872",
    "held": "Nationalmuseum, Stockholm",
    "page": "https://commons.wikimedia.org/wiki/File:Thor%27s_Battle_Against_the_J%C3%B6tnar_(1872)_by_M%C3%A5rten_Eskil_Winge.jpg",
    "licence": "Public domain",
-   "fetched_width": 1920,
+   "fetched_width": 3840,
    "focus": [
     0.455,
     0.26
    ],
-   "used": "the run"
+   "used": "the run",
+   "face": [
+    1890,
+    1047,
+    230
+   ],
+   "run": 33
   },
   "semele": {
    "what": "Jupiter and Semele, by Gustave Moreau, oil on canvas, 1894 to 1895",
@@ -104,7 +134,13 @@
     0.467,
     0.206
    ],
-   "used": "the run"
+   "used": "the run",
+   "face": [
+    1917,
+    922,
+    181
+   ],
+   "run": 7
   },
   "pan": {
    "what": "Pan, by Mikhail Vrubel, oil on canvas, 1899",
@@ -116,7 +152,13 @@
     0.24,
     0.17
    ],
-   "used": "the run"
+   "used": "the run",
+   "face": [
+    627,
+    422,
+    317
+   ],
+   "run": 5
   },
   "mars": {
    "what": "Mars, by Diego Velázquez, oil on canvas, 1639 to 1641",
@@ -128,7 +170,13 @@
     0.45,
     0.143
    ],
-   "used": "the run"
+   "used": "the run",
+   "face": [
+    648,
+    467,
+    216
+   ],
+   "run": 3
   },
   "jupiter": {
    "what": "Jupiter and Thetis, by Jean-Auguste-Dominique Ingres, oil on canvas, 1811 (a photograph of it in its frame; only the canvas is shown)",
@@ -146,7 +194,13 @@
      994
     ]
    ],
-   "used": "the run"
+   "used": "the run",
+   "face": [
+    1999,
+    1041,
+    308
+   ],
+   "run": 35
   },
   "urizen": {
    "what": "The Ancient of Days, the frontispiece of Europe a Prophecy (copy D), by William Blake, 1794, a relief etching coloured by hand",
@@ -479,6 +533,383 @@
     ]
    ],
    "used": "the theophanies, under the last line"
+  },
+  "dossi": {
+   "what": "Jupiter, Mercury and Virtue, by Dosso Dossi, oil on canvas, about 1524 (held on Mercury)",
+   "held": "Wawel Royal Castle, Kraków",
+   "page": "https://commons.wikimedia.org/wiki/File:Dosso_Dossi_010.jpg",
+   "licence": "Public domain",
+   "fetched_width": 3840,
+   "used": "the run",
+   "face": [
+    2202,
+    994,
+    224
+   ],
+   "run": 19
+  },
+  "pallas": {
+   "what": "Pallas Athena, by Rembrandt or his workshop, oil on canvas, about 1657",
+   "held": "Calouste Gulbenkian Museum, Lisbon",
+   "page": "https://commons.wikimedia.org/wiki/File:Pallas_Athena_Rembrandt.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    965,
+    934,
+    268
+   ],
+   "run": 28
+  },
+  "vermeer": {
+   "what": "Diana and Her Nymphs, by Johannes Vermeer, oil on canvas, about 1653 (held on Diana)",
+   "held": "Mauritshuis, The Hague",
+   "page": "https://commons.wikimedia.org/wiki/File:Johannes_Vermeer_-_Diana_and_her_Nymphs_-_406_-_Mauritshuis.jpg",
+   "licence": "Public domain",
+   "fetched_width": 3840,
+   "used": "not used: in the frame her face is turned away and in shadow",
+   "face": [
+    1899,
+    1015,
+    262
+   ]
+  },
+  "solomon": {
+   "what": "Bacchus, by Simeon Solomon, 1867",
+   "held": "Its holder is named on its page",
+   "page": "https://commons.wikimedia.org/wiki/File:Bacchus,_Simeon_Solomon.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    1021,
+    434,
+    277
+   ],
+   "run": 15
+  },
+  "vertumnus": {
+   "what": "Vertumnus: the emperor Rudolf II as the god of the seasons, by Giuseppe Arcimboldo, oil on panel, 1591",
+   "held": "Skokloster Castle, Sweden",
+   "page": "https://commons.wikimedia.org/wiki/File:Vertumnus_%C3%A5rstidernas_gud_m%C3%A5lad_av_Giuseppe_Arcimboldo_1591_-_Skoklosters_slott_-_91503.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    890,
+    803,
+    641
+   ],
+   "run": 27
+  },
+  "nebuchadnezzar": {
+   "what": "Nebuchadnezzar, by William Blake, a colour print finished by hand, 1795",
+   "held": "Minneapolis Institute of Art",
+   "page": "https://commons.wikimedia.org/wiki/File:William_Blake_-_Nebuchadnezzar_(Minneapolis).jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    1540,
+    611,
+    185
+   ],
+   "run": 9
+  },
+  "proserpine": {
+   "what": "Proserpine, by Dante Gabriel Rossetti, oil on canvas",
+   "held": "One of several versions; its holder is named on its page",
+   "page": "https://commons.wikimedia.org/wiki/File:Dante_Gabriel_Rossetti_-_Proserpine_-_Google_Art_Project_(JQFW5c2ZLfpmbw).jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    867,
+    791,
+    483
+   ],
+   "run": 4
+  },
+  "circe": {
+   "what": "Circe Offering the Cup to Ulysses, by John William Waterhouse, oil on canvas, 1891",
+   "held": "Gallery Oldham",
+   "page": "https://commons.wikimedia.org/wiki/File:Circe_Offering_the_Cup_to_Odysseus_(2457_x_4023px_ed.).jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    891,
+    632,
+    165
+   ],
+   "run": 8
+  },
+  "pharaoh": {
+   "what": "The Death of the Pharaoh's Firstborn Son, by Lawrence Alma-Tadema, oil on canvas, 1872 (held on Pharaoh)",
+   "held": "Rijksmuseum, Amsterdam",
+   "page": "https://commons.wikimedia.org/wiki/File:1872_Lawrence_Alma-Tadema_-_Death_of_the_Pharaoh_Firstborn_son.jpg",
+   "licence": "Public domain",
+   "fetched_width": 3840,
+   "used": "the run",
+   "face": [
+    1283,
+    445,
+    238
+   ],
+   "run": 13
+  },
+  "stuck": {
+   "what": "Pallas Athena, by Franz von Stuck, 1898",
+   "held": "Its holder is named on its page",
+   "page": "https://commons.wikimedia.org/wiki/File:Pallas_Athene_by_Franz_von_Stuck,_1898.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1280,
+   "used": "the run",
+   "face": [
+    630,
+    707,
+    221
+   ],
+   "run": 14
+  },
+  "cassandra": {
+   "what": "Cassandra, by Evelyn De Morgan, oil on canvas, 1898",
+   "held": "The De Morgan Collection",
+   "page": "https://commons.wikimedia.org/wiki/File:Cassandra1.jpeg",
+   "licence": "Public domain",
+   "fetched_width": 3840,
+   "used": "the run",
+   "face": [
+    1909,
+    1526,
+    426
+   ],
+   "run": 18
+  },
+  "tiepolo": {
+   "what": "Apollo Pursuing Daphne, by Giovanni Battista Tiepolo, oil on canvas, about 1755 to 1760 (held on Apollo)",
+   "held": "National Gallery of Art, Washington",
+   "page": "https://commons.wikimedia.org/wiki/File:Giovanni_Battista_Tiepolo,_Apollo_Pursuing_Daphne,_c._1755-1760,_NGA_41693.jpg",
+   "licence": "CC0",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    1510,
+    554,
+    87
+   ],
+   "run": 29
+  },
+  "belshazzar": {
+   "what": "Belshazzar's Feast, by Rembrandt, oil on canvas, about 1636 (held on Belshazzar)",
+   "held": "The National Gallery, London",
+   "page": "https://commons.wikimedia.org/wiki/File:Belshazzar%E2%80%99s_feast,_by_Rembrandt.jpg",
+   "licence": "Public domain",
+   "fetched_width": 3840,
+   "used": "the run",
+   "face": [
+    1912,
+    828,
+    240
+   ],
+   "run": 17
+  },
+  "prometheus": {
+   "what": "Prometheus, by Gustave Moreau, oil on canvas, 1868",
+   "held": "Musée national Gustave Moreau, Paris",
+   "page": "https://commons.wikimedia.org/wiki/File:Moreau_-_Prometheus,_1869.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    1043,
+    895,
+    124
+   ],
+   "run": 21
+  },
+  "nightsleep": {
+   "what": "Night and Sleep, by Evelyn De Morgan, oil on canvas, 1878",
+   "held": "The De Morgan Collection",
+   "page": "https://commons.wikimedia.org/wiki/File:Night_%26_Sleep.jpg",
+   "licence": "Public domain",
+   "fetched_width": 3840,
+   "used": "the run",
+   "face": [
+    1156,
+    693,
+    232
+   ],
+   "run": 31
+  },
+  "flora": {
+   "what": "Saskia van Uylenburgh as Flora, by Rembrandt, oil on canvas, 1630s",
+   "held": "Its holder is named on its page",
+   "page": "https://commons.wikimedia.org/wiki/File:Saskia_van_Uylenburgh_(1612-1642)_as_Flora,_by_Rembrandt.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    1019,
+    647,
+    259
+   ],
+   "run": 20
+  },
+  "bellona2": {
+   "what": "Bellona, by Rembrandt, oil on canvas, 1633",
+   "held": "The Metropolitan Museum of Art, New York",
+   "page": "https://commons.wikimedia.org/wiki/File:Bellona_MET_DP146454.jpg",
+   "licence": "CC0",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    991,
+    828,
+    257
+   ],
+   "run": 6
+  },
+  "batonidiana": {
+   "what": "Diana and Cupid, by Pompeo Batoni, oil on canvas, 1761 (held on Diana)",
+   "held": "The Metropolitan Museum of Art, New York",
+   "page": "https://commons.wikimedia.org/wiki/File:Diana_and_Cupid,_Pompeo_Batoni,_Metropolitan_Museum.jpg",
+   "licence": "Public domain",
+   "fetched_width": 3840,
+   "used": "the run",
+   "face": [
+    2352,
+    674,
+    268
+   ],
+   "run": 26
+  },
+  "hygieia": {
+   "what": "Hygieia, from Medicine, by Gustav Klimt, 1900 to 1907 (a reproduction of the detail)",
+   "held": "The painting was destroyed in 1945",
+   "page": "https://commons.wikimedia.org/wiki/File:Hku_Klimt_Hygieia.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    943,
+    298,
+    373
+   ],
+   "run": 10
+  },
+  "nero": {
+   "what": "Nero at Baiae, by Jan Styka, oil on canvas, about 1900",
+   "held": "Its holder is named on its page",
+   "page": "https://commons.wikimedia.org/wiki/File:Jan_Styka_-_Nero_at_Baiae.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    1341,
+    369,
+    166
+   ],
+   "run": 23
+  },
+  "sigyn": {
+   "what": "Loki and Sigyn, by Mårten Eskil Winge, oil on canvas, 1863 (held on Loki)",
+   "held": "Nationalmuseum, Stockholm",
+   "page": "https://commons.wikimedia.org/wiki/File:Loke_and_Sigyn_(M%C3%A5rten_Winge)_-_Nationalmuseum_-_18041.tif",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    1572,
+    1226,
+    170
+   ],
+   "run": 25
+  },
+  "venusmars": {
+   "what": "Venus and Mars, by Sandro Botticelli, about 1485 (held on Venus)",
+   "held": "The National Gallery, London",
+   "page": "https://commons.wikimedia.org/wiki/File:Botticelli_-_Venus_and_Mars.jpeg",
+   "licence": "Public domain",
+   "fetched_width": 3840,
+   "used": "the run",
+   "face": [
+    620,
+    261,
+    204
+   ],
+   "run": 24
+  },
+  "vigee": {
+   "what": "A Sibyl, by Johannes Emilius Phaff (the name its page gives; SK-A-649)",
+   "held": "Rijksmuseum, Amsterdam",
+   "page": "https://commons.wikimedia.org/wiki/File:Sibylle_Rijksmuseum_SK-A-649.jpeg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    807,
+    670,
+    292
+   ],
+   "run": 30
+  },
+  "vulcan": {
+   "what": "Vulcan Forging the Thunderbolts of Jupiter, by Peter Paul Rubens, oil on canvas, 1636 to 1638",
+   "held": "Museo del Prado, Madrid",
+   "page": "https://commons.wikimedia.org/wiki/File:Rubens_-_Vulcano_forjando_los_rayos_de_J%C3%BApiter.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1280,
+   "used": "the run",
+   "face": [
+    592,
+    589,
+    252
+   ],
+   "run": 11
+  },
+  "juno": {
+   "what": "Juno, by Rembrandt, oil on canvas, about 1662 to 1665",
+   "held": "Hammer Museum, Los Angeles",
+   "page": "https://commons.wikimedia.org/wiki/File:Juno,_Rembrandt,_1662-1665,_Armand_Hammer_Museum_of_Art.jpg",
+   "licence": "Public domain",
+   "fetched_width": 3840,
+   "used": "the run",
+   "face": [
+    2005,
+    1243,
+    546
+   ],
+   "run": 16
+  },
+  "minerva": {
+   "what": "Minerva in Her Study, by Rembrandt, oil on canvas, 1635",
+   "held": "The Leiden Collection, New York",
+   "page": "https://commons.wikimedia.org/wiki/File:Minerva_in_Her_Study,_Rembrandt,_1635,_The_Leiden_Collection.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "used": "the run",
+   "face": [
+    899,
+    709,
+    261
+   ],
+   "run": 22
+  },
+  "buddha2": {
+   "what": "Buddha, by Odilon Redon, pastel, about 1905",
+   "held": "Its holder is named on its page",
+   "page": "https://commons.wikimedia.org/wiki/File:Odilon_Redon_-_Buddha_-_Google_Art_Project.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "face": [
+    392,
+    910,
+    120
+   ],
+   "run": 12,
+   "used": "the run"
   }
  }
 }
