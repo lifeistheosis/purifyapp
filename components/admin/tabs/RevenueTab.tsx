@@ -11,7 +11,8 @@ import { Freshness } from "../Freshness";
 import { useEffect, useState } from "react";
 
 import type { AbandonmentStats, AovSplit } from "@/lib/shop/commerceMetrics";
-import { Card, StatCard, ChartFrame, Sensitive, ToolbarButton } from "../primitives";
+import { Card, Disclosure, StatCard, ChartFrame, Sensitive, ToolbarButton } from "../primitives";
+import { RevenueLead } from "../money/RevenueLead";
 import { BarChart, Donut, SERIES_COLORS, chartColors } from "../charts";
 import { Quiet } from "../daily/parts";
 import { MoneyColumnsChart, type MoneyChartPayload } from "../money/MoneyColumnsChart";
@@ -182,6 +183,26 @@ function RevenuePanel() {
       <div className="flex justify-end">
         <Freshness lastSynced={lastSynced} failing={failing} onRefresh={refresh} />
       </div>
+      {/* One lead and one line; the cards, the note on where Plus comes from
+          and the run-rate are in the fold below (his yes, 2026-11-24). */}
+      <RevenueLead
+        data={
+          data
+            ? {
+                realizedCents: data.realized.totalCents,
+                realizedComplete: data.realized.complete,
+                plusMonthCents: data.subscriptions.mrrCents,
+                plusYearCents: data.subscriptions.arrCents,
+                plusEstimated: data.subscriptions.estimated,
+                shopNetCents: data.shop.netCents,
+                donationsRecorded: data.donations.recorded,
+                donationsCents: data.donations.totalCents,
+              }
+            : null
+        }
+      />
+      <Disclosure title="Every figure" hint="The five cards, the note on Plus, the run-rate">
+      <div className="space-y-4 px-3 pb-3 md:px-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
           // The figure the panel never had. Every card here reported one
@@ -246,10 +267,6 @@ function RevenuePanel() {
         />
       </div>
 
-      <OrdersAndCheckouts split={data?.shop.split} abandonment={data?.shop.abandonment} />
-
-      <ShopGrowthCards />
-
       {/* The label is the point. Until RevenueCat is wired this panel could
           only multiply subscribers by a list price, which cannot see a
           discount, a regional tier, an annual plan or store commission. Where
@@ -292,6 +309,35 @@ function RevenuePanel() {
           with what members actually paid. Shop figures are realized.
         </p>
       )}
+
+      <Card title={data && !data.subscriptions.estimated ? "Subscription run-rate" : "Estimated subscription run-rate"}>
+        <div className="grid grid-cols-2 gap-4 font-sans">
+          <div>
+            <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">
+              {data && !data.subscriptions.estimated ? "MRR (RevenueCat)" : "MRR (est.)"}
+            </p>
+            <p className="mt-1 text-title font-bold tabular-nums text-paper">
+              {data ? money(data.subscriptions.mrrCents) : "—"}
+            </p>
+          </div>
+          <div>
+            <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">
+              {data && !data.subscriptions.estimated ? "ARR (MRR × 12)" : "ARR (est.)"}
+            </p>
+            <p className="mt-1 text-title font-bold tabular-nums text-paper">
+              {data ? money(data.subscriptions.arrCents) : "—"}
+            </p>
+          </div>
+        </div>
+      </Card>
+      </div>
+      </Disclosure>
+      <Disclosure title="The shop and its checkouts" hint="Average order, walked-away checkouts, growth">
+        <div className="space-y-4 px-3 pb-3 md:px-4">
+          <OrdersAndCheckouts split={data?.shop.split} abandonment={data?.shop.abandonment} />
+          <ShopGrowthCards />
+        </div>
+      </Disclosure>
 
       {/* Above the charts, because a chart of revenue that is missing money
           Stripe already took is the wrong thing to look at first. */}
@@ -346,31 +392,15 @@ function RevenuePanel() {
         </ChartFrame>
       </div>
 
-      <Card title={data && !data.subscriptions.estimated ? "Subscription run-rate" : "Estimated subscription run-rate"}>
-        <div className="grid grid-cols-2 gap-4 font-sans">
-          <div>
-            <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">
-              {data && !data.subscriptions.estimated ? "MRR (RevenueCat)" : "MRR (est.)"}
-            </p>
-            <p className="mt-1 text-title font-bold tabular-nums text-paper">
-              {data ? money(data.subscriptions.mrrCents) : "—"}
-            </p>
-          </div>
-          <div>
-            <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">
-              {data && !data.subscriptions.estimated ? "ARR (MRR × 12)" : "ARR (est.)"}
-            </p>
-            <p className="mt-1 text-title font-bold tabular-nums text-paper">
-              {data ? money(data.subscriptions.arrCents) : "—"}
-            </p>
-          </div>
-        </div>
-      </Card>
 
       {/* Everything Stripe has. Until 2026-09-05 nothing in the panel read
           Stripe, so the movements above came from one webhook event and a
           typed-in figure while the ledger itself was invisible. */}
-      <StripeLedgerCard />
+      <Disclosure title="Stripe's ledger" hint="Every charge, refund and payout Stripe holds">
+        <div className="px-3 pb-3 md:px-4">
+          <StripeLedgerCard />
+        </div>
+      </Disclosure>
     </div>
   );
 }
