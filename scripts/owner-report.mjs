@@ -84,6 +84,8 @@ async function main() {
       const from = d.costs.from === "bank" ? "the bank's last whole months" : "the typed cost lines";
       console.log(`Running costs $${(d.costs.monthlyCents / 100).toFixed(2)} a month (from ${from}); Plus covers ${d.rates.costsCoveredPct}% at list less the stores' cut`);
     } else if (d.costs === null) console.log("Running costs: could not read");
+    if (d.keep) console.log(`Last 30 days: ${d.keep.cancelled30} cancelled in the store, ${d.keep.uncancelled30} turned renewal back on`);
+    else if (d.keep === null) console.log("Cancellations: could not read");
   }
   const r = report.revenuecat;
   console.log("");

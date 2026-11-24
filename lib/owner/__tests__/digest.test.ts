@@ -29,6 +29,7 @@ const inputs: DigestInputs = {
   },
   shop: { paidOrders30: 0, paidRevenueCents30: 0 },
   costs: { monthlyCents: 30000, from: "lines" },
+  keep: { cancelled30: 6, uncancelled30: 1 },
   sources: { revenuecat: true, mercury: false, stripe: true },
 };
 
