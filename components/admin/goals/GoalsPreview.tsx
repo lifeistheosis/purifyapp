@@ -38,6 +38,7 @@ const FULL: GoalsData = {
   growth: 0.062,
   paceCents: 1_900,
   paying: { monthly: 180, yearly: 95 },
+  carried: { members: 0, weeklyCents: 0 },
   thisWeek: { joined: 19, left: 3 },
   steps: [
     step({ id: "bills", name: "Pays its own bills", weeklyCents: 5_300, reachedOn: "2026-12-14" }),
@@ -110,6 +111,7 @@ const FIRST_WEEKS: GoalsData = {
   growth: null,
   paceCents: null,
   paying: { monthly: 80, yearly: 38 },
+  carried: { members: 0, weeklyCents: 0 },
   thisWeek: { joined: 4, left: 1 },
   steps: [
     step({ id: "bills", name: "Pays its own bills", weeklyCents: 5_300, heldWeeks: 1, byPace: "2026-12-14" }),
