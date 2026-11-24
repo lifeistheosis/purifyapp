@@ -80,6 +80,10 @@ async function main() {
     console.log(`Visits ${d.readers.sessions7} this week (${miss(d.rates.sessionsChangePct)}%), ${d.rates.pageviewsPerSession} pages a visit`);
     console.log(`Plus paying ${d.plus.paid} (${d.rates.plusConversionPct}% of accounts), trials ${d.plus.trial}, set to end ${d.plus.cancelling} (${d.rates.cancellingPct}%), billing issues ${d.plus.billingIssue}`);
     console.log(`Shop ${d.shop.paidOrders30} paid orders, $${(d.shop.paidRevenueCents30 / 100).toFixed(2)} in 30 days`);
+    if (d.costs) {
+      const from = d.costs.from === "bank" ? "the bank's last whole months" : "the typed cost lines";
+      console.log(`Running costs $${(d.costs.monthlyCents / 100).toFixed(2)} a month (from ${from}); Plus covers ${d.rates.costsCoveredPct}% at list less the stores' cut`);
+    } else if (d.costs === null) console.log("Running costs: could not read");
   }
   const r = report.revenuecat;
   console.log("");

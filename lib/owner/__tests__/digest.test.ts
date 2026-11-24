@@ -28,6 +28,7 @@ const inputs: DigestInputs = {
     cancelling: 5, billingIssue: 1, estimatedMrrCents: 22977,
   },
   shop: { paidOrders30: 0, paidRevenueCents30: 0 },
+  costs: { monthlyCents: 30000, from: "lines" },
   sources: { revenuecat: true, mercury: false, stripe: true },
 };
 
@@ -39,6 +40,7 @@ describe("buildDigest", () => {
     expect(d.rates.newAccountsChangePct).toBe(-27);
     expect(d.rates.sessionsChangePct).toBeNull();
     expect(d.rates.pageviewsPerSession).toBe(15.2);
+    expect(d.rates.costsCoveredPct).toBe(65.1); // 22977 * 0.85 = 19530 of 30000
   });
   it("carries no personal data", () => {
     expect(digestHasNoPersonalData(buildDigest(inputs))).toBe(true);

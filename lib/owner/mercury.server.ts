@@ -34,7 +34,7 @@ type MercuryTx = {
 };
 
 const KEEP_MS = 10 * 60_000;
-const WINDOW_DAYS = 90;
+const WINDOW_DAYS = 120; // about: three whole months and this one
 let kept: { read: BankRead; at: number } | null = null;
 
 export const mercuryConfigured = () => !!process.env.MERCURY_API_TOKEN;
@@ -53,7 +53,10 @@ export async function readBank(): Promise<BankRead> {
   const token = process.env.MERCURY_API_TOKEN;
   if (!token) throw new Error("not configured");
 
-  const start = new Date(Date.now() - WINDOW_DAYS * 86_400_000).toISOString().slice(0, 10);
+  // From the first day of the month three months back, so the three whole
+  // months before this one are read in full (lib/owner/bank.mjs, bankRunningCosts).
+  const now = new Date();
+  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 3, 1)).toISOString().slice(0, 10);
   const { accounts } = await get<{ accounts?: { id: string; name: string; kind: string; currentBalance: number }[] }>(
     "/accounts",
     token,
