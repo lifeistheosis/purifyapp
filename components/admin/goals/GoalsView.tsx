@@ -309,9 +309,14 @@ function Head({ data, next, reached }: { data: GoalsData; next: GoalStep | null;
         )}
       </p>
       <p className="mt-1 text-[13px] tabular-nums" style={{ color: "var(--adm-ink-3)" }}>
-        {count.format(data.paying.monthly + data.paying.yearly)} members, {count.format(data.thisWeek.joined)} joined and{" "}
+        {count.format(data.paying.monthly + data.paying.yearly + (data.carried?.members ?? 0))} members, {count.format(data.thisWeek.joined)} joined and{" "}
         {count.format(data.thisWeek.left)} left this week
       </p>
+      {data.carried?.members ? (
+        <p className="mt-1 text-[12.5px]" style={{ color: "var(--adm-ink-3)" }}>
+          {count.format(data.carried.members)} of them joined before 1.9 and count at the list price (est.) until their next renewal.
+        </p>
+      ) : null}
     </section>
   );
 }

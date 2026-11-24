@@ -81,7 +81,7 @@ export type GoalsRead =
 
 export async function readGoals(admin: SupabaseClient, now: Date = new Date()): Promise<GoalsRead> {
   const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
-  const [plus, settingRow, costsRes, rating, ownerIds, orders] = await Promise.all([
+  const [plus, settingRow, costsRes, rating, ownerIds, orders, payingRes] = await Promise.all([
     readPlusFacts(admin, "1970-01-01T00:00:00Z"),
     admin.from("site_settings").select("value").eq("key", GOALS_KEY).maybeSingle(),
     monthlyCosts(admin, now),
@@ -90,6 +90,8 @@ export async function readGoals(admin: SupabaseClient, now: Date = new Date()): 
       (ids) => new Set(ids.filter((id): id is string => !!id)),
     ),
     admin.from("shop_orders").select("email, total_cents, payment_status, paid_at").eq("payment_status", "paid").gte("paid_at", monthStart),
+    // Paying by the entitlements, for the members carried over (milestones' payingIds).
+    admin.from("entitlements").select("user_id").gt("plus_until", now.toISOString()).in("plus_source", ["apple", "google", "stripe"]),
   ]);
 
   if (plus.state !== "ok") {
@@ -125,6 +127,7 @@ export async function readGoals(admin: SupabaseClient, now: Date = new Date()): 
     signupsByDay,
     rating: rating?.ok && rating.value.play ? { stars: rating.value.play.rating, store: "Google Play" } : null,
     extra: shop ? { monthCents: shop.reduce((n, o) => n + (o.total_cents ?? 0), 0), orders: shop.length } : null,
+    payingIds: payingRes.error ? [] : ((payingRes.data ?? []) as { user_id: string }[]).map((r) => r.user_id),
   });
   return { ok: true, data: { ...data, mail: setting.mail }, setting, marksSaved: !settingRow.error && !!settingRow.data, costsRead: !!costsRes, costsFrom: costsRes?.from ?? null };
 }

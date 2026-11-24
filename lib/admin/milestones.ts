@@ -24,6 +24,7 @@
  * of 2026-11-24): each step stands on the costs, `bills`.
  */
 
+import { PLAN_PRICE_CENTS } from "@/lib/premium/plans";
 import { afterStoreCents, counts, isRefund, planOf, tally, weekOf, type PlusFact } from "./plusHistory";
 
 // ── The page's figures ───────────────────────────────────────────────────
@@ -84,6 +85,8 @@ export type GoalsData = {
   /** The number's average gain a week over the last four, in cents. */
   paceCents: number | null;
   paying: { monthly: number; yearly: number };
+  /** Paying members with no kept event yet, counted at list price (est.); their share of weeklyCents. */
+  carried: { members: number; weeklyCents: number };
   thisWeek: { joined: number; left: number };
   steps: GoalStep[];
   /** The step reached this week, for its moment at the head. */
@@ -151,7 +154,18 @@ export type MilestonesInput = {
   rating: { stars: number | null; store: string } | null;
   /** Shop sales this month, when they can be read. */
   extra: { monthCents: number; orders: number } | null;
+  /**
+   * Accounts paying by the entitlements (a store or Stripe, Plus now) whether
+   * or not an event of theirs is kept. Those with no kept event joined before
+   * 1.9 began keeping them (2026-11-17) and have not renewed since; they are
+   * counted as carried over (CARRIED_WEEKLY_CENTS each, est.) until their
+   * first event lands. His yes, 2026-11-24 ("recommended do that").
+   */
+  payingIds?: readonly string[];
 };
+
+/** A carried-over member a week: the monthly list price less the stores' 15%, as a week. */
+export const CARRIED_WEEKLY_CENTS = Math.round((PLAN_PRICE_CENTS.plusMonthly * 0.85 * 12) / 52);
 
 /** Monthly or yearly, read word by word from the store's product name, as planOf reads the plan. */
 export function periodOf(productId: string | null | undefined): "monthly" | "yearly" | null {
@@ -231,9 +245,15 @@ export function milestones(input: MilestonesInput): GoalsData {
   const atEnd = ends_.map((ms) => payingAt(facts, ms - 1, ownerIds));
   const values = atEnd.map(sum);
   const nowPaying = payingAt(facts, t, ownerIds);
-  const weeklyCents = sum(nowPaying);
+  // Carried over: paying now, with no kept event at all (see payingIds).
+  const known = new Set(facts.map((f) => f.user_id).filter((id): id is string => !!id));
+  const carriedCount = (input.payingIds ?? []).filter((id) => !known.has(id) && !ownerIds.has(id)).length;
+  const carriedCents = carriedCount * CARRIED_WEEKLY_CENTS;
+  const keptCents = sum(nowPaying);
+  const weeklyCents = keptCents + carriedCents;
   const last = values.length > 1 ? values[values.length - 1] : null;
-  const growth = fullWeeks >= 1 && last !== null && last > 0 ? (weeklyCents - last) / last : null;
+  // Growth compares kept with kept: the carried were never in the history.
+  const growth = fullWeeks >= 1 && last !== null && last > 0 ? (keptCents - last) / last : null;
   const paceCents = enough ? Math.round((values[values.length - 1] - values[values.length - 5]) / 4) : null;
 
   // The streak: whole weeks in a row the number grew on the week before.
@@ -262,7 +282,7 @@ export function milestones(input: MilestonesInput): GoalsData {
     );
     if (m2 && m2.weeklyCents > m1.weeklyCents) plan.push({ id: "second", name: m2.name || "The second mark", weeklyCents: costs + m2.weeklyCents });
   }
-  const perMember = nowPaying.size > 0 ? weeklyCents / nowPaying.size : 0;
+  const perMember = nowPaying.size + carriedCount > 0 ? weeklyCents / (nowPaying.size + carriedCount) : 0;
   const weeksTo = (target: number) => {
     if (paceCents === null || paceCents <= 0) return null;
     return Math.ceil((target - weeklyCents) / paceCents);
@@ -462,6 +482,7 @@ export function milestones(input: MilestonesInput): GoalsData {
     growth,
     paceCents,
     paying: { monthly: byPeriod(nowPaying, "monthly").length, yearly: byPeriod(nowPaying, "yearly").length },
+    carried: { members: carriedCount, weeklyCents: carriedCents },
     thisWeek: { joined: thisTally.joined, left: thisTally.left },
     steps,
     justReached,

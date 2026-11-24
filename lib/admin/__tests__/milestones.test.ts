@@ -169,3 +169,21 @@ describe("which goals the email is for", () => {
     expect(goalsToMail(steps, now).map((s) => s.id)).toEqual(["tenth", "quarter"]);
   });
 });
+
+describe("members carried over from before 1.9 (his yes, 2026-11-24)", () => {
+  const kept = monthly("u1", MON, MON + 200 * DAY);
+  it("counts paying accounts with no kept event at list price, est., and not in growth", () => {
+    const without = milestones(base({ facts: kept }));
+    const withCarried = milestones(base({ facts: kept, payingIds: ["u1", "old1", "old2"] }));
+    // u1 has events, so only the two older members are carried.
+    expect(withCarried.carried.members).toBe(2);
+    expect(withCarried.carried.weeklyCents).toBe(2 * 196);
+    expect(withCarried.weeklyCents).toBe(without.weeklyCents + 2 * 196);
+    expect(withCarried.growth).toBe(without.growth);
+  });
+  it("stops carrying a member once an event of theirs is kept, and never his own", () => {
+    const later = [...kept, ...monthly("old1", MON + 2 * DAY, MON + 200 * DAY)];
+    const d = milestones(base({ facts: later, payingIds: ["old1", "mine"], ownerIds: new Set(["mine"]) }));
+    expect(d.carried.members).toBe(0);
+  });
+});
