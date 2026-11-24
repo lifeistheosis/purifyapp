@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { categorize, summarizeBank } from "../../../scripts/owner-report.mjs";
+import { categorize, summarizeBank } from "../bank.mjs";
 
 describe("owner report: bank lines", () => {
   it("names money in and out by who it is with", () => {
