@@ -1,15 +1,13 @@
 "use client";
 
-// Sustainability tab — current-month BMC raised vs goal, 12-month history,
-// editable expense lines. The expense rows are the source of truth that
-// the public /support page reads.
+// Costs: what Purify spends a month (CostsLead) and the editable expense
+// lines behind it, private to the admin; Goals and Home measure Level 1
+// against them. No donations since his word of 2026-11-24.
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { SENSITIVE } from "@/lib/admin/streamer";
-import { Card, DataTable, Disclosure, Pill, Select, StatCard, Toolbar, ToolbarButton } from "../primitives";
+import { Card, DataTable, Pill, Select, Toolbar, ToolbarButton } from "../primitives";
 import { CostsLead } from "../money/CostsLead";
-import { BarChart } from "../charts";
 import {
   CADENCES,
   CADENCE_LABEL,
@@ -117,22 +115,7 @@ export function SustainabilityTab() {
       setSavingOrder(false);
     }
   }
-  const [editingGoal, setEditingGoal] = useState(false);
-  const [editingRaised, setEditingRaised] = useState(false);
-  const [raisedDraft, setRaisedDraft] = useState("");
-  const [raisedError, setRaisedError] = useState<string | null>(null);
-  const [goalDraft, setGoalDraft] = useState("");
 
-  // Opening the editor replaces the button that opened it, so without this a
-  // keyboard operator's focus falls to <body> and they have to tab back in
-  // from the top. autoFocus would do the same thing, but the lint rule against
-  // it is aimed at controls that steal focus on page load; this moves focus
-  // exactly once, in response to a click, which is the behaviour the rule
-  // wants rather than the attribute it bans.
-  const goalInputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    if (editingGoal) goalInputRef.current?.focus();
-  }, [editingGoal]);
   const [, startTransition] = useTransition();
 
   async function reload() {
@@ -253,25 +236,6 @@ export function SustainabilityTab() {
    * guessing, and is the one control in this panel that looks like the browser
    * rather than the product.
    */
-  async function saveGoal(usdValue: string) {
-    if (!data) return;
-    const cents = Math.round(Number(usdValue) * 100);
-    // Number("") is 0 and Number("abc") is NaN, so both are caught here.
-    if (!Number.isFinite(cents) || cents < 0) return;
-    const r = await fetch("/api/admin/sustainability/actions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "goal-set",
-        yearMonth: data.current.yearMonth,
-        goalCents: cents,
-      }),
-    });
-    if (r.ok) {
-      setEditingGoal(false);
-      startTransition(() => reload());
-    }
-  }
 
   /**
    * Correct the donations figure for this month.
@@ -286,33 +250,6 @@ export function SustainabilityTab() {
    * counts it. lib/admin/profit.ts keeps it out of revenue, margin and the
    * break-even gap, and the revenue donut leaves it out of realized income.
    */
-  async function saveRaised(usdValue: string) {
-    if (!data) return;
-    const cents = Math.round(Number(usdValue) * 100);
-    // Number("") is 0 and Number("abc") is NaN, so both are caught here.
-    if (!Number.isFinite(cents) || cents < 0) {
-      setRaisedError("Enter an amount in dollars, like 24.98.");
-      return;
-    }
-    setRaisedError(null);
-    const r = await fetch("/api/admin/sustainability/actions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "donations-set",
-        yearMonth: data.current.yearMonth,
-        totalCents: cents,
-        supporters: data.current.supporters ?? 0,
-      }),
-    });
-    if (!r.ok) {
-      const body = (await r.json().catch(() => null)) as { error?: string } | null;
-      setRaisedError(body?.error ?? "That didn't save.");
-      return;
-    }
-    setEditingRaised(false);
-    startTransition(() => reload());
-  }
 
   if (!data) {
     return loadFailed ? (
@@ -329,21 +266,6 @@ export function SustainabilityTab() {
     );
   }
 
-  const pct =
-    data.current.goalCents > 0
-      ? Math.min(100, Math.round((data.current.raisedCents / data.current.goalCents) * 100))
-      : 0;
-  const shortfallCents = Math.max(0, data.current.goalCents - data.current.raisedCents);
-  // DONATIONS over costs, and nothing else. Shop net and subscription
-  // revenue are not in the numerator, so this is one funding source measured
-  // against the whole cost base. It was labelled "Expense coverage" and
-  // hinted "Below operating cost", which reads as a verdict on the business
-  // and is not one: it can sit under 100% while Purify is comfortably above
-  // water on total income. Named for what it divides.
-  const donationCoverageRatio =
-    data.monthlyExpenseCents > 0
-      ? data.current.raisedCents / data.monthlyExpenseCents
-      : 0;
 
   return (
     <div className="space-y-6">
@@ -358,7 +280,7 @@ export function SustainabilityTab() {
         subtitle={
           data.expensesFromFallback
             ? `Falling back to data/support/support.ts, because the expense_lines table is empty. /support is publishing these ${data.expenses.length} committed lines and saying so. Adopt them to take over.`
-            : "Lives on /support. Edits propagate without a redeploy."
+            : "Private to the admin. Goals and Home measure Level 1 against these."
         }
         action={
           <Toolbar>
@@ -605,247 +527,11 @@ export function SustainabilityTab() {
           />
         )}
       </Card>
-      <Disclosure title="Donations and the /support goal" hint="The goal /support publishes, what came in, and the shortfall">
-        <div className="space-y-6 px-3 pb-3 md:px-4">
-      {!data.current.live && (
-        <Card title="BMC unreachable" accent>
-          <p className="font-sans text-detail text-paper/75">
-            The Buy Me a Coffee Developer API didn&rsquo;t return a value for
-            this month. Check <span className="font-mono">BMC_ACCESS_TOKEN</span>{" "}
-            and the /support page is currently showing the fallback figure.
-          </p>
-        </Card>
-      )}
-
-      {/* The budget, next to the numbers it governs, and honest about
-          whether anyone actually set it for this month. */}
-      <Card
-        title="Monthly goal"
-        subtitle={
-          data.current.goalSetForMonth
-            ? `Set for ${data.current.yearMonth}. This is what /support publishes.`
-            : "Not set for this month. /support is publishing the committed default from data/support/support.ts."
-        }
-        action={
-          editingGoal ? undefined : (
-            <Toolbar>
-              <ToolbarButton
-                variant="primary"
-                onClick={() => {
-                  setGoalDraft(String(data.current.goalCents / 100));
-                  setEditingGoal(true);
-                }}
-                title="Set this month's goal"
-              >
-                {data.current.goalSetForMonth ? "Change goal" : "Set goal"}
-              </ToolbarButton>
-            </Toolbar>
-          )
-        }
-      >
-        {editingGoal ? (
-          <div className="flex flex-wrap items-end gap-3">
-            <label className="min-w-[160px]">
-              <span
-                className="mb-1 block font-sans text-[11.5px]"
-                style={{ color: "var(--adm-ink-3)" }}
-              >
-                Goal, USD per month
-              </span>
-              <input
-                type="number"
-                min={0}
-                step="1"
-                inputMode="decimal"
-                ref={goalInputRef}
-                value={goalDraft}
-                onChange={(e) => setGoalDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") saveGoal(goalDraft);
-                  if (e.key === "Escape") setEditingGoal(false);
-                }}
-                className="h-11 w-full rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[13px] tabular-nums"
-                style={{
-                  background: "var(--adm-control)",
-                  borderColor: "var(--adm-line-strong)",
-                  color: "var(--adm-ink)",
-                }}
-              />
-            </label>
-            <Toolbar>
-              <ToolbarButton variant="primary" onClick={() => saveGoal(goalDraft)}>
-                Save
-              </ToolbarButton>
-              <ToolbarButton onClick={() => setEditingGoal(false)}>Cancel</ToolbarButton>
-            </Toolbar>
-          </div>
-        ) : (
-          <p
-            className="font-sans text-[30px] font-semibold leading-none tracking-[-0.02em] tabular-nums"
-            style={{ color: "var(--adm-ink)" }}
-          >
-            {usd(data.current.goalCents)}
-            <span
-              className="ml-2 align-middle font-sans text-[13px] font-normal"
-              style={{ color: "var(--adm-ink-3)" }}
-            >
-              against {usd(data.monthlyExpenseCents)} of costs
-            </span>
-          </p>
-        )}
-      </Card>
-
-      {/* ── Donations, and what they are ─────────────────────────────────
-          Editable, and labelled as recalled rather than measured. The subtitle
-          is not a disclaimer bolted on: this figure is deliberately excluded
-          from revenue, margin and the break-even gap everywhere else, and an
-          operator reading it needs to know that is on purpose rather than a
-          bug they should report. */}
-      <Card
-        title="Donations received"
-        subtitle="Entered by hand, not measured. Shown here and left out of revenue, profit and the break-even gap on purpose"
-        action={
-          editingRaised ? undefined : (
-            <Toolbar>
-              <ToolbarButton
-                variant="primary"
-                onClick={() => {
-                  setRaisedDraft(String(data.current.raisedCents / 100));
-                  setRaisedError(null);
-                  setEditingRaised(true);
-                }}
-                title="Correct the donations figure for this month"
-              >
-                {data.current.raisedCents > 0 ? "Correct figure" : "Enter figure"}
-              </ToolbarButton>
-            </Toolbar>
-          )
-        }
-      >
-        {editingRaised ? (
-          <div className="flex flex-wrap items-end gap-3">
-            <label className="min-w-[160px]">
-              <span
-                className="mb-1 block font-sans text-[11.5px]"
-                style={{ color: "var(--adm-ink-3)" }}
-              >
-                Donations, USD, {data.current.yearMonth}
-              </span>
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                inputMode="decimal"
-                value={raisedDraft}
-                onChange={(e) => setRaisedDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") void saveRaised(raisedDraft);
-                  if (e.key === "Escape") setEditingRaised(false);
-                }}
-                className="h-11 w-full rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[13px] tabular-nums"
-                style={{
-                  background: "var(--adm-control)",
-                  borderColor: "var(--adm-line-strong)",
-                  color: "var(--adm-ink)",
-                }}
-              />
-            </label>
-            <Toolbar>
-              <ToolbarButton variant="primary" onClick={() => void saveRaised(raisedDraft)}>
-                Save
-              </ToolbarButton>
-              <ToolbarButton onClick={() => setEditingRaised(false)}>Cancel</ToolbarButton>
-            </Toolbar>
-          </div>
-        ) : (
-          <p
-            className="font-sans text-[30px] font-semibold leading-none tracking-[-0.02em] tabular-nums"
-            style={{ color: "var(--adm-ink)" }}
-          >
-            {usd(data.current.raisedCents)}
-            <span
-              className="ml-2 align-middle font-sans text-[13px] font-normal"
-              style={{ color: "var(--adm-ink-3)" }}
-            >
-              not counted as revenue
-            </span>
-          </p>
-        )}
-        {raisedError && (
-          <p
-            role="alert"
-            className="mt-2 font-sans text-[12.5px]"
-            style={{ color: "var(--adm-critical)" }}
-          >
-            {raisedError}
-          </p>
-        )}
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard
-          label={`Raised · ${data.current.yearMonth}`}
-          value={usd(data.current.raisedCents)}
-          accent
-          hint={`${pct}% of ${usd(data.current.goalCents)} goal`}
-        />
-        <StatCard
-          label="Shortfall to goal"
-          value={usd(shortfallCents)}
-          hint={`${data.current.supporters} supporters`}
-        />
-        <StatCard
-          label="Monthly expenses"
-          value={usd(data.monthlyExpenseCents)}
-          // Counts CONTRIBUTING lines, not active ones. A one time cost is
-          // active and adds nothing to a monthly figure, so the old hint
-          // counted rows the number beside it deliberately excludes, and the
-          // two would have disagreed the day the first one time line was
-          // entered.
-          hint={(() => {
-            const active = data.expenses.filter((e) => e.active);
-            const once = active.filter((e) => e.cadence === "once").length;
-            const recurring = active.length - once;
-            return once === 0
-              ? `${recurring} recurring line${recurring === 1 ? "" : "s"}`
-              : `${recurring} recurring, ${once} one time`;
-          })()}
-        />
-        <StatCard
-          label="Donations vs costs"
-          value={`${Math.round(donationCoverageRatio * 100)}%`}
-          hint={
-            donationCoverageRatio >= 1
-              ? "Donations alone cover costs"
-              : "Donations alone do not cover costs. Shop and subscription income are not counted here."
-          }
-          accent={donationCoverageRatio < 1}
-        />
-      </div>
-
-        </div>
-      </Disclosure>
-      <Card
-        title="12-month donations history"
-        subtitle="From donations_monthly snapshots. Empty if the daily cron hasn’t run."
-      >
-        {data.history.length === 0 ? (
-          <p className="font-sans text-caption text-paper/45 py-4">
-            No snapshots yet. Run <span className="font-mono">/api/cron/bmc-snapshot</span> or wait for the daily job.
-          </p>
-        ) : (
-          // Masked under streamer mode with the revenue charts: the bars are
-          // dollars received, month by month. The card title stays readable.
-          <div className={SENSITIVE}>
-            <BarChart
-              rows={data.history.map((h) => ({
-                label: h.year_month.slice(2),
-                value: Math.round(h.total_cents / 100),
-              }))}
-            />
-          </div>
-        )}
-      </Card>
+      {/* No donations (his word, 2026-11-24): "No public donations, no buy me
+          coffee ... we're trying to move more into like a established brand".
+          The /support goal, the donations entry, their cards, the BMC notice
+          and the 12-month donations chart left this page; the rows in
+          donations_monthly stay in the database. */}
     </div>
   );
 }

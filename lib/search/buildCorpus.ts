@@ -64,7 +64,7 @@ const STATIC_PAGES: SearchItem[] = [
   { id: "page-reading", ...said("nav.reading", "Reading"), href: "/reading", group: "Other" },
   // Chants (1.7), where the Kitchen was; each chant is a row of its own below.
   { id: "page-chants", ...said("chants.title", "Chants"), href: "/chants", group: "Prayers", keywords: "chant hymn hymns music sung byzantine znamenny troparion kontakion psalm tone" },
-  { id: "page-support", label: "Support Purify", href: "/support", group: "Other", keywords: "donate give giving" },
+  { id: "page-support", label: "Support Purify", href: "/support", group: "Other", keywords: "support plus shop help" },
   { id: "page-pricing", label: "Pricing", href: "/pricing", group: "Other", keywords: "app pass subscription free" },
   { id: "page-whats-new", label: "What's new", href: "/whats-new", group: "Other", keywords: "release notes changelog updates" },
   { id: "page-about", label: "About Purify", href: "/about", group: "Other" },

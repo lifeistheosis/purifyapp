@@ -2,7 +2,8 @@
 
 /**
  * Revenue's lead: what Purify has actually been paid, all time, and one plain
- * line under it (Plus a month and a year, the shop, donations). Every figure
+ * line under it (Plus a month and a year, the shop). No donations (his word,
+ * 2026-11-24). Every figure
  * the page used to open with is in its "Every figure" fold, unchanged.
  * docs/plans/admin-levels-rework.md, the page-by-page step, his yes of
  * 2026-11-24 ("yes start with revenue"). A figure not read is said in words,
@@ -30,8 +31,7 @@ const usd = (c: number) => formatPrice(c, "usd");
 export function revenueLine(d: RevenueLeadData): string {
   const plus = `Plus ${usd(d.plusMonthCents)} a month${d.plusEstimated ? " (est.)" : ""}, ${usd(d.plusYearCents)} a year`;
   const shop = `the shop ${usd(d.shopNetCents)} net`;
-  const gifts = d.donationsRecorded ? `donations ${usd(d.donationsCents)}` : "donations not recorded";
-  return `${plus}; ${shop}; ${gifts}.`;
+  return `${plus}; ${shop}.`;
 }
 
 export function RevenueLead({ data }: { data: RevenueLeadData | null }) {
