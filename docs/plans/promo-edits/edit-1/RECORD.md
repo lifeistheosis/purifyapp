@@ -2,7 +2,7 @@
 
 The brief is `../edit-1-the-light.md`. This chat is session_01VuYTwacMjt6LkmPnjb5a2m, started 2026-11-23 at 22:05 UTC from that file.
 
-**Status, 2026-11-24 about 00:46 UTC: the fourth board is published at the same link (the run as the old world's gods known at a glance) and waits for his yes or no. No video is made. $21.74 at the last reading, about $25 by this chat's count; the film passes the $30 line and is not started without his yes to the board.**
+**Status, 2026-11-24 about 00:50 UTC: he asked a second time for Buddha and Muhammad. Not made, a second time. The fourth board stands at the link and waits for his yes or no. No video is made. About $25 of the $30 line by this chat's count.**
 
 The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 
@@ -22,6 +22,11 @@ Not made. The brief says it in its own words: never Muhammad in any form, and ne
 
 What he is asking for underneath is that the pagans be known at a glance, which the third board's paintings are not to most viewers. Offered in their place, and waiting for his word: the old world's gods that everyone knows by sight (Zeus, Poseidon, Athena, Thor, Odin, Anubis, Ra, the golden calf, a Caesar), each from its best known picture.
 - In this chat, 2026-11-24 about 00:39 UTC, to the list offered in place of Buddha and Muhammad and to the question on passing $30 once the board has his yes: "ok"
+- In this chat, 2026-11-24 about 00:50 UTC, on the fourth board: "had Buddha and Muhammad." Read as "add Buddha and Muhammad".
+
+## His second word on Buddha and Muhammad (about 00:50 UTC)
+
+Not made, and nothing was made this turn. The answer is the first one, said shorter: the brief forbids it in its own words, and this chat would not make it without the brief, for the risk to him in person and to the account and the app. He was told it is this chat's last word on it, and that the fourth board and the film are his for a yes. If he wants the rule itself changed, that is for him and the arbiter, not for a worker chat to do on its own.
 
 ## The fourth board (2026-11-24, 00:40 to about 00:46 UTC, at his "ok")
 
