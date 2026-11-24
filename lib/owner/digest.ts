@@ -32,9 +32,13 @@ export type DigestInputs = {
   generatedAt: string;
   accounts: { total: number; new7: number; newPrev7: number; new30: number };
   readers: {
-    /** Distinct signed-in readers seen in a session in the window. */
-    signedIn7: number;
-    signedInPrev7: number;
+    /**
+     * Distinct signed-in readers seen in the window. Null: not recorded.
+     * /api/track never writes analytics_sessions.user_id, so this count read
+     * 0 on its first live read (2026-11-24); null says so instead of a zero.
+     */
+    signedIn7: number | null;
+    signedInPrev7: number | null;
     sessions7: number;
     sessionsPrev7: number;
     pageviews7: number;
