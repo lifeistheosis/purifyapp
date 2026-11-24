@@ -31,7 +31,7 @@ export { Mark } from "./Mark";
 import { larpOn } from "@/lib/admin/larp";
 
 /** Stamped into any file larp mode produces. See handleCsv. */
-const LARP_FILE_NOTE =
+export const LARP_FILE_NOTE =
   "LARP MODE: every figure in this file is invented. Not real data.";
 import { Odometer } from "./Odometer";
 import { downloadCsv, toCsv } from "@/lib/admin/csv";
