@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "net.purifyapp.admin",
+      "sha256_cert_fingerprints": ["B7:0B:90:8C:AF:37:B9:6D:CC:65:AB:77:05:D7:E8:04:1A:CC:0D:03:CA:ED:65:6D:A0:39:28:0C:15:07:B1:0F"]
+    }
+  }
+]
