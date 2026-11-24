@@ -62,6 +62,10 @@ Kept by the chat he started for this on 2026-11-23 at 20:53 UTC (session_01VuYTw
 
   The two chats, both started at 22:05 UTC, Fable 5.2 at High as the designer's role card says: "Purify promo: edit 1, the Light" (session_01VuYTwacMjt6LkmPnjb5a2m) and "Purify promo: edit 2, the Church" (session_01VuYTwaL9B8MePq2DHwaw7z). Each keeps its own record under `docs/plans/promo-edits/edit-<n>/RECORD.md`. (The times of his words from 21:35 on are this chat's estimates and run about half an hour ahead of the clock: the two chats' start, 22:05, is the measured one.)
 
+- 2026-11-24, after the two edits' chats had been at work some hours: "move over prompt for opus 5.5 (for the admin panel stuff)"
+
+  At that word: the milestones' one-shot prompt was written for a fresh chat on Opus 5.5, the admin card's own model: `docs/handoffs/admin-milestones-prompt.md`. It builds `docs/plans/goals-milestones.md` in the plan's order (the measure, the marks in `site_settings` with no migration, a drawing for his yes, the page, the proof), keeps his private figures out of the public repository, and caps its spend at $10 to the drawing and $30 in all. He was given a short line to start that chat with, and the offer to start it for him. It is not started: two promo chats are at work, and he asked for the prompt.
+
 ## The first edit: a storyboard idea (put to him 2026-11-23 about 21:55 UTC; overtaken about 22:10 by his own direction above, and kept as an idea)
 
 About 20 seconds, 1080 by 1920, a silent master. The times are those of reference 1's sound (its bass comes in at 11.1 s) and move if he picks another sound.
