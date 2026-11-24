@@ -2,7 +2,7 @@
 
 The brief is `../edit-1-the-light.md`. This chat is session_01VuYTwacMjt6LkmPnjb5a2m, started 2026-11-23 at 22:05 UTC from that file.
 
-**Status, 2026-11-24 about 01:07 UTC: at his word ("use art, not statues or old drawings") every pagan in the run is now a painting: Buddha is John La Farge's painting of the Great Buddha, and Ra's wall painting is out. Muhammad is not made. The board is published at the same link and waits for his yes or no. No video is made. By this chat's count it stands near $29 of the $30 line, so nothing more is made without his word.**
+**Status, 2026-11-24 about 01:13 UTC: he asked for the Demiurge (or Freemasonry, or Gnosticism) as the run's last picture. The picture is chosen and its cut is planned, but it is not on the board: the first placing failed, and this chat stands at the $30 line by its own count, so it stopped and asked him, as the brief says. The board at the link is the one before (paintings only, Ingres's Jupiter last). No video is made.**
 
 The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 
@@ -54,6 +54,16 @@ If he wants the brief's rule itself lifted, that is his to settle with the arbit
 - `plate` in `edit.py` now keeps a painting covering the frame, so no edge of a canvas shows.
 - The run on the board: Neptune (Copley), Athena (Klimt), Buddha (La Farge), Thor (Winge), the golden calf (Poussin), Jupiter (Moreau), and Ingres's Jupiter to close.
 - The kit's check passed again; two sheets were looked at.
+- In this chat, 2026-11-24 about 01:09 UTC: "and for the last photo, do the demiurge or something related to Freemasonry or Gnosticism."
+
+## His word on the Demiurge, and where it stopped (01:09 to about 01:13 UTC)
+
+- **The picture chosen:** William Blake's The Ancient of Days (1794): Blake's Urizen, the false maker of his poems, measuring the world with a compass. It is the Demiurge of the Gnostics and the Great Architect's sign of Freemasonry in one picture, in colour, by a Western artist.
+- **The cut planned:** its disc of light set on the halo of the Sinai icon that follows the drop, the same middle and the same size (the halo's circle is the Christ edit's own measure, 931, 911.5 and 822 in the 1920-wide file), so on the bass the false light becomes His halo. Ingres's Jupiter leaves the run.
+- **What failed:** the two files that came up on Commons are photographs of the print hanging in exhibitions (at Oberhausen's Gasometer, 5616 by 3744, and the Fitzwilliam's copy shown at the Hamburg Kunsthalle, 3888 by 5184), and the script that looks for the disc read a small bright patch in each. The frame it made was wrong and was not published. The changes were taken back out of the working files (kept as `demiurge-attempt.patch` in the work folder), so the repository matches the board at the link.
+- **To do at his word:** fetch a straight reproduction (the British Museum's or the Whitworth's copy), mark the disc by eye, add the `halo` way of placing to `plate`, render stills 5 and 6, and change the page's words.
+- **Named to him:** a priest should see this frame first. The picture is widely taken for God the Father making the world, and its name is a name of God in Daniel 7, so as the last false god before Christ it can be read as the Gnostics' own claim that the Maker is false.
+- **Why it stopped:** the brief says to ask before passing $30 in all.
 
 ## The fourth board (2026-11-24, 00:40 to about 00:46 UTC, at his "ok")
 
@@ -158,4 +168,5 @@ Read with get_session, which shows the cost at the last finished turn.
 - By get_session at 00:35 UTC: **$21.74** at the last finished turn, so the third board was $2.32.
 - By get_session at 00:53 UTC: **$24.30** at the last finished turn, so the fourth board and the two answers after it were $2.56 together.
 - Buddha's addition and his change to a painting (the eleventh and twelfth turns): get_session at 01:00 UTC still read $24.30, so neither is read yet. From the earlier readings this chat now reckons a turn by what it writes and thinks, not by its calls: about $2 each, so near $29 in all. The next turn reads it.
+- At 01:09 UTC get_session still read $24.30 and showed a turn opened at 00:53, so its figure has stopped moving. This chat's own count after the try at the Demiurge is about $29.5. He is asked before anything more is made.
 - The line to ask him at is $30 in all.
