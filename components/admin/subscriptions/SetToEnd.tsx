@@ -52,6 +52,27 @@ export function noteFor(name: string | null): string {
   ].join("\n");
 }
 
+/**
+ * The note for a member whose card failed: they did not choose to leave, and
+ * the store is still retrying, so the note says how to fix the card. Same
+ * voice, no offer. His word, 2026-11-24: "add the card failed note too".
+ */
+export function cardNoteFor(name: string | null): string {
+  const first = name?.trim().split(/\s+/)[0];
+  return [
+    `Hi${first ? ` ${first}` : ""},`,
+    "",
+    "Thank you for being a Purify Plus member. A heads-up: your last renewal payment did not go through, so your membership will end unless the card is updated.",
+    "",
+    "On Android: open the Play Store, tap your profile, then Payments and subscriptions, then Subscriptions, and update the card for Purify. On iPhone: open Settings, tap your name, then Subscriptions.",
+    "",
+    "If you meant to stop, no need to do anything. If anything is not working for you, just reply; I read every one.",
+    "",
+    "With gratitude,",
+    "Edgar, the Purify Team",
+  ].join("\n");
+}
+
 const day = (iso: string | null) =>
   iso ? new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "an unknown day";
 
@@ -93,7 +114,19 @@ export function SetToEnd({ members }: { members: EndingMember[] }) {
           </li>
         ))}
       </ul>
-      <div className="mt-2">
+      <div className="mt-2 space-y-2">
+        {members.some((m) => m.endReason === "BILLING_ERROR") ? (
+          <Disclosure title="Your note for a failed card" hint="For the rows that say the card failed: how to update it">
+            <div className="px-3 pb-3 md:px-4">
+              <p className="whitespace-pre-line font-sans text-[13px] leading-relaxed" style={{ color: "var(--adm-ink-2)" }}>
+                {cardNoteFor(null)}
+              </p>
+              <button type="button" onClick={() => copy("card", cardNoteFor(null))} className={link + " mt-1"} style={{ color: "var(--adm-ink-2)" }}>
+                {copied === "card" ? "Copied" : "Copy the note"}
+              </button>
+            </div>
+          </Disclosure>
+        ) : null}
         <Disclosure title="Your note" hint="A thank-you and one honest question, from your own email">
           <div className="px-3 pb-3 md:px-4">
             <p className="whitespace-pre-line font-sans text-[13px] leading-relaxed" style={{ color: "var(--adm-ink-2)" }}>
