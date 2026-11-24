@@ -809,47 +809,75 @@ const MILESTONE = {
   number: "$780 a week",
   growth: "Up 4% on last week.",
   steps: [
-    { name: "Pays its own bills", pct: 100 },
-    { name: "A tenth of the way", pct: 100 },
-    { name: "A quarter of the way", pct: 100 },
-    { name: "Halfway", pct: 100, now: true },
-    { name: "The first mark", pct: 52 },
-    { name: "The second mark", pct: 26 },
+    { name: "Pays its own bills", reached: true },
+    { name: "A tenth of the way", reached: true },
+    { name: "A quarter of the way", reached: true },
+    { name: "Halfway", reached: true, now: true },
+    { name: "The first mark", reached: false },
+    { name: "The second mark", reached: false },
   ],
-  next: "Next is the first mark, $1,500 a week: about 426 more members, by September at your pace.",
+  next: { name: "The first mark", amount: "$1,500 a week", pct: 52, line: "About 426 more members, by September at your pace." },
 };
 
 /** One figure, large in the page's serif, with a line under it. */
 const oneFigure = (p, value, note) => `<tr><td style="padding:6px 0 0">
-  <p${p.c({ fg: "ink", cls: "e-fig" }, `margin:0;font-family:${SERIF};font-size:40px;line-height:46px;`)}>${esc(value)}</p>
-  ${note ? `<p${p.c({ fg: "quiet" }, `margin:6px 0 0;font-family:${SANS};font-size:14px;line-height:20px;`)}>${esc(note)}</p>` : ""}
+  <p${p.c({ fg: "ink", cls: "e-fig" }, `margin:0;font-family:${SERIF};font-size:34px;line-height:40px;`)}>${esc(value)}</p>
+  ${note ? `<p${p.c({ fg: "quiet" }, `margin:4px 0 0;font-family:${SANS};font-size:14px;line-height:20px;`)}>${esc(note)}</p>` : ""}
 </td></tr>`;
 
 /**
- * The milestones as the Goals page draws them: a name, where it stands at the
- * end ("Reached", "Reached today", or its share), and a bar of how far the
- * number has come towards it, on a track of the hairline. Reached ones are
- * whole and in the ink; the ones ahead in the chart's quieter mark.
+ * The milestone on the night, as Today's card stands (lead() above, the
+ * retention emails' card): a small line, the milestone's name large, what it
+ * took in italics, then the whole road as six stops on one line, the ones
+ * reached filled, the one reached today larger, the ones ahead open, and the
+ * email's one button. The night is dark on every palette (`dark-island`).
  */
-function milestoneBars(p, list) {
-  const { c, bgcolor } = p;
-  const row = (x) => {
-    const done = x.pct >= 100;
-    const w = Math.max(2, Math.min(100, x.pct));
-    const slot = done ? "ink" : "mark";
-    const value = x.now ? "Reached today" : done ? "Reached" : `${x.pct}%`;
-    return `<tr><td style="padding:12px 0 0">
-      <table ${TABLE} width="100%"><tr>
-        <td width="100%"${c({ fg: done ? "ink" : "body" }, `font-family:${SERIF};font-size:17px;line-height:24px;${x.now ? "font-weight:700;" : ""}`)}>${esc(x.name)}</td>
-        <td${c({ fg: done ? "ink" : "quiet" }, `white-space:nowrap;font-family:${SANS};font-size:15px;line-height:24px;font-weight:600;`)}>${esc(value)}</td>
-      </tr></table>
-      <table ${TABLE} width="100%" dir="ltr" role="img" aria-label="${esc(x.name)}: ${esc(value)}" style="border-collapse:separate;margin:6px 0 0"><tr>
-        <td width="${w}%" height="6"${bgcolor(slot)}${c({ bg: slot }, `width:${w}%;height:6px;font-size:0;line-height:0;border-radius:3px;`)}>&nbsp;</td>
-        ${w < 100 ? `<td height="6"${bgcolor("line")}${c({ bg: "line" }, "height:6px;font-size:0;line-height:0;border-radius:3px;")}>&nbsp;</td>` : ""}
-      </tr></table>
-    </td></tr>`;
+function achievement(p, m) {
+  const say = (style, colour) => ` style="${style}color:${colour};"`;
+  const reached = m.steps.filter((x) => x.reached).length;
+  const stop = (x) => {
+    const size = x.now ? 22 : 14;
+    const fill = x.reached;
+    const inner = fill ? size : size - 4;
+    return `<td width="${size}" valign="middle" style="width:${size}px;min-width:${size}px"><table ${TABLE} width="${size}" style="border-collapse:separate;width:${size}px"><tr><td width="${inner}" height="${inner}" bgcolor="${fill ? NIGHT.ink : NIGHT.ground}" style="width:${inner}px;height:${inner}px;font-size:0;line-height:0;border-radius:${size / 2}px;background-color:${fill ? NIGHT.ink : NIGHT.ground};${fill ? "" : `border:2px solid ${NIGHT.quiet};`}">&nbsp;</td></tr></table></td>`;
   };
-  return `<tr><td><table ${TABLE} width="100%">${list.map(row).join("\n")}</table></td></tr>`;
+  const between = (lit) =>
+    `<td valign="middle" style="padding:0 5px"><table ${TABLE} width="100%"><tr><td height="2" bgcolor="${lit ? NIGHT.ink : NIGHT.line}" style="height:2px;font-size:0;line-height:0;background-color:${lit ? NIGHT.ink : NIGHT.line}">&nbsp;</td></tr></table></td>`;
+  const road = m.steps.map((x, i) => stop(x) + (i < m.steps.length - 1 ? between(m.steps[i + 1].reached) : "")).join("");
+  const words = `Milestones: ${reached} of ${m.steps.length} reached. ${m.steps.map((x) => `${x.name}, ${x.now ? "reached today" : x.reached ? "reached" : "ahead"}`).join("; ")}.`;
+  return `<tr><td style="padding:24px 0 0">
+  <table ${TABLE} width="100%" class="dark-island" bgcolor="${NIGHT.ground}" style="border-collapse:separate;background-color:${NIGHT.ground};border:1px solid ${NIGHT.line};border-radius:22px">
+  <tr><td style="padding:26px 22px 24px">
+    <p${say(`margin:0;font-family:${SANS};font-size:13px;line-height:18px;font-weight:600;`, NIGHT.quiet)}>A milestone reached</p>
+    <h1 class="e-title"${say(`margin:8px 0 0;font-family:${SERIF};font-size:36px;line-height:42px;font-weight:700;`, NIGHT.ink)}>${esc(m.name)}</h1>
+    <p${say(`margin:10px 0 0;font-family:${SERIF};font-style:italic;font-size:17px;line-height:26px;`, NIGHT.words)}>Held ${esc(m.amount)} for four weeks running.</p>
+    <table ${TABLE} width="100%" dir="ltr" role="img" aria-label="${esc(words)}" style="margin:26px 0 0"><tr>${road}</tr></table>
+    <table ${TABLE} width="100%" style="margin:10px 0 0"><tr>
+      <td${say(`font-family:${SANS};font-size:13px;line-height:18px;`, NIGHT.quiet)}>${reached} of ${m.steps.length} reached</td>
+      <td${say(`text-align:right;text-align:end;font-family:${SANS};font-size:13px;line-height:18px;`, NIGHT.quiet)}>Next: ${esc(m.next.name.toLowerCase())}</td>
+    </tr></table>
+    <table ${TABLE} width="100%"><tr><td height="24" style="height:24px;font-size:0;line-height:0">&nbsp;</td></tr></table>
+    ${button(p, { href: "https://purifyapp.net/admin#tab=goals", text: "Open your goals", island: true })}
+  </td></tr>
+  </table>
+</td></tr>`;
+}
+
+/** The next milestone: its name and amount, its bar on a track of the hairline, and what it needs. */
+function nextMilestone(p, n) {
+  const { c, bgcolor } = p;
+  const w = Math.max(2, Math.min(100, n.pct));
+  return `<tr><td style="padding:4px 0 0">
+  <table ${TABLE} width="100%"><tr>
+    <td width="100%"${c({ fg: "ink" }, `font-family:${SERIF};font-size:20px;line-height:28px;`)}>${esc(n.name)}</td>
+    <td${c({ fg: "quiet" }, `white-space:nowrap;font-family:${SANS};font-size:15px;line-height:28px;`)}>${esc(n.amount)}</td>
+  </tr></table>
+  <table ${TABLE} width="100%" dir="ltr" role="img" aria-label="${n.pct}% of the way to ${esc(n.name.toLowerCase())}" style="border-collapse:separate;margin:10px 0 0"><tr>
+    <td width="${w}%" height="8"${bgcolor("ink")}${c({ bg: "ink" }, `width:${w}%;height:8px;font-size:0;line-height:0;border-radius:4px;`)}>&nbsp;</td>
+    ${w < 100 ? `<td height="8"${bgcolor("line")}${c({ bg: "line" }, "height:8px;font-size:0;line-height:0;border-radius:4px;")}>&nbsp;</td>` : ""}
+  </tr></table>
+  <p${c({ fg: "body" }, `margin:10px 0 0;font-family:${SANS};font-size:15px;line-height:22px;`)}>${n.pct}% there. ${esc(n.line)}</p>
+</td></tr>`;
 }
 
 export function milestone(how) {
@@ -858,16 +886,14 @@ export function milestone(how) {
   const m = MILESTONE;
   return shell(p, {
     title: `You reached ${m.name.toLowerCase()}`,
-    preheader: `${m.amount}, held four weeks running.`,
-    kind: "A milestone",
+    preheader: `${m.name}: ${m.amount}, held four weeks running.`,
+    kind: m.date,
     rows: [
-      opening(p, { eyebrow: m.date, title: `You reached ${m.name.toLowerCase()}`, sub: `Held ${m.amount} for four weeks running.` }),
-      label(p, "Members bring in"),
+      achievement(p, m),
+      label(p, "Members bring in", 34),
       oneFigure(p, m.number, m.growth),
-      label(p, "Milestones"),
-      milestoneBars(p, m.steps),
-      para(p, esc(m.next), 22),
-      `<tr><td style="padding:26px 0 0">${button(p, { href: "https://purifyapp.net/admin#tab=goals", text: "Open your goals" })}</td></tr>`,
+      label(p, "Next", 30),
+      nextMilestone(p, m.next),
     ],
     foot: `<p style="margin:0">This email comes once for each milestone, when it has held four weeks running. It is made for the owner and goes to no reader.</p>
   <p style="margin:18px 0 0">${quietButton(p, { href: "https://purifyapp.net/unsubscribe", text: "Unsubscribe" })}</p>
