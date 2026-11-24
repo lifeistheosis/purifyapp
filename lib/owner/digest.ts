@@ -58,6 +58,8 @@ export type DigestInputs = {
     estimatedMrrCents: number;
   };
   shop: { paidOrders30: number; paidRevenueCents30: number };
+  /** Keeping members (docs/plans/keep-members.md, step 5): store cancellations and members who turned renewal back on, last 30 days, from the kept events. */
+  keep: { cancelled30: number; uncancelled30: number } | null;
   /** Monthly running costs and where they came from (lib/admin/goals.server.ts, monthlyCosts). Null: not read. */
   costs: { monthlyCents: number; from: "bank" | "lines" } | null;
   /** Which outside sources this server holds a key for, so a chat can check Render's setup. */
