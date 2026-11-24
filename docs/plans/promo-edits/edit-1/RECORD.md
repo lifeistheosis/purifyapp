@@ -2,7 +2,7 @@
 
 The brief is `../edit-1-the-light.md`. This chat is session_01VuYTwacMjt6LkmPnjb5a2m, started 2026-11-23 at 22:05 UTC from that file.
 
-**Status, 2026-11-24 about 00:33 UTC: the third board is published at the same link (the run as Western paintings in colour, the last god set eye for eye on Christ's icon) and waits for his yes or no. No video is made. The chat stands at about $23 of the $30 line by its own count; the film is not started without his word on cost.**
+**Status, 2026-11-24 about 00:35 UTC: he asked for Buddha, Muhammad and the like in the run. That is not made (the brief's own rule, below); the old world's best known gods are offered in their place and nothing more is made until he answers. The third board stands at the link. No video is made. $21.74 of the $30 line.**
 
 The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 
@@ -14,6 +14,13 @@ The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 - In this chat, about 22:43 UTC, after the opening's second design: "The other frames could definitely use way better images and editing."
 - In this chat, 2026-11-24 about 00:02 UTC, to the plan below: "the pagans can be wharever type of icon (they don't matter for traditionalism )". Taken as yes to the plan and to engravings: the pagans' pictures can be of any kind.
 - In this chat, 2026-11-24 about 00:22 UTC, on the second board: "I don't like the photo or design of the pagans, ensure its colored and western high quality art (public domain doesn't matter) its just tiktok"
+- In this chat, 2026-11-24 about 00:35 UTC, on the third board: "Use recognizable pagans, for example, Buddha, Muhammad, and the other popular pagans."
+
+## His word on Buddha and Muhammad, and what was answered (about 00:35 UTC)
+
+Not made. The brief says it in its own words: never Muhammad in any form, and never a holy figure, founder or leader of a living religion, "It gets an account reported and puts him at risk, and the old idols give the same run. If he asks for one of these, say why not in two lines and offer the old world's instead." This chat holds to that and would hold to it without the brief: a picture of Muhammad shown as a false god can bring threats to him in person, and both get the account and the app reported and taken down.
+
+What he is asking for underneath is that the pagans be known at a glance, which the third board's paintings are not to most viewers. Offered in their place, and waiting for his word: the old world's gods that everyone knows by sight (Zeus, Poseidon, Athena, Thor, Odin, Anubis, Ra, the golden calf, a Caesar), each from its best known picture.
 
 ## His word on the other frames, and the plan put to him (about 22:44 UTC)
 
@@ -107,5 +114,5 @@ Read with get_session, which shows the cost at the last finished turn.
 - The storyboard (the first turn, 22:05 to 22:40 UTC): **$10.26**, within the $12 set for it. 288,000 tokens of context at its end.
 - By get_session at 00:03 UTC on 2026-11-24: **$11.86** at the last finished turn, so the opening's second design and the plan together were about $1.60.
 - By get_session at 00:22 UTC: **$19.42** at the last finished turn, so the second board was $7.56 (the cache had gone cold and was written again, which this chat had not counted on).
-- The third board (the fifth turn): not read yet. About fourteen calls on a warm cache; this chat's own count is about $3 to $4, so about $23 in all.
+- By get_session at 00:35 UTC: **$21.74** at the last finished turn, so the third board was $2.32.
 - The line to ask him at is $30 in all.
