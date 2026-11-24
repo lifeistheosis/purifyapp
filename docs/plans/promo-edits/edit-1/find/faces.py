@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw
 R=json.load(open('find/fetched.json'))
 names=[n for n in sys.argv[1:] if os.path.exists(f'raw/{n}.jpg') and os.path.getsize(f'raw/{n}.jpg')>1000]
 det=cv2.FaceDetectorYN.create('find/model/yunet.onnx','',(640,640),0.45,0.3,200)
-out={}; tiles=[]
+out=json.load(open('find/faces.json')) if os.path.exists('find/faces.json') else {}; tiles=[]
 for n in names:
     im=Image.open(f'raw/{n}.jpg').convert('RGB'); w,h=im.size; found=[]
     for side in (1100,2000,3200):
@@ -37,4 +37,4 @@ sh=Image.new('RGB',(2000,len(rows)*294),(20,20,20))
 for j,row in enumerate(rows):
     x=0
     for t in row: sh.paste(t,(x,j*294)); x+=t.width+4
-sh.save('find/faces.jpg',quality=80); print('sheet',sh.size,len(tiles))
+sh.save(os.environ.get('SHEET','find/faces.jpg'),quality=80); print('sheet',sh.size,len(tiles))
