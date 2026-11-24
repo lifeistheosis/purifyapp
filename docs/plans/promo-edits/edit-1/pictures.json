@@ -1,5 +1,5 @@
 {
- "about": "The pictures of promo edit 1, the Light. Every file was fetched from Wikimedia Commons on 2026-11-23 at the width given ('fetched_width'); 'licence' is what that page states. A statue's photograph is the museum's own, released CC0 under its Open Access policy (The Met's own record marks each isPublicDomain: true; 'museum_page' is that record). The icons and the painting are faithful photographs of flat works long out of copyright, marked Public domain on Commons. None is held in Greece or Italy (lib/marketing/heritagePictures.ts). 'eyes' is where the eyes are in the fetched file, read off by hand: the eye at the viewer's left first. The files themselves are out of git. From 2026-11-24, at his word that the pagans can be any kind of picture, the run also takes old engravings: flat printed works long out of copyright, marked Public domain on Commons. They are ink already and are not put through the ink filter. 'focus' is the point of the print that is held, as shares of its width and height. From his word of 2026-11-24 (\"ensure its colored and western high quality art\"), the run is Western paintings in colour. Each is long out of copyright and marked Public domain on Commons, though he said that need not hold for the pagans. On 2026-11-24, at his word given three times after the risk to the account was named to him, a Buddha stands in the run: the Cleveland Museum of Art's own photograph, released CC0 under its Open Access policy. Later the same day, at his word (\"use art, not statues or old drawings\"), Buddha became a painting (the Great Buddha of Kamakura as John La Farge painted it, The Met, CC0) and Ra's wall painting left the run.",
+ "about": "The pictures of promo edit 1, the Light. Every file was fetched from Wikimedia Commons on 2026-11-23 at the width given ('fetched_width'); 'licence' is what that page states. A statue's photograph is the museum's own, released CC0 under its Open Access policy (The Met's own record marks each isPublicDomain: true; 'museum_page' is that record). The icons and the painting are faithful photographs of flat works long out of copyright, marked Public domain on Commons. None is held in Greece or Italy (lib/marketing/heritagePictures.ts). 'eyes' is where the eyes are in the fetched file, read off by hand: the eye at the viewer's left first. The files themselves are out of git. From 2026-11-24, at his word that the pagans can be any kind of picture, the run also takes old engravings: flat printed works long out of copyright, marked Public domain on Commons. They are ink already and are not put through the ink filter. 'focus' is the point of the print that is held, as shares of its width and height. From his word of 2026-11-24 (\"ensure its colored and western high quality art\"), the run is Western paintings in colour. Each is long out of copyright and marked Public domain on Commons, though he said that need not hold for the pagans. On 2026-11-24, at his word given three times after the risk to the account was named to him, a Buddha stands in the run: the Cleveland Museum of Art's own photograph, released CC0 under its Open Access policy. Later the same day, at his word (\"use art, not statues or old drawings\"), Buddha became a painting (the Great Buddha of Kamakura as John La Farge painted it, The Met, CC0) and Ra's wall painting left the run. For the film (2026-11-24, at his word \"make the edit now\"): Pan and Mars joined the run, Ingres's Jupiter stayed in it, and the run closes on William Blake's Ancient of Days, the Demiurge he asked for. 'disc' is its disc of light in the fetched file (middle x, y and radius, read off by eye), set on the Sinai icon's halo ('halo', the Christ edit's own measure). The seven icons after the drop are the Christ edit's, with its own eye marks.",
  "pictures": {
   "saul": {
    "what": "The Conversion of Saint Paul, by Parmigianino, oil on canvas, about 1527",
@@ -106,6 +106,30 @@
    ],
    "used": "the run"
   },
+  "pan": {
+   "what": "Pan, by Mikhail Vrubel, oil on canvas, 1899",
+   "held": "Tretyakov Gallery, Moscow",
+   "page": "https://commons.wikimedia.org/wiki/File:1899_Vrubel_Pan_anagoria.JPG",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "focus": [
+    0.24,
+    0.17
+   ],
+   "used": "the run"
+  },
+  "mars": {
+   "what": "Mars, by Diego Velázquez, oil on canvas, 1639 to 1641",
+   "held": "Museo del Prado, Madrid",
+   "page": "https://commons.wikimedia.org/wiki/File:Vel%C3%A1zquez_-_Dios_Marte_(Museo_del_Prado,_1639-41).jpg",
+   "licence": "Public domain",
+   "fetched_width": 1280,
+   "focus": [
+    0.45,
+    0.143
+   ],
+   "used": "the run"
+  },
   "jupiter": {
    "what": "Jupiter and Thetis, by Jean-Auguste-Dominique Ingres, oil on canvas, 1811 (a photograph of it in its frame; only the canvas is shown)",
    "held": "Musée Granet, Aix-en-Provence",
@@ -122,7 +146,20 @@
      994
     ]
    ],
-   "used": "the run: its last face, the frame before the drop, set eye for eye on the icon that follows"
+   "used": "the run"
+  },
+  "urizen": {
+   "what": "The Ancient of Days, the frontispiece of Europe a Prophecy (copy D), by William Blake, 1794, a relief etching coloured by hand",
+   "held": "The British Museum, London",
+   "page": "https://commons.wikimedia.org/wiki/File:Europe_a_Prophecy,_copy_D,_object_1_(Bentley_1,_Erdman_i,_Keynes_i)_British_Museum.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "disc": [
+    994.6,
+    819.5,
+    643.2
+   ],
+   "used": "the run: its last picture, the frame before the drop, its disc of light set on the halo of the icon that follows"
   },
   "adramelech": {
    "what": "Adramelech (2 Kings 17:31), engraving after Louis Le Breton, from Collin de Plancy's Dictionnaire infernal, Paris, 1863",
@@ -284,7 +321,12 @@
      950
     ]
    ],
-   "used": "the drop"
+   "used": "the drop",
+   "halo": [
+    931,
+    911.5,
+    822
+   ]
   },
   "transfig": {
    "what": "The Transfiguration, attributed to Theophanes the Greek, from Pereslavl-Zalessky, about 1403",
@@ -293,6 +335,132 @@
    "licence": "Public domain",
    "fetched_width": 1280,
    "used": "the theophanies, first after the drop"
+  },
+  "zlatye": {
+   "what": "The Saviour of the Golden Hair, early 13th century",
+   "held": "Dormition Cathedral, Moscow Kremlin",
+   "page": "https://commons.wikimedia.org/wiki/File:Zlaty_vlasy_(13th_c.,_Assumption_Cathedral).jpg",
+   "licence": "Public domain",
+   "fetched_width": 3840,
+   "eyes": [
+    [
+     1432,
+     1941
+    ],
+    [
+     2419,
+     1941
+    ]
+   ],
+   "used": "after the drop"
+  },
+  "ushakov": {
+   "what": "The Holy Face, by Simon Ushakov, 1658",
+   "held": "Tretyakov Gallery, Moscow",
+   "page": "https://commons.wikimedia.org/wiki/File:Simon_Ushakov_-_Спас_Нерукотворный_-_Google_Art_Project.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "eyes": [
+    [
+     721,
+     1072
+    ],
+    [
+     1086,
+     1072
+    ]
+   ],
+   "used": "after the drop"
+  },
+  "rublev": {
+   "what": "The Saviour, from the Zvenigorod tier, by Andrei Rublev, about 1410",
+   "held": "Tretyakov Gallery, Moscow",
+   "page": "https://commons.wikimedia.org/wiki/File:Rublev's_saviour.jpg",
+   "licence": "Public domain",
+   "fetched_width": 960,
+   "eyes": [
+    [
+     362,
+     421
+    ],
+    [
+     554,
+     412
+    ]
+   ],
+   "used": "after the drop"
+  },
+  "vysotsky": {
+   "what": "Christ Pantocrator from the Vysotsky tier, Byzantine, 1387 to 1395",
+   "held": "Tretyakov Gallery, Moscow",
+   "page": "https://commons.wikimedia.org/wiki/File:Christ_Pantocrator_from_Vysotsky_chin_(14c,_Tretyakov_gallery).jpg",
+   "licence": "Public domain",
+   "fetched_width": 1280,
+   "eyes": [
+    [
+     607,
+     478
+    ],
+    [
+     704,
+     478
+    ]
+   ],
+   "used": "after the drop"
+  },
+  "yaroe": {
+   "what": "The Saviour of the Fiery Eye, mid 14th century",
+   "held": "Dormition Cathedral, Moscow Kremlin",
+   "page": "https://commons.wikimedia.org/wiki/File:Spas_Yaroe_Oko_ikona.jpg",
+   "licence": "Public domain",
+   "fetched_width": 500,
+   "eyes": [
+    [
+     203,
+     272
+    ],
+    [
+     290,
+     270
+    ]
+   ],
+   "used": "after the drop"
+  },
+  "pantocrator19": {
+   "what": "Christ Pantocrator, tempera on wood, late 19th century",
+   "held": "not stated on its page",
+   "page": "https://commons.wikimedia.org/wiki/File:Christ_Pantocrator_icon.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "eyes": [
+    [
+     870,
+     689
+    ],
+    [
+     1077,
+     689
+    ]
+   ],
+   "used": "after the drop"
+  },
+  "golden": {
+   "what": "Christ Pantocrator on a chased gold ground, tempera on wood, Russia, late 19th or early 20th century",
+   "held": "not stated on its page",
+   "page": "https://commons.wikimedia.org/wiki/File:Christ_Pantocrator_Tempera_on_woodpanel.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "eyes": [
+    [
+     905,
+     690
+    ],
+    [
+     1035,
+     691
+    ]
+   ],
+   "used": "after the drop"
   },
   "novgorod": {
    "what": "The Holy Face (the Saviour Not Made by Hands), Novgorod, 12th century",

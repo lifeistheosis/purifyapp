@@ -2,7 +2,7 @@
 
 The brief is `../edit-1-the-light.md`. This chat is session_01VuYTwacMjt6LkmPnjb5a2m, started 2026-11-23 at 22:05 UTC from that file.
 
-**Status, 2026-11-24 about 01:13 UTC: he asked for the Demiurge (or Freemasonry, or Gnosticism) as the run's last picture. The picture is chosen and its cut is planned, but it is not on the board: the first placing failed, and this chat stands at the $30 line by its own count, so it stopped and asked him, as the brief says. The board at the link is the one before (paintings only, Ingres's Jupiter last). No video is made.**
+**Status, 2026-11-24 about 01:39 UTC: the film is made and put to him for his yes or no. Its page (private, his): https://claude.ai/artifact/PBVETgo9CqoLQzRNbZuzvY. The silent master and a preview with the reference's sound were sent to him in the chat. Nothing is posted. The storyboard's page stays at its own link. $31.34 at the last reading, taken before the film; about $35 by this chat's count.**
 
 The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 
@@ -64,6 +64,20 @@ If he wants the brief's rule itself lifted, that is his to settle with the arbit
 - **To do at his word:** fetch a straight reproduction (the British Museum's or the Whitworth's copy), mark the disc by eye, add the `halo` way of placing to `plate`, render stills 5 and 6, and change the page's words.
 - **Named to him:** a priest should see this frame first. The picture is widely taken for God the Father making the world, and its name is a name of God in Daniel 7, so as the last false god before Christ it can be read as the Gnostics' own claim that the Maker is false.
 - **Why it stopped:** the brief says to ask before passing $30 in all.
+- In this chat, 2026-11-24 about 01:20 UTC, to the two questions put to him (pass $30; keep Blake's Demiurge last or put Zeus back): "Yeah, make the edit now." Taken as yes to passing $30 and as his word to make the film; the Demiurge stays last, as he had asked.
+
+## The film (2026-11-24, 01:20 to about 01:39 UTC)
+
+- **Measured on the files** (ffprobe, counting frames): H.264, 1080 by 1920, yuv420p, 60 frames a second, 1,199 frames, 19.983 s. The master is silent, 68.8 MB. The preview is the same picture with the reference's own sound copied under it from its first sample; the film runs on the reference's clock, so nothing is shifted.
+- **The run:** 36 pictures on the reference's cuts. Nine gods (Neptune by Copley, Athena by Klimt, Buddha by La Farge, Thor by Winge, the golden calf by Poussin, Jupiter by Moreau, Pan by Vrubel, Mars by Velázquez, Jupiter by Ingres) come round in four passes, each framed three ways, no god twice running (`GODS` and `PASSES` in `edit.py`), each melting into the next as the Christ edit's faces do. Pan and Mars are new since the board. Then the Demiurge.
+- **The Demiurge:** Blake's Ancient of Days in a straight reproduction this time (Europe a Prophecy, copy D, the British Museum). Its disc of light was read by eye off a gridded sheet (its middle at 0.518 and 0.309 of the file's width and height, its radius 0.335 of the width) and set on the halo of the Sinai icon that follows: the same middle and the same size.
+- **After the drop:** ten icons on the reference's cuts (671 739 807 841 870 917 930 942 977 1013), each filling the frame, held on Him, one slow even move. The seven new ones are the Christ edit's, with its own eye marks, fetched at the widths it names.
+- **Looked for and left out:** Velázquez's Bacchus (the file too small for the frame), Arbo's Wild Hunt of Odin (dark, its riders tiny), Motte's Baal (a small file, and unclothed prisoners across its foot).
+- **The words:** the four lines of the board. "I am the light of the world" (John 8:12) is in, as on the board; he has not said yes or no to it by name. The John 14:6 line is offered and not added.
+- **Checked:** one sheet of 34 frames taken from the encoded master was looked at (every part, each god's framings, each icon, the Demiurge and the drop side by side). The page passed the kit's check. This chat cannot play video, so the film was not seen in motion before it went to him, and he was told so.
+- **Named to him again on the page:** a priest's yes before posting, above all for the Demiurge frame; the account's risk for Buddha; that it is for the separate edits account, not a paid ad or the store pages.
+- **The files** are out of git, in `.promo/promo-edits/edit-1/film/`, and were sent to him in the chat (`purify-the-light.mp4`, `purify-the-light-PREVIEW-not-for-posting.mp4`).
+- **To make it again:** fetch each page in `pictures.json` into `<work>/raw` (`find/fetch.py`), then `assets.py . <work>` (Saul, the font, the mark), `edit.py . <work> render <work>/film <the reference's file>`, `edit.py . <work> board <work>/board`, a small copy of the preview as `<work>/film/page.mp4`, and `film.py . <work>`. `page.py` is the storyboard's page as it stood at 01:08; `film.py` is the film's.
 
 ## The fourth board (2026-11-24, 00:40 to about 00:46 UTC, at his "ok")
 
@@ -169,4 +183,6 @@ Read with get_session, which shows the cost at the last finished turn.
 - By get_session at 00:53 UTC: **$24.30** at the last finished turn, so the fourth board and the two answers after it were $2.56 together.
 - Buddha's addition and his change to a painting (the eleventh and twelfth turns): get_session at 01:00 UTC still read $24.30, so neither is read yet. From the earlier readings this chat now reckons a turn by what it writes and thinks, not by its calls: about $2 each, so near $29 in all. The next turn reads it.
 - At 01:09 UTC get_session still read $24.30 and showed a turn opened at 00:53, so its figure has stopped moving. This chat's own count after the try at the Demiurge is about $29.5. He is asked before anything more is made.
+- By get_session at 01:38 UTC: **$31.34** at the last finished turn, the one that stopped at the Demiurge. So the $30 line had already been passed before he was asked: this chat's own count ($29.5) was too low, because a turn costs mostly what is thought and written, and that was undercounted. He was told.
+- The film (the fourteenth turn): not read yet; about $3 to $4 by this chat's count, so about $35 in all.
 - The line to ask him at is $30 in all.
