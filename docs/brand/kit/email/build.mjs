@@ -813,37 +813,24 @@ const MILESTONE = {
   tier: "Legendary",
   name: "Halfway",
   amount: "$750 a week",
-  number: "$780 a week",
-  growth: "Up 4% on last week.",
   // How far the number has come towards each level, as the page's road draws it.
   road: [100, 100, 100, 100, 52, 26],
-  next: { level: 5, name: "The first mark", toGo: "$720", line: "About 426 more members, by September at your pace." },
 };
 
-/** One figure, large in the page's serif, with a line under it. */
-const oneFigure = (p, value, note) => `<tr><td style="padding:6px 0 0">
-  <p${p.c({ fg: "ink", cls: "e-fig" }, `margin:0;font-family:${SERIF};font-size:34px;line-height:40px;`)}>${esc(value)}</p>
-  ${note ? `<p${p.c({ fg: "quiet" }, `margin:4px 0 0;font-family:${SANS};font-size:14px;line-height:20px;`)}>${esc(note)}</p>` : ""}
-</td></tr>`;
-
 /**
- * The level reached, as the Goals page opens (components/admin/goals/
- * GoalsView.tsx, Head): a small line, the level as a numeral in the serif, its
- * tier and its name, and what it took in italics. No card: his word on the
- * page's card, 2026-11-24, "new card design that looks vibe coded".
+ * The level reached, and nothing to explain it (his word, 2026-11-24: "make it
+ * straight to the point on whatever it's about. the admin panel does the
+ * explaining. the email does the showcasing"): a small line, the level as a
+ * numeral in the serif, its name, its tier and its amount. No card (his word
+ * on the page's card the same day: "looks vibe coded").
  */
 function levelOpening(p, m) {
   const { c } = p;
-  return `<tr><td style="padding:34px 0 0">
-  <p${c({ fg: "quiet" }, `margin:0;font-family:${SANS};font-size:13px;line-height:18px;font-weight:600;`)}>Level ${m.level} reached</p>
-  <table ${TABLE} style="margin:10px 0 0"><tr>
-    <td valign="bottom"${c({ fg: "ink" }, `padding:0 16px 0 0;font-family:${SERIF};font-size:96px;line-height:80px;`)}>${m.level}</td>
-    <td valign="bottom" style="padding:0 0 4px">
-      <p${c({ fg: "quiet" }, `margin:0;font-family:${SANS};font-size:13px;line-height:18px;`)}>${esc(m.tier)}</p>
-      <h1${c({ fg: "ink", cls: "e-title" }, `margin:2px 0 0;font-family:${SERIF};font-size:30px;line-height:36px;font-weight:700;`)}>${esc(m.name)}</h1>
-    </td>
-  </tr></table>
-  <p${c({ fg: "body" }, `margin:16px 0 0;font-family:${SERIF};font-style:italic;font-size:17px;line-height:26px;`)}>Held ${esc(m.amount)} for four weeks running.</p>
+  return `<tr><td style="padding:44px 0 0">
+  <p${c({ fg: "quiet" }, `margin:0;font-family:${SANS};font-size:13px;line-height:18px;font-weight:600;`)}>Level reached</p>
+  <p${c({ fg: "ink" }, `margin:10px 0 0;font-family:${SERIF};font-size:120px;line-height:100px;`)}>${m.level}</p>
+  <h1${c({ fg: "ink", cls: "e-title" }, `margin:14px 0 0;font-family:${SERIF};font-size:34px;line-height:40px;font-weight:700;`)}>${esc(m.name)}</h1>
+  <p${c({ fg: "quiet" }, `margin:8px 0 0;font-family:${SANS};font-size:14px;line-height:20px;`)}>${esc(m.tier)} · ${esc(m.amount)}</p>
 </td></tr>`;
 }
 
@@ -886,19 +873,14 @@ export function milestone(how) {
   const m = MILESTONE;
   return shell(p, {
     title: `Level ${m.level}: ${m.name}`,
-    preheader: `${m.name}: ${m.amount}, held four weeks running.`,
+    preheader: `Level ${m.level} reached: ${m.name}.`,
     kind: m.date,
     rows: [
       levelOpening(p, m),
       levelRoad(p, m.road),
-      label(p, "XP: what members bring in", 30),
-      oneFigure(p, m.number, m.growth),
-      para(p, `${esc(m.next.toGo)} to level ${m.next.level}, ${esc(m.next.name.toLowerCase())}. ${esc(m.next.line)}`, 18),
-      `<tr><td style="padding:26px 0 0">${button(p, { href: "https://purifyapp.net/admin#tab=goals", text: "Open your goals" })}</td></tr>`,
+      `<tr><td style="padding:32px 0 8px">${button(p, { href: "https://purifyapp.net/admin#tab=goals", text: "Open your goals" })}</td></tr>`,
     ],
-    foot: `<p style="margin:0">This email comes once for each level, when its milestone has held four weeks running. It is made for the owner and goes to no reader.</p>
-  <p style="margin:18px 0 0">${quietButton(p, { href: "https://purifyapp.net/unsubscribe", text: "Unsubscribe" })}</p>
-  <p style="margin:8px 0 0">${link(p, "https://purifyapp.net/admin", "Open the panel")}</p>`,
+    foot: `<p style="margin:0">${quietButton(p, { href: "https://purifyapp.net/unsubscribe", text: "Unsubscribe" })}</p>`,
   });
 }
 

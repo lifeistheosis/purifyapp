@@ -10,7 +10,10 @@ import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { Lock } from "@/components/ui/icons/Lock";
 import { Seal } from "@/components/ui/icons/Seal";
 import { Star } from "@/components/ui/icons/Star";
+import type { GoalMark, GoalsData, GoalStep, GoalStepId, Mover } from "@/lib/admin/milestones";
 import { useReducedMotion } from "@/lib/ui/motion";
+
+export type { GoalMark, GoalsData, GoalStep, GoalStepId, Mover, ReleaseLine } from "@/lib/admin/milestones";
 
 /**
  * The Goals page, the calm way (his word of 2026-11-23: the panel "feels like
@@ -42,100 +45,6 @@ import { useReducedMotion } from "@/lib/ui/motion";
  * guesses nothing. Before four full weeks are kept it shows no rate and no
  * day, and says so.
  */
-
-export type GoalStepId = "bills" | "tenth" | "quarter" | "half" | "first" | "second";
-
-export type GoalStep = {
-  id: GoalStepId;
-  /** Its plain name: "Halfway", or the name he gave a mark. */
-  name: string;
-  /** What the number must reach, in cents a week. */
-  weeklyCents: number;
-  /** The day it was reached (held four weeks running), or null. */
-  reachedOn: string | null;
-  /** Weeks running the number has stood at or over it, before it is reached (0 to 3). */
-  heldWeeks: number;
-  /** More paying members it needs at today's mix; null once reached. */
-  moreMembers: number | null;
-  /** The day it is reached at the last four weeks' pace; null without one. For a step the number already stands over, the day its four weeks are up. */
-  byPace: string | null;
-  /** The day it is reached at 5% a week; null without four weeks. */
-  byFive: string | null;
-};
-
-export type Mover = {
-  id: "readers" | "begin" | "pay" | "leave";
-  /** This week: a count for readers, a share (0 to 1) for the rest. */
-  value: number;
-  /** His own last four weeks, bettered by 5%. */
-  aim: number;
-};
-
-export type ReleaseLine = {
-  version: string;
-  from: string;
-  /** The next release's day, or null for the newest. */
-  to: string | null;
-  joined: number;
-  left: number;
-  /** The share of paying members who left a month, over its days. */
-  leftAMonth: number | null;
-  /** The share of trials that paid. */
-  trialsPaid: number | null;
-};
-
-export type GoalMark = { name: string; weeklyCents: number };
-
-export type GoalsData = {
-  /** Today, YYYY-MM-DD, UTC. */
-  today: string;
-  /** The Monday this week began. */
-  week: string;
-  /** Null once four full weeks are kept; until then, the Monday they will be. */
-  enoughOn: string | null;
-  weeklyCents: number;
-  /** On last week, as a share; null before two weeks. */
-  growth: number | null;
-  /** The number's average gain a week over the last four, in cents. */
-  paceCents: number | null;
-  paying: { monthly: number; yearly: number };
-  thisWeek: { joined: number; left: number };
-  steps: GoalStep[];
-  /** The step reached this week, for its moment at the head. */
-  justReached: GoalStepId | null;
-  movers: Mover[] | null;
-  lever: "joining" | "leaving" | "monthly" | null;
-  /** New members a month that only replace the ones who leave. */
-  standStill: number | null;
-  releases: ReleaseLine[];
-  rating: { stars: number | null; store: string; held: boolean | null };
-  refunds: { count: number; payments: number; low: boolean };
-  mix: {
-    monthlyCents: number;
-    yearlyCents: number;
-    /** The monthly share of the number a month ago. */
-    monthlyShareBefore: number | null;
-    leftMonthly: { left: number; of: number } | null;
-    leftYearly: { left: number; of: number } | null;
-    renewalOff: number;
-    cardFailed: number;
-    /** The next step's members, if every new one were monthly, or yearly. */
-    allMonthly: number | null;
-    allYearly: number | null;
-  };
-  extra: { monthCents: number; orders: number } | null;
-  marks: GoalMark[];
-  /** Weeks in a row the number has grown on the week before, and the longest such run. */
-  streak: { weeks: number; best: number };
-  /** Days left in this week, today included (weeks run Monday to Sunday, UTC). */
-  daysLeft: number;
-  /** Weeks with all four quests met. */
-  perfectWeeks: number;
-  /** Badges: each for a real event in the kept numbers, earned on a day or not yet. */
-  badges: { id: string; name: string; how: string; earnedOn: string | null; /** 1 (easy, green) to 5 (gold). */ tier: number }[];
-  /** Personal bests, each a real figure and the day it was set. */
-  records: { name: string; value: number; unit: "money" | "count" | "weeks" | "share"; on: string | null; isNew: boolean }[];
-};
 
 // ── Words for the figures ────────────────────────────────────────────────
 
@@ -226,7 +135,7 @@ export function GoalsView({
   banner?: ReactNode;
   hourly?: ReactNode;
   licence?: ReactNode;
-  onSaveMarks?: (marks: GoalMark[]) => void | Promise<void>;
+  onSaveMarks?: (marks: GoalMark[]) => Promise<string | null> | void;
 }) {
   const next = data.steps.find((s) => s.reachedOn === null) ?? null;
   const reached = data.justReached ? data.steps.find((s) => s.id === data.justReached) ?? null : null;
@@ -259,12 +168,17 @@ export function GoalsView({
 
       <Block
         label="This week's quests"
-        aside={data.movers ? `${data.movers.filter(questMet).length} of 4 done, ${data.daysLeft} ${data.daysLeft === 1 ? "day" : "days"} left` : undefined}
+        aside={data.movers ? `${data.movers.filter(questMet).length} of ${data.movers.length} done, ${data.daysLeft} ${data.daysLeft === 1 ? "day" : "days"} left` : undefined}
       >
         <Quests data={data} />
       </Block>
 
       <Block label="Levels" aside={`${data.steps.filter((s) => s.reachedOn !== null).length} of ${data.steps.length}`}>
+        {data.marks.length === 0 ? (
+          <p className="mb-2 text-[14px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
+            Set your two marks under More, Your marks, and the other five levels appear.
+          </p>
+        ) : null}
         <Levels data={data} next={next} onOpen={open} />
       </Block>
 
@@ -296,7 +210,7 @@ export function GoalsView({
           </Fold>
           {hourly ? <Fold title="This hour">{hourly}</Fold> : null}
           {licence ? <Fold title="Bible licence">{licence}</Fold> : null}
-          <Fold title="Your marks">
+          <Fold title="Your marks" value={data.marks.length ? undefined : "Not set"} open={data.marks.length === 0}>
             <Marks marks={data.marks} onSave={onSaveMarks} />
           </Fold>
         </div>
@@ -530,12 +444,14 @@ function Quests({ data }: { data: GoalsData }) {
           );
         })}
       </ul>
+{data.movers.length === 4 ? (
       <p className="mt-3 flex items-center gap-2 text-[13px]" style={{ color: "var(--adm-ink-2)" }}>
         <Star size={16} style={{ color: "var(--adm-ink)" }} />
         {done === 4
           ? `A perfect week: all four done. That makes ${data.perfectWeeks + 1}.`
           : `${data.perfectWeeks} perfect ${data.perfectWeeks === 1 ? "week" : "weeks"} so far. All four by Sunday makes it ${data.perfectWeeks + 1}.`}
       </p>
+      ) : null}
     </>
   );
 }
@@ -888,13 +804,14 @@ function MonthlyAndYearly({ data, next, early }: { data: GoalsData; next: GoalSt
 
 // ── Folded: his marks ────────────────────────────────────────────────────
 
-function Marks({ marks, onSave }: { marks: GoalMark[]; onSave?: (marks: GoalMark[]) => void | Promise<void> }) {
+function Marks({ marks, onSave }: { marks: GoalMark[]; onSave?: (marks: GoalMark[]) => Promise<string | null> | void }) {
   const start = [0, 1].map((i) => ({
     name: marks[i]?.name ?? (i === 0 ? "The first mark" : "The second mark"),
     dollars: marks[i] ? String(Math.round(marks[i].weeklyCents / 100)) : "",
   }));
   const [rows, setRows] = useState(start);
   const [busy, setBusy] = useState(false);
+  const [said, setSaid] = useState<string | null>(null);
   const set = (i: number, k: "name" | "dollars", v: string) => setRows((r) => r.map((x, j) => (j === i ? { ...x, [k]: v } : x)));
 
   return (
@@ -957,7 +874,8 @@ function Marks({ marks, onSave }: { marks: GoalMark[]; onSave?: (marks: GoalMark
             if (!onSave) return;
             setBusy(true);
             try {
-              await onSave(rows.map((r) => ({ name: r.name.trim(), weeklyCents: Number(r.dollars || 0) * 100 })));
+              const error = await onSave(rows.filter((r) => r.dollars).map((r) => ({ name: r.name.trim(), weeklyCents: Number(r.dollars) * 100 })));
+              setSaid(error ? error : "Saved. Your levels are made from them now.");
             } finally {
               setBusy(false);
             }
@@ -966,6 +884,11 @@ function Marks({ marks, onSave }: { marks: GoalMark[]; onSave?: (marks: GoalMark
           Save marks
         </ToolbarButton>
       </div>
+      {said ? (
+        <p role="status" className="mt-3 text-[13.5px]" style={{ color: "var(--adm-ink-2)" }}>
+          {said}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -992,9 +915,9 @@ function Block({ label, aside, children }: { label: string; aside?: string; chil
 }
 
 /** A quiet row that opens in place: no box, a hairline between, the house's chevron. */
-function Fold({ title, value, children }: { title: string; value?: string; children: ReactNode }) {
+function Fold({ title, value, open, children }: { title: string; value?: string; open?: boolean; children: ReactNode }) {
   return (
-    <details className="group border-t first:border-t-0" style={{ borderColor: "var(--adm-line)" }}>
+    <details open={open} className="group border-t first:border-t-0" style={{ borderColor: "var(--adm-line)" }}>
       <summary className="flex min-h-[52px] cursor-pointer list-none items-center gap-3 [&::-webkit-details-marker]:hidden">
         <span className="min-w-0 flex-1 text-[15px]" style={{ color: "var(--adm-ink)" }}>
           {title}
