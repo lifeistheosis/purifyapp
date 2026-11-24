@@ -12,6 +12,7 @@ import { formatPrice } from "@/lib/shop/format";
 import { LocksPanel } from "./LocksPanel";
 import { PlusOverTime } from "../subscriptions/PlusOverTime";
 import { MemberCounts } from "../subscriptions/MemberCounts";
+import { SetToEnd } from "../subscriptions/SetToEnd";
 
 type Subs = {
   activePlus: number;
@@ -173,6 +174,9 @@ type Member = {
   comped: boolean;
   nextBilling: string | null;
   startDate: string | null;
+  /** Renewal turned off in the store (docs/plans/keep-members.md). */
+  setToEnd?: boolean;
+  endReason?: string | null;
 };
 
 function shortDate(iso: string | null): string {
@@ -406,6 +410,14 @@ function MembersPanel() {
 
   return (
     <div className="space-y-6">
+      {/* Who is leaving, first: the members to write to this week. */}
+      {loaded ? (
+        <SetToEnd
+          members={members
+            .filter((m) => m.setToEnd && !m.comped)
+            .map((m) => ({ userId: m.userId, name: m.name, email: m.email, source: m.source, nextBilling: m.nextBilling, endReason: m.endReason ?? null }))}
+        />
+      ) : null}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Members" value={loaded ? members.length : "—"} accent />
         <StatCard
