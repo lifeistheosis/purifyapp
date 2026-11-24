@@ -22,6 +22,8 @@ import { loadOlder, moveLine, useTimeline } from "@/lib/admin/timelineStore";
 import { useAttention } from "@/lib/admin/useAttention";
 import { trafficUrl } from "@/lib/admin/trafficChart";
 import { agoLabel, useLiveData } from "@/lib/admin/useLiveData";
+import type { Level } from "@/lib/admin/level";
+import { LevelPanel } from "../home/LevelPanel";
 import { formatPrice } from "@/lib/shop/format";
 
 import { Chevron, FigureCard, Figure, GoLabel, LiveDot, Panel, PanelLink, Quiet, Spark } from "../daily/parts";
@@ -250,13 +252,11 @@ function WeekColumns({ days }: { days: { day: string; cents: number }[] }) {
 function MoneyLead({
   revenue,
   week,
-  paid,
   live,
   visitorsToday,
 }: {
   revenue: string;
   week: { days: { day: string; cents: number }[]; totalCents: number } | null;
-  paid: ReactNode;
   live: ReactNode;
   visitorsToday: ReactNode;
 }) {
@@ -283,9 +283,6 @@ function MoneyLead({
         </div>
         {week ? <WeekColumns days={week.days} /> : null}
         <div className="mt-2.5 flex items-center gap-2 font-sans text-[12px]" style={{ color: "var(--adm-ink-2)" }}>
-          <span>
-            Plus <b className="font-mono font-medium" style={{ color: "var(--adm-ink)" }}>{paid}</b> paying
-          </span>
           <span className="ml-auto">
             <PanelLink onClick={() => open("overview")}>Open Money</PanelLink>
           </span>
@@ -339,6 +336,7 @@ export function HomeTab() {
   const { summary, refresh } = useAttention();
   const overview = useLiveData<Overview>("/api/admin/overview", 60_000);
   const stats = useLiveData<Stats>("/api/admin/stats", 20_000);
+  const level = useLiveData<Level>("/api/admin/level", 300_000);
   const traffic = useLiveData<Traffic>(trafficUrl(), 300_000);
   // The goals keep themselves: read every half minute, so the bars move while
   // he watches and the next hour's targets arrive at the top of the hour (the
@@ -372,7 +370,6 @@ export function HomeTab() {
   const signupsWeek = points.length >= 7 ? points.slice(-7).reduce((a, p) => a + p.signups, 0) : null;
   const visitorsToday = figure(stats.data?.today?.visitors, stats.loading);
   const live = figure(stats.data?.liveCount, stats.loading);
-  const paid = figure(overview.data?.paidPlus, overview.loading);
   const signups = figure(stats.data?.today?.signups, stats.loading);
   const most = mostIn(stats.data?.sessions);
 
@@ -409,15 +406,6 @@ export function HomeTab() {
       ) : null,
       live: true,
       lit: true,
-    },
-    {
-      key: "plus",
-      label: "Paying for Plus",
-      value: typeof paid === "number" ? count(paid) : paid,
-      // No history of members is kept (entitlements holds the state, not its
-      // changes), so there is no "this week" here, only who pays now.
-      sub: overview.data ? `${count(overview.data.paidPro)} of them Pro` : "Plus and Pro",
-      spark: null,
     },
     {
       key: "readers",
@@ -475,13 +463,20 @@ export function HomeTab() {
 
   return (
     <div className="space-y-3.5">
+      {/* Level 1 leads (docs/plans/admin-levels-rework.md, step 1, his yes of
+          2026-11-24). Paying members stand here alone: the numbers row and
+          MoneyLead no longer repeat them. In B, MoneyLead keeps Open Money. */}
+      <LevelPanel
+        level={level.data ?? null}
+        failed={!level.loading && !level.data}
+        onOpen={layout === "b" ? undefined : () => open("overview")}
+      />
       {/* His own A and B (sheet r3-32), picked in Settings: B, money leads,
           or A, the numbers first. */}
       {layout === "b" ? (
         <MoneyLead
           revenue={revenue}
           week={week}
-          paid={typeof paid === "number" ? count(paid) : paid}
           live={typeof live === "number" ? count(live) : live}
           visitorsToday={typeof visitorsToday === "number" ? count(visitorsToday) : visitorsToday}
         />
