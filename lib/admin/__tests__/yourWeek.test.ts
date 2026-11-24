@@ -75,9 +75,9 @@ describe("suggestions, and the rail on his yes", () => {
 
   it("suggests the moves his use makes, the one into Daily first", () => {
     const s = railSuggestions(pickedRail(), WEEK, 7);
-    // Users had half a minute all week: it steps down for Orders and, with
+    // Readers (Users until 2026-11-24) had half a minute all week: it steps down for Orders and, with
     // under a minute, folds into Tools, the rail's own rule.
-    expect(s.map((x) => x.title)).toEqual(["Put Orders in Daily.", "Bring Releases out of Tools.", "Fold Users into Tools."]);
+    expect(s.map((x) => x.title)).toEqual(["Put Orders in Daily.", "Bring Releases out of Tools.", "Fold Readers into Tools."]);
     expect(s[0].why).toBe("You opened it 18 times this week, 4 min in all.");
     expect(s[0].id).toBe("orders>Daily");
     expect(s[2].why).toBe("You opened it 4 times this week, 30 s in all.");
