@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 
 import { StatusDot, ToolbarButton, type StatusTone } from "../primitives";
 import { FinishMoment } from "@/components/flow/FinishMoment";
+import { Check } from "@/components/ui/icons/Check";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { Seal } from "@/components/ui/icons/Seal";
+import { useReducedMotion } from "@/lib/ui/motion";
 
 /**
  * The Goals page, the calm way (his word of 2026-11-23: the panel "feels like
@@ -181,6 +184,20 @@ export function GoalsView({
 }) {
   const next = data.steps.find((s) => s.reachedOn === null) ?? null;
   const reached = data.justReached ? data.steps.find((s) => s.id === data.justReached) ?? null : null;
+  // Each milestone has a screen of its own (his word, 2026-11-24: "ensure each
+  // goal has its own screen and animation"). Back returns to the same place.
+  const [goal, setGoal] = useState<GoalStepId | null>(null);
+  const was = useRef(0);
+  useLayoutEffect(() => {
+    if (goal) window.scrollTo(0, 0);
+    else if (was.current) window.scrollTo(0, was.current);
+  }, [goal]);
+  const open = (id: GoalStepId) => {
+    was.current = window.scrollY;
+    setGoal(id);
+  };
+  const opened = goal ? data.steps.find((s) => s.id === goal) ?? null : null;
+  if (opened) return <GoalScreen data={data} step={opened} onBack={() => setGoal(null)} />;
   const early = data.enoughOn !== null;
   const total = data.mix.monthlyCents + data.mix.yearlyCents;
   const broke = [
@@ -206,7 +223,7 @@ export function GoalsView({
       <TheNumber data={data} />
 
       <Block label="Milestones" aside={`${data.steps.filter((s) => s.reachedOn !== null).length} of ${data.steps.length} reached`}>
-        <Milestones data={data} next={next} />
+        <Milestones data={data} next={next} onOpen={open} />
       </Block>
 
       <ul className="mt-10" aria-label="This week">
@@ -350,47 +367,49 @@ function TheFour({ data }: { data: GoalsData }) {
 // what it still needs and its day. Every step ahead keeps a bar of how far
 // the number has come towards it.
 
-function Milestones({ data, next }: { data: GoalsData; next: GoalStep | null }) {
+function Milestones({ data, next, onOpen }: { data: GoalsData; next: GoalStep | null; onOpen: (id: GoalStepId) => void }) {
   const done = data.steps.filter((s) => s.reachedOn !== null);
   const ahead = data.steps.filter((s) => s.reachedOn === null && s !== next);
-  const pct = (s: GoalStep) => (s.weeklyCents > 0 ? Math.min(100, Math.round((data.weeklyCents / s.weeklyCents) * 100)) : 100);
+  const pct = (s: GoalStep) => pctOf(data, s);
 
   return (
     <div>
       {done.length ? (
         <ul aria-label="Reached">
           {done.map((s) => (
-            <li key={s.id} className="flex min-h-11 items-center gap-3 border-t py-2.5 first:border-t-0" style={{ borderColor: "var(--adm-line)" }}>
-              <Seal size={22} className="shrink-0" style={{ color: "var(--adm-ink)" }} />
-              <div className="min-w-0 flex-1">
-                <p className="text-[15px] leading-snug" style={{ color: "var(--adm-ink)" }}>
-                  {s.name}
-                </p>
-                <p className="text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
-                  {s.id === data.justReached ? "Reached this week" : `Reached ${dayWords(s.reachedOn as string, data.today)}`}
-                </p>
-              </div>
-              <p className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
-                {money(s.weeklyCents)} a week
-              </p>
+            <li key={s.id} className="border-t first:border-t-0" style={{ borderColor: "var(--adm-line)" }}>
+              <button type="button" onClick={() => onOpen(s.id)} className="flex min-h-11 w-full items-center gap-3 py-2.5 text-start">
+                <Seal size={22} className="shrink-0" style={{ color: "var(--adm-ink)" }} />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[15px] leading-snug" style={{ color: "var(--adm-ink)" }}>
+                    {s.name}
+                  </span>
+                  <span className="block text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
+                    {s.id === data.justReached ? "Reached this week" : `Reached ${dayWords(s.reachedOn as string, data.today)}`}
+                  </span>
+                </span>
+                <span className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
+                  {money(s.weeklyCents)} a week
+                </span>
+              </button>
             </li>
           ))}
         </ul>
       ) : null}
 
       {next ? (
-        <div className={done.length ? "mt-5" : "mt-1"} aria-current="step">
-          <div className="flex items-baseline justify-between gap-3">
-            <p className="text-[17px] font-semibold leading-snug" style={{ color: "var(--adm-ink)" }}>
+        <button type="button" onClick={() => onOpen(next.id)} className={"block w-full text-start " + (done.length ? "mt-5" : "mt-1")} aria-current="step">
+          <span className="flex items-baseline justify-between gap-3">
+            <span className="text-[17px] font-semibold leading-snug" style={{ color: "var(--adm-ink)" }}>
               {next.name}
-            </p>
-            <p className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
+            </span>
+            <span className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-2)" }}>
               {money(next.weeklyCents)} a week
-            </p>
-          </div>
+            </span>
+          </span>
           <Bar pct={pct(next)} label={next.name} thick />
           <NextNotes data={data} next={next} pct={pct(next)} />
-        </div>
+        </button>
       ) : (
         <p className="mt-4 text-[15px] font-semibold" style={{ color: "var(--adm-ink)" }}>
           Every milestone is reached.
@@ -405,19 +424,21 @@ function Milestones({ data, next }: { data: GoalsData; next: GoalStep | null }) 
               ? `Held ${s.heldWeeks} of 4 weeks${s.byPace ? `, reached ${dayWords(s.byPace, data.today)} if it holds` : ""}`
               : `${pct(s)}%, ${count.format(s.moreMembers ?? 0)} more members${s.byPace ? `, by ${dayWords(s.byPace, data.today)}` : ""}`;
             return (
-              <li key={s.id} className="border-t py-3" style={{ borderColor: "var(--adm-line)" }}>
-                <div className="flex items-baseline justify-between gap-3">
-                  <p className="text-[15px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
-                    {s.name}
-                  </p>
-                  <p className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-3)" }}>
-                    {money(s.weeklyCents)} a week
-                  </p>
-                </div>
-                <Bar pct={pct(s)} label={s.name} />
-                <p className="mt-1.5 text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
-                  {note}
-                </p>
+              <li key={s.id} className="border-t" style={{ borderColor: "var(--adm-line)" }}>
+                <button type="button" onClick={() => onOpen(s.id)} className="block w-full py-3 text-start">
+                  <span className="flex items-baseline justify-between gap-3">
+                    <span className="text-[15px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
+                      {s.name}
+                    </span>
+                    <span className="shrink-0 text-[14px] tabular-nums" style={{ color: "var(--adm-ink-3)" }}>
+                      {money(s.weeklyCents)} a week
+                    </span>
+                  </span>
+                  <Bar pct={pct(s)} label={s.name} />
+                  <span className="mt-1.5 block text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
+                    {note}
+                  </span>
+                </button>
               </li>
             );
           })}
@@ -426,6 +447,9 @@ function Milestones({ data, next }: { data: GoalsData; next: GoalStep | null }) 
     </div>
   );
 }
+
+const pctOf = (data: GoalsData, s: GoalStep) =>
+  s.weeklyCents > 0 ? Math.min(100, Math.round((data.weeklyCents / s.weeklyCents) * 100)) : 100;
 
 /** Under the next milestone's bar: what it still needs at the start, its day at the end. */
 function NextNotes({ data, next, pct }: { data: GoalsData; next: GoalStep; pct: number }) {
@@ -441,29 +465,150 @@ function NextNotes({ data, next, pct }: { data: GoalsData; next: GoalStep; pct: 
       ? ["Not enough weeks yet", null]
       : [next.byPace ? `By ${dayWords(next.byPace, data.today)}` : "Not at this pace", `${dayWords(next.byFive, data.today)} at 5% a week`];
   return (
-    <div className="mt-2 grid grid-cols-[1fr_auto] gap-x-3 text-[13px] leading-snug">
-      <p style={{ color: "var(--adm-ink-2)" }}>{need[0]}</p>
-      <p className="text-end" style={{ color: "var(--adm-ink-2)" }}>
+    <span className="mt-2 grid grid-cols-[1fr_auto] gap-x-3 text-[13px] leading-snug">
+      <span style={{ color: "var(--adm-ink-2)" }}>{need[0]}</span>
+      <span className="text-end" style={{ color: "var(--adm-ink-2)" }}>
         {when[0]}
-      </p>
-      <p style={{ color: "var(--adm-ink-3)" }}>{need[1]}</p>
-      <p className="text-end" style={{ color: "var(--adm-ink-3)" }}>
+      </span>
+      <span style={{ color: "var(--adm-ink-3)" }}>{need[1]}</span>
+      <span className="text-end" style={{ color: "var(--adm-ink-3)" }}>
         {when[1]}
-      </p>
-    </div>
+      </span>
+    </span>
   );
 }
 
 /** A milestone's bar: how far the number has come towards it. The next one's is thicker. */
 function Bar({ pct, label, thick }: { pct: number; label: string; thick?: boolean }) {
   return (
-    <div
-      className={(thick ? "mt-3 h-2" : "mt-2 h-1") + " w-full overflow-hidden rounded-full"}
+    <span
+      className={(thick ? "mt-3 h-2" : "mt-2 h-1") + " block w-full overflow-hidden rounded-full"}
       style={{ background: "var(--adm-line)" }}
       role="img"
       aria-label={`${pct}% of the way to ${label}`}
     >
-      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: thick ? "var(--adm-accent)" : "var(--adm-ink-2)" }} />
+      <span className="block h-full rounded-full" style={{ width: `${pct}%`, background: thick ? "var(--adm-accent)" : "var(--adm-ink-2)" }} />
+    </span>
+  );
+}
+
+// ── A goal's own screen ──────────────────────────────────────────────────
+//
+// It rises in on the house's curve. Its ring fills to where the number stands;
+// a goal reached completes its ring, and then the check draws itself, the
+// app's own finish (components/flow/FinishMoment.tsx). Still with Motion off.
+
+function GoalScreen({ data, step, onBack }: { data: GoalsData; step: GoalStep; onBack: () => void }) {
+  const reduced = useReducedMotion();
+  const done = step.reachedOn !== null;
+  const pct = done ? 100 : pctOf(data, step);
+  const toGo = Math.max(0, step.weeklyCents - data.weeklyCents);
+  const [ringDone, setRingDone] = useState(false);
+  const landed = useCallback(() => setRingDone(true), []);
+  const rows: { name: string; value: string }[] = [];
+  if (!done) {
+    if (toGo > 0) {
+      rows.push({ name: "More members", value: `about ${count.format(step.moreMembers ?? 0)}` });
+      if (data.enoughOn || step.byFive === null) rows.push({ name: "Its day", value: "not enough weeks yet" });
+      else {
+        rows.push({ name: "At your pace", value: step.byPace ? `by ${dayWords(step.byPace, data.today)}` : "not at this pace" });
+        rows.push({ name: "At 5% a week", value: `by ${dayWords(step.byFive, data.today)}` });
+      }
+    } else {
+      rows.push({ name: "Held", value: `${step.heldWeeks} of 4 weeks` });
+      if (step.byPace) rows.push({ name: "Reached", value: `${dayWords(step.byPace, data.today)} if it holds` });
+    }
+  }
+  return (
+    <div className="font-sans" style={{ animation: reduced ? undefined : "adm-rise 260ms var(--adm-ease) backwards" }}>
+      <button type="button" onClick={onBack} className="-ms-2 inline-flex min-h-11 items-center gap-1 px-2 text-[15px]" style={{ color: "var(--adm-ink-2)" }}>
+        <ChevronLeft size={18} className="rtl:-scale-x-100" />
+        Goals
+      </button>
+      <p className="mt-6 text-[13px]" style={{ color: "var(--adm-ink-3)", fontWeight: 500 }}>
+        Milestone {data.steps.indexOf(step) + 1} of {data.steps.length}
+      </p>
+      <h2 className="mt-1 text-[34px] font-semibold leading-tight tracking-[-0.02em]" style={{ color: "var(--adm-ink)" }}>
+        {step.name}
+      </h2>
+      <p className="mt-1 text-[17px]" style={{ color: "var(--adm-ink-2)" }}>
+        {money(step.weeklyCents)} a week
+      </p>
+
+      <Ring pct={pct} label={step.name} onDone={landed}>
+        {done ? (
+          ringDone || reduced ? (
+            <Check size={52} strokeWidth={1.8} className="check-draw finish-draw" style={{ color: "var(--adm-ink)" }} />
+          ) : null
+        ) : (
+          <>
+            <span className="block text-[40px] leading-none tabular-nums" style={{ color: "var(--adm-ink)", fontWeight: 500 }}>
+              {pct}%
+            </span>
+            <span className="mt-2 block text-[14px]" style={{ color: "var(--adm-ink-2)" }}>
+              {toGo > 0 ? `${money(toGo)} to go` : `held ${step.heldWeeks} of 4 weeks`}
+            </span>
+          </>
+        )}
+      </Ring>
+
+      {done ? (
+        <div className="mt-8 text-center">
+          <p className="text-[17px] font-semibold" style={{ color: "var(--adm-ink)" }}>
+            {step.id === data.justReached ? "Reached this week" : `Reached ${dayWords(step.reachedOn as string, data.today)}`}
+          </p>
+          <p className="mt-1 text-[14px]" style={{ color: "var(--adm-ink-2)" }}>
+            Held {money(step.weeklyCents)} a week for four weeks running.
+          </p>
+        </div>
+      ) : (
+        <ul className="mt-8">
+          {rows.map((r) => (
+            <Row key={r.name} name={r.name} value={r.value} />
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/** A goal's ring: it fills to `pct` on the house's curve as the screen opens, then says so. */
+function Ring({ pct, label, onDone, children }: { pct: number; label: string; onDone: () => void; children: ReactNode }) {
+  const arc = useRef<SVGCircleElement>(null);
+  const reduced = useReducedMotion();
+  useEffect(() => {
+    const el = arc.current;
+    if (!el || reduced || typeof el.animate !== "function") {
+      onDone();
+      return;
+    }
+    const run = el.animate([{ strokeDashoffset: 100 }, { strokeDashoffset: 100 - pct }], {
+      duration: 900,
+      easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+      fill: "backwards",
+    });
+    run.onfinish = () => onDone();
+    return () => run.cancel();
+  }, [pct, reduced, onDone]);
+  return (
+    <div className="relative mx-auto mt-8 grid size-[208px] place-items-center" role="img" aria-label={`${pct}% of the way to ${label}`}>
+      <svg viewBox="0 0 208 208" className="absolute inset-0 -rotate-90" aria-hidden>
+        <circle cx="104" cy="104" r="94" fill="none" stroke="var(--adm-line)" strokeWidth="10" />
+        <circle
+          ref={arc}
+          cx="104"
+          cy="104"
+          r="94"
+          fill="none"
+          stroke="var(--adm-accent)"
+          strokeWidth="10"
+          strokeLinecap="round"
+          pathLength={100}
+          strokeDasharray="100"
+          strokeDashoffset={100 - pct}
+        />
+      </svg>
+      <div className="relative text-center">{children}</div>
     </div>
   );
 }

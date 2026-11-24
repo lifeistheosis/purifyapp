@@ -12,11 +12,13 @@ The worker chat for one job: his own milestones in the panel, with the Goals pag
 
 2026-11-24, on the second drawing, about 11:00 UTC: "I want to see more milestone bars/ achievement designs". Taken as one version that shows the milestones as bars and achievements (version 3 at the same link), not a set of options.
 
+2026-11-24, on the third drawing, about 11:20 UTC: "now ensure each goal has its own screen and animation". Done for the six milestones (version 4 at the same link). The four weekly goals (what moves it) do not have screens of their own yet; if he meant them too, the same screen takes them.
+
 ## Where it stands
 
-**Waiting for his yes or no on the third drawing** (version 3 at the link: the minimal page with the milestones as bars and achievements). The first, busier one he sent back for "more simplified and minimalist" (artifact version 1, commit `58e3352c`); the second, minimal one, he answered with "more milestone bars/ achievement designs" (version 2, commit `0121babc`).
+**Waiting for his yes or no on the fourth drawing** (version 4 at the link: the minimal page, the milestones as bars and achievements, and a screen of its own for each milestone). The earlier ones are the artifact's versions 1 to 3 and commits `58e3352c`, `0121babc` and `a773bd14`. **This chat is past its size line** (about 200,000 tokens): at his yes, a fresh chat builds the rest from this file.
 
-- The drawing, a private artifact: https://claude.ai/artifact/S4FhycWThzkyV6uMWHWdMh, version 3 (the page at 390 in the panel's dark theme, a reason for each choice, its other states, and two questions).
+- The drawing, a private artifact: https://claude.ai/artifact/S4FhycWThzkyV6uMWHWdMh, version 4 (the page at 390 in the panel's dark theme, a reason for each choice, its other states, and two questions).
 
 ## What was built (on the branch, for the drawing)
 
@@ -31,11 +33,13 @@ What the page shows, top to bottom, each thing once (the third drawing: the mini
 3. Milestones, with "N of 6 reached" at the end of its label: each step reached as an achievement (the house's `Seal` icon, its name, "Reached" and its day, its amount); the next step in bold with a thick bar, then what it needs at the start (the share and the dollars to go; about N more members) and its day at the end (at his pace; at 5% a week), or, when the number stands over it, the weeks held and the day it is reached if it holds; a thin bar for every step ahead with its share, members and day at his pace. The 5% day shows for the next step only.
 4. This week: paying now (monthly and yearly under it), joined and left.
 5. What moves it: the one lever in a line, then the four, each with its aim under its name and a dot and a word (Met, Not yet).
+Each milestone opens its own screen (`GoalScreen` in GoalsView.tsx), at a tap on its row: Back (the house's ChevronLeft and "Goals", 44px) at the top; "Milestone N of 6"; its name large; its amount a week; a ring (`Ring`) that fills to where the number stands as the screen opens (the Web Animations API on the house's curve, 900ms; none with Motion off); under it, for a step ahead, more members, the day at his pace and at 5% a week (or the weeks held and the day it is reached if it holds); for a step reached, the ring completes and then the check draws itself (`Check` with `check-draw finish-draw`, the app's own finish), with "Reached" and its day. The screen rises in (`adm-rise`, 260ms). Back returns to the same scroll position. Not yet: the phone's own back gesture (history) does not close the screen; wire it when the page is built, keeping the panel's own address handling whole.
+
 6. More, quiet rows that open in place (no box, a hairline between, the house's chevron): By update; Monthly and yearly (value: the monthly share; inside: the mix, who left in 30 days by plan, what standing still costs, the two ends, the early signs, how a member counts); Guardrails (value: "All hold", or what broke); Extra (value: the shop this month); This hour (`HourlyGoals`); Bible licence (`ApiLimitsPanel`); Your marks (two rows, name and dollars a week, Save marks). `ApiLimitBanner` stays first on the page.
 
 ## What was proved, and how
 
-- checkMock (`scripts/mock-check.mjs`) on the preview at 390 with touch, all four states (mid-road, first weeks, reached, and five More rows opened by real taps), on the five palettes: every rule passes, on all three drawings (the third with the finish moment on the panel's dark and light). Its first run caught the two amount fields at 25px tall inside a 44px box; they are 44px.
+- checkMock (`scripts/mock-check.mjs`) on the preview at 390 with touch, all four states (mid-road, first weeks, reached, and five More rows opened by real taps), on the five palettes: every rule passes, on all four drawings (the third with the finish moment on the panel's dark and light). Each milestone's screen, opened by a tap from a scrolled page (Halfway, a quarter of the way, the second mark): every rule passes with `{ pixels: true }` (the ring's centre words measured on their pixels), and Back returns to the same scroll position (250 to 250). Its first run caught the two amount fields at 25px tall inside a 44px box; they are 44px.
 - The kit's check on the artifact page (`node docs/brand/kit/check.mjs --page`): passes on the five palettes at 360, 390, 412 and 1032, no parchment, no sideways scroll.
 - The preview at 390: no sideways scroll; no page error (the 403s are the hourly goals and the licence asking their real routes with no session, inside closed folds).
 - `npm run typecheck`: 0. eslint on the three new files: clean.
@@ -71,4 +75,4 @@ Still to ask when the step needs it: whether Pro (the EIKON Box membership) coun
 
 ## Cost
 
-get_session reports neither cost nor context size here. An estimate: about 175,000 tokens of context after the third drawing, near the 200,000 line where the brief says the next piece goes to a fresh chat; $8 to $20 in all by the token count (the price per token is not shown).
+get_session reports neither cost nor context size here. An estimate: about 200,000 tokens of context after the fourth drawing, the line where the brief says the next piece goes to a fresh chat; $10 to $25 in all by the token count (the price per token is not shown).
