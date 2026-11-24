@@ -28,3 +28,12 @@ Read when he asks, never on a schedule. Counts are head requests and move no row
 1. Render, the purifyapp service, Environment, Add Environment Variable. Key `OWNER_DIGEST_TOKEN`. For the value press Generate (or any random string of 40 or more letters and digits). Save; Render redeploys.
 2. Copy that value. In the chat, the chat opens a secure form for purifyapp.net (a network secret on his personal cloud environment); paste it there, never in chat. The chat never sees it: the proxy adds it to the chat's requests to purifyapp.net.
 3. To turn it off: delete the variable on Render. To change it: a new value on Render and the same form again.
+
+## The other read keys (2026-11-24, his "yea lets set them up")
+
+Saved as network secrets on his personal cloud environment (the proxy adds them; no chat sees the values). Each is read-only, and deleting it at its source stops it at once.
+
+- `api.mercury.com`: a Mercury read-only API token. Accounts and transactions: `GET /api/v1/accounts`, `GET /api/v1/account/<id>/transactions`. It cannot move money. On its first read both accounts (Checking ••2088, Savings ••4241) held $0 and no transactions.
+- `api.revenuecat.com`: a RevenueCat v2 secret key, read only. Project `proj2ed00c93`. `GET /v2/projects/proj2ed00c93/metrics/overview` gives MRR, 28-day revenue, active subscriptions and trials, new customers, active users.
+
+What a chat reports from these is analysis, not the books: the accounting record for tax is the bank's statements and receipts in accounting software, checked by a CPA.
