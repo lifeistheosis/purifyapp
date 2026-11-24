@@ -22,6 +22,17 @@ for line in sys.argv[1:]:
             d=info(p['imageinfo'][0]); d['title']=p['title']; R[f'{name}{k}']=d
             if 'thumb.wikimedia.org' not in d['thumb']: continue   # a page of a scanned book: its host turns scripts away
             time.sleep(1.5); open(f'cand/{name}{k}.jpg','wb').write(raw(d['thumb'])); print(f'{name}{k}',d['licence'],f"{d['w']}x{d['h']}",p['title'][:80])
+    elif line.startswith('!'):
+        # !name|search words|a word its title must hold : the largest picture among the first hits, at 1920 or the step under it
+        name,q,must=line[1:].split('|')
+        if os.path.exists(f'raw/{name}.jpg') and name in R: continue
+        r=json.loads(raw(API+'action=query&generator=search&gsrnamespace=6&gsrlimit=8&gsrsearch='+urllib.parse.quote(q+' filetype:bitmap')+'&prop=imageinfo&iiprop=url|size|extmetadata&iiurlwidth=1920'))
+        yes=[m for m in must.lower().split(',') if not m.startswith('-')]; no=[m[1:] for m in must.lower().split(',') if m.startswith('-')]
+        ps=[p for p in (r.get('query') or {}).get('pages',{}).values() if all(m in p['title'].lower() for m in yes) and not any(m in p['title'].lower() for m in no) and 'thumb.wikimedia.org' in p['imageinfo'][0]['thumburl']]
+        if not ps: print(name,'NOTHING FOUND'); continue
+        p=max(ps,key=lambda p:p['imageinfo'][0]['width'])
+        d=info(p['imageinfo'][0]); d['title']=p['title']; R[name]=d
+        time.sleep(1.5); open(f'raw/{name}.jpg','wb').write(raw(d['thumb'])); print(name,d['licence'],f"{d['w']}x{d['h']} at {d['tw']}",p['title'][:90])
     else:
         name,title,width=line.split('|')
         if os.path.exists(f'raw/{name}.jpg') and name in R: continue

@@ -2,7 +2,7 @@
 
 The brief is `../edit-1-the-light.md`. This chat is session_01VuYTwacMjt6LkmPnjb5a2m, started 2026-11-23 at 22:05 UTC from that file.
 
-**Status, 2026-11-24 about 00:17 UTC: the second board is published at the same link (the run from old engravings, the icons filling the frame, the last idol set eye for eye on Christ's icon) and waits for his yes or no. No video is made.**
+**Status, 2026-11-24 about 00:33 UTC: the third board is published at the same link (the run as Western paintings in colour, the last god set eye for eye on Christ's icon) and waits for his yes or no. No video is made. The chat stands at about $23 of the $30 line by its own count; the film is not started without his word on cost.**
 
 The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 
@@ -13,6 +13,7 @@ The page (private, his): https://claude.ai/artifact/D666RfDb41G8z2UhrfZeUR
 - In this chat, 2026-11-23 about 22:41 UTC, on the storyboard's first still: "Do a different design for the background for the \"Who Art Thou, Lord.\" But I like the image of the prophet."
 - In this chat, about 22:43 UTC, after the opening's second design: "The other frames could definitely use way better images and editing."
 - In this chat, 2026-11-24 about 00:02 UTC, to the plan below: "the pagans can be wharever type of icon (they don't matter for traditionalism )". Taken as yes to the plan and to engravings: the pagans' pictures can be of any kind.
+- In this chat, 2026-11-24 about 00:22 UTC, on the second board: "I don't like the photo or design of the pagans, ensure its colored and western high quality art (public domain doesn't matter) its just tiktok"
 
 ## His word on the other frames, and the plan put to him (about 22:44 UTC)
 
@@ -41,6 +42,16 @@ Cost named to him: about $7 to $10 for the eight stills again, which would bring
 - Named to him on the page: two of the engravings are from a dictionary of demons, and he may refuse the book; the Transfiguration's own painted lines of light stay unless he says otherwise.
 - Found and not usable yet: von Rosen's Odin (1886) and the Jupiter of Olympia (1814) are on Commons only at sizes whose full files its host refused today (429, with a wait of up to ten minutes asked). They are for the film, when the host allows.
 - The kit's check passed again on the page; three sheets of the new stills were looked at.
+
+## The third board (2026-11-24, 00:22 to about 00:33 UTC, at his word above)
+
+- **The run is Western paintings in colour.** Klimt's Pallas Athene (1898), Moreau's Jupiter and Semele (1895), Winge's Thor's Fight with the Giants (1872), and Ingres's Jupiter and Thetis (1811) to close it. Each fills the frame, held on the god's face, the light pooled there and the foot let fall for the words, which are white. The ink faces and the engravings are out of the run; their rows in `pictures.json` say so.
+- **The melt** is the Christ edit's again (two whole pictures, each following the other, soft in the middle), since the pictures are in colour.
+- **The last god and the drop.** Ingres's Jupiter is set eye for eye on the Sinai icon: the same place and the same size. Its file is a photograph of the painting on its wall and is softer than the rest; a sharper one is to be looked for.
+- **On "public domain doesn't matter".** His to say, and noted. Every painting used is long out of copyright all the same (the newest is of 1898 and its painter died in 1918), so the choice cost nothing and no one can claim the video. Nothing held in Greece or Italy is used.
+- **Unclothed figures.** Moreau's and Ingres's paintings have them beside the god; each is held on the god's face so they are out of the frame. This chat's choice for a prayer app, his to overrule.
+- Looked for and not got today: Rossetti's Astarte Syriaca (the search gave a drawn study, and the name guessed for the painting's file does not exist), Poussin's golden calf (the search gave an engraving after it), Collier's Priestess of Delphi (only 345 wide).
+- The kit's check passed again; three sheets of the new stills were looked at.
 
 ## What was measured (the reference, again, frame by frame)
 
@@ -95,5 +106,6 @@ Read with get_session, which shows the cost at the last finished turn.
 
 - The storyboard (the first turn, 22:05 to 22:40 UTC): **$10.26**, within the $12 set for it. 288,000 tokens of context at its end.
 - By get_session at 00:03 UTC on 2026-11-24: **$11.86** at the last finished turn, so the opening's second design and the plan together were about $1.60.
-- The second board (the fourth turn): not read yet; the next turn reads it and writes it here.
+- By get_session at 00:22 UTC: **$19.42** at the last finished turn, so the second board was $7.56 (the cache had gone cold and was written again, which this chat had not counted on).
+- The third board (the fifth turn): not read yet. About fourteen calls on a warm cache; this chat's own count is about $3 to $4, so about $23 in all.
 - The line to ask him at is $30 in all.

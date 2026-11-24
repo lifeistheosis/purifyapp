@@ -26,28 +26,29 @@ STILLS = [
      ["<b>What changed.</b> The round light in the sky is gone. No lamp is seen now: the light comes down from above the top of the frame and lies on the road about him as one soft pool. Saul is the same picture, as you asked.",
       "<b>Why.</b> It is what Acts 9:3 says: \"there shined round about him a light from heaven\". The light is about him and above him, and he looks up into it. The first design read as a moon in a black sky.",
       "<b>For the viewer.</b> He lies on something now, so he reads as a man thrown to the ground, not a figure floating. His question stands alone in the dark between the two lights, so it is read first. One soft light, no beams, and it grows a little, evenly."]),
-    ("2-run-first", "2.10 s on", "The run: an idol, sharp",
-     "Second design, at your word. Moloch (Leviticus 18:21, Acts 7:43), an engraving of 1863.",
-     ["<b>What changed.</b> The run is now old engravings beside the best of the statues. An engraving is ink already, so nothing is put through a filter, and each one is plainly an idol. The first design was museum heads that looked alike.",
-      "<b>Why.</b> Your word: the pagans can be any kind of picture. Each is framed its own way and large, as the reference frames its faces, on the reference's own cuts: 36 from 2.10 s to the drop.",
-      "<b>One thing to know.</b> This Moloch and one other (Adramelech) are from a French dictionary of demons, the Dictionnaire infernal. Say if you would rather not take pictures from that book.",
-      "<b>The line.</b> \"there be gods many, and lords many\", 1 Corinthians 8:5, held for the whole run, on clean white under the picture."]),
-    ("3-run-melt", "2.90 s", "The run: one melting into the next",
-     "The fish-god of Nimrud, called Dagon (1 Samuel 5:2), becoming Amun of Egypt. The middle frame of a melt of five frames.",
-     ["<b>What changed.</b> The melt is ink laid over ink, so black stays black. The first design faded through grey. The whole is drawn out a little from its middle, as the reference's smears are.",
+    ("2-run-first", "2.22 s", "The run: a god, sharp",
+     "Third design, at your word. Pallas Athene, by Gustav Klimt, 1898 (Wien Museum).",
+     ["<b>What changed.</b> Your word: coloured, Western, high quality art. The run is now great Western paintings of the pagan gods. Each fills the frame and is held on the god's face, with the light pooled there. The ink and the engravings are gone.",
+      "<b>Why.</b> It sets what the West painted for its old gods against what the Church painted for Christ. The cut on the drop goes from oil paint to the icon.",
+      "<b>The line.</b> \"there be gods many, and lords many\", 1 Corinthians 8:5, held for the whole run, in white where the picture's light falls away.",
+      "<b>One thing to know.</b> You said public domain need not matter for these. Every painting here is long out of copyright anyway, so nobody can claim the video. The paintings are held on the gods' faces, so the unclothed figures around them stay out of the frame."]),
+    ("3-run-melt", "2.35 s", "The run: one melting into the next",
+     "Klimt's Athena becoming Gustave Moreau's Jupiter (Jupiter and Semele, 1895, Musée Gustave Moreau, Paris). The middle frame of a melt of five frames.",
+     ["<b>What it is.</b> The Christ edit's melt, the one you called perfect: both whole pictures laid over each other, each following the other part of the way, soft in the middle.",
       "<b>For the viewer.</b> One god turns into the next before the eye can rest on it. None of them holds."]),
-    ("4-run-sharp", "3.28 s", "The run: another idol",
-     "Diana of the Ephesians (Acts 19:28), a wood engraving of 1880.",
-     ["<b>Why her.</b> Scripture names her, and she was not in the first design: no open museum photograph was found, and an engraving is allowed now.",
-      "<b>Why whole.</b> Her shape is what makes her known at once, so she is shown from her crown to her waist and not as a face."]),
+    ("4-run-sharp", "2.75 s", "The run: another god",
+     "Thor's Fight with the Giants, by Mårten Eskil Winge, 1872 (Nationalmuseum, Stockholm).",
+     ["<b>Why him.</b> The north was named for the run and no picture of it was found before. This is the best known painting of Thor there is.",
+      "<b>Why this framing.</b> The hammer, the lightning and the red are what make him known at once, so he is shown to the waist and not as a face."]),
     ("5-before-the-drop", "11.17 s", "The last frame before the drop",
-     "Zeus Ammon, a Roman marble at The Met. Scripture names Jupiter in Acts 14:12.",
-     ["<b>What changed.</b> The last false god is now set eye for eye on the icon that follows: the same place on the screen and the same size. Look at this still and the next one together.",
-      "<b>Why.</b> On the bass the false face becomes the true one without the eyes moving. That is the edit's one big cut, and nothing flashes or shakes to make it."]),
+     "Jupiter, from Jupiter and Thetis by Ingres, 1811 (Musée Granet, Aix-en-Provence). Scripture names Jupiter in Acts 14:12.",
+     ["<b>What it is.</b> The last false god is set eye for eye on the icon that follows: the same place on the screen and the same size. Look at this still and the next one together.",
+      "<b>Why.</b> On the bass the false face becomes the true one without the eyes moving. That is the edit's one big cut, and nothing flashes or shakes to make it.",
+      "<b>One thing to know.</b> This file is a photograph of the painting on its wall, so it is a little softer than the others. For the film I would look for a sharper one."]),
     ("6-the-drop", "11.18 s, the drop", "Jesus Christ",
      "The Sinai Pantocrator in full colour, with the answer: \"I am Jesus\", Acts 9:5.",
      ["<b>What changed.</b> His face fills the frame, as in the Christ edit you called perfect. The first design showed the whole panel, flat. The light is pooled on His face and the edges are let fall. One slow even move toward Him.",
-      "<b>Why.</b> Your word: the drop is Jesus Christ. The turn from white ink to colour on the bass is the hit. The answer is the same verse as the question.",
+      "<b>Why.</b> Your word: the drop is Jesus Christ. The turn from Western oil paint to the icon, eye for eye on the bass, is the hit. The answer is the same verse as the question.",
       "<b>The line.</b> Under His beard. A word never stands on His face. No glow behind it. The icon moves only whole and nothing in it is redrawn."]),
     ("7-transfiguration", "12.32 s on", "The theophanies: the Transfiguration",
      "The Transfiguration, attributed to Theophanes the Greek, about 1403 (Tretyakov Gallery).",
@@ -65,10 +66,10 @@ STILLS = [
       "<b>Why 19.07 and not 19.5.</b> It is the reference's last cut. From there the mark has nine tenths of a second to be read. From 19.5 it would have less than half a second."]),
 ]
 
-MORE = ("In the run now: Adramelech, Moloch, the fish-god called Dagon and Diana as engravings, with Amun, Serapis, Augustus and Zeus Ammon as statues. "
-        "Found and waiting to be fetched at your yes: Odin as Georg von Rosen drew him in 1886, the Jupiter of Olympia as it was drawn in 1814, "
-        "and from The Met and Cleveland (all CC0) Apollo, Athena, Dionysos, Jupiter, Mercury, the winged lion of Assyria, a Canaanite god on his throne, "
-        "Osiris, the Apis bull, and the emperors Caligula, Caracalla, Trajan and Nero. Wikimedia lets a script take only a few files an hour, so the rest come in slowly.")
+MORE = ("In the run now: Klimt's Athena, Moreau's Jupiter, Winge's Thor and Ingres's Jupiter. "
+        "Next to bring in, all old enough to be free: Rossetti's Astarte Syriaca, Poussin's Adoration of the Golden Calf, Collier's Priestess of Delphi, "
+        "Rembrandt's Minerva, Velazquez's Mars, Rubens's Mercury and Arbo's Wild Hunt of Odin. The first three were looked for today and the right files did not come up. "
+        "Name any painting you want in it and I will look for it.")
 
 
 def figure(name, when, title, caption, reasons):
@@ -86,7 +87,7 @@ def figure(name, when, title, caption, reasons):
 
 
 rows = "\n".join(
-    f'          <tr><td>{p["what"]}<br>{p["held"]}</td><td class="k-num">{p["licence"]}</td></tr>' for p in PICS.values())
+    f'          <tr><td>{p["what"]}<br>{p["held"]}</td><td class="k-num">{p["licence"]}</td></tr>' for p in PICS.values() if not p["used"].startswith("not used"))
 
 body = f"""<title>The Light storyboard</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -99,12 +100,12 @@ body = f"""<title>The Light storyboard</title>
     <span class="k-eyebrow">Promo edit 1</span>
     <h1>The Light</h1>
     <p class="k-lede">The storyboard, for your yes or no.</p>
-    <p class="k-meta">Nine stills from the real stage, made again at your word. No video is made yet.</p>
+    <p class="k-meta">Nine stills from the real stage. The run is made a third time, at your word. No video is made yet.</p>
   </header>
 
   <section class="k-section" aria-labelledby="s-shape">
     <h2 id="s-shape">The shape</h2>
-    <p>A man before a light asks who it is. Then false god after false god, in black ink on white. On the drop, the answer: Jesus Christ, in full colour. Then the Light shown with a face.</p>
+    <p>A man before a light asks who it is. Then false god after false god, in the West's own paintings. On the drop, the answer: Jesus Christ, in His icon. Then the Light shown with a face.</p>
     <p>20 seconds, 1080 by 1920, 60 frames a second, cut on the reference's own clock. Every word on screen is Scripture, word for word, and the script checks each against the app's own Bible every time it runs. Only cuts and lines fall on the sound.</p>
   </section>
 
@@ -135,8 +136,7 @@ body = f"""<title>The Light storyboard</title>
 
   <section class="k-section" aria-labelledby="s-open">
     <h2 id="s-open">What is not done yet</h2>
-    <p>The film needs about thirty pictures in the run, and eight are in. {MORE}</p>
-    <p>Not found yet: Baal and Astarte under their own names, and Thor.</p>
+    <p>The film needs about thirty pictures in the run, and four are in. {MORE}</p>
     <p>No living religion and no living person stands in the run, and none will.</p>
     <p>The other opening that was offered (Moses at the bush) is not drawn. Saul stands, as chosen.</p>
     <p>At your yes: the film, a silent master to save, and one preview with the reference's sound for you alone, marked not for posting. A priest's yes is still yours to get before it is posted. It is for the separate edits account, not a paid ad and not the store pages.</p>

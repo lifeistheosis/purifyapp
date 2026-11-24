@@ -31,13 +31,14 @@ DROP = 671        # 11.183 s: the first frame the sound's low band (under 120 Hz
 MELT = 5          # frames a face takes to become the next (the reference's smears take three to six)
 END = 1144        # 19.07 s: the reference's last cut before its white frame; ours goes to black and the mark
 
-# The run, in order; it uses as many as there are shots, round again, and always ends on the last.
-#   a statue:  (picture, how far apart its eyes stand on the screen)            its eyes are set on (540, EYE_Y)
-#   a print:   (picture, how wide the whole print is on the screen, where its held point stands)
-# Each is framed its own way and large, as the reference frames its faces. The last, Zeus Ammon, is set eye for eye on
-# the icon that follows the drop: the same place and the same size, so the cut turns one face into the other.
-RUN = [("adramelech", 1180, (540, 690)), ("moloch", 1750, (540, 610)), ("dagon", 1500, (560, 600)), ("amun", 320), ("diana", 1120, (540, 360)),
-       ("serapis", 245), ("augustus", 290), ("zeusammon", 214)]
+# The run, in order: Western paintings of the pagan gods, in colour (his word, 2026-11-24). It uses as many as there
+# are shots, round again, and always ends on the last. Each fills the frame, held on the god's face:
+#   (picture, how wide the whole painting is on the screen, where its held point stands)
+# The last, Ingres's Jupiter, is set eye for eye on the icon that follows the drop: the same place and the same size,
+# so the cut turns the false face into the true one.
+RUN = [("athene", 2700, (540, 640)), ("semele", 4000, (540, 660)), ("thor", 1700, (540, 640)),
+       ("jupiter", "eyes", None)]
+RUN_POOL = (380, 1250, 0.24)  # the light pooled on the face, the rest let fall
 WORDS_CLEAR = 1230  # below this line of the frame the run is clean white, for its words
 EYE_Y = 700       # where the eyes stand in every face, so the gaze holds still through the run
 
@@ -171,68 +172,55 @@ def entry(i):
 
 
 def plate(i):
-    e = entry(i)
-    name = e[0]
+    """A painting whole and unaltered, larger than the frame, held on the god's face, its light pooled there."""
+    name, width, at = entry(i)
     def make():
+        im, p = rgb(name), PICS[name]
+        if width == "eyes":
+            (lx, ly), (rx, ry) = p["eyes"]
+            (ax, ay), (bx, by) = PICS["sinai"]["eyes"]
+            k = math.hypot(bx - ax, by - ay) * AFTER[0][4] / rgb("sinai").shape[1] / math.hypot(rx - lx, ry - ly)
+            sx, sy, (dx, dy) = (lx + rx) / 2, (ly + ry) / 2, AFTER[0][3]
+        else:
+            k, sx, sy, (dx, dy) = width / im.shape[1], p["focus"][0] * im.shape[1], p["focus"][1] * im.shape[0], at
+        out = place(im, k, sx, sy, dx, dy)
+        if k > 1.2:  # a painting shown larger than its file is made a little crisper; nothing in it is drawn
+            out = np.clip(out + 0.6 * (out - cv2.GaussianBlur(out, (0, 0), 2.2 * k)), 0, 1)
+        out = out * pool(dx, dy, *RUN_POOL)
         yy, _ = grid()
-        if len(e) == 2:      # a statue: the museum's photograph as ink (assets.py), set on its eyes
-            ink = np.asarray(Image.open(f"{HOME}/ink/{name}.png"), dtype=np.float32) / 255
-            (lx, ly), (rx, ry) = PICS[name]["eyes"]
-            p = place(ink, e[1] / math.hypot(rx - lx, ry - ly), (lx + rx) / 2, (ly + ry) / 2, W / 2, EYE_Y, ground=1.0)
-        else:                # a print: ink already. Its paper is taken to white and its ink to black; nothing is drawn.
-            g = np.asarray(Image.open(f"{HOME}/raw/{name}.jpg").convert("L"), dtype=np.float32) / 255
-            k = e[1] / g.shape[1]
-            fx, fy = PICS[name]["focus"]
-            p = place(g, k, fx * g.shape[1], fy * g.shape[0], e[2][0], e[2][1], ground=float(np.percentile(g, 90)))
-            p = cv2.GaussianBlur(p, (0, 0), max(0.5, 0.45 * k))
-            lo, hi = float(np.percentile(g, 3)), float(np.percentile(g, 85))
-            p = np.clip((p - lo) / (hi - lo), 0, 1)
-            p = np.clip((p - 0.55) * 3.2 + 0.5, 0, 1)
-        # Below WORDS_CLEAR the ink is let go into the white ground, so the words stand on clean white.
-        keep = 1 - np.clip((yy - WORDS_CLEAR + 150) / 150, 0, 1) ** 2
-        return 1 - (1 - p) * keep
-    return once(("plate", e), make)
+        foot = np.clip((yy - 1060) / 380, 0, 1)
+        return out * (1 - 0.55 * foot * foot * (3 - 2 * foot))[..., None]  # the foot let fall further, where the words stand
+    return once(("plate", name), make)
 
 
 def flow(i, j):
-    """How the pixels of one face would have to travel to become the next: found small and smooth, then enlarged.
+    """How the pixels of one picture would have to travel to become the next: found small and smooth, then enlarged.
     (The Christ edit's melt.)"""
     def make():
-        small = lambda p: cv2.GaussianBlur(cv2.resize((p * 255).astype(np.uint8), (270, 480), interpolation=cv2.INTER_AREA), (0, 0), 2)
+        small = lambda p: cv2.GaussianBlur(cv2.resize(cv2.cvtColor((np.clip(p, 0, 1) * 255).astype(np.uint8), cv2.COLOR_RGB2GRAY), (270, 480), interpolation=cv2.INTER_AREA), (0, 0), 2)
         f = cv2.calcOpticalFlowFarneback(small(plate(i)), small(plate(j)), None, 0.5, 4, 41, 4, 7, 1.5, 0)
         return cv2.resize(cv2.GaussianBlur(f, (0, 0), 6), (W, H), interpolation=cv2.INTER_CUBIC) * 4.0
-    return once(("flow", entry(i), entry(j)), make)
+    return once(("flow", entry(i)[0], entry(j)[0]), make)
 
 
 def melt(i, j, u):
-    """One picture melting into the next, in ink: each whole picture follows the flow part of the way and both are
-    laid over each other as ink on one sheet, black staying black, never a grey fade; the whole is drawn out a
-    little from its middle, as the reference's smears are. Nothing in either picture is drawn."""
+    """One painting melting into the next, as the Christ edit's faces do: each whole picture follows the flow part of
+    the way, laid over the other, soft in its middle. Nothing in either is drawn."""
     f = flow(i, j) * 1.5
     yy, xx = grid()
-    A = cv2.remap(plate(i), xx - u * f[..., 0], yy - u * f[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
-    B = cv2.remap(plate(j), xx + (1 - u) * f[..., 0], yy + (1 - u) * f[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
-    ink = np.maximum((1 - A) * min(1.0, 2 * (1 - u)), (1 - B) * min(1.0, 2 * u))
-    w = math.sin(math.pi * u)
-    # Drawn out from the middle: the mean of the sheet at a few sizes about the eyes' place. One smooth pull, no beams.
-    acc = np.zeros_like(ink)
-    steps = [1 + 0.04 * w * (t / 7 - 1) for t in range(15)]
-    for z in steps:
-        M = np.float32([[z, 0, W / 2 * (1 - z)], [0, z, EYE_Y * (1 - z)]])
-        acc += cv2.warpAffine(ink, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
-    g = 1 - acc / len(steps)
-    return np.clip((g - 0.5) * (1 + 0.8 * w) + 0.5, 0, 1)
+    A = cv2.remap(plate(i), xx - u * f[..., 0], yy - u * f[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    B = cv2.remap(plate(j), xx + (1 - u) * f[..., 0], yy + (1 - u) * f[..., 1], cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    return cv2.GaussianBlur(A * (1 - u) + B * u, (0, 0), 1.0 + 5.0 * math.sin(math.pi * u))
 
 
 def the_run(F):
     i = max(k for k, c in enumerate(RUN_CUTS) if c <= F + MELT / 2)
     c = RUN_CUTS[i]
-    if i > 0 and abs(F - c) < MELT / 2:      # the first face comes on a plain cut; the last gives way to the drop on one
-        g = melt(i - 1, i, smooth((F - c + MELT / 2) / MELT))
+    if i > 0 and abs(F - c) < MELT / 2:      # the first comes on a plain cut; the last gives way to the drop on one
+        out = melt(i - 1, i, smooth((F - c + MELT / 2) / MELT))
     else:
-        g = plate(i if F >= c else i - 1)
-    out = np.repeat(g[..., None], 3, 2)
-    return say(out, "gods", 1320, ["there be gods many,", "and lords many"], turned=True)
+        out = plate(i if F >= c else i - 1)
+    return say(out, "gods", 1320, ["there be gods many,", "and lords many"])
 
 
 # ── After the drop ───────────────────────────────────────────────────────
@@ -286,7 +274,7 @@ def save(F, path, width=W):
 
 
 # The storyboard: the moments the brief asks for.
-BOARD = [("1-the-light", 60), ("2-run-first", 148), ("3-run-melt", 174), ("4-run-sharp", 197), ("5-before-the-drop", 670), ("6-the-drop", 690),
+BOARD = [("1-the-light", 60), ("2-run-first", 133), ("3-run-melt", 141), ("4-run-sharp", 165), ("5-before-the-drop", 670), ("6-the-drop", 690),
          ("7-transfiguration", 800), ("8-light-of-the-world", 1060), ("9-the-end", 1180)]
 
 if __name__ == "__main__":

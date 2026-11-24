@@ -1,5 +1,5 @@
 {
- "about": "The pictures of promo edit 1, the Light. Every file was fetched from Wikimedia Commons on 2026-11-23 at the width given ('fetched_width'); 'licence' is what that page states. A statue's photograph is the museum's own, released CC0 under its Open Access policy (The Met's own record marks each isPublicDomain: true; 'museum_page' is that record). The icons and the painting are faithful photographs of flat works long out of copyright, marked Public domain on Commons. None is held in Greece or Italy (lib/marketing/heritagePictures.ts). 'eyes' is where the eyes are in the fetched file, read off by hand: the eye at the viewer's left first. The files themselves are out of git. From 2026-11-24, at his word that the pagans can be any kind of picture, the run also takes old engravings: flat printed works long out of copyright, marked Public domain on Commons. They are ink already and are not put through the ink filter. 'focus' is the point of the print that is held, as shares of its width and height.",
+ "about": "The pictures of promo edit 1, the Light. Every file was fetched from Wikimedia Commons on 2026-11-23 at the width given ('fetched_width'); 'licence' is what that page states. A statue's photograph is the museum's own, released CC0 under its Open Access policy (The Met's own record marks each isPublicDomain: true; 'museum_page' is that record). The icons and the painting are faithful photographs of flat works long out of copyright, marked Public domain on Commons. None is held in Greece or Italy (lib/marketing/heritagePictures.ts). 'eyes' is where the eyes are in the fetched file, read off by hand: the eye at the viewer's left first. The files themselves are out of git. From 2026-11-24, at his word that the pagans can be any kind of picture, the run also takes old engravings: flat printed works long out of copyright, marked Public domain on Commons. They are ink already and are not put through the ink filter. 'focus' is the point of the print that is held, as shares of its width and height. From his word of 2026-11-24 (\"ensure its colored and western high quality art\"), the run is Western paintings in colour. Each is long out of copyright and marked Public domain on Commons, though he said that need not hold for the pagans.",
  "pictures": {
   "saul": {
    "what": "The Conversion of Saint Paul, by Parmigianino, oil on canvas, about 1527",
@@ -8,6 +8,60 @@
    "licence": "Public domain",
    "fetched_width": 1920,
    "used": "the light: Saul alone, cut out whole from the ground, the horse and the landscape left out"
+  },
+  "athene": {
+   "what": "Pallas Athene, by Gustav Klimt, oil on canvas, 1898",
+   "held": "Wien Museum, Vienna",
+   "page": "https://commons.wikimedia.org/wiki/File:Klimt_-_Pallas_Athene.jpeg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "focus": [
+    0.4,
+    0.24
+   ],
+   "used": "the run"
+  },
+  "thor": {
+   "what": "Thor's Fight with the Giants, by Mårten Eskil Winge, oil on canvas, 1872",
+   "held": "Nationalmuseum, Stockholm",
+   "page": "https://commons.wikimedia.org/wiki/File:Thor%27s_Battle_Against_the_J%C3%B6tnar_(1872)_by_M%C3%A5rten_Eskil_Winge.jpg",
+   "licence": "Public domain",
+   "fetched_width": 1920,
+   "focus": [
+    0.455,
+    0.26
+   ],
+   "used": "the run"
+  },
+  "semele": {
+   "what": "Jupiter and Semele, by Gustave Moreau, oil on canvas, 1894 to 1895",
+   "held": "Musée national Gustave Moreau, Paris",
+   "page": "https://commons.wikimedia.org/wiki/File:Moreau,_Gustave_-_Jupiter_und_Semele_-_1896.jpg",
+   "licence": "Public domain",
+   "fetched_width": 3840,
+   "focus": [
+    0.467,
+    0.206
+   ],
+   "used": "the run"
+  },
+  "jupiter": {
+   "what": "Jupiter and Thetis, by Jean-Auguste-Dominique Ingres, oil on canvas, 1811 (a photograph of it in its frame; only the canvas is shown)",
+   "held": "Musée Granet, Aix-en-Provence",
+   "page": "https://commons.wikimedia.org/wiki/File:Jean_Auguste_Dominique_Ingres_-_Jupiter_et_Th%C3%A9tis_01.jpg",
+   "licence": "Public domain",
+   "fetched_width": 3840,
+   "eyes": [
+    [
+     1932,
+     994
+    ],
+    [
+     2066,
+     994
+    ]
+   ],
+   "used": "the run: its last face, the frame before the drop, set eye for eye on the icon that follows"
   },
   "adramelech": {
    "what": "Adramelech (2 Kings 17:31), engraving after Louis Le Breton, from Collin de Plancy's Dictionnaire infernal, Paris, 1863",
@@ -19,7 +73,7 @@
     0.5,
     0.47
    ],
-   "used": "the run"
+   "used": "not used since his word of 2026-11-24 (the run is paintings in colour)"
   },
   "moloch": {
    "what": "Moloch (Leviticus 18:21, Acts 7:43), engraving after Louis Le Breton, from Collin de Plancy's Dictionnaire infernal, Paris, 1863",
@@ -31,7 +85,7 @@
     0.59,
     0.215
    ],
-   "used": "the run"
+   "used": "not used since his word of 2026-11-24 (the run is paintings in colour)"
   },
   "dagon": {
    "what": "The fish-god of Nimrud, called Dagon (1 Samuel 5:2), wood engraving after Layard's drawing, from Illustrerad verldshistoria, Stockholm, 1875",
@@ -43,7 +97,7 @@
     0.42,
     0.115
    ],
-   "used": "the run"
+   "used": "not used since his word of 2026-11-24 (the run is paintings in colour)"
   },
   "diana": {
    "what": "Diana of the Ephesians (Acts 19:28), wood engraving from Sarah Amelia Scull's Greek Mythology Systematized, Philadelphia, 1880",
@@ -55,7 +109,7 @@
     0.5,
     0.14
    ],
-   "used": "the run"
+   "used": "not used since his word of 2026-11-24 (the run is paintings in colour)"
   },
   "augustus": {
    "what": "Marble portrait of the emperor Augustus, Roman, about 14 to 37 AD",
@@ -74,7 +128,7 @@
      1348
     ]
    ],
-   "used": "the run"
+   "used": "not used since his word of 2026-11-24 (the run is paintings in colour)"
   },
   "zeusammon": {
    "what": "Marble head of Zeus Ammon, Roman, about 120 to 160 AD",
@@ -93,7 +147,7 @@
      566
     ]
    ],
-   "used": "the run: its last face, the frame before the drop, set eye for eye on the icon that follows"
+   "used": "not used since his word of 2026-11-24 (the run is paintings in colour)"
   },
   "amun": {
    "what": "Head of the god Amun, Egypt, about 1328 to 1318 BC",
@@ -112,7 +166,7 @@
      1185
     ]
    ],
-   "used": "the run"
+   "used": "not used since his word of 2026-11-24 (the run is paintings in colour)"
   },
   "smiting": {
    "what": "Smiting god wearing an Egyptian atef crown, bronze, Canaanite, about the 15th to 14th century BC",
@@ -150,7 +204,7 @@
      525
     ]
    ],
-   "used": "the run"
+   "used": "not used since his word of 2026-11-24 (the run is paintings in colour)"
   },
   "sinai": {
    "what": "Christ Pantocrator, encaustic on panel, 6th century",
