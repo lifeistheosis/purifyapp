@@ -68,8 +68,8 @@ export function AdminStreamerToggle({ compact = false }: { compact?: boolean } =
     <button
       type="button"
       onClick={toggle}
-      title={on ? "Show money and addresses again" : "Hide money and addresses"}
-      aria-label={on ? "Show money and addresses again" : "Hide money and addresses"}
+      title={on ? "Unblur the screen" : "Blur the screen"}
+      aria-label={on ? "Unblur the screen" : "Blur the screen"}
       aria-pressed={on}
       className={`adm-control flex h-11 ${compact ? "w-11 shrink-0" : "w-full"} items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] font-sans text-[11.5px]`}
       style={

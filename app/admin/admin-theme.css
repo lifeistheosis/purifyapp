@@ -673,10 +673,29 @@
   user-select: auto;
 }
 
+/* BLUR FOR EVERYTHING (his word, 2026-11-24: "im saying for everything").
+ * With the switch on, the open page's data blurs, not only money and
+ * addresses: every figure, line of text, list, table, chart and picture in the
+ * view (data-adm-view, AdminShell), and the live cards' words. What lets him
+ * find his way stays sharp: page and section titles, buttons, tabs and the
+ * rail. A tap or a pointer on an item lifts it for the one at the screen. */
+[data-adm-streamer] [data-adm-view] :is(p, li, td, th, dd, dt, svg, canvas, img, input, textarea, select, .adm-fig, [role="img"]):not(:is(h1, h2, h3, button, summary, [role="tablist"]) *):not(button, summary, nav *),
+[data-adm-streamer] [data-adm-live] {
+  filter: blur(9px);
+  user-select: none;
+  transition: filter 120ms ease;
+}
+[data-adm-streamer] [data-adm-view] :is(p, li, td, th, dd, dt, svg, canvas, img, input, textarea, select, .adm-fig, [role="img"]):hover {
+  filter: none;
+  user-select: auto;
+}
+
 /* Keyed to Purify's motion switch, not the browser's setting: the panel
  * defaults to motion whatever the OS says (lib/ui/motionPreference.ts), so
  * the streamer blur eases unless motion is actually off. */
-:where([data-motion="reduce"]) [data-adm-streamer] .adm-sensitive {
+:where([data-motion="reduce"]) [data-adm-streamer] .adm-sensitive,
+:where([data-motion="reduce"]) [data-adm-streamer] [data-adm-view] *,
+:where([data-motion="reduce"]) [data-adm-streamer] [data-adm-live] {
   transition: none;
 }
 
