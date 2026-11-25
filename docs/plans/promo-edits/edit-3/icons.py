@@ -299,17 +299,19 @@ def picture(sg, t, i, cx=None, cy=None, w=None):
 
 
 def strips(sg, t, i):
-    """The split screen on a hi-hat roll: a strip more on each hat; from the fourth hat, the second set."""
+    """The split screen on a hi-hat roll: a strip more on each hat; on the fourth hat, the second set; on the fifth,
+    the same three a step closer (a straight cut, as every jump closer is)."""
     j = C.hats_in(sg["t0"], i)
     first_set, second_set = SPLITS[sg["fx"]["split"]]
     sw = (W - 2 * GUTTER) // 3
     canvas = np.zeros((H, W, 3), np.float32)
     shown = min(3, j) if j <= 3 else 3
     use = first_set if j <= 3 else second_set
+    closer = 0.78 if j >= 5 else 1.0
     u = C.clamp01((t - sg["t0"]) / max(1e-3, sg["t1"] - sg["t0"]))
     for n in range(shown):
         key, cx, cy, w = use[n]
-        img, _ = C.view(key, cx, cy - 0.04 * w * u, w * (1 - 0.06 * u), sw, H)   # each strip drifts up, steadily
+        img, _ = C.view(key, cx, cy - 0.04 * w * u, w * (1 - 0.06 * u) * closer, sw, H)   # each drifts up, steadily
         x0 = n * (sw + GUTTER)
         canvas[:, x0:x0 + sw] = img
     return canvas
