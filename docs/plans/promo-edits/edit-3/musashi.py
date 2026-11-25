@@ -471,16 +471,22 @@ def with_hats(sg, i):
         return sg
     kind = sg["kind"]
     s2 = dict(sg)
+    nx = next_seg(sg) or {}
+
+    def pick(pool, cur, nxt):
+        # never the drawing on screen, never the one the next beat brings: the beat stays a cut
+        c = [f for f in pool if f != cur and f != nxt]
+        start = pool.index(cur) if cur in pool else 0
+        return c[(start + j - 1) % len(c)]
     if kind == "swap" and sg.get("face"):
-        s2["face"] = MOTHER_SWAPS[(MOTHER_SWAPS.index(sg["face"]) + j) % len(MOTHER_SWAPS)]
+        s2["face"] = pick(MOTHER_SWAPS, sg["face"], nx.get("face"))
     elif kind == "quote" and sg.get("group"):
-        s2["group"] = GROUP_ORDER[(GROUP_ORDER.index(sg["group"]) + j) % len(GROUP_ORDER)]
+        s2["group"] = pick(GROUP_ORDER, sg["group"], nx.get("group"))
     elif kind == "question" and sg.get("face"):
-        f = CHRIST_ALL[(CHRIST_ALL.index(sg["face"]) + j) % len(CHRIST_ALL)]
+        f = pick(CHRIST_ALL, sg["face"], nx.get("face"))
         s2["face"], s2["standing"] = f, f == "schon_christ"
     elif kind == "colourface":
-        n = COLOUR_FACES.index(sg["face"])
-        s2["face"] = COLOUR_FACES[(n + j) % len(COLOUR_FACES)]
+        s2["face"] = pick(COLOUR_FACES, sg["face"], nx.get("face"))
         s2["entry"] = False
     elif kind == "final":                    # a hat: a side step closer; the beat's own step stays the larger
         s2["zoom"] = sg["zoom"] * (1.10 if j % 2 else 1.18)
