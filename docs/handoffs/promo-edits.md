@@ -156,7 +156,7 @@ Addresses: `https://www.tiktok.com/@praisegrimm/video/7709973136590015757`, `@je
 
 ## His new rule, 2026-11-25
 
-"new rule for edits. (public domain is NOT needed)", then "edits are NOT paid ads". Edits are unpaid posts, so their pictures need not be public domain (CLAUDE.md, "Edits need not be public domain"). The "pictures" point below is overtaken for edits; the other points stand.
+"new rule for edits. (public domain is NOT needed)", then "edits are NOT paid ads". Edits are unpaid posts, so their pictures need not be public domain (CLAUDE.md, "Edits need not be public domain"). Then "include the audio with edits": the master carries its sound, never silent. The "pictures" and "sound" points below are overtaken for edits; the other points stand.
 
 ## Where the references meet his standing words
 
