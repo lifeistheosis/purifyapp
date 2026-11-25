@@ -80,6 +80,8 @@ The map, measured with `docs/plans/promo-edits/edit-3/sound_map.py` and `sound_m
 
 **The licence, named to him.** Cradles was released through NoCopyrightSounds (NCS). NCS's usage policy (ncs.io/usage-policy, read 2026-11-25) gives free use to independent creators only; "Brands and businesses", content "made to promote a product, service or brand", need a licence, and changing a track "beyond cutting it to fit" is not allowed (a slowed version is such a change). His rule for edits takes the risk that a post is taken down or muted. The safer ways: buy NCS's licence for the track, or post with the sound picked inside TikTok or Instagram. Either way the caption names the song: "Sound: Sub Urban, Cradles (slowed)".
 
+**His decision (2026-11-25): "no licence. this is going on tiktok".** So: no NCS licence; the film goes to TikTok, from the edits account, with the sound in the master as his rule says. A TikTok Business account may only use TikTok's commercial library, and music it uploads can be muted; a personal or creator account has no such limit, so it is posted from the edits account, not a Business one. If TikTok mutes it anyway, the same sound is added from TikTok's own library at 0.00, and the caption still names the song.
+
 ## The look (one look, held through all three chapters)
 
 - **Frame.** 1080 by 1920, 60 frames a second, phone first. The picture fills the frame: no letterbox, no bars, no border. The whole icon in shot 14 stands on the dark ground as a framed thing; that is an object in the frame, not a letterbox.
@@ -182,12 +184,12 @@ Two worlds, as reference 3 has them: **the Word in ink on a white ground, and th
 ## Asked of him before the storyboard
 
 1. **The song's words.** In this clip, does anything sung clash with icons of the Mother of God? (The song's own music video is dark: a bedroom on fire, masked bodies, mannequins. Nothing of it is used, but some viewers know it.)
-2. **The licence:** NCS's licence for the track, the sound picked inside the app, or his accepted risk.
+2. **The licence:** answered, no licence; TikTok ("no licence. this is going on tiktok").
 
 ## Deliver, in two steps
 
 1. **The storyboard, for his yes or no.** Eleven stills from the real film, rendered by the real tools, at 1.20, 3.30, 8.00, 15.00, 18.60, 26.80, 34.00, 39.00, 44.00, 53.00 and 56.00 seconds. One page, made phone first from the design kit (`docs/brand/design-kit.md`), published as a private Artifact: under the stills, the song's timeline drawn with the three chapters and the silences on it; the reason for each choice; the pictures with their licences; the cost so far.
-2. **At his yes, the film.** The master: 1080 by 1920, 60 frames a second, H.264 High profile at about 20 Mbps, the sound as AAC at 256 kbps, 3,400 frames (56.67 s), the sound at frame 0 and unchanged (no fade, no cut, no level change). A still for the post's cover (shot 8, her eye). The page: the film, the master to save, the reasons, the caption line naming the song. The record. Say plainly on the page that a priest's yes is still his to get before it is posted, and that it is for the edits account, not a paid ad and not the store pages.
+2. **At his yes, the film.** The master: 1080 by 1920, 60 frames a second, H.264 High profile at about 20 Mbps, the sound as AAC at 256 kbps, 3,400 frames (56.67 s), the sound at frame 0 and unchanged (no fade, no cut, no level change). A still for the post's cover (shot 8, her eye). The page: the film, the master to save, the reasons, the caption line naming the song, and the TikTok steps (the edits account, the sound already in the file, the library's sound if it is muted). The record. Say plainly on the page that a priest's yes is still his to get before it is posted, and that it is for the edits account, not a paid ad and not the store pages.
 
 ## Checks, before he sees anything
 
