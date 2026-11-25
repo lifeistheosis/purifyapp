@@ -6,7 +6,7 @@
    "page": "https://www.metmuseum.org/art/collection/search/436570",
    "licence": "The Met Open Access: public domain",
    "file": "raw/met_436570.jpg, 2495 by 3824",
-   "shots": "1 to 7"
+   "shots": "1 to 7; version 1: the stable glimpsed, the drop, the Child; version 2: the Nativity, and the angels at the end; version 3: one of the painted faces"
   },
   "vladimir": {
    "what": "Our Lady of Vladimir, Moscow, middle of the 16th century, in its silver-gilt cover with enamel and stones",
@@ -14,7 +14,7 @@
    "page": "https://rusmuseumvrm.ru/data/collections/ikonopis/drzh-302/index.php",
    "licence": "not stated on the page (the museum's own photograph, from its zoom viewer)",
    "file": "raw/vladimir_rm302.jpg, 5270 by 6000",
-   "shots": "8 to 14, and the sixth face of 16"
+   "shots": "8 to 14, and the sixth face of 16; version 2: out of the silence, the Child's cheek on hers"
   },
   "berlinghiero": {
    "what": "Berlinghiero, Madonna and Child, possibly 1230s, tempera on wood, gold ground",
@@ -79,13 +79,227 @@
    "licence": "Purify's own",
    "file": "177 by 311, drawn at its own size",
    "shots": "19"
+  },
+  "met_370641": {
+   "what": "Rembrandt (Rembrandt van Rijn), The Angel Appearing to the Shepherds, 1634",
+   "held": "The Metropolitan Museum of Art, New York (20.46.14)",
+   "page": "https://www.metmuseum.org/art/collection/search/370641",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met/370641.jpg",
+   "shots": "version 1 (the storm): the field, the night the angel came"
+  },
+  "met_354629": {
+   "what": "Rembrandt (Rembrandt van Rijn), The Flight into Egypt: a Night Piece, 1651",
+   "held": "The Metropolitan Museum of Art, New York (41.1.52)",
+   "page": "https://www.metmuseum.org/art/collection/search/354629",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met/354629.jpg",
+   "shots": "version 1: the road by lantern"
+  },
+  "met_359896": {
+   "what": "Rembrandt (Rembrandt van Rijn), Adoration of the Shepherds:  A Night Piece, ca. 1657",
+   "held": "The Metropolitan Museum of Art, New York (27.3)",
+   "page": "https://www.metmuseum.org/art/collection/search/359896",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met/359896.jpg",
+   "shots": "version 1: the stable in the dark, the lantern"
+  },
+  "met_437972": {
+   "what": "Francisco de Zurbarán, The Crucifixion",
+   "held": "The Metropolitan Museum of Art, New York (65.220.2)",
+   "page": "https://www.metmuseum.org/art/collection/search/437972",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met/437972.jpg",
+   "shots": "version 1: the Cross in the dark; version 2: the Cross into the song's stop; version 3: one of the painted faces"
+  },
+  "met_437404": {
+   "what": "Rembrandt, Head of Christ",
+   "held": "The Metropolitan Museum of Art, New York (17.120.222)",
+   "page": "https://www.metmuseum.org/art/collection/search/437404",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met/437404.jpg",
+   "shots": "version 1: His face in the rising light; version 3: the first and last painted face"
+  },
+  "met_437455": {
+   "what": "Jusepe de Ribera (called Lo Spagnoletto), The Holy Family with Saints Anne and Catherine of Alexandria, 1648",
+   "held": "The Metropolitan Museum of Art, New York (34.73)",
+   "page": "https://www.metmuseum.org/art/collection/search/437455",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met/437455.jpg",
+   "shots": "version 2: the Mother's eyes on the drop, the Holy Family; version 3: in to the Mother's eyes, the Child's face"
+  },
+  "met_437175": {
+   "what": "Bartolomé Estebán Murillo, Virgin and Child, 1670s",
+   "held": "The Metropolitan Museum of Art, New York (43.13)",
+   "page": "https://www.metmuseum.org/art/collection/search/437175",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met/437175.jpg",
+   "shots": "version 1: the Child's face matched with His (in black and white); version 2: the Mother's face and hands, and at the end the Child's stare; version 3: the colour painting the drawn faces are laid over"
+  },
+  "met_437971": {
+   "what": "Francisco de Zurbarán, The Young Virgin, ca. 1632–33",
+   "held": "The Metropolitan Museum of Art, New York (27.137)",
+   "page": "https://www.metmuseum.org/art/collection/search/437971",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met/437971.jpg",
+   "shots": "version 2: the first painting and an angel's face at the end; version 3: out from the young Virgin's eyes to the whole room"
+  },
+  "met_437871": {
+   "what": "Velázquez (Diego Rodríguez de Silva y Velázquez), The Supper at Emmaus, 1622–23",
+   "held": "The Metropolitan Museum of Art, New York (14.40.631)",
+   "page": "https://www.metmuseum.org/art/collection/search/437871",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met/437871.jpg",
+   "shots": "version 2: Emmaus, after the stop; version 3: one of the painted faces"
+  },
+  "met_437986": {
+   "what": "Caravaggio (Michelangelo Merisi), The Denial of Saint Peter, 1610",
+   "held": "The Metropolitan Museum of Art, New York (1997.167)",
+   "page": "https://www.metmuseum.org/art/collection/search/437986",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met/437986.jpg",
+   "shots": "version 2: Peter's denial, before the drop"
+  },
+  "met_367006": {
+   "what": "Martin Schongauer, Virgin and Child with an Apple, ca. 1475",
+   "held": "The Metropolitan Museum of Art, New York (37.3.5)",
+   "page": "https://www.metmuseum.org/art/collection/search/367006",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/367006.jpg",
+   "shots": "version 3 (Musashi): the Mother's face (Schongauer), in ink"
+  },
+  "met_396540": {
+   "what": "Albrecht Dürer, Virgin and Child Seated by a Tree, 1513",
+   "held": "The Metropolitan Museum of Art, New York (17.3.442)",
+   "page": "https://www.metmuseum.org/art/collection/search/396540",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/396540.jpg",
+   "shots": "version 3 (Musashi): the Mother's face (Dürer), in ink"
+  },
+  "met_342531": {
+   "what": "Marcantonio Raimondi, The Virgin and the Christ Child seated on clouds, ca. 1500–34",
+   "held": "The Metropolitan Museum of Art, New York (49.97.17)",
+   "page": "https://www.metmuseum.org/art/collection/search/342531",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/342531.jpg",
+   "shots": "version 3 (Musashi): the Mother's face (Raimondi), in ink"
+  },
+  "met_391227": {
+   "what": "Albrecht Dürer, Virgin and Child Crowned by Two Angels, 1518",
+   "held": "The Metropolitan Museum of Art, New York (68.793.39)",
+   "page": "https://www.metmuseum.org/art/collection/search/391227",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/391227.jpg",
+   "shots": "version 3 (Musashi): the Mother's face (Dürer), in ink"
+  },
+  "met_367004": {
+   "what": "Martin Schongauer, The Madonna and Child with the Parrot, 1470–1491",
+   "held": "The Metropolitan Museum of Art, New York (37.3.6)",
+   "page": "https://www.metmuseum.org/art/collection/search/367004",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/367004.jpg",
+   "shots": "version 3 (Musashi): the Mother's face (Schongauer), in ink"
+  },
+  "met_391198": {
+   "what": "Albrecht Dürer, Virgin and Child with the Pear, 1511",
+   "held": "The Metropolitan Museum of Art, New York (19.73.48)",
+   "page": "https://www.metmuseum.org/art/collection/search/391198",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/391198.jpg",
+   "shots": "version 3 (Musashi): the Mother's face (Dürer), in ink"
+  },
+  "met_367003": {
+   "what": "Martin Schongauer, Virgin and Child on a Grassy Bench, 1470–1491",
+   "held": "The Metropolitan Museum of Art, New York (1984.1201.41)",
+   "page": "https://www.metmuseum.org/art/collection/search/367003",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/367003.jpg",
+   "shots": "version 3 (Musashi): the Mother's face (Schongauer), in ink"
+  },
+  "met_390975": {
+   "what": "Albrecht Dürer, Virgin and Child on a Grassy Bench, 1503",
+   "held": "The Metropolitan Museum of Art, New York (19.73.41)",
+   "page": "https://www.metmuseum.org/art/collection/search/390975",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/390975.jpg",
+   "shots": "version 3 (Musashi): the Mother's face (Dürer), in ink"
+  },
+  "met_391215": {
+   "what": "Albrecht Dürer, Virgin and Child Seated by the Wall, 1514",
+   "held": "The Metropolitan Museum of Art, New York (68.793.30)",
+   "page": "https://www.metmuseum.org/art/collection/search/391215",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/391215.jpg",
+   "shots": "version 3 (Musashi): the Mother's face (Dürer), in ink"
+  },
+  "met_367005": {
+   "what": "Martin Schongauer, The Madonna and Child in the Courtyard, 1470–1491",
+   "held": "The Metropolitan Museum of Art, New York (25.5.2)",
+   "page": "https://www.metmuseum.org/art/collection/search/367005",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/367005.jpg",
+   "shots": "version 3 (Musashi): the Mother's face (Schongauer), in ink"
+  },
+  "met_394488": {
+   "what": "Wilhelm Traut, Bust of Christ Blessing, 17th century",
+   "held": "The Metropolitan Museum of Art, New York (2010.401)",
+   "page": "https://www.metmuseum.org/art/collection/search/394488",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/394488.jpg",
+   "shots": "version 3 (Musashi): His face beside the question, in ink"
+  },
+  "met_645136": {
+   "what": "Grégoire Huret, Christ Crowned with Thorns, 17th century",
+   "held": "The Metropolitan Museum of Art, New York (53.600.4247)",
+   "page": "https://www.metmuseum.org/art/collection/search/645136",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/645136.jpg",
+   "shots": "version 3 (Musashi): His face beside the question, in ink"
+  },
+  "met_341241": {
+   "what": "Agostino Carracci, Ecce Homo, 1587",
+   "held": "The Metropolitan Museum of Art, New York (53.600.2118)",
+   "page": "https://www.metmuseum.org/art/collection/search/341241",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/341241.jpg",
+   "shots": "version 3 (Musashi): His face beside the question, in ink"
+  },
+  "met_418384": {
+   "what": "Sebald Beham, The Head of Christ Crowned with Thorns, ca. 1520",
+   "held": "The Metropolitan Museum of Art, New York (23.18)",
+   "page": "https://www.metmuseum.org/art/collection/search/418384",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/418384.jpg",
+   "shots": "version 3 (Musashi): His face beside the question, in ink"
+  },
+  "met_383693": {
+   "what": "Jan van der Straet, called Stradanus, Head of Christ",
+   "held": "The Metropolitan Museum of Art, New York (49.95.1052)",
+   "page": "https://www.metmuseum.org/art/collection/search/383693",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/383693.jpg",
+   "shots": "version 3 (Musashi): His face beside the question, in ink"
+  },
+  "met_367000": {
+   "what": "Martin Schongauer, Christ in an Attitude of Benediction, 1470–1491",
+   "held": "The Metropolitan Museum of Art, New York (28.26.1)",
+   "page": "https://www.metmuseum.org/art/collection/search/367000",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/ink/367000.jpg",
+   "shots": "version 3 (Musashi): the standing figure beside the question, in ink"
+  },
+  "murillo_child_mask": {
+   "what": "The Child cut out of Murillo's Virgin and Child (GrabCut, then the Mother's chin trimmed by hand), so the drawn faces of version 3 sit behind Him as reference 3 keeps its hand and sword in front",
+   "file": "raw/murillo_child_mask.png",
+   "shots": "version 3, beats 4 to 13"
   }
  },
  "notes": {
   "rule": "His word 2026-11-25: edits need not be public domain; anything Orthodox or of Christ, Western art too, nothing heretical. None held in Greece or Italy (lib/marketing/heritagePictures.ts): New York and Saint Petersburg.",
   "fetched_not_used": [
    "The Russian Museum's Nativity, early 16th century (DRZh-1248), 9168 by 12000: the first plan's night, replaced by El Greco at his word that Western art may be used",
-   "The Tretyakov's Our Lady of Vladimir (my.tretyakov.ru 9256), 1457 by 2048: too small for the drop's close shots"
+   "The Tretyakov's Our Lady of Vladimir (my.tretyakov.ru 9256), 1457 by 2048: too small for the drop's close shots",
+   "For the three full-style versions (2026-11-25), fetched from The Met and not used: Rembrandt's Adoration with the Lamp (373069; its open line work reads as a drawing, not a night), Christ at Emmaus: the Larger Plate (391998; a glory of beams behind Him), Christ Preaching (371733), Christ Presented to the People (343142; too small for close shots), La Tour's Penitent Magdalen (436839; the Western reading of the Magdalen, which the Orthodox Church does not share), and engravings whose halos are beams (Raimondi 342532 and 342564, Dürer 391267, Rembrandt 391684, Goltzius 398389, Lucas van Leyden 364759, Matham 338386), or too small, too faint or a crowd (Schongauer 367002 and 336162, Rembrandt 334647, 373921, 391023 and 391993, Dürer 388800, 391052, 391240 and 360355, Zoboli 340995, Cigoli 338521, Annibale Carracci 341351, Reni 340615, the Master of Jesus in Bethlehem 337757, Mellan 391939)"
   ],
   "wikimedia": "Wikimedia's file servers refused this machine on 2026-11-25 (429, too many requests from a shared cloud address), so the pictures came from the museums' own servers."
  }
