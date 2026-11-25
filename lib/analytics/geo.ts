@@ -110,6 +110,54 @@ async function tryIpApi(ip: string): Promise<Geo | null> {
 }
 
 /**
+ * The visitor's place as Cloudflare tells it, with no outside call.
+ *
+ * purifyapp.net is served through Cloudflare. When its "IP Geolocation"
+ * setting is on, every request carries `cf-ipcountry`; with the "Add
+ * visitor location headers" managed transform also on, it carries
+ * `cf-region`, `cf-ipcity` and `cf-iplatitude` / `cf-iplongitude` too.
+ * Read first, so the free lookup services (whose free tiers are for
+ * non-commercial use and cap requests per server address) are only a
+ * fallback. Returns null when Cloudflare sent no usable country, and the
+ * caller falls back exactly as before.
+ */
+export function geoFromCloudflare(headers: Headers): Geo | null {
+  const code = (headers.get("cf-ipcountry") ?? "").trim().toUpperCase();
+  // XX: unknown. T1: Tor. Anything not two letters is not a country.
+  if (!/^[A-Z]{2}$/.test(code) || code === "XX" || code === "T1") return null;
+  const text = (name: string): string | null => {
+    const v = (headers.get(name) ?? "").trim();
+    return v ? v : null;
+  };
+  const num = (name: string): number | null => {
+    const v = Number(text(name));
+    return text(name) !== null && Number.isFinite(v) ? v : null;
+  };
+  let country: string | null = null;
+  try {
+    country = new Intl.DisplayNames(["en"], { type: "region" }).of(code) ?? null;
+  } catch {
+    country = null;
+  }
+  return {
+    country,
+    country_code: code,
+    region: text("cf-region"),
+    city: text("cf-ipcity"),
+    lat: num("cf-iplatitude"),
+    lng: num("cf-iplongitude"),
+  };
+}
+
+/**
+ * Where a request comes from: Cloudflare's headers first, then the
+ * lookup services by IP (geolocate). Never throws.
+ */
+export async function geoForRequest(headers: Headers): Promise<Geo | null> {
+  return geoFromCloudflare(headers) ?? (await geolocate(clientIp(headers)));
+}
+
+/**
  * Pull the client IP from common proxy headers. Render sets
  * `x-forwarded-for`; Cloudflare sets `cf-connecting-ip`; some other
  * proxies use `x-real-ip` or `forwarded`. Returns the first
@@ -160,6 +208,9 @@ export function geoHeaderSnapshot(headers: Headers): {
   xRealIp: string | null;
   cfConnectingIp: string | null;
   trueClientIp: string | null;
+  cfIpCountry: string | null;
+  cfRegion: string | null;
+  cfIpCity: string | null;
   selectedIp: string;
   privateOrEmpty: boolean;
 } {
@@ -169,6 +220,9 @@ export function geoHeaderSnapshot(headers: Headers): {
     xRealIp: headers.get("x-real-ip"),
     cfConnectingIp: headers.get("cf-connecting-ip"),
     trueClientIp: headers.get("true-client-ip"),
+    cfIpCountry: headers.get("cf-ipcountry"),
+    cfRegion: headers.get("cf-region"),
+    cfIpCity: headers.get("cf-ipcity"),
     selectedIp: selected,
     privateOrEmpty: isPrivate(selected),
   };

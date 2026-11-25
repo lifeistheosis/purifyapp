@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { notFound } from "next/navigation";
 import { getAdminUser, adminDebugEnabled } from "@/lib/admin/access";
-import { geolocate, geoHeaderSnapshot } from "@/lib/analytics/geo";
+import { geolocate, geoFromCloudflare, geoHeaderSnapshot } from "@/lib/analytics/geo";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
   }
 
   const snapshot = geoHeaderSnapshot(req.headers);
+  const cloudflare = geoFromCloudflare(req.headers);
   const startedAt = Date.now();
   const geo = snapshot.privateOrEmpty
     ? null
@@ -32,14 +33,18 @@ export async function GET(req: NextRequest) {
     {
       ok: true,
       headers: snapshot,
+      cloudflare,
       geo,
       lookupElapsedMs: elapsedMs,
       notes:
-        snapshot.privateOrEmpty
+        (cloudflare
+          ? "Cloudflare sends the visitor's country, so new visits take their place from it with no outside lookup. "
+          : "Cloudflare sends no country (cf-ipcountry): turn on IP Geolocation in Cloudflare, Network, for purifyapp.net. ") +
+        (snapshot.privateOrEmpty
           ? "Selected IP is private or empty, Render's proxy is not forwarding the client IP via the headers we read. Check the deployment's proxy configuration."
           : geo
             ? "Geo lookup succeeded for the selected IP."
-            : "Both providers (ipwho.is, ip-api.com) returned null or timed out. Check outbound network from Render or provider rate-limits.",
+            : "Both providers (ipwho.is, ip-api.com) returned null or timed out. Check outbound network from Render or provider rate-limits."),
     },
     { headers: { "Cache-Control": "no-store" } },
   );
