@@ -1018,7 +1018,7 @@ export function AdminShell({
                 sits here, inside the shell and around the open view only, so
                 a view that throws cannot take the rail down with it. */}
             {booted ? (
-              <div key={active} className="adm-panel-enter">
+              <div key={active} className="adm-panel-enter" data-adm-view>
                 <TabBoundary label={current.label} onRetry={() => setReloadKey((n) => n + 1)}>
                   {Current ? (
                     <Current key={reloadKey} />

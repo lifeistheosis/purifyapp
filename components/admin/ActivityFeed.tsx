@@ -391,7 +391,7 @@ function MobileToast({
         {/* The phone wraps rather than truncates. There is no fixed width to
             fit the sentence into here, so a second line is the honest answer
             and a cut-off word is not. */}
-        <span className="min-w-0">
+        <span className="min-w-0" data-adm-live>
           <span className="block font-sans text-[13px] font-medium leading-snug" style={{ color: "var(--adm-ink)" }}>
             {record.text}
           </span>
@@ -485,7 +485,7 @@ function ActivityPill({
         {/* NO truncate. PILL_W is chosen to fit the longest sentence this feed
             can produce, so a cut-off word would mean the copy has outgrown the
             measurement, and the fix for that is the width, not an ellipsis. */}
-        <span className="min-w-0 flex-1 self-center">
+        <span className="min-w-0 flex-1 self-center" data-adm-live>
           <span className="block whitespace-nowrap font-sans text-[13px] font-medium leading-tight" style={{ color: "var(--adm-ink)" }}>
             {record.text}
           </span>
