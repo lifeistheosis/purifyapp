@@ -11,6 +11,15 @@ Brief: `docs/plans/promo-edits/edit-3-the-cradle.md`. Made in session_01VuYTwcTk
 - "I said. It doesn't have to be public domain." (while the pictures were being searched for)
 - "again it could be anything Eastern Orthodox related or Jesus related (it could be western art too! just nothing heretical) the video has to be nice"
 
+## The second cut (his word on the first: "you barely even edited it. no effects. and not a single edit style used from our references")
+
+He was right: the first cut was slow pushes and plain cuts, held back by his older rule against effects on the beat. The second cut carries each reference's own devices, one reference to a chapter, on the same pictures:
+
+- **The night (reference 1, the storm):** black and white in a widescreen band (1080 by 760, as the storm's 1080 by 740), film grain and a vignette; every cut hidden inside a strike of light that blows out the lights and keeps the shadows (the glory that shone round the shepherds, Luke 2:9), rising over two frames to its peak on the cut's frame; flickers inside shots at 8.12, 9.08 and 15.30 s; cuts into darkness at the breaks; the film opens on a fast blurred push that lands in half a second.
+- **The drop (18.53 s):** out of black, two frames of white, and the band opens to the full screen on her eye in colour.
+- **The Mother (reference 2, the whisper):** every cut enters on a fast blurred zoom or pan (from the right, from above, from the left) that settles in about a third of a second; coverage of one picture, wider each cut; crush and a black-frame strobe on both of the song's stops.
+- **The light (reference 3, Musashi):** the words rise out of white; bold capitals that pulse on the beat (a larger push on the bar); a page-bend into the faces, which then swap in place on every half beat, the eight twice over, each with a small push; a white flash into the second verse; a motion-blur whip into the question; a fade to black; the cross, and the name typed under it, with no glow.
+
 ## What changed from the brief, and why
 
 - **The night is El Greco, not a Nativity icon.** At his word that Western art may be used and "the video has to be nice": *The Adoration of the Shepherds* (The Met, about 1605 to 1610) is a night where the newborn Child is the only light and every face is lit from Him, which is the light that edits. El Greco was trained as an icon painter in Crete before he went West. The icon first chosen (the Russian Museum's early 16th century Nativity, DRZh-1248, 9168 by 12000) is bright gold from edge to edge and was fetched but not used.
@@ -34,6 +43,10 @@ Brief: `docs/plans/promo-edits/edit-3-the-cradle.md`. Made in session_01VuYTwcTk
 
 - **The film (third render, 2026-11-25 about 08:12 UTC):** 1080 by 1920, 60 frames a second, 3,400 frames (56.667 s), H.264 High, the sound as AAC from frame 0. Large changes only at the planned cuts: 136, 260, 402, 704, 828, 1111 (the drop, out of black), 1254, 1395, 1537, 1679, 1821, 2246 (black to white, the light), 2530, 2812, 3288. Luma by second: 0.13 to 0.19 in the night outside its two dark cuts, 0.25 to 0.31 for the Mother, 0.97 on the white, 0.30 to 0.48 for the faces.
 - First stills, after the lift: Chapter I frames 0.13 to 0.29 luma, their brightest tenth 0.26 to 0.71; Chapter II 0.22 to 0.30; the faces 0.28; the white panels 0.97.
+
+## The Vault
+
+The first cut was sent to him on 2026-11-25 and is kept in that message; its renderer is commit 49be2652 on the branch, so it can be made again exactly. The second cut is `.promo/edit-3/out/the-cradle-cut2.mp4` (out of git).
 
 ## Cost
 
