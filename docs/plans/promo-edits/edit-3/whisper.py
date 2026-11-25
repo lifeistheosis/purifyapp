@@ -12,12 +12,14 @@ Its moves are kept and its weaknesses are not: every move runs at a steady speed
 "No bounce"); no push goes past a picture's own detail; the black frames come once a beat (about 1.7 a second, under
 the three a second that light-sensitive viewers can take), not fifteen in a second.
 
-The paintings, one to each phrase of the song, each covered beat by beat:
-  the young Virgin praying (Zurbarán); the Mother and Child, her face and hands only (Murillo); the night of the
-  Nativity (El Greco); Peter's denial by the fire (Caravaggio); at the drop, the Mother looking into the lens, then
-  the Holy Family widening out (Ribera); the Cross, into the song's stop (Zurbarán); at Emmaus, known in the breaking
-  of the bread (Velázquez); out of the silence, Our Lady of Vladimir, the Child's cheek on hers; the Murillo again,
-  and now the Child looks into the lens; the angels with their banner (El Greco), black between them; the card.
+The paintings, at his word (2026-11-25, living-paintings-plan.md), the Gospel in the song's phrases, each covered
+beat by beat and moved through in depth (depth_maps.py; the Byzantine-manner Berlinghiero keeps a plain camera move):
+  the Annunciation twice, as two cameras on one scene (Luca Giordano, Philippe de Champaigne); the Mother and Child
+  (Berlinghiero); the Flight into Egypt (Maratti, Giordano); on the drop the Mother looking into the lens, then the Holy
+  Family widening (Ribera); the Forerunner preaching (Preti) and the Baptism by night (Bassano) into the song's stop;
+  the Baptism again (Bourdon), the Wilderness (Moretto), the blind man healed (El Greco) into the silence; Peter's
+  denial and his tears (Caravaggio, Ribera); the Cross (Zurbarán); the Lamentation (Domenichino); the angels, black
+  between them; the card. Nothing titled or composed as an Adoration, no saint the East does not share.
 """
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -30,17 +32,36 @@ NAME = "the-cradle-v2-whisper"
 OW, OH = 1080, 810
 BAND = (0, (C.H - OH) // 2, OW, OH)     # reference 2's 4:3, as a phone shows it
 C.add_source("cross_w", "met/437972.jpg", "gray")
+# The fifteen at his word (2026-11-25, living-paintings-plan.md): The Met, European Paintings, public domain.
+for _k, _p in {"giordano_ann": "met2/436502.jpg", "champaigne": "met2/438724.jpg", "maratti": "met2/816629.jpg",
+               "giordano_flight": "met2/436503.jpg", "bassano": "met2/440393.jpg", "bourdon": "met2/435755.jpg",
+               "domenichino": "met2/439553.jpg", "moretto": "met2/437157.jpg", "ribera_peter": "met2/441971.jpg",
+               "greco_blind": "met2/436572.jpg", "preti": "met2/438824.jpg", "berlinghiero": "met_435658.jpg"}.items():
+    C.add_source(_k, _p, "rgb")
+C.PLATES.update({"greco_blind": (200, 180, 3820, 2950), "moretto": (60, 60, 3940, 3290)})
+# every crop inside the painting, clear of its frame (sizes in pixels as The Met serves them)
+_INSET = {"giordano_ann": (2926, 4000), "champaigne": (3741, 3658), "maratti": (3214, 4000), "giordano_flight": (3188, 4000),
+          "bassano": (3143, 3857), "bourdon": (2880, 3722), "domenichino": (2844, 3815), "ribera_peter": (2721, 3874),
+          "preti": (2760, 3838), "berlinghiero": (2792, 4000)}
+C.PLATES.update({k: (int(w * 0.035), int(h * 0.03), int(w * 0.965), int(h * 0.97)) for k, (w, h) in _INSET.items()})
 
 # Each painting's light: gamma, gain, how far the pool of light reaches and its floor, colour.
 LOOK = {
-    "zurbaran": dict(gamma=0.92, gain=1.30, r=0.80, floor=0.55, sat=1.05),
-    "murillo": dict(gamma=0.95, gain=1.18, r=0.80, floor=0.55, sat=1.05),
-    "greco": dict(gamma=0.80, gain=1.45, r=0.75, floor=0.45, sat=1.00),
-    "caravaggio": dict(gamma=0.72, gain=1.95, r=0.70, floor=0.40, sat=1.08),
     "ribera": dict(gamma=0.98, gain=1.08, r=0.85, floor=0.60, sat=1.02),
+    "caravaggio": dict(gamma=0.72, gain=1.95, r=0.70, floor=0.40, sat=1.08),
     "cross_w": dict(gamma=1.00, gain=1.10, r=0.80, floor=0.50, sat=1.00, tint=(1.0, 0.97, 0.93)),   # near neutral: no sepia (CLAUDE.md)
-    "velazquez": dict(gamma=0.90, gain=1.30, r=0.80, floor=0.50, sat=1.04),
-    "vladimir": dict(gamma=1.00, gain=1.12, r=0.80, floor=0.55, sat=0.84),
+    "giordano_ann": dict(gamma=0.92, gain=1.25, r=0.80, floor=0.55, sat=1.00),
+    "champaigne": dict(gamma=1.00, gain=1.05, r=0.85, floor=0.60, sat=0.95),
+    "maratti": dict(gamma=0.95, gain=1.10, r=0.85, floor=0.60, sat=0.95),
+    "giordano_flight": dict(gamma=0.88, gain=1.35, r=0.80, floor=0.55, sat=1.00),
+    "bassano": dict(gamma=0.70, gain=2.00, r=0.75, floor=0.45, sat=1.05),
+    "bourdon": dict(gamma=0.95, gain=1.12, r=0.85, floor=0.60, sat=0.95),
+    "domenichino": dict(gamma=0.98, gain=1.05, r=0.85, floor=0.60, sat=0.95),
+    "moretto": dict(gamma=0.92, gain=1.20, r=0.80, floor=0.55, sat=1.00),
+    "ribera_peter": dict(gamma=0.80, gain=1.60, r=0.75, floor=0.50, sat=1.05),
+    "greco_blind": dict(gamma=0.95, gain=1.10, r=0.85, floor=0.60, sat=0.95),
+    "preti": dict(gamma=0.82, gain=1.50, r=0.75, floor=0.50, sat=1.05),
+    "berlinghiero": dict(gamma=0.95, gain=1.10, r=0.85, floor=0.60, sat=0.90),
 }
 
 # Moves: each shot drifts at a steady speed, never still. in/out push or pull a share of the width; l/r/u/d pan.
@@ -50,42 +71,41 @@ MOVES = {"in": (0, 0, -0.09), "out": (0, 0, 0.09), "l": (-0.07, 0, -0.03), "r": 
 # (beat, painting, (centre x, centre y, width), move, note). A painting's first shot develops out of the dark; its
 # last shot is crushed into it; a gap is quieter.
 SHOTS = [
-    # I. The young Virgin praying (Zurbarán). Close, then wider each kick, the whole at the phrase's end.
-    (0, "zurbaran", (1653, 2120, 650), "u", "her hands, folded"),
-    (1, "zurbaran", (1520, 1370, 640), "in", "her face, looking up"),
-    (2, "zurbaran", (1476, 960, 900), "r", "angels' faces in the dark above her"),
-    (3, "zurbaran", (1600, 1750, 1300), "out", "her face and her hands"),
-    (4, "zurbaran", (2622, 1956, 820), "l", "the lilies and the roses"),
-    (5, "zurbaran", (1525, 1330, 400), "in", "her eyes"),
-    (6, "zurbaran", (1600, 2050, 2950), "out", "the whole room: the master"),
-    # II. The Mother and Child (Murillo): her face and her hands; His face is kept for the end.
-    (7, "murillo", (1545, 1115, 520), "in", "her eyes, lowered to Him"),
-    (8, "murillo", (1440, 1440, 470), "r", "His hand on her breast"),
-    (9, "murillo", (1500, 1160, 820), "l", "her face"),
-    (10, "murillo", (1911, 2000, 720), "u", "her hand holding Him"),
-    (11, "murillo", (1733, 2680, 620), "d", "His foot"),
-    (12, "murillo", (689, 2667, 640), "r", "her other hand"),
-    (13, "murillo", (1450, 1650, 1600), "out", "the Mother, and the Child turned from us"),
-    (14, "murillo", (1420, 2000, 2550), "out", "gap: the master, crushed"),
-    # III. The night of the Nativity (El Greco): the break, the bass gone; the Child the only light.
-    (15, "greco", (1105, 2335, 420), "in", "the Child's face"),
-    (16, "greco", (1530, 1585, 520), "l", "the Mother's face"),
-    (17, "greco", (1310, 2200, 900), "r", "her hands over Him"),
-    (18, "greco", (1790, 1650, 560), "in", "Joseph"),
-    (19, "greco", (880, 1450, 700), "u", "a shepherd's face"),
-    (20, "greco", (1300, 1900, 1500), "out", "the Mother, the Child and the shepherds"),
-    (21, "greco", (1150, 650, 800), "d", "the angels with their banner"),
-    (22, "greco", (1250, 2000, 2400), "out+", "the master, crushed"),
-    # IV. Peter's denial by the fire (Caravaggio): "I know not the man." Into the pause before the drop.
-    (23, "caravaggio", (3010, 900, 700), "in", "Peter's face"),
-    (24, "caravaggio", (1580, 880, 620), "r", "the servant girl"),
-    (25, "caravaggio", (2560, 1800, 820), "l", "his hands: not I"),
-    (26, "caravaggio", (900, 760, 760), "u", "the soldier's helmet"),
-    (27, "caravaggio", (2300, 1000, 2600), "out", "the girl and Peter"),
-    (28, "caravaggio", (3000, 860, 420), "in", "Peter's eyes"),
-    (29, "caravaggio", (1565, 850, 400), "in", "her eyes"),
-    (30, "caravaggio", (1950, 1450, 3700), "out", "the master, crushed into the pause"),
-    # V. The drop: the Mother looks into the lens (Ribera). Then the Holy Family, wider every kick.
+    # I. The Annunciation, twice, as two cameras on one scene: Luca Giordano, then Philippe de Champaigne.
+    (0, "giordano_ann", (1800, 1540, 650), "in", "the Mother's face"),
+    (1, "giordano_ann", (760, 860, 700), "l", "Gabriel"),
+    (2, "giordano_ann", (1040, 1600, 700), "r", "the lily he brings"),
+    (3, "giordano_ann", (1460, 1600, 2600), "out", "the angel and the Mother"),
+    (4, "giordano_ann", (1900, 1830, 600), "u", "her hand on her breast"),
+    (5, "giordano_ann", (1240, 2110, 600), "r", "her open hand"),
+    (6, "giordano_ann", (1463, 2000, 2850), "out", "the master, crushed"),
+    (7, "champaigne", (2850, 900, 800), "in", "Gabriel, the second camera"),
+    (8, "champaigne", (1180, 1330, 650), "l", "the Mother's face"),
+    (9, "champaigne", (2280, 1500, 700), "r", "his hand: hail"),
+    (10, "champaigne", (1450, 1700, 1300), "out", "the Mother and her hands"),
+    (11, "champaigne", (3000, 1500, 700), "u", "the lily"),
+    (12, "champaigne", (1100, 330, 900), "d", "the angels above (clear of the shaft of light)"),
+    (13, "champaigne", (1215, 1330, 420), "in", "her eyes"),
+    (14, "champaigne", (1250, 2300, 1800), "out", "gap: the Mother kneeling, crushed"),
+    # II. The break: the Mother and Child, Berlinghiero, in the Byzantine manner: a plain camera move only.
+    (15, "berlinghiero", (1886, 1600, 700), "in", "her face"),
+    (16, "berlinghiero", (1886, 1580, 420), "in", "her eyes"),
+    (17, "berlinghiero", (1800, 2200, 1400), "u", "the Child on her arm"),
+    (18, "berlinghiero", (1300, 2500, 900), "r", "her hand, showing Him"),
+    (19, "berlinghiero", (1396, 2000, 2650), "out", "the whole panel"),
+    (20, "berlinghiero", (1886, 1620, 900), "in", "the Child's face beside hers"),
+    (21, "berlinghiero", (1886, 1300, 1200), "u", "the gold and her halo"),
+    (22, "berlinghiero", (1396, 2000, 2700), "out+", "the master, crushed"),
+    # III. The Flight into Egypt: Maratti, then Giordano, into the pause before the drop.
+    (23, "maratti", (1200, 1800, 650), "in", "the Mother's face"),
+    (24, "maratti", (1330, 2000, 650), "r", "the Child"),
+    (25, "maratti", (2000, 2000, 700), "l", "Joseph"),
+    (26, "maratti", (1650, 700, 1200), "d", "the angels above them, crushed"),
+    (27, "giordano_flight", (2100, 1850, 1100), "in", "the Mother and the Child, resting"),
+    (28, "giordano_flight", (1650, 1500, 700), "r", "Joseph"),
+    (29, "giordano_flight", (2400, 1000, 1000), "l", "the angels over them"),
+    (30, "giordano_flight", (1594, 2200, 3000), "out", "the master, crushed into the pause"),
+    # IV. The drop: the Mother looks into the lens (Ribera). Then the Holy Family, wider every kick.
     (31, "ribera", (1852, 1205, 500), "in", "the Mother's eyes, on us"),
     (32, "ribera", (1640, 1390, 600), "l", "the Child"),
     (33, "ribera", (1160, 1690, 700), "r", "Catherine kisses His hand"),
@@ -102,73 +122,75 @@ SHOTS = [
     (44, "ribera", (1852, 1220, 700), "in", "the Mother's eyes again"),
     (45, "ribera", (1380, 1860, 2700), "out", "the whole family: the master"),
     (46, "ribera", (1380, 1860, 2700), "out", "gap: the master, crushed"),
-    # VI. The Cross (Zurbarán), into the song's stop.
-    (47, "cross_w", (1140, 1000, 620), "in", "His head, crowned"),
-    (48, "cross_w", (2226, 540, 600), "l", "His hand"),
-    (49, "cross_w", (1221, 360, 700), "r", "the title over Him"),
-    (50, "cross_w", (1150, 1000, 1150), "out", "His head and shoulders"),
-    (51, "cross_w", (330, 620, 560), "r", "His other hand"),
-    (52, "cross_w", (1150, 1700, 1400), "d", "His body and the white cloth"),
-    (53, "cross_w", (1165, 2950, 700), "u", "His feet: the song stops"),
-    (54, "cross_w", (1222, 1500, 2443), "out", "the stop: the whole Cross, crushed"),
-    # VII. Emmaus (Velázquez): known in the breaking of the bread. Into the silence.
-    (55, "velazquez", (800, 760, 800), "in", "His face"),
-    (56, "velazquez", (1080, 1440, 700), "l", "a hand thrown up"),
-    (57, "velazquez", (2080, 760, 720), "r", "the one who sees"),
-    (58, "velazquez", (1470, 2010, 800), "u", "His hands, the bread"),
-    (59, "velazquez", (2700, 1290, 760), "l", "the other, turning"),
-    (60, "velazquez", (1770, 1650, 3400), "out", "the master, crushed into the silence"),
-    (61, "velazquez", (820, 700, 440), "in", "silence: His eyes, developing and crushed"),
-    (62, "vladimir", (2330, 1960, 900), "in", "silence: her eye, out of the dark"),
-    # VIII. Our Lady of Vladimir: the Child's cheek on hers. The cover of silver, wider every kick.
-    (63, "vladimir", (2330, 1960, 700), "in", "her eye"),
-    (64, "vladimir", (2250, 2230, 560), "r", "the Child's cheek on hers"),
-    (65, "vladimir", (1650, 1600, 800), "u", "the enamel"),
-    (66, "vladimir", (2420, 2100, 1150), "out", "both faces"),
-    (67, "vladimir", (2980, 2850, 800), "l", "the Child's hand"),
-    (68, "vladimir", (1650, 3900, 900), "u", "her hand"),
-    (69, "vladimir", (2640, 3800, 700), "r", "a stone in the silver"),
-    (70, "vladimir", (2380, 1900, 520), "in", "gap: her eye, quiet"),
-    (71, "vladimir", (2640, 2700, 2600), "out", "the two of them"),
-    (72, "vladimir", (2900, 4560, 900), "l", "the Child's foot"),
-    (73, "vladimir", (1200, 1250, 700), "r", "a medallion"),
-    (74, "vladimir", (2700, 2600, 1150), "in", "the Child"),
-    (75, "vladimir", (600, 3000, 1000), "u", "the silver flowers"),
-    (76, "vladimir", (2650, 3500, 1800), "out", "her arm round Him"),
-    (77, "vladimir", (2250, 2230, 640), "in", "the cheeks, again"),
-    (78, "vladimir", (2635, 3000, 3375), "out", "gap: the whole icon, crushed"),
-    # IX. The Murillo again, and now the Child looks into the lens.
-    (79, "murillo", (1792, 1494, 460), "in", "His eyes, on us"),
-    (80, "murillo", (1545, 1115, 460), "r", "her eyes, on Him"),
-    (81, "murillo", (1550, 1460, 520), "l", "His hand on her"),
-    (82, "murillo", (1790, 1530, 760), "in", "His face"),
-    (83, "murillo", (1530, 1160, 700), "r", "her face"),
-    (84, "murillo", (1650, 1360, 1350), "out", "the two of them"),
-    (85, "murillo", (1550, 1750, 2050), "out", "the Mother and Child"),
-    (86, "murillo", (1420, 2000, 2550), "out", "gap: the master, crushed"),
-    # X. The angels (El Greco), black between them, once a beat. Then the card.
-    (87, "greco", (1150, 650, 800), "in", "the angels with their banner"),
-    (88, "greco", (1190, 610, 380), "r", "an angel's face"),
-    (89, "zurbaran", (1476, 930, 820), "r", "the angels' faces in her dark, again"),
-    (90, "greco", (930, 660, 440), "in", "another angel"),
-    (91, "greco", (1170, 470, 620), "r", "their banner: we praise thee, we bless thee"),
-    (92, "greco", (1150, 700, 1100), "out", "the angels together"),
+    # V. The Forerunner preaching (Preti), the Baptism by night (Bassano), into the song's stop.
+    (47, "preti", (1950, 900, 650), "in", "John's face"),
+    (48, "preti", (700, 700, 900), "r", "his arm raised"),
+    (49, "preti", (2350, 2950, 800), "u", "the lamb, crushed"),
+    (50, "bassano", (1800, 2000, 1000), "in", "Christ in the Jordan"),
+    (51, "bassano", (2100, 1450, 1200), "l", "John's arm and the water"),
+    (52, "bassano", (500, 1800, 1000), "r", "the angels waiting"),
+    (53, "bassano", (1800, 2300, 900), "u", "Christ: the song stops"),
+    (54, "bassano", (1572, 2200, 3000), "out", "the stop: the master, crushed"),
+    # VI. The Baptism again (Bourdon), the Wilderness (Moretto), the blind man healed (El Greco) into the silence.
+    (55, "bourdon", (1180, 1420, 650), "in", "Christ's face"),
+    (56, "bourdon", (1700, 1050, 700), "l", "John"),
+    (57, "bourdon", (2200, 1800, 1100), "r", "the angels with the cloth, crushed"),
+    (58, "moretto", (3150, 1250, 800), "in", "Christ in the wilderness"),
+    (59, "moretto", (1800, 1700, 1400), "l", "the wild beasts"),
+    (60, "moretto", (3550, 650, 900), "d", "the angels who served Him, crushed into the silence"),
+    (61, "greco_blind", (1720, 1330, 650), "in", "silence: Christ's face, developing and crushed"),
+    (62, "greco_blind", (1350, 1700, 700), "in", "silence: the blind man, out of the dark"),
+    # VII. Peter's denial and his tears (Caravaggio, Ribera).
+    (63, "caravaggio", (3010, 900, 700), "in", "Peter's face"),
+    (64, "caravaggio", (1580, 880, 620), "r", "the servant girl"),
+    (65, "caravaggio", (2560, 1800, 820), "l", "his hands: not I"),
+    (66, "caravaggio", (2300, 1000, 2600), "out", "the girl and Peter, crushed"),
+    (67, "ribera_peter", (1000, 1120, 650), "in", "Peter weeps"),
+    (68, "ribera_peter", (750, 1980, 700), "u", "his hands"),
+    (69, "ribera_peter", (1360, 2000, 2400), "out", "Peter, the whole"),
+    (70, "ribera_peter", (1000, 1080, 400), "in", "gap: his eyes, crushed"),
+    # VIII. The Cross (Zurbarán).
+    (71, "cross_w", (1140, 1000, 620), "in", "His head, crowned"),
+    (72, "cross_w", (2226, 540, 600), "l", "His hand"),
+    (73, "cross_w", (1221, 360, 700), "r", "the title over Him"),
+    (74, "cross_w", (1150, 1000, 1150), "out", "His head and shoulders"),
+    (75, "cross_w", (330, 620, 560), "r", "His other hand"),
+    (76, "cross_w", (1150, 1700, 1400), "d", "His body and the white cloth"),
+    (77, "cross_w", (1165, 2950, 700), "u", "His feet"),
+    (78, "cross_w", (1222, 1500, 2443), "out", "gap: the whole Cross, crushed"),
+    # IX. The Lamentation (Domenichino).
+    (79, "domenichino", (1350, 1350, 650), "in", "the Mother's face"),
+    (80, "domenichino", (650, 1900, 650), "r", "His face"),
+    (81, "domenichino", (2150, 1050, 650), "l", "a woman's grief"),
+    (82, "domenichino", (1000, 1700, 1300), "out", "the Mother holds Him"),
+    (83, "domenichino", (700, 950, 700), "r", "Joseph of Arimathea"),
+    (84, "domenichino", (300, 3500, 800), "u", "the crown of thorns and the nails"),
+    (85, "domenichino", (1422, 1908, 2800), "out", "the whole"),
+    (86, "domenichino", (1422, 1908, 2800), "out", "gap: the master, crushed"),
+    # X. The angels (Giordano, Maratti, Domenichino, Bourdon), black between them, once a beat. Then the card.
+    (87, "giordano_ann", (2300, 500, 800), "in", "angels over the Annunciation"),
+    (88, "maratti", (1450, 650, 800), "r", "angels over the Flight"),
+    (89, "domenichino", (1250, 2950, 700), "l", "an angel at the Lamentation"),
+    (90, "bourdon", (2350, 1550, 800), "in", "an angel at the Baptism"),
+    (91, "maratti", (2950, 1150, 700), "r", "an angel in the tree"),
+    (92, "giordano_ann", (760, 860, 900), "out", "Gabriel"),
     (93, None, None, None, "the card: the cross, and the name typed"),
 ]
 assert [s[0] for s in SHOTS] == list(range(len(BEATS))), "one shot for every beat, in order"
 
-FIRSTS = {0: (0.70, 0.45), 7: (0.70, 0.45), 15: (0.70, 0.45), 23: (0.70, 0.45), 47: (0.70, 0.45), 55: (0.40, 0.35),
-          63: (0.45, 0.30), 79: (0.60, 0.20)}   # develops out of the dark: (how far it starts crushed, over how long)
+FIRSTS = {0: (0.70, 0.45), 7: (0.70, 0.45), 15: (0.70, 0.45), 23: (0.70, 0.45), 27: (0.45, 0.25), 47: (0.70, 0.45),
+          50: (0.45, 0.25), 55: (0.40, 0.35), 58: (0.45, 0.25), 63: (0.45, 0.30), 67: (0.45, 0.25), 71: (0.60, 0.35),
+          79: (0.60, 0.30)}   # develops out of the dark: (how far it starts crushed, over how long)
 # (the drop is the one painting that does not develop: the Mother's eyes are simply there, on the beat)
-GAIN = {2: 1.7, 89: 1.7}                                   # the angels' faces in Zurbarán's dark are faint paint
-CRUSHED = {6, 14, 22, 30, 46, 54, 60, 78, 86}       # a painting's last shot is crushed into the dark
+GAIN = {}                                   # the angels' faces in Zurbarán's dark are faint paint
+CRUSHED = {6, 14, 22, 26, 30, 46, 49, 54, 57, 60, 66, 70, 78, 86}       # a painting's last shot is crushed into the dark
 ANGELS = range(87, 93)                              # each shown on its beat, black for the last nine frames before the next
 
 
 def build():
     segs = []
     # it opens in the middle of a move: a fast pan across the room to her hands, at a steady speed
-    segs.append(dict(t0=0.0, t1=BEATS[0], key="zurbaran", a=(2500, 1250, 1500), b=(1800, 2000, 900), k=-1,
+    segs.append(dict(t0=0.0, t1=BEATS[0], key="giordano_ann", a=(2300, 900, 1500), b=(1800, 1500, 900), k=-1,
                      note="the opening move", blur=True))
     for (k, key, crop, mv, note) in SHOTS:
         t0, t1 = BEATS[k], beat_end(k)
