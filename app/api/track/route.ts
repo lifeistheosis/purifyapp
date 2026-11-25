@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { geolocate, clientIp } from "@/lib/analytics/geo";
+import { geoForRequest } from "@/lib/analytics/geo";
 import { isAutomatedAgent } from "@/lib/analytics/bot";
 import { classifyTrack } from "@/lib/analytics/heartbeat";
 import { sessionStart } from "@/lib/analytics/sessionStart";
@@ -151,7 +151,7 @@ async function handlePOST(req: Request) {
       if (await rateLimited(`track-new:${ip}`, 86400, 600)) {
         return new NextResponse(null, { status: 429 });
       }
-      const geo = await geolocate(clientIp(req.headers));
+      const geo = await geoForRequest(req.headers);
       // Where it came from and what it is read on, as they are kept (lib/analytics/sessionStart.ts).
       const start = sessionStart({
         referrer,
