@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { fetchBmcTotal } from "@/lib/support/buymeacoffee";
 import { SUPPORT, type ExpenseLine } from "@/data/support/support";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // Sustainability overview:
-//   - Current month BMC raised + supporters (live)
+//   - (Buy Me a Coffee is no longer read: no donations since 2026-11-24)
 //   - 12-month donations trend from donations_monthly snapshots
 //   - Editable expense lines (DB-backed, falls back to data/support/support.ts)
 export async function GET() {
@@ -18,12 +17,13 @@ export async function GET() {
   const supa = createAdminClient();
 
   const [
-    live,
+    ,
     { data: history },
     { data: expenses, error: expensesError },
     { data: currentMonthRow },
   ] = await Promise.all([
-      fetchBmcTotal().catch(() => null),
+      // No donations since 2026-11-24 (his word): nothing is asked of Buy Me a Coffee.
+      Promise.resolve(null),
       supa
         .from("donations_monthly")
         .select("year_month, total_cents, supporters, goal_cents")
@@ -97,12 +97,12 @@ export async function GET() {
     {
       current: {
         yearMonth: currentYearMonth(),
-        raisedCents: live ? Math.round(live.monthlyRaisedUsd * 100) : 0,
-        supporters: live?.supporters ?? 0,
+        raisedCents: 0,
+        supporters: 0,
         goalCents,
         goalSetForMonth,
-        fetchedAt: live?.fetchedAt ?? null,
-        live: Boolean(live),
+        fetchedAt: null,
+        live: false,
       },
       history: history ?? [],
       expenses: expenseRows,

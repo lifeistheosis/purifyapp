@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
  * share one claim per ten-minute step, so calling this as well sends nothing
  * twice.
  *
- * Auth: x-cron-secret header (same shape as /api/cron/bmc-snapshot).
+ * Auth: x-cron-secret header (the cron routes' shared shape).
  */
 export async function GET(req: NextRequest) {
   // Degrade CLOSED, not open. This used to be `if (secret) { ...403... }`,
