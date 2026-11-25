@@ -1,0 +1,92 @@
+{
+ "pictures": {
+  "elgreco": {
+   "what": "El Greco (Domenikos Theotokopoulos), The Adoration of the Shepherds, about 1605 to 1610, oil on canvas",
+   "held": "The Metropolitan Museum of Art, New York (05.42)",
+   "page": "https://www.metmuseum.org/art/collection/search/436570",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met_436570.jpg, 2495 by 3824",
+   "shots": "1 to 7"
+  },
+  "vladimir": {
+   "what": "Our Lady of Vladimir, Moscow, middle of the 16th century, in its silver-gilt cover with enamel and stones",
+   "held": "State Russian Museum, Saint Petersburg (DRZh-302)",
+   "page": "https://rusmuseumvrm.ru/data/collections/ikonopis/drzh-302/index.php",
+   "licence": "not stated on the page (the museum's own photograph, from its zoom viewer)",
+   "file": "raw/vladimir_rm302.jpg, 5270 by 6000",
+   "shots": "8 to 14, and the sixth face of 16"
+  },
+  "berlinghiero": {
+   "what": "Berlinghiero, Madonna and Child, possibly 1230s, tempera on wood, gold ground",
+   "held": "The Metropolitan Museum of Art, New York (60.173)",
+   "page": "https://www.metmuseum.org/art/collection/search/435658",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met_435658.jpg, 2792 by 4000",
+   "shots": "16, the first face"
+  },
+  "hodegetria14": {
+   "what": "Our Lady Hodegetria of Smolensk, end of the 14th century",
+   "held": "State Russian Museum, Saint Petersburg (DRZh-3124)",
+   "page": "https://rusmuseumvrm.ru/data/collections/ikonopis/drzh-3124/index.php",
+   "licence": "not stated on the page",
+   "file": "raw/rm_3124.jpg, 2706 by 3790",
+   "shots": "16, the second face"
+  },
+  "bellini65": {
+   "what": "Giovanni Bellini, Madonna and Child, about 1465, tempera, oil and gold on wood",
+   "held": "The Metropolitan Museum of Art, New York, Robert Lehman Collection (1975.1.81)",
+   "page": "https://www.metmuseum.org/art/collection/search/459023",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met_459023.jpg, 3033 by 4000",
+   "shots": "16, the third face"
+  },
+  "hodegetria15": {
+   "what": "Our Lady Hodegetria, Suzdal, end of the 15th century",
+   "held": "State Russian Museum, Saint Petersburg (DRZh-987)",
+   "page": "https://rusmuseumvrm.ru/data/collections/ikonopis/drzh-987/index.php",
+   "licence": "not stated on the page",
+   "file": "raw/rm_987.jpg, 3080 by 3872",
+   "shots": "16, the fourth face"
+  },
+  "bellini": {
+   "what": "Giovanni Bellini, Madonna and Child, late 1480s, oil on wood",
+   "held": "The Metropolitan Museum of Art, New York (08.183.1)",
+   "page": "https://www.metmuseum.org/art/collection/search/435641",
+   "licence": "The Met Open Access: public domain",
+   "file": "raw/met_435641.jpg, 3019 by 3718",
+   "shots": "16, the fifth face"
+  },
+  "smolensk16": {
+   "what": "Our Lady Hodegetria of Smolensk, middle to second half of the 16th century",
+   "held": "State Russian Museum, Saint Petersburg (DRZh-1871)",
+   "page": "https://rusmuseumvrm.ru/data/collections/ikonopis/drzh-1871/index.php",
+   "licence": "not stated on the page",
+   "file": "raw/rm_1871.jpg, 4227 by 5390",
+   "shots": "16, the seventh face"
+  },
+  "kazan": {
+   "what": "Our Lady of Kazan, 17th century",
+   "held": "State Russian Museum, Saint Petersburg (DRZh-623)",
+   "page": "https://rusmuseumvrm.ru/data/collections/ikonopis/drzh-623/index.php",
+   "licence": "not stated on the page",
+   "file": "raw/rm_623.jpg, 2766 by 3264",
+   "shots": "16, the eighth face"
+  },
+  "mark": {
+   "what": "Purify's mark",
+   "held": "this repository",
+   "page": "public/purify-cross-mark.png",
+   "licence": "Purify's own",
+   "file": "177 by 311, drawn at its own size",
+   "shots": "19"
+  }
+ },
+ "notes": {
+  "rule": "His word 2026-11-25: edits need not be public domain; anything Orthodox or of Christ, Western art too, nothing heretical. None held in Greece or Italy (lib/marketing/heritagePictures.ts): New York and Saint Petersburg.",
+  "fetched_not_used": [
+   "The Russian Museum's Nativity, early 16th century (DRZh-1248), 9168 by 12000: the first plan's night, replaced by El Greco at his word that Western art may be used",
+   "The Tretyakov's Our Lady of Vladimir (my.tretyakov.ru 9256), 1457 by 2048: too small for the drop's close shots"
+  ],
+  "wikimedia": "Wikimedia's file servers refused this machine on 2026-11-25 (429, too many requests from a shared cloud address), so the pictures came from the museums' own servers."
+ }
+}
