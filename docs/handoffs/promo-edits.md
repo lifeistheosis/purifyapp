@@ -158,6 +158,10 @@ Addresses: `https://www.tiktok.com/@praisegrimm/video/7709973136590015757`, `@je
 
 "new rule for edits. (public domain is NOT needed)", then "edits are NOT paid ads". Edits are unpaid posts, so their pictures need not be public domain (CLAUDE.md, "Edits need not be public domain"). Then "include the audio with edits": the master carries its sound, never silent. The "pictures" and "sound" points below are overtaken for edits; the other points stand.
 
+## Three more, studied 2026-11-25
+
+The storm (Christ on the water), the whisper (old masters) and his "new editing style" (Musashi): `docs/plans/promo-edits/study-2026-11-25.md`. The next edit starts from there, in a fresh chat.
+
 ## Where the references meet his standing words
 
 His to decide; named to him in the chat.
