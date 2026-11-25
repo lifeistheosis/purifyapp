@@ -120,13 +120,13 @@ describe("a reader back from the sign-in their reminders asked for", () => {
 describe("with the roads on", () => {
   const roads = (o: Partial<Parameters<typeof flowSteps>[0]> = {}) => steps({ roads: true, ...o });
 
-  it("shows a new reader Purify before it asks for an account or for reminders", () => {
-    expect(roads({ level: "inquirer" })).toEqual(["welcome", "background", "level", "intent", "handoff"]);
-    expect(roads({ level: "learning" })).toEqual(["welcome", "background", "level", "intent", "handoff"]);
+  it("asks a new reader for an account right after the welcome, as before 1.9 (2026-11-25)", () => {
+    expect(roads({ level: "inquirer" })).toEqual(["welcome", "account", "background", "level", "intent", "handoff"]);
+    expect(roads({ level: "learning" })).toEqual(["welcome", "account", "background", "level", "intent", "handoff"]);
   });
 
   it("asks the practicing their calendar and fast, and the clergy's question of nobody who did not open it", () => {
-    expect(roads({ level: "practicing" })).toEqual(["welcome", "background", "level", "rule", "intent", "handoff"]);
+    expect(roads({ level: "practicing" })).toEqual(["welcome", "account", "background", "level", "rule", "intent", "handoff"]);
     for (const role of ["priest", "deacon", "layman", null] as (Role | null)[]) {
       const s = roads({ level: "practicing", role, country: "US" });
       expect(s, String(role)).not.toContain("role");
@@ -135,7 +135,7 @@ describe("with the roads on", () => {
   });
 
   it("opens the clergy's screens after the rule, from its quiet line", () => {
-    expect(roads({ level: "practicing", clergyOpen: true })).toEqual(["welcome", "background", "level", "rule", "role", "intent", "handoff"]);
+    expect(roads({ level: "practicing", clergyOpen: true })).toEqual(["welcome", "account", "background", "level", "rule", "role", "intent", "handoff"]);
     const priest = roads({ level: "practicing", clergyOpen: true, role: "priest", country: "US" });
     expect(priest.slice(priest.indexOf("rule"), priest.indexOf("intent"))).toEqual([
       "rule",
@@ -167,16 +167,10 @@ describe("with the roads on", () => {
     expect(roads({ startAt: "reminders" })).toEqual(["reminders", "handoff"]);
   });
 
-  it("asks for the account as the last question in that version of the account's test, and only of a reader with none", () => {
-    // lib/ab/tests.ts, ACCOUNT_PLACE: "end", where the other version offers it on Today.
-    expect(roads({ level: "inquirer", accountAtEnd: true })).toEqual(["welcome", "background", "level", "intent", "account", "handoff"]);
-    expect(roads({ level: "practicing", accountAtEnd: true })).toEqual(["welcome", "background", "level", "rule", "intent", "account", "handoff"]);
-    // Signed in at that step: the account step is behind them and the reminders are asked.
+  it("no longer moves the account to the end for the test's second version (the test ended 2026-11-24)", () => {
+    expect(roads({ level: "inquirer", accountAtEnd: true })).toEqual(roads({ level: "inquirer" }));
     expect(roads({ level: "inquirer", accountAtEnd: true, signedIn: true })).toEqual(["welcome", "background", "level", "intent", "reminders", "handoff"]);
-    // Never twice where the questions began at the account (the mobile website).
     expect(roads({ startAt: "account", level: "inquirer", accountAtEnd: true })).toEqual(["account", "background", "level", "intent", "handoff"]);
-    // And never with the roads off.
-    expect(steps({ level: "inquirer", accountAtEnd: true })).toEqual(steps({ level: "inquirer" }));
   });
 
   it("measures the progress line against a path that holds every screen it can show, in its order", () => {

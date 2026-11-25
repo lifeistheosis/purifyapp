@@ -85,14 +85,14 @@ export function flowSteps(o: {
   if (o.startAt === "reminders") return ["reminders", "handoff"];
   if (o.roads) {
     return [
-      ...roadsHead(o.startAt),
+      ...roadsHead(o.startAt).filter((id) => !(id === "account" && o.signedIn && o.startAt !== "account")),
       "background",
       "level",
       ...(asksRule(o.level) ? (["rule"] as StepId[]) : []),
       ...(asksClergy(o.level) && o.clergyOpen ? (["role", ...clergySteps(o.role, o.country)] as StepId[]) : []),
       "intent",
-      // Never where the questions began at the account (the mobile website).
-      ...(o.accountAtEnd && !o.signedIn && o.startAt !== "account" ? (["account"] as StepId[]) : []),
+      // The account as the last question was one version of a test that
+      // ended on 2026-11-24: the account step is in the head again.
       ...(o.signedIn && !(o.startAt === "returning" && o.remindersOn) ? (["reminders"] as StepId[]) : []),
       "handoff",
     ];
@@ -109,9 +109,17 @@ export function flowSteps(o: {
   ];
 }
 
-/** The way in with the roads on: a new reader's welcome is not followed by the account step. */
+/**
+ * The way in with the roads on: the welcome, then the account step, as before
+ * 1.9. The roads had dropped the account step for a new reader (offered later
+ * on Today, or as the last question in one version of a test), and sign-ups
+ * fell from about 5.5% of visitors to about 2.7% the week it reached them (the
+ * owner digest's days, 2026-11-25). His word that day: "fix the onboarding
+ * account step". The reader can still carry on without an account, and the
+ * card on Today still offers one to whoever did.
+ */
 function roadsHead(startAt: Exclude<FlowStart, "reminders">): StepId[] {
-  return startAt === "welcome" ? ["welcome"] : head(startAt);
+  return head(startAt);
 }
 
 /**
@@ -137,9 +145,6 @@ export function progressPath(startAt: FlowStart, roads = false): StepId[] {
       "clergyJurisdiction",
       "clergyParish",
       "intent",
-      // The account as the last question (one version of the account's test).
-      // Where the questions began at it, it is in the head and not here.
-      ...(from === "account" ? [] : (["account"] as StepId[])),
       "reminders",
       "handoff",
     ];

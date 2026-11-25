@@ -107,7 +107,10 @@ export const ACCOUNT_PLACE: AbTest = {
   arms: ["card", "end"],
   share: 1,
   begins: "2026-11-17",
-  ends: "2027-02-09",
+  // Ended early, his word of 2026-11-25 ("fix the onboarding account step"):
+  // neither version asked early, and sign-ups halved. The account step is
+  // after the welcome again (lib/onboarding/flowSteps.ts, roadsHead).
+  ends: "2026-11-24",
   gate: "roads",
   judge: "back_week2",
   guards: ["finished", "account", "plus_bought"],

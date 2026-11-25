@@ -6,11 +6,11 @@ What a reader is given because of who they are, written from the rules themselve
 The plan it belongs to is docs/plans/reader-map.md.
 
 1. THE QUESTIONS (a new reader, from the welcome, signed out)
-  inquirer: welcome > background > level > intent > handoff
-  learning: welcome > background > level > intent > handoff
-  practicing: welcome > background > level > rule > intent > handoff
-  no level: welcome > background > level > intent > handoff
-  where the account's test asks it last: welcome > background > level > intent > account > handoff
+  inquirer: welcome > account > background > level > intent > handoff
+  learning: welcome > account > background > level > intent > handoff
+  practicing: welcome > account > background > level > rule > intent > handoff
+  no level: welcome > account > background > level > intent > handoff
+  where the account's test asks it last: welcome > account > background > level > intent > handoff
   a priest in the United States, signed in: welcome > background > level > rule > role > clergyWhere > clergyJurisdiction > clergyParish > intent > reminders > handoff
 
 2. THE READER'S TYPE (how far along they are; it decides how Today looks). The rule; not every pair is offered on the screens, see 3.
