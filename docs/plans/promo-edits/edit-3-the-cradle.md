@@ -19,6 +19,7 @@ You make ONE thing for Purify: promo edit 3, **the Cradle**, a 56.66 second film
 - "remove the last rule. include the audio with edits" (the master carries its sound; it is never silent).
 - On the three references: "not just the scene. but the editing, transition, emotion, quality, and etc", then "as you can see they all have overlapping themes with their aesthetic but all have unique editing styles".
 - "I want you to use this audio and make a prompt with extreme detail on the style and how the edit will be structured".
+- "also the beat drop is around 0:18". Measured: the drop is at 18.51 (frame 1111), after a pause from 18.25.
 
 His standing words from the earlier films, which bind this one:
 
@@ -31,12 +32,14 @@ His standing words from the earlier films, which bind this one:
 
 **The song is called Cradles, so the film is about the cradle: the manger at Bethlehem, and the Mother who holds the Child.** It is the Nativity Fast (15 November to 24 December on the new calendar, 28 November to 6 January on the old), so it posts in season, up to the feast.
 
-It is built the way the three references taught: **one look, three editing styles.** The song falls by itself into three chapters of about eighteen seconds each, the length of each reference, split by two silences (at 18.2 s and at 36.5 s). Each chapter is cut in one reference's style, and each ends by turning to the viewer, as each reference does at its peak.
+It is built the way the three references taught: **one look, three editing styles.** The song falls by itself into three chapters of about eighteen seconds each, the length of each reference, split by two silences (at 18.25 s and at 36.5 s). Each chapter is cut in one reference's style, and each ends by turning to the viewer, as each reference does at its peak.
+
+**The drop is at 18.51** (his word: "also the beat drop is around 0:18"; measured to the frame below). Everything before it is the build: the song is muffled, as if heard through a wall (its brightness sits near 900 Hz). At 18.51 the filter opens (its brightness jumps to about 3,000 Hz and the top of the sound comes in), after a quarter second of near silence. **The film is built on that one moment.** Before the drop the picture is held back as the sound is: dark, almost without colour, slow. On the drop it opens as the sound opens: out of black, onto the Mother's eye, in warm colour and full light. Nothing in the film is as big a change as that cut, and nothing before it gives it away.
 
 | Chapter | Time | Style (from the study) | What it shows | It turns to you with |
 |---|---|---|---|---|
 | I. The night | 0.00 to 18.51 | **Light that edits** (reference 1, the storm): cuts hidden in darkness, each shot closer | The Nativity icon in the dark: the journey through the night to the manger | The cradle itself, closest of all, the last light before black |
-| II. The Mother | 18.51 to 36.40 | **A picture filmed as a scene** (reference 2, the whisper): coverage of one icon, wider each cut, crush and develop | The Theotokos of Vladimir, from her eye to the whole icon | Her eyes, looking out at the viewer, on the hardest hit of the song |
+| II. The Mother | 18.51 to 36.40 | **A picture filmed as a scene** (reference 2, the whisper): coverage of one icon, wider each cut, crush and develop | The Theotokos of Vladimir, from her eye to the whole icon | Her eyes, looking out at the viewer, on the drop |
 | III. The light | 37.43 to 56.66 | **Two worlds** (reference 3, Musashi): life in colour, the word in ink on white, a question at the end | Scripture on a white ground, and the Child's face in many icons | His question: "But whom say ye that I am?" |
 
 The brightness of the whole film climbs with the story: near black in I, warm and golden in II, white in III. Colour climbs with it: the night is almost without colour, the Mother is warm, the light is full colour. **No word appears until the light does** (37.43 s): the words come with the light.
@@ -50,16 +53,16 @@ The map, measured with `docs/plans/promo-edits/edit-3/sound_map.py` and `sound_m
 | Time (s) | Frame at 60 | What the sound does | What the film does there |
 |---|---|---|---|
 | 0.00 to 2.25 | 0 to 135 | Intro: quiet, thin, no bass; a small rise at 1.4 | Shot 1, the small light in the dark |
-| **2.25** | 135 | **The bass lands** | Hard cut |
-| 2.25 to 9.65 | 135 to 579 | Section A: bass and hook. Bar lines with strong onsets at 4.37 and 6.73 | Cuts on 4.37 and 6.73 |
+| **2.25** | 135 | The bass comes in, muffled: the build begins (not the drop) | Hard cut |
+| 2.25 to 9.65 | 135 to 579 | The build, part one: bass and hook behind the filter (brightness near 810 Hz). Bar lines with strong onsets at 4.37 and 6.73 | Cuts on 4.37 and 6.73 |
 | 9.65 | 579 | The bass goes out | The light starts to close |
 | **10.40 to 10.70** | 624 to 642 | Near silence (31 dB down) | The cut hidden in the dark, at 10.53 |
 | **11.71** | 703 | The bass comes back | Hard cut |
-| 11.71 to 16.63 | 703 to 998 | Section A again. Bar line at 13.82 | Cut on 13.82 |
-| 16.63 | 998 | The bass goes out | The light tightens and closes |
-| **18.20 to 18.40** | 1092 to 1104 | Near silence (33 dB down) | Black |
-| **18.51** | 1111 | **The bass lands, loudest hit so far: Chapter II** | Hard cut out of black onto her eye |
-| 18.51 to 32.00 | 1111 to 1920 | Section B, the fullest part. Bar lines 20.92, 23.29, 25.66, 28.00, 30.37 | One cut on each bar line, wider each time |
+| 11.71 to 16.63 | 703 to 998 | The build, part two, still behind the filter (brightness near 1,000 Hz). Bar line at 13.82 | Cut on 13.82, then the longest shot of the film holds until the drop |
+| 16.63 | 998 | The bass goes out; the break before the drop (a rise in the middle and top from 17.0) | The light tightens and closes |
+| **18.25 to 18.50** | 1095 to 1110 | The pause before the drop: near silence (40 dB down) | Black |
+| **18.51** | 1111 | **THE DROP** (his word). The loudest hit so far, and the filter opens: the sound's brightness goes from about 900 Hz before to about 3,000 Hz after, and its top (8 to 11 kHz) comes up about 5 dB. Chapter II | Hard cut out of black onto her eye: the film's one great turn |
+| 18.51 to 32.00 | 1111 to 1920 | Section B, the fullest and brightest part. Bar lines 20.92, 23.29, 25.66, 28.00, 30.37 | One cut on each bar line, wider each time |
 | **32.00 to 32.70** | 1920 to 1962 | The music stops (28 dB down), small knocks at 32.4 | The crush |
 | **32.70** | 1962 | The music returns | Cut to the whole icon, which develops up out of the dark |
 | 32.70 to 35.85 | 1962 to 2151 | The last bars of B; bar line 35.09 | The whole icon holds and moves |
@@ -83,7 +86,7 @@ The map, measured with `docs/plans/promo-edits/edit-3/sound_map.py` and `sound_m
 - **Ground and light.** A black ground and one soft pool of light on the thing that matters in each shot (the christ edit's `pool`). Light is a soft pool or nothing: never beams, rays, a ring, a flare, a light leak or a glow. If a picture has painted beams in it (the Nativity's star sends one down to the cave), the frame leaves it out or leaves it unlit; nothing is added to it.
 - **Texture.** The icons' own cracks, wear and old repairs are the texture. Nothing is added: no grain, no dust, no film burn, no scratches.
 - **Grade by chapter.**
-  - I, the night: the icon's own colour at about 30% saturation, neutral (no blue, no teal: his word on the Christ edit). Outside the pool the picture falls to about 5% of its light.
+  - I, the night (the build): the icon's own colour at about 30% saturation, neutral (no blue, no teal: his word on the Christ edit). Outside the pool the picture falls to about 5% of its light. The whole chapter is held a touch soft, a blur of about 0.8 px at 1080 wide and no more, so the icon's lines read but the picture is held back as the sound is behind its filter. At the drop it is gone: Chapter II is at the scan's full sharpness, so the picture opens in the same frame as the sound.
   - II, the Mother: about 80% saturation, the gold and the umber as painted. Outside the pool, about 22%.
   - III, the light: the white ground is a clean neutral, `#FAFAFA`, never cream or parchment (CLAUDE.md). The faces at full colour, with a wide pool that leaves the edges at about 45%.
 - **Brightness a phone can read.** The references' worst fault was 4.7 seconds a phone shows as a black screen. So: in Chapter I the lit subject reads at a mean luma of at least 0.30 (of 1.0), and the whole frame at least 0.05, except inside the two dark cuts; in Chapter II the frame is at least 0.12, except in the crushes. The only long black is the silence before the light (36.40 to 37.43), and it is there on purpose.
@@ -128,7 +131,7 @@ The pictures: one Nativity icon (see "The pictures"). Each shot is closer to the
 | 4 | 6.73 to 10.53 (404 to 632) | The hook; the bass goes out at 9.65; near silence 10.40 to 10.70 | The angels bowed over the top of the mountain, with the star's painted beam out of frame or left dark | The angels about 50% of W | Push 1.000 to 1.040; from 9.65 the pool closes (its radius and light fall together over 0.75 s, the symmetric ease) to near black by 10.40 | The dark cut at 10.53 | The cut hides inside the dark and the song's own silence, as reference 1 hides its cuts in the night |
 | 5 | 10.53 to 11.71 (632 to 703) | The break; the instruments return at 10.80 | The cave from close: the manger faint in the black | The manger about 55% of W | Still; the pool opens out of black from 10.70 to 11.60 on the house curve | Hard cut at 11.71 | Arrival. The light finds the cradle before the bass returns, so the return lands on what was found |
 | 6 | 11.71 to 13.82 (703 to 829) | The bass comes back | The manger, the ox and the ass leaning in | Manger and heads about 75% of W | Push 1.000 to 1.040 toward the Child | Hard cut at 13.82 | Closer. The beasts at the crib are the icon's own reading of Isaiah 1:3 (not written on screen) |
-| 7 | 13.82 to 18.51 (829 to 1111) | The hook; the bass goes out at 16.63; near silence 18.20 to 18.40 | The swaddled Child in the manger, as close as the scan allows | The Child about 80% of W | Push 1.000 to 1.050; from 16.63 the pool tightens until only the white of the swaddling is lit, and it is gone by 18.30 | Black, then the hard cut at 18.51 | The cradle, last and closest: the turn to the viewer of Chapter I. The bands the icon paints like a shroud are the last thing seen in the dark |
+| 7 | 13.82 to 18.51 (829 to 1111) | The hook; the bass goes out at 16.63 (the break before the drop); the pause 18.25 to 18.50 | The swaddled Child in the manger, as close as the scan allows | The Child about 80% of W | Push 1.000 to 1.050, the longest shot of the film (4.69 s); from 16.63 the pool tightens until only the white of the swaddling is lit, and it is gone by 18.25 | Black through the pause, then the hard cut on the drop at 18.51 | The cradle, last and closest: the turn to the viewer of Chapter I. The longest, slowest shot is the tension before the drop; the bands the icon paints like a shroud are the last thing seen, and the pause before the drop is black |
 
 ### Chapter II, the Mother (18.51 to 36.40): a picture filmed as a scene
 
@@ -136,7 +139,7 @@ The picture: the Theotokos of Vladimir, alone. Cut like film coverage of a scene
 
 | # | Time | Sound | Picture | Framing and light | Move | Out | Why |
 |---|---|---|---|---|---|---|---|
-| 8 | 18.51 to 20.92 (1111 to 1255) | The bass lands, the loudest hit so far | Her near eye, looking out of the icon at the viewer | The eye about 45% of W; the pool on it | Push 1.000 to 1.030 | Hard cut at 20.92 | Out of the black, she is looking at you. The stare into the lens was reference 2's peak; here it lands on the song's hardest hit, a cut and nothing else. Chapter I's last thing was the Child; Chapter II's first is His Mother's eye |
+| 8 | 18.51 to 20.92 (1111 to 1255) | **The drop**: the filter opens, the loudest hit so far | Her near eye, looking out of the icon at the viewer | The eye about 45% of W; the pool on it; full sharpness and warm colour from this frame | Push 1.000 to 1.030 | Hard cut at 20.92 | On the drop the picture opens as the sound does: out of black, sharp, warm, and she is looking at you. The stare into the lens was reference 2's peak; here it is the drop itself, a cut and nothing else (no flash, no shake, no punch in). Chapter I's last thing was the Child; Chapter II's first is His Mother's eye |
 | 9 | 20.92 to 23.29 (1255 to 1397) | Bar line | The two faces, cheek against cheek | Both faces about 90% of W | Pan 5% of W from her face to His | Hard cut at 23.29 | Tenderness: the Mother is the cradle. The move joins the two faces |
 | 10 | 23.29 to 25.66 (1397 to 1540) | Bar line | His hand at her neck, and His cheek | The hand about 40% of W | Pan along His arm, 4% of W | Hard cut at 25.66 | The embrace, the detail every reader of this icon remembers |
 | 11 | 25.66 to 28.00 (1540 to 1680) | Bar line | The Child whole in her arms, the sole of His foot turned out | The Child about 70% of W | Push 1.000 to 1.030 | Hard cut at 28.00 | Wider: the coverage moves out as reference 2's does |
@@ -189,7 +192,8 @@ Two worlds, as reference 3 has them: **the Word in ink on a white ground, and th
 ## Checks, before he sees anything
 
 - Each word asserted against `data/bible` (the render stops if one differs).
-- Every cut on its onset's frame or one frame before it; print each cut's frame beside the onset's.
+- Every cut on its onset's frame or one frame before it; print each cut's frame beside the onset's. Above all the drop: shot 8's first frame is the drop's onset frame (1111 if the measure holds) or the one before, and frames 1095 to 1110 are black.
+- The build and the drop: print the mean sharpness and saturation of Chapter I beside Chapter II's; the drop must be the largest change of both in the film.
 - Luma for every frame, printed, against the floors in "The look". Chapter I's lit subject at 0.30 or more and the frame at 0.05 or more outside the dark cuts; Chapter II's frame at 0.12 or more outside the crushes.
 - Large black to white changes: one, at 37.43.
 - Every word and face inside x 90 to 900, y 250 to 1450.
