@@ -7,6 +7,7 @@ import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 import { testWebEnv } from "@/lib/testWeb";
 import { testWebMayEmail } from "@/lib/testWeb/rules";
 
+import { fromFor } from "./sender";
 import { bareAddress, suppressedAmong } from "./suppression";
 import { UNSUBSCRIBE_PAGE, fillUnsubscribe } from "./unsubscribe";
 
@@ -84,13 +85,18 @@ export async function sendEmail(opts: {
   headers?: Record<string, string>;
   /** A plain-text part. Optional; clients that cannot render HTML use it. */
   text?: string;
+  /** What the email is (its log row's kind): picks the sender's name (lib/email/sender.ts). */
+  kind?: string;
 }): Promise<SendResult> {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.info(`[email] RESEND_API_KEY unset; skipped: "${opts.subject}"`);
     return { ok: false, skipped: true };
   }
-  const from = process.env.EMAIL_FROM;
+  // The sender's name by kind, on EMAIL_FROM's own address (lib/email/sender.ts).
+  // EMAIL_FROM as it stands when it holds no address we can read.
+  let from = fromFor(process.env.EMAIL_FROM, opts.kind) ?? process.env.EMAIL_FROM;
+  let asciiTried = false;
   if (!from) {
     console.warn(`[email] EMAIL_FROM unset; refused rather than send from a test address: "${opts.subject}"`);
     return { ok: false, skipped: true, code: "no_sender" };
@@ -147,6 +153,17 @@ export async function sendEmail(opts: {
         error = { name: "application_error", message: (e as Error).message };
       }
       if (!error) return { ok: true };
+      // A name Resend will not take (the bullet in "Purify • Shop") falls back
+      // once to "Purify - Shop" rather than lose the email.
+      if (error.name === "validation_error" && /from/i.test(error.message) && !asciiTried) {
+        asciiTried = true;
+        const plain = fromFor(process.env.EMAIL_FROM, opts.kind, true);
+        if (plain && plain !== from) {
+          from = plain;
+          keyN++;
+          continue;
+        }
+      }
       if (NETWORK_ERRORS.has(error.name) && !networkRetried) {
         networkRetried = true;
         await new Promise((resolve) => setTimeout(resolve, NETWORK_RETRY_WAIT_MS));

@@ -100,7 +100,10 @@ async function withUnsubscribe<T extends { html: string; text?: string }>(
  */
 export async function sendEmailOnce(admin: SupabaseClient, msg: OnceMessage): Promise<SendOnceResult> {
   const tagged = tagEmailLinks(msg, tagForSend({ kind: msg.kind, dedupeKey: msg.dedupeKey, userId: msg.userId }));
-  return sendOnce({ ledger: supabaseLedger(admin), send: sendEmail }, await withUnsubscribe(admin, msg.userId, tagged));
+  return sendOnce(
+    { ledger: supabaseLedger(admin), send: (mail) => sendEmail({ ...mail, kind: msg.kind }) },
+    await withUnsubscribe(admin, msg.userId, tagged),
+  );
 }
 
 type SendOpts = Parameters<typeof sendEmail>[0];
@@ -149,7 +152,7 @@ export async function sendLoggedEmail(
 
   // The client that wrote the log row also finds the reader's link. Without
   // one the button still leads somewhere true.
-  const result = await sendEmail(await withUnsubscribe(admin, userId, tagEmailLinks(mail, tagForSend({ kind }))));
+  const result = await sendEmail({ ...(await withUnsubscribe(admin, userId, tagEmailLinks(mail, tagForSend({ kind })))), kind });
 
   if (admin) {
     const status = result.ok ? "sent" : result.skipped ? "skipped" : "failed";
