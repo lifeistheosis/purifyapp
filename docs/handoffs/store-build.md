@@ -2,6 +2,16 @@
 
 Store-build chat, started 2026-11-25 at the owner's word. Plan only: nothing is built or run until his yes.
 
+## His decision, 2026-11-25: no build from main; the next store build is a full 2.0
+
+His words: "1.9 is live we are making v2.0", then, asked whether to cut a small 2.0 from main now or wait: "Full 2.0, wait". So:
+
+- No store build is cut from main. There is no 1.9.1 fault build; campaign pictures keep their own plan.
+- The next store build is 2.0, cut from the branch once all of 2.0 is ready: the privacy page and new terms, the lines in every language, his yes on each piece, and the pre-build gate on the export of that branch.
+- The cost he chose: the account step after the welcome (aefe1114), the Liturgy guide mend, keep-members step 4 (0517bbd7, already on the branch) and the faults below reach phones only with 2.0. Until then sign-ups in the app stay near 2.7% of visitors in place of about 5.5% (the website has the account step since aefe1114).
+- The rest of this page is the plan as it stood for a build from main. Its fault list, its gate and its steps 4 to 9 still serve the 2.0 build; step 2 becomes "on the branch already".
+- This chat's job ends here. The 2.0 store build is a fresh chat's, when 2.0 is ready, started from this page and `docs/handoffs/onboarding-2.0.md`.
+
 ## Why this build
 
 Sign-ups fell from about 5.5% of visitors to about 2.7% after 1.9 took the account step out of the welcome. Main has it back (`aefe1114`, `lib/onboarding/flowSteps.ts` roadsHead), but most sign-ups happen in the app, and the apps still run 1.9 as shipped (Android build 101, from main `6700c2e65`). Level 1 (`docs/plans/levels.md`) waits on this build.
@@ -57,4 +67,5 @@ Recommendation: mend 1 to 3 on the branch, then on main with the build; leave 4 
 ## Log
 
 - 2026-11-25: plan written; waits for his answers.
+- 2026-11-25: his word, full 2.0, wait. No build from main. This chat hands over.
 - 2026-11-25: step 4 reported done on the branch by session_01VuYTwbGuypFaiAN1DaWnZQ; cherry-pick onto main checked clean.
