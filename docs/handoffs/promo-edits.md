@@ -160,7 +160,7 @@ Addresses: `https://www.tiktok.com/@praisegrimm/video/7709973136590015757`, `@je
 
 ## Three more, studied 2026-11-25
 
-The storm (Christ on the water), the whisper (old masters) and his "new editing style" (Musashi): `docs/plans/promo-edits/study-2026-11-25.md`. The next edit starts from there, in a fresh chat.
+The storm (Christ on the water), the whisper (old masters) and his "new editing style" (Musashi): `docs/plans/promo-edits/study-2026-11-25.md`. The next edit starts from there. **Edit 3, the Cradle** (2026-11-25, to his sound "Sub Urban - Cradles (Slowed)"): the one-shot prompt is `docs/plans/promo-edits/edit-3-the-cradle.md`, waiting on his two answers (the song's words, the licence) and his yes to begin.
 
 ## Where the references meet his standing words
 
