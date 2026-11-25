@@ -28,10 +28,13 @@ Brief: `docs/plans/promo-edits/edit-3-the-cradle.md`. Made in session_01VuYTwcTk
 - A thin white rim around the whole icon (33 to 36 s): the museum photograph's light ground. It is turned to black from the picture's edge inward; the icon is not touched.
 - The type was raised again, to 78 px for the Isaiah lines and 96 for the question (the block stays clear of the buttons TikTok draws lower down the right side).
 
+- After the crush to black (36.40 s) a few silver glints stayed lit: the lift let the brightest silver pass white before the crush. The picture is now clipped before the crush, and a full crush is black.
+
 ## Measured
 
+- **The film (third render, 2026-11-25 about 08:12 UTC):** 1080 by 1920, 60 frames a second, 3,400 frames (56.667 s), H.264 High, the sound as AAC from frame 0. Large changes only at the planned cuts: 136, 260, 402, 704, 828, 1111 (the drop, out of black), 1254, 1395, 1537, 1679, 1821, 2246 (black to white, the light), 2530, 2812, 3288. Luma by second: 0.13 to 0.19 in the night outside its two dark cuts, 0.25 to 0.31 for the Mother, 0.97 on the white, 0.30 to 0.48 for the faces.
 - First stills, after the lift: Chapter I frames 0.13 to 0.29 luma, their brightest tenth 0.26 to 0.71; Chapter II 0.22 to 0.30; the faces 0.28; the white panels 0.97.
 
 ## Cost
 
-- See the chat's report to him; get_session read $5.86 at the start of the study of the references (after the store-build plan and the ipwho.is fix). The film's own cost is read at its end.
+- get_session: $5.86 at the start of the study of the references; $13.29 at the last finished turn before the film's turn (context 391,000 tokens). The film's turn (finding the pictures, the renderer, three renders) is not in that figure; it shows once the turn ends. No credits were spent: no Higgsfield, no generated picture.
