@@ -33,6 +33,22 @@ Reference 3's square, its two worlds and its order. Colour: Murillo's Mother and
 
 ### Measured on the films
 
+Each film was measured from the finished MP4, not from the timeline: every frame's change against the last, the largest change within two frames of each beat, and the film's own sound against the song it was made from. The films are 1080 by 1920, 60 frames a second, 3,400 frames (56.667 s), H.264, the sound AAC from frame 0.
+
+- **Version 1, the storm:** 94 of 94 beats carry a cut; 88 on the beat's own frame, 6 where the lightning's first flicker starts two frames ahead of the cut it hides. The other large changes are the lightning's second flash three to five frames after a strike, and the two flickers where the bass comes in between beats (2.28 and 11.74 s). Two flickers that fell between beats in the quiet opening were taken out after the first render.
+- **Version 2, the whisper:** 93 of 94 beats carry a cut, all 93 on the beat's own frame. The first render measured 84: where one painting crushed fully to black and the next developed out of black, black met black and the beat showed nothing. Reference 2's own crush keeps the lights, so the crush now stops short of black and the next painting comes up from its brightest parts; the beat after the song's stop now hits the painting harder. Its other large changes are the opening pan, the crushes and develops inside shots, and the black frames that come just before each angel's beat.
+- **Version 3, Musashi:** 93 of 94 beats carry a cut; 91 on the beat's own frame, 2 two frames after (the whips, centred on their beats). The first render measured 85: the beats where only a line or a word arrived changed too little of the frame, so each of those beats now also swaps the drawing beside the words. Its other large changes are the white coming in before the drop, the two whips and the white flash into the painted faces.
+- **The last beat (55.107 s)** carries the cross appearing alone on black in versions 2 and 3, and His eye in the light in version 1; a small mark on black changes little of the frame, and is plain to the eye.
+- **The sound** sits 0 ms from the song in all three.
+
+### Sent to him, and the Vault
+
+Sent: version 1 at a lighter bitrate (CRF 20, 95 MB; the master's film grain makes it 222 MB), versions 2 and 3 as rendered (88 and 99 MB). The masters are `.promo/edit-3/out/the-cradle-v1-storm.mp4`, `-v2-whisper.mp4` and `-v3-musashi.mp4`; the copies sent are in `.promo/edit-3/out/send/`. The fourth cut and its renderer (`edit.py`, commit bb13fe6e) stay as they are: nothing made is deleted.
+
+### Cost
+
+get_session: $39.70 for the whole session at 10:15 UTC (it began as the store-build chat at 03:18 UTC), context about 740,000 tokens. No credits were spent: no generated picture or film; every picture is a museum's own photograph.
+
 ## The second cut (his word on the first: "you barely even edited it. no effects. and not a single edit style used from our references")
 
 He was right: the first cut was slow pushes and plain cuts, held back by his older rule against effects on the beat. The second cut carries each reference's own devices, one reference to a chapter, on the same pictures:
