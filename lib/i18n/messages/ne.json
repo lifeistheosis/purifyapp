@@ -4068,6 +4068,8 @@
   "plus.screen.proBody": "दियोहरू बलिरहन दिनुभएकोमा धन्यवाद। Plus का हरेक सुविधा तपाईंकै हुन्, र सदस्यहरूको तह हाम्रो कृतज्ञतासहित आउँछ।",
   "plus.screen.plusTitle": "तपाईंसँग Purify Plus छ।",
   "plus.screen.plusBody": "यहाँ भएका सबै कुरा पहिले नै तपाईंका हुन्। Purify Pro ले यसमाथि सदस्यहरूको तह थप्छ।",
+  "plus.screen.endsOn": "तपाईंको Plus {day} मा सकिन्छ। तपाईंले सुरक्षित गरेका सबै कुरा तपाईंको खातामा रहन्छन्।",
+  "plus.screen.keepIt": "Plus राख्नुहोस्",
   "plus.screen.tierUnavailable": "{tier} अहिले किन्न उपलब्ध छैन। कृपया छिट्टै फेरि हेर्नुहोस्।",
   "plus.screen.bothApple": "आज तपाईंसँग Plus छ। Pro सुरु भएपछि App Store मा Plus रद्द गर्नुहोस्, ताकि दुवैको शुल्क नलागोस्।",
   "plus.screen.bothGoogle": "आज तपाईंसँग Plus छ। Pro सुरु भएपछि Google Play मा Plus रद्द गर्नुहोस्, ताकि दुवैको शुल्क नलागोस्।",

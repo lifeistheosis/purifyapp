@@ -4140,6 +4140,8 @@
   "plus.screen.proBody": "Mulțumim că ții candelele aprinse. Fiecare funcție Plus este a ta, iar stratul membrilor vine cu recunoștința noastră.",
   "plus.screen.plusTitle": "Ai Purify Plus.",
   "plus.screen.plusBody": "Tot ce e aici este deja al tău. Purify Pro adaugă deasupra stratul membrilor.",
+  "plus.screen.endsOn": "Plus se încheie pe {day}. Tot ce ai salvat rămâne în contul tău.",
+  "plus.screen.keepIt": "Păstrează Plus",
   "plus.screen.tierUnavailable": "{tier} nu poate fi cumpărat acum. Revino în curând.",
   "plus.screen.bothApple": "Ai Plus astăzi. După ce începe Pro, anulează Plus în App Store, ca să nu plătești pentru amândouă.",
   "plus.screen.bothGoogle": "Ai Plus astăzi. După ce începe Pro, anulează Plus în Google Play, ca să nu plătești pentru amândouă.",

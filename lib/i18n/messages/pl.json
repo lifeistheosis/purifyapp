@@ -4192,6 +4192,8 @@
   "plus.screen.proBody": "Dziękujemy, że dbasz, by lampy płonęły. Każda funkcja Plus jest twoja, a warstwa dla członków przychodzi z naszą wdzięcznością.",
   "plus.screen.plusTitle": "Masz Purify Plus.",
   "plus.screen.plusBody": "Wszystko tutaj jest już twoje. Purify Pro dokłada do tego warstwę dla członków.",
+  "plus.screen.endsOn": "Twój Plus kończy się {day}. Wszystko, co zapisałeś, zostaje na Twoim koncie.",
+  "plus.screen.keepIt": "Zachowaj Plus",
   "plus.screen.tierUnavailable": "{tier} nie można teraz kupić. Zajrzyj tu wkrótce.",
   "plus.screen.bothApple": "Masz dziś Plus. Gdy zacznie się Pro, anuluj Plus w App Store, aby nie płacić za oba.",
   "plus.screen.bothGoogle": "Masz dziś Plus. Gdy zacznie się Pro, anuluj Plus w Google Play, aby nie płacić za oba.",

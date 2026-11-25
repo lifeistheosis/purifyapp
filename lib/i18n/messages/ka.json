@@ -4068,6 +4068,8 @@
   "plus.screen.proBody": "გმადლობთ, რომ კანდელებს ანთებულს ინახავთ. Plus-ის ყველა შესაძლებლობა თქვენია, წევრების ფენა კი ჩვენს მადლიერებასთან ერთად მოდის.",
   "plus.screen.plusTitle": "თქვენ გაქვთ Purify Plus.",
   "plus.screen.plusBody": "აქ ყველაფერი უკვე თქვენია. Purify Pro ამას ზემოდან წევრების ფენას უმატებს.",
+  "plus.screen.endsOn": "თქვენი Plus-ის ვადა: {day}. ყველაფერი, რაც შეინახეთ, თქვენს ანგარიშზე რჩება.",
+  "plus.screen.keepIt": "Plus-ის შენარჩუნება",
   "plus.screen.tierUnavailable": "{tier} ამჟამად შესაძენად მიუწვდომელია. გთხოვთ, მალე შემოიხედოთ.",
   "plus.screen.bothApple": "დღეს Plus გაქვთ. Pro-ს დაწყების შემდეგ გააუქმეთ Plus App Store-ში, რომ ორივეში არ გადაიხადოთ.",
   "plus.screen.bothGoogle": "დღეს Plus გაქვთ. Pro-ს დაწყების შემდეგ გააუქმეთ Plus Google Play-ში, რომ ორივეში არ გადაიხადოთ.",

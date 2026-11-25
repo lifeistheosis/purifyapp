@@ -4091,6 +4091,8 @@
   "plus.screen.proBody": "Merci de garder les lampes allumées. Chaque fonction Plus est à vous, et l’espace des membres vient avec notre gratitude.",
   "plus.screen.plusTitle": "Vous avez Purify Plus.",
   "plus.screen.plusBody": "Tout ce qui est ici est déjà à vous. Purify Pro y ajoute l’espace des membres.",
+  "plus.screen.endsOn": "Votre Plus se termine le {day}. Tout ce que vous avez enregistré reste dans votre compte.",
+  "plus.screen.keepIt": "Garder Plus",
   "plus.screen.tierUnavailable": "{tier} ne peut pas être acheté pour le moment. Revenez bientôt.",
   "plus.screen.bothApple": "Vous avez Plus aujourd’hui. Une fois Pro commencé, résiliez Plus dans l’App Store pour ne pas payer les deux.",
   "plus.screen.bothGoogle": "Vous avez Plus aujourd’hui. Une fois Pro commencé, résiliez Plus dans Google Play pour ne pas payer les deux.",

@@ -47,6 +47,7 @@ import {
   getPlusPackages,
   getProPackages,
   isPlusActive,
+  plusEndsOn,
   isProActive,
   purchase,
   restore,
@@ -62,6 +63,7 @@ import { nativePlatform, useIsNative } from "@/lib/platform/native";
 import { NO_OFFERS, firstPlan, type Plan, type PlusOffers } from "@/lib/billing/offers";
 import { PRO_ROWS, PRO_TERMS, SOON_LABEL } from "@/lib/premium/plusRows";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 import {
   DockNote,
   FeatureRow,
@@ -120,6 +122,8 @@ export function PlusPaywall() {
   // What the account already has. `pro` short-circuits to the subscribed
   // screen; `plus` keeps the paywall up so Pro stays one tap away.
   const [active, setActive] = useState<"none" | "plus">("none");
+  // The day Plus ends when the member turned renewal off (keep-members step 4).
+  const [endsOn, setEndsOn] = useState<string | null>(null);
   const [plusPkgs, setPlusPkgs] = useState<PlusPackages>(NO_PACKAGES);
   const [proPkgs, setProPkgs] = useState<PlusPackages>(NO_PACKAGES);
   const [plusOffers, setPlusOffers] = useState<PlusOffers>(NO_OFFERS);
@@ -156,6 +160,7 @@ export function PlusPaywall() {
       }
       const hasPlus = await isPlusActive();
       setActive(hasPlus ? "plus" : "none");
+      if (hasPlus) setEndsOn(await plusEndsOn());
       const [plus, pro] = await Promise.all([
         getPlusPackages(),
         getProPackages(),
@@ -291,6 +296,7 @@ export function PlusPaywall() {
       selected={selected}
       onSelect={setSelected}
       plusOwned={active === "plus"}
+      plusEndsOn={endsOn}
       busy={busy}
       note={note}
       onSubscribe={onSubscribe}
@@ -414,6 +420,8 @@ type ReadyProps = {
   selected: Plan;
   onSelect: (p: Plan) => void;
   plusOwned: boolean;
+  /** The day Plus ends when renewal is off (keep-members step 4); null while it renews. */
+  plusEndsOn?: string | null;
   busy: "buy" | "restore" | null;
   note: Note | null;
   onSubscribe: () => void;
@@ -447,6 +455,7 @@ export function ReadyBottom({
   selected,
   onSelect,
   plusOwned,
+  plusEndsOn = null,
   busy,
   note,
   onSubscribe,
@@ -472,7 +481,7 @@ export function ReadyBottom({
 
   if (tier === "plus" && plusOwned) {
     // Already on Plus: nothing to sell on this tab, manage instead.
-    return <PlusOwnedFoot onManage={onManage} onRestore={onRestore} busy={busy} message={message} />;
+    return <PlusOwnedFoot onManage={onManage} onRestore={onRestore} busy={busy} message={message} endsOn={plusEndsOn} />;
   }
 
   if (!sellingThisTier) {
@@ -590,21 +599,30 @@ export function PlusOwnedFoot({
   onRestore,
   busy,
   message,
+  endsOn = null,
 }: {
   onManage: () => void;
   onRestore?: () => void;
   busy: "buy" | "restore" | null;
   message?: string | null;
+  /**
+   * The day Plus ends when the member turned renewal off (keep-members step 4,
+   * 2026-11-25): one quiet line saying so, and the button keeps Plus by opening
+   * the store's own page. No pop-up, no countdown, nothing in the way of
+   * leaving. Null while it renews: the screen is as it was.
+   */
+  endsOn?: string | null;
 }) {
-  const { t } = useTranslate();
+  const { t, locale } = useTranslate();
+  const day = endsOn ? new Date(endsOn).toLocaleDateString(dateLocale(locale), { day: "numeric", month: "long" }) : null;
   return (
     <PaywallFoot>
       <p className="text-center font-heading text-title-sm font-semibold text-paper">{t("plus.screen.plusTitle")}</p>
       <p className="mx-auto mt-2 max-w-[300px] text-center font-sans text-ui leading-relaxed text-paper/65">
-        {t("plus.screen.plusBody")}
+        {day ? t("plus.screen.endsOn", { day }) : t("plus.screen.plusBody")}
       </p>
       <button type="button" onClick={onManage} className={cn(PREMIUM_GHOST, "mt-5 w-full")}>
-        {t("ui.manageSubscription")}
+        {day ? t("plus.screen.keepIt") : t("ui.manageSubscription")}
       </button>
       {message ? <DockNote>{message}</DockNote> : null}
       <FooterRow onRestore={onRestore} busy={busy} />

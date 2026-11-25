@@ -4066,6 +4066,8 @@
   "plus.screen.proBody": "Terima kasih telah menjaga pelita tetap menyala. Setiap fitur Plus milik Anda, dan lapisan anggota hadir bersama rasa terima kasih kami.",
   "plus.screen.plusTitle": "Anda memiliki Purify Plus.",
   "plus.screen.plusBody": "Semua yang ada di sini sudah milik Anda. Purify Pro menambahkan lapisan anggota di atasnya.",
+  "plus.screen.endsOn": "Plus Anda berakhir pada {day}. Semua yang Anda simpan tetap ada di akun Anda.",
+  "plus.screen.keepIt": "Pertahankan Plus",
   "plus.screen.tierUnavailable": "{tier} tidak dapat dibeli saat ini. Silakan periksa kembali nanti.",
   "plus.screen.bothApple": "Anda memiliki Plus saat ini. Setelah Pro dimulai, batalkan Plus di App Store agar Anda tidak ditagih untuk keduanya.",
   "plus.screen.bothGoogle": "Anda memiliki Plus saat ini. Setelah Pro dimulai, batalkan Plus di Google Play agar Anda tidak ditagih untuk keduanya.",

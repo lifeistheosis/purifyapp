@@ -4189,6 +4189,8 @@
   "plus.screen.proBody": "Дякуємо, що підтримуєте вогонь лампад. Усі можливості Plus ваші, а рівень для учасників приходить разом із нашою вдячністю.",
   "plus.screen.plusTitle": "У вас Purify Plus.",
   "plus.screen.plusBody": "Усе тут уже ваше. Purify Pro додає згори рівень для учасників.",
+  "plus.screen.endsOn": "Ваш Plus закінчується {day}. Усе збережене залишиться у вашому обліковому записі.",
+  "plus.screen.keepIt": "Залишити Plus",
   "plus.screen.tierUnavailable": "Оформити {tier} зараз не можна. Загляньте трохи згодом.",
   "plus.screen.bothApple": "Зараз у вас Plus. Коли почнеться Pro, скасуйте Plus в App Store, щоб не платити за обидва.",
   "plus.screen.bothGoogle": "Зараз у вас Plus. Коли почнеться Pro, скасуйте Plus у Google Play, щоб не платити за обидва.",

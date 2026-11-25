@@ -4068,6 +4068,8 @@
   "plus.screen.proBody": "Danke, dass du die Lampen am Brennen hältst. Jede Plus-Funktion gehört dir, und die Mitgliederebene kommt mit unserem Dank.",
   "plus.screen.plusTitle": "Du hast Purify Plus.",
   "plus.screen.plusBody": "Alles hier gehört dir schon. Purify Pro legt die Mitgliederebene obendrauf.",
+  "plus.screen.endsOn": "Dein Plus endet am {day}. Alles, was du gespeichert hast, bleibt in deinem Konto.",
+  "plus.screen.keepIt": "Plus behalten",
   "plus.screen.tierUnavailable": "{tier} kann gerade nicht gekauft werden. Schau bald wieder vorbei.",
   "plus.screen.bothApple": "Du hast heute Plus. Kündige Plus nach dem Start von Pro im App Store, damit dir nicht beides berechnet wird.",
   "plus.screen.bothGoogle": "Du hast heute Plus. Kündige Plus nach dem Start von Pro bei Google Play, damit dir nicht beides berechnet wird.",

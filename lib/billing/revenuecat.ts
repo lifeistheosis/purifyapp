@@ -109,6 +109,25 @@ export async function isPlusActive(): Promise<boolean> {
   return plusActive(customerInfo);
 }
 
+/**
+ * The day Plus ends, when the member has turned renewal off; null while it
+ * renews, without Plus, or where billing is not available. From the store's
+ * own entitlement (willRenew, expirationDate). keep-members step 4
+ * (docs/handoffs/keep-members.md), 2026-11-25.
+ */
+export async function plusEndsOn(): Promise<string | null> {
+  if (!billingAvailable()) return null;
+  try {
+    const { Purchases } = await import("@revenuecat/purchases-capacitor");
+    const { customerInfo } = await Purchases.getCustomerInfo();
+    const e = customerInfo.entitlements.active[PLUS_ENTITLEMENT_ID];
+    if (!e || e.willRenew !== false || !e.expirationDate) return null;
+    return e.expirationDate;
+  } catch {
+    return null;
+  }
+}
+
 /** Current Pro status straight from RevenueCat. Plus does not imply Pro. */
 export async function isProActive(): Promise<boolean> {
   if (!billingAvailable()) return false;

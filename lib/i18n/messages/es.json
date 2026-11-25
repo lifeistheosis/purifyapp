@@ -4077,6 +4077,8 @@
   "plus.screen.proBody": "Gracias por mantener encendidas las lámparas. Todas las funciones de Plus son tuyas, y la capa de miembros llega con nuestra gratitud.",
   "plus.screen.plusTitle": "Tienes Purify Plus.",
   "plus.screen.plusBody": "Todo lo de aquí ya es tuyo. Purify Pro añade encima la capa de miembros.",
+  "plus.screen.endsOn": "Tu Plus termina el {day}. Todo lo que guardaste se queda en tu cuenta.",
+  "plus.screen.keepIt": "Mantener Plus",
   "plus.screen.tierUnavailable": "{tier} no se puede comprar en este momento. Vuelve a mirar pronto.",
   "plus.screen.bothApple": "Hoy tienes Plus. Cuando empiece Pro, cancela Plus en la App Store para que no te cobren los dos.",
   "plus.screen.bothGoogle": "Hoy tienes Plus. Cuando empiece Pro, cancela Plus en Google Play para que no te cobren los dos.",

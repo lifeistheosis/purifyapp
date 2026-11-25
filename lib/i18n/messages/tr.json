@@ -4068,6 +4068,8 @@
   "plus.screen.proBody": "Kandilleri yanık tuttuğunuz için teşekkür ederiz. Her Plus özelliği sizindir, üyelere özel katman da minnettarlığımızla birlikte gelir.",
   "plus.screen.plusTitle": "Purify Plus aboneliğiniz var.",
   "plus.screen.plusBody": "Buradaki her şey zaten sizin. Purify Pro bunun üstüne üyelere özel katmanı ekler.",
+  "plus.screen.endsOn": "Plus aboneliğiniz {day} tarihinde sona eriyor. Kaydettiğiniz her şey hesabınızda kalır.",
+  "plus.screen.keepIt": "Plus'ı koru",
   "plus.screen.tierUnavailable": "{tier} şu anda satın alınamıyor. Lütfen yakında tekrar bakın.",
   "plus.screen.bothApple": "Bugün Plus aboneliğiniz var. Pro başladıktan sonra, ikisi için birden ödeme yapmamak için Plus aboneliğinizi App Store'da iptal edin.",
   "plus.screen.bothGoogle": "Bugün Plus aboneliğiniz var. Pro başladıktan sonra, ikisi için birden ödeme yapmamak için Plus aboneliğinizi Google Play'de iptal edin.",

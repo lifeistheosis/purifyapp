@@ -4132,6 +4132,8 @@
   "plus.screen.proBody": "Хвала што одржавате кандила упаљеним. Свака Plus могућност је ваша, а слој за чланове долази уз нашу захвалност.",
   "plus.screen.plusTitle": "Имате Purify Plus.",
   "plus.screen.plusBody": "Све овде је већ ваше. Purify Pro додаје слој за чланове изнад тога.",
+  "plus.screen.endsOn": "Ваш Plus истиче {day}. Све што сте сачували остаје на вашем налогу.",
+  "plus.screen.keepIt": "Задржите Plus",
   "plus.screen.tierUnavailable": "{tier} тренутно није могуће купити. Свратите поново ускоро.",
   "plus.screen.bothApple": "Данас имате Plus. Када Pro почне, откажите Plus у App Store-у да вам не би била наплаћена оба.",
   "plus.screen.bothGoogle": "Данас имате Plus. Када Pro почне, откажите Plus на Google Play-у да вам не би била наплаћена оба.",

@@ -4068,6 +4068,8 @@
   "plus.screen.proBody": "Köszönjük, hogy égve tartod a mécseseket. Minden Plus funkció a tiéd, a tagoknak szóló réteg pedig hálánkkal érkezik.",
   "plus.screen.plusTitle": "A Purify Plus a tiéd.",
   "plus.screen.plusBody": "Minden, ami itt van, már a tiéd. A Purify Pro ehhez adja hozzá a tagoknak szóló réteget.",
+  "plus.screen.endsOn": "A Plus lejárata: {day}. Minden, amit elmentettél, megmarad a fiókodban.",
+  "plus.screen.keepIt": "Plus megtartása",
   "plus.screen.tierUnavailable": "A {tier} most nem vásárolható meg. Nézz vissza hamarosan.",
   "plus.screen.bothApple": "Most Plus előfizetésed van. Amikor a Pro elindul, mondd le a Plus előfizetést az App Store-ban, hogy ne kelljen mindkettőért fizetned.",
   "plus.screen.bothGoogle": "Most Plus előfizetésed van. Amikor a Pro elindul, mondd le a Plus előfizetést a Google Playen, hogy ne kelljen mindkettőért fizetned.",

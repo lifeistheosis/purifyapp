@@ -4068,6 +4068,8 @@
   "plus.screen.proBody": "Благодарим ви, че поддържате кандилата запалени. Всяка функция на Plus е ваша, а слоят за членове идва с нашата благодарност.",
   "plus.screen.plusTitle": "Имате Purify Plus.",
   "plus.screen.plusBody": "Всичко тук вече е ваше. Purify Pro добавя отгоре слоя за членове.",
+  "plus.screen.endsOn": "Вашият Plus изтича на {day}. Всичко запазено остава в профила ви.",
+  "plus.screen.keepIt": "Запазете Plus",
   "plus.screen.tierUnavailable": "{tier} не може да бъде закупен в момента. Моля, проверете отново скоро.",
   "plus.screen.bothApple": "Днес имате Plus. След като Pro започне, прекратете Plus в App Store, за да не плащате и за двата.",
   "plus.screen.bothGoogle": "Днес имате Plus. След като Pro започне, прекратете Plus в Google Play, за да не плащате и за двата.",
