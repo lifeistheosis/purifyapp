@@ -154,6 +154,10 @@ Addresses: `https://www.tiktok.com/@praisegrimm/video/7709973136590015757`, `@je
 - The last five seconds are near black with thin scratch lines and the maker's name, over the tail of the bass.
 - The photographs carry a picture agency's watermark.
 
+## His new rule, 2026-11-25
+
+"new rule for edits. (public domain is NOT needed)", then "edits are NOT paid ads". Edits are unpaid posts, so their pictures need not be public domain (CLAUDE.md, "Edits need not be public domain"). The "pictures" point below is overtaken for edits; the other points stand.
+
 ## Where the references meet his standing words
 
 His to decide; named to him in the chat.
