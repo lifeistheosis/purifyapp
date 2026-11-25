@@ -11,7 +11,7 @@
 // from the email: the link, then Hold. Holding never needs a link that acts
 // on its own, which a mail client's link checker could press.
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 import { adminJson } from "@/lib/admin/fetchJson";
 import { clockLabel, OWNER_ZONE, WEEKDAYS, type DeskSettings } from "@/lib/admin/ownerDesk";
@@ -19,6 +19,7 @@ import type { PieceView, TodayPart } from "@/lib/admin/briefToday";
 
 import { Card, Modal, ToolbarButton } from "../primitives";
 import { Select } from "../Select";
+import { Toggle } from "../needed/parts";
 
 const ink2 = { color: "var(--adm-ink-2)" } as const;
 const ink3 = { color: "var(--adm-ink-3)" } as const;
@@ -66,6 +67,42 @@ function pieceLine(p: PieceView): string {
   }
 }
 
+/** A group of settings rows under a small title, with one quiet line under it when it needs one. */
+function SettingsGroup({ title, foot, children }: { title: string; foot?: string; children: ReactNode }) {
+  return (
+    <section>
+      <h3 className="mb-1 font-sans text-[12px]" style={ink3}>
+        {title}
+      </h3>
+      <ul className="[&>li:first-child]:border-t-0">{children}</ul>
+      {foot ? (
+        <p className="mt-1.5 text-[12.5px] leading-snug" style={ink3}>
+          {foot}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+/** One setting: its name (and a quiet line) on the left, its value or control on the right. */
+function SettingRow({ id, name, sub, children }: { id?: string; name: string; sub?: string; children: ReactNode }) {
+  return (
+    <li className="flex min-h-12 items-center gap-3 border-t py-1.5" style={{ borderColor: "var(--adm-line)" }}>
+      <span className="min-w-0 flex-1">
+        <span id={id} className="block text-[14px]" style={{ color: "var(--adm-ink)" }}>
+          {name}
+        </span>
+        {sub ? (
+          <span className="block text-[12px]" style={ink3}>
+            {sub}
+          </span>
+        ) : null}
+      </span>
+      <span className="shrink-0">{children}</span>
+    </li>
+  );
+}
+
 async function post<T>(body: unknown): Promise<{ data: T | null; error: string | null }> {
   try {
     const r = await fetch("/api/admin/desk", {
@@ -81,9 +118,9 @@ async function post<T>(body: unknown): Promise<{ data: T | null; error: string |
   }
 }
 
-export function OwnerDesk() {
-  const [view, setView] = useState<DeskView | null>(null);
-  const [loading, setLoading] = useState(true);
+export function OwnerDesk({ sample }: { sample?: DeskView } = {}) {
+  const [view, setView] = useState<DeskView | null>(sample ?? null);
+  const [loading, setLoading] = useState(!sample);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<{ subject: string; html: string } | null>(null);
@@ -97,8 +134,8 @@ export function OwnerDesk() {
   useEffect(() => {
     /* eslint-disable-next-line react-hooks/set-state-in-effect -- the mount
        read shares its path with every write's reload; each set is past an await. */
-    void load();
-  }, [load]);
+    if (!sample) void load();
+  }, [load, sample]);
 
   async function act(name: string, body: Record<string, unknown>) {
     setBusy(name);
@@ -181,12 +218,12 @@ export function OwnerDesk() {
         ) : null}
 
         <section aria-labelledby="desk-today">
-          <h3 id="desk-today" className="font-sans text-[13px] font-semibold" style={{ color: "var(--adm-ink)" }}>
+          <h3 id="desk-today" className="mb-1 font-sans text-[12px]" style={ink3}>
             Today&apos;s emails
           </h3>
           {today.pieces.length === 0 && !today.board ? (
-            <p className="mt-1 text-sm" style={ink2}>
-              Nothing is due to go out today.
+            <p className="flex min-h-12 items-center text-[14px]" style={ink2}>
+              Nothing goes out today.
             </p>
           ) : (
             <ul className="mt-2 space-y-3">
@@ -244,83 +281,91 @@ export function OwnerDesk() {
           )}
         </section>
 
-        <section aria-labelledby="desk-brief">
-          <h3 id="desk-brief" className="font-sans text-[13px] font-semibold" style={{ color: "var(--adm-ink)" }}>
-            Your brief
-          </h3>
-          <p className="mt-1 text-sm" style={ink2}>
-            One email a day, in place of the morning board email and the Monday letter. Yesterday on one screen, what needs you,
-            and what goes out today. No reader&apos;s name or address is ever in it.
-          </p>
-          <div className="mt-3 flex flex-wrap items-center gap-3 text-sm" style={ink2}>
-            <span id="desk-brief-at">Comes at</span>
-            <div className="w-[9.5rem]">
-              <Select
-                ariaLabelledBy="desk-brief-at"
-                value={s.briefAt}
-                options={quarterHours(view.limits.brief)}
-                onChange={(v) => void save({ briefAt: v })}
-                disabled={!writable || busy !== null}
-              />
-            </div>
-            <span id="desk-weekly">New York time. The weekly one comes on</span>
-            <div className="w-[9.5rem]">
-              <Select
-                ariaLabelledBy="desk-weekly"
-                value={String(s.weeklyDay)}
-                options={WEEKDAYS.map((d, i) => ({ value: String(i), label: d }))}
-                onChange={(v) => void save({ weeklyDay: Number(v) })}
-                disabled={!writable || busy !== null}
-              />
-            </div>
-          </div>
-          <p className="mt-2 text-sm" style={ink3}>
-            {view.brief.sent === null
-              ? "Whether today's brief has gone could not be read."
-              : view.brief.sent
-                ? `Today's ${view.brief.weekly ? "weekly " : ""}brief went${view.brief.at ? ` at ${new Date(view.brief.at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: OWNER_ZONE })} New York time` : ""}.`
-                : `Today's ${view.brief.weekly ? "weekly " : ""}brief has not gone yet.`}
-          </p>
-          <div className="mt-3">
-            <ToolbarButton loading={busy === "preview"} onClick={() => void openPreview()}>
-              Preview today&apos;s brief
-            </ToolbarButton>
-          </div>
-        </section>
+        {/* Settings, as settings (his word, 2026-11-24: "this is clearly not
+            optimized. make it an actual settings with minimalist designs"):
+            one row each, the name on the left and its value or switch on the
+            right, and one quiet line where a row needs it. */}
+        <SettingsGroup title="Morning brief">
+          <SettingRow id="desk-brief-at" name="Time" sub="New York time">
+            <Select
+              size="sm"
+              align="end"
+              ariaLabelledBy="desk-brief-at"
+              value={s.briefAt}
+              options={quarterHours(view.limits.brief)}
+              onChange={(v) => void save({ briefAt: v })}
+              disabled={!writable || busy !== null}
+            />
+          </SettingRow>
+          <SettingRow id="desk-weekly" name="Weekly brief" sub="The longer one, once a week">
+            <Select
+              size="sm"
+              align="end"
+              ariaLabelledBy="desk-weekly"
+              value={String(s.weeklyDay)}
+              options={WEEKDAYS.map((d, i) => ({ value: String(i), label: d }))}
+              onChange={(v) => void save({ weeklyDay: Number(v) })}
+              disabled={!writable || busy !== null}
+            />
+          </SettingRow>
+          <SettingRow name="Today">
+            <span className="text-[13px]" style={ink3}>
+              {view.brief.sent === null
+                ? "Not known"
+                : view.brief.sent
+                  ? `Sent${view.brief.at ? ` ${new Date(view.brief.at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: OWNER_ZONE })}` : ""}`
+                  : "Not sent yet"}
+            </span>
+          </SettingRow>
+          <li className="border-t" style={{ borderColor: "var(--adm-line)" }}>
+            <button
+              type="button"
+              onClick={() => void openPreview()}
+              disabled={busy === "preview"}
+              className="flex min-h-12 w-full items-center gap-3 text-start text-[14px]"
+              style={{ color: "var(--adm-ink)" }}
+            >
+              <span className="flex-1">{busy === "preview" ? "Opening the preview" : "Preview today's brief"}</span>
+              <span aria-hidden style={ink3}>
+                ›
+              </span>
+            </button>
+          </li>
+        </SettingsGroup>
 
-        <section aria-labelledby="desk-auto">
-          <h3 id="desk-auto" className="font-sans text-[13px] font-semibold" style={{ color: "var(--adm-ink)" }}>
-            Sending by itself: {s.autoSend ? "on" : "off"}
-          </h3>
-          <p className="mt-1 text-sm" style={ink2}>
-            The Sunday email, the monthly note and the feast shop email go out on their day once the morning brief has named
-            them with a Hold, at least {view.limits.holdMinutes / 60} hours after it. A day with nothing to send sends nothing.
-            The board message always waits for you.
-          </p>
-          <div className="mt-3 flex flex-wrap items-center gap-3 text-sm" style={ink2}>
-            <span id="desk-send-at">They go at</span>
-            <div className="w-[9.5rem]">
-              <Select
-                ariaLabelledBy="desk-send-at"
-                value={s.sendAt}
-                options={quarterHours(view.limits.send)}
-                onChange={(v) => void save({ sendAt: v })}
-                disabled={!writable || busy !== null}
-              />
-            </div>
-            <span>New York time.</span>
+        <SettingsGroup
+          title="Automatic emails"
+          foot={`The Sunday email, the monthly note and the feast shop email, each named in the morning brief with a Hold. The board message always waits for you.${
+            view.saved
+              ? ` Changed ${new Date(view.saved.at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}.`
+              : ""
+          }`}
+        >
+          <SettingRow id="desk-auto" name="Send automatically" sub={`At least ${view.limits.holdMinutes / 60} hours after the brief`}>
             {writable ? (
-              <ToolbarButton loading={busy === "settings-auto"} onClick={() => void act("settings-auto", { action: "settings", settings: { ...s, autoSend: !s.autoSend } })}>
-                {s.autoSend ? "Turn off" : "Turn on"}
-              </ToolbarButton>
-            ) : null}
-          </div>
-          {view.saved ? (
-            <p className="mt-2 text-xs" style={ink3}>
-              {`Last changed ${new Date(view.saved.at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}${view.saved.by ? ` by ${view.saved.by}` : ""}.`}
-            </p>
-          ) : null}
-        </section>
+              <Toggle
+                on={s.autoSend}
+                label="Send automatically"
+                onChange={(v) => void act("settings-auto", { action: "settings", settings: { ...s, autoSend: v } })}
+              />
+            ) : (
+              <span className="text-[13px]" style={ink3}>
+                {s.autoSend ? "On" : "Off"}
+              </span>
+            )}
+          </SettingRow>
+          <SettingRow id="desk-send-at" name="Send time" sub="New York time">
+            <Select
+              size="sm"
+              align="end"
+              ariaLabelledBy="desk-send-at"
+              value={s.sendAt}
+              options={quarterHours(view.limits.send)}
+              onChange={(v) => void save({ sendAt: v })}
+              disabled={!writable || busy !== null}
+            />
+          </SettingRow>
+        </SettingsGroup>
 
         {error ? (
           <p role="alert" className="text-sm" style={{ color: "var(--adm-ink)" }}>
