@@ -292,6 +292,70 @@
    "what": "The Child cut out of Murillo's Virgin and Child (GrabCut, then the Mother's chin trimmed by hand), so the drawn faces of version 3 sit behind Him as reference 3 keeps its hand and sword in front",
    "file": "raw/murillo_child_mask.png",
    "shots": "version 3, beats 4 to 13"
+  },
+  "galanopoulos_annunciation": {
+   "what": "Nikolaos Galanopoulos, The Annunciation, an icon of our day, signed \"Χείρ Νικ. Γαλανόπουλου\"",
+   "held": "sold as a printed icon by Athonite USA",
+   "page": "https://www.athoniteusa.com/products/the-annunciation-scene",
+   "licence": "a living iconographer's work, sold as a print; used in an unpaid edit at his word of 2026-11-25 (edits need not be public domain), with the takedown risk he accepted; the caption credits him",
+   "file": "raw/modern/athonite/annunciation.jpg, 2362 by 3307",
+   "shots": "version 4 (the Cradle in icons), beats 0 to 6, 89"
+  },
+  "galanopoulos_nativity": {
+   "what": "Nikolaos Galanopoulos, The Nativity of Christ, an icon of our day, signed \"Χείρ Νικ. Γαλανόπουλου\"",
+   "held": "sold as a printed icon by Athonite USA",
+   "page": "https://www.athoniteusa.com/products/the-nativity-of-christ",
+   "licence": "a living iconographer's work, sold as a print; used in an unpaid edit at his word of 2026-11-25 (edits need not be public domain), with the takedown risk he accepted; the caption credits him",
+   "file": "raw/modern/athonite/nativity.jpg, 2362 by 3307",
+   "shots": "version 4 (the Cradle in icons), beats 7 to 22, 90, 92"
+  },
+  "galanopoulos_meeting": {
+   "what": "Nikolaos Galanopoulos, The Meeting in the Temple, an icon of our day, signed \"Χείρ Νικ. Γαλανόπουλου\"",
+   "held": "sold as a printed icon by Athonite USA",
+   "page": "https://www.athoniteusa.com/products/presentation-of-christ-to-the-temple",
+   "licence": "a living iconographer's work, sold as a print; used in an unpaid edit at his word of 2026-11-25 (edits need not be public domain), with the takedown risk he accepted; the caption credits him",
+   "file": "raw/modern/athonite/meeting.jpg, 2362 by 3307",
+   "shots": "version 4 (the Cradle in icons), beats 23 to 38"
+  },
+  "galanopoulos_baptism": {
+   "what": "Nikolaos Galanopoulos, The Baptism of Christ, an icon of our day, signed \"Χείρ Νικ. Γαλανόπουλου\"",
+   "held": "sold as a printed icon by Athonite USA",
+   "page": "https://www.athoniteusa.com/products/baptism-of-jesus-christ",
+   "licence": "a living iconographer's work, sold as a print; used in an unpaid edit at his word of 2026-11-25 (edits need not be public domain), with the takedown risk he accepted; the caption credits him",
+   "file": "raw/modern/athonite/baptism.jpg, 2362 by 3307",
+   "shots": "version 4 (the Cradle in icons), beats 39 to 46, 91"
+  },
+  "galanopoulos_lazarus": {
+   "what": "Nikolaos Galanopoulos, The Raising of Lazarus, an icon of our day, signed \"Χείρ Νικ. Γαλανόπουλου\"",
+   "held": "sold as a printed icon by Athonite USA",
+   "page": "https://www.athoniteusa.com/products/the-resurrection-of-lazarus",
+   "licence": "a living iconographer's work, sold as a print; used in an unpaid edit at his word of 2026-11-25 (edits need not be public domain), with the takedown risk he accepted; the caption credits him",
+   "file": "raw/modern/athonite/lazarus.jpg, 3307 by 2362",
+   "shots": "version 4 (the Cradle in icons), beats 47 to 54"
+  },
+  "galanopoulos_crucifixion": {
+   "what": "Nikolaos Galanopoulos, The Crucifixion, an icon of our day, signed \"Χείρ Νικ. Γαλανόπουλου\"",
+   "held": "sold as a printed icon by Athonite USA",
+   "page": "https://www.athoniteusa.com/products/crucifixion-of-christ",
+   "licence": "a living iconographer's work, sold as a print; used in an unpaid edit at his word of 2026-11-25 (edits need not be public domain), with the takedown risk he accepted; the caption credits him",
+   "file": "raw/modern/athonite/crucifixion.jpg, 2362 by 3307",
+   "shots": "version 4 (the Cradle in icons), beats 55 to 62"
+  },
+  "galanopoulos_resurrection": {
+   "what": "Nikolaos Galanopoulos, The Resurrection (the Descent into Hades), an icon of our day, signed \"Χείρ Νικ. Γαλανόπουλου\"",
+   "held": "sold as a printed icon by Athonite USA",
+   "page": "https://www.athoniteusa.com/products/the-resurrection-of-our-lord",
+   "licence": "a living iconographer's work, sold as a print; used in an unpaid edit at his word of 2026-11-25 (edits need not be public domain), with the takedown risk he accepted; the caption credits him",
+   "file": "raw/modern/athonite/resurrection.jpg, 2362 by 3307",
+   "shots": "version 4 (the Cradle in icons), beats 63 to 78"
+  },
+  "galanopoulos_ascension": {
+   "what": "Nikolaos Galanopoulos, The Ascension, an icon of our day, signed \"Χείρ Νικ. Γαλανόπουλου\"",
+   "held": "sold as a printed icon by Athonite USA",
+   "page": "https://www.athoniteusa.com/products/the-ascension-of-our-lord",
+   "licence": "a living iconographer's work, sold as a print; used in an unpaid edit at his word of 2026-11-25 (edits need not be public domain), with the takedown risk he accepted; the caption credits him",
+   "file": "raw/modern/athonite/ascension.jpg, 2362 by 3307",
+   "shots": "version 4 (the Cradle in icons), beats 79 to 88"
   }
  },
  "notes": {
