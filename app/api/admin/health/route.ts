@@ -4,6 +4,7 @@ import { readRenderDeploys, renderDashboardUrl, type DeployFacts } from "@/lib/a
 import { licensedBibleEnabled } from "@/lib/bible/api-bible";
 import { HEARTBEAT_KEY_PREFIX, heartbeatVerdict } from "@/lib/ops/heartbeat";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { geoFromCloudflare } from "@/lib/analytics/geo";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -44,7 +45,7 @@ export async function GET(req: Request) {
 
   const scope = new URL(req.url).searchParams.get("scope");
   const internal = [probeSupabase, probeRateLimiter, probeHeartbeat];
-  const outbound = [probeApiBible, probeIpwhois, probeRender];
+  const outbound = [probeApiBible, () => probeIpwhois(req), probeRender];
   const list =
     scope === "internal" ? internal : scope === "outbound" ? outbound : [...internal, ...outbound];
 
@@ -189,7 +190,24 @@ async function probeApiBible(): Promise<Probe> {
   };
 }
 
-async function probeIpwhois(): Promise<Probe> {
+/**
+ * Visits are placed by Cloudflare's headers first (lib/analytics/geo.ts,
+ * geoForRequest, 2026-11-25); ipwho.is is only the fallback. This request
+ * comes through the same Cloudflare, so when it carries the country,
+ * visits are being placed and the free lookup is not asked at all (its
+ * daily cap is better kept for the fallback). Only when Cloudflare sends
+ * nothing does the probe ask ipwho.is, and fail as it always did.
+ */
+async function probeIpwhois(req: Request): Promise<Probe> {
+  const cf = geoFromCloudflare(req.headers);
+  if (cf) {
+    return {
+      service: "ipwho.is (geo enrichment)",
+      status: "ok",
+      detail: `Cloudflare places visits (${cf.country_code}${cf.city ? `, ${cf.city}` : ""} for this request); ipwho.is is only the fallback`,
+      latencyMs: 0,
+    };
+  }
   const { ms, error } = await timed(async () => {
     const r = await fetch("https://ipwho.is/8.8.8.8", {
       signal: AbortSignal.timeout(5000),
