@@ -50,7 +50,12 @@ beforeEach(() => {
   });
 });
 
-const ask = () => GET(new Request("https://purifyapp.net/api/admin/health?scope=outbound"));
+const ask = (headers: Record<string, string> = {}) =>
+  GET(new Request("https://purifyapp.net/api/admin/health?scope=outbound", { headers }));
+const geo = async (headers: Record<string, string> = {}) => {
+  const body = (await (await ask(headers)).json()) as { probes: { service: string; status: string; detail: string }[] };
+  return body.probes.find((p) => p.service.startsWith("ipwho.is"))!;
+};
 const render = async () => {
   const body = (await (await ask()).json()) as { probes: { service: string; status: string; deploy?: { failed: boolean; commit: string } }[] };
   return body.probes.find((p) => p.service.startsWith("Render"))!;
@@ -83,5 +88,28 @@ describe("/api/admin/health", () => {
     const p = await render();
     expect(p.status).toBe("fail");
     expect(p.deploy).toBeNull();
+  });
+
+  // The Readers page warned "ipwho.is probe failed" while visits were placed
+  // by Cloudflare (2026-11-25): the free lookup is only the fallback now.
+  it("is OK without asking ipwho.is when Cloudflare places the request", async () => {
+    const asked: string[] = [];
+    vi.stubGlobal("fetch", async (url: string) => {
+      asked.push(url);
+      if (url.startsWith("https://ipwho.is/")) return new Response("{}", { status: 429 });
+      return new Response("[]", { status: 200 });
+    });
+    const p = await geo({ "cf-ipcountry": "US", "cf-ipcity": "Hialeah" });
+    expect(p.status).toBe("ok");
+    expect(p.detail).toContain("Cloudflare places visits");
+    expect(asked.some((u) => u.startsWith("https://ipwho.is/"))).toBe(false);
+  });
+
+  it("still fails when Cloudflare sends no country and ipwho.is does not answer", async () => {
+    vi.stubGlobal("fetch", async (url: string) =>
+      url.startsWith("https://ipwho.is/") ? new Response("{}", { status: 429 }) : new Response("[]", { status: 200 }),
+    );
+    expect((await geo()).status).toBe("fail");
+    expect((await geo({ "cf-ipcountry": "XX" })).status).toBe("fail");
   });
 });
