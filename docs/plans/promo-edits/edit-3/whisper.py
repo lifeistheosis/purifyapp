@@ -177,7 +177,8 @@ def build():
             cx, cy, w = crop
             dx, dy, dz = MOVES[mv]
             sg["a"] = (cx, cy, w)
-            sg["b"] = (cx + dx * w, cy + dy * w, w * (1 + dz))
+            sg["b"] = (cx + dx * w * 0.5, cy + dy * w * 0.5, w * (1 + dz * 0.5))   # half the move is the camera's;
+            sg["mv"] = mv                                                     # the rest is in depth (depth_move)
         if k == 30:
             sg["t1"] = 18.24
         segs.append(sg)
@@ -235,6 +236,42 @@ def grade(x, sg, t, geo):
     return C.crush_lights(x, crush_amount(sg, t))
 
 
+# ---------------------------------------------------------------- the 2.5D move (his choice: "No AI, free 2.5D")
+# Each painting's depth (depth_maps.py, Depth Anything V2 Small): the camera moves through the scene, so what is near
+# slides against what is far, at a steady speed. An icon has no depth map and keeps a plain camera move.
+_depth = {}
+
+
+def depth_of(key):
+    if key not in _depth:
+        p = os.path.join(C.WORK, "raw", "depth", f"{key}.png")
+        _depth[key] = cv2.imread(p, cv2.IMREAD_UNCHANGED).astype(np.float32) / 65535 if os.path.exists(p) else None
+    return _depth[key]
+
+
+PARALLAX = {"l": (-1, 0, 0), "r": (1, 0, 0), "u": (0, -1, 0), "d": (0, 1, 0), "in": (0, 0, 1), "out": (0, 0, -1),
+            "in+": (0, 0, 1.5), "out+": (0, 0, -1.5)}
+
+
+def depth_move(img, sg, t, geo):
+    d = depth_of(sg.get("key")) if sg.get("mv") else None
+    if d is None:
+        return img
+    cx, cy, s = geo
+    M = np.float32([[s / 4, 0, (cx - OW / 2 * s) / 4], [0, s / 4, (cy - OH / 2 * s) / 4]])
+    dv = cv2.warpAffine(d, M, (OW, OH), flags=cv2.INTER_LINEAR | cv2.WARP_INVERSE_MAP, borderMode=cv2.BORDER_REPLICATE)
+    focus = float(np.median(dv[OH // 3:2 * OH // 3, OW // 3:2 * OW // 3]))
+    u = C.clamp01((t - sg["t0"]) / max(1e-3, sg["t1"] - sg["t0"]))
+    ax, ay, az = PARALLAX[sg["mv"]]
+    rel = dv - focus                                   # near is positive, far negative, the subject still
+    uu, vv = C.grid(OW, OH)
+    A = 100.0 * u                                       # pixels at a full step of depth, growing at a steady speed
+    Z = 0.15 * u
+    mx = uu - (ax * A * rel + az * Z * rel * (uu - OW / 2))
+    my = vv - (ay * A * rel + az * Z * rel * (vv - OH / 2))
+    return cv2.remap(img, mx.astype(np.float32), my.astype(np.float32), cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+
+
 def picture(sg, t):
     u = C.clamp01((t - sg["t0"]) / max(1e-3, sg["t1"] - sg["t0"]))
     (ax, ay, aw), (bx, by, bw) = sg["a"], sg["b"]
@@ -269,6 +306,7 @@ def frame(i):
             img, geo = C.view(sg["key"], cx + side * w, cy, w * (0.72 if j % 2 else 0.56), OW, OH)
         else:
             img, geo = picture(sg, t)
+        img = depth_move(img, sg, t, geo)
         x = grade(img, sg, t, geo)
     x = C.add_grain(x, i, 0.022)
     return C.in_band(C.u8(x), BAND)

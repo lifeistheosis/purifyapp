@@ -1,4 +1,4 @@
-# The whisper, 1:1: living paintings (plan, waiting on his yes)
+# The whisper, 1:1: living paintings
 
 His words (2026-11-25), sending reference 2 again: "copy this reference 1:1 this a style where it's a static art and they edit it so that it moves. do more research on this editing style and let's edit our version 1:1".
 
@@ -22,3 +22,7 @@ Guardrails: only Western paintings are animated. An icon is never redrawn (CLAUD
 - Seedance 2.5 at 1080p: 80 credits a clip, about 1,000 for the set.
 - The Higgsfield account holds 0 credits on the free plan, so credits would have to be bought first.
 - Without AI, a hand-built 2.5D move (figures cut out and moved at their own depth) costs nothing but no face turns or breathes: it would not be 1:1.
+
+## His choice, and what was made
+
+He chose "No AI, free 2.5D" over every paid model. So nothing was generated and no credit spent. `depth_maps.py` estimates each painting's depth once with Depth Anything V2 Small (Apache-2.0, run on the CPU with onnxruntime) and saves it beside the paintings (`.promo/edit-3/raw/depth/`). The whisper (`whisper.py`, `depth_move`) now moves through each painting in depth on every shot: half of each shot's move is the camera's, the other half is depth, so what is near slides against what is far and the subject holds still, at a steady speed (up to 100 px across a full step of depth on a slide, 15% on a push). Our Lady of Vladimir has no depth map: a depth move bends parts of a picture against each other, which would redraw the icon, so it keeps a plain camera move. Every cut on the beats and the hats stays where it was.
