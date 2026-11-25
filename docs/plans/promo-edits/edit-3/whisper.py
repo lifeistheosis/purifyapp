@@ -178,7 +178,7 @@ SHOTS = [
 ]
 assert [s[0] for s in SHOTS] == list(range(len(BEATS))), "one shot for every beat, in order"
 
-FIRSTS = {0: (0.70, 0.45), 7: (0.70, 0.45), 15: (0.70, 0.45), 23: (0.70, 0.45), 27: (0.45, 0.25), 47: (0.70, 0.45),
+FIRSTS = {0: (0.70, 0.45), 7: (0.70, 0.45), 15: (0.40, 0.35), 23: (0.40, 0.35), 27: (0.45, 0.25), 47: (0.70, 0.45),
           50: (0.45, 0.25), 55: (0.40, 0.35), 58: (0.45, 0.25), 63: (0.45, 0.30), 67: (0.45, 0.25), 71: (0.60, 0.35),
           79: (0.60, 0.30)}   # develops out of the dark: (how far it starts crushed, over how long)
 # (the drop is the one painting that does not develop: the Mother's eyes are simply there, on the beat)
@@ -240,7 +240,7 @@ def crush_amount(sg, t):
         u = t - sg["t0"]
         c = max(0.0, 0.55 - u / 0.30) if u < 0.30 else 0.80 * C.clamp01((u - 0.32) / 0.22)
     if k == 62:                           # her eye comes slowly out of the dark
-        c = 0.62 - 0.30 * C.clamp01((t - sg["t0"]) / (sg["t1"] - sg["t0"]))
+        c = 0.42 - 0.20 * C.clamp01((t - sg["t0"]) / (sg["t1"] - sg["t0"]))
     return c
 
 
