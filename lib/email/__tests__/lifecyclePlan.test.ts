@@ -225,3 +225,32 @@ describe("claim_closing", () => {
     expect(kinds(rows, { openDrops: [{ ...drop, claims_close_at: null }] })).toEqual([]);
   });
 });
+
+describe("the free trial's reminder (Level 1, 2026-11-25)", () => {
+  const DAY = 86_400_000;
+  const row = (over: Partial<LifecycleRow>): LifecycleRow => ({
+    user_id: "t1",
+    plus_until: new Date(NOW.getTime() + DAY).toISOString(),
+    pro_until: null,
+    plus_source: "google",
+    auto_renew: true,
+    billing_issue_at: null,
+    ...over,
+  });
+  const plan = (trials: { userId: string; endsAt: string }[], rows: LifecycleRow[] = [row({})]) =>
+    planLifecycle({ rows, openDrops: [], claimedBy: new Map(), now: NOW, trials }).filter((p) => p.kind === "trial_ending");
+
+  it("reminds within two days of the trial turning paid, once per trial end", () => {
+    const due = plan([{ userId: "t1", endsAt: new Date(NOW.getTime() + 1.5 * DAY).toISOString() }]);
+    expect(due).toHaveLength(1);
+    expect(due[0]).toMatchObject({ userId: "t1", store: "google" });
+    expect(due[0].dedupeKey).toMatch(/^trial_ending:t1:\d{4}-\d{2}-\d{2}$/);
+  });
+  it("waits while the end is more than two days off, and stops once it has passed", () => {
+    expect(plan([{ userId: "t1", endsAt: new Date(NOW.getTime() + 3 * DAY).toISOString() }])).toHaveLength(0);
+    expect(plan([{ userId: "t1", endsAt: new Date(NOW.getTime() - DAY).toISOString() }])).toHaveLength(0);
+  });
+  it("sends none to a reader who turned renewal off (they get ends in three days)", () => {
+    expect(plan([{ userId: "t1", endsAt: new Date(NOW.getTime() + DAY).toISOString() }], [row({ auto_renew: false })])).toHaveLength(0);
+  });
+});

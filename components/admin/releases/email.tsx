@@ -59,6 +59,7 @@ type TermsResult = {
 const KIND_LABEL: Record<keyof LifecycleReport["byKind"], string> = {
   plus_ending: "Plus ends in three days",
   plus_ended: "Plus has ended",
+  trial_ending: "Free trial ends in two days",
   winback: "A month on (winback)",
   claim_closing: "EIKON claims close soon",
   welcome: "Welcome (catch-up)",

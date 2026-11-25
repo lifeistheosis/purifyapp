@@ -21,6 +21,7 @@ import {
   type DeliveredOrder,
   type LifecycleRow,
   type OpenDrop,
+  type OpenTrial,
   type OrderMissingAddress,
   type PlannedEmail,
   type ReviewAskOrder,
@@ -33,6 +34,7 @@ import type { SendOnceResult } from "./sendOnce";
 import {
   claimClosingEmail,
   plusEndedEmail,
+  trialEndingEmail,
   plusEndingEmail,
   welcomeEmail,
   type BillingStore,
@@ -85,6 +87,8 @@ function contentFor(p: PlannedEmail): EmailContent {
       return plusEndingEmail({ endsOn: p.endsOn, store: p.store as BillingStore, pro: p.pro });
     case "plus_ended":
       return plusEndedEmail({ pro: p.pro });
+    case "trial_ending":
+      return trialEndingEmail({ endsOn: p.endsOn, store: p.store as BillingStore });
     case "winback":
       // Never reached: winbacks are marketing and go through sendMarketingTo.
       throw new Error("winback is sent through lib/email/marketing.ts");
@@ -349,9 +353,44 @@ async function readDrops(
   return { openDrops, claimedBy };
 }
 
+/**
+ * Free trials still running, from the kept RevenueCat events of the last 40
+ * days (a trial is days, not months): per reader, the newest trial purchase
+ * with nothing after it that ends or changes it. Test money and his own
+ * accounts are the plan's to leave out by their entitlement; sandbox events
+ * are left out here. Best effort: a failed read is reported and no reminder goes.
+ */
+async function readOpenTrials(admin: SupabaseClient, now: Date, errors: string[]): Promise<OpenTrial[]> {
+  const since = new Date(now.getTime() - 40 * 86_400_000).toISOString();
+  const { data, error } = await admin
+    .from("plus_events")
+    .select("user_id, type, period_type, environment, expires_at, event_at")
+    .not("user_id", "is", null)
+    .gte("event_at", since)
+    .order("event_at", { ascending: true })
+    .limit(5000);
+  if (error) {
+    errors.push(`free trials could not be read: ${error.message}`);
+    return [];
+  }
+  const open = new Map<string, OpenTrial>();
+  for (const e of (data ?? []) as {
+    user_id: string;
+    type: string;
+    period_type: string | null;
+    environment: string | null;
+    expires_at: string | null;
+  }[]) {
+    if (e.environment === "SANDBOX") continue;
+    if (e.type === "INITIAL_PURCHASE" && e.period_type === "TRIAL" && e.expires_at) open.set(e.user_id, { userId: e.user_id, endsAt: e.expires_at });
+    else if (["RENEWAL", "EXPIRATION", "CANCELLATION", "BILLING_ISSUE", "PRODUCT_CHANGE"].includes(e.type)) open.delete(e.user_id);
+  }
+  return [...open.values()];
+}
+
 export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()): Promise<LifecycleReport> {
   const errors: string[] = [];
-  const [{ rows, renewalStateKnown }, { openDrops, claimedBy }, accounts, ordersMissingAddress, deliveredOrders, reviewAsks] =
+  const [{ rows, renewalStateKnown }, { openDrops, claimedBy }, accounts, ordersMissingAddress, deliveredOrders, reviewAsks, trials] =
     await Promise.all([
       readRows(admin, errors),
       readDrops(admin, errors),
@@ -359,6 +398,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
       readOrdersMissingAddress(admin, errors),
       readDeliveredOrders(admin, now, errors),
       readReviewAsks(admin, now, errors),
+      readOpenTrials(admin, now, errors),
     ]);
 
   const plan = planLifecycle({
@@ -371,6 +411,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     ordersMissingAddress,
     deliveredOrders,
     reviewAsks,
+    trials,
   });
 
   // The day's bulk budget (lib/email/budget.ts). Account mail a reader is
@@ -386,6 +427,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
   const byKind: LifecycleReport["byKind"] = {
     plus_ending: emptyCounts(),
     plus_ended: emptyCounts(),
+    trial_ending: emptyCounts(),
     winback: emptyCounts(),
     claim_closing: emptyCounts(),
     welcome: emptyCounts(),
