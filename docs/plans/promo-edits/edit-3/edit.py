@@ -90,59 +90,207 @@ def ramp(t, segs, v0):
     return v
 
 
-# ---------------------------------------------------------------- the shots
-# A picture shot's crop: centre (cx, cy) and width cw in source pixels at its start (a) and end (b); its height follows
-# from the frame it fills (the band in Chapter I, the full 9:16 after the drop). whoosh: the entry of reference 2, a fast
-# blurred zoom (A, the extra zoom at the first frame) and pan (ox, oy screen pixels) that settles over D seconds.
-NIGHT = dict(band=True, sat=0.06, soft=0.6, floor=0.18, gain=1.55, gamma=0.66, grain=0.050, vignette=True)
-MOTHER = dict(sat=0.88, soft=0.0, floor=0.30, gain=1.18, gamma=0.95, grain=0.020)
+# ---------------------------------------------------------------- the beats
+# Every beat of the song, tracked from its own drums and snapped to its onset (librosa, about 6 ms): 94 beats, the bar
+# lines falling on the drop (18.53 s). His word (2026-11-25): "I wanted every beat to have a retention point (image
+# switch, movement, transition or something etc, image cut)". So each beat below starts something.
+BEATS_ALL = [0.209, 0.795, 1.393, 1.985, 2.572, 3.17, 3.756, 4.342, 4.934, 5.526, 6.118, 6.716, 7.303, 7.895, 8.487,
+             9.085, 9.665, 10.257, 10.855, 11.436, 12.028, 12.626, 13.212, 13.804, 14.396, 14.988, 15.581, 16.167,
+             16.765, 17.357, 18.007, 18.53, 19.18, 19.72, 20.312, 20.904, 21.496, 22.082, 22.674, 23.266, 23.853,
+             24.433, 25.037, 25.629, 26.221, 26.807, 27.44, 27.992, 28.543, 29.176, 29.739, 30.36, 30.952, 31.539,
+             32.148, 32.705, 33.315, 33.907, 34.458, 35.045, 35.683, 36.27, 36.879, 37.448, 38.04, 38.609, 39.259,
+             39.816, 40.414, 41.001, 41.593, 42.179, 42.818, 43.328, 43.961, 44.577, 45.134, 45.708, 46.301, 46.881,
+             47.502, 48.094, 48.686, 49.238, 49.865, 50.457, 51.072, 51.635, 52.233, 52.808, 53.418, 54.004, 54.596,
+             55.107]
+BASS_IN = [2.281, 11.738]   # the bass comes in off the beat, twice in the build: each gets its own strike
 
-SHOTS = [
-    # ---- Chapter I, the night: reference 1
-    dict(n=1, t0=0.000, t1=2.281, src="elgreco", a=(1250, 1850, 2300), b=(1250, 1900, 2150), pool=(1230, 2290, 0.44), **NIGHT,
-         light=[(0.00, 0.60, 0.70, 1.0, HOUSE)], whoosh=dict(A=0.32, ox=0, oy=0, D=0.50)),
-    dict(n=2, t0=2.281, t1=4.342, src="elgreco", a=(1100, 720, 1350), b=(1100, 700, 1280), pool=(1090, 650, 0.48), **NIGHT),
-    dict(n=3, t0=4.342, t1=6.716, src="elgreco", a=(850, 1500, 1150), b=(840, 1490, 1090), pool=(900, 1470, 0.48), **NIGHT),
-    dict(n=4, t0=6.716, t1=10.53, src="elgreco", a=(1640, 1640, 1050), b=(1650, 1630, 990), pool=(1650, 1620, 0.46), **NIGHT,
-         light=[(9.65, 10.40, 1.0, 0.0, SYM)]),
-    dict(n=5, t0=10.53, t1=11.738, src="elgreco", a=(1530, 1600, 720), b=(1530, 1595, 700), pool=(1530, 1585, 0.44), **NIGHT,
-         light=[(10.53, 10.70, 0.0, 0.0, SYM), (10.70, 11.60, 0.0, 1.0, HOUSE)]),
-    dict(n=6, t0=11.738, t1=13.804, src="elgreco", a=(1320, 2200, 1050), b=(1310, 2215, 1000), pool=(1290, 2260, 0.50), **NIGHT),
-    dict(n=7, t0=13.804, t1=18.530, src="elgreco", a=(1250, 2310, 820), b=(1250, 2310, 740), pool=(1250, 2310, 0.52), **NIGHT,
-         radius=[(16.63, 18.10, 0.52, 0.18, SYM)], light=[(16.63, 18.25, 1.0, 0.0, SYM)]),
-    # ---- Chapter II, the Mother: reference 2
-    dict(n=8, t0=18.530, t1=20.904, src="vladimir", a=(2330, 1960, 700), b=(2335, 1960, 680), pool=(2330, 1950, 0.62), **MOTHER,
-         whoosh=dict(A=0.24, ox=0, oy=0, D=0.42)),
-    dict(n=9, t0=20.904, t1=23.266, src="vladimir", a=(2560, 2080, 1150), b=(2300, 2150, 1150), pool=(2400, 2100, 0.66), **MOTHER,
-         whoosh=dict(A=0.10, ox=260, oy=0, D=0.34)),
-    dict(n=10, t0=23.266, t1=25.629, src="vladimir", a=(2650, 2600, 1100), b=(2760, 2700, 1080), pool=(2700, 2600, 0.68), **MOTHER,
-         whoosh=dict(A=0.14, ox=0, oy=-220, D=0.34)),
-    dict(n=11, t0=25.629, t1=27.992, src="vladimir", a=(2650, 3700, 1900), b=(2650, 3690, 1845), pool=(2600, 3400, 0.74), **MOTHER,
-         whoosh=dict(A=0.12, ox=-260, oy=0, D=0.34)),
-    dict(n=12, t0=27.992, t1=30.360, src="vladimir", a=(2640, 2700, 2600), b=(2640, 2690, 2520), pool=(2400, 2300, 0.80), **MOTHER,
-         whoosh=dict(A=0.18, ox=0, oy=0, D=0.36)),
-    dict(n=13, t0=30.360, t1=32.705, src="vladimir", a=(2635, 3000, 3375), b=(2635, 3000, 3290), pool=(2400, 2300, 0.85), **MOTHER,
-         whoosh=dict(A=0.10, ox=0, oy=200, D=0.34), crush=[(32.00, 32.12, 0.0, 0.52, SYM)], strobe=(32.00, 32.705)),
-    dict(n=14, t0=32.705, t1=37.448, src="vladimir", whole=True, a=(2635, 3000, 5728), b=(2635, 3000, 5560), pool=(2500, 2600, 0.95), **MOTHER,
-         crush=[(32.705, 33.705, 0.55, 0.0, HOUSE), (35.85, 36.40, 0.0, 1.0, SYM)], strobe=(35.85, 36.40)),
-    # ---- Chapter III, the light: reference 3
-    dict(n=15, t0=37.448, t1=42.179, panel="isaiah92"),
-    dict(n=16, t0=42.179, t1=46.881, faces=True),
-    dict(n=17, t0=46.881, t1=51.635, panel="isaiah96", flash_in=True),
-    dict(n=18, t0=51.635, t1=54.805, panel="matthew1615", big=True),
-    dict(n=19, t0=54.805, t1=N / FPS + 1, end=True, mark_at=55.107),
-]
+# ---------------------------------------------------------------- the looks
+NIGHT = dict(band=True, sat=0.06, soft=0.6, floor=0.18, gain=1.55, gamma=0.66, grain=0.050, vignette=True, r=0.56)
+MOTHER = dict(sat=0.88, soft=0.0, floor=0.30, gain=1.18, gamma=0.95, grain=0.020, r=0.70)
+LIGHT = dict(sat=1.0, soft=0.0, floor=0.42, gain=1.20, gamma=0.85, grain=0.018, r=0.80)   # colour inserts in Chapter III
 
-# Light (reference 1): (time, peak, frames of rise before it, decay seconds, hold frames). A cut inside a flash rises over
-# two frames to its peak on the cut's own frame; a flicker is a single strike.
-FLASHES = [
-    (2.281, 0.95, 2, 0.11, 0), (4.342, 0.95, 2, 0.11, 0), (6.716, 0.95, 2, 0.11, 0),
-    (8.120, 0.70, 0, 0.06, 0), (8.205, 0.45, 0, 0.05, 0), (9.080, 0.60, 0, 0.07, 0),
-    (11.738, 0.95, 2, 0.11, 0), (13.804, 0.95, 2, 0.11, 0),
-    (15.300, 0.55, 0, 0.06, 0), (15.385, 0.35, 0, 0.05, 0),
-    (18.530, 1.00, 0, 0.10, 2),   # the drop: out of black, white, then her eye
+# The details each chapter cuts between: centre and width in source pixels.
+NIGHT_CROPS = {  # El Greco, in the widescreen band
+    "W": (1250, 1900, 2200), "SK": (1100, 720, 1350), "CH": (1050, 640, 700), "SA": (430, 1320, 800),
+    "SP": (880, 1450, 620), "SY": (1060, 1480, 600), "KF": (450, 3200, 820), "MJ": (1650, 1630, 1000),
+    "JF": (1790, 1650, 600), "MF": (1530, 1585, 600), "LB": (1100, 3050, 850), "MH": (1310, 2200, 1000),
+    "CC": (1250, 2310, 760), "CX": (1150, 2320, 480),
+}
+NIGHT_GAIN = {"CC": 1.05, "CX": 0.92, "LB": 0.80, "MH": 1.30, "KF": 1.75}   # the Child and the lamb are the brightest paint
+MOTHER_CROPS = {  # the Vladimir in its silver cover, full screen
+    "E1": (2330, 1960, 700), "E2": (2380, 1900, 520), "CF": (2250, 2230, 560), "FF": (2420, 2100, 1150),
+    "EN": (1650, 1600, 800), "MD": (1200, 1250, 700), "EM": (2700, 2600, 1100), "HN": (2980, 2850, 800),
+    "TS": (2650, 3500, 1800), "GM": (2640, 3800, 700), "FT": (2900, 4560, 900), "SH": (2640, 2700, 2600),
+    "HD": (1650, 3900, 900), "SV": (600, 3000, 1000), "FH": (2635, 3000, 3375),
+}
+
+# The night (reference 1). cut: a new detail; punch: the same picture, a jump closer; reveal: in the dark, a strike of
+# lightning shows a detail and the dark takes it back. strike: a cut inside a flash; flick: a flicker inside the shot.
+NIGHT_SCRIPT = [
+    (0.000, "cut", "W", dict(whoosh=dict(A=0.32, ox=0, oy=0, D=0.50), light=[(0.00, 0.60, 0.70, 1.0)])),
+    (0.209, "punch", None, {}),
+    (0.795, "cut", "SK", dict(flick=0.50)),
+    (1.393, "punch", None, {}),
+    (1.985, "cut", "CH", dict(flick=0.60)),
+    (2.281, "cut", "SA", dict(strike=0.95)),
+    (2.572, "punch", None, {}),
+    (3.170, "cut", "SP", {}),
+    (3.756, "punch", None, dict(flick=0.40)),
+    (4.342, "cut", "SY", dict(strike=0.95)),
+    (4.934, "punch", None, {}),
+    (5.526, "cut", "KF", {}),
+    (6.118, "punch", None, dict(flick=0.50)),
+    (6.716, "cut", "MJ", dict(strike=0.95)),
+    (7.303, "punch", None, {}),
+    (7.895, "cut", "JF", dict(flick=0.50)),
+    (8.487, "cut", "MF", {}),
+    (9.085, "cut", "LB", dict(strike=0.95, light=[(9.665, 9.95, 1.0, 0.0)])),
+    (10.257, "reveal", "JF", dict(peak=0.95)),
+    (10.855, "reveal", "SA", dict(peak=0.95)),
+    (11.436, "reveal", "MF", dict(peak=0.95)),
+    (11.738, "cut", "MH", dict(strike=0.95)),
+    (12.028, "punch", None, {}),
+    (12.626, "cut", "CC", {}),
+    (13.212, "punch", None, {}),
+    (13.804, "cut", "CX", dict(strike=0.95)),
+    (14.396, "punch", None, {}),
+    (14.988, "cut", "MF", {}),
+    (15.581, "cut", "CC", dict(flick=0.55)),
+    (16.167, "cut", "CX", dict(strike=0.95, light=[(16.63, 16.76, 1.0, 0.0)])),
+    (16.765, "reveal", "CX", dict(peak=0.75)),
+    (17.357, "reveal", "MF", dict(peak=0.55)),
+    (18.007, "reveal", "CC", dict(peak=0.42)),
 ]
-DROP_FLASH = 18.530
+# The Mother (reference 2): each bar a whoosh cut, wider each bar; a punch; two quick inserts.
+MOTHER_SCRIPT = [
+    (18.530, "cut", "E1", dict(whoosh=dict(A=0.24, ox=0, oy=0, D=0.42))),
+    (19.180, "punch", None, {}),
+    (19.720, "cut", "E2", {}),
+    (20.312, "cut", "CF", {}),
+    (20.904, "cut", "FF", dict(whoosh=dict(A=0.10, ox=260, oy=0, D=0.34))),
+    (21.496, "punch", None, {}),
+    (22.082, "cut", "EN", {}),
+    (22.674, "cut", "MD", {}),
+    (23.266, "cut", "EM", dict(whoosh=dict(A=0.14, ox=0, oy=-220, D=0.34))),
+    (23.853, "punch", None, {}),
+    (24.433, "cut", "HN", {}),
+    (25.037, "cut", "CF", {}),
+    (25.629, "cut", "TS", dict(whoosh=dict(A=0.12, ox=-260, oy=0, D=0.34))),
+    (26.221, "punch", None, {}),
+    (26.807, "cut", "GM", {}),
+    (27.440, "cut", "FT", {}),
+    (27.992, "cut", "SH", dict(whoosh=dict(A=0.18, ox=0, oy=0, D=0.36))),
+    (28.543, "punch", None, {}),
+    (29.176, "cut", "HD", {}),
+    (29.739, "cut", "SV", {}),
+    (30.360, "cut", "FH", dict(whoosh=dict(A=0.10, ox=0, oy=200, D=0.34))),
+    (30.952, "punch", None, {}),
+    (31.539, "cut", "E1", dict(crush=[(32.00, 32.12, 0.0, 0.52)], strobe=(32.00, 32.705))),
+    (32.705, "whole", 0, dict(crush=[(32.705, 33.30, 0.55, 0.0)])),
+    (33.315, "whole", 1, {}),
+    (33.907, "whole", 2, {}),
+    (34.458, "whole", 3, {}),
+    (35.045, "whole", 4, dict(crush=[(35.683, 36.25, 0.0, 1.0)], strobe=(35.683, 36.25))),
+    (36.270, "glimpse", 4, dict(peak=0.85)),
+    (36.879, "glimpse", 3, dict(peak=0.45)),
+]
+WHOLE_STEP = 1.075   # the whole icon comes closer by this much on each beat after the stop
+
+# The light (reference 3): the verses one line on each beat, the question one word on each beat; once a verse is whole,
+# its beats switch to a colour picture and back (reference 3's two worlds).
+LIGHT_SCRIPT = [
+    (37.448, "panel", "isaiah92", dict(shown=1, entry="bloom")),
+    (38.040, "panel", "isaiah92", dict(shown=2)),
+    (38.609, "panel", "isaiah92", dict(shown=3)),
+    (39.259, "panel", "isaiah92", dict(shown=4)),
+    (39.816, "panel", "isaiah92", dict(shown=5)),
+    (40.414, "insert", ("elgreco", (1150, 2320, 560)), {}),
+    (41.001, "panel", "isaiah92", dict(shown=5)),
+    (41.593, "insert", ("vladimir", (2330, 1960, 700)), {}),
+    (42.179, "faces", None, {}),
+    (46.881, "panel", "isaiah96", dict(shown=1, entry="flash")),
+    (47.502, "panel", "isaiah96", dict(shown=2)),
+    (48.094, "panel", "isaiah96", dict(shown=3)),
+    (48.686, "panel", "isaiah96", dict(shown=4)),
+    (49.238, "insert", ("kazan", (1918, 1700, 760)), {}),
+    (49.865, "panel", "isaiah96", dict(shown=4)),
+    (50.457, "insert", ("vladimir", (2250, 2230, 560)), {}),
+    (51.072, "panel", "isaiah96", dict(shown=4)),
+    (51.635, "panel", "matthew1615", dict(shown=1, big=True)),
+    (52.233, "panel", "matthew1615", dict(shown=2, big=True)),
+    (52.808, "panel", "matthew1615", dict(shown=3, big=True)),
+    (53.418, "panel", "matthew1615", dict(shown=4, big=True)),
+    (54.004, "panel", "matthew1615", dict(shown=5, big=True)),
+    (54.596, "panel", "matthew1615", dict(shown=5, big=True)),
+    (54.805, "end", None, dict(mark_at=55.107)),
+]
+END_T = N / FPS + 1
+
+
+def build():
+    """The segments of the film, one for each event, in order; and the flashes of light."""
+    segs, flashes = [], []
+    script = NIGHT_SCRIPT + MOTHER_SCRIPT
+    prev = None
+    for k, (t0, op, arg, opt) in enumerate(script):
+        t1 = script[k + 1][0] if k + 1 < len(script) else 37.448
+        night = t0 < 18.53 - 1e-6
+        look = NIGHT if night else MOTHER
+        crops = NIGHT_CROPS if night else MOTHER_CROPS
+        if op in ("cut", "reveal"):
+            cx, cy, cw = crops[arg]
+            a = (cx, cy, cw)
+            b = (cx + 0.01 * cw, cy - 0.005 * cw, cw * 0.965)
+        elif op == "punch":
+            (px, py, pw) = prev["b"]
+            a = (px, py, pw / 1.12)
+            b = (px, py, pw / 1.16)
+        elif op in ("whole", "glimpse"):
+            z = WHOLE_STEP ** arg
+            a = (2635, 3000, 5728 / z)
+            b = (2635, 3000, 5728 / (z * 1.012))
+        sg = dict(t0=t0, t1=t1, kind="pic", src="elgreco" if night else "vladimir", a=a, b=b, whole=(op in ("whole", "glimpse")), **look)
+        sg["pool"] = (a[0], a[1], look["r"]) if op not in ("whole", "glimpse") else (2500, 2600, 0.95)
+        if op == "glimpse":   # in the silence, the icon seen for a moment, and the dark again
+            sg["light"] = [(t0, t0 + 0.36, opt["peak"], 0.0, lambda u: 1 - (1 - u) ** 2.4)]
+        if night and op in ("cut", "reveal") and arg in NIGHT_GAIN: sg["gain"] = NIGHT_GAIN[arg]
+        if op == "punch": sg["gain"] = prev["gain"]
+        if "whoosh" in opt: sg["whoosh"] = opt["whoosh"]
+        if op == "punch": sg["whoosh"] = dict(A=0.05, ox=0, oy=0, D=0.16)
+        if "light" in opt: sg["light"] = [(x0, x1, v0, v1, SYM) for (x0, x1, v0, v1) in opt["light"]]
+        if "crush" in opt: sg["crush"] = [(x0, x1, v0, v1, HOUSE if v0 > v1 else SYM) for (x0, x1, v0, v1) in opt["crush"]]
+        if "strobe" in opt: sg["strobe"] = opt["strobe"]
+        if op == "reveal":
+            pk = opt.get("peak", 0.9)
+            sg["light"] = [(t0, t0 + 0.42, pk, 0.0, lambda u: 1 - (1 - u) ** 2.2)]
+            flashes.append((t0, 0.55 * pk, 0, 0.06, 0, "strike"))
+        if "strike" in opt: flashes.append((t0, opt["strike"], 2, 0.11, 0, "strike"))
+        if "flick" in opt:
+            flashes.append((t0 + 0.04, opt["flick"], 0, 0.06, 0, "strike"))
+            flashes.append((t0 + 0.13, opt["flick"] * 0.6, 0, 0.05, 0, "strike"))
+        segs.append(sg)
+        prev = sg
+    segs[-1]["t1"] = 37.448
+    flashes.append((18.530, 1.00, 0, 0.10, 2, "white"))     # the drop
+    for k, (t0, op, arg, opt) in enumerate(LIGHT_SCRIPT):
+        t1 = LIGHT_SCRIPT[k + 1][0] if k + 1 < len(LIGHT_SCRIPT) else END_T
+        if op == "panel":
+            segs.append(dict(t0=t0, t1=t1, kind="panel", key=arg, shown=opt["shown"], big=opt.get("big", False), entry=opt.get("entry")))
+        elif op == "insert":
+            name, (cx, cy, cw) = arg
+            sg = dict(t0=t0, t1=t1, kind="pic", src=name, a=(cx, cy, cw), b=(cx, cy, cw * 0.95), whole=False, **LIGHT)
+            sg["pool"] = (cx, cy, LIGHT["r"])
+            sg["whoosh"] = dict(A=0.08, ox=0, oy=0, D=0.18)
+            segs.append(sg)
+        elif op == "faces":
+            segs.append(dict(t0=t0, t1=t1, kind="faces"))
+        elif op == "end":
+            segs.append(dict(t0=t0, t1=t1, kind="end", mark_at=opt["mark_at"]))
+    return segs, flashes
+
+
+SEGS, FLASHES = build()
+FLASHES.append((9.665, 0.60, 0, 0.06, 0, "strike"))   # the bass leaves: one flicker as the light closes
 
 # The faces of reference 3: swapped fast in place, the Child's eyes held still. (src, eye one, eye two) in source pixels.
 FACES = [
@@ -155,7 +303,7 @@ FACES = [
     ("smolensk16", (2965, 2012), (3075, 2012)),     # mid to late 16th century
     ("kazan", (1871, 1644), (1965, 1644)),          # 17th century
 ]
-BEATS = [42.179, 42.818, 43.328, 43.961, 44.577, 45.134, 45.708, 46.295]  # measured onsets
+BEATS = [42.179, 42.818, 43.328, 43.961, 44.577, 45.134, 45.708, 46.301]
 SWAPS = []
 for k, b in enumerate(BEATS):
     SWAPS.append(b)
@@ -165,7 +313,6 @@ SWAPS = SWAPS[:16]          # one face on each half beat, the eight twice over
 EYES_AT = (540, 790)
 EYE_GAP = 112
 WARP_D = 0.36               # the page-bend into the faces
-BEAT = 60 / 103.4           # the song's beat, for the words' pulses
 
 # ---------------------------------------------------------------- loading
 _cache = {}
@@ -306,16 +453,20 @@ def grade(x, sh, t, geo, ow, oh):
 
 
 def flash_at(i):
-    v = 0.0
-    for (te, peak, pre, decay, hold) in FLASHES:
+    """The light of the strikes (lightning, reference 1) and of the drop's white flash at frame i."""
+    v = {"strike": 0.0, "white": 0.0}
+    for (te, peak, pre, decay, hold, kind) in FLASHES:
         fe = first(te)
         if fe - pre <= i < fe:
-            v = max(v, peak * (0.35 + 0.65 * (i - (fe - pre) + 1) / (pre + 1)))
+            x = peak * (0.35 + 0.65 * (i - (fe - pre) + 1) / (pre + 1))
         elif fe <= i < fe + hold + 1:
-            v = max(v, peak)
+            x = peak
         elif i >= fe + hold + 1:
-            v = max(v, peak * math.exp(-(i - fe - hold) / (decay * FPS)))
-    return v
+            x = peak * math.exp(-(i - fe - hold) / (decay * FPS))
+        else:
+            x = 0.0
+        v[kind] = max(v[kind], x)
+    return v["strike"], v["white"]
 
 
 def light_strike(x, L, top_bias=True, white=False):
@@ -350,8 +501,10 @@ def picture_frame(sh, i, blur=True):
         a, b = sh["strobe"]
         if first(a) <= i < first(b) and ((i - first(a)) // 3) % 2 == 1:
             x = x * 0.0
-    L = flash_at(i)
-    x = light_strike(x, L, top_bias=sh.get("band", False), white=not sh.get("band", False))
+    Ls, Lw = flash_at(i)
+    if sh.get("band"):
+        x = light_strike(x, Ls, top_bias=True)
+    x = light_strike(x, Lw, top_bias=False, white=True)
     if sh.get("grain", 0) > 0 and x.max() > 0:
         x = np.clip(x + (grain(i, ow, oh) * sh["grain"])[..., None] * (0.35 + 0.65 * x), 0, 1)
     out = (x * 255 + 0.5).astype(np.uint8)
@@ -365,15 +518,21 @@ def picture_frame(sh, i, blur=True):
 # ---------------------------------------------------------------- the white panels (reference 3)
 _panels = {}
 
-def panel(key, big=False):
-    if (key, big) in _panels: return _panels[(key, big)]
+TOKENS = {   # what appears on each beat: (line, first character, last character)
+    "isaiah92": [(0, 0, 8), (1, 0, 10), (2, 0, 9), (3, 0, 8), (4, 0, 11)],
+    "isaiah96": [(0, 0, 11), (1, 0, 14), (2, 0, 12), (3, 0, 11)],
+    "matthew1615": [(0, 0, 3), (0, 4, 8), (1, 0, 6), (1, 7, 11), (2, 0, 5)],
+}
+
+
+def panel(key, big=False, shown=99):
+    ck = (key, big, shown)
+    if ck in _panels: return _panels[ck]
     line, cite, _ = WORDS[key]
-    im = Image.new("RGB", (W, H), (250, 250, 250))
-    # reference 3's white is not flat: a soft fall of light toward the corners
-    a = np.array(im).astype(np.float32) / 255
+    a = np.full((H, W, 3), 250 / 255, np.float32)
     u, v = grid(W, H)
     r2 = ((u - W / 2) / (W / 2)) ** 2 + ((v - H * 0.42) / (H / 2)) ** 2
-    a = a * np.clip(1 - 0.07 * r2, 0.86, 1)[..., None]
+    a = a * np.clip(1 - 0.07 * r2, 0.86, 1)[..., None]   # reference 3's white is not flat
     im = Image.fromarray((a * 255 + 0.5).astype(np.uint8))
     d = ImageDraw.Draw(im)
     size = 112 if big else 96
@@ -381,15 +540,19 @@ def panel(key, big=False):
     lines = line.split("\n")
     lh = round(size * 1.04)
     block = lh * len(lines) + 34 + 44
-    y = 760 - block // 2
+    y0 = 760 - block // 2
     for ln in lines:
-        wln = d.textlength(ln, font=f)
-        assert wln <= 860, f"{ln!r} is wider than 860 px"
-        d.text((110, y), ln, font=f, fill=(14, 14, 14))
-        y += lh
-    d.text((114, y + 34), cite, font=fc, fill=(88, 88, 88))
-    _panels[(key, big)] = np.array(im)
-    return _panels[(key, big)]
+        assert d.textlength(ln, font=f) <= 860, f"{ln!r} is wider than 860 px"
+    toks = TOKENS[key][:shown]
+    for (li, c0, c1) in toks:
+        ln = lines[li]
+        assert ln[c0:c1].strip(), (key, li, c0, c1)
+        x = 110 + d.textlength(ln[:c0], font=f)
+        d.text((x, y0 + li * lh), ln[c0:c1], font=f, fill=(14, 14, 14))
+    if shown >= len(TOKENS[key]):
+        d.text((114, y0 + len(lines) * lh + 34), cite, font=fc, fill=(88, 88, 88))
+    _panels[ck] = np.array(im)
+    return _panels[ck]
 
 
 def zoom_about(img, z, centre, bg):
@@ -400,33 +563,25 @@ def zoom_about(img, z, centre, bg):
                           borderMode=cv2.BORDER_CONSTANT, borderValue=bg)
 
 
-def pulse(t, t0):
-    """Reference 3's pulse: a small push on each beat that eases out, larger on the bar."""
-    z = 1.0
-    k = 0
-    tb = t0
-    while tb <= t + 1e-9:
-        amp = 0.020 if k % 4 == 0 else 0.008
-        z += amp * math.exp(-(t - tb) / 0.14)
-        k += 1
-        tb = t0 + k * BEAT
-    return z
+def kick(t, t0, amp=0.065):
+    """Reference 3's pulse: a push on the beat that eases out."""
+    return 1.0 + amp * math.exp(-max(0.0, t - t0) / 0.13)
 
 
 def panel_frame(sh, i):
     t = i / FPS
-    base = panel(sh["panel"], sh.get("big", False))
-    drift = 1.0 + 0.03 * SYM(min(1.0, (t - sh["t0"]) / (sh["t1"] - sh["t0"])))
-    img = zoom_about(base, drift * pulse(t, sh["t0"]), (540, 760), (250, 250, 250)).astype(np.float32) / 255
-    # entry: the words come up out of white (reference 3's white flash)
-    fe = first(sh["t0"])
-    hold = 3 if sh.get("flash_in") else 0
-    k = i - fe
-    if k < hold:
-        img = np.ones_like(img)
-    elif k < hold + 8:
-        a = (k - hold + 1) / 9
-        img = 1 - (1 - img) * a
+    base = panel(sh["key"], sh["big"], sh["shown"])
+    z = kick(t, sh["t0"]) * (1.0 + 0.012 * min(1.0, (t - sh["t0"]) / 0.6))
+    img = zoom_about(base, z, (540, 760), (250, 250, 250)).astype(np.float32) / 255
+    k = i - first(sh["t0"])
+    entry = sh.get("entry")
+    if entry in ("bloom", "flash"):
+        hold = 3
+        if k < hold:
+            img = np.ones_like(img)
+        elif k < hold + 8:
+            a = (k - hold + 1) / 9
+            img = 1 - (1 - img) * a
     return (np.clip(img, 0, 1) * 255 + 0.5).astype(np.uint8)
 
 
@@ -489,11 +644,11 @@ def whip_frame(i):
         if tk < cut:
             p = max(0.0, (tk - (cut - WHIP_OUT)) / WHIP_OUT)
             d = 1500 * p * p
-            img = panel("isaiah96")
+            img = panel("isaiah96", False, 4)
         else:
             p = min(1.0, (tk - cut) / WHIP_IN)
             d = -1500 * (1 - HOUSE(p))
-            img = panel("matthew1615", True)
+            img = panel("matthew1615", True, 1)
         M = np.float32([[1, 0, -DIRX * d], [0, 1, -DIRY * d]])
         f = cv2.warpAffine(img, M, (W, H), flags=cv2.INTER_LINEAR | cv2.WARP_INVERSE_MAP,
                            borderMode=cv2.BORDER_CONSTANT, borderValue=(250, 250, 250)).astype(np.float32)
@@ -513,7 +668,7 @@ def end_frame(sh, i):
     t = i / FPS
     fade_end = 55.10
     if t < fade_end:     # the question fades to black
-        base = panel("matthew1615", True).astype(np.float32)
+        base = panel("matthew1615", True, 5).astype(np.float32)
         a = max(0.0, 1 - (t - sh["t0"]) / (fade_end - sh["t0"]))
         return (base * SYM(a)).astype(np.uint8)
     out = np.zeros((H, W, 3), np.uint8)
@@ -540,19 +695,20 @@ def end_frame(sh, i):
 
 # ---------------------------------------------------------------- one frame
 def shot_at(i):
-    for sh in SHOTS:
+    for sh in SEGS:
         if first(sh["t0"]) <= i < first(sh["t1"]):
             return sh
-    return SHOTS[-1]
+    return SEGS[-1]
 
 
 def frame(i):
     if in_whip(i):
         return whip_frame(i)
     sh = shot_at(i)
-    if "src" in sh: return picture_frame(sh, i)
-    if "panel" in sh: return panel_frame(sh, i)
-    if sh.get("faces"): return faces_frame(sh, i)
+    k = sh["kind"]
+    if k == "pic": return picture_frame(sh, i)
+    if k == "panel": return panel_frame(sh, i)
+    if k == "faces": return faces_frame(sh, i)
     return end_frame(sh, i)
 
 
@@ -613,11 +769,10 @@ def cmd_render(sound):
 def cmd_check():
     check_words()
     print("words: every line is in data/bible")
-    for sh in SHOTS:
-        mid = (sh["t0"] + min(sh["t1"], N / FPS)) / 2
-        x = frame(first(mid)).astype(np.float32) / 255
-        lum = x @ np.float32([0.2126, 0.7152, 0.0722])
-        print(f"shot {sh['n']:2d} at {mid:5.2f} s: frame luma {lum.mean():.3f}, brightest tenth {np.percentile(lum, 90):.3f}")
+    print(f"segments: {len(SEGS)}; beats: {len(BEATS_ALL)}")
+    starts = sorted(first(sg["t0"]) for sg in SEGS)
+    missing = [b for b in BEATS_ALL if not any(abs(first(b) - st) <= 1 for st in starts) and not (42.17 < b < 46.89) and not (32.0 < b < 32.7) and not (35.6 < b < 37.44)]
+    print("beats with no event of their own:", missing)
 
 
 if __name__ == "__main__":

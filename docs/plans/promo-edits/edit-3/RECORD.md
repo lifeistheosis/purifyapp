@@ -20,6 +20,13 @@ He was right: the first cut was slow pushes and plain cuts, held back by his old
 - **The Mother (reference 2, the whisper):** every cut enters on a fast blurred zoom or pan (from the right, from above, from the left) that settles in about a third of a second; coverage of one picture, wider each cut; crush and a black-frame strobe on both of the song's stops.
 - **The light (reference 3, Musashi):** the words rise out of white; bold capitals that pulse on the beat (a larger push on the bar); a page-bend into the faces, which then swap in place on every half beat, the eight twice over, each with a small push; a white flash into the second verse; a motion-blur whip into the question; a fade to black; the cross, and the name typed under it, with no glow.
 
+## The third cut (his word on the second: "and I wanted every beat to have a retention point (image switch, movement, transition or something etc, image cut)")
+
+- **The beats:** the song's 94 beats, tracked from its own drums (101.7 a minute) and snapped to their onsets, with the bar lines on the drop; and the two bass entries that fall between beats in the build (2.28, 11.74 s).
+- **Every beat starts something.** The night: a cut to a new detail of the El Greco on each beat, the bar lines inside a strike of light, a punch closer on the beats between, flickers; in its two dark breaks each beat is a strike that shows a face and gives it back to the dark. The Mother: each bar a whoosh cut, wider each bar, then a punch and two inserts (her eyes close, the Child's face, the enamel, a medallion, His hand, the gem, His foot, her hand, the silver flowers); after the stop the whole icon comes closer on every beat; in the silence before the light, two glimpses of it out of the dark. The light: the verses one line on each beat and the question one word on each beat, each with a push; once a verse is whole, its beats switch to a colour picture and back; the faces swap on every half beat.
+- **Measured on the film:** the picture changes by a median of 0.093 (of 1) across the frames at a beat, and by 0.0026 between beats: 36 times more. 93 of 94 beats carry a clear change; the 94th (32.15 s) is inside the song's stop, where the strobe runs.
+- The Child and the lamb, the brightest paint in the El Greco, have their own exposure so they no longer blow out.
+
 ## What changed from the brief, and why
 
 - **The night is El Greco, not a Nativity icon.** At his word that Western art may be used and "the video has to be nice": *The Adoration of the Shepherds* (The Met, about 1605 to 1610) is a night where the newborn Child is the only light and every face is lit from Him, which is the light that edits. El Greco was trained as an icon painter in Crete before he went West. The icon first chosen (the Russian Museum's early 16th century Nativity, DRZh-1248, 9168 by 12000) is bright gold from edge to edge and was fetched but not used.
@@ -46,7 +53,7 @@ He was right: the first cut was slow pushes and plain cuts, held back by his old
 
 ## The Vault
 
-The first cut was sent to him on 2026-11-25 and is kept in that message; its renderer is commit 49be2652 on the branch, so it can be made again exactly. The second cut is `.promo/edit-3/out/the-cradle-cut2.mp4` (out of git).
+The first cut was sent to him on 2026-11-25 and is kept in that message; its renderer is commit 49be2652 on the branch, so it can be made again exactly. The second cut is `.promo/edit-3/out/the-cradle-cut2.mp4` and the third `.promo/edit-3/out/the-cradle-cut3.mp4` (out of git); both were sent to him.
 
 ## Cost
 
