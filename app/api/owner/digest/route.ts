@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
       total, new7, newPrev7, new30,
       sessions7, sessionsPrev7,
       views7Rows,
-      subs, cancelling, billingIssue, orders, costs, cancelled30, uncancelled30,
+      subs, cancelling, billingIssue, orders, costs, cancelled30, uncancelled30, buckets,
     ] = await Promise.all([
       count(admin.from("profiles").select("id", head)),
       count(admin.from("profiles").select("id", head).gte("joined_at", d7)),
@@ -79,6 +79,11 @@ export async function GET(req: NextRequest) {
       monthlyCosts(admin, new Date(now)),
       count(admin.from("plus_events").select("id", head).eq("type", "CANCELLATION").gte("event_at", d30)).catch(() => null),
       count(admin.from("plus_events").select("id", head).eq("type", "UNCANCELLATION").gte("event_at", d30)).catch(() => null),
+      // 28 days by UTC day (the same function Goals and Traffic read): 28 rows of numbers.
+      Promise.resolve(admin.rpc("analytics_daily_buckets", { p_since: iso(now - 28 * day), p_days: 28 })).then(
+        ({ data, error }) => (error || !Array.isArray(data) ? null : data),
+        () => null,
+      ),
     ]);
 
     const inputs: DigestInputs = {
@@ -112,6 +117,14 @@ export async function GET(req: NextRequest) {
       },
       costs: costs ? { monthlyCents: costs.cents, from: costs.from.source } : null,
       keep: cancelled30 === null || uncancelled30 === null ? null : { cancelled30, uncancelled30 },
+      daily: buckets
+        ? (buckets as { day: string; visitors: number | string; views: number | string; signups: number | string }[]).map((b) => ({
+            day: String(b.day).slice(0, 10),
+            visitors: Number(b.visitors) || 0,
+            views: Number(b.views) || 0,
+            signups: Number(b.signups) || 0,
+          }))
+        : null,
       sources: {
         revenuecat: !!process.env.REVENUECAT_V2_API_KEY && !!process.env.REVENUECAT_PROJECT_ID,
         mercury: !!process.env.MERCURY_API_TOKEN,

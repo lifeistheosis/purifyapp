@@ -30,6 +30,7 @@ const inputs: DigestInputs = {
   shop: { paidOrders30: 0, paidRevenueCents30: 0 },
   costs: { monthlyCents: 30000, from: "lines" },
   keep: { cancelled30: 6, uncancelled30: 1 },
+  daily: [{ day: "2026-11-24", visitors: 577, views: 4115, signups: 15 }],
   sources: { revenuecat: true, mercury: false, stripe: true },
 };
 
@@ -47,5 +48,6 @@ describe("buildDigest", () => {
     expect(digestHasNoPersonalData(buildDigest(inputs))).toBe(true);
     expect(digestHasNoPersonalData({ ...inputs, who: "someone@example.com" })).toBe(false);
     expect(digestHasNoPersonalData({ plus: { bySource: { "a@b.c": 1 } } })).toBe(false);
+    expect(digestHasNoPersonalData({ daily: [{ day: "someone@example.com" }] })).toBe(false);
   });
 });

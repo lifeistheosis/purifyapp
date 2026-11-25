@@ -62,6 +62,8 @@ export type DigestInputs = {
   keep: { cancelled30: number; uncancelled30: number } | null;
   /** Monthly running costs and where they came from (lib/admin/goals.server.ts, monthlyCosts). Null: not read. */
   costs: { monthlyCents: number; from: "bank" | "lines" } | null;
+  /** The last 28 UTC days, from analytics_daily_buckets, for finding when a number moved. Null: not read. */
+  daily: { day: string; visitors: number; views: number; signups: number }[] | null;
   /** Which outside sources this server holds a key for, so a chat can check Render's setup. */
   sources: { revenuecat: boolean; mercury: boolean; stripe: boolean };
 };
@@ -108,7 +110,12 @@ export function buildDigest(i: DigestInputs): Digest {
 export function digestHasNoPersonalData(d: unknown): boolean {
   const walk = (v: unknown, key: string): boolean => {
     if (typeof v === "number" || typeof v === "boolean" || v === null) return true;
-    if (typeof v === "string") return (key === "generatedAt" && !Number.isNaN(Date.parse(v))) || (key === "from" && (v === "bank" || v === "lines"));
+    if (typeof v === "string")
+      return (
+        (key === "generatedAt" && !Number.isNaN(Date.parse(v))) ||
+        (key === "from" && (v === "bank" || v === "lines")) ||
+        (key === "day" && /^\d{4}-\d{2}-\d{2}$/.test(v))
+      );
     if (typeof v === "object") {
       return Object.entries(v as Record<string, unknown>).every(
         ([k, x]) => !k.includes("@") && k.length <= 40 && walk(x, k),
