@@ -366,13 +366,17 @@ async function readDrops(
  */
 async function readOpenTrials(admin: SupabaseClient, now: Date, errors: string[]): Promise<OpenTrial[]> {
   const since = new Date(now.getTime() - 40 * 86_400_000).toISOString();
-  const { data, error } = await admin
-    .from("plus_events")
-    .select("user_id, type, period_type, environment, expires_at, event_at")
-    .not("user_id", "is", null)
-    .gte("event_at", since)
-    .order("event_at", { ascending: true })
-    .limit(5000);
+  // In pages: one request stops at 1,000 rows (lib/supabase/__tests__/rowCap.test.ts).
+  const { data, error } = await pageAllSettled((from, to) =>
+    admin
+      .from("plus_events")
+      .select("user_id, type, period_type, environment, expires_at, event_at")
+      .not("user_id", "is", null)
+      .gte("event_at", since)
+      .order("event_at", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, to),
+  );
   if (error) {
     errors.push(`free trials could not be read: ${error.message}`);
     return [];
@@ -400,13 +404,17 @@ async function readOpenTrials(admin: SupabaseClient, now: Date, errors: string[]
  */
 async function readRecentCancels(admin: SupabaseClient, now: Date, errors: string[]): Promise<RecentCancel[]> {
   const since = new Date(now.getTime() - 4 * 86_400_000).toISOString();
-  const { data, error } = await admin
-    .from("plus_events")
-    .select("event_id, user_id, type, reason, period_type, environment, event_at")
-    .not("user_id", "is", null)
-    .gte("event_at", since)
-    .order("event_at", { ascending: true })
-    .limit(5000);
+  // In pages: one request stops at 1,000 rows (lib/supabase/__tests__/rowCap.test.ts).
+  const { data, error } = await pageAllSettled((from, to) =>
+    admin
+      .from("plus_events")
+      .select("event_id, user_id, type, reason, period_type, environment, event_at")
+      .not("user_id", "is", null)
+      .gte("event_at", since)
+      .order("event_at", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, to),
+  );
   if (error) {
     errors.push(`recent cancellations could not be read: ${error.message}`);
     return [];
