@@ -22,6 +22,7 @@ import {
   type LifecycleRow,
   type OpenDrop,
   type OpenTrial,
+  type RecentCancel,
   type OrderMissingAddress,
   type PlannedEmail,
   type ReviewAskOrder,
@@ -35,6 +36,7 @@ import {
   claimClosingEmail,
   plusEndedEmail,
   trialEndingEmail,
+  cancelQuestionEmail,
   plusEndingEmail,
   welcomeEmail,
   type BillingStore,
@@ -87,6 +89,8 @@ function contentFor(p: PlannedEmail): EmailContent {
       return plusEndingEmail({ endsOn: p.endsOn, store: p.store as BillingStore, pro: p.pro });
     case "plus_ended":
       return plusEndedEmail({ pro: p.pro });
+    case "cancel_question":
+      return cancelQuestionEmail({ endsOn: p.endsOn });
     case "trial_ending":
       return trialEndingEmail({ endsOn: p.endsOn, store: p.store as BillingStore });
     case "winback":
@@ -388,9 +392,46 @@ async function readOpenTrials(admin: SupabaseClient, now: Date, errors: string[]
   return [...open.values()];
 }
 
+/**
+ * Members who turned renewal off in the last four days, from the kept events:
+ * the newest CANCELLATION for an unsubscribe with no UNCANCELLATION after it.
+ * Not a trial's cancel (the trial's own email covers it), not sandbox money.
+ * Best effort: a failed read is reported and no question goes.
+ */
+async function readRecentCancels(admin: SupabaseClient, now: Date, errors: string[]): Promise<RecentCancel[]> {
+  const since = new Date(now.getTime() - 4 * 86_400_000).toISOString();
+  const { data, error } = await admin
+    .from("plus_events")
+    .select("event_id, user_id, type, reason, period_type, environment, event_at")
+    .not("user_id", "is", null)
+    .gte("event_at", since)
+    .order("event_at", { ascending: true })
+    .limit(5000);
+  if (error) {
+    errors.push(`recent cancellations could not be read: ${error.message}`);
+    return [];
+  }
+  const open = new Map<string, RecentCancel>();
+  for (const e of (data ?? []) as {
+    event_id: string;
+    user_id: string;
+    type: string;
+    reason: string | null;
+    period_type: string | null;
+    environment: string | null;
+    event_at: string;
+  }[]) {
+    if (e.environment === "SANDBOX") continue;
+    if (e.type === "CANCELLATION" && e.reason === "UNSUBSCRIBE" && e.period_type !== "TRIAL") {
+      open.set(e.user_id, { userId: e.user_id, eventId: e.event_id, at: e.event_at });
+    } else if (e.type === "UNCANCELLATION" || e.type === "RENEWAL") open.delete(e.user_id);
+  }
+  return [...open.values()];
+}
+
 export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()): Promise<LifecycleReport> {
   const errors: string[] = [];
-  const [{ rows, renewalStateKnown }, { openDrops, claimedBy }, accounts, ordersMissingAddress, deliveredOrders, reviewAsks, trials] =
+  const [{ rows, renewalStateKnown }, { openDrops, claimedBy }, accounts, ordersMissingAddress, deliveredOrders, reviewAsks, trials, cancels] =
     await Promise.all([
       readRows(admin, errors),
       readDrops(admin, errors),
@@ -399,6 +440,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
       readDeliveredOrders(admin, now, errors),
       readReviewAsks(admin, now, errors),
       readOpenTrials(admin, now, errors),
+      readRecentCancels(admin, now, errors),
     ]);
 
   const plan = planLifecycle({
@@ -412,6 +454,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     deliveredOrders,
     reviewAsks,
     trials,
+    cancels,
   });
 
   // The day's bulk budget (lib/email/budget.ts). Account mail a reader is
@@ -428,6 +471,7 @@ export async function runLifecycle(admin: SupabaseClient, now: Date = new Date()
     plus_ending: emptyCounts(),
     plus_ended: emptyCounts(),
     trial_ending: emptyCounts(),
+    cancel_question: emptyCounts(),
     winback: emptyCounts(),
     claim_closing: emptyCounts(),
     welcome: emptyCounts(),

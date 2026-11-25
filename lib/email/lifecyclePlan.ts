@@ -49,6 +49,16 @@ export type LifecycleRow = EntitlementDates & {
  */
 export type OpenTrial = { userId: string; endsAt: string };
 
+/**
+ * A member who turned renewal off in the store, from the kept events: the
+ * newest CANCELLATION (reason UNSUBSCRIBE) with no UNCANCELLATION after it,
+ * and when it came.
+ */
+export type RecentCancel = { userId: string; eventId: string; at: string };
+
+/** The question goes within three days of the cancellation, never later. */
+export const CANCEL_QUESTION_MS = 3 * 86_400_000;
+
 /** How long before a trial turns paid its reminder goes: two days. */
 export const TRIAL_NOTICE_MS = 2 * 86_400_000;
 
@@ -58,6 +68,8 @@ export type PlannedEmail =
   /** `pro`: the plan ending is the higher one, which the email names (note 71, refinement 3). */
   | { kind: "plus_ending"; userId: string; dedupeKey: string; endsOn: Date; store: string | null; pro: boolean }
   | { kind: "plus_ended"; userId: string; dedupeKey: string; pro: boolean }
+  /** One question after a member turns renewal off: why? (docs/plans/keep-members.md, step 3) */
+  | { kind: "cancel_question"; userId: string; dedupeKey: string; endsOn: Date | null }
   /** A free trial that turns paid within two days (Level 1, his "do everything here", 2026-11-25). */
   | { kind: "trial_ending"; userId: string; dedupeKey: string; endsOn: Date; store: string | null }
   | { kind: "winback"; userId: string; dedupeKey: string; wasPro: boolean }
@@ -157,10 +169,33 @@ export function planLifecycle(input: {
   reviewAsks?: readonly ReviewAskOrder[];
   /** Free trials still running, for the reminder before they turn paid. */
   trials?: readonly OpenTrial[];
+  /** Members who turned renewal off lately, for the one question. */
+  cancels?: readonly RecentCancel[];
 }): PlannedEmail[] {
   const { rows, openDrops, claimedBy, now } = input;
   const t = now.getTime();
   const out: PlannedEmail[] = [];
+
+  // One question after a member turns renewal off, within three days, once per
+  // cancellation, and only while their renewal is still off (a member who
+  // turned it back on is not asked). Not to a trial's cancel: that member
+  // never paid, and the trial's own email says how it ends.
+  {
+    const byUser = new Map(rows.map((r) => [r.user_id, r]));
+    for (const c of input.cancels ?? []) {
+      const at = Date.parse(c.at);
+      const row = byUser.get(c.userId);
+      if (!Number.isFinite(at) || t - at < 0 || t - at > CANCEL_QUESTION_MS) continue;
+      if (row && row.auto_renew === true) continue;
+      const until = Math.max(Date.parse(row?.plus_until ?? "") || 0, Date.parse(row?.pro_until ?? "") || 0);
+      out.push({
+        kind: "cancel_question",
+        userId: c.userId,
+        dedupeKey: `cancel_question:${c.eventId}`,
+        endsOn: until > t ? new Date(until) : null,
+      });
+    }
+  }
 
   // The free trial's reminder: within two days of turning paid, and only while
   // renewal is on (a reader who turned it off gets "ends in three days"
