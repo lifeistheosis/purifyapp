@@ -254,3 +254,29 @@ describe("the free trial's reminder (Level 1, 2026-11-25)", () => {
     expect(plan([{ userId: "t1", endsAt: new Date(NOW.getTime() + DAY).toISOString() }], [row({ auto_renew: false })])).toHaveLength(0);
   });
 });
+
+describe("one question after a member turns renewal off (keep-members step 3)", () => {
+  const DAY = 86_400_000;
+  const row = (over: Partial<LifecycleRow>): LifecycleRow => ({
+    user_id: "c1",
+    plus_until: new Date(NOW.getTime() + 10 * DAY).toISOString(),
+    pro_until: null,
+    plus_source: "apple",
+    auto_renew: false,
+    billing_issue_at: null,
+    ...over,
+  });
+  const plan = (cancels: { userId: string; eventId: string; at: string }[], rows: LifecycleRow[] = [row({})]) =>
+    planLifecycle({ rows, openDrops: [], claimedBy: new Map(), now: NOW, cancels }).filter((p) => p.kind === "cancel_question");
+
+  it("asks within three days of the cancellation, once per cancellation, naming the end day", () => {
+    const due = plan([{ userId: "c1", eventId: "evt-1", at: new Date(NOW.getTime() - DAY).toISOString() }]);
+    expect(due).toHaveLength(1);
+    expect(due[0].dedupeKey).toBe("cancel_question:evt-1");
+    expect(due[0].kind === "cancel_question" && due[0].endsOn?.getTime()).toBe(NOW.getTime() + 10 * DAY);
+  });
+  it("does not ask late, nor a member who turned renewal back on", () => {
+    expect(plan([{ userId: "c1", eventId: "e", at: new Date(NOW.getTime() - 4 * DAY).toISOString() }])).toHaveLength(0);
+    expect(plan([{ userId: "c1", eventId: "e", at: new Date(NOW.getTime() - DAY).toISOString() }], [row({ auto_renew: true })])).toHaveLength(0);
+  });
+});

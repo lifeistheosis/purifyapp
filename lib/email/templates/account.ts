@@ -108,6 +108,28 @@ export function plusEndingEmail(opts: { endsOn: Date; store: BillingStore; pro?:
 }
 
 /**
+ * One question after a member turns renewal off (docs/plans/keep-members.md,
+ * step 3): why, answered by a reply in their own words, which reaches the
+ * support inbox as a request he can answer. No offer, no pressure, nothing to
+ * tap that a mail scanner could tap for them. His word, 2026-11-25.
+ */
+export function cancelQuestionEmail(opts: { endsOn: Date | null }): EmailContent {
+  return build({
+    eyebrow: "Membership",
+    subject: "Would you tell us why?",
+    heading: "Would you tell us why?",
+    paragraphs: [
+      opts.endsOn
+        ? `We saw that your Purify Plus membership is set to end on ${longDate(opts.endsOn)}. Thank you for the time you spent with it.`
+        : "We saw that your Purify Plus membership is set to end. Thank you for the time you spent with it.",
+      "May we ask one honest question: why are you leaving? Just reply to this email, even with a word: too expensive, not using it, something missing, or anything else.",
+      "Every reply is read, and it helps us make Purify better. Everything you saved stays with your account, and the library stays free.",
+    ],
+    action: { label: "Your account", href: url("/account") },
+  });
+}
+
+/**
  * Before a free trial turns paid (Level 1, 2026-11-25). Plain about what
  * happens and how to stop it: the price is the one the reader agreed to in the
  * store, which is the store's to state, so no figure is given here. No offer,
