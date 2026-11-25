@@ -7,3 +7,5 @@
 **His steps (Cloudflare, purifyapp.net; its DNS is his Cloudflare zone):** Network, IP Geolocation on; Rules, Transform Rules, Managed Transforms, "Add visitor location headers" on; the record proxied (orange cloud). Then `purifyapp.net/api/admin/geo-debug` signed in as admin (needs `ADMIN_DEBUG_ENABLED` in Render) shows `cloudflare` filled.
 
 **Open, each for his yes:** the health probe still asks ipwho.is directly, so the warning can stay while visits are placed by Cloudflare; once the headers are seen, the probe should warn only when no source places visits. If the free services are dropped entirely, the privacy page, which names ipwho.is, changes with it (his wording).
+
+**Confirmed live, 2026-11-25:** after both Cloudflare settings, geo-debug read `cloudflare: US, Florida, Hialeah` with latitude and longitude, from his own visit. New visits are placed by Cloudflare with no outside call; the free services are now a fallback only.
