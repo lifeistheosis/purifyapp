@@ -260,7 +260,15 @@ def frame(i):
         img = acc / 10
         x = grade(img, dict(sg, k=-1), t, geo)
     else:
-        img, geo = picture(sg, t)
+        j = C.hats_in(sg["t0"], i) if k >= 0 else 0
+        if j:                                                    # a hi-hat: an insert of the same painting
+            u = C.clamp01((t - sg["t0"]) / max(1e-3, sg["t1"] - sg["t0"]))
+            (ax, ay, aw), (bx, by, bw) = sg["a"], sg["b"]
+            cx, cy, w = ax + (bx - ax) * u, ay + (by - ay) * u, aw + (bw - aw) * u
+            side = 0.12 if j % 2 else -0.12
+            img, geo = C.view(sg["key"], cx + side * w, cy, w * (0.72 if j % 2 else 0.56), OW, OH)
+        else:
+            img, geo = picture(sg, t)
         x = grade(img, sg, t, geo)
     x = C.add_grain(x, i, 0.022)
     return C.in_band(C.u8(x), BAND)

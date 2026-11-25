@@ -50,6 +50,20 @@ STOP = (32.00, 32.705)         # the song stops; one faint sound inside (32.148)
 SILENCE = (35.85, 37.448)      # the song goes quiet; a sound at 36.27 and a click at 36.879
 END = N / FPS
 
+# The hi-hats between the beats (sound_hats.py writes hats.json). His word (2026-11-25): "match the hi hats too when
+# frame switches". A hat is a cut as a beat is; a hat in a roll (about 50 ms apart) is a stutter.
+HATS = [h["t"] for h in __import__("json").load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "hats.json")))["hats"]]
+
+
+def hats_in(t0, i):
+    """How many hats have fallen since the beat at t0, up to frame i (a hat cuts on its own frame, as a beat does):
+    the variant a beat's shot is showing."""
+    return sum(1 for h in HATS if t0 + 0.05 < h and first(h) <= i)
+
+
+def hats_between(t0, t1):
+    return sum(1 for h in HATS if t0 + 0.05 < h < t1 - 0.01)
+
 
 def first(t):
     """The frame that holds time t: a cut lands on its beat's frame, never after it."""

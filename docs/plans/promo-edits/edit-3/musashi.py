@@ -455,7 +455,49 @@ def final_frame(sg, t, i):
     return x
 
 
+CHRIST_ALL = ["traut", "huret", "acarracci", "beham", "straet", "schon_christ"]
+
+
+def next_seg(sg):
+    k = sg.get("k", -1)
+    return next((s for s in SEGS if s.get("k") == k + 1), None)
+
+
+def with_hats(sg, i):
+    """A hi-hat between beats is a cut in reference 3's own way: the next drawing swapped in place, the next face, or a
+    step further along the beat's own move."""
+    j = C.hats_in(sg["t0"], i)
+    if not j:
+        return sg
+    kind = sg["kind"]
+    s2 = dict(sg)
+    if kind == "swap" and sg.get("face"):
+        s2["face"] = MOTHER_SWAPS[(MOTHER_SWAPS.index(sg["face"]) + j) % len(MOTHER_SWAPS)]
+    elif kind == "quote" and sg.get("group"):
+        s2["group"] = GROUP_ORDER[(GROUP_ORDER.index(sg["group"]) + j) % len(GROUP_ORDER)]
+    elif kind == "question" and sg.get("face"):
+        f = CHRIST_ALL[(CHRIST_ALL.index(sg["face"]) + j) % len(CHRIST_ALL)]
+        s2["face"], s2["standing"] = f, f == "schon_christ"
+    elif kind == "colourface":
+        n = COLOUR_FACES.index(sg["face"])
+        s2["face"] = COLOUR_FACES[(n + j) % len(COLOUR_FACES)]
+        s2["entry"] = False
+    elif kind in ("colour", "final"):
+        nx = next_seg(sg)
+        n = C.hats_between(sg["t0"], sg["t1"])
+        f = j / (n + 1)
+        if kind == "final":
+            z1 = nx["zoom"] if nx and nx["kind"] == "final" else sg["zoom"] * 1.2
+            s2["zoom"] = sg["zoom"] + (z1 - sg["zoom"]) * f
+        else:
+            c0 = sg["crop"]
+            c1 = nx["crop"] if nx and nx["kind"] == "colour" and nx["key"] == sg["key"] else (c0[0], c0[1], c0[2] * 0.8)
+            s2["crop"] = tuple(a + (b - a) * f for a, b in zip(c0, c1))
+    return s2
+
+
 def body(sg, t, i):
+    sg = with_hats(sg, i)
     k = sg["kind"]
     if k == "black":
         return np.zeros((S, S, 3), np.float32)

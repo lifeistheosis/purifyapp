@@ -290,7 +290,12 @@ def frame(i):
     else:
         u = C.clamp01((t - sg["t0"]) / max(1e-3, sg["t1"] - sg["t0"]))
         (ax, ay, aw), (bx, by, bw) = sg["a"], sg["b"]
-        img, geo = C.view(sg["key"], ax + (bx - ax) * u, ay + (by - ay) * u, aw + (bw - aw) * u, OW, OH)
+        cx, cy, w = ax + (bx - ax) * u, ay + (by - ay) * u, aw + (bw - aw) * u
+        j = C.hats_in(sg["t0"], i)
+        if j:                          # a hi-hat: a cut closer into the same picture, towards its light
+            lx, ly = sg["light"] or (cx, cy)
+            cx, cy, w = cx + (lx - cx) * 0.5, cy + (ly - cy) * 0.5, w * (0.74 if j % 2 else 0.58)
+        img, geo = C.view(sg["key"], cx, cy, w, OW, OH)
         x = grade(img, sg, t, geo, i)
     x = C.add_grain(x, i, 0.050)
     return C.in_band(C.u8(x), BAND)
