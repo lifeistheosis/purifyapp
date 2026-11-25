@@ -9,3 +9,5 @@
 **Open, each for his yes:** the health probe still asks ipwho.is directly, so the warning can stay while visits are placed by Cloudflare; once the headers are seen, the probe should warn only when no source places visits. If the free services are dropped entirely, the privacy page, which names ipwho.is, changes with it (his wording).
 
 **Confirmed live, 2026-11-25:** after both Cloudflare settings, geo-debug read `cloudflare: US, Florida, Hialeah` with latitude and longitude, from his own visit. New visits are placed by Cloudflare with no outside call; the free services are now a fallback only.
+
+**The warning, fixed at his word ("yes fix the warning and push"):** the health probe reports OK when the admin's own request carries Cloudflare's country, and asks ipwho.is only when it does not (`app/api/admin/health/route.ts`, test in `lib/admin/__tests__/healthRoute.test.ts`). Main `1aea88f7`; the way back is `56e9000c`. The privacy page still names ipwho.is, which stays true while it is the fallback.
