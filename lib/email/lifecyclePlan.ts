@@ -42,12 +42,24 @@ export type LifecycleRow = EntitlementDates & {
   plus_source: string | null;
 };
 
+/**
+ * A free trial still running, from the kept RevenueCat events: the newest
+ * trial purchase of a reader with nothing after it (no renewal, expiration,
+ * cancellation or billing issue), and the day it turns paid.
+ */
+export type OpenTrial = { userId: string; endsAt: string };
+
+/** How long before a trial turns paid its reminder goes: two days. */
+export const TRIAL_NOTICE_MS = 2 * 86_400_000;
+
 export type OpenDrop = { id: string; title: string; claims_close_at: string | null };
 
 export type PlannedEmail =
   /** `pro`: the plan ending is the higher one, which the email names (note 71, refinement 3). */
   | { kind: "plus_ending"; userId: string; dedupeKey: string; endsOn: Date; store: string | null; pro: boolean }
   | { kind: "plus_ended"; userId: string; dedupeKey: string; pro: boolean }
+  /** A free trial that turns paid within two days (Level 1, his "do everything here", 2026-11-25). */
+  | { kind: "trial_ending"; userId: string; dedupeKey: string; endsOn: Date; store: string | null }
   | { kind: "winback"; userId: string; dedupeKey: string; wasPro: boolean }
   | { kind: "claim_closing"; userId: string; dedupeKey: string; dropTitle: string; closesAt: Date }
   | { kind: "welcome"; userId: string; dedupeKey: string }
@@ -143,10 +155,33 @@ export function planLifecycle(input: {
   deliveredOrders?: readonly DeliveredOrder[];
   /** Delivered orders with pieces not yet reviewed, for the review request. */
   reviewAsks?: readonly ReviewAskOrder[];
+  /** Free trials still running, for the reminder before they turn paid. */
+  trials?: readonly OpenTrial[];
 }): PlannedEmail[] {
   const { rows, openDrops, claimedBy, now } = input;
   const t = now.getTime();
   const out: PlannedEmail[] = [];
+
+  // The free trial's reminder: within two days of turning paid, and only while
+  // renewal is on (a reader who turned it off gets "ends in three days"
+  // instead). Its store from the entitlement, so the email names the right one.
+  if (input.renewalStateKnown !== false) {
+    const byUser = new Map(rows.map((r) => [r.user_id, r]));
+    for (const trial of input.trials ?? []) {
+      const end = Date.parse(trial.endsAt);
+      const row = byUser.get(trial.userId);
+      if (!Number.isFinite(end) || end <= t || end - t > TRIAL_NOTICE_MS) continue;
+      if (row?.auto_renew === false) continue;
+      const endsOn = new Date(end);
+      out.push({
+        kind: "trial_ending",
+        userId: trial.userId,
+        dedupeKey: `trial_ending:${trial.userId}:${isoDay(endsOn)}`,
+        endsOn,
+        store: row?.plus_source ?? null,
+      });
+    }
+  }
 
   // The care guide: once per order, five to thirty days after it was marked
   // delivered, long enough that it has been unpacked and short enough that it

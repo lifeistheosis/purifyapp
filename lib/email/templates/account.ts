@@ -107,6 +107,28 @@ export function plusEndingEmail(opts: { endsOn: Date; store: BillingStore; pro?:
   });
 }
 
+/**
+ * Before a free trial turns paid (Level 1, 2026-11-25). Plain about what
+ * happens and how to stop it: the price is the one the reader agreed to in the
+ * store, which is the store's to state, so no figure is given here. No offer,
+ * no pressure; cancelling stays one tap in the store.
+ */
+export function trialEndingEmail(opts: { endsOn: Date; store: BillingStore }): EmailContent {
+  const manage = manageSubscription(opts.store);
+  const day = longDate(opts.endsOn);
+  return build({
+    eyebrow: "Membership",
+    subject: `Your free trial of Plus ends on ${day}`,
+    heading: "Your free trial ends soon",
+    paragraphs: [
+      `Your free trial of Purify Plus ends on ${day}. After that it becomes a paid membership, at the price you agreed to in ${manage.label}, unless you cancel before then.`,
+      "If Plus has been helping your prayer and reading, there is nothing to do.",
+      `If you would rather not continue, you can cancel in ${manage.label} any time before ${day}, and the library stays free.`,
+    ],
+    action: { label: `Open ${manage.label}`, href: manage.href },
+  });
+}
+
 export function plusEndedEmail(opts: { pro?: boolean } = {}): EmailContent {
   const plan = planName(opts.pro);
   return build({
