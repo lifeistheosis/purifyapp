@@ -20,6 +20,14 @@ He was right: the first cut was slow pushes and plain cuts, held back by his old
 - **The Mother (reference 2, the whisper):** every cut enters on a fast blurred zoom or pan (from the right, from above, from the left) that settles in about a third of a second; coverage of one picture, wider each cut; crush and a black-frame strobe on both of the song's stops.
 - **The light (reference 3, Musashi):** the words rise out of white; bold capitals that pulse on the beat (a larger push on the bar); a page-bend into the faces, which then swap in place on every half beat, the eight twice over, each with a small push; a white flash into the second verse; a motion-blur whip into the question; a fade to black; the cross, and the name typed under it, with no glow.
 
+## The fourth cut (his words on the third: "that certain "bounce" (that very first bounce in that repeats) techniche is very vibe coded. and the pacing is very slow and the text bouncing in has the same bounce effect that is very vibecoded (strict rule)")
+
+- **No bounce, a strict rule now in CLAUDE.md, held by `lib/marketing/__tests__/noBounce.test.ts`** (it fails on the third cut's renderer and passes on the fourth). Gone: the opening push that landed, the punch in that settled on every jump, the pulses on the words, the push on each word, the page-bend that flattened into the faces, the whip that slowed as it arrived. Every move now runs at a steady speed; a jump closer is a straight cut.
+- **Twice the pace:** a cut on every half beat (about 0.3 s), 187 half beats in all, as reference 3 swaps its faces. The night cuts through the El Greco with a jump closer every fourth cut, strikes on the bar lines and the two bass entries, flickers between; its dark breaks strike on every half beat; the build closes on strikes that grow dimmer. The Mother cuts on every half beat, the bar lines wider each bar with a flash of white; after the stop the whole icon in straight steps, closer on each half beat.
+- **Measured on the film:** across all 187 half beats the picture changes by a median of 0.078 at a half beat against 0.0027 between them (29 times). The six quiet half beats are inside the song's own pause before the drop, its two stops and its silence before the light.
+- **A fault of the renderer, mended:** the fourth cut's frames are quick to draw, so they piled up waiting for the encoder until the machine ran out of memory and the film came out cut short twice; the renderer now hands out eight runs at a time.
+- **The words on white with a picture beside them**, as reference 3 sets its words beside its figure: a line on each beat (a word of the question on each beat), the picture changing on every half beat, faces that look out at the one asked under the question.
+
 ## The third cut (his word on the second: "and I wanted every beat to have a retention point (image switch, movement, transition or something etc, image cut)")
 
 - **The beats:** the song's 94 beats, tracked from its own drums (101.7 a minute) and snapped to their onsets, with the bar lines on the drop; and the two bass entries that fall between beats in the build (2.28, 11.74 s).
@@ -53,7 +61,7 @@ He was right: the first cut was slow pushes and plain cuts, held back by his old
 
 ## The Vault
 
-The first cut was sent to him on 2026-11-25 and is kept in that message; its renderer is commit 49be2652 on the branch, so it can be made again exactly. The second cut is `.promo/edit-3/out/the-cradle-cut2.mp4` and the third `.promo/edit-3/out/the-cradle-cut3.mp4` (out of git); both were sent to him.
+The first cut was sent to him on 2026-11-25 and is kept in that message; its renderer is commit 49be2652 on the branch, so it can be made again exactly. The second, third and fourth cuts are `.promo/edit-3/out/the-cradle-cut2.mp4`, `-cut3.mp4` and `-cut4.mp4` (out of git); each was sent to him.
 
 ## Cost
 

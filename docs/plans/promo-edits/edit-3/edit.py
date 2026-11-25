@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
-"""Promo edit 3, the Cradle, second cut: one look, the three references' editing styles, one per chapter.
+"""Promo edit 3, the Cradle, fourth cut: a cut on every half beat, and nothing that bounces.
 
-His word on the first cut (2026-11-25): "you barely even edited it. no effects. and not a single edit style used
-from our references". So each chapter now carries its reference's own devices (docs/plans/promo-edits/study-2026-11-25.md):
-  I, the night (reference 1, the storm): black and white in a widescreen band, film grain, cuts hidden inside flashes
-     of light, flickers inside shots, cuts into darkness at the breaks.
-  The drop: a white flash, and the band opens to the full screen on her eye.
-  II, the Mother (reference 2, the whisper): every cut enters on a fast blurred zoom or pan that settles into a drift;
-     coverage of one picture, wider each cut; crush and strobe on the song's stops.
-  III, the light (reference 3, Musashi): white flash entries, bold words that pulse on the beat, a page-bend warp into
-     the faces, the faces swapped fast in place, a motion-blur whip into the question, the name typed at the end.
-Never: rays, sparkle, glow behind words or the mark, parchment.
+His words on the third cut (2026-11-25): "that certain "bounce" (that very first bounce in that repeats) techniche is
+very vibe coded. and the pacing is very slow and the text bouncing in has the same bounce effect that is very
+vibecoded (strict rule)". So: nothing pops and settles (CLAUDE.md, "No bounce"); every move runs at a steady speed;
+pace comes from cuts, one on every half beat (about 0.3 s), as reference 3 swaps its faces.
+  I, the night (reference 1): black and white in a widescreen band, film grain; a cut on every half beat, each bar
+     line inside a strike of light; in the dark breaks each half beat is a strike that shows a face and gives it back.
+  The drop: white, and the band opens to the full screen on her eye.
+  II, the Mother (reference 2): a cut on every half beat, each bar's first shot wider than the last, a flash of white
+     on each bar line; crush and strobe on the song's stops; after the stop the whole icon in steps, closer each half beat.
+  III, the light (reference 3): the words in ink on white, a line on each beat and the question a word on each beat,
+     a picture beside them changing on every half beat; the faces cut on every half beat; a whip at a steady speed into
+     the question; a fade; the cross and the name typed under it.
+Never: rays, sparkle, glow behind words or the mark, parchment, bounce.
 
 Run from the repository root, with a Python that has numpy, opencv-python-headless and pillow:
   python edit.py <work> still <seconds> [...]   stills into <work>/stills/
-  python edit.py <work> sheet                   eleven stills in one picture
+  python edit.py <work> sheet [seconds ...]     stills in one picture
   python edit.py <work> render <sound.mp3>      every frame, then <work>/out/the-cradle.mp4
-  python edit.py <work> check                   the words against data/bible, and the light of each shot
+  python edit.py <work> check                   the words against data/bible, and an event for every half beat
 <work> holds raw/ (the pictures, out of git) and font/ (DM Sans 400, 500, 700).
 """
 import json, math, os, subprocess, sys
@@ -124,173 +127,157 @@ MOTHER_CROPS = {  # the Vladimir in its silver cover, full screen
     "HD": (1650, 3900, 900), "SV": (600, 3000, 1000), "FH": (2635, 3000, 3375),
 }
 
-# The night (reference 1). cut: a new detail; punch: the same picture, a jump closer; reveal: in the dark, a strike of
-# lightning shows a detail and the dark takes it back. strike: a cut inside a flash; flick: a flicker inside the shot.
-NIGHT_SCRIPT = [
-    (0.000, "cut", "W", dict(whoosh=dict(A=0.32, ox=0, oy=0, D=0.50), light=[(0.00, 0.60, 0.70, 1.0)])),
-    (0.209, "punch", None, {}),
-    (0.795, "cut", "SK", dict(flick=0.50)),
-    (1.393, "punch", None, {}),
-    (1.985, "cut", "CH", dict(flick=0.60)),
-    (2.281, "cut", "SA", dict(strike=0.95)),
-    (2.572, "punch", None, {}),
-    (3.170, "cut", "SP", {}),
-    (3.756, "punch", None, dict(flick=0.40)),
-    (4.342, "cut", "SY", dict(strike=0.95)),
-    (4.934, "punch", None, {}),
-    (5.526, "cut", "KF", {}),
-    (6.118, "punch", None, dict(flick=0.50)),
-    (6.716, "cut", "MJ", dict(strike=0.95)),
-    (7.303, "punch", None, {}),
-    (7.895, "cut", "JF", dict(flick=0.50)),
-    (8.487, "cut", "MF", {}),
-    (9.085, "cut", "LB", dict(strike=0.95, light=[(9.665, 9.95, 1.0, 0.0)])),
-    (10.257, "reveal", "JF", dict(peak=0.95)),
-    (10.855, "reveal", "SA", dict(peak=0.95)),
-    (11.436, "reveal", "MF", dict(peak=0.95)),
-    (11.738, "cut", "MH", dict(strike=0.95)),
-    (12.028, "punch", None, {}),
-    (12.626, "cut", "CC", {}),
-    (13.212, "punch", None, {}),
-    (13.804, "cut", "CX", dict(strike=0.95)),
-    (14.396, "punch", None, {}),
-    (14.988, "cut", "MF", {}),
-    (15.581, "cut", "CC", dict(flick=0.55)),
-    (16.167, "cut", "CX", dict(strike=0.95, light=[(16.63, 16.76, 1.0, 0.0)])),
-    (16.765, "reveal", "CX", dict(peak=0.75)),
-    (17.357, "reveal", "MF", dict(peak=0.55)),
-    (18.007, "reveal", "CC", dict(peak=0.42)),
-]
-# The Mother (reference 2): each bar a whoosh cut, wider each bar; a punch; two quick inserts.
-MOTHER_SCRIPT = [
-    (18.530, "cut", "E1", dict(whoosh=dict(A=0.24, ox=0, oy=0, D=0.42))),
-    (19.180, "punch", None, {}),
-    (19.720, "cut", "E2", {}),
-    (20.312, "cut", "CF", {}),
-    (20.904, "cut", "FF", dict(whoosh=dict(A=0.10, ox=260, oy=0, D=0.34))),
-    (21.496, "punch", None, {}),
-    (22.082, "cut", "EN", {}),
-    (22.674, "cut", "MD", {}),
-    (23.266, "cut", "EM", dict(whoosh=dict(A=0.14, ox=0, oy=-220, D=0.34))),
-    (23.853, "punch", None, {}),
-    (24.433, "cut", "HN", {}),
-    (25.037, "cut", "CF", {}),
-    (25.629, "cut", "TS", dict(whoosh=dict(A=0.12, ox=-260, oy=0, D=0.34))),
-    (26.221, "punch", None, {}),
-    (26.807, "cut", "GM", {}),
-    (27.440, "cut", "FT", {}),
-    (27.992, "cut", "SH", dict(whoosh=dict(A=0.18, ox=0, oy=0, D=0.36))),
-    (28.543, "punch", None, {}),
-    (29.176, "cut", "HD", {}),
-    (29.739, "cut", "SV", {}),
-    (30.360, "cut", "FH", dict(whoosh=dict(A=0.10, ox=0, oy=200, D=0.34))),
-    (30.952, "punch", None, {}),
-    (31.539, "cut", "E1", dict(crush=[(32.00, 32.12, 0.0, 0.52)], strobe=(32.00, 32.705))),
-    (32.705, "whole", 0, dict(crush=[(32.705, 33.30, 0.55, 0.0)])),
-    (33.315, "whole", 1, {}),
-    (33.907, "whole", 2, {}),
-    (34.458, "whole", 3, {}),
-    (35.045, "whole", 4, dict(crush=[(35.683, 36.25, 0.0, 1.0)], strobe=(35.683, 36.25))),
-    (36.270, "glimpse", 4, dict(peak=0.85)),
-    (36.879, "glimpse", 3, dict(peak=0.45)),
-]
-WHOLE_STEP = 1.075   # the whole icon comes closer by this much on each beat after the stop
+# ---------------------------------------------------------------- the half beats
+HALF = []
+for k, b in enumerate(BEATS_ALL):
+    HALF.append(b)
+    if k + 1 < len(BEATS_ALL):
+        HALF.append(round((b + BEATS_ALL[k + 1]) / 2, 3))
+BARS_NIGHT = [1.985, 4.342, 6.716, 9.085, 13.804, 16.167]   # bar lines of the build (the bars fall on the drop)
+BASS_IN_SLOT = [2.278, 11.732]                              # the two bass entries fall on half beats
+BARS_MOTHER = [18.530, 20.904, 23.266, 25.629, 27.992, 30.360]
 
-# The light (reference 3): the verses one line on each beat, the question one word on each beat; once a verse is whole,
-# its beats switch to a colour picture and back (reference 3's two worlds).
-LIGHT_SCRIPT = [
-    (37.448, "panel", "isaiah92", dict(shown=1, entry="bloom")),
-    (38.040, "panel", "isaiah92", dict(shown=2)),
-    (38.609, "panel", "isaiah92", dict(shown=3)),
-    (39.259, "panel", "isaiah92", dict(shown=4)),
-    (39.816, "panel", "isaiah92", dict(shown=5)),
-    (40.414, "insert", ("elgreco", (1150, 2320, 560)), {}),
-    (41.001, "panel", "isaiah92", dict(shown=5)),
-    (41.593, "insert", ("vladimir", (2330, 1960, 700)), {}),
-    (42.179, "faces", None, {}),
-    (46.881, "panel", "isaiah96", dict(shown=1, entry="flash")),
-    (47.502, "panel", "isaiah96", dict(shown=2)),
-    (48.094, "panel", "isaiah96", dict(shown=3)),
-    (48.686, "panel", "isaiah96", dict(shown=4)),
-    (49.238, "insert", ("kazan", (1918, 1700, 760)), {}),
-    (49.865, "panel", "isaiah96", dict(shown=4)),
-    (50.457, "insert", ("vladimir", (2250, 2230, 560)), {}),
-    (51.072, "panel", "isaiah96", dict(shown=4)),
-    (51.635, "panel", "matthew1615", dict(shown=1, big=True)),
-    (52.233, "panel", "matthew1615", dict(shown=2, big=True)),
-    (52.808, "panel", "matthew1615", dict(shown=3, big=True)),
-    (53.418, "panel", "matthew1615", dict(shown=4, big=True)),
-    (54.004, "panel", "matthew1615", dict(shown=5, big=True)),
-    (54.596, "panel", "matthew1615", dict(shown=5, big=True)),
-    (54.805, "end", None, dict(mark_at=55.107)),
+# The night cuts through El Greco's picture in this order, again and again; a jump is the same detail, closer.
+NIGHT_SEQ = ["W", "SK", "SA", "SP", "SY", "CH", "KF", "MJ", "JF", "MF", "MH", "LB", "CC", "CX",
+             "SA", "W", "SP", "MF", "JF", "SY", "SK", "CC", "MH", "CH", "KF", "MJ", "CX", "LB"]
+NIGHT_REVEALS = ["JF", "SA", "MF", "SP", "SY", "MJ", "CH"]
+NIGHT_CLOSING = [("CX", 0.80), ("MF", 0.66), ("CC", 0.52), ("JF", 0.40), ("CX", 0.30)]
+# The Mother: each bar's first shot wider than the last bar's; the half beats between cut to details.
+MOTHER_BAR = ["E1", "FF", "EM", "TS", "SH", "FH"]
+MOTHER_SEQ = ["E2", "CF", "EN", "MD", "HN", "GM", "FT", "HD", "SV", "E2", "CF", "MD", "EN", "GM", "HN", "HD", "FT", "SV",
+              "CF", "E2", "EN", "GM", "MD", "HD", "SV", "HN", "FT", "CF", "E2", "EN", "MD", "GM", "HN", "HD", "FT", "SV"]
+WHOLE_STEP = 1.06
+
+# The light: pictures that stand beside the words on white, changing on every half beat. (src, centre and width.)
+WINDOW = (110, 960, 790, 540)    # x, y, width, height of the picture on the white page (clear of the buttons on the right)
+WINDOW_SEQ = [
+    ("vladimir", (2330, 1960, 900)), ("berlinghiero", (1886, 1578, 900)), ("elgreco", (1250, 2310, 820)),
+    ("hodegetria14", (1917, 1640, 830)), ("vladimir", (1650, 1600, 900)), ("bellini65", (1708, 1500, 1000)),
+    ("kazan", (1918, 1660, 700)), ("vladimir", (1200, 1250, 760)), ("bellini", (2243, 1430, 920)),
+    ("smolensk16", (3020, 2030, 800)), ("vladimir", (2258, 2228, 640)), ("hodegetria15", (2098, 1700, 460)),
+    ("vladimir", (2640, 3800, 900)), ("elgreco", (1530, 1590, 700)),
 ]
+QUESTION_SEQ = [   # for the question: faces that look out at the one asked
+    ("vladimir", (2330, 1960, 760)), ("kazan", (1918, 1660, 640)), ("hodegetria14", (1917, 1640, 760)),
+    ("bellini65", (1708, 1500, 900)), ("smolensk16", (3020, 2030, 760)), ("berlinghiero", (1886, 1578, 820)),
+    ("vladimir", (2258, 2228, 600)),
+]
+LIGHT_LINES = {   # the beats on which each line, or each word of the question, arrives
+    "isaiah92": [37.448, 38.040, 38.609, 39.259, 39.816],
+    "isaiah96": [46.881, 47.502, 48.094, 48.686],
+    "matthew1615": [51.635, 52.233, 52.808, 53.418, 54.004],
+}
 END_T = N / FPS + 1
 
 
+def slots(a, b):
+    return [h for h in HALF if a - 1e-6 <= h < b - 1e-6]
+
+
 def build():
-    """The segments of the film, one for each event, in order; and the flashes of light."""
+    """Every segment of the film, one for each half beat, in order; and the strikes and flashes of light."""
     segs, flashes = [], []
-    script = NIGHT_SCRIPT + MOTHER_SCRIPT
-    prev = None
-    for k, (t0, op, arg, opt) in enumerate(script):
-        t1 = script[k + 1][0] if k + 1 < len(script) else 37.448
-        night = t0 < 18.53 - 1e-6
-        look = NIGHT if night else MOTHER
-        crops = NIGHT_CROPS if night else MOTHER_CROPS
-        if op in ("cut", "reveal"):
-            cx, cy, cw = crops[arg]
-            a = (cx, cy, cw)
-            b = (cx + 0.01 * cw, cy - 0.005 * cw, cw * 0.965)
-        elif op == "punch":
-            (px, py, pw) = prev["b"]
-            a = (px, py, pw / 1.12)
-            b = (px, py, pw / 1.16)
-        elif op in ("whole", "glimpse"):
-            z = WHOLE_STEP ** arg
-            a = (2635, 3000, 5728 / z)
-            b = (2635, 3000, 5728 / (z * 1.012))
-        sg = dict(t0=t0, t1=t1, kind="pic", src="elgreco" if night else "vladimir", a=a, b=b, whole=(op in ("whole", "glimpse")), **look)
-        sg["pool"] = (a[0], a[1], look["r"]) if op not in ("whole", "glimpse") else (2500, 2600, 0.95)
-        if op == "glimpse":   # in the silence, the icon seen for a moment, and the dark again
-            sg["light"] = [(t0, t0 + 0.36, opt["peak"], 0.0, lambda u: 1 - (1 - u) ** 2.4)]
-        if night and op in ("cut", "reveal") and arg in NIGHT_GAIN: sg["gain"] = NIGHT_GAIN[arg]
-        if op == "punch": sg["gain"] = prev["gain"]
-        if "whoosh" in opt: sg["whoosh"] = opt["whoosh"]
-        if op == "punch": sg["whoosh"] = dict(A=0.05, ox=0, oy=0, D=0.16)
-        if "light" in opt: sg["light"] = [(x0, x1, v0, v1, SYM) for (x0, x1, v0, v1) in opt["light"]]
-        if "crush" in opt: sg["crush"] = [(x0, x1, v0, v1, HOUSE if v0 > v1 else SYM) for (x0, x1, v0, v1) in opt["crush"]]
-        if "strobe" in opt: sg["strobe"] = opt["strobe"]
-        if op == "reveal":
-            pk = opt.get("peak", 0.9)
-            sg["light"] = [(t0, t0 + 0.42, pk, 0.0, lambda u: 1 - (1 - u) ** 2.2)]
-            flashes.append((t0, 0.55 * pk, 0, 0.06, 0, "strike"))
-        if "strike" in opt: flashes.append((t0, opt["strike"], 2, 0.11, 0, "strike"))
-        if "flick" in opt:
-            flashes.append((t0 + 0.04, opt["flick"], 0, 0.06, 0, "strike"))
-            flashes.append((t0 + 0.13, opt["flick"] * 0.6, 0, 0.05, 0, "strike"))
+
+    def pic(t0, t1, srcname, crop, look, push=0.05, **kw):
+        cx, cy, cw = crop
+        sg = dict(t0=t0, t1=t1, kind="pic", src=srcname, a=(cx, cy, cw), b=(cx + 0.012 * cw, cy - 0.006 * cw, cw * (1 - push)),
+                  whole=False, **look)
+        sg["pool"] = (cx, cy, look["r"])
+        sg.update(kw)
         segs.append(sg)
-        prev = sg
-    segs[-1]["t1"] = 37.448
-    flashes.append((18.530, 1.00, 0, 0.10, 2, "white"))     # the drop
-    for k, (t0, op, arg, opt) in enumerate(LIGHT_SCRIPT):
-        t1 = LIGHT_SCRIPT[k + 1][0] if k + 1 < len(LIGHT_SCRIPT) else END_T
-        if op == "panel":
-            segs.append(dict(t0=t0, t1=t1, kind="panel", key=arg, shown=opt["shown"], big=opt.get("big", False), entry=opt.get("entry")))
-        elif op == "insert":
-            name, (cx, cy, cw) = arg
-            sg = dict(t0=t0, t1=t1, kind="pic", src=name, a=(cx, cy, cw), b=(cx, cy, cw * 0.95), whole=False, **LIGHT)
-            sg["pool"] = (cx, cy, LIGHT["r"])
-            sg["whoosh"] = dict(A=0.08, ox=0, oy=0, D=0.18)
-            segs.append(sg)
-        elif op == "faces":
-            segs.append(dict(t0=t0, t1=t1, kind="faces"))
-        elif op == "end":
-            segs.append(dict(t0=t0, t1=t1, kind="end", mark_at=opt["mark_at"]))
+        return sg
+
+    # ---- I, the night
+    times = [0.0] + slots(0.2, 18.53)
+    n = 0
+    for k, t0 in enumerate(times):
+        t1 = times[k + 1] if k + 1 < len(times) else 18.53
+        if 9.66 <= t0 < 11.73:        # the dark break: a strike shows a face, the dark takes it back
+            key = NIGHT_REVEALS[(k) % len(NIGHT_REVEALS)]
+            sg = pic(t0, t1, "elgreco", NIGHT_CROPS[key], NIGHT, gain=NIGHT_GAIN.get(key, NIGHT["gain"]))
+            sg["light"] = [(t0, t0 + 0.26, 0.95, 0.0, lambda u: 1 - (1 - u) ** 2.2)]
+            flashes.append((t0, 0.55, 0, 0.05, 0, "strike"))
+            continue
+        if t0 >= 16.62:               # the closing before the drop: each strike dimmer, then black for the pause
+            idx = len([x for x in times if 16.62 <= x < t0])
+            if idx < len(NIGHT_CLOSING) and t0 < 18.24:
+                key, pk = NIGHT_CLOSING[idx]
+                sg = pic(t0, t1, "elgreco", NIGHT_CROPS[key], NIGHT, gain=NIGHT_GAIN.get(key, NIGHT["gain"]))
+                sg["light"] = [(t0, t0 + 0.26, pk, 0.0, lambda u: 1 - (1 - u) ** 2.2)]
+                flashes.append((t0, 0.5 * pk, 0, 0.05, 0, "strike"))
+            else:
+                segs.append(dict(t0=t0, t1=t1, kind="black"))
+            continue
+        key = NIGHT_SEQ[n % len(NIGHT_SEQ)]
+        n += 1
+        crop = NIGHT_CROPS[key]
+        if n % 4 == 0:                # a jump: the detail before it, closer, cut straight in
+            px, py, pw = segs[-1]["b"]
+            crop = (px, py, pw / 1.3)
+            key = None
+        sg = pic(t0, t1, "elgreco", crop, NIGHT, gain=NIGHT_GAIN.get(key, NIGHT["gain"]) if key else segs[-1]["gain"])
+        if any(abs(t0 - b) < 0.02 for b in BARS_NIGHT + BASS_IN_SLOT):
+            flashes.append((t0, 0.95, 2, 0.10, 0, "strike"))
+        if 9.0 <= t0 < 9.66:          # the bass leaves: the light closes
+            sg["light"] = [(9.665, 9.90, 1.0, 0.0, SYM)]
+    flashes.append((0.0, 0.85, 0, 0.12, 0, "strike"))          # the film opens on a strike
+    for t in (0.502, 3.47, 5.82, 7.6, 12.93, 15.28):           # flickers between the bar lines
+        flashes.append((t + 0.05, 0.45, 0, 0.05, 0, "strike"))
+
+    # ---- the drop, and II, the Mother
+    flashes.append((18.530, 1.00, 0, 0.10, 2, "white"))
+    times = slots(18.53, 32.0)
+    m = 0
+    for k, t0 in enumerate(times):
+        t1 = times[k + 1] if k + 1 < len(times) else 32.0
+        bar = [j for j, b in enumerate(BARS_MOTHER) if abs(t0 - b) < 0.02]
+        if bar:
+            key = MOTHER_BAR[bar[0]]
+            if t0 > 18.6:
+                flashes.append((t0, 0.55, 0, 0.06, 1, "white"))
+        else:
+            key = MOTHER_SEQ[m % len(MOTHER_SEQ)]
+            m += 1
+        pic(t0, t1, "vladimir", MOTHER_CROPS[key], MOTHER)
+    # the stop: the last shot is crushed under a strobe
+    pic(32.0, 32.705, "vladimir", MOTHER_CROPS["E1"], MOTHER, crush=[(32.00, 32.12, 0.0, 0.52, SYM)], strobe=(32.00, 32.705))
+    # after the stop: the whole icon, closer on each half beat, cut straight
+    times = slots(32.705, 35.683)
+    for k, t0 in enumerate(times):
+        t1 = times[k + 1] if k + 1 < len(times) else 35.683
+        z = WHOLE_STEP ** k
+        sg = pic(t0, t1, "vladimir", (2635, 3000 - 60 * k, 5728 / z), MOTHER, push=0.015, whole=True)
+        sg["pool"] = (2500, 2600, 0.95)
+        if k == 0:
+            sg["crush"] = [(32.705, 33.0, 0.55, 0.0, SYM)]
+    z = WHOLE_STEP ** len(times)
+    sg = pic(35.683, 36.25, "vladimir", (2635, 3000 - 60 * len(times), 5728 / z), MOTHER, push=0.015, whole=True,
+             crush=[(35.683, 36.20, 0.0, 1.0, SYM)], strobe=(35.683, 36.25))
+    sg["pool"] = (2500, 2600, 0.95)
+    segs.append(dict(t0=36.25, t1=36.27, kind="black"))
+    for (t0, t1, k, pk) in ((36.270, 36.879, 4, 0.85), (36.879, 37.448, 3, 0.45)):   # two glimpses in the silence
+        sg = pic(t0, t1, "vladimir", (2635, 3000, 5728 / WHOLE_STEP ** k), MOTHER, push=0.0, whole=True)
+        sg["pool"] = (2500, 2600, 0.95)
+        sg["light"] = [(t0, t0 + 0.36, pk, 0.0, lambda u: 1 - (1 - u) ** 2.4)]
+
+    # ---- III, the light
+    def page(key, t0, t1, seq, offset, big=False, entry=None):
+        lines = LIGHT_LINES[key]
+        for k, ts in enumerate(slots(t0, t1)):
+            te = slots(t0, t1)[k + 1] if k + 1 < len(slots(t0, t1)) else t1
+            shown = len([x for x in lines if x <= ts + 1e-6])
+            segs.append(dict(t0=ts, t1=te, kind="panel", key=key, shown=max(1, shown), big=big,
+                             entry=entry if k == 0 else None, window=seq[(offset + k) % len(seq)]))
+    page("isaiah92", 37.448, 42.179, WINDOW_SEQ, 0, entry="bloom")
+    segs.append(dict(t0=42.179, t1=46.881, kind="faces"))
+    page("isaiah96", 46.881, 51.635, WINDOW_SEQ, 6, entry="flash")
+    page("matthew1615", 51.635, 54.805, QUESTION_SEQ, 0, big=True)
+    segs.append(dict(t0=54.805, t1=END_T, kind="end", mark_at=55.107))
+    segs.sort(key=lambda sg: sg["t0"])
     return segs, flashes
 
 
 SEGS, FLASHES = build()
-FLASHES.append((9.665, 0.60, 0, 0.06, 0, "strike"))   # the bass leaves: one flicker as the light closes
 
 # The faces of reference 3: swapped fast in place, the Child's eyes held still. (src, eye one, eye two) in source pixels.
 FACES = [
@@ -312,7 +299,6 @@ for k, b in enumerate(BEATS):
 SWAPS = SWAPS[:16]          # one face on each half beat, the eight twice over
 EYES_AT = (540, 790)
 EYE_GAP = 112
-WARP_D = 0.36               # the page-bend into the faces
 
 # ---------------------------------------------------------------- loading
 _cache = {}
@@ -398,21 +384,10 @@ def view(name, cx, cy, cw, ow, oh, whole=False):
 
 
 def camera(sh, t):
-    """The crop at time t, with reference 2's entry: a fast zoom and pan that settles."""
+    """The crop at time t: a move at a steady speed from the shot's start to its end."""
     p = min(1.0, max(0.0, (t - sh["t0"]) / (sh["t1"] - sh["t0"])))
-    e = SYM(p)
     (ax, ay, aw), (bx, by, bw) = sh["a"], sh["b"]
-    cx, cy, cw = ax + (bx - ax) * e, ay + (by - ay) * e, aw + (bw - aw) * e
-    wh = sh.get("whoosh")
-    if wh:
-        tau = t - sh["t0"]
-        if tau < wh["D"]:
-            k = 1 - HOUSE(max(0.0, tau) / wh["D"])
-            ow = W
-            cw = cw / (1 + wh["A"] * k)
-            cx -= wh["ox"] * k * cw / ow
-            cy -= wh["oy"] * k * cw / ow
-    return cx, cy, cw
+    return ax + (bx - ax) * p, ay + (by - ay) * p, aw + (bw - aw) * p
 
 
 def picture(sh, t):
@@ -481,22 +456,10 @@ def light_strike(x, L, top_bias=True, white=False):
     return np.clip(x * (1 + 3.2 * L) + 0.06 * L, 0, 1)
 
 
-def picture_frame(sh, i, blur=True):
+def picture_frame(sh, i):
     t = i / FPS
-    wh = sh.get("whoosh")
-    moving = wh and (t - sh["t0"]) < wh["D"] * 0.85
-    if moving and blur:
-        acc = None
-        K = 7
-        for k in range(K):
-            tk = t + (k / (K - 1) - 0.5) * (1.6 / FPS)
-            img, geo, ow, oh = picture(sh, max(sh["t0"], tk))
-            g = grade(img, sh, t, geo, ow, oh)
-            acc = g if acc is None else acc + g
-        x = acc / K
-    else:
-        img, geo, ow, oh = picture(sh, t)
-        x = grade(img, sh, t, geo, ow, oh)
+    img, geo, ow, oh = picture(sh, t)
+    x = grade(img, sh, t, geo, ow, oh)
     if sh.get("strobe"):
         a, b = sh["strobe"]
         if first(a) <= i < first(b) and ((i - first(a)) // 3) % 2 == 1:
@@ -526,6 +489,7 @@ TOKENS = {   # what appears on each beat: (line, first character, last character
 
 
 def panel(key, big=False, shown=99):
+    """The white page and its words, set from the top; the picture beside them is laid on per half beat."""
     ck = (key, big, shown)
     if ck in _panels: return _panels[ck]
     line, cite, _ = WORDS[key]
@@ -539,18 +503,15 @@ def panel(key, big=False, shown=99):
     f, fc = font(700, size), font(500, 40)
     lines = line.split("\n")
     lh = round(size * 1.04)
-    block = lh * len(lines) + 34 + 44
-    y0 = 760 - block // 2
+    y0 = 300
     for ln in lines:
         assert d.textlength(ln, font=f) <= 860, f"{ln!r} is wider than 860 px"
-    toks = TOKENS[key][:shown]
-    for (li, c0, c1) in toks:
+    for (li, c0, c1) in TOKENS[key][:shown]:
         ln = lines[li]
-        assert ln[c0:c1].strip(), (key, li, c0, c1)
         x = 110 + d.textlength(ln[:c0], font=f)
         d.text((x, y0 + li * lh), ln[c0:c1], font=f, fill=(14, 14, 14))
     if shown >= len(TOKENS[key]):
-        d.text((114, y0 + len(lines) * lh + 34), cite, font=fc, fill=(88, 88, 88))
+        d.text((114, y0 + len(lines) * lh + 30), cite, font=fc, fill=(88, 88, 88))
     _panels[ck] = np.array(im)
     return _panels[ck]
 
@@ -563,24 +524,33 @@ def zoom_about(img, z, centre, bg):
                           borderMode=cv2.BORDER_CONSTANT, borderValue=bg)
 
 
-def kick(t, t0, amp=0.065):
-    """Reference 3's pulse: a push on the beat that eases out."""
-    return 1.0 + amp * math.exp(-max(0.0, t - t0) / 0.13)
+
+
+
+def window_picture(sh, i):
+    """The picture that stands beside the words: a detail at full colour, moving at a steady speed."""
+    name, (cx, cy, cw) = sh["window"]
+    x0, y0, ww, wh = WINDOW
+    t = i / FPS
+    p = min(1.0, max(0.0, (t - sh["t0"]) / max(1e-3, sh["t1"] - sh["t0"])))
+    cw2 = cw * (1 - 0.05 * p)
+    img, geo = view(name, cx, cy, cw2, ww, wh, whole=False)
+    look = dict(pool=(cx, cy, LIGHT["r"]), floor=LIGHT["floor"], gain=LIGHT["gain"], gamma=LIGHT["gamma"], sat=1.0)
+    g = grade(img, look, t, geo, ww, wh)
+    return (np.clip(g, 0, 1) * 255 + 0.5).astype(np.uint8)
 
 
 def panel_frame(sh, i):
-    t = i / FPS
-    base = panel(sh["key"], sh["big"], sh["shown"])
-    z = kick(t, sh["t0"]) * (1.0 + 0.012 * min(1.0, (t - sh["t0"]) / 0.6))
-    img = zoom_about(base, z, (540, 760), (250, 250, 250)).astype(np.float32) / 255
+    page = panel(sh["key"], sh["big"], sh["shown"]).copy()
+    x0, y0, ww, wh = WINDOW
+    page[y0:y0 + wh, x0:x0 + ww] = window_picture(sh, i)
+    img = page.astype(np.float32) / 255
     k = i - first(sh["t0"])
-    entry = sh.get("entry")
-    if entry in ("bloom", "flash"):
-        hold = 3
-        if k < hold:
+    if sh.get("entry") in ("bloom", "flash"):   # reference 3's white flash: white, then the page
+        if k < 3:
             img = np.ones_like(img)
-        elif k < hold + 8:
-            a = (k - hold + 1) / 9
+        elif k < 11:
+            a = (k - 2) / 9
             img = 1 - (1 - img) * a
     return (np.clip(img, 0, 1) * 255 + 0.5).astype(np.uint8)
 
@@ -599,55 +569,41 @@ def face(k):
     cy = my - (EYES_AT[1] - H / 2) * s
     img, geo = view(name, cx, cy, cw, W, H, whole=True)
     sh = dict(pool=(mx, my + 40 * s, 0.78), floor=0.45, gain=1.08, sat=1.0)
-    _faces[k] = grade(img, sh, 0.0, geo, W, H)
+    _faces[k] = (np.clip(grade(img, sh, 0.0, geo, W, H), 0, 1) * 255 + 0.5).astype(np.uint8)   # kept small: eight of them
     return _faces[k]
 
 
-def bend(img, k):
-    """Reference 3's page-bend: the picture arrives curved like a sheet and flattens. k from 1 to 0."""
-    if k <= 1e-3: return img
-    u, v = grid(W, H)
-    nx, ny = (u - W / 2) / (W / 2), (v - H / 2) / (H / 2)
-    r2 = nx * nx + ny * ny
-    amt = 0.42 * k
-    sx = 1 + amt * r2
-    mapx = (W / 2 + (u - W / 2) * sx * (1 + 0.10 * k)).astype(np.float32)
-    mapy = (H / 2 + (v - H / 2) * sx * (1 + 0.10 * k) - 60 * k * (1 - nx * nx)).astype(np.float32)
-    return cv2.remap(img, mapx, mapy, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(0.98, 0.98, 0.98))
+
 
 
 def faces_frame(sh, i):
-    t = i / FPS
-    j = max(n for n, s in enumerate(SWAPS) if i >= first(s) or n == 0)
-    x = face(j % len(FACES))
-    since = t - SWAPS[j]
-    z = 1 + 0.045 * math.exp(-max(0.0, since) / 0.10)
-    x = zoom_about(x, z, EYES_AT, (0, 0, 0))
-    tau = t - sh["t0"]
-    if tau < WARP_D:
-        x = bend(x, 1 - HOUSE(tau / WARP_D))
+    """The faces cut straight, one on each half beat, the Child's eyes held in one place; white for three frames first."""
+    j = max(n for n, st in enumerate(SWAPS) if i >= first(st) or n == 0)
+    x = face(j % len(FACES)).astype(np.float32) / 255
+    if i - first(sh["t0"]) < 3:
+        x = np.ones_like(x)
     x = np.clip(x + (grain(i, W, H) * 0.018)[..., None] * (0.35 + 0.65 * x), 0, 1)
     return (x * 255 + 0.5).astype(np.uint8)
 
 
 # ---------------------------------------------------------------- the whip into the question (reference 3)
-WHIP_OUT, WHIP_IN = 0.09, 0.20
+WHIP_OUT, WHIP_IN = 0.10, 0.10
 DIRX, DIRY = 0.87, -0.50
 
 def whip_frame(i):
+    """Reference 3's whip, at a steady speed: the page leaves along one line and the question arrives along it."""
     t = i / FPS
     cut = 51.635
     acc = None
     K = 48
+    speed = 1500 / WHIP_IN
     for k in range(K):
         tk = t + (k / (K - 1) - 0.5) * (2.0 / FPS)
         if tk < cut:
-            p = max(0.0, (tk - (cut - WHIP_OUT)) / WHIP_OUT)
-            d = 1500 * p * p
+            d = speed * max(0.0, tk - (cut - WHIP_OUT))
             img = panel("isaiah96", False, 4)
         else:
-            p = min(1.0, (tk - cut) / WHIP_IN)
-            d = -1500 * (1 - HOUSE(p))
+            d = -speed * max(0.0, (cut + WHIP_IN) - tk)
             img = panel("matthew1615", True, 1)
         M = np.float32([[1, 0, -DIRX * d], [0, 1, -DIRY * d]])
         f = cv2.warpAffine(img, M, (W, H), flags=cv2.INTER_LINEAR | cv2.WARP_INVERSE_MAP,
@@ -670,7 +626,7 @@ def end_frame(sh, i):
     if t < fade_end:     # the question fades to black
         base = panel("matthew1615", True, 5).astype(np.float32)
         a = max(0.0, 1 - (t - sh["t0"]) / (fade_end - sh["t0"]))
-        return (base * SYM(a)).astype(np.uint8)
+        return (base * a).astype(np.uint8)
     out = np.zeros((H, W, 3), np.uint8)
     if i < first(sh["mark_at"]):
         return out
@@ -709,6 +665,7 @@ def frame(i):
     if k == "pic": return picture_frame(sh, i)
     if k == "panel": return panel_frame(sh, i)
     if k == "faces": return faces_frame(sh, i)
+    if k == "black": return np.zeros((H, W, 3), np.uint8)
     return end_frame(sh, i)
 
 
@@ -756,11 +713,14 @@ def cmd_render(sound):
                            "-i", "-", "-i", sound, "-map", "0:v", "-map", "1:a", "-c:v", "libx264", "-preset", "slow",
                            "-crf", "16", "-profile:v", "high", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
                            "-c:a", "aac", "-b:a", "256k", "-t", f"{N / FPS:.4f}", path], stdin=subprocess.PIPE)
+    # the workers draw faster than the encoder takes frames: hand out a few runs at a time, so finished frames never
+    # pile up waiting (a whole film of them filled the machine's memory on 2026-11-25)
     chunks = [(a, min(N, a + 20)) for a in range(0, N, 20)]
     with mp.Pool(4) as pool:
-        for k, frames in enumerate(pool.imap(_render_chunk, chunks)):
-            for fb in frames:
-                ff.stdin.write(fb)
+        for k in range(0, len(chunks), 8):
+            for frames in pool.map(_render_chunk, chunks[k:k + 8]):
+                for fb in frames:
+                    ff.stdin.write(fb)
     ff.stdin.close()
     ff.wait()
     print(path)
@@ -769,10 +729,9 @@ def cmd_render(sound):
 def cmd_check():
     check_words()
     print("words: every line is in data/bible")
-    print(f"segments: {len(SEGS)}; beats: {len(BEATS_ALL)}")
-    starts = sorted(first(sg["t0"]) for sg in SEGS)
-    missing = [b for b in BEATS_ALL if not any(abs(first(b) - st) <= 1 for st in starts) and not (42.17 < b < 46.89) and not (32.0 < b < 32.7) and not (35.6 < b < 37.44)]
-    print("beats with no event of their own:", missing)
+    starts = sorted(set(first(sg["t0"]) for sg in SEGS)) + [first(x) for x in SWAPS] + [first(f[0]) for f in FLASHES]
+    quiet = [h for h in HALF if not any(abs(first(h) - st) <= 1 for st in starts) and not (32.0 < h < 32.7) and not (35.68 < h < 36.26)]
+    print(f"segments: {len(SEGS)}; half beats: {len(HALF)}; half beats with no event: {quiet}")
 
 
 if __name__ == "__main__":
