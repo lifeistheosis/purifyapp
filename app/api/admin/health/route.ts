@@ -44,7 +44,7 @@ export async function GET(req: Request) {
 
   const scope = new URL(req.url).searchParams.get("scope");
   const internal = [probeSupabase, probeRateLimiter, probeHeartbeat];
-  const outbound = [probeApiBible, probeBmc, probeIpwhois, probeRender];
+  const outbound = [probeApiBible, probeIpwhois, probeRender];
   const list =
     scope === "internal" ? internal : scope === "outbound" ? outbound : [...internal, ...outbound];
 
@@ -185,32 +185,6 @@ async function probeApiBible(): Promise<Probe> {
     service: "API.Bible (licensed Scripture)",
     status: error ? "fail" : "ok",
     detail: error ? error : `HTTP ${result} from /v1/bibles`,
-    latencyMs: ms,
-  };
-}
-
-async function probeBmc(): Promise<Probe> {
-  const token = process.env.BMC_ACCESS_TOKEN;
-  if (!token) {
-    return {
-      service: "Buy Me a Coffee",
-      status: "skipped",
-      detail: "BMC_ACCESS_TOKEN not set",
-      latencyMs: null,
-    };
-  }
-  const { result, ms, error } = await timed(async () => {
-    const r = await fetch("https://developers.buymeacoffee.com/api/v1/supporters?page=1", {
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-      signal: AbortSignal.timeout(6000),
-    });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return r.status;
-  });
-  return {
-    service: "Buy Me a Coffee",
-    status: error ? "fail" : "ok",
-    detail: error ? error : `HTTP ${result} from /supporters`,
     latencyMs: ms,
   };
 }

@@ -23,13 +23,12 @@ vi.mock("@/lib/supabase/admin", () => ({
 
 import { GET } from "@/app/api/admin/health/route";
 
-const ENV = { key: process.env.RENDER_API_KEY, id: process.env.RENDER_SERVICE_ID, bmc: process.env.BMC_ACCESS_TOKEN };
+const ENV = { key: process.env.RENDER_API_KEY, id: process.env.RENDER_SERVICE_ID };
 afterAll(() => {
   vi.unstubAllGlobals();
   for (const [k, v] of [
     ["RENDER_API_KEY", ENV.key],
     ["RENDER_SERVICE_ID", ENV.id],
-    ["BMC_ACCESS_TOKEN", ENV.bmc],
   ] as const) {
     if (v === undefined) delete process.env[k];
     else process.env[k] = v;
@@ -42,7 +41,6 @@ beforeEach(() => {
   state.deploys = [];
   process.env.RENDER_API_KEY = "test-key";
   process.env.RENDER_SERVICE_ID = "srv-test";
-  delete process.env.BMC_ACCESS_TOKEN;
   vi.stubGlobal("fetch", async (url: string) => {
     if (url.startsWith("https://api.render.com/")) {
       return new Response(JSON.stringify(state.deploys), { status: state.renderStatus });

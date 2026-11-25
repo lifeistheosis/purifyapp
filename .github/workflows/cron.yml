@@ -36,8 +36,9 @@ name: Scheduled jobs
 #     Actions tab red instead of logging a cheerful zero forever.
 
 on:
-  # Manual only. The schedule (hourly push-deliver, 03:10 UTC bmc-snapshot)
-  # was removed on 2026-09-26; see the header.
+  # Manual only. The schedule (hourly push-deliver) was removed on 2026-09-26;
+  # see the header. The Buy Me a Coffee snapshot job went on 2026-11-25: no
+  # donations any more (his word, 2026-11-24).
   workflow_dispatch:
     inputs:
       job:
@@ -45,7 +46,7 @@ on:
         required: true
         default: push-deliver
         type: choice
-        options: [push-deliver, bmc-snapshot, both]
+        options: [push-deliver]
 
 jobs:
   push-deliver:
@@ -79,34 +80,5 @@ jobs:
           echo
           if [ "$code" != "200" ]; then
             echo "::error::push-deliver returned ${code}"
-            exit 1
-          fi
-
-  bmc-snapshot:
-    name: Snapshot donation totals
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    if: >-
-      github.event_name == 'schedule' && github.event.schedule == '10 3 * * *'
-      || (github.event_name == 'workflow_dispatch'
-          && (inputs.job == 'bmc-snapshot' || inputs.job == 'both'))
-    steps:
-      - name: Call /api/cron/bmc-snapshot
-        env:
-          SITE_URL: ${{ vars.SITE_URL || 'https://purifyapp.net' }}
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
-        run: |
-          set -euo pipefail
-          body=$(mktemp)
-          code=$(curl -sS -m 120 -o "$body" -w '%{http_code}' \
-            -H "x-cron-secret: ${CRON_SECRET}" \
-            "${SITE_URL}/api/cron/bmc-snapshot")
-          echo "HTTP ${code}"
-          cat "$body"
-          echo
-          # 503 means Buy Me a Coffee was unreachable this run, which is
-          # transient and not our bug; anything else non-2xx is a real fault.
-          if [ "$code" != "200" ] && [ "$code" != "503" ]; then
-            echo "::error::bmc-snapshot returned ${code}"
             exit 1
           fi

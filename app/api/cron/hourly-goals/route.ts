@@ -32,7 +32,7 @@ export const dynamic = "force-dynamic";
  *
  * ── Degrades CLOSED ────────────────────────────────────────────────────
  *
- * Same shape as app/api/cron/bmc-snapshot: with CRON_SECRET unset this
+ * Same shape as the other cron routes: with CRON_SECRET unset this
  * refuses rather than running the handler under the service role for any
  * anonymous caller. That route's own comment records that the earlier
  * `if (secret) { ...403... }` form skipped the check entirely when the secret
