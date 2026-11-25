@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "../primitives";
 import { ApiLimitBanner, ApiLimitsPanel } from "../insights/ApiLimits";
 import { HourlyGoals } from "../HourlyGoals";
 import { patchJson } from "../adminFetch";
@@ -35,13 +36,24 @@ export function GoalsTab() {
 
   if (!live.data) {
     return (
-      <div className="space-y-5 font-sans">
-        <ApiLimitBanner />
-        <p className="text-[15px]" style={{ color: "var(--adm-ink-2)" }}>
-          {live.failing ? "Your goals could not be read just now. They try again by themselves." : "Reading your goals."}
-        </p>
-        <HourlyGoals />
-        <ApiLimitsPanel />
+      // The page's own shape while it reads, so nothing jumps when it lands
+      // (his walk, 2026-11-24: the hour's goals showed first and were pushed
+      // down). The hour and the licence come with the page, in their places.
+      <div className="space-y-5 font-sans" aria-busy={!live.failing}>
+        {live.failing ? (
+          <p className="text-[15px]" style={{ color: "var(--adm-ink-2)" }}>
+            Your goals could not be read just now. They try again by themselves.
+          </p>
+        ) : (
+          <>
+            <span className="sr-only">Reading your goals.</span>
+            <Skeleton w="60%" h={96} />
+            <Skeleton w="45%" h={64} />
+            <Skeleton w="100%" h={12} />
+            <Skeleton w="70%" h={40} />
+            <Skeleton w="100%" h={180} />
+          </>
+        )}
       </div>
     );
   }

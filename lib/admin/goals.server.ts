@@ -63,7 +63,14 @@ export async function monthlyCosts(
   now: Date = new Date(),
 ): Promise<{ cents: number; from: CostsFrom } | null> {
   if (mercuryConfigured()) {
-    const bank = await readBank().catch(() => null);
+    // At most 1.5 s for the bank: a cold read pages Mercury for four months,
+    // and Goals was slow on it (his walk, 2026-11-24). Past that the typed
+    // lines answer this time, and the read carries on and is kept ten minutes
+    // (readBank) for the next open.
+    const bank = await Promise.race([
+      readBank().catch(() => null),
+      new Promise<null>((r) => setTimeout(() => r(null), 1500)),
+    ]);
     const fromBank = bank ? bankRunningCosts(bank.months, now.toISOString().slice(0, 7)) : null;
     if (fromBank) return { cents: fromBank.cents, from: { source: "bank", months: fromBank.months } };
   }
