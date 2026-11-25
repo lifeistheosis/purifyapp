@@ -16,7 +16,7 @@ Most of the 41 are admin, email and server work, which the apps do not carry. Wh
 | The first Liturgy's guide no longer breaks on "During the Liturgy" | 60c400d3 | components/start/liturgy/FirstLiturgyGuide.tsx |
 | Fewer calls to the database (ping, Community every 20 s) | b89b56b1 | lib/analytics/heartbeat.ts, components/community/CommunityClient.tsx, lib/community/feedMemo.ts |
 | Buy Me a Coffee gone | d5e6f036, 857e5589 | lib/support/buymeacoffee.ts, lib/search/buildCorpus.ts |
-| Waiting: "Your Plus ends on <day>. Keep it" | keep-members step 4 | components/billing/PlusPaywall.tsx (being built in session_01VuYTwbGuypFaiAN1DaWnZQ) |
+| "Your Plus ends on <day>. Everything you saved stays with your account." and "Keep Plus" | 0517bbd7 (branch only) | components/billing/PlusPaywall.tsx, lib/billing/revenuecat.ts, 21 locales |
 
 Nothing native changed (no android/, ios/, plugin or package change), so R8's risk is the same as build 101's. The release APK is still walked before the AAB goes to Play (AGENTS.md 2a).
 
@@ -33,7 +33,7 @@ Recommendation: mend 1 to 3 on the branch, then on main with the build; leave 4 
 ## The steps, in order
 
 1. His answers to the questions below.
-2. Keep-members step 4 lands on main (his yes on its still first).
+2. Keep-members step 4: built on the branch (0517bbd7) and not on main, since it changes nothing on the website. It applies cleanly onto main (checked 2026-11-25) and is cherry-picked onto main with the build, never the branch's dark 2.0 work. Owed first: a still of the Plus foot from the native export at 390 with checkMock passing, for his yes, and a look on a real phone with a member whose renewal is off.
 3. Mends 1 to 3, each with a test that fails on the old code.
 4. The release tooling: `node scripts/release.mjs new <version>`, the note, `bump` (the six identifiers), the checklist of six categories, `board`, `back`, `check`.
 5. The pre-build gate on the export of exactly what will be cut (CLAUDE.md): the touch walk as a new reader at phone size, checkMock on every screen in five palettes (`guardrail-walk.mjs`, `stripe-walk.mjs`), the picture list, the reader-facing lines, a test per known fault. Plus typecheck, unit tests, `build:android`, `build:ios`, web `build`.
@@ -57,3 +57,4 @@ Recommendation: mend 1 to 3 on the branch, then on main with the build; leave 4 
 ## Log
 
 - 2026-11-25: plan written; waits for his answers.
+- 2026-11-25: step 4 reported done on the branch by session_01VuYTwbGuypFaiAN1DaWnZQ; cherry-pick onto main checked clean.
