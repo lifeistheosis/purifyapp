@@ -1,0 +1,24 @@
+# The whisper, 1:1: living paintings (plan, waiting on his yes)
+
+His words (2026-11-25), sending reference 2 again: "copy this reference 1:1 this a style where it's a static art and they edit it so that it moves. do more research on this editing style and let's edit our version 1:1".
+
+## What reference 2 really does (measured again)
+
+The file he sent is byte for byte reference 2 (sha256 bf54926c...). Optical flow on it, a camera fitted to each 0.2 s and what moves apart from the camera measured: in most shots the camera hardly moves (zoom and pan near zero) while parts of the picture move by 2 to 47 pixels. The paintings themselves move: the woman at the start turns her head; the angel at 12 to 14 s tilts its head, breathes, its wing and hair move, and it comes toward the lens. Version 2 moved a camera over still paintings, so it missed the style's heart.
+
+## The style
+
+Image-to-video AI animates each still painting into a short clip (a few seconds): small natural motion (a head turns, breath, hair and cloth stir, eyes move) and a slow camera move; the edit then cuts those living clips like coverage of a scene, with crush and develop between paintings, the stare into the lens, the angels under black frames. Reference 2 is a CapCut export; CapCut's own image-to-video (Dreamina) and Kling are the usual tools. The makers' own advice: subtle motion; large gestures break a painting's identity and it reads as a video with painted textures (Kling's painting page).
+
+## What would be made
+
+Version 2 rebuilt 1:1: its paintings, each animated once (one clip of 5 s per painting, about 12 clips), cut on every beat and every hi-hat as now, its crush and develop, the Mother's stare on the drop, the Child's stare near the end, the angels, the card.
+
+Guardrails: only Western paintings are animated. An icon is never redrawn (CLAUDE.md), so Our Lady of Vladimir is not animated: it stays still or gives its place to a Western painting. Every clip is checked frame by frame and thrown out if a face changes (Christ, the Mother, the Child). Prompts ask for steady camera moves; the cuts stay on the beats (no bounce).
+
+## Cost (Higgsfield's own quotes, 2026-11-25)
+
+- Kling 3.0 standard, 5 s, no sound: 7.5 credits a clip. Pro (higher quality): 8.75 a clip. About 12 clips: 90 to 105 credits; with retries for faces that change, about 120 to 140.
+- Seedance 2.5 at 1080p: 80 credits a clip, about 1,000 for the set.
+- The Higgsfield account holds 0 credits on the free plan, so credits would have to be bought first.
+- Without AI, a hand-built 2.5D move (figures cut out and moved at their own depth) costs nothing but no face turns or breathes: it would not be 1:1.
