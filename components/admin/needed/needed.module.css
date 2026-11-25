@@ -341,8 +341,21 @@
 
 /* ── A switch ──────────────────────────────────────────────────────── */
 .toggle {
+  /* 44px to tap (the house's targets, checkMock "target"); the track it draws
+     is the same 36 by 21 as before, centred in it (2026-11-24). */
   position: relative;
   flex: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+}
+.toggle::before {
+  content: "";
+  position: absolute;
+  top: 11.5px;
+  inset-inline-start: 4px;
+  box-sizing: border-box;
   width: 36px;
   height: 21px;
   border: 1.5px solid var(--adm-line-strong);
@@ -355,20 +368,20 @@
 .toggle::after {
   content: "";
   position: absolute;
-  top: 2.5px;
-  inset-inline-start: 3px;
+  top: 15.5px;
+  inset-inline-start: 8.5px;
   width: 13px;
   height: 13px;
   border-radius: 50%;
   background: var(--adm-ink-3);
 }
-.toggleOn {
+.toggleOn::before {
   border-color: var(--adm-ink);
   background: var(--adm-ink);
 }
 .toggleOn::after {
   inset-inline-start: auto;
-  inset-inline-end: 3px;
+  inset-inline-end: 8.5px;
   background: var(--adm-on-accent);
 }
 
