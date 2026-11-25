@@ -482,17 +482,11 @@ def with_hats(sg, i):
         n = COLOUR_FACES.index(sg["face"])
         s2["face"] = COLOUR_FACES[(n + j) % len(COLOUR_FACES)]
         s2["entry"] = False
-    elif kind in ("colour", "final"):
-        nx = next_seg(sg)
-        n = C.hats_between(sg["t0"], sg["t1"])
-        f = j / (n + 1)
-        if kind == "final":
-            z1 = nx["zoom"] if nx and nx["kind"] == "final" else sg["zoom"] * 1.2
-            s2["zoom"] = sg["zoom"] + (z1 - sg["zoom"]) * f
-        else:
-            c0 = sg["crop"]
-            c1 = nx["crop"] if nx and nx["kind"] == "colour" and nx["key"] == sg["key"] else (c0[0], c0[1], c0[2] * 0.8)
-            s2["crop"] = tuple(a + (b - a) * f for a, b in zip(c0, c1))
+    elif kind == "final":                    # a hat: a side step closer; the beat's own step stays the larger
+        s2["zoom"] = sg["zoom"] * (1.10 if j % 2 else 1.18)
+    elif kind == "colour":                   # a hat: the same painting, closer and to one side, then the other
+        cx, cy, w = sg["crop"]
+        s2["crop"] = (cx + (0.10 if j % 2 else -0.10) * w, cy, w * (0.80 if j % 2 else 0.68))
     return s2
 
 

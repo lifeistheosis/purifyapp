@@ -189,6 +189,14 @@ def build():
             strikes.append((t0, STRIKE_PEAK if strong else 0.70, strong))
         elif cut == "R":
             strikes.append((t0, (0.85 if strong else 0.62) if expo > 0.07 else 0.40, False))
+    # a hi-hat in a dark shot is a cut nobody could see: it comes with a faint flicker, the storm's own way of showing
+    # a thing in the dark; in a roll only its first hit flickers, so the dark never strobes
+    prev = -1.0
+    for h in C.HATS:
+        sg = next((s for s in segs if s["t0"] < h < s["t1"]), None)
+        if sg and sg.get("key") and sg["kind"] in ("S", "R", "D") and sg["exp"] < 0.35 and h - prev > 0.07:
+            strikes.append((h, 0.50, False))
+        prev = h
     strikes.append((C.BASS_IN[0], 0.70, True))        # the bass comes in: a flicker on the flock
     strikes.append((C.BASS_IN[1], 0.75, True))        # and again on the road
     return segs, strikes
