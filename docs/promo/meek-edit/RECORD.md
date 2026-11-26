@@ -1,42 +1,58 @@
 # The meek edit: the record
 
-What was made for `BRIEF.md`, how, from what, and how it was checked. Made 2026-11-26.
+What was made for `BRIEF.md`, how, from what, and how it was checked. Made 2026-11-26, and made again the same day at his second word: "ensure the effects, visuals, and design is 1:1". This is the second version; the first is in the Vault (below).
 
 ## The file
 
 | | |
 |---|---|
-| File | `.promo/meek-edit/purify-meek.mp4` (out of git), sha256 `d54646ddfa0354bac84fb7fcadf6f298eda7fe181fc5aafd519fea5c816c1d75` |
+| File | `.promo/meek-edit/purify-meek.mp4` (out of git), sha256 `99254c17a7bcda6369ed76135fc95a6faf0996cc6ddcf7c81ca24e0ae9f83492` |
 | Length | 18.60 seconds, 558 frames: the reference edit's own length, frame for frame |
-| Size | 27.4 MB (28,768,778 bytes) |
+| Size | 26.4 MB (27,655,083 bytes) |
 | Picture | 1080 by 1080 (the reference's square, at full resolution), H.264 High, yuv420p, 30 frames a second, faststart |
-| Sound | AAC, 48 kHz stereo, 192 kbps; -14.0 LUFS integrated, true peak -1.4 dBTP |
-| Made by | `render.py` (the picture) and `sound.py` (the sound). Stills first, checked shot by shot against the reference; then three renders of the picture on this machine (about 75 seconds each), the first two reviewed frame by frame and corrected. One version |
+| Sound | AAC, 48 kHz stereo, 192 kbps; -14.0 LUFS integrated, true peak -1.4 dBTP (unchanged from the first version) |
+| Made by | `render.py` with `look.py` (the picture) and `sound.py` (the sound). Stills first, each compared with the reference's same frame and measured; then four renders of the picture on this machine (about 80 seconds each), the first three reviewed and corrected. One version |
 | Paid generation | none |
 
 ## The shots
 
-Every cut, move and transition is on the reference's own frames (measured in it frame by frame: the cut list, a contact sheet at 10 frames a second, and its beat grid at 103.4 beats a minute).
+Every cut, move and transition is on the reference's own frames, and every shot now wears the reference shot's look.
 
 | Frames | Seconds | The reference | Ours |
 |---|---|---|---|
-| 0 to 40 | 0.00 to 1.33 | the colour hero portrait, slow push-in, soft glow | **Christ Pantocrator**, Sinai, 6th century: the same push-in and glow, soft white pools of light drifting (never amber) |
-| 41 to 138 | 1.37 to 4.60 | eight flashes of ink panels over the colour picture, on the beat: the hero's own panel, then four others, in the order 1 2 3 4 5 4 3 1 | the Pantocrator in black and white, aligned over itself, then **Ushakov, the Vysotsky Pantocrator, the Novgorod Holy Face and Vasnetsov**, in the same order on the same frames, in the same feathered panel |
+| 0 to 40 | 0.00 to 1.33 | the colour hero: warm, hard contrast, glowing highlights, peach and orange bokeh, a breath of light at 0.93 s | **Christ Pantocrator**, Sinai, 6th century, graded to the reference's opening: the same warmth, contrast, glow, bokeh and breath of light |
+| 41 to 138 | 1.37 to 4.60 | eight flashes of manga ink panels, each throwing a white halo, over the colour picture | the Pantocrator in ink over itself, then **Ushakov, the Vysotsky Pantocrator, the Novgorod Holy Face and Vasnetsov** in ink, in the reference's order on its frames, each with the halo |
 | 139 to 141 | 4.63 to 4.70 | white flash | white flash |
-| 142 to 234 | 4.73 to 7.80 | colour close-up, backlit, falling dust, a glint travelling along the sword | **Kramskoi, Christ in the Wilderness**, close on His face and clasped hands, dust in the air, a soft pool of dawn light travelling along the horizon |
-| 235 to 328 | 7.83 to 10.93 | a figure in a sunlit landscape with water, flying in as a bent panel | **Polenov, On the Lake of Gennesaret**: the same panel, from 55% with a bend that relaxes, landing by frame 288 |
+| 142 to 234 | 4.73 to 7.80 | backlit close-up: a cream haze behind a dark figure, snow-like flakes, light along the sword | **Kramskoi, Christ in the Wilderness**, graded to it and lifted to the same cream haze; the same flakes; a soft pool of light passing over His clasped hands |
+| 235 to 328 | 7.83 to 10.93 | a dark forest stream in golden light with an Orton glow, flying in as a bent panel | **Polenov, On the Lake of Gennesaret** in the same dark golden hour and glow, on the same bent panel |
 | 329 to 331 | 10.97 to 11.03 | a soft white band wipes left to right | the same |
-| 332 to 422 | 11.07 to 14.07 | ink figure from behind, seated; the first card blurs in; zoom steps on seven beats | **Polenov, Dreams (On the Hill)** in black and white; **"I am meek / and lowly / in heart", Matthew 11:29**; the same blur-in and the same seven steps |
-| 423 to 432 | 14.10 to 14.40 | diagonal whip, both cards blurred in motion | the same |
-| 433 to 502 | 14.43 to 16.73 | a small walking figure on white; the second card; one zoom step | **Polenov, He Returned in the Power of the Spirit into Galilee** in black and white on white; **"The kingdom / of God is / within you", Luke 17:21**; the same step at frame 468 |
-| 503 to 548 | 16.77 to 18.27 | the ground falls to black; the creator's name typed on in a white glow | the same fall, to the app's dark ground; **Purify** typed on in the app's glowing white |
+| 332 to 422 | 11.07 to 14.07 | a manga drawing on white with grey corners; the first card in comic capitals upper right; the card rides the zoom | **Polenov, Dreams (On the Hill)** as a manga drawing, cut so He sits large at lower left as the reference's figure does; **I AM / MEEK AND / LOWLY / IN HEART** in comic capitals upper right, on the reference's zoom path |
+| 423 to 432 | 14.10 to 14.40 | diagonal whip | the same |
+| 433 to 502 | 14.43 to 16.73 | a small walking figure drawn on white; the second card as its own layer, growing 1.25 times while the picture zooms past it | **Polenov, He Returned in the Power of the Spirit into Galilee** as a manga drawing; **THE KINGDOM / OF GOD / IS WITHIN / YOU.** on the reference's path and growth |
+| 503 to 548 | 16.77 to 18.27 | the page falls to a warm near-black; the name in brush capitals, revealed left to right in a white glow | the same; **PURIFY** in brush capitals, the same reveal and glow |
 | 549 to 557 | 18.30 to 18.57 | fades out | fades out |
 
-The cards and the figure are mirrored from the reference where a painting requires it: in Dreams Christ sits on the right, so the first card stands in the open sky on the left.
+## The look, matched and measured
+
+`look.py` matches each colour shot to the reference shot it stands in for (its tone by quantiles, its cast by mean and spread in Lab, kept in `grade_ref.json`: numbers, not pictures), then finishes it as the reference is finished. The black and white shots are rendered as manga ink: the picture calmed by mean shift, contours drawn by an extended difference of Gaussians, the deepest shadows filled black, the middle tones hatched (paintings) or screened (icons), stray specks removed. Measured on the finished film against the reference, shot by shot (L* is lightness out of 100; b* above 0 is warm):
+
+| Shot | Reference: L* mean, b*, darkest 5% / lightest 5% | Ours |
+|---|---|---|
+| Opening | 61.2, 8.4, 5.9 / 98.0 | 53.6, 12.8, 5.9 / 94.1 |
+| Ink panels | 59.3, 2.4, 0.4 / 100 | 53.8, 5.9, 0.4 / 99.2 |
+| Close-up | 56.7, 6.4, 0.4 / 99.6 | 55.3, 8.2, 2.0 / 98.0 |
+| Lake | 32.4, 18.6, 6.7 / 91.0 | 36.4, 21.6, 2.0 / 80.4 |
+| First card | 88.1, 0.0, 24.7 / 100 | 81.3, 0.0, 3.9 / 100 |
+| Second card | 89.7, 0.0, 23.1 / 100 | 91.6, 0.0, 70.6 / 100 |
+| End | 4.4, 0.4 | 4.0, 1.0 |
+
+The cards' text was measured too, by its pixels: each card is centred within about 0.02 of the reference's at the start and end of its zoom, and the second ends centred at (0.55, 0.33) against the reference's (0.57, 0.33).
+
+Tried at the stills and left out: Vasnetsov's Christ Almighty as the opening (its night sky went grey and wrong under the reference's bright grade; it stays a panel), Rublev's Baptism of Christ for the lake (flat and worn under the golden hour), and a statistical match for the lake (an olive duotone).
 
 ## The pictures
 
-All public domain: every work is at least a century old (the latest painter died in 1927), and each scan is a faithful photograph of a flat work. None is on the heritage list (`lib/marketing/heritagePictures.ts`): nothing is held in Greece or Italy. Each file's checksum is in `art.json`, and `fetch.py` refuses a file that differs.
+Unchanged from the first version: nine public-domain works, none on the heritage list (`lib/marketing/heritagePictures.ts`), each file's checksum in `art.json`.
 
 | Shot | Work | Painter, date | Held |
 |---|---|---|---|
@@ -50,59 +66,71 @@ All public domain: every work is at least a century old (the latest painter died
 | S5 | Dreams (On the Hill) | Vasily Polenov, 1894 | Radishchev Art Museum, Saratov (per two picture agencies) |
 | S6 | He Returned in the Power of the Spirit into Galilee | Vasily Polenov, not later than 1909 | State Russian Museum, Zh-9157 (the museum's own photograph) |
 
-Two were tried and left out at the stills: Rublev's Zvenigorod Saviour (its loss of paint turned to noise in black and white) and the Saviour of the Golden Hair (its darkened face read as a skull in black and white).
+The colour shots carry the reference's grade and the ink shots are drawn from the pictures; nothing is added to or taken from a work's content, and nothing is mirrored.
 
 ## The words
 
-Verbatim King James, as the app gives it (`public/audio/read/<book>/<chapter>.json`), and never a sentence written for it.
+Verbatim King James, as the app gives it. On screen, in the reference's comic capitals and without a reference line under them, as the reference has none: "I am meek and lowly in heart" (Matthew 11:29, inside the verse, so no full stop is added) and "The kingdom of God is within you." (Luke 17:21, the verse's end and its own full stop). The citations go in the caption instead (below). Spoken, unchanged: John 18:33, 18:35, 18:36 and 18:37 at the reference's four moments (`lines.json`).
 
-- **On screen.** "I am meek and lowly in heart" (Matthew 11:29, inside the verse) and "The kingdom of God is within you" (Luke 17:21, the verse's end), each with its reference under it. At the end: Purify.
-- **Spoken**, at the moments the reference's four lines are spoken, in John 18's own order: "Art thou the King of the Jews?" (18:33, at 4.78 s), "What hast thou done?" (18:35, at 7.78), "My kingdom is not of this world" (18:36, at 10.62), "Every one that is of the truth heareth my voice." (18:37, at 12.64). The cut points, to the millisecond and on silence, are `lines.json`.
+Caption line, to paste with the post: "My kingdom is not of this world." John 18:36. On screen: Matthew 11:29; Luke 17:21. Art: Christ Pantocrator (Sinai); icons by Simon Ushakov, the Vysotsky Deesis and Novgorod; Viktor Vasnetsov; Ivan Kramskoi; Vasily Polenov. Scripture: KJV.
+
+## The type
+
+| Use | Face | Licence | In place of |
+|---|---|---|---|
+| The two cards | Comic Relief Bold, narrowed to 93% | OFL 1.1 | the reference's manga lettering (a commercial face) |
+| The name | Permanent Marker, spaced | Apache 2.0 | the reference's brush capitals |
+
+Both from their open-licence packages (`fetch.py`, checked by checksum). The house faces (Lora, DM Sans, DM Serif Display) are set aside for this piece at his word; they are what the first version used.
 
 ## The sound
 
+Unchanged from the first version.
+
 | Part | Where | From | Rights |
 |---|---|---|---|
-| The four lines | 4.78, 7.78, 10.62, 12.64 s | the app's own narration of John 18 (`audio.purifyapp.net/read/john/18.mp3`, the Heart voice readers hear in the app) | first party; the text is public domain |
-| A held note, D and A, sung in colour | 0 to 16.95 s | synthesised in `sound.py` | first party |
-| Hits on the five big cuts, ticks on the seven panel flashes, rushes into the flash, the panel and the two whips | on their frames | synthesised in `sound.py` | first party |
+| The four lines | 4.78, 7.78, 10.62, 12.64 s | the app's own narration of John 18 (`audio.purifyapp.net/read/john/18.mp3`, the Heart voice) | first party; the text is public domain |
+| A held note, D and A | 0 to 16.95 s | synthesised in `sound.py` | first party |
+| Hits, ticks, rushes | on their frames | synthesised in `sound.py` | first party |
 | Wind | under the opening, the wilderness and the cards | `public/audio/ambience/wind.mp3` (Karlunun) | CC0 |
 | Sea | under the lake | `public/audio/ambience/sea.mp3` (earthcalling) | public domain |
 | Bell | on the name, 17.07 s | `public/audio/ambience/bell.mp3` | first party |
-
-No chant: the app's chant recordings are carried unlicensed by his knowing decision (`docs/licensing/audio-provenance.md`), and that decision covers the app, not an advert.
 
 ## The checks
 
 | Check | Result |
 |---|---|
-| Timing against the reference (`cutlist.py`, the same detector on both files) | cuts start on frames 41 51 60 69 92 103 111 119 139 235 329 346 359 366 371 426 469 506, against the reference's 41 52 60 68 92 102 110 119 139 235 329 345 358 365 370 377 395 424 506: every one within a frame or two (the reference's steps at 377 and 395 are gentler in ours, under the detector's threshold) |
-| The lines heard in the mix (Whisper, each line's window) | all four read back word for word |
-| Words against what stands behind them (`check_text.py`, every sixth frame with a card) | worst 9.29 to 1 (the rule is 4.5); the name on the end card 15.7 to 1 |
-| Size on a phone (a square video 390 wide) | the cards' lines about 19 px and up, the references 12 px rising to 20 px as the cards zoom |
-| Loudness | -14.0 LUFS, -1.4 dBTP |
-| The house's rules | light only as soft pools; no rays, no sparkle (the dust is round), no stripe down an edge, no parchment (every white is neutral), no added gold or amber, no em dash in any word, nothing from the heritage list |
-| Made again from the repository | `fetch.py` then the two scripts: the sound is bit for bit the delivered sound; the frames match the delivered picture to within its compression |
+| Timing against the reference (`cutlist.py`) | cuts start on frames 41 51 60 69 92 103 111 119 139 329 346 359 366 378 396 408 425 469 506, against the reference's 41 52 60 68 92 102 110 119 139 235 329 345 358 365 370 377 395 424 506: every one within a frame. The lake's panel still arrives on frame 235 (a change of 12.9 there, just under the detector's 14, as the darker grade softened it) |
+| The look | the table above |
+| Words against what stands behind them (`check_text.py`) | worst 12.95 to 1 (the rule is 4.5); the name on the end card 11.85 to 1 |
+| Size | the first card's capitals 32 px tall at their smallest (12 px on a phone 390 wide, as small as the reference's, and rising with the zoom); the second's 41.5 px; the name's 79 px |
+| The lines heard in the mix | unchanged; all four read back word for word |
+| House rules | no light rays (light is soft pools and bokeh discs), no sparkle (the flakes are round), no stripe down an edge, no parchment (every white is neutral), no em dash in any word, nothing from the heritage list. Gold: see Open |
+| Made again from the repository | `fetch.py` into an empty folder, then `render.py`: the frames match the delivered film to within its compression (a mean difference of 1 to 3 out of 255) |
 
 ## Why it looks as it does
 
 | The choice | Why | What it does for the reader |
 |---|---|---|
-| The reference's structure frame for frame, in its square | He asked for one to one; its rhythm is what made it travel | The format people already stop for, carrying Christ instead of a samurai |
-| Icons for the portrait and the flashes | The Church's own image of Christ; the Pantocrator is the app's own | An Orthodox viewer sees the icons they pray before, not a stranger's picture of Jesus |
-| The hero in colour, then the same icon in black and white over itself | It is the reference's best device: the coloured picture, then the original beneath it | The icon arrives twice, the second time stripped to its lines |
-| Russian realist painters for the cinematic shots (Kramskoi, Polenov) | The reference's colour shots are painted, cinematic, a figure alone in a landscape; these are, and they are long loved in Russia | Christ alone in the desert and by the lake, the edit's mood without an invented picture |
-| Christ's words from John 18 where the dialogue was | The reference's lines are a man asked who he is and refusing the title; Pilate asks Christ the same and He answers that His kingdom is not of this world | The same arc in Scripture's own words, in the voice readers already hear in the app; a reading, never an actor playing Christ |
-| Meek and lowly, the kingdom within: the two cards | They answer the reference's two cards ("All truly strong people are kind", "Do you see how infinite you are?") with His own words | The strongest is the gentlest; the infinite is within you |
-| Lora Medium in sentence case, the reference under each card, the app's ink on white | The app sets a verse this way; citing is the house's rule | Reads as Purify, and every word can be checked |
-| Purify typed on in the app's glowing white, on its dark ground, with a bell | The reference signs off with its creator's name; this is the house's dark ground and its one accent | The last frame is the name, and the bell is the app's own |
-| No light rays, no gold added, no parchment | His standing rules | Nothing on screen reads as made by a machine |
+| The reference's look shot by shot, measured, not guessed | His word: effects, visuals and design one to one | The edit people stop for, carrying Christ |
+| The grade matched by numbers, the finishing copied (glow, bokeh, haze, golden hour) | A grade judged by eye drifts; a grade held to the reference's own numbers does not | Each shot lands with the same weight and light as its original |
+| Manga ink drawn from icons and paintings | The reference's black and white is ink; icons have their own ink tradition, the painter's pattern drawing | The panels read as originals beneath the colour, as the reference's do |
+| The icons in the flashes, the Pantocrator first | The Church's own image of Christ, the app's own icon | An Orthodox viewer sees the icons they pray before |
+| Comic capitals, the reference's places, sizes and zoom paths, no reference line on screen | The cards are the design; their text was measured on the reference | The words arrive exactly as the original's did; the citation is in the caption |
+| PURIFY in brush capitals with the glow and reveal | The reference signs off with its creator's name in this treatment | The last frame is the name |
+| Christ's words from John 18 where the dialogue was | Unchanged from the first version: the same arc in Scripture's own words, read in the app's voice, never acted | The story holds, and every word is His |
 
 ## Open
 
-- **Russia's museum law.** Seven of the nine works are held in Russia. Russia's law on the Museum Fund (54-FZ, article 36, as Garant reads it) asks a museum's permission for commercial copies of its objects' images, much as Greece and Italy's laws do; how far that reaches a public-domain work is disputed. The house's heritage note assessed only Greece and Italy, and this was not assessed by a lawyer either. The app and its store pictures already show Tretyakov icons on the same footing.
+- **Gold.** The lake carries the reference's golden-hour light (23% of its pixels in the band the house measures as gold, against the reference's 29%). The house rule keeps gold, yellow and amber out of Purify's own colours; the icons' gold leaf has always been shown. This is the one grade in the edit that adds yellow light. At his word the lake goes warm-neutral instead.
+- **The house type** is set aside for this piece (above), and the citations are in the caption, not on screen.
+- **Russia's museum law.** Seven of the nine works are held in Russia. Russia's law on the Museum Fund (54-FZ, article 36, as Garant reads it) asks a museum's permission for commercial copies of its objects' images; how far that reaches a public-domain work is disputed. The house's heritage note assessed only Greece and Italy. Not assessed by a lawyer here either.
 - **Two holders unconfirmed**: which of Ushakov's versions this is, and whether the Vasnetsov is the dome or its study.
-- **Post it with its own sound.** Never with the reference's: that is copyrighted music with Vagabond dialogue.
+- **Post it with its own sound.** Never with the reference's: copyrighted music with Vagabond dialogue.
+
+## The Vault
+
+The first version, 2026-11-26: the reference's cut in the house's look (Lora cards with their references, the house faces, a neutral grade, the name in DM Serif Display). Superseded the same day at his word, "ensure the effects, visuals, and design is 1:1". Kept, not deleted: its film at `.promo/meek-edit/purify-meek-v1.mp4` (out of git, sha256 `d54646ddfa0354bac84fb7fcadf6f298eda7fe181fc5aafd519fea5c816c1d75`) and its scripts at commit `c6d635e2`.
 
 ## Making it again
 
@@ -114,4 +142,4 @@ python3 -m venv .promo/meek-edit/venv && .promo/meek-edit/venv/bin/pip install -
 ffmpeg -i .promo/meek-edit/picture.mp4 -i .promo/meek-edit/sound.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -ar 48000 -shortest -movflags +faststart .promo/meek-edit/purify-meek.mp4
 ```
 
-`render.py --stills 0,92,200 --out <dir>` takes stills; `check_text.py` and `cutlist.py <reference> <ours>` are the checks above. Fetching needs Node (`npm pack`) for the faces.
+`render.py --stills 0,92,200 --out <dir>` takes stills (`--rebuild` prepares the pictures again); `check_text.py` and `cutlist.py <reference> <ours>` are the checks above. Fetching needs Node (`npm pack`) for the faces.
