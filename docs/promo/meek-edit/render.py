@@ -33,6 +33,8 @@ W = H = 1080
 FPS = 30
 N = 558
 C2 = 2 * W                     # the cards' canvas, twice the frame, so type stays sharp through the zoom
+TM = 0.3                       # the second card's words get this much room beyond each edge of the frame
+TW = int(C2 * (1 + 2 * TM))
 PANEL = (0.17, 0.04, 0.83, 0.70)
 TEXT_INK = np.array([0.07, 0.07, 0.07], np.float32)
 END_TOP = np.array([0.075, 0.060, 0.050], np.float32)   # the reference's end ground: near black, warm
@@ -166,27 +168,34 @@ def build():
     dre = load("s5_dreams.jpg")
     # cut so He sits large at lower left with open sky at upper right, as the reference's figure and card do
     A["s5"] = LK.ink_paint(square(dre, 675, 0, 825, C2), scale=2.0, black=0.07, hatch_hi=0.42, cross=0.20, white=0.58)
-    A["t5"] = text_block(["I AM", "MEEK AND", "LOWLY", "IN HEART"], "ComicRelief-Bold.ttf", 84, 104, (C2, C2), (0.75, 0.33))
+    A["t5"] = text_block(["I AM", "MEEK AND", "LOWLY", "IN HEART"], "ComicRelief-Bold.ttf", 84, 104, (C2, C2), (0.712, 0.361))  # where the reference's first card stands at 332
     # S6: He returned into Galilee, in ink, laid on paper, with the second card.
     gal = load("s6_galilee_rm.jpg")
     sx1, sy0, sy1 = 0.62 * gal.shape[1], 0.06 * gal.shape[0], 0.80 * gal.shape[0]
     part = gal[int(sy0):int(sy1), 0:int(sx1)]
-    s = 0.80 * C2 / part.shape[0]
+    s0 = 0.80 * C2 / part.shape[0]
+    ox0, oy0 = 0.38 * C2 - 0.405 * gal.shape[1] * s0, 0.39 * C2 - (0.21 * gal.shape[0] - sy0) * s0
+    # the figure's centre at that placing, measured: (0.384, 0.588) of the canvas, 0.304 tall. The reference's figure
+    # stands at (0.523, 0.518), 0.385 tall, at frame 436 (its own camera undone from 440, 450 and 466).
+    px0, py0 = (0.384 * C2 - ox0) / s0, (0.588 * C2 - oy0) / s0
+    s = s0 * 0.385 / 0.304
+    ox, oy = round(0.523 * C2 - s * px0), round(0.518 * C2 - s * py0)
     pic = cv2.resize(part, (round(part.shape[1] * s), round(part.shape[0] * s)), interpolation=cv2.INTER_LANCZOS4)
-    pic = LK.ink_paint(pic, scale=2.0)
+    pic = LK.ink_paint(pic, scale=2.0 * s / s0)
     canvas = np.ones((C2, C2), np.float32)
-    ox, oy = round(0.42 * C2 - 0.405 * gal.shape[1] * s), round(0.24 * C2 - (0.21 * gal.shape[0] - sy0) * s)
     y0, y1 = max(0, oy), min(C2, oy + pic.shape[0])
     x0, x1 = max(0, ox), min(C2, ox + pic.shape[1])
     canvas[y0:y1, x0:x1] = pic[y0 - oy:y1 - oy, x0 - ox:x1 - ox]
     yy, xx = np.mgrid[0:C2, 0:C2].astype(np.float32)
-    m = np.exp(-(((xx - 0.41 * C2) / (0.19 * C2)) ** 4 + ((yy - 0.49 * C2) / (0.31 * C2)) ** 4))
+    m = np.exp(-(((xx - 0.505 * C2) / (0.24 * C2)) ** 4 + ((yy - 0.584 * C2) / (0.39 * C2)) ** 4))
     inside = np.zeros((C2, C2), np.float32)
     inside[y0:y1, x0:x1] = 1
     inside = cv2.GaussianBlur(cv2.erode(inside, np.ones((301, 301), np.uint8)), (0, 0), 60)
     m = cv2.GaussianBlur(m, (0, 0), 40) * inside
     A["s6"] = 1 - (1 - canvas) * m
-    A["t6"] = text_block(["THE KINGDOM", "OF GOD", "IS WITHIN", "YOU."], "ComicRelief-Bold.ttf", 110, 136, (C2, C2), (0.835, 0.175))
+    # the reference's words stand centred at (0.882, 0.123), 0.315 wide, at frame 436, partly off the frame's right edge
+    A["t6"] = text_block(["THE KINGDOM", "OF GOD", "IS WITHIN", "YOU."], "ComicRelief-Bold.ttf", 101, 125,
+                         (TW, TW), ((0.8895 + TM) * C2 / TW, (0.1193 + TM) * C2 / TW))
     # The end: PURIFY in brush capitals.
     A["end"] = text_block(["PURIFY"], "PermanentMarker-Regular.ttf", 104, 150, (W, H), (0.5, 0.5), squeeze=1.0, spacing=14)
     for k, v in A.items():
@@ -254,12 +263,92 @@ FLAKES = dict(x=RNG.uniform(0, 1.1, 95), y=RNG.uniform(-0.1, 1.1, 95), r=RNG.cho
 BIG = dict(x=RNG.uniform(0, 1.1, 14), y=RNG.uniform(0, 1.1, 14), r=RNG.uniform(10, 24, 14), a=RNG.uniform(0.16, 0.32, 14),
            vy=RNG.uniform(0.06, 0.11, 14), vx=RNG.uniform(-0.04, -0.02, 14))
 
+# ---------------------------------------------------------------- the camera: the reference's own, measured
+
+MOTION = json.load(open(os.path.join(HERE, "motion_ref.json")))
+TR = MOTION["tracks"]
+TX = MOTION["transitions"]
+
+def table(d, f):
+    """Linear lookup in a {frame: value} table, held at its ends."""
+    ks = sorted(int(k) for k in d)
+    if f <= ks[0]:
+        return d[str(ks[0])]
+    if f >= ks[-1]:
+        return d[str(ks[-1])]
+    for a, b in zip(ks, ks[1:]):
+        if a <= f <= b:
+            va, vb = d[str(a)], d[str(b)]
+            t = (f - a) / (b - a)
+            if isinstance(va, list):
+                return [x + (y - x) * t for x, y in zip(va, vb)]
+            return va + (vb - va) * t
+
+def cam(name, f):
+    """The reference camera of a shot at frame f, as a 3x3 in frame units (content moves p -> M p)."""
+    s, r, dx, dy = table(TR[name], f)
+    th = math.radians(r)
+    A = s * np.array([[math.cos(th), -math.sin(th)], [math.sin(th), math.cos(th)]])
+    t = np.array([0.5 + dx, 0.5 + dy]) - A @ np.array([0.5, 0.5])
+    return np.array([[A[0, 0], A[0, 1], t[0]], [A[1, 0], A[1, 1], t[1]], [0, 0, 1.0]])
+
+def cam_on(name, f, back=20):
+    """Past the end of a track the camera goes on at its last rate (the close-up behind the panel)."""
+    ks = sorted(int(k) for k in TR[name])
+    if f <= ks[-1]:
+        return cam(name, f)
+    last, prev = cam(name, ks[-1]), cam(name, ks[-1] - back)
+    w, v = np.linalg.eig(last @ np.linalg.inv(prev))
+    root = np.real(v @ np.diag(w ** (1.0 / back)) @ np.linalg.inv(v))
+    return np.linalg.matrix_power(root, int(f - ks[-1])) @ last
+
+def motion_px(name, f):
+    """How far the camera carries the frame's corners within one frame, in pixels."""
+    R = cam(name, f + 0.5) @ np.linalg.inv(cam(name, f - 0.5))
+    pts = np.array([[0, 0, 1], [1, 0, 1], [0, 1, 1], [1, 1, 1], [0.5, 0.5, 1]], float).T
+    return float(np.max(np.linalg.norm((R @ pts - pts)[:2], axis=0)) * W)
+
+def shutter(names, f):
+    """Sub-frame times for motion blur: one sample per 4 pixels of travel, as the reference's fast moves blur."""
+    n = int(min(9, max(1, math.ceil(max(motion_px(nm, f) for nm in names) / 4))))
+    return [f - 0.5 + (i + 0.5) / n for i in range(n)]
+
+def scale_about(s, cx=0.5, cy=0.5):
+    return np.array([[s, 0, cx - s * cx], [0, s, cy - s * cy], [0, 0, 1.0]])
+
+def shift(dx, dy):
+    return np.array([[1, 0, dx], [0, 1, dy], [0, 0, 1.0]])
+
+NPX = np.diag([W, H, 1.0])
+NPX_I = np.diag([1.0 / W, 1.0 / H, 1.0])
+
+def place(img, B, Mn, border=0.0, size_out=(W, H)):
+    """Draw img through its base mapping B (source pixels to frame pixels at the shot's start), moved by Mn."""
+    T = NPX @ Mn @ NPX_I @ np.vstack([B, [0, 0, 1]])
+    a = math.sqrt(abs(np.linalg.det(T[:2, :2])))
+    src = cv2.GaussianBlur(img, (0, 0), 0.45 / a) if a < 0.8 else img
+    bv = (border,) * (3 if img.ndim == 3 else 1)
+    return cv2.warpAffine(src, T[:2].astype(np.float32), size_out, flags=cv2.INTER_CUBIC if a >= 1 else cv2.INTER_LINEAR,
+                          borderMode=cv2.BORDER_CONSTANT, borderValue=bv)
+
+def base(size, overscan=1.0, fixed=(0.5, 0.5)):
+    """A square source filling the frame, a touch larger than it so the camera's roll never shows an edge."""
+    a = overscan * W / size
+    return np.array([[a, 0, fixed[0] * W - a * fixed[0] * size], [0, a, fixed[1] * H - a * fixed[1] * size]])
+
+OVERSCAN = 1.03
+B_CANVAS = np.array([[W / C2, 0, 0], [0, H / C2, 0]])
+B_TEXT = np.array([[W / C2, 0, -TM * W], [0, H / C2, -TM * H]])
+
 # ---------------------------------------------------------------- the shots
 
-def shot_s1(f):
+def cam_s12(f):
+    """The opening's camera, carried on behind the panels."""
+    return cam("S1", f) if f <= 40 else cam("S2bg", f) @ cam("S1", 40)
+
+def s1_plate(Mn, f):
     a = assets()
-    z = 1.0 + 0.05 * (f / 141)
-    img = view(a["s1"], (0, 0, a["s1"].shape[0]), z, fixed=(0.5, 0.31))
+    img = place(a["s1"], base(a["s1"].shape[0], OVERSCAN, (0.5, 0.31)), Mn)
     img = bloom(img, 0.26, 22)
     t = f / FPS
     img = bokeh(img, t)
@@ -268,28 +357,37 @@ def shot_s1(f):
     pulse = math.exp(-((f - 29) / 2.2) ** 2) * 0.07  # the warm breath of light at 0.93 s
     if pulse > 0.003:
         img = LK.screen(img, pulse * PEACH)
-    return img, z
+    return img
 
-PANELS = [(41, 50, 1), (51, 59, 2), (60, 68, 3), (69, 91, 4), (92, 102, 5), (103, 110, 4), (111, 118, 3), (119, 139, 1)]
+def shot_s1(f):
+    return s1_plate(cam_s12(f), f)
+
+PANELS = [(41, 51, 1, "P1a"), (52, 59, 2, "P2"), (60, 68, 3, "P3"), (69, 91, 4, "P4"), (92, 102, 5, "P5"),
+          (103, 110, 4, "P4b"), (111, 118, 3, "P3b"), (119, 139, 1, "P1b")]
+PANEL_MIX = {51: 0.35, 59: 0.25, 68: 0.38, 91: 0.3, 102: 0.35, 110: 0.35, 118: 0.4}  # the frame before each switch carries some of the next panel, as the reference's do
+
+def panel_image(i, f):
+    """Panel i of PANELS at frame f: its picture moving as the reference's panel moved."""
+    a = assets()
+    p0, p1, which, track = PANELS[i]
+    move = cam(track, f)
+    if which == 1:        # the icon's own ink, laid over it where it stands
+        return place(a["s1_ink"], base(a["s1_ink"].shape[0], OVERSCAN, (0.5, 0.31)), move @ cam_s12(p0), border=1.0)
+    im = a[f"p{which}"]
+    s = (PANEL[2] - PANEL[0]) * W / im.shape[1]
+    cx, cy = (PANEL[0] + PANEL[2]) / 2 * W, (PANEL[1] + PANEL[3]) / 2 * H
+    return place(im, np.array([[s, 0, cx - s * im.shape[1] / 2], [0, s, cy - s * im.shape[0] / 2]]), move, border=1.0)
 
 def shot_s2(f):
-    a = assets()
-    bg, z = shot_s1(f)
-    which, f0, f1 = 1, 119, 139
-    for p0, p1, w in PANELS:
+    bg = s1_plate(cam_s12(f), f)
+    i = len(PANELS) - 1
+    for k, (p0, p1, w, tr) in enumerate(PANELS):
         if p0 <= f <= p1:
-            which, f0, f1 = w, p0, p1
-    k = (f - f0) / max(1, (f1 - f0))
-    pz = 1.0 + (0.035 if which == 4 else 0.02) * k
-    if which == 1:
-        pan = view(a["s1_ink"], (0, 0, a["s1_ink"].shape[0]), z, fixed=(0.5, 0.31), border=1.0)
-    else:
-        im = a[f"p{which}"]
-        pw = (PANEL[2] - PANEL[0]) * W
-        s = pz * pw / im.shape[1]
-        cx, cy = (PANEL[0] + PANEL[2]) / 2 * W, (PANEL[1] + PANEL[3]) / 2 * H
-        M = np.float32([[s, 0, cx - s * im.shape[1] / 2], [0, s, cy - s * im.shape[0] / 2]])
-        pan = cv2.warpAffine(im, M, (W, H), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_CONSTANT, borderValue=1.0)
+            i = k
+    pan = panel_image(i, f)
+    if f in PANEL_MIX and i + 1 < len(PANELS):
+        mix = PANEL_MIX[f]
+        pan = pan * (1 - mix) + panel_image(i + 1, PANELS[i + 1][0]) * mix
     pan = np.dstack([pan, pan, pan])
     bg = LK.screen(bg, 0.05)
     bg = LK.screen(bg, 0.55 * GLOW_MASK[..., None])  # the white halo the reference's panels throw
@@ -298,8 +396,7 @@ def shot_s2(f):
 
 def shot_s3(f):
     a = assets()
-    z = 1.0 + 0.075 * clamp01((f - 139) / 165)
-    img = view(a["s3"], (0, 0, a["s3"].shape[0]), z, fixed=(0.50, 0.27))
+    img = place(a["s3"], base(a["s3"].shape[0], OVERSCAN, (0.50, 0.27)), cam_on("S3", f))
     img = bloom(img, 0.30, 26)
     t = (f - 139) / FPS
     # light passing over the clasped hands, 5.8 s to 7.2 s, where it ran along the sword: a soft pool
@@ -309,93 +406,78 @@ def shot_s3(f):
         g = np.exp(-(((XX - cx) / 90) ** 2 + ((YY - 0.80 * H) / 45) ** 2)) * 0.24 * math.sin(math.pi * k)
         img = LK.screen(img, g[..., None] * np.array([1.0, 0.96, 0.88], np.float32))
     fl = FLAKES
-    ys = (fl["y"] + fl["vy"] * t) % 1.2 - 0.1
-    xs = (fl["x"] + fl["vx"] * t) % 1.2 - 0.05
-    img = dots(img, xs, ys, fl["r"], fl["a"])
+    img = dots(img, (fl["x"] + fl["vx"] * t) % 1.2 - 0.05, (fl["y"] + fl["vy"] * t) % 1.2 - 0.1, fl["r"], fl["a"])
     b = BIG
     img = dots(img, (b["x"] + b["vx"] * t) % 1.2 - 0.05, (b["y"] + b["vy"] * t) % 1.2 - 0.1, b["r"], b["a"])
     return img
 
-def s4_frame(f):
+def s4_plate(Mn):
     a = assets()
-    z = 1.0 + 0.045 * clamp01((f - 290) / 39)
-    img = view(a["s4"], (0, 0, a["s4"].shape[0]), z, fixed=(0.62, 0.52))
+    img = place(a["s4"], base(a["s4"].shape[0], 1.0), Mn)
     return vignette(bloom(img, 0.12, 18), 0.30)
 
+P = TX["panel"]
+
 def shot_s4(f):
-    if f >= 303:
-        return s4_frame(f)
+    """The lake flies in as a card, on the reference's measured path: its width, its height, its centre,
+    the flare of its right-hand corners; from 290 it is the full frame on the reference's camera."""
+    if f >= 290:
+        return s4_plate(cam("S4", f) @ scale_about(1.02))
     behind = shot_s3(f)
-    src = s4_frame(f)
-    k = (f - 235) / (288 - 235)
-    p = 0.55 + 0.45 * ease_out(k) if f <= 288 else 1.0 + 0.03 * clamp01((f - 288) / 15)
-    bend = 0.20 * (1 - ease_out((f - 235) / (300 - 235)))
-    tilt = 0.07 * (1 - ease_out((f - 235) / (290 - 235)))
-    cx, cy = 0.5, 0.47 + 0.03 * ease_out(k)
-    qx = (XX / W - cx) / p
-    qy = (YY / H - cy) / p
-    qy = qy / (1 + tilt * qx * 2)
-    r2 = qx * qx + qy * qy
-    qx = qx * (1 + bend * r2 * 4)
-    qy = qy * (1 + bend * r2 * 4)
-    panel = cv2.remap(src, (qx + 0.5) * W, (qy + 0.5) * H, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=(0, 0, 0))
-    inside = ((qx > -0.5) & (qx < 0.5) & (qy > -0.5) & (qy < 0.5)).astype(np.float32)
+    src = s4_plate(np.eye(3))
+    hw, top = table(P["hw"], f), table(P["top"], f)
+    cx, cy = table(P["cx"], f), table(P["cy"], f)
+    hh = cy - top
+    fl = table(P["flare"], f)
+    v = (YY / H - cy) / hh
+    u = (XX / W - cx - fl * v * v / 2) / (hw + fl * v * v / 2)
+    panel = cv2.remap(src, ((u + 1) / 2 * W).astype(np.float32), ((v + 1) / 2 * H).astype(np.float32), cv2.INTER_LINEAR,
+                      borderMode=cv2.BORDER_CONSTANT, borderValue=(0, 0, 0))
+    inside = ((np.abs(u) <= 1) & (np.abs(v) <= 1)).astype(np.float32)
     inside = cv2.GaussianBlur(inside, (0, 0), 0.8)[..., None]
-    if f < 240:
-        panel = cv2.GaussianBlur(panel, (0, 0), 3.0 * (240 - f) / 5)
+    if f < 238:
+        panel = cv2.GaussianBlur(panel, (0, 0), 2.0 * (238 - f))
     shade = cv2.GaussianBlur(inside[..., 0], (0, 0), 18)[..., None]
     behind = behind * (1 - 0.35 * shade)
     return behind * (1 - inside) + panel * inside
 
-# The fixed points of the zooms, measured on the reference. Its first card rides its picture: the centre
-# goes from (0.75, 0.33) to (0.53, 0.39). Its second card is its own layer: it grows only 1.25 times while
-# the picture behind zooms past it, its centre going from (0.835, 0.165) to (0.57, 0.33).
-S5_FIX = (1.05, 0.25)
-S6_FIX = (1.30, 0.0)
-T6_FIX = (1.917, -0.509)
-T6_GROW = 0.25
-
-def s5_layer(f, text_e=1.0):
+def s5_canvas(text_e=1.0):
     a = assets()
     t = a["t5"]
     if text_e < 1:
         sig = 10 * (1 - text_e)
         t = (cv2.GaussianBlur(t, (0, 0), sig) if sig > 0.3 else t) * text_e
-    canvas = a["s5"][..., None] * (1 - t[..., None]) + TEXT_INK * t[..., None]
-    z = 1.0 + 0.10 * clamp01((f - 332) / 90)
-    for fi in (345, 358, 365, 370, 377, 395, 407):
-        z += 0.09 * ease_out((f - fi) / 8)
-    return canvas, z
-
-def z6(f):
-    return 1.0 + 0.10 * clamp01((f - 430) / 37) + 0.35 * ease_out((f - 468) / 9) + 0.10 * clamp01((f - 477) / 26)
-
-Z6_END = 1.55
-
-def s6_frame(f, shift=(0.0, 0.0)):
-    """The walking figure zooms; the second card, its own layer, grows less and slides to the middle."""
-    a = assets()
-    z = z6(f)
-    img = warp_canvas(np.dstack([a["s6"]] * 3), z, S6_FIX, shift)
-    zt = 1.0 + T6_GROW * (z - 1.0) / (Z6_END - 1.0)
-    t = view(a["t6"], (0, 0, C2), zt, fixed=T6_FIX, shift=shift, border=0.0)[..., None]
-    return img * (1 - t) + TEXT_INK * t
-
-def warp_canvas(canvas, z, fixed, shift=(0, 0)):
-    return view(canvas, (0, 0, canvas.shape[0]), z, fixed=fixed, shift=shift, border=1.0)
+    return a["s5"][..., None] * (1 - t[..., None]) + TEXT_INK * t[..., None]
 
 def shot_s5(f):
-    canvas, z = s5_layer(f, text_e=ease_out((f - 330) / 6))
-    return paper_vignette(warp_canvas(canvas, z, S5_FIX))
+    c = s5_canvas(ease_out((f - 330) / 6))
+    ts = shutter(["S5"], f)
+    acc = sum(place(c, B_CANVAS, cam("S5", t), border=1.0) for t in ts)
+    return paper_vignette(acc / len(ts))
+
+def s6_frame(f, img_extra=None, txt_extra=None):
+    """The walking figure and the second card, each on the reference's own camera for its layer."""
+    a = assets()
+    ie = np.eye(3) if img_extra is None else img_extra
+    te = np.eye(3) if txt_extra is None else txt_extra
+    img = place(np.dstack([a["s6"]] * 3), B_CANVAS, ie @ cam("S6img", f), border=1.0)
+    t = place(a["t6"], B_TEXT, te @ cam("S6txt", f), border=0.0)[..., None]
+    return img * (1 - t) + TEXT_INK * t
 
 def shot_s6(f):
-    return paper_vignette(s6_frame(f))
+    ts = shutter(["S6img", "S6txt"], f)
+    img = sum(s6_frame(t) for t in ts) / len(ts)
+    if f <= 445:  # the first card's last letters are still leaving at the lower left
+        acc = np.zeros((H, W, 3), np.float32)
+        for i in range(5):
+            acc += outgoing(f - 0.5 + (i + 0.5) / 5)
+        img = img * (acc / 5)
+    return paper_vignette(img)
 
 def whip1(f):
-    bx = {329: 0.06, 330: 0.30, 331: 0.68}[f]
-    out = cv2.blur(s4_frame(f), (31, 1))
-    nxt, _ = s5_layer(332, text_e=0.0)
-    nxt = cv2.blur(paper_vignette(warp_canvas(nxt, 1.0, S5_FIX)), (41, 1))
+    bx = TX["wipe"][str(f)]
+    out = cv2.blur(s4_plate(cam("S4", 328) @ scale_about(1.02)), (31, 1))
+    nxt = cv2.blur(paper_vignette(place(s5_canvas(0.0), B_CANVAS, cam("S5", 332), border=1.0)), (41, 1))
     x = XX / W
     left = cv2.GaussianBlur((x < bx).astype(np.float32), (0, 0), 14)[..., None]
     band = np.exp(-((x - bx) / 0.10) ** 2)[..., None]
@@ -403,18 +485,23 @@ def whip1(f):
     img = out * (1 - left) + (nxt * (1 - 0.8 * wash) + 0.8 * wash) * left
     return LK.screen(img, band)
 
+def outgoing(t):
+    """The first card leaving at the lower left, on the reference's path, a little paler as it goes."""
+    ox, oy = table(TX["whip_out"], t)
+    out5 = place(s5_canvas(), B_CANVAS, shift(ox, oy) @ cam("S5", 422), border=1.0)
+    return 1 - (1 - out5) * (1 - 0.35 * clamp01((t - 422) / 23))
+
 def whip2(f):
-    e0 = ease_in_out((f - 0.5 - 423) / 10)
-    e1 = ease_in_out((f + 0.5 - 423) / 10)
+    """The diagonal whip: the second card slides in from the upper right on the reference's measured path while
+    the first leaves at the lower left; the blur is the path each travels within the frame."""
     acc5 = np.zeros((H, W, 3), np.float32)
     acc6 = np.zeros((H, W, 3), np.float32)
     n = 13
-    c5, z5 = s5_layer(422)
     for i in range(n):
-        e = e0 + (e1 - e0) * (i + 0.5) / n
-        out5 = warp_canvas(c5, z5, S5_FIX, shift=(-0.42 * e, 0.30 * e))
-        acc5 += 1 - (1 - out5) * (1 - 0.55 * e)
-        acc6 += s6_frame(430, shift=(0.32 * (1 - e), -0.24 * (1 - e)))
+        t = f - 0.5 + (i + 0.5) / n
+        acc5 += outgoing(t)
+        ix, iy = table(TX["whip_in"], t)
+        acc6 += s6_frame(436, img_extra=shift(ix, iy), txt_extra=shift(ix, iy))
     return paper_vignette((acc5 / n) * (acc6 / n))
 
 GRAD = (END_TOP[None, None, :] * (1 - (YY / H)[..., None]) * (0.6 + 0.4 * (XX / W)[..., None])
@@ -425,11 +512,12 @@ def end_layer(f):
     word = a["end"]
     cols = np.where(word.max(axis=0) > 0.05)[0]
     xl, xr = (cols.min() / W, cols.max() / W) if len(cols) else (0.3, 0.7)
-    edge = xl + (xr - xl + 0.06) * clamp01((f - 512) / 23)  # a soft wipe reveals it left to right
-    reveal = LK.smoothstep(edge, edge - 0.06, XX / W)
-    s = 1.0 + 0.03 * clamp01((f - 512) / 37)
-    M = cv2.getRotationMatrix2D((W / 2, H / 2), 0, s)
-    w = cv2.warpAffine(word, M, (W, H), flags=cv2.INTER_LINEAR) * reveal
+    s = table(TX["end_scale"], f)                     # it arrives larger and settles as it is revealed
+    Mn = (cam("END", f) if f >= 530 else np.eye(3)) @ scale_about(s)
+    w = place(word, np.array([[1.0, 0, 0], [0, 1.0, 0]]), Mn)
+    xl_s, xr_s = 0.5 + (xl - 0.5) * s, 0.5 + (xr - 0.5) * s
+    edge = xl_s + (xr_s - xl_s + 0.06) * table(TX["end_reveal"], f)
+    w = w * LK.smoothstep(edge, edge - 0.06, XX / W)
     if f >= 549:
         w = w * (1 - smooth((f - 549) / 8))
     flick = 0.94 + 0.06 * math.sin(f * 1.7) * math.sin(f * 0.61 + 1.0)
@@ -439,12 +527,9 @@ def end_layer(f):
     return w, np.clip(g1 + g2, 0, 1)
 
 def dim_and_end(f):
-    d = smooth((f - 503) / 14)
-    if f <= 517:
-        img = shot_s6(f) * (1 - d) + GRAD * d
-    else:
-        img = GRAD.copy()
-    if f >= 512:
+    d = min(1.0, table(TX["dim"], f) / 0.95) if f <= 517 else 1.0
+    img = shot_s6(f) * (1 - d) + GRAD * d if f <= 517 else GRAD.copy()
+    if f >= 511:
         w, g = end_layer(f)
         img = img * (1 - w[..., None]) + END_TEXT * w[..., None]
         img = LK.screen(img, g[..., None] * np.array([1.0, 1.0, 1.0], np.float32))
@@ -454,24 +539,24 @@ def dim_and_end(f):
 
 def frame(f):
     if f <= 40:
-        img = vignette(shot_s1(f)[0], 0.12)
+        img = vignette(shot_s1(f), 0.12)
     elif f <= 138:
         img = vignette(shot_s2(f), 0.12)
     elif f <= 141:
-        w = {139: 0.62, 140: 0.97, 141: 0.55}[f]
+        w = TX["flash"][str(f)]
         under = vignette(shot_s2(f), 0.12) if f == 139 else shot_s3(f)
         img = under * (1 - w) + w
     elif f <= 234:
         img = shot_s3(f)
-        if f <= 144:
-            img = LK.screen(img, np.full_like(img, {142: 0.14, 143: 0.06, 144: 0.02}[f]))
+        if f == 142:
+            img = LK.screen(img, np.full_like(img, TX["flash"]["142"]))
     elif f <= 328:
         img = shot_s4(f)
     elif f <= 331:
         img = whip1(f)
     elif f <= 422:
         img = shot_s5(f)
-    elif f <= 432:
+    elif f <= 435:
         img = whip2(f)
     elif f <= 502:
         img = shot_s6(f)
