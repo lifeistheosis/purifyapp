@@ -1,0 +1,9 @@
+numpy==2.5.5
+scipy
+opencv-python-headless==5.1.0
+pillow==13.0.0
+soundfile
+fonttools
+brotli
+# only for the checks in RECORD.md (the narration heard in the mix):
+faster-whisper
