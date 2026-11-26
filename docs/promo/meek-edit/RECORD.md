@@ -1,17 +1,17 @@
 # The meek edit: the record
 
-What was made for `BRIEF.md`, how, from what, and how it was checked. Made 2026-11-26, and made again the same day at his second word: "ensure the effects, visuals, and design is 1:1". This is the second version; the first is in the Vault (below).
+What was made for `BRIEF.md`, how, from what, and how it was checked. Made 2026-11-26, made again the same day at his second word ("ensure the effects, visuals, and design is 1:1"), and given the reference's own sound at his third ("put the original audio"). Earlier versions are in the Vault (below).
 
 ## The file
 
 | | |
 |---|---|
-| File | `.promo/meek-edit/purify-meek.mp4` (out of git), sha256 `99254c17a7bcda6369ed76135fc95a6faf0996cc6ddcf7c81ca24e0ae9f83492` |
+| File | `.promo/meek-edit/purify-meek.mp4` (out of git), sha256 `7a2b2925220e93a15560612b6f3680985e3e21b5d7b2f477ea2a9ac92246e21e` |
 | Length | 18.60 seconds, 558 frames: the reference edit's own length, frame for frame |
-| Size | 26.4 MB (27,655,083 bytes) |
+| Size | 26.4 MB (27,646,074 bytes) |
 | Picture | 1080 by 1080 (the reference's square, at full resolution), H.264 High, yuv420p, 30 frames a second, faststart |
-| Sound | AAC, 48 kHz stereo, 192 kbps; -14.0 LUFS integrated, true peak -1.4 dBTP (unchanged from the first version) |
-| Made by | `render.py` with `look.py` (the picture) and `sound.py` (the sound). Stills first, each compared with the reference's same frame and measured; then four renders of the picture on this machine (about 80 seconds each), the first three reviewed and corrected. One version |
+| Sound | the reference's own sound, its first 18.52 seconds, at its own level (-11.7 LUFS against its -11.6; true peak -0.2 dBTP); AAC, 48 kHz stereo, 192 kbps |
+| Made by | `render.py` with `look.py` (the picture); the sound taken from the reference file. Stills first, each compared with the reference's same frame and measured; then four renders of the picture on this machine (about 80 seconds each), the first three reviewed and corrected. One version |
 | Paid generation | none |
 
 ## The shots
@@ -85,7 +85,11 @@ Both from their open-licence packages (`fetch.py`, checked by checksum). The hou
 
 ## The sound
 
-Unchanged from the first version.
+At his third word, "put the original audio": the reference's own sound, from its first frame to 18.52 seconds, where its own fade ends; TikTok's outro jingle begins at 18.54 and is left out (the last 0.15 seconds of the file peak at 0.085, the jingle at about 0.6). Taken from the reference file as it is, resampled to 48 kHz, nothing else done to it. It lines up with the picture to the sample (offset 0 at 48 kHz, correlation 0.9991 with the reference's sound), because every cut was placed on the reference's own frames.
+
+It is the reference creator's sound: copyrighted music under four lines of Vagabond dialogue ("You're not just a vagabond, are you?", "[name] the unrivaled", "I hate that title", "A man without a rival is like a katana without a whetstone"). See Open.
+
+The sound made for the first two versions is kept (`sound.py`, the Vault):
 
 | Part | Where | From | Rights |
 |---|---|---|---|
@@ -104,7 +108,7 @@ Unchanged from the first version.
 | The look | the table above |
 | Words against what stands behind them (`check_text.py`) | worst 12.95 to 1 (the rule is 4.5); the name on the end card 11.85 to 1 |
 | Size | the first card's capitals 32 px tall at their smallest (12 px on a phone 390 wide, as small as the reference's, and rising with the zoom); the second's 41.5 px; the name's 79 px |
-| The lines heard in the mix | unchanged; all four read back word for word |
+| The sound | in sync to the sample with the reference's (offset 0), same loudness (-11.7 against -11.6 LUFS), no TikTok jingle |
 | House rules | no light rays (light is soft pools and bokeh discs), no sparkle (the flakes are round), no stripe down an edge, no parchment (every white is neutral), no em dash in any word, nothing from the heritage list. Gold: see Open |
 | Made again from the repository | `fetch.py` into an empty folder, then `render.py`: the frames match the delivered film to within its compression (a mean difference of 1 to 3 out of 255) |
 
@@ -118,7 +122,7 @@ Unchanged from the first version.
 | The icons in the flashes, the Pantocrator first | The Church's own image of Christ, the app's own icon | An Orthodox viewer sees the icons they pray before |
 | Comic capitals, the reference's places, sizes and zoom paths, no reference line on screen | The cards are the design; their text was measured on the reference | The words arrive exactly as the original's did; the citation is in the caption |
 | PURIFY in brush capitals with the glow and reveal | The reference signs off with its creator's name in this treatment | The last frame is the name |
-| Christ's words from John 18 where the dialogue was | Unchanged from the first version: the same arc in Scripture's own words, read in the app's voice, never acted | The story holds, and every word is His |
+| The reference's own sound | His word, on hearing the John 18 version | The edit is the trend as people know it, and its cuts land on the beats and lines they were made for |
 
 ## Open
 
@@ -126,9 +130,11 @@ Unchanged from the first version.
 - **The house type** is set aside for this piece (above), and the citations are in the caption, not on screen.
 - **Russia's museum law.** Seven of the nine works are held in Russia. Russia's law on the Museum Fund (54-FZ, article 36, as Garant reads it) asks a museum's permission for commercial copies of its objects' images; how far that reaches a public-domain work is disputed. The house's heritage note assessed only Greece and Italy. Not assessed by a lawyer here either.
 - **Two holders unconfirmed**: which of Ushakov's versions this is, and whether the Vasnetsov is the dome or its study.
-- **Post it with its own sound.** Never with the reference's: copyrighted music with Vagabond dialogue.
+- **The sound is someone else's.** It is copyrighted music with Vagabond dialogue, now baked into the file. Uploaded as it is, TikTok, Instagram and YouTube can match it and mute the video, block it in places or claim it. The way that stays inside TikTok's licence is to post the picture and choose the reference's sound in TikTok itself ("use this sound" on the original post); the cuts line up because the timing is frame for frame. The dialogue is a samurai's lines, now over Christ.
 
 ## The Vault
+
+The second version with its own sound, 2026-11-26: this picture with four lines of John 18 in the app's narration over a first-party bed (`sound.py`). Replaced the same day at his word, "put the original audio". Kept: its film at `.promo/meek-edit/purify-meek-v2-narration.mp4` (out of git, sha256 `99254c17a7bcda6369ed76135fc95a6faf0996cc6ddcf7c81ca24e0ae9f83492`) and `sound.py`, `lines.json` here.
 
 The first version, 2026-11-26: the reference's cut in the house's look (Lora cards with their references, the house faces, a neutral grade, the name in DM Serif Display). Superseded the same day at his word, "ensure the effects, visuals, and design is 1:1". Kept, not deleted: its film at `.promo/meek-edit/purify-meek-v1.mp4` (out of git, sha256 `d54646ddfa0354bac84fb7fcadf6f298eda7fe181fc5aafd519fea5c816c1d75`) and its scripts at commit `c6d635e2`.
 
@@ -138,8 +144,9 @@ The first version, 2026-11-26: the reference's cut in the house's look (Lora car
 python3 -m venv .promo/meek-edit/venv && .promo/meek-edit/venv/bin/pip install -r docs/promo/meek-edit/requirements.txt
 .promo/meek-edit/venv/bin/python docs/promo/meek-edit/fetch.py
 .promo/meek-edit/venv/bin/python docs/promo/meek-edit/render.py --video .promo/meek-edit/picture.mp4
-.promo/meek-edit/venv/bin/python docs/promo/meek-edit/sound.py .promo/meek-edit/sound.wav
-ffmpeg -i .promo/meek-edit/picture.mp4 -i .promo/meek-edit/sound.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -ar 48000 -shortest -movflags +faststart .promo/meek-edit/purify-meek.mp4
+# the sound: the reference file (his, kept out of git) to 18.52 s, before TikTok's jingle
+ffmpeg -i <reference.mp4> -vn -af "atrim=0:18.52,afade=t=out:st=18.50:d=0.02,apad=whole_dur=18.6,aresample=48000:resampler=soxr" -c:a pcm_s24le .promo/meek-edit/sound.wav
+ffmpeg -i .promo/meek-edit/picture.mp4 -i .promo/meek-edit/sound.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -ar 48000 -t 18.6 -movflags +faststart .promo/meek-edit/purify-meek.mp4
 ```
 
 `render.py --stills 0,92,200 --out <dir>` takes stills (`--rebuild` prepares the pictures again); `check_text.py` and `cutlist.py <reference> <ours>` are the checks above. Fetching needs Node (`npm pack`) for the faces.
