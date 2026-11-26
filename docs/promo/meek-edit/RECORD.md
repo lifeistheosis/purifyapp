@@ -1,17 +1,17 @@
 # The meek edit: the record
 
-What was made for `BRIEF.md`, how, from what, and how it was checked. Made 2026-11-26, made again the same day at his second word ("ensure the effects, visuals, and design is 1:1"), and given the reference's own sound at his third ("put the original audio"). Earlier versions are in the Vault (below).
+What was made for `BRIEF.md`, how, from what, and how it was checked. Made 2026-11-26, made again the same day at his second word ("ensure the effects, visuals, and design is 1:1"), given the reference's own sound at his third ("put the original audio"), and put on the reference's measured camera and transitions at his fourth ("the tracking and movement and transition animation could definitely be better"). Earlier versions are in the Vault (below).
 
 ## The file
 
 | | |
 |---|---|
-| File | `.promo/meek-edit/purify-meek.mp4` (out of git), sha256 `7a2b2925220e93a15560612b6f3680985e3e21b5d7b2f477ea2a9ac92246e21e` |
+| File | `.promo/meek-edit/purify-meek.mp4` (out of git), sha256 `53a2f7f20559b61feb060238a2496e9fe5e0b0b60c95c7f0def7c1a7acbdb774` |
 | Length | 18.60 seconds, 558 frames: the reference edit's own length, frame for frame |
-| Size | 26.4 MB (27,646,074 bytes) |
+| Size | 28.6 MB (30,006,447 bytes) |
 | Picture | 1080 by 1080 (the reference's square, at full resolution), H.264 High, yuv420p, 30 frames a second, faststart |
 | Sound | the reference's own sound, its first 18.52 seconds, at its own level (-11.7 LUFS against its -11.6; true peak -0.2 dBTP); AAC, 48 kHz stereo, 192 kbps |
-| Made by | `render.py` with `look.py` (the picture); the sound taken from the reference file. Stills first, each compared with the reference's same frame and measured; then four renders of the picture on this machine (about 80 seconds each), the first three reviewed and corrected. One version |
+| Made by | `render.py` with `look.py` and `motion_ref.json` (the picture); the sound taken from the reference file. Stills first, each compared with the reference's same frame and measured; for the motion, two full renders (about 95 seconds each), the first re-tracked and corrected. One version |
 | Paid generation | none |
 
 ## The shots
@@ -49,6 +49,19 @@ Every cut, move and transition is on the reference's own frames, and every shot 
 The cards' text was measured too, by its pixels: each card is centred within about 0.02 of the reference's at the start and end of its zoom, and the second ends centred at (0.55, 0.33) against the reference's (0.57, 0.33).
 
 Tried at the stills and left out: Vasnetsov's Christ Almighty as the opening (its night sky went grey and wrong under the reference's bright grade; it stays a panel), Rublev's Baptism of Christ for the lake (flat and worn under the golden hour), and a statistical match for the lake (an olive duotone).
+
+## The motion, measured
+
+Every camera move and every transition now follows the reference's own, measured frame by frame and kept as numbers in `motion_ref.json` (no picture of the reference is kept).
+
+- **The camera, shot by shot.** Each shot's move (zoom, roll, drift) relative to its first frame, by matching features between frames (`track_features.py`: SIFT, a robust similarity fit, re-anchored when the shared content runs low) and, for the small moves of the eight panels and the end card, by image alignment (`track_ecc.py`). The opening pushes in 9.4% with a 0.9 degree roll; the background goes on moving behind the panels; the close-up pushes in 12.6%; the lake 37.6% with a 1.1 degree roll; the first card zooms 2.0 times in its steps while drifting down and left; on the second card the picture and the words are tracked as separate layers (the words' path by template matching, the picture's to 490 by features and on to a keyframe at 500), since there the words grow 1.38 times while the picture grows 1.56. Outlier frames were found against a running median and replaced; the tracks are smoothed over three frames.
+- **The lake's flight.** Its left and right edges and its top corners measured on every frame from 235 to 291 against the close-up behind it: it arrives 0.54 of the frame wide, is 0.71 wide by 240, 0.80 by 248, fills the frame by 289, with its right-hand corners flaring as it comes.
+- **The whip.** The incoming figure's centre found in every frame from 424 to 436 (the words arrive with it); the outgoing card's path measured to 427 and carried on at its own slowing rate, still leaving at the lower left until 445 while the second card has begun, as in the reference.
+- **The panel switches.** Each switch takes two frames in the reference, the frame before carrying part of the next panel; so do ours.
+- **The flash, the wipe, the fall to black and the name.** The flash's whiteness on each of its three frames, the wipe band's place on each of its frames, the fall to near black from 503 to 517, and the name's reveal and settle (it arrives 1.3 times larger and settles as it is revealed) all follow the measured curves.
+- **Motion blur** follows the measured speed: one sample for every 4 pixels the camera moves within a frame, up to 56 pixels in the second card's zoom.
+
+**Checked by tracking ours the same way.** Our film was tracked with the same tool and set against the reference, frame by frame: the opening within 0.5% in scale and 0.06% of the frame in position at its worst, the close-up within 0.6% and 0.11%, the lake within 0.5% and 0.07%, the first card within 3.1% and 0.9%. Through the whip and the second card's zoom, our figure's centre stands on average 1.2% of the frame from the reference's (2.6% at worst, at 475, where both are blurred by the zoom).
 
 ## The pictures
 
@@ -104,10 +117,11 @@ The sound made for the first two versions is kept (`sound.py`, the Vault):
 
 | Check | Result |
 |---|---|
-| Timing against the reference (`cutlist.py`) | cuts start on frames 41 51 60 69 92 103 111 119 139 329 346 359 366 378 396 408 425 469 506, against the reference's 41 52 60 68 92 102 110 119 139 235 329 345 358 365 370 377 395 424 506: every one within a frame. The lake's panel still arrives on frame 235 (a change of 12.9 there, just under the detector's 14, as the darker grade softened it) |
+| Timing against the reference (`cutlist.py`) | cuts start on frames 41 51 59 68 91 102 109 118 139 235 329 376 395 407 423 506, against the reference's 41 52 60 68 92 102 110 119 139 235 329 345 358 365 370 377 395 424 506: the panel switches are now two frames, as the reference's are, and the detector finds their first; the first card's zoom steps are on the reference's own frames (its smaller steps fall under the detector's threshold) |
+| The camera | see "The motion, measured": tracked on our film and set against the reference, within 0.6% in scale and 0.11% of the frame in position on the opening, close-up and lake |
 | The look | the table above |
-| Words against what stands behind them (`check_text.py`) | worst 12.95 to 1 (the rule is 4.5); the name on the end card 11.85 to 1 |
-| Size | the first card's capitals 32 px tall at their smallest (12 px on a phone 390 wide, as small as the reference's, and rising with the zoom); the second's 41.5 px; the name's 79 px |
+| Words against what stands behind them (`check_text.py`) | worst 12.15 to 1 (the rule is 4.5); the name on the end card 11.85 to 1 |
+| Size | the first card's capitals 32 px tall at their smallest (12 px on a phone 390 wide, as small as the reference's, and rising with the zoom); the second's 36 px; the name's 79 px |
 | The sound | in sync to the sample with the reference's (offset 0), same loudness (-11.7 against -11.6 LUFS), no TikTok jingle |
 | House rules | no light rays (light is soft pools and bokeh discs), no sparkle (the flakes are round), no stripe down an edge, no parchment (every white is neutral), no em dash in any word, nothing from the heritage list. Gold: see Open |
 | Made again from the repository | `fetch.py` into an empty folder, then `render.py`: the frames match the delivered film to within its compression (a mean difference of 1 to 3 out of 255) |
@@ -133,6 +147,8 @@ The sound made for the first two versions is kept (`sound.py`, the Vault):
 - **The sound is someone else's.** It is copyrighted music with Vagabond dialogue, now baked into the file. Uploaded as it is, TikTok, Instagram and YouTube can match it and mute the video, block it in places or claim it. The way that stays inside TikTok's licence is to post the picture and choose the reference's sound in TikTok itself ("use this sound" on the original post); the cuts line up because the timing is frame for frame. The dialogue is a samurai's lines, now over Christ.
 
 ## The Vault
+
+The third version, 2026-11-26: the reference's look and sound on approximated moves (zooms and transitions set by eye). Replaced the same day at his word, "the tracking and movement and transition animation could definitely be better". Kept: its film at `.promo/meek-edit/purify-meek-v3-original-audio.mp4` (out of git, sha256 `7a2b2925220e93a15560612b6f3680985e3e21b5d7b2f477ea2a9ac92246e21e`) and its scripts at commit `5df2a01d`.
 
 The second version with its own sound, 2026-11-26: this picture with four lines of John 18 in the app's narration over a first-party bed (`sound.py`). Replaced the same day at his word, "put the original audio". Kept: its film at `.promo/meek-edit/purify-meek-v2-narration.mp4` (out of git, sha256 `99254c17a7bcda6369ed76135fc95a6faf0996cc6ddcf7c81ca24e0ae9f83492`) and `sound.py`, `lines.json` here.
 

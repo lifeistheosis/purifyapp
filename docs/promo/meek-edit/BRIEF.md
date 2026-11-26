@@ -28,3 +28,8 @@ So the look is the reference's too, not only its cut: each colour shot graded to
 ## His third word
 
 Same day, on seeing the second version: "put the original audio". The reference's own sound goes on the picture, its first 18.52 seconds (TikTok's jingle after it left out), at its own level and in sync to the sample. The John 18 sound is in the Vault. The copyright risk of a file with someone else's sound in it, and the way to post that avoids it, are in `RECORD.md`, Open.
+
+## His fourth word
+
+Same day: "the tracking and movement and transition animation could definitely be better". So the moves are no longer set by eye: every shot's camera, the lake's flight, both whips, the panel switches, the flash, the wipe, the fall to black and the name's reveal were measured on the reference frame by frame (`motion_ref.json`) and our film follows them, checked by tracking ours the same way (`RECORD.md`, "The motion, measured"). The third version is in the Vault.
+
