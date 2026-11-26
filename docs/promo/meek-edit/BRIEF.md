@@ -16,5 +16,11 @@ A TikTok by @disciplinepaystt (its file names it `vid:v26044gc0000dc0aoafog65sr0
 
 - **The pictures.** Inoue's art and its AI colourings are someone else's work. Each shot takes a public-domain work of the same kind of picture instead (`art.json`).
 - **The sound.** It is copyrighted music with Vagabond dialogue; over Christ it would also put a samurai's lines in His mouth. Its place is taken by the same shape made from cleared parts: four lines of John 18 in the app's own narration, at the reference's four moments (`RECORD.md`).
-- **The comic lettering and the capitals.** The cards are set as the app sets a verse (Lora Medium, sentence case), with the reference under each.
+- **The comic lettering and the capitals** (first version only; see below). The cards were set as the app sets a verse (Lora Medium, sentence case), with the reference under each.
 - **No paid generation, one version.** His rules: spend only what was asked, stills before video. Stills were taken and checked shot by shot against the reference first; the picture was then rendered three times on this machine (about 75 seconds each), the first two reviewed frame by frame and corrected.
+
+## His second word
+
+Same day, on seeing the first version: "ensure the effects, visuals, and design is 1:1".
+
+So the look is the reference's too, not only its cut: each colour shot graded to the reference shot's own measured tone and cast and given its finishing (glow, bokeh, cream haze, golden hour); the black and white shots drawn as manga ink on white with its grey corners; the cards in comic capitals at the reference's places, sizes and zoom paths, with no reference line on screen (the citations move to the caption); the end in brush capitals with its glow and reveal. The house faces are set aside for this piece, and the lake takes the reference's golden light, the one grade that adds yellow (flagged to him in `RECORD.md`, Open). Still the same pictures, the same words and the same sound, and still no paid generation. The first version is in the Vault.

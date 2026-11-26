@@ -2,7 +2,7 @@
 
   python fetch.py
 
-The pictures (art.json), the house faces from their open-licence packages, and
+The pictures (art.json), the two faces from their open-licence packages, and
 the app's own narration of John 18. Every file is held to the checksum it had
 when the edit was made; a file that differs is refused, never used.
 """
@@ -16,12 +16,10 @@ UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64)"}
 NARRATION = ("https://audio.purifyapp.net/read/john/18.mp3", "aud/john_18.mp3",
              "93c8a57654384f153df152a455fcbe0a5b329c0c22f7eeca3ae4e0c0e9efc752")
 FACES = [  # (package, file inside it, sha256 of that file, the name it is kept under)
-    ("@fontsource/dm-serif-display@5.2.5", "files/dm-serif-display-latin-400-normal.woff2",
-     "8b0ceabdff07806ce949c228d047d0824bca1bec4c3c3f83ac2cd077a24e55e5", "DMSerifDisplay-Regular.ttf"),
-    ("@fontsource/dm-sans@5.2.5", "files/dm-sans-latin-500-normal.woff2",
-     "720546bd1109304dfb6076e22b74c2afeaca0b38c819d019eccb1a2e91e6f0be", "DMSans-Medium.ttf"),
-    ("@fontsource/lora@5.2.5", "files/lora-latin-500-normal.woff2",
-     "800add27cb95a3c2cd75af11c93352a16023aee109c5c979c56bfae3f3f999c2", "Lora-Medium.ttf"),
+    ("@fontsource/comic-relief@5.3.0", "files/comic-relief-latin-700-normal.woff2",
+     "138cf98c989b64ff955952473ee94ce505e1890675413a8061a6e608dee3ded8", "ComicRelief-Bold.ttf"),          # OFL 1.1
+    ("@fontsource/permanent-marker@5.3.0", "files/permanent-marker-latin-400-normal.woff2",
+     "4884fec2c73aa52a2461073c1b87d1ceb80f400520391b43f97ca7d3c39eeb24", "PermanentMarker-Regular.ttf"),  # Apache 2.0
 ]
 
 def sha(data):
