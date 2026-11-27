@@ -5,6 +5,7 @@ import { useId } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { answerArt } from "@/lib/art/art";
+import { cn } from "@/lib/cn";
 import { useArt } from "@/lib/art/useArt";
 import { ANSWER_PICTURES } from "@/lib/onboarding/pictures";
 import { INTENTS, type Intent } from "@/lib/onboarding/space";
@@ -76,7 +77,7 @@ export function LookingFor({
         {INTENTS.map((intent, i) => {
           // Its place in the order tapped, from 1; 0 when it is not picked.
           const n = picks.indexOf(intent) + 1;
-          // In Silver Night, the place's own picture where it has one (2.0, lib/art/art.ts).
+          // In Silver Night, the place's own picture where it has one, the old one in grayscale where none is made yet (2.0, lib/art/art.ts).
           const art = artOn ? answerArt(intent) : null;
           const picture = art ? { ...ANSWER_PICTURES[intent], src: art.webp, focus: "50% 45%" } : ANSWER_PICTURES[intent];
           // An odd last card runs across both columns.
@@ -96,7 +97,7 @@ export function LookingFor({
                   src={picture.src}
                   decoding="async"
                   draggable={false}
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className={cn("absolute inset-0 h-full w-full object-cover", artOn && !art && "grayscale")}
                   style={{ objectPosition: picture.focus }}
                 />
                 {/* The page's own ground, so on Parchment it is a wash of paper with the ink on it. */}

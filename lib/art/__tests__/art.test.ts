@@ -41,6 +41,11 @@ describe("Silver Night's pictures", () => {
     expect(read("components/parishes/ParishFinderList.tsx")).toContain('<ArtHead place="parish" />');
   });
 
+  it("a picture not made yet keeps the grid one tone: the old one in grayscale, on Discover and onboarding alike", () => {
+    expect(read("components/art/ArtTiles.tsx")).toMatch(/object-cover grayscale/);
+    expect(read("components/onboarding/LookingFor.tsx")).toContain('artOn && !art && "grayscale"');
+  });
+
   it("a tile shows its place's name and the app's whole line, never cut short", () => {
     const tiles = read("components/art/ArtTiles.tsx");
     expect(tiles).toContain("{door.title}");
