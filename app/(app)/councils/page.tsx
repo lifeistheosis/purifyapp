@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArtHead } from "@/components/art/ArtHead";
 import { T } from "@/components/i18n/T";
 import { CouncilMap } from "@/components/councils/CouncilMap";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
@@ -36,6 +37,8 @@ export default function CouncilsPage() {
  <MobileTopBar titleKey="councils.eyebrow" back backFallback="/discover" revealTitleOn="councils-title" />
  <section className="bg-night px-5 md:px-8 pt-6 pb-16 md:py-24">
  <div className="mx-auto max-w-[1200px] w-full">
+ {/* Silver Night: this place's picture as its head, carried from its Discover door (2.0, components/art/ArtHead.tsx). */}
+ <ArtHead place="councils" />
  <p className="font-sans text-caption font-semibold text-paper/60">
  <T k="councils.eyebrow" />
  </p>

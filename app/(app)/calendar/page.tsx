@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { ArtHead } from "@/components/art/ArtHead";
 import { CalendarClient } from "@/components/calendar/CalendarClient";
 import { CalendarSkeleton } from "@/components/calendar/CalendarSkeleton";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
@@ -46,6 +47,12 @@ export default function CalendarPage() {
   return (
     <>
       <MobileTopBar titleKey="nav.calendar" back backFallback="/discover" />
+      {/* Silver Night: this place's picture as its head, carried from its Discover door (2.0, components/art/ArtHead.tsx). */}
+      <div className="bg-night px-5 pt-4 md:px-8">
+        <div className="mx-auto w-full max-w-[720px]">
+          <ArtHead place="calendar" />
+        </div>
+      </div>
       <Suspense fallback={<CalendarSkeleton />}>
         <CalendarClient />
       </Suspense>

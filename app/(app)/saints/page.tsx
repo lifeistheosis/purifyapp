@@ -1,4 +1,5 @@
 import { SaintsBrowser } from "@/components/saints/SaintsBrowser";
+import { ArtHead } from "@/components/art/ArtHead";
 import { SaintSearch } from "@/components/saints/SaintSearch";
 import { Cross } from "@/components/ui/icons/Cross";
 import { SaintsGreekLine } from "@/components/saints/SaintsGreekLine";
@@ -17,6 +18,8 @@ export default function SaintsPage() {
     // below it. Desktop is unchanged.
     <section className="bg-night px-5 md:px-8 pt-8 pb-12 md:py-24">
       <div className="mx-auto max-w-[1200px] w-full cascade">
+        {/* Silver Night: this place's picture as its head, carried from its Discover door (2.0, components/art/ArtHead.tsx). */}
+        <ArtHead place="saints" />
         <header className="border-b border-paper/8 pb-7 md:pb-10">
           <div className="mb-5 flex items-center gap-2.5 text-gold">
             <Cross size={18} aria-hidden />

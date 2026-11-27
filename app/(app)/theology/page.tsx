@@ -1,4 +1,5 @@
 import { APOLOGETICS_TOPICS } from "@/lib/apologetics/topics";
+import { ArtHead } from "@/components/art/ArtHead";
 import { COUNCILS } from "@/lib/councils/councils";
 import { councilFocus, councilPicture } from "@/lib/councils/page";
 import { TILE_PREVIEWS } from "@/lib/discover/tilePreviews.generated";
@@ -125,6 +126,8 @@ export default async function TheologyHubPage() {
       <MobileTopBar titleKey="nav.discoverMenu.theology" back backFallback="/discover" searchPlace="theology" />
       <section className="bg-night px-5 pb-10 pt-5 md:px-8 md:py-14">
         <div className="mx-auto w-full max-w-[640px]">
+          {/* Silver Night: this place's picture as its head, carried from its Discover door (2.0, components/art/ArtHead.tsx). */}
+          <ArtHead place="theology" />
           {/* On a computer, the page names itself; a phone's bar does. */}
           <header className="mb-8 hidden md:block native-md-hidden">
             <p className="font-sans text-caption font-semibold text-paper/55">

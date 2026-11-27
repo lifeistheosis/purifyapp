@@ -1,4 +1,5 @@
 import { T } from "@/components/i18n/T";
+import { ArtHead } from "@/components/art/ArtHead";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { WalkSoon } from "@/components/walkthrough/WalkSoon";
 import { WalkthroughsHub } from "@/components/walkthrough/WalkthroughsHub";
@@ -21,6 +22,12 @@ export default function WalkthroughsPage() {
   return (
     <>
       <MobileTopBar titleKey="walk.hubTitle" back backFallback="/discover" revealTitleOn="walk-hub-title" />
+      {/* Silver Night: this place's picture as its head, carried from its Discover door (2.0, components/art/ArtHead.tsx). */}
+      <div className="bg-night px-5 pt-4 md:px-8">
+        <div className="mx-auto w-full max-w-[720px]">
+          <ArtHead place="walkthroughs" />
+        </div>
+      </div>
       {walkthroughsEnabled() ? (
         <WalkthroughsHub
           books={Object.values(WALKTHROUGHS).map((w) => ({

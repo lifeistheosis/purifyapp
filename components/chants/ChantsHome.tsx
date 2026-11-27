@@ -1,5 +1,6 @@
 "use client";
 
+import { ArtHead } from "@/components/art/ArtHead";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -58,6 +59,8 @@ export function ChantsHome({ index }: { index: ChantIndexRow[] }) {
   return (
     <section className="bg-night px-5 pb-16 pt-6 md:px-8 md:pt-12">
       <div className="mx-auto w-full max-w-[720px]">
+        {/* Silver Night: this place's picture as its head, carried from its Discover door (2.0, components/art/ArtHead.tsx). */}
+        <ArtHead place="chants" />
         <header>
           <h1 className="text-title font-bold leading-tight tracking-[-0.01em] text-paper md:text-heading">{t("chants.title")}</h1>
           <p className="mt-2 max-w-[52ch] font-sans text-ui leading-[1.55] text-paper/60">{t("chants.lead")}</p>

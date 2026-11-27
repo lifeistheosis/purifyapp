@@ -1,5 +1,6 @@
 "use client";
 
+import { ArtHead } from "@/components/art/ArtHead";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -298,6 +299,8 @@ export function ReadingRoom({ room: built, library }: { room: Room; library: Lib
           bar here, under the apps' back bar, two bars (fresh eyes M3). */}
       <section className="px-5 pb-16 pt-4 md:px-8 md:pt-12">
         <div className="mx-auto w-full max-w-[1100px]">
+          {/* Silver Night: this place's picture as its head, carried from its Discover door (2.0, components/art/ArtHead.tsx). */}
+          <ArtHead place="reading" />
           <h1 className="hidden text-heading font-semibold leading-tight tracking-[-0.01em] text-paper md:block native-md-hidden">
             {t("nav.reading")}
           </h1>

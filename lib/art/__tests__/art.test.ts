@@ -67,6 +67,25 @@ describe("Silver Night's pictures", () => {
     expect(css).toMatch(/html\[data-art\] :is\([\s\S]*?\) \{\n filter: grayscale\(1\);/);
   });
 
+  it("each place with room for one wears its picture as its head; Community's head takes it in its own picture's place", () => {
+    const heads: Record<string, string> = {
+      saints: "app/(app)/saints/page.tsx",
+      reading: "components/reading/ReadingRoom.tsx",
+      history: "app/(app)/history/page.tsx",
+      councils: "app/(app)/councils/page.tsx",
+      theology: "app/(app)/theology/page.tsx",
+      chants: "components/chants/ChantsHome.tsx",
+      calendar: "app/(app)/calendar/page.tsx",
+      walkthroughs: "app/(app)/walkthroughs/page.tsx",
+      start: "components/start/StartHere.tsx",
+      parish: "components/parishes/ParishFinderList.tsx",
+    };
+    for (const [place, file] of Object.entries(heads)) expect(read(file), file).toMatch(new RegExp(`<ArtHead\\s+place="${place}"`));
+    expect(read("components/community/CommunityHead.tsx")).toContain("src={artOn ? ART.chat.webp : COMMUNITY_PICTURE}");
+    // The shop opens on a featured piece of its own: no second picture over it.
+    expect(read("components/shop/ShopHomeClient.tsx")).not.toContain("<ArtHead");
+  });
+
   it("a tile shows its place's name and the app's whole line, never cut short", () => {
     const tiles = read("components/art/ArtTiles.tsx");
     expect(tiles).toContain("{door.title}");

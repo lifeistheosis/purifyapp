@@ -323,7 +323,8 @@ describe("nothing moves when a picture comes", () => {
 
   it("keeps the head of Community's entrance on its frame, apart from the picture's arrival", () => {
     const head = code("components/community/CommunityHead.tsx");
-    expect(head).toMatch(/<span className="community-head-img absolute inset-0">\s*<ArrivingImage\s+src=\{COMMUNITY_PICTURE\}/);
+    // Silver Night (2.0) swaps the source in Testers mode; the frame stays the same.
+    expect(head).toMatch(/<span className="community-head-img absolute inset-0">\s*<ArrivingImage\s+src=\{(?:artOn \? ART\.chat\.webp : )?COMMUNITY_PICTURE\}/);
   });
 
   it("lets a card's dimming and its picture's fade share one transition", () => {

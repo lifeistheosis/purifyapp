@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import { PrayTalkSwitch } from "@/components/community/PrayTalkSwitch";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
+import { ART } from "@/lib/art/art";
+import { useArt } from "@/lib/art/useArt";
 import { cn } from "@/lib/cn";
 import type { CommunityHalf, PrayDoor } from "@/lib/community/halves";
 import { TILE_PREVIEWS } from "@/lib/discover/tilePreviews.generated";
@@ -50,7 +52,9 @@ export function CommunityHead({
 }) {
   const { t } = useTranslate();
   const onPicture = half === "pray" && (door === "open" || door === "waiting");
-  const preview = TILE_PREVIEWS[COMMUNITY_PICTURE]?.src;
+  // Silver Night: the place's own picture in the head's place (2.0, lib/art/art.ts); no old preview under it.
+  const artOn = useArt();
+  const preview = artOn ? undefined : TILE_PREVIEWS[COMMUNITY_PICTURE]?.src;
 
   return (
     <div className={cn("community-head relative", onPicture && "community-on-picture")}>
@@ -66,7 +70,7 @@ export function CommunityHead({
               preview, never a band at a time (build 85, note 52). */}
           <span className="community-head-img absolute inset-0">
             <ArrivingImage
-              src={COMMUNITY_PICTURE}
+              src={artOn ? ART.chat.webp : COMMUNITY_PICTURE}
               width={507}
               height={396}
               decoding="async"

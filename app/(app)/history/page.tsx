@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { ArtHead } from "@/components/art/ArtHead";
 import { CouncilMap } from "@/components/councils/CouncilMap";
 import { HistoryTimelinePage } from "@/components/history/HistoryTimelinePage";
 import { T } from "@/components/i18n/T";
@@ -55,6 +56,10 @@ export default function HistoryPage() {
     <>
       <MobileTopBar titleKey="nav.discoverMenu.history" back backFallback="/discover" revealTitleOn="history-title" />
       <div className="bg-night pb-16 safe-pb">
+        {/* Silver Night: this place's picture as its head, carried from its Discover door (2.0, components/art/ArtHead.tsx). */}
+        <div className="mx-auto w-full max-w-[1440px] px-5 pt-4 md:px-8">
+          <ArtHead place="history" />
+        </div>
         <HistoryTimelinePage lead={lead} />
         {/* The same events on the map, with the councils (1.8). */}
         <div className="mx-auto w-full max-w-[1440px] px-5 md:px-8">
