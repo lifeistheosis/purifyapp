@@ -1,5 +1,7 @@
 # Silver Night: Purify's illustration style
 
+**No art drawn in code** (his word, 2026-11-27: "all the designs look super vibe coded honestly"). Shapes drawn in SVG read as vibe coded, however they are styled. Purify's art is made by an image model from the prompts here, or by an illustrator; a chat writes the art direction and the prompts and judges what comes back. The code-drawn sets in this folder (`ref/`, `directions/`, `pack/`) are kept as unused, for the Vault, and are never given to a model as a reference: the reference is his own best result.
+
 His words, 2026-11-27: "we will work on prompt generation. to feed to my image models to create artwork for purify"; Hallow's Discover shown as a distinct illustrated system; "I want one of ours but with our own unique touch and black and grayscale defined pallete"; "as clear as possible though and a reference"; "send me the 2 references to use".
 
 ## The two references
