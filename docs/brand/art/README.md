@@ -1,5 +1,7 @@
 # Silver Night: Purify's illustration style
 
+**No recreations of holy icons** (his word, 2026-11-27: "no recreations of holy icons by the way"). No prompt asks for an icon, an iconostasis's images or a holy figure; a result that shows one is redone. Round 1's Saints drew faint icon figures behind the candles, so it is redone in `PLAN.md`. The app's real icons stay as they are (`docs/editorial-standards.md`: no invented artwork).
+
 **No art drawn in code** (his word, 2026-11-27: "all the designs look super vibe coded honestly"). Shapes drawn in SVG read as vibe coded, however they are styled. Purify's art is made by an image model from the prompts here, or by an illustrator; a chat writes the art direction and the prompts and judges what comes back. The code-drawn sets in this folder (`ref/`, `directions/`, `pack/`) are kept as unused, for the Vault, and are never given to a model as a reference: the reference is his own best result.
 
 His words, 2026-11-27: "we will work on prompt generation. to feed to my image models to create artwork for purify"; Hallow's Discover shown as a distinct illustrated system; "I want one of ours but with our own unique touch and black and grayscale defined pallete"; "as clear as possible though and a reference"; "send me the 2 references to use".
@@ -135,7 +137,7 @@ Use the attached image as the style reference and match it exactly: black and gr
 **Start here**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A small Orthodox church at night with a round dome and a three-bar cross, seen close from the front. Its arched wooden door stands half open, and inside, through the door, rows of thin candles glow softly, their light spilling white over three stone steps and onto a short path. A small arched niche above the door. Low mist on the ground, a calm night sky. Peaceful, welcoming and safe, like coming home. Keep the subject large in the center and the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A small Orthodox church at night with a round dome and a three-bar cross, seen close from the front. Its arched wooden door stands half open, and inside, through the door, rows of thin candles glow softly, their light spilling white over three stone steps and onto a short path. A small carved cross above the door. Low mist on the ground, a calm night sky. Peaceful, welcoming and safe, like coming home. Keep the subject large in the center and the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 **Chants**
 
