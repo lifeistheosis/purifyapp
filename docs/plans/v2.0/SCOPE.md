@@ -59,7 +59,7 @@ The checklist is `RELEASE.md` here: the list frozen (`since-1.9.md`), the note, 
 
 ## The order from here
 
-1. Section 5's drawing (5.1 and 5.2), for his yes.
+1. Section 5's drawing (5.1 and 5.2): drawn 2026-11-27, waiting for his yes (https://claude.ai/artifact/JmWyuPSczpraKth8R6pZan).
 2. The faults (B), one at a time.
 3. Section 5 built (5.1 to 5.3), then 5.4.
 4. C2 to C5.

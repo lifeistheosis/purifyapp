@@ -982,3 +982,12 @@ Section 5 with (b): about $40 to $65 in all, one piece at a time, each at his ye
 2. (a) or (b) for 5.4.
 3. The Plus card a day after the close: yes or no, and whether it waits for its test's end.
 4. Once drawn: the close's one line and "I went"'s three.
+
+### Mock-up 14: the week's close, drawn (2026-11-27)
+
+At his "organize everything and start working on v2 0". Drawn from the app's own Today on the native export of `a6a7620e` (`docs/plans/reader-map/mock-week-close.mjs`; the page by `mock-week-close-page.mjs`): a Catholic road's reader on the day day 7 is kept (its next step is Your first Liturgy, as on the catechumen's road), Testers mode on so the frame works. Stills: `img/mock-close-before.jpg`, `img/mock-close.jpg`, `img/mock-close-motion.jpg`. Every still passed `checkMock`, all fifteen rules, on the five palettes and the two earned, and once more in Arabic (the card mirrored, `dir="rtl"`); the page passed the kit's check at 360, 390, 412 and 1032. Page: https://claude.ai/artifact/JmWyuPSczpraKth8R6pZan
+
+- **The close:** the same card, "Day 7 of 7, kept", then the one new sentence "Your first week is kept.", then "Tomorrow: Your first Liturgy" (the app's own line for tomorrow).
+- **The finish:** 1.4 s on the house curve: a soft light of the palette's silver comes down into the card from its top, brightens and settles to half; the sentence comes up, then tomorrow's step. Reduced motion shows the end.
+- **Two changes from the plan, for his word:** no button (a kept day has none; tomorrow the card offers the step with its own Begin), and no marks for the seven days ("Day 7 of 7" says it; marks would read as a count, and each thing is said once).
+- **Waiting for his yes or no,** and his answers on 5.4 and the Plus card's day. On a yes the build is next (about $10 to $20).

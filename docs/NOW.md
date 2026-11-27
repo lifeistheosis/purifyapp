@@ -17,7 +17,7 @@ Updated 2026-11-27 about 07:45 UTC by the one chat (session_01VuYTwc1qekL8Gg5GoJ
 - **Stores:** 1.9 on both. Android is build 101, from main `6700c2e65`. The App Store serves 1.9 since 2026-11-21 00:06 UTC (Apple's public lookup); whether Apple approved build 37 or build 39 is his to confirm.
 - **The main web** runs main `1aea88f7` of 2026-11-25 (the admin's money, goals and levels, the owner digest, keeping members, the account step after the welcome, Cloudflare's place for a visit). Its cache version is `purify-1.9.0`.
 - **The branch** holds 2.0 (SCOPE, part A), the promo edits, and every commit of main by content. None of its 2.0 work is on main or in a build, by his word ("Full 2.0, wait").
-- **2.0:** `docs/plans/v2.0/SCOPE.md` is what is in it, the cut line and the order; `docs/plans/v2.0/RELEASE.md` is the steps that ship it. **Now:** section 5's drawing (the week's close), for his yes, by this chat from `docs/handoffs/v2.0-week-close.md` (cap $12).
+- **2.0:** `docs/plans/v2.0/SCOPE.md` is what is in it, the cut line and the order; `docs/plans/v2.0/RELEASE.md` is the steps that ship it. **Now:** section 5's drawing (the week's close) is done and waits for his yes: https://claude.ai/artifact/JmWyuPSczpraKth8R6pZan (mock-up 14, `docs/plans/onboarding-2.0.md`).
 - **Two planning documents from him for 2.0** (a growth framework, a growth and money model, 2026-11-22) are confidential and not in this repository, which is public. Ask him when a step needs them.
 
 ## Waiting on him
