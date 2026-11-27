@@ -7,7 +7,7 @@
 // Every picture is made with Gemini from the prompts in docs/brand/art/PLAN.md,
 // with his yes on each, and built into public/art/ by scripts/art/build.mjs.
 // No picture recreates a holy icon (his word, 2026-11-27); the one exception he
-// made by name is the daily rule's (PLAN.md, "Picked so far").
+// made by name is the daily rule's (docs/brand/art/PICKED.md).
 //
 // Dark for readers until 2.0 lights it: ART_LIVE, and Testers mode walks it.
 

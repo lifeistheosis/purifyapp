@@ -2,7 +2,7 @@
 
 **The page to copy from:** https://claude.ai/artifact/7LsSMiwAobQMRvpoDYL7Lm (private; built from `prompts.py`, which writes `PLAN.md` and `prompts.html`).
 
-**No recreations of holy icons** (his word, 2026-11-27: "no recreations of holy icons by the way"). No prompt asks for an icon, an iconostasis's images or a holy figure; a result that shows one is redone. Round 1's Saints drew faint icon figures behind the candles, so it is redone in `PLAN.md`. The app's real icons stay as they are (`docs/editorial-standards.md`: no invented artwork).
+**Saints, yes; a specific icon, never** (his words, 2026-11-27: "no recreations of holy icons by the way", then "no restrictions on making saints just no recreatings specific iconagraphy just generic depictions"). Saints may be drawn as generic, unnamed figures; no prompt copies a particular icon. No prompt asks for an icon, an iconostasis's images or a holy figure; a result that shows one is redone. Round 1's Saints drew faint icon figures behind the candles, so it is redone in `PLAN.md`. The app's real icons stay as they are (`docs/editorial-standards.md`: no invented artwork).
 
 **No art drawn in code** (his word, 2026-11-27: "all the designs look super vibe coded honestly"). Shapes drawn in SVG read as vibe coded, however they are styled. Purify's art is made by an image model from the prompts here, or by an illustrator; a chat writes the art direction and the prompts and judges what comes back. The code-drawn sets in this folder (`ref/`, `directions/`, `pack/`) are kept as unused, for the Vault, and are never given to a model as a reference: the reference is his own best result.
 

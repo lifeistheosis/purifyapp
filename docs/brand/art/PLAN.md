@@ -1,14 +1,12 @@
 # Silver Night, Mist: every surface, and a prompt for each picture
 
-**The page to copy from:** https://claude.ai/artifact/7LsSMiwAobQMRvpoDYL7Lm (private; built from `prompts.py`, which writes `PLAN.md` and `prompts.html`).
-
 His word, 2026-11-27: "make me designs for everything we will implement the photos to actually. we are going all in on design."
 
-Every prompt is for Gemini with `ref/mist-reference.jpg` attached. The page to copy from is `prompts.html` (published as an artifact).
+Every prompt is for Gemini with `ref/mist-reference.jpg` attached. The page to copy from is `prompts.html` (published as an artifact). What he has picked, and how each was checked, is `PICKED.md`; this file is written by `prompts.py`, so nothing is added to it by hand.
 
-## No recreated icons
+## Saints, yes; a specific icon, never
 
-His word, 2026-11-27: "no recreations of holy icons by the way". No prompt asks for an icon, an iconostasis's images, or a holy figure, and a result that shows one is redone. Scenes that would invite icons describe the panels as shadow or leave them out.
+His words, 2026-11-27: "no recreations of holy icons by the way", then "no restrictions on making saints just no recreatings specific iconagraphy just generic depictions". Saints and the clergy may be drawn as generic, unnamed figures; no prompt copies a particular icon's composition or a named saint's likeness, and a result that does is redone.
 
 ## What stays real
 
@@ -22,43 +20,43 @@ Discover's doors, then the mastheads, onboarding's cards, Plus, the empty states
 
 Each picture is saved as `public/art/<surface>/<name>` in AVIF and WebP, like the others, and takes the place of the old one in its map (DiscoverMobile's entries, `lib/onboarding/pictures.ts`, `lib/media/sections.ts`, the Plus pages). Each is recorded in `docs/licensing/SECTION_MEDIA.md` as Purify's own, made with Gemini. Discover's doors are 4:3 tiles while Discover shows wide bands today: his call on the layout comes first.
 
-## Discover's doors (5, 4:3)
+## Discover's doors (5, 16:9)
 
-Where: Discover, each door's picture (components/mobile/DiscoverMobile.tsx). Six of them also stand on onboarding's answer cards (lib/onboarding/pictures.ts shares them). Round 1 made eight; round 2 re-prompts six (the README). Saints is redone here because round 1 drew icon figures behind the candles; the other four are still to make.
+Where: Discover, each door's picture (components/mobile/DiscoverMobile.tsx). Six of them also stand on onboarding's answer cards (lib/onboarding/pictures.ts shares them). Made: Find a parish, History, Councils, Chants, Shop, Start here, Reading. Left: these five, at 16:9 with the subject in the middle, so one picture is both the door (cut to 4:3) and the place's head.
 
-**Saints (redo: no icon figures)**
+**Saints**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: Inside a dark Orthodox church, a tall stand of thin beeswax candles burning in rows, their flames the only light, a soft haze of incense, the walls behind lost in deep shadow with only the curves of arches showing. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: Inside a dark Orthodox church, a row of saints as tall generic figures in long monastic and bishops' robes, standing in quiet prayer, each with a faint round halo of soft light behind the head, their faces in soft shadow; candles glowing in front of them, incense haze drifting. Drawn as generic, unnamed figures, not copied from any icon. Keep the group in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Theology**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: Looking straight up into the dome of a dark Orthodox church, a ring of arched windows glowing white around it, the center softly lit, a thin veil of incense haze drifting across. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: Looking straight up into the dome of a dark Orthodox church, a ring of arched windows glowing white around it, the center softly lit, a thin veil of incense haze drifting across. Keep the subject in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Calendar**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A monastery on a mountain ridge in silhouette, mist filling the valley below, and across the night sky a gentle arc of the moon's phases from a thin crescent to full. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A monastery on a mountain ridge in silhouette, mist filling the valley below, and across the night sky a gentle arc of the moon's phases from a thin crescent to full. Keep the subject in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Walkthroughs**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A lone pilgrim with a walking staff, seen from behind as a silhouette, on a winding path through misty hills toward a small distant chapel with one glowing window, under a full moon. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A lone pilgrim with a walking staff, seen from behind as a silhouette, on a winding path through misty hills toward a small distant chapel with one glowing window, under a full moon. Keep the subject in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Chat**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A long wooden table in a monastery refectory at night, candles along its length, people seated together on both sides as soft silhouettes, leaning in to talk, haze in the candlelight. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A long wooden table in a monastery refectory at night, candles along its length, people seated together on both sides as soft silhouettes, leaning in to talk, haze in the candlelight. Keep the subject in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
-## Section mastheads (6, 16:9)
+## Section mastheads (5, 16:9)
 
-Where: The head of Bible, Prayers, Discover, Reading and You, and Today's picture (components/mobile/SectionMasthead.tsx, lib/media/sections.ts). Each is the first thing a section shows, so each names the place at a glance.
+Where: The head of Bible, Prayers, Discover, Reading and You, and Today's picture (components/mobile/SectionMasthead.tsx, lib/media/sections.ts). Made: Reading. Each is the first thing a section shows, so each names the place at a glance.
 
 **Today**
 
@@ -84,21 +82,15 @@ Use the attached image as the style reference and match it exactly: black and gr
 Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: The long nave of a great dark church seen from its entrance, arches receding into mist, pools of light under hanging lamps, open doorways on either side. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
-**Reading**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: Towering shelves of old books in a monastery library at night, a wooden ladder leaning against them, one reading lamp glowing on a long table. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
-
 **You**
 
 ```
 Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: One person seen from behind, standing on a hill at night in a long coat, looking toward a distant church with glowing windows, a few stars above. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
-## Onboarding's answer cards (5, 4:3)
+## Onboarding's answer cards (3, 4:3)
 
-Where: "What are you looking for?", the picture on each answer (lib/onboarding/pictures.ts). Saints, the Fathers, councils, history, beliefs and feasts take Discover's pictures; these five have their own. A reader's first look at Purify's art.
+Where: "What are you looking for?", the picture on each answer (lib/onboarding/pictures.ts). Saints, the Fathers, councils, history, beliefs and feasts take Discover's pictures; these five have their own. Made: Quiet, A daily rule. A reader's first look at Purify's art.
 
 **The Gospels**
 
@@ -109,19 +101,7 @@ Use the attached image as the style reference and match it exactly: black and gr
 **The Liturgy**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: Inside an Orthodox church during the Liturgy, seen from the back: the carved wooden screen at the front glowing softly with candlelight, its panels in deep shadow, its central doors open to a soft light, a few worshippers standing as silhouettes, incense haze. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
-
-**A daily rule**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A quiet corner of a home at night: a hanging glass oil lamp glowing over a small wooden shelf that holds a prayer rope, a candle and a closed prayer book, the wall behind in shadow. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
-
-**Quiet**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A monk in silhouette sitting on a rock at the edge of a cliff above a sea of mist before dawn, a prayer rope in his hand, the sky still dark. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: Inside an Orthodox church during the Liturgy, seen from the back: a priest in flowing vestments stands at the open central doors of the carved wooden screen, censing, a soft light beyond him; the screen's panels in deep shadow; a few worshippers standing as silhouettes; incense haze. Generic figures, not copied from any icon. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Study**
@@ -140,9 +120,9 @@ Where: The head of the Plus page and the kept-items sheet (components/premium/Pl
 Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A vast monastery library seen through an arched doorway, tall shelves rising into the dark, soft white light, a reading desk with an open book in the center. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
-## Empty states (5, 1:1)
+## Empty states (4, 1:1)
 
-Where: What a page shows when it has nothing yet: bookmarks, the journal, search, offline, notifications. Smaller and quieter than the doors: one subject and a lot of dark.
+Where: What a page shows when it has nothing yet: bookmarks, the journal, search, offline, notifications. Made: Offline. Smaller and quieter than the doors: one subject and a lot of dark.
 
 **No bookmarks yet**
 
@@ -162,38 +142,20 @@ Use the attached image as the style reference and match it exactly: black and gr
 Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 1:1. Scene: A hand holding a lantern out over a misty path at night, the path fading into fog. Leave plenty of dark empty space around one small, quiet subject. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
-**Offline**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 1:1. Scene: A small monastery on a cliff high above the clouds at night, far from everything, a few stars. Leave plenty of dark empty space around one small, quiet subject. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
-
 **No notifications**
 
 ```
 Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 1:1. Scene: A still bell hanging in a quiet belfry arch at night under the moon. Leave plenty of dark empty space around one small, quiet subject. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
-## Email headers (4, 2:1)
+## Email headers (2, 2:1)
 
-Where: The picture at the top of each letter to readers (lib/email/). A reader sees one in their inbox before the app.
-
-**A new release**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 2:1. Scene: Dawn breaking over a wide sea of mist, the domes and crosses of a monastery rising through it, the first pale light along the horizon. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
+Where: The picture at the top of each letter to readers (lib/email/). Made: A new release, Where you left off. A reader sees one in their inbox before the app.
 
 **The first week**
 
 ```
 Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 2:1. Scene: Stone steps leading up through mist to the open door of a small church, soft light inside. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
-
-**Where you left off**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 2:1. Scene: An open book left on a stone windowsill at night, a ribbon marker across its page, the moon outside. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **The fasting companion**
@@ -224,9 +186,9 @@ Use the attached image as the style reference and match it exactly: black and gr
 Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 21:9. Scene: A long row of thin candles burning on a stand in a dark church, seen low and wide, incense haze. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
-## Theology's subjects (his call) (4, 4:3)
+## Theology's subjects (3, 4:3)
 
-Where: The four bands at the head of Theology (public/theology/subjects/). Today they are real icons. His call: keep the real icons, or these, which show each subject by its signs alone: no icon is recreated, and Christ, the Trinity and the saints are never drawn.
+Where: The four bands at the head of Theology (public/theology/subjects/). Today they are real icons. Made: The Last Judgment. These show each subject by its signs: no icon's composition is recreated.
 
 **The Holy Trinity**
 
@@ -240,43 +202,8 @@ Use the attached image as the style reference and match it exactly: black and gr
 Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A long table spread with white cloth in a dark upper room, a loaf of bread and a chalice at its center under one hanging lamp, the benches empty. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
-**The Last Judgment**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: The end of night: a great cross standing on a dark hill against the first light of dawn breaking along the horizon, mist below. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
-
 **The Triumph of Orthodoxy**
 
 ```
 Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A procession at night seen from behind: the faithful as silhouettes carrying lit candles and a tall processional cross, walking toward a great church with glowing windows. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
-
-## Picked so far (2026-11-27)
-
-His word: "im gonna send you a massive batch of all the generated photos I liked". Twelve, saved in `mist/picked/` under the spot each fills; every one is the shape its spot needs.
-
-| Spot | Picture | Check |
-|---|---|---|
-| Discover, Find a parish | `ref/mist-reference.jpg` | Holds every rule |
-| Discover, Orthodox History | `discover-history.jpg` | Holds every rule: round 2's prompt kept the towers out |
-| Discover, Councils | `discover-councils.jpg` | Holds every rule |
-| Discover, Chants | `discover-chants.jpg` | Holds every rule; staff notation is how Slavic choirs sing today |
-| Discover, Shop | `discover-shop.jpg` | Holds every rule; his pick over the redo |
-| Discover, Start here | `discover-start.jpg` | Holds every rule; his pick over the redo |
-| Mastheads, Reading | `masthead-reading.jpg` | Holds every rule. Its pointed arches read as a Western library (optional fix) |
-| Onboarding, Quiet | `onboarding-quiet.jpg` | Holds every rule. The monk's hood reads as a Western friar's (optional fix) |
-| Onboarding, A daily rule | `onboarding-daily-rule.jpg` | Shows an icon of the Theotokos on the wall. **Kept as it is, at his word** (2026-11-27: "ignore the daily rule flag for that one"): the one exception to his rule against recreated icons |
-| Empty, Offline | `empty-offline.jpg` | Holds every rule |
-| Email, A new release | `email-release.jpg` | Holds every rule |
-| Email, Where you left off | `email-left-off.jpg` | Holds every rule |
-| Theology, The Last Judgment | `theology-last-judgment.jpg` | Holds every rule, redone with the Orthodox three-bar cross: its footrest raised on Christ's right, the viewer's left, as the tradition of the penitent thief has it. The Latin-cross first try is in `mist/vault/` (Theology itself is his call) |
-
-**Still to make (21):** Discover's Saints (round 1 drew icon figures), Reading, Theology, Calendar, Walkthroughs and Chat; the mastheads for Today, Bible, Prayers, Discover and You; onboarding's Gospels, Liturgy and Study; Plus; four empty states; two letters; three banners; three of Theology's four (his call).
-
-**Edits, in Gemini with the picture attached:**
-
-- Quiet (optional): "Replace the monk's hood with a soft round black cap. Change nothing else."
-- Reading masthead (optional): "Make the pointed arches round Byzantine arches. Change nothing else."
-
-**Size:** these came at 1024 wide. Enough for the tiles; the letters and mastheads want 2048 if Gemini will give it.
