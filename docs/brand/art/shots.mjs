@@ -71,7 +71,7 @@ try {
 
   // The pictures still waiting for their own, in black and white.
   await go(page, "/prayers");
-  await page.locator(".masthead-picture, figure img").first().waitFor({ state: "visible", timeout: 30000 });
+  await page.locator('img[src^="/sections/"]').first().waitFor({ state: "visible", timeout: 30000 });
   await page.evaluate(() => window.scrollTo(0, 0));
   await keep(page, "6-prayers-head-bw", "Prayers, its head in black and white");
   await go(page, "/");

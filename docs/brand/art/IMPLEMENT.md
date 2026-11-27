@@ -58,6 +58,7 @@ His word: "implement everything and send screengrabs at the very end". Commits `
 - **Discover as tiles** (`components/art/ArtTiles.tsx`): two across, the name on the picture's dark foot, the app's whole line under it, the reader's own order kept. Seven places have their picture (Find a parish, History, Councils, Chants, Shop, Start here, Reading); the other five show their old picture in grayscale until theirs is made.
 - **Heads that take the carried picture** (`components/art/ArtHead.tsx`): Find a parish and Start here, with the mist drifting at a steady speed (`.art-drift`), still under data-motion="reduce".
 - **Onboarding's answer cards**: the place's picture on the Fathers, the councils, history, a daily rule and quiet; the others in grayscale.
+- **Black and white for the rest** (his word: "make the rest black and white so it matches the aesthetic and we will make custom images for them"): while Silver Night is on, `data-art` on `<html>` (`components/art/ArtRoot.tsx`) turns every picture still waiting for its own black and white by its folder (`/sections/`, `/discover/tiles/`, `/theology/subjects/`; app/globals.css). The saints' and the services' real icons stay in colour.
 - **Held by** `lib/art/__tests__/art.test.ts`; every screen pictured passed checkMock on the five palettes and the two earned (`docs/brand/art/shots.mjs`, `shots/`).
 
 ## Not built yet, and why
