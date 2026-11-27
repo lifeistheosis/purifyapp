@@ -8,7 +8,7 @@ Updated 2026-11-27 about 07:45 UTC by the one chat (session_01VuYTwc1qekL8Gg5GoJ
 
 - **One chat,** which is also the worker. A second only at his yes, for one named job, with a cap. Nothing is scheduled.
 - **Talk, a plan in the repo, his yes, then work.** The cost is named before anything that costs.
-- **Extra simplified mode is on** (his word, 2026-11-20): a few plain lines, one or two questions at a time, no em dashes.
+- **Super simplified mode is on** (his word, 2026-11-27, about 07:33 UTC: "super simplified mode"): the fewest words, a line or two, emojis welcome, no em dashes. It replaces extra simplified mode (2026-11-20). Only the talk changes, never the work.
 - **One branch:** `ccr-07896cf2-bo0afd`. Main is the website and moves only at his word.
 - **A fresh chat reads** CLAUDE.md, this page and `docs/plans/v2.0/SCOPE.md`, then only what its step needs.
 
