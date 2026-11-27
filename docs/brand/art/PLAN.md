@@ -251,3 +251,34 @@ Use the attached image as the style reference and match it exactly: black and gr
 ```
 Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A procession at night seen from behind: the faithful as silhouettes carrying lit candles and a tall processional cross, walking toward a great church with glowing windows. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
+
+## Picked so far (2026-11-27)
+
+His word: "im gonna send you a massive batch of all the generated photos I liked". Twelve, saved in `mist/picked/` under the spot each fills; every one is the shape its spot needs.
+
+| Spot | Picture | Check |
+|---|---|---|
+| Discover, Find a parish | `ref/mist-reference.jpg` | Holds every rule |
+| Discover, Orthodox History | `discover-history.jpg` | Holds every rule: round 2's prompt kept the towers out |
+| Discover, Councils | `discover-councils.jpg` | Holds every rule |
+| Discover, Chants | `discover-chants.jpg` | Holds every rule; staff notation is how Slavic choirs sing today |
+| Discover, Shop | `discover-shop.jpg` | Holds every rule; his pick over the redo |
+| Discover, Start here | `discover-start.jpg` | Holds every rule; his pick over the redo |
+| Mastheads, Reading | `masthead-reading.jpg` | Holds every rule. Its pointed arches read as a Western library (optional fix) |
+| Onboarding, Quiet | `onboarding-quiet.jpg` | Holds every rule. The monk's hood reads as a Western friar's (optional fix) |
+| Onboarding, A daily rule | `onboarding-daily-rule.jpg` | **Breaks his rule:** an icon of the Theotokos hangs on the wall. Fix before use |
+| Empty, Offline | `empty-offline.jpg` | Holds every rule |
+| Email, A new release | `email-release.jpg` | Holds every rule |
+| Email, Where you left off | `email-left-off.jpg` | Holds every rule |
+| Theology, The Last Judgment | `theology-last-judgment.jpg` | A Latin cross: an Orthodox three-bar cross fits (Theology is his call) |
+
+**Still to make (21):** Discover's Saints (round 1 drew icon figures), Reading, Theology, Calendar, Walkthroughs and Chat; the mastheads for Today, Bible, Prayers, Discover and You; onboarding's Gospels, Liturgy and Study; Plus; four empty states; two letters; three banners; three of Theology's four (his call).
+
+**Edits, in Gemini with the picture attached:**
+
+- A daily rule: "Remove the framed picture from the wall on the left and leave a plain dark wall there. Change nothing else."
+- The Last Judgment: "Change the cross into an Orthodox three-bar cross: a short top bar, the long main bar, and a slanted footrest bar below it. Change nothing else."
+- Quiet (optional): "Replace the monk's hood with a soft round black cap. Change nothing else."
+- Reading masthead (optional): "Make the pointed arches round Byzantine arches. Change nothing else."
+
+**Size:** these came at 1024 wide. Enough for the tiles; the letters and mastheads want 2048 if Gemini will give it.
