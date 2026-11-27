@@ -1,5 +1,7 @@
 # Silver Night, Mist: every surface, and a prompt for each picture
 
+**The page to copy from:** https://claude.ai/artifact/7LsSMiwAobQMRvpoDYL7Lm (private; built from `prompts.py`, which writes `PLAN.md` and `prompts.html`).
+
 His word, 2026-11-27: "make me designs for everything we will implement the photos to actually. we are going all in on design."
 
 Every prompt is for Gemini with `ref/mist-reference.jpg` attached. The page to copy from is `prompts.html` (published as an artifact).
