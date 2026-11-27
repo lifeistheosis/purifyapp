@@ -1,0 +1,14 @@
+{
+  "version": "2.0",
+  "kind": "",
+  "date": "",
+  "title": "",
+  "blurb": "",
+  "items": [
+    "A plain line.",
+    {
+      "category": "fixes",
+      "text": "A line filed under a category."
+    }
+  ]
+}
