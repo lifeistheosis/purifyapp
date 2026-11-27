@@ -16,53 +16,53 @@ END_EMPTY = " Leave plenty of dark empty space around one small, quiet subject. 
 SURFACES = [
  {"key":"discover","name":"Discover's doors","aspect":"16:9","where":"Discover, each door's picture (components/mobile/DiscoverMobile.tsx). Six of them also stand on onboarding's answer cards (lib/onboarding/pictures.ts shares them).","note":"Made: Find a parish, History, Councils, Chants, Shop, Start here, Reading. Left: these five, at 16:9 with the subject in the middle, so one picture is both the door (cut to 4:3) and the place's head.",
   "items":[
-   ("Saints","Inside a dark Orthodox church, a row of saints as tall generic figures in long monastic and bishops' robes, standing in quiet prayer, each with a faint round halo of soft light behind the head, their faces in soft shadow; candles glowing in front of them, incense haze drifting. Drawn as generic, unnamed figures, not copied from any icon. Keep the group in the middle of the frame."),
-   ("Theology","Looking straight up into the dome of a dark Orthodox church, a ring of arched windows glowing white around it, the center softly lit, a thin veil of incense haze drifting across. Keep the subject in the middle of the frame."),
-   ("Calendar","A monastery on a mountain ridge in silhouette, mist filling the valley below, and across the night sky a gentle arc of the moon's phases from a thin crescent to full. Keep the subject in the middle of the frame."),
-   ("Walkthroughs","A lone pilgrim with a walking staff, seen from behind as a silhouette, on a winding path through misty hills toward a small distant chapel with one glowing window, under a full moon. Keep the subject in the middle of the frame."),
-   ("Chat","A long wooden table in a monastery refectory at night, candles along its length, people seated together on both sides as soft silhouettes, leaning in to talk, haze in the candlelight. Keep the subject in the middle of the frame."),
+   ("Saints","A procession of saints walking in single file along a misty mountain ridge at first light, generic figures in long monastic and bishops' robes, each with a faint round halo of soft light, small against a vast sky. Generic, unnamed figures, not copied from any icon. Keep the procession in the middle of the frame."),
+   ("Theology","A great spiral staircase of stone inside a tall tower, seen from below, winding up and up into a soft white light at the top, a thin veil of mist hanging in the stairwell. Keep the spiral in the middle of the frame."),
+   ("Calendar","Four small arched windows side by side in a pale stone wall, each framing the same distant monastery in a different season: deep snow, blossoming trees, summer haze, falling leaves. Keep the four windows in the middle of the frame."),
+   ("Walkthroughs","An old stone bridge arching over a misty river, a lone traveler with a walking staff halfway across, seen from behind, the path going on into rolling hills beyond. Keep the bridge in the middle of the frame."),
+   ("Chat","A monastery courtyard at dusk: a few people gathered on wooden benches under a great old tree, talking, as soft silhouettes, a lantern hanging from a low branch, mist low on the ground. Keep the gathering in the middle of the frame."),
  ]},
  {"key":"sections","name":"Section mastheads","aspect":"16:9","where":"The head of Bible, Prayers, Discover, Reading and You, and Today's picture (components/mobile/SectionMasthead.tsx, lib/media/sections.ts).","note":"Made: Reading. Each is the first thing a section shows, so each names the place at a glance.",
   "items":[
-   ("Today","First light over a sea of mist: a small monastery bell tower rising through it on a hill, a thin pale glow along the horizon, a fading crescent moon still in the sky."),
-   ("Bible","An open Gospel book on a tall wooden stand in a dark church, its pages glowing softly, one beeswax candle beside it, incense haze drifting."),
-   ("Prayers","A hand holding a single lit beeswax candle in a dark church, rows of candles softly blurred behind it, the flame's glow on the fingers."),
-   ("Discover","The long nave of a great dark church seen from its entrance, arches receding into mist, pools of light under hanging lamps, open doorways on either side."),
-   ("You","One person seen from behind, standing on a hill at night in a long coat, looking toward a distant church with glowing windows, a few stars above."),
+   ("Today","A monk high in an open bell tower at sunrise, seen from behind, pulling the ropes of several bells, the valley far below filled with mist and the first pale light on the horizon."),
+   ("Bible","Two hands opening a large old book on a dark wooden table, a soft white glow rising from its pages and catching the dust floating in the air."),
+   ("Prayers","A woman in a headscarf kneeling in prayer at the back of a dark, empty church, seen from behind, one hanging lamp glowing far ahead near the front."),
+   ("Discover","Seen from high above: a monastery on a rocky headland wrapped in sea fog, its many domes and courtyards, a winding path down to a small harbor with one boat."),
+   ("You","A person seen from behind on a window seat at night, a blanket over their shoulders and a prayer rope in their hand, looking out at snow falling over a sleeping town with one church dome."),
  ]},
  {"key":"onboarding","name":"Onboarding's answer cards","aspect":"4:3","where":"\"What are you looking for?\", the picture on each answer (lib/onboarding/pictures.ts). Saints, the Fathers, councils, history, beliefs and feasts take Discover's pictures; these five have their own.","note":"Made: Quiet, A daily rule. A reader's first look at Purify's art.",
   "items":[
-   ("The Gospels","A Gospel book with a cross on its cover, resting closed on a cloth-covered holy table in a dark church, one candle beside it."),
-   ("The Liturgy","Inside an Orthodox church during the Liturgy, seen from the back: a priest in flowing vestments stands at the open central doors of the carved wooden screen, censing, a soft light beyond him; the screen's panels in deep shadow; a few worshippers standing as silhouettes; incense haze. Generic figures, not copied from any icon."),
-   ("Study","A writing desk at night with stacked old books, an open manuscript, a quill and an inkwell, one candle burning, a window with the moon behind."),
+   ("The Gospels","Four old leather-bound books standing upright together on a stone shelf, lit softly from one side, a small cross on each spine."),
+   ("The Liturgy","Looking down the length of a church from the balcony: worshippers standing in rows as silhouettes, incense rising, and at the far end the open central doors glowing with candlelight, a priest in vestments standing there. Generic figures, not copied from any icon."),
+   ("Study","A young person seen from behind, sitting cross-legged on a wooden floor surrounded by open books and loose notes, a small lamp beside them, a tall arched window with the night behind."),
  ]},
  {"key":"plus","name":"Purify Plus","aspect":"16:9","where":"The head of the Plus page and the kept-items sheet (components/premium/PlanScreen.tsx, components/billing/KeptPaywall.tsx).","note":"Plus is the whole library: depth, not a lock.",
   "items":[
-   ("The whole library","A vast monastery library seen through an arched doorway, tall shelves rising into the dark, soft white light, a reading desk with an open book in the center."),
+   ("The whole library","Endless rows of tall bookshelves stretching away into mist, seen straight down a long central aisle, small pools of light along it, one reader walking slowly between them."),
  ]},
  {"key":"empty","name":"Empty states","aspect":"1:1","where":"What a page shows when it has nothing yet: bookmarks, the journal, search, offline, notifications.","note":"Made: Offline. Smaller and quieter than the doors: one subject and a lot of dark.",
   "items":[
-   ("No bookmarks yet","A closed old book with a ribbon marker resting on a dark table in a soft round pool of light."),
-   ("Journal, first page","An open blank notebook with a pen lying across it on a dark table, one candle beside it."),
-   ("Search found nothing","A hand holding a lantern out over a misty path at night, the path fading into fog."),
-   ("No notifications","A still bell hanging in a quiet belfry arch at night under the moon."),
+   ("No bookmarks yet","A single loose ribbon bookmark lying on an empty wooden table in a soft round pool of light."),
+   ("Journal, first page","A fountain pen resting on a blank page, its nib catching a soft light."),
+   ("Search found nothing","A small rowing boat with a lantern drifting on a calm, misty lake at night, the far shore lost in fog."),
+   ("No notifications","A small hand bell resting still on a wooden windowsill, snow falling softly outside."),
  ]},
  {"key":"email","name":"Email headers","aspect":"2:1","where":"The picture at the top of each letter to readers (lib/email/).","note":"Made: A new release, Where you left off. A reader sees one in their inbox before the app.",
   "items":[
-   ("The first week","Stone steps leading up through mist to the open door of a small church, soft light inside."),
-   ("The fasting companion","A simple wooden table by a window at dusk with bread, olives and a cup of water, one candle burning."),
+   ("The first week","Seven flat stepping stones crossing a still pond toward a small chapel on the far bank, morning mist lying on the water."),
+   ("The fasting companion","A monastery kitchen garden at first light, a monk kneeling among the rows of vegetables, mist rising from the soil, the monastery walls behind."),
  ]},
  {"key":"banners","name":"Today's banners","aspect":"21:9","where":"New banner looks a reader can choose on Today (public/themes/), beside the ones they have.","note":"Added as choices, never replacing a reader's own.",
   "items":[
-   ("Night Mist","A long horizon of misty hills with distant domes and crosses, a full moon low over them."),
-   ("Monastery Ridge","A monastery strung along a cliff ridge above a sea of mist at night."),
-   ("Candle Row","A long row of thin candles burning on a stand in a dark church, seen low and wide, incense haze."),
+   ("Monastery Coast","A long rocky coastline at night, small chapels strung along the cliffs, sea mist rolling in, a few windows lit."),
+   ("Snow Domes","A snowy town at night seen from a hill: rooftops and several church domes under snow, smoke rising from chimneys, soft lit windows."),
+   ("Desert Dawn","A desert at first light: dunes softened by mist, a small domed chapel beside a lone palm, a line of travelers with camels far away."),
  ]},
  {"key":"theology","name":"Theology's subjects","aspect":"4:3","where":"The four bands at the head of Theology (public/theology/subjects/). Today they are real icons.","note":"Made: The Last Judgment. These show each subject by its signs: no icon's composition is recreated.",
   "items":[
-   ("The Holy Trinity","A bishop's three-branched candlestick with three crossed candles burning, raised in a dark church, incense haze around the flames."),
-   ("The Mystical Supper","A long table spread with white cloth in a dark upper room, a loaf of bread and a chalice at its center under one hanging lamp, the benches empty."),
-   ("The Triumph of Orthodoxy","A procession at night seen from behind: the faithful as silhouettes carrying lit candles and a tall processional cross, walking toward a great church with glowing windows."),
+   ("The Holy Trinity","Three flames of equal height rising from a single oil lamp in a dark church, their light meeting in one soft glow."),
+   ("The Mystical Supper","Close on two hands breaking a round loaf of bread above a cup on a wooden table, lit by one lamp, the room dark around them."),
+   ("The Triumph of Orthodoxy","The great doors of a cathedral thrown open at dawn, the faithful pouring out onto the steps with lit candles, bells swinging in the tower above."),
  ]},
 ]
 
@@ -113,8 +113,8 @@ h2{{font-size:19px;margin:0}} .tag{{color:var(--muted);font-size:13px;white-spac
 .p{{color:var(--muted);font-size:13.5px;margin:8px 0 0;overflow-wrap:anywhere}}
 </style>
 <main>
-<h1>Silver Night: what is left</h1>
-<p class="lede">{total} pictures for Purify in the Mist style, one per place in the app. Attach the reference below to each in Gemini, then tap Copy. Saints are generic figures, never a copy of a specific icon. What is already made is named at the head of each part.</p>
+<h1>Silver Night: round 3</h1>
+<p class="lede">{total} pictures for Purify in the Mist style, one per place in the app. Attach the reference below to each in Gemini, then tap Copy. Saints are generic figures, never a copy of a specific icon. What is already made is named at the head of each part. All new scenes, chosen so the set does not repeat itself.</p>
 <img class="ref" src="img/mist-reference.jpg" alt="The reference: a black Orthodox church silhouette with glowing windows under a full moon, in mist." width="2400" height="1792">
 <p class="cap">The reference, from your first Gemini run.</p>
 {"".join(cards)}

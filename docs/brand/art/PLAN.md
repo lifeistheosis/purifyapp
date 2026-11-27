@@ -27,31 +27,31 @@ Where: Discover, each door's picture (components/mobile/DiscoverMobile.tsx). Six
 **Saints**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: Inside a dark Orthodox church, a row of saints as tall generic figures in long monastic and bishops' robes, standing in quiet prayer, each with a faint round halo of soft light behind the head, their faces in soft shadow; candles glowing in front of them, incense haze drifting. Drawn as generic, unnamed figures, not copied from any icon. Keep the group in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A procession of saints walking in single file along a misty mountain ridge at first light, generic figures in long monastic and bishops' robes, each with a faint round halo of soft light, small against a vast sky. Generic, unnamed figures, not copied from any icon. Keep the procession in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Theology**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: Looking straight up into the dome of a dark Orthodox church, a ring of arched windows glowing white around it, the center softly lit, a thin veil of incense haze drifting across. Keep the subject in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A great spiral staircase of stone inside a tall tower, seen from below, winding up and up into a soft white light at the top, a thin veil of mist hanging in the stairwell. Keep the spiral in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Calendar**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A monastery on a mountain ridge in silhouette, mist filling the valley below, and across the night sky a gentle arc of the moon's phases from a thin crescent to full. Keep the subject in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: Four small arched windows side by side in a pale stone wall, each framing the same distant monastery in a different season: deep snow, blossoming trees, summer haze, falling leaves. Keep the four windows in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Walkthroughs**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A lone pilgrim with a walking staff, seen from behind as a silhouette, on a winding path through misty hills toward a small distant chapel with one glowing window, under a full moon. Keep the subject in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: An old stone bridge arching over a misty river, a lone traveler with a walking staff halfway across, seen from behind, the path going on into rolling hills beyond. Keep the bridge in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Chat**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A long wooden table in a monastery refectory at night, candles along its length, people seated together on both sides as soft silhouettes, leaning in to talk, haze in the candlelight. Keep the subject in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A monastery courtyard at dusk: a few people gathered on wooden benches under a great old tree, talking, as soft silhouettes, a lantern hanging from a low branch, mist low on the ground. Keep the gathering in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 ## Section mastheads (5, 16:9)
@@ -61,31 +61,31 @@ Where: The head of Bible, Prayers, Discover, Reading and You, and Today's pictur
 **Today**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: First light over a sea of mist: a small monastery bell tower rising through it on a hill, a thin pale glow along the horizon, a fading crescent moon still in the sky. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A monk high in an open bell tower at sunrise, seen from behind, pulling the ropes of several bells, the valley far below filled with mist and the first pale light on the horizon. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Bible**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: An open Gospel book on a tall wooden stand in a dark church, its pages glowing softly, one beeswax candle beside it, incense haze drifting. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: Two hands opening a large old book on a dark wooden table, a soft white glow rising from its pages and catching the dust floating in the air. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Prayers**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A hand holding a single lit beeswax candle in a dark church, rows of candles softly blurred behind it, the flame's glow on the fingers. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A woman in a headscarf kneeling in prayer at the back of a dark, empty church, seen from behind, one hanging lamp glowing far ahead near the front. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Discover**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: The long nave of a great dark church seen from its entrance, arches receding into mist, pools of light under hanging lamps, open doorways on either side. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: Seen from high above: a monastery on a rocky headland wrapped in sea fog, its many domes and courtyards, a winding path down to a small harbor with one boat. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **You**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: One person seen from behind, standing on a hill at night in a long coat, looking toward a distant church with glowing windows, a few stars above. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A person seen from behind on a window seat at night, a blanket over their shoulders and a prayer rope in their hand, looking out at snow falling over a sleeping town with one church dome. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 ## Onboarding's answer cards (3, 4:3)
@@ -95,19 +95,19 @@ Where: "What are you looking for?", the picture on each answer (lib/onboarding/p
 **The Gospels**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A Gospel book with a cross on its cover, resting closed on a cloth-covered holy table in a dark church, one candle beside it. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: Four old leather-bound books standing upright together on a stone shelf, lit softly from one side, a small cross on each spine. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **The Liturgy**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: Inside an Orthodox church during the Liturgy, seen from the back: a priest in flowing vestments stands at the open central doors of the carved wooden screen, censing, a soft light beyond him; the screen's panels in deep shadow; a few worshippers standing as silhouettes; incense haze. Generic figures, not copied from any icon. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: Looking down the length of a church from the balcony: worshippers standing in rows as silhouettes, incense rising, and at the far end the open central doors glowing with candlelight, a priest in vestments standing there. Generic figures, not copied from any icon. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Study**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A writing desk at night with stacked old books, an open manuscript, a quill and an inkwell, one candle burning, a window with the moon behind. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A young person seen from behind, sitting cross-legged on a wooden floor surrounded by open books and loose notes, a small lamp beside them, a tall arched window with the night behind. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 ## Purify Plus (1, 16:9)
@@ -117,7 +117,7 @@ Where: The head of the Plus page and the kept-items sheet (components/premium/Pl
 **The whole library**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A vast monastery library seen through an arched doorway, tall shelves rising into the dark, soft white light, a reading desk with an open book in the center. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: Endless rows of tall bookshelves stretching away into mist, seen straight down a long central aisle, small pools of light along it, one reader walking slowly between them. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 ## Empty states (4, 1:1)
@@ -127,25 +127,25 @@ Where: What a page shows when it has nothing yet: bookmarks, the journal, search
 **No bookmarks yet**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 1:1. Scene: A closed old book with a ribbon marker resting on a dark table in a soft round pool of light. Leave plenty of dark empty space around one small, quiet subject. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 1:1. Scene: A single loose ribbon bookmark lying on an empty wooden table in a soft round pool of light. Leave plenty of dark empty space around one small, quiet subject. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Journal, first page**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 1:1. Scene: An open blank notebook with a pen lying across it on a dark table, one candle beside it. Leave plenty of dark empty space around one small, quiet subject. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 1:1. Scene: A fountain pen resting on a blank page, its nib catching a soft light. Leave plenty of dark empty space around one small, quiet subject. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **Search found nothing**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 1:1. Scene: A hand holding a lantern out over a misty path at night, the path fading into fog. Leave plenty of dark empty space around one small, quiet subject. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 1:1. Scene: A small rowing boat with a lantern drifting on a calm, misty lake at night, the far shore lost in fog. Leave plenty of dark empty space around one small, quiet subject. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **No notifications**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 1:1. Scene: A still bell hanging in a quiet belfry arch at night under the moon. Leave plenty of dark empty space around one small, quiet subject. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 1:1. Scene: A small hand bell resting still on a wooden windowsill, snow falling softly outside. Leave plenty of dark empty space around one small, quiet subject. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 ## Email headers (2, 2:1)
@@ -155,35 +155,35 @@ Where: The picture at the top of each letter to readers (lib/email/). Made: A ne
 **The first week**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 2:1. Scene: Stone steps leading up through mist to the open door of a small church, soft light inside. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 2:1. Scene: Seven flat stepping stones crossing a still pond toward a small chapel on the far bank, morning mist lying on the water. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **The fasting companion**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 2:1. Scene: A simple wooden table by a window at dusk with bread, olives and a cup of water, one candle burning. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 2:1. Scene: A monastery kitchen garden at first light, a monk kneeling among the rows of vegetables, mist rising from the soil, the monastery walls behind. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 ## Today's banners (3, 21:9)
 
 Where: New banner looks a reader can choose on Today (public/themes/), beside the ones they have. Added as choices, never replacing a reader's own.
 
-**Night Mist**
+**Monastery Coast**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 21:9. Scene: A long horizon of misty hills with distant domes and crosses, a full moon low over them. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 21:9. Scene: A long rocky coastline at night, small chapels strung along the cliffs, sea mist rolling in, a few windows lit. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
-**Monastery Ridge**
+**Snow Domes**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 21:9. Scene: A monastery strung along a cliff ridge above a sea of mist at night. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 21:9. Scene: A snowy town at night seen from a hill: rooftops and several church domes under snow, smoke rising from chimneys, soft lit windows. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
-**Candle Row**
+**Desert Dawn**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 21:9. Scene: A long row of thin candles burning on a stand in a dark church, seen low and wide, incense haze. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 21:9. Scene: A desert at first light: dunes softened by mist, a small domed chapel beside a lone palm, a line of travelers with camels far away. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 ## Theology's subjects (3, 4:3)
@@ -193,17 +193,17 @@ Where: The four bands at the head of Theology (public/theology/subjects/). Today
 **The Holy Trinity**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A bishop's three-branched candlestick with three crossed candles burning, raised in a dark church, incense haze around the flames. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: Three flames of equal height rising from a single oil lamp in a dark church, their light meeting in one soft glow. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **The Mystical Supper**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A long table spread with white cloth in a dark upper room, a loaf of bread and a chalice at its center under one hanging lamp, the benches empty. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: Close on two hands breaking a round loaf of bread above a cup on a wooden table, lit by one lamp, the room dark around them. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 **The Triumph of Orthodoxy**
 
 ```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A procession at night seen from behind: the faithful as silhouettes carrying lit candles and a tall processional cross, walking toward a great church with glowing windows. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: The great doors of a cathedral thrown open at dawn, the faithful pouring out onto the steps with lit candles, bells swinging in the tower above. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
