@@ -101,3 +101,20 @@ Color, gold, sepia, cream or paper texture, light rays or sunbursts, sparkles or
 ## Format
 
 Waiting on his word: tiles two across (4:3, like Hallow's), or the gallery's wide bands (about 4:1, the subject on the right, the left kept dark for the title).
+
+## Round 1 from Gemini, rated (2026-11-27)
+
+His eight results are in `mist/round-1/`. His word: "rate all of the images it made from the promps". Rated on four things: the style held, the door read at a glance, the house's rules, and the Church got right.
+
+| Door | Score | What works | What to fix in the prompt |
+|---|---|---|---|
+| Find a parish (the reference) | 9 | The silhouette, the moon, the mist | The windows came out warm: pure white |
+| Saints | 9 | Candles before icons in incense: Orthodox at a glance | Nothing needed |
+| Reading | 7.5 | Clear and calm | The lamp is a genie lamp and the lectern a podium: a hanging glass lampada, a slanted wooden analogion |
+| Councils | 7.5 | The half circle, the book in its light | Modern chairs, and a faint shaft of light from above: wooden benches, no shaft |
+| Chants | 6.5 | Strong figures | Modern five-line sheet music, and a second lectern like Reading's: Byzantine neumes over Greek text, or another scene |
+| Start here | 6.5 | The door's light | Reads as a crypt in fog, with no dome or cross: a small domed church, a cross over the door, candles inside |
+| Orthodox History | 6 | The skyline and the ship | Minarets, despite the prompt: Ottoman Istanbul, wrong for the door. Name the Hagia Sophia of 537 with no towers at all |
+| Shop | 5 | The glow | A treasure chest any app could have: an open box holding a small icon in a frame and a prayer rope |
+
+Not yet made: Theology, Calendar, Walkthroughs, Chat. The set as a whole: about 7, and above 8 with the four fixes.
