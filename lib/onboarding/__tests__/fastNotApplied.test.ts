@@ -42,6 +42,8 @@ describe("the fast is not set on a Catholic's or a Protestant's day", () => {
     // Today: the rail and the date line honour the rule, which is hidden off the fast's roads.
     expect(read("components/today/ChurchTodayRail.tsx")).toContain('const view = fasting === "hidden" ? null : fastView(fast.kind, fasting);');
     expect(read("components/today/GreetingHeader.tsx")).toMatch(/dayMarks\(lead, day\.fast, fasting\)/);
+    // Today: the Nativity Fast's path band, which names the fast and counts its days (found on the export's walk).
+    expect(read("components/today/ChurchTodayRail.tsx")).toContain("const path = nativity && fastApplies");
     // Today: the Nativity Fast's count of days.
     expect(read("components/today/NativityStarCard.tsx")).toContain("const shown = fastApplies && n !== null && n <= days.length;");
     // Prayers: the date line's register, its tone, the day card, and the fast day's prayer.

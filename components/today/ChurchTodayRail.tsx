@@ -99,7 +99,7 @@ const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").the
  */
 export function ChurchTodayRail() {
   const day = useChurchDay();
-  const { fasting } = useSpace();
+  const { fasting, fastApplies } = useSpace();
   const { t, tn } = useTranslate();
   const [calendarStyle] = useCalendarStyleDefault();
   // The Nativity Fast path (1.8): the day a reader on it is on, or the
@@ -183,7 +183,10 @@ export function ChurchTodayRail() {
     </>
   ) : null;
   // The Nativity Fast's path, at the foot of the fast it belongs to (r3-21 A).
-  const path = nativity
+  // Not on a Catholic's or a Protestant's Today: the band names the fast and
+  // counts its days. The path stays theirs to read in the reading room
+  // (lib/onboarding/road.ts, fastApplies).
+  const path = nativity && fastApplies
     ? nativity.kind === "day"
       ? { href: `/reading/paths/${NATIVITY_PATH}#day-${nativity.n}`, value: t("today.nativity.day", { n: nativity.n, total: nativity.of }) }
       : { href: `/reading/paths/${NATIVITY_PATH}`, value: t("today.nativity.invite") }

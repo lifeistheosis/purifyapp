@@ -20,10 +20,11 @@ const live = vi.hoisted(() => ({
   today: null as Date | null,
   nativity: null as { kind: "invite" } | { kind: "day"; n: number; of: number } | null,
   fasting: "calendar" as string,
+  fastApplies: true,
 }));
 vi.mock("@/lib/calendar/useToday", () => ({ useToday: () => live.today }));
 vi.mock("@/lib/reading/useNativityRow", () => ({ useNativityRow: () => live.nativity }));
-vi.mock("@/lib/onboarding/useSpace", () => ({ useSpace: () => ({ fasting: live.fasting }) }));
+vi.mock("@/lib/onboarding/useSpace", () => ({ useSpace: () => ({ fasting: live.fasting, fastApplies: live.fastApplies }) }));
 
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { ChurchTodayRail, SaintsFold } from "@/components/today/ChurchTodayRail";
@@ -63,10 +64,14 @@ const element = (html: string, marker: string, tag: string) => {
 };
 const provide = (node: React.ReactElement) => renderToString(createElement(MessagesProvider, { locale: "en", messages: en } as ProviderProps, node));
 
-function draw(day: Date, { nativity = null, fasting = "calendar" }: { nativity?: typeof live.nativity; fasting?: string } = {}): string {
+function draw(
+  day: Date,
+  { nativity = null, fasting = "calendar", fastApplies = true }: { nativity?: typeof live.nativity; fasting?: string; fastApplies?: boolean } = {},
+): string {
   live.today = day;
   live.nativity = nativity;
   live.fasting = fasting;
+  live.fastApplies = fastApplies;
   return provide(createElement(ChurchTodayRail));
 }
 
@@ -342,6 +347,14 @@ describe("the Nativity Fast's path", () => {
     expect(fast).not.toContain('href="/fasting"');
     expect(fast).not.toContain("border-t");
     expect(words(fast)).toContain(en["today.nativity.invite"]);
+  });
+
+  it("is not on a Catholic's or a Protestant's Today: the band names the fast and counts its days (his word, 2026-11-27)", () => {
+    // Off those roads the reader's space shows the fast as hidden and says it does not apply (lib/onboarding/road.ts).
+    const html = draw(NOV_13, { nativity: { kind: "day", n: 3, of: 40 }, fasting: "hidden", fastApplies: false });
+    expect(html).not.toContain('data-today-band="fast"');
+    expect(html).not.toContain("data-nativity-path");
+    expect(words(html)).not.toContain(en["today.nativity.label"]);
   });
 
   it("draws the fast as one row in its tray when there is no path to offer (1.9)", () => {
