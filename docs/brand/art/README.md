@@ -118,3 +118,37 @@ His eight results are in `mist/round-1/`. His word: "rate all of the images it m
 | Shop | 5 | The glow | A treasure chest any app could have: an open box holding a small icon in a frame and a prayer rope |
 
 Not yet made: Theology, Calendar, Walkthroughs, Chat. The set as a whole: about 7, and above 8 with the four fixes.
+
+## Round 2: the re-prompts for the six to fix (2026-11-27)
+
+His word: "make reprompts for the ones that need fixing". Each describes only what should be there: round 1 drew minarets when the prompt named them.
+**Orthodox History**
+
+```
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: Constantinople in the year 537 across calm water at night. At its heart the Great Church of Hagia Sophia exactly as it was first built: one vast, low, wide dome resting on a ring of small arched windows, with nothing rising around it, and every dome in the city crowned with a small cross. Long sea walls with square towers run along the shore, a few windows glow, and a Byzantine ship with one square sail rests on the water in the foreground, mist lying on the sea, a full moon behind the great dome. Keep the subject large in the center and the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+```
+**Shop**
+
+```
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: An open wooden box resting on a dark wooden table, its lid tilted back. Inside, on a folded soft cloth, lie a knotted prayer rope with a small cross and tassel, a small carved wooden cross, and one beeswax candle. Soft white light glows up from inside the box onto the cloth, a little mist drifts around it, and a dark room is softly blurred behind. A gift, quiet and precious. Keep the subject large in the center and the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+```
+**Start here**
+
+```
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A small Orthodox church at night with a round dome and a three-bar cross, seen close from the front. Its arched wooden door stands half open, and inside, through the door, rows of thin candles glow softly, their light spilling white over three stone steps and onto a short path. A small arched niche above the door. Low mist on the ground, a calm night sky. Peaceful, welcoming and safe, like coming home. Keep the subject large in the center and the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+```
+**Chants**
+
+```
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A close-up of an old open chant book on a wooden stand inside a dark church. Its pages hold lines of Greek letters, with small curling Byzantine neume marks written above the words, in black ink. One beeswax candle stands beside the book, its flame lighting the pages with a soft white glow. Behind, softly blurred, the dark church with a few glowing candles and a curve of the dome. Keep the subject large in the center and the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+```
+**Councils**
+
+```
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A vast round hall with a dome, at night. Robed bishops in tall headdresses sit on long wooden benches along the curved wall, seen from behind and the side as dark silhouettes, all turned toward an open book on a carved wooden stand in the center. Tall candle stands on either side of the book give it a soft round pool of white light; the dome above stays dark. Incense haze hangs in the air. Keep the subject large in the center and the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+```
+**Reading**
+
+```
+Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A monk's quiet stone cell at night. In the center a tall Orthodox reading stand: a narrow wooden stand with a sloping top, draped in a dark embroidered cloth, holding an open old book. Above it a small glass oil lamp hangs from a thin chain, its single flame glowing softly. Behind, a narrow arched window shows the full moon, and haze drifts in the lamplight. Keep the subject large in the center and the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
+```
