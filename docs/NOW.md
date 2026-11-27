@@ -22,7 +22,7 @@ Updated 2026-11-27 about 07:45 UTC by the one chat (session_01VuYTwc1qekL8Gg5GoJ
 
 ## Waiting on him
 
-1. **The update prompt (R6):** he set it on Render (his word, 2026-11-27 about 08:15 UTC: "I just updated renders env"). At 08:18 UTC `https://purifyapp.net/api/app/release` still said Android 78 and iOS 31, so the redeploy had not landed; a watch checks it. Apps also keep the answer up to an hour (its cache header).
+1. **The update prompt (R6): Android live, iOS waits.** He set it on Render (2026-11-27, "I just updated renders env"); `https://purifyapp.net/api/app/release` says Android 101 from 08:23 UTC (probed). iOS still says 31: `IOS_BUILD_NUMBER` waits for his word on which build Apple approved, 37 or 39 (a number above the store's would prompt readers to a build that does not exist).
 2. **Supabase's free quota:** the grace period ends 11 Dec 2026. Watch the Usage page (egress must fall under about 0.13 GB a day) and decide by about 5 Dec whether to pay for one month. Details in the kept page of 11-27, "Waiting on him", item 0.
 3. **2.0's cut line:** yes or no to SCOPE's recommendation (D1 to D3 and D5 to 2.1), and keep or remove Studio Audio (C2).
 4. **Section 5's choices:** 5.4 (a) or (b), and the Plus card a day after the close (`docs/plans/onboarding-2.0.md`, "Section 5, after day seven: the plan", "What is his").
