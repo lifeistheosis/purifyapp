@@ -4,6 +4,7 @@ import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
 import { DoorOrder } from "@/components/discover/DoorOrder";
 import { SearchDoor } from "@/components/search/SearchField";
+import { DiscoverDoors } from "@/components/art/DiscoverDoors";
 import { GalleryBand } from "@/components/ui/GalleryBand";
 import { orderPrepaint } from "@/lib/discover/doorOrder";
 import { TILE_PREVIEWS } from "@/lib/discover/tilePreviews.generated";
@@ -253,6 +254,12 @@ export function DiscoverMobile({ nonce }: { nonce?: string } = {}) {
 
       {/* One child of the shell's cascade, as the list alone was. */}
       <div>
+        {/* Silver Night's tiles where it is on (2.0, lib/art/useArt.ts); the bands, with the
+            reader's order laid before they are drawn, everywhere else. */}
+        <DiscoverDoors
+          doors={entries.map((e) => ({ href: e.href, title: e.label, line: e.blurb, picture: e.picture, focus: e.focus }))}
+          bands={
+            <>
         <script nonce={nonce} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: orderPrepaint(entries.map((e) => e.href)) }} />
         <DoorOrder
           doors={entries.map((e, i) => ({
@@ -274,6 +281,9 @@ export function DiscoverMobile({ nonce }: { nonce?: string } = {}) {
               />
             ),
           }))}
+        />
+            </>
+          }
         />
       </div>
 

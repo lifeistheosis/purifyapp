@@ -24,6 +24,7 @@
 // - The reader's own region stands first (./RegionOrder.tsx): the regions are
 //   still drawn here, and only their order is chosen on the device.
 
+import { ArtHead } from "@/components/art/ArtHead";
 import Link from "next/link";
 
 import { T } from "@/components/i18n/T";
@@ -57,6 +58,8 @@ export function ParishFinderList() {
           owner's "do all" of 2026-11-23). It draws nothing (components/onboarding/DayFrame.tsx). */}
       <DayKeptOnTap on="[data-parish-finder], [data-parish-guide]" />
       <div className="mx-auto w-full max-w-[820px]">
+        {/* Silver Night's head for this place (2.0, components/art/ArtHead.tsx); nothing where it is off. */}
+        <ArtHead place="parish" />
         <header>
           <p className="font-sans text-caption font-semibold text-paper/55">
             <T k="nav.discover" />

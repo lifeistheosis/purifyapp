@@ -27,6 +27,8 @@ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { sectionMedia } from "@/lib/media/sections";
 import { START_STEPS } from "@/lib/start/steps";
 
+import { ArtHead } from "@/components/art/ArtHead";
+
 import { FirstLiturgyCard } from "./FirstLiturgyCard";
 
 export function StartHere() {
@@ -35,7 +37,11 @@ export function StartHere() {
     <section className="bg-night px-5 pb-16 pt-8 md:px-8 md:pt-14">
       <div className="mx-auto w-full max-w-[720px]">
         <header className="flex flex-col items-center text-center">
-          {icon ? (
+          {/* Silver Night's head for this place (2.0, components/art/ArtHead.tsx); the prayers' icon everywhere else. */}
+          <ArtHead
+            place="start"
+            fallback={
+              icon ? (
             // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
             <img
               src={icon.src}
@@ -45,7 +51,9 @@ export function StartHere() {
               decoding="async"
               className="h-auto w-[min(168px,44vw)] rounded-[14px] bg-night-soft ring-1 ring-inset ring-paper/10 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.75)]"
             />
-          ) : null}
+              ) : null
+            }
+          />
           <h1
             id="start-title"
             className="mt-7 font-serif text-display-sm font-bold leading-[1.08] tracking-[-0.02em] text-paper md:text-display"

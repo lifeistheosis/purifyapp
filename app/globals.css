@@ -15386,3 +15386,24 @@ body[data-sheet-up] .journal-add {
   top: 72px;
  }
 }
+
+/* Silver Night (2.0, lib/art/art.ts): the mist over a place's head drifts,
+   slowly and at a steady speed, never a pop or a bounce (components/art/ArtHead.tsx).
+   It stands still under data-motion="reduce". */
+.art-drift::after {
+ content: "";
+ position: absolute;
+ inset: -10% -30%;
+ pointer-events: none;
+ background:
+  radial-gradient(40% 30% at 30% 72%, rgb(255 255 255 / 0.1), transparent 70%),
+  radial-gradient(34% 24% at 74% 82%, rgb(255 255 255 / 0.08), transparent 70%);
+ animation: art-drift 40s linear infinite alternate;
+}
+@keyframes art-drift {
+ from { transform: translateX(-6%); }
+ to { transform: translateX(6%); }
+}
+:where([data-motion="reduce"]) .art-drift::after {
+ animation: none;
+}

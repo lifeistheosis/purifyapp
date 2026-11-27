@@ -223,3 +223,19 @@ photograph) was opened, then dropped for the Tretyakov panel below.
 The other five subjects use icons the prayer pages already carry, recorded
 in `lib/prayers/icons.ts`: Christ Pantocrator, the Theotokos of Vladimir,
 Pentecost, the Anastasis and the Three Hierarchs.
+
+## Silver Night: Purify's own pictures (2.0)
+
+Made with Google's Gemini by the owner from the prompts in `docs/brand/art/PLAN.md` (2026-11-27), each picked by him, and built into `public/art/` by `scripts/art/build.mjs`. They are Purify's own artwork, not the work of a third party, so no outside licence applies. None recreates a holy icon (his word, 2026-11-27), but for the one exception he made by name: the daily rule's picture shows an icon on the wall ("ignore the daily rule flag for that one"). Dark for readers until 2.0 (`lib/art/art.ts`, `ART_LIVE`).
+
+| File | Place | Source in docs/brand/art |
+|---|---|---|
+| `public/art/parish.{webp,avif}` | Find a parish | `ref/mist-reference.jpg` |
+| `public/art/history.{webp,avif}` | Orthodox History | `mist/picked/discover-history.jpg` |
+| `public/art/councils.{webp,avif}` | Councils | `mist/picked/discover-councils.jpg` |
+| `public/art/chants.{webp,avif}` | Chants | `mist/picked/discover-chants.jpg` |
+| `public/art/shop.{webp,avif}` | Shop | `mist/picked/discover-shop.jpg` |
+| `public/art/start.{webp,avif}` | Start here | `mist/picked/discover-start.jpg` |
+| `public/art/reading.{webp,avif}` | Reading | `mist/picked/masthead-reading.jpg` |
+| `public/art/quiet.{webp,avif}` | Onboarding, Quiet | `mist/picked/onboarding-quiet.jpg` |
+| `public/art/rule.{webp,avif}` | Onboarding, A daily rule | `mist/picked/onboarding-daily-rule.jpg` |

@@ -4,6 +4,8 @@ import { useId } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
+import { answerArt } from "@/lib/art/art";
+import { useArt } from "@/lib/art/useArt";
 import { ANSWER_PICTURES } from "@/lib/onboarding/pictures";
 import { INTENTS, type Intent } from "@/lib/onboarding/space";
 
@@ -50,6 +52,8 @@ export function LookingFor({
 }) {
   const { t } = useTranslate();
   const id = useId();
+  // Silver Night's pictures on the answers where it is on (2.0, lib/art/useArt.ts).
+  const artOn = useArt();
   const count = picks.length;
 
   return (
@@ -72,7 +76,9 @@ export function LookingFor({
         {INTENTS.map((intent, i) => {
           // Its place in the order tapped, from 1; 0 when it is not picked.
           const n = picks.indexOf(intent) + 1;
-          const picture = ANSWER_PICTURES[intent];
+          // In Silver Night, the place's own picture where it has one (2.0, lib/art/art.ts).
+          const art = artOn ? answerArt(intent) : null;
+          const picture = art ? { ...ANSWER_PICTURES[intent], src: art.webp, focus: "50% 45%" } : ANSWER_PICTURES[intent];
           // An odd last card runs across both columns.
           const wide = i === INTENTS.length - 1 && INTENTS.length % 2 === 1;
           return (
