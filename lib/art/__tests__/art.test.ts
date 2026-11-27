@@ -43,7 +43,9 @@ describe("Silver Night's pictures", () => {
 
   it("a picture not made yet keeps the grid one tone: the old one in grayscale, on Discover and onboarding alike", () => {
     expect(read("components/art/ArtTiles.tsx")).toMatch(/object-cover grayscale/);
-    expect(read("components/onboarding/LookingFor.tsx")).toContain('artOn && !art && "grayscale"');
+    expect(read("components/onboarding/LookingFor.tsx")).toContain('artOn && !art && "art-gray"');
+    // Above the cards' own dimming of an answer not picked, which a plain grayscale class loses to.
+    expect(read("app/globals.css")).toContain('.ob-pick[aria-pressed="false"] img.art-gray {\n filter: grayscale(1) brightness(0.75);');
   });
 
   it("a tile shows its place's name and the app's whole line, never cut short", () => {

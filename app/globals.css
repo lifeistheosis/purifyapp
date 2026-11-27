@@ -6483,6 +6483,14 @@ html[data-reading-mode="parchment"] .ob-says-ln {
 .ob-pick[aria-pressed="false"] img {
  filter: grayscale(0.3) brightness(0.75);
 }
+/* Silver Night (2.0, lib/art/art.ts): an answer whose own picture is not made
+   yet keeps the cards one tone, picked or not. */
+.ob-pick img.art-gray {
+ filter: grayscale(1);
+}
+.ob-pick[aria-pressed="false"] img.art-gray {
+ filter: grayscale(1) brightness(0.75);
+}
 .ob-pick-n {
  box-shadow: 0 0 12px -1px rgb(255 255 255 / 0.55);
 }

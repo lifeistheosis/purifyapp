@@ -49,3 +49,23 @@ The same treatment on every surface, so the art reads as a system:
 3. Discover drawn with the real pictures from the app's own component on the export, checkMock passing, for his yes: about $5 to $10.
 4. Built behind a switch, with tests and the gate walk: about $15 to $25.
 5. Then the heads, onboarding's cards, the empty states and the letters, one surface at a time, each drawn first.
+
+## Built, 2026-11-27 (dark for readers; Testers mode walks it)
+
+His word: "implement everything and send screengrabs at the very end". Commits `bcf1da08` and `a9e3b2b7`.
+
+- **One picture per place** (`lib/art/art.ts`): nine of his picks built into `public/art/` (`scripts/art/build.mjs`, 5 to 25 KB each), shared by Discover's doors, onboarding's answer cards and the places' heads. `ART_LIVE` is off.
+- **Discover as tiles** (`components/art/ArtTiles.tsx`): two across, the name on the picture's dark foot, the app's whole line under it, the reader's own order kept. Seven places have their picture (Find a parish, History, Councils, Chants, Shop, Start here, Reading); the other five show their old picture in grayscale until theirs is made.
+- **Heads that take the carried picture** (`components/art/ArtHead.tsx`): Find a parish and Start here, with the mist drifting at a steady speed (`.art-drift`), still under data-motion="reduce".
+- **Onboarding's answer cards**: the place's picture on the Fathers, the councils, history, a daily rule and quiet; the others in grayscale.
+- **Held by** `lib/art/__tests__/art.test.ts`; every screen pictured passed checkMock on the five palettes and the two earned (`docs/brand/art/shots.mjs`, `shots/`).
+
+## Not built yet, and why
+
+- **The other places' heads and pictures**: Saints, Theology, Calendar, Walkthroughs and Chat need their pictures (the prompts are ready), and each of those pages' tops is drawn for his yes before it changes.
+- **The section heads** (Today, Bible, Prayers, Discover, You): their pictures are not made yet.
+- **Empty states**: the pattern is ready to build, but only Offline has a picture, and the app has no offline page today.
+- **Letters**: both have a picture slot, but the release letter's look 3 and the others' look 2 are designs he said yes to as they are; a picture in them waits for his yes on that look.
+- **Theology**: one of its four pictures exists; his call whether Theology changes at all.
+- **Rearranging the tiles**: the hold-to-move is built for a list; the tiles keep the reader's order but cannot be rearranged yet.
+- **Before readers have it**: his yes on these screens, the missing pictures, the gate's walk, then `ART_LIVE`.

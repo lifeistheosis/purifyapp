@@ -97,7 +97,7 @@ export function LookingFor({
                   src={picture.src}
                   decoding="async"
                   draggable={false}
-                  className={cn("absolute inset-0 h-full w-full object-cover", artOn && !art && "grayscale")}
+                  className={cn("absolute inset-0 h-full w-full object-cover", artOn && !art && "art-gray")}
                   style={{ objectPosition: picture.focus }}
                 />
                 {/* The page's own ground, so on Parchment it is a wash of paper with the ink on it. */}
