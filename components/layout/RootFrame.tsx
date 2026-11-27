@@ -53,6 +53,7 @@ import { CommandPaletteMount } from "@/components/search/CommandPaletteMount";
 import { StreakSavedHost } from "@/components/streak/StreakSavedHost";
 import { AppThemeController } from "@/components/theme/AppThemeController";
 import { InputModality } from "@/components/ui/InputModality";
+import { ArtRoot } from "@/components/art/ArtRoot";
 import { MotionRoot } from "@/components/ui/MotionRoot";
 import { UpdateBridge } from "@/components/update/UpdateBridge";
 import { TourHost } from "@/components/whats-new/tour/TourHost";
@@ -148,6 +149,8 @@ export function RootFrame({
             phone speed check, and in a browser that asked for calm says so
             once. */}
         <MotionRoot />
+        {/* Silver Night's mark on <html> while it is on (2.0, components/art/ArtRoot.tsx). */}
+        <ArtRoot />
         {children}
         {/* Here, not in (app)/layout.tsx. Today is app/page.tsx, outside the
             (app) group, so a bar mounted there would unmount on every Today

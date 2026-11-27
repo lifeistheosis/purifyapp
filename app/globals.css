@@ -15415,3 +15415,11 @@ body[data-sheet-up] .journal-add {
 :where([data-motion="reduce"]) .art-drift::after {
  animation: none;
 }
+
+/* Silver Night (2.0, lib/art/art.ts): every picture still waiting for its own
+   (the section heads and Today's readings, the old Discover pictures wherever
+   they stand, Theology's subjects) stands in black and white, so the app keeps
+   one tone until each is made (components/art/ArtRoot.tsx sets data-art). */
+html[data-art] :is(img[src^="/sections/"], img[src^="/discover/tiles/"], img[src^="/theology/subjects/"]) {
+ filter: grayscale(1);
+}

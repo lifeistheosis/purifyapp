@@ -48,6 +48,15 @@ describe("Silver Night's pictures", () => {
     expect(read("app/globals.css")).toContain('.ob-pick[aria-pressed="false"] img.art-gray {\n filter: grayscale(1) brightness(0.75);');
   });
 
+  it("every picture still waiting for its own stands in black and white while Silver Night is on", () => {
+    expect(read("components/art/ArtRoot.tsx")).toMatch(/if \(on\) html\.dataset\.art = "";\s*else delete html\.dataset\.art;/);
+    expect(read("components/layout/RootFrame.tsx")).toContain("<ArtRoot />");
+    expect(read("app/layout.tsx")).toContain('data-art={ART_LIVE ? "" : undefined}');
+    const css = read("app/globals.css");
+    for (const folder of ["/sections/", "/discover/tiles/", "/theology/subjects/"]) expect(css, folder).toContain(`img[src^="${folder}"]`);
+    expect(css).toMatch(/html\[data-art\] :is\([^)]*\) \{\n filter: grayscale\(1\);/);
+  });
+
   it("a tile shows its place's name and the app's whole line, never cut short", () => {
     const tiles = read("components/art/ArtTiles.tsx");
     expect(tiles).toContain("{door.title}");

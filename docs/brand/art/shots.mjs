@@ -68,6 +68,17 @@ try {
   await page.locator('[data-art-head="start"]').waitFor({ state: "visible", timeout: 30000 });
   await page.evaluate(() => window.scrollTo(0, 0));
   await keep(page, "4-start-head", "Start here, its head");
+
+  // The pictures still waiting for their own, in black and white.
+  await go(page, "/prayers");
+  await page.locator(".masthead-picture, figure img").first().waitFor({ state: "visible", timeout: 30000 });
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await keep(page, "6-prayers-head-bw", "Prayers, its head in black and white");
+  await go(page, "/");
+  const readings = page.locator(".today-readings-picture").first();
+  await readings.waitFor({ state: "attached", timeout: 30000 });
+  await page.evaluate(() => document.querySelector(".today-readings-picture")?.closest("section, article, div")?.scrollIntoView({ block: "center" }));
+  await keep(page, "7-today-readings-bw", "Today, the readings in black and white");
   await ctx.close();
 
   // A new reader, at "What are you looking for?"
