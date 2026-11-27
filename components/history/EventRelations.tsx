@@ -14,6 +14,7 @@ import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { COUNCILS } from "@/lib/councils/councils";
 import { HERESIES } from "@/lib/heresies/heresies";
+import { alongTheLine } from "@/lib/history/alongTheLine";
 import { eventBySlug, publishedEvents, type HistoryEventMeta } from "@/lib/history/events";
 import { getTopicMeta } from "@/lib/theology/topics";
 
@@ -87,11 +88,9 @@ export function EventRelations({ meta }: { meta: HistoryEventMeta }) {
   const resulted = meta.rel?.resultedIn ?? [];
 
   // The events either side on the line give every page a way along it, even
-  // where no chain of cause is written.
-  const all = publishedEvents();
-  const idx = all.findIndex((e) => e.slug === meta.slug);
-  const prev = idx > 0 ? all[idx - 1] : null;
-  const next = idx >= 0 && idx < all.length - 1 ? all[idx + 1] : null;
+  // where no chain of cause is written; one the chain already names is passed
+  // over for the next on that side (lib/history/alongTheLine.ts).
+  const { prev, next } = alongTheLine(publishedEvents(), meta);
 
   return (
     <section className="mt-14 border-t border-paper/10 pt-8">

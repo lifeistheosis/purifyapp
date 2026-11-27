@@ -34,7 +34,8 @@ import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import type { QuotePlace } from "@/lib/remember/items";
 import { INTERVALS, addDays, answer, dayOf, hintWords, type Entry, type HintWord } from "@/lib/remember/schedule";
 
-const PILL = "tap-press inline-flex h-11 items-center gap-1.5 rounded-pill px-4 font-sans text-caption font-semibold disabled:opacity-50";
+// min-w-11: a pill holding one short word (Arabic's "غيّر") is still 44 px wide (Updates 98v, 41.9 px).
+const PILL = "tap-press inline-flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-pill px-4 font-sans text-caption font-semibold disabled:opacity-50";
 const SOLID = "bg-paper text-night";
 const QUIET = "border border-paper/20 text-paper/85";
 
@@ -125,7 +126,7 @@ function Practise({ verse, locked, onClose, onChange }: { verse: PractiseText; l
           {verse.name}
         </p>
         {onChange ? (
-          <button type="button" data-learn-change="" onClick={onChange} className="tap-press -me-2 inline-flex h-11 shrink-0 items-center rounded-pill px-3 font-sans text-caption font-semibold text-paper/70">
+          <button type="button" data-learn-change="" onClick={onChange} className="tap-press -me-2 inline-flex h-11 min-w-11 shrink-0 items-center justify-center rounded-pill px-3 font-sans text-caption font-semibold text-paper/70">
             {t("learn.change")}
           </button>
         ) : null}

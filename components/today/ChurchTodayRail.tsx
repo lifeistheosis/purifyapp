@@ -376,7 +376,7 @@ export function SaintsFold({ open, onToggle, count, children }: { open: boolean;
         >
           <span className="min-w-0 font-sans text-[13.5px] leading-[1.3]">
             <span className="font-semibold text-paper/85">{t("bible.readForCommemoration")}</span>
-            <span className="text-paper/50"> · {tn("today.readings.more", count)}</span>
+            <span className="text-paper/65"> · {tn("today.readings.more", count)}</span>
           </span>
           <span aria-hidden className="grid size-[30px] shrink-0 place-items-center rounded-full bg-paper/[0.07] text-paper/80">
             <ChevronDown size={16} className={cn("transition-transform duration-[240ms] ease-house motion-reduce:transition-none", open && "rotate-180")} />

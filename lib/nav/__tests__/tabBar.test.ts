@@ -88,11 +88,22 @@ describe("the tab bar", () => {
     for (const route of ['"/account"', '"/saved"', '"/settings"']) expect(tab, route).not.toContain(route);
   });
 
-  it("claims no route for two tabs", () => {
+  // A page with two homes is claimed by both, by name and reason, and lights the
+  // one the reader came from (lib/nav/tabLit.ts). Every other route has one tab.
+  const TWO_HOMES: Record<string, { tabs: [string, string]; why: string }> = {
+    "/journal": { tabs: ["bible", "you"], why: "opened from the Bible's study row and from You (Your journal, 1.9)" },
+  };
+
+  it("claims no route for two tabs, but a page with two homes named here", () => {
     const claimed = new Map<string, string>();
     for (const [key, tab] of tabs) {
       for (const [, route] of tab.matchAll(/p === "(\/[a-z-]*)"/g)) {
-        expect(claimed.get(route), `${route} is claimed by ${claimed.get(route)} and ${key}`).toBeUndefined();
+        const before = claimed.get(route);
+        if (before && TWO_HOMES[route]) {
+          expect([before, key], `${route}: ${TWO_HOMES[route].why}`).toEqual(TWO_HOMES[route].tabs);
+          continue;
+        }
+        expect(before, `${route} is claimed by ${before} and ${key}`).toBeUndefined();
         claimed.set(route, key);
       }
     }

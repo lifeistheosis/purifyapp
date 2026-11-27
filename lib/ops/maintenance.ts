@@ -85,7 +85,16 @@ async function every(
 
 export type MaintenanceReport = Record<string, JobResult>;
 
-export async function runMaintenance(admin: SupabaseClient, now: number = Date.now()): Promise<MaintenanceReport> {
+/**
+ * `later`, where the caller has one, takes work that can run after the call
+ * has answered (the heartbeat passes next/server's after()). The email jobs'
+ * share goes there: a release to every account sends for minutes at about six
+ * a second, and held the scheduler's call open past the 100 seconds Render's
+ * proxy allows, so Render called the heartbeat failed (found 2026-11-22).
+ */
+export type MaintenanceOptions = { later?: (task: () => Promise<void>) => void };
+
+export async function runMaintenance(admin: SupabaseClient, now: number = Date.now(), opts: MaintenanceOptions = {}): Promise<MaintenanceReport> {
   const report: MaintenanceReport = {};
   // Abandoned checkouts: hourly. Stale means past Stripe's 24 hour session
   // life, so an hour of lag changes nothing a buyer can see.
@@ -99,15 +108,26 @@ export async function runMaintenance(admin: SupabaseClient, now: number = Date.n
   // Hourly from noon UTC; a share already spent sends nothing, so the later
   // runs of the day only pick up budget the day has not used.
   if (new Date(now).getUTCHours() >= EMAIL_JOBS_FROM_UTC_HOUR) {
-    report.emailJobs = await every("emailJobs", 55 * 60_000, now, async () => {
-      const r = await runEmailJobs(admin, new Date(now));
-      return {
-        running: r.running,
-        allowance: r.allowance,
-        sent: r.reports.reduce((n, x) => n + x.counts.sent, 0),
-        notes: r.reports.flatMap((x) => (x.note ? [`${x.mailing}: ${x.note}`] : [])),
-      };
-    });
+    const share = () =>
+      every("emailJobs", 55 * 60_000, now, async () => {
+        const r = await runEmailJobs(admin, new Date(now));
+        return {
+          running: r.running,
+          allowance: r.allowance,
+          sent: r.reports.reduce((n, x) => n + x.counts.sent, 0),
+          notes: r.reports.flatMap((x) => (x.note ? [`${x.mailing}: ${x.note}`] : [])),
+        };
+      });
+    if (opts.later) {
+      // After the answer: what it sent is the heartbeat's own log line, not this report.
+      opts.later(async () => {
+        const r = await share();
+        if (r.ran) console.log("[maintenance] emailJobs", JSON.stringify(r));
+      });
+      report.emailJobs = { ran: false, detail: "after the response" };
+    } else {
+      report.emailJobs = await share();
+    }
   }
   // Ambassador commissions (lib/ambassadors/payouts.ts): what has passed its
   // refund window clears hourly; cleared balances are paid once a day at

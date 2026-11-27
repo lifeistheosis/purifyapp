@@ -21,16 +21,16 @@ The account step after the welcome is on the main web since 2026-11-25 and reach
 
 His rule: a release ships finished, and a fault never waits for a point release. Each mend comes with a test that fails on the old code. About $20 to $40 together, with one export to check them.
 
-1. German and Urdu: "2 weitere" on Today under 4.5 to 1; in German a council's link cut short ("Das Glaubensbekenntnis, Zeile für Zeile").
-2. Pentecost's page shows "Paul's missions" twice.
-3. `/journal/` reached from You marks Bible in the tab bar (seen, not checked).
-4. Arabic: PractiseSheet's Change button is 41.9 px wide, under 44 (`components/you/PractiseSheet.tsx:128`; the pill at :89 has the same risk).
+1. **Mended 2026-11-27:** German and Urdu: "2 weitere" on Today under 4.5 to 1 (now the house's secondary strength, `text-paper/65`); in German the Creed's row, also on council pages, cut short (its title now wraps). Tests: `lib/today/__tests__/readingsMoreContrast.test.ts`, `lib/theology/__tests__/rowTitlesWhole.test.ts`.
+2. **Mended 2026-11-27:** Pentecost's page showed "Paul's missions" twice: "Earlier" and "Later" now pass over what the chain of events already names (`lib/history/alongTheLine.ts`, its test over every published event).
+3. **Mended 2026-11-27:** `/journal/` reached from You marked Bible: a page with two homes now lights the tab the reader came from (`lib/nav/tabLit.ts`; the journal named in `tabBar.test.ts`'s one exception).
+4. **Mended 2026-11-27:** Arabic: PractiseSheet's Change button was 41.9 px wide; both its pills now hold 44 px (`lib/ui/__tests__/practiseTargets.test.ts`). Not walked: the sheet is behind a Plus feature.
 5. John 1's Community link goes blank for 211 ms on the way.
 6. Four page switches 98t could not reproduce: the Creed into a council document (blank), the Bible to 1 Samuel (cut), the doctrine shelves to vestments (flash), the work pill (26 px).
-7. `components/learn/ChooseSheet.tsx:514`: the hidden-text pattern of 98v's Share fault (named, not failed).
-8. The week's card reads "Tomorrow: Pentecost: the Descent of the Holy Spirit", two colons.
+7. **Mended 2026-11-27:** ChooseSheet's hidden note kept its margin, 98v's Share fault's shape; the rule now holds every component (`lib/ui/__tests__/hiddenLinesNoRoom.test.ts`).
+8. The week's card reads "Tomorrow: Pentecost: the Descent of the Holy Spirit", two colons. His word: proposed, the page's own bar name ("Tomorrow: Pentecost").
 9. Testers mode only: the Testers mark over the Bible's chapter pill, and cut short for "Another Christian tradition".
-10. The website: the hourly heartbeat is cut while it finishes a long send, so Render calls the job failed (`docs/1.9-build/NOW-to-2026-11-27.md`, "Found").
+10. **Mended 2026-11-27:** the website's hourly heartbeat was cut while it finished a long send, so Render called it failed: the email jobs' share now goes after the answer, as the reminders do (`lib/ops/__tests__/emailAfterAnswer.test.ts`). Reaches the main web with 2.0.
 
 ## C. To build for 2.0 (recommended in)
 

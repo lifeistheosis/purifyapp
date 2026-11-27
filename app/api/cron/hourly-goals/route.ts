@@ -160,7 +160,8 @@ export async function GET(req: NextRequest) {
   // Housekeeping on the same heartbeat, BEFORE the goals: a goals table that
   // is missing answers early below, and must not also stop abandoned
   // checkouts being cleared. See lib/ops/maintenance.ts; nothing in it throws.
-  const maintenance = await runMaintenance(supa);
+  // The email jobs' share goes after the response, like the reminders above (lib/ops/maintenance.ts).
+  const maintenance = await runMaintenance(supa, Date.now(), { later: (task) => after(task) });
 
   const { data, error } = await supa
     .from("hourly_goals")

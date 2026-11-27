@@ -35,6 +35,7 @@ import { OrthodoxCross } from "@/components/ui/icons/tab/OrthodoxCross";
 import { PrayingHands } from "@/components/ui/icons/tab/PrayingHands";
 import { NotificationsBadge } from "@/components/community/NotificationsInbox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { tabLit } from "@/lib/nav/tabLit";
 import { alreadyAtPlace, useBibleTabHref } from "@/lib/bible/lastRead";
 import { haptic } from "@/lib/ui/motion";
 import { useOverlayOpen } from "@/lib/ui/overlay";
@@ -123,6 +124,9 @@ type Tab = {
  * look is unchanged.
  */
 const TAB_LINES = [1, 2] as const;
+
+/** The tab the last page of one home lit, for a page with two (lib/nav/tabLit.ts). Kept for the session, whatever remounts the bar. */
+let lastSingleTab: string | null = null;
 
 export function MobileTabBar() {
   const pathname = usePathname() ?? "/";
@@ -257,6 +261,9 @@ export function MobileTabBar() {
       matches: (p) =>
         p === "/account" ||
         p.startsWith("/account/") ||
+        // The journal has two homes, the Bible's study row and You: it lights the one the reader came from (lib/nav/tabLit.ts).
+        p === "/journal" ||
+        p.startsWith("/journal/") ||
         p === "/saved" ||
         p.startsWith("/saved/") ||
         // The Florilegium is Saved's first row (1.8): it lit no tab at all.
@@ -283,6 +290,16 @@ export function MobileTabBar() {
         (p.startsWith("/credits/") && !p.startsWith("/credits/gpl")),
     },
   ];
+
+  // The tab to light: the one that claims this page, or, for a page with two
+  // homes, the one the reader came from (lib/nav/tabLit.ts). Read in render;
+  // a page of one home is recorded once it is drawn.
+  const claims = TABS.filter((tab) => tab.matches(pathname)).map((tab) => tab.key);
+  const lit = tabLit(claims, lastSingleTab);
+  const only = claims.length === 1 ? claims[0] : null;
+  useLayoutEffect(() => {
+    if (only) lastSingleTab = only;
+  }, [only]);
 
   // One label size for the row, small enough that no two words next to each
   // other touch and neither end word leaves the bar, and for each label how
@@ -387,8 +404,8 @@ export function MobileTabBar() {
         )}
       >
         <ul ref={listRef} className="flex items-stretch gap-1 max-[359px]:gap-0">
-          {TABS.map(({ key, label, href, open, Icon, box, lines = TAB_LINES, matches }) => {
-            const active = matches(pathname);
+          {TABS.map(({ key, label, href, open, Icon, box, lines = TAB_LINES }) => {
+            const active = key === lit;
             // Every glyph at one size: see lib/ui/tabGlyphFrame.ts.
             const frame = frameGlyph(box, lines[0]);
             return (

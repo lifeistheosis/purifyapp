@@ -511,7 +511,7 @@ function Own({ onTake }: { onTake: (item: LearnItem) => void }) {
             </span>
           ) : null}
         </div>
-        <p aria-live="polite" className={cn(NOTE, "mt-2", !full && "sr-only")}>
+        <p aria-live="polite" className={cn(NOTE, full ? "mt-2" : "sr-only")}>
           {full ? t("learn.tooLong") : ""}
         </p>
       </form>
