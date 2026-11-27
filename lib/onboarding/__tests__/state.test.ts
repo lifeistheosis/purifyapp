@@ -81,7 +81,7 @@ describe("onboarding state", () => {
   });
 
   it("round-trips the answers through one snapshot string", () => {
-    const nothing = { level: null, intent: null, fasting: "strict", background: null, returning: false, intents: [] };
+    const nothing = { level: null, intent: null, fasting: "strict", fastApplies: true, background: null, returning: false, intents: [] };
     expect(parseSpaceSnapshot(spaceSnapshot())).toEqual(nothing);
     writeLevel("learning");
     writeIntent("liturgy");
@@ -90,7 +90,9 @@ describe("onboarding state", () => {
     expect(parseSpaceSnapshot(spaceSnapshot())).toEqual({
       level: "learning",
       intent: "liturgy",
+      // A Protestant at the services is on the catechumen's road, where the fast is set (road.ts, fastApplies).
       fasting: "modified",
+      fastApplies: true,
       background: "protestant",
       returning: false,
       intents: ["liturgy"],
@@ -107,6 +109,7 @@ describe("onboarding state", () => {
       level: "practicing",
       intent: "prayer",
       fasting: "strict",
+      fastApplies: true,
       background: "christian",
       returning: true,
       intents: ["prayer", "saints", "feasts"],
@@ -121,6 +124,7 @@ describe("onboarding state", () => {
       level: null,
       intent: null,
       fasting: "strict",
+      fastApplies: true,
       background: null,
       returning: false,
       intents: ["quiet"],
@@ -130,6 +134,7 @@ describe("onboarding state", () => {
       level: "learning",
       intent: "liturgy",
       fasting: "modified",
+      fastApplies: true,
       background: null,
       returning: false,
       intents: [],

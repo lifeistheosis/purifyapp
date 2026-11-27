@@ -14,6 +14,7 @@ import type { JournalSource } from "@/lib/journal/entries";
 import { localDayKey } from "@/lib/journal/feed";
 import { highlightFrom } from "@/lib/saved/feed";
 import { useVerseWords } from "@/lib/saved/verseWords";
+import { useSpace } from "@/lib/onboarding/useSpace";
 
 type Highlighted = { book: string; chapter: number; verse: number };
 
@@ -49,6 +50,8 @@ function highlightedToday(today: Date): Highlighted[] {
  */
 export function TodayPage({ onWriteFrom }: { onWriteFrom: (source: JournalSource) => void }) {
   const { t, locale } = useTranslate();
+  // No fast set on a Catholic's or a Protestant's day (lib/onboarding/road.ts, fastApplies).
+  const { fastApplies } = useSpace();
   // The day is known in the first frame (lib/calendar/useChurchDay.ts,
   // useChurchDayAtOnce): the journal draws this page only on the device,
   // once it is mounted (JournalClient), so nothing stands in for it. Until
@@ -80,7 +83,7 @@ export function TodayPage({ onWriteFrom }: { onWriteFrom: (source: JournalSource
   };
   const weekday = fmt({ weekday: "long" });
   const date = fmt({ month: "long", day: "numeric" });
-  const fasting = day.fast.kind === "strict" || day.fast.kind === "wine-oil" || day.fast.kind === "fish" || day.fast.kind === "fast";
+  const fasting = fastApplies && (day.fast.kind === "strict" || day.fast.kind === "wine-oil" || day.fast.kind === "fish" || day.fast.kind === "fast");
   const line = [date, day.headline?.name, fasting ? t(`calendar.fast.${day.fast.ruleId}.label`) : null].filter(Boolean).join(" · ");
 
   return (

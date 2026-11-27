@@ -8,6 +8,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CARD, CARD_BG, CTA, Eyebrow } from "@/components/ui/Graphite";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
+import { useSpace } from "@/lib/onboarding/useSpace";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 
@@ -27,6 +28,8 @@ import { dateLocale } from "@/lib/i18n/deviceDates";
 export function PrayersDayCard() {
   const { t, tn, locale } = useTranslate();
   const day = useChurchDay();
+  // No fast set on a Catholic's or a Protestant's day (lib/onboarding/road.ts, fastApplies).
+  const { fastApplies } = useSpace();
 
   return (
     <Link href="/prayers/today" className={CARD} style={CARD_BG}>
@@ -45,10 +48,14 @@ export function PrayersDayCard() {
             {day.headline?.name ?? t("prayers.dayCard.fallback")}
           </p>
           <p className="mt-2 flex items-center gap-2 font-sans text-caption text-paper/55">
-            <span aria-hidden className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${FAST_DOT[day.fast.kind]}`} />
+            {fastApplies ? <span aria-hidden className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${FAST_DOT[day.fast.kind]}`} /> : null}
             <span>
-              {t(`calendar.fast.${day.fast.ruleId}.label`)}
-              <span aria-hidden> · </span>
+              {fastApplies ? (
+                <>
+                  {t(`calendar.fast.${day.fast.ruleId}.label`)}
+                  <span aria-hidden> · </span>
+                </>
+              ) : null}
               {day.pascha.daysAway > 0
                 ? tn("calendar.daysUntilPascha", day.pascha.daysAway)
                 : day.pascha.daysAway === 0

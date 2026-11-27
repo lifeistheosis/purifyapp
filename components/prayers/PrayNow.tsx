@@ -23,6 +23,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useToday } from "@/lib/calendar/useToday";
 import { cn } from "@/lib/cn";
+import { useSpace } from "@/lib/onboarding/useSpace";
 import { getRuleMeta } from "@/lib/prayers/rules";
 import { isFastDay, seasonFor } from "@/lib/prayers/season";
 import { useRecentPrayers } from "@/lib/prayers/storage";
@@ -38,6 +39,8 @@ export function PrayNow({ variant }: { variant: "desktop" | "mobile" }) {
   const mounted = useMounted();
   const today = useToday();
   const [style] = useCalendarStyleDefault();
+  // No fast set on a Catholic's or a Protestant's day (lib/onboarding/road.ts, fastApplies).
+  const { fastApplies } = useSpace();
   const recents = useRecentPrayers();
 
   if (!mounted || !today) {
@@ -80,7 +83,7 @@ export function PrayNow({ variant }: { variant: "desktop" | "mobile" }) {
   for (const r of suggestRules({
     tod: timeOfDayAt(new Date()),
     season: seasonFor(today),
-    isFast: isFastDay(today, style),
+    isFast: fastApplies && isFastDay(today, style),
     max: SLOTS - cards.length,
     exclude: new Set(cards.map((c) => c.id)),
   })) {

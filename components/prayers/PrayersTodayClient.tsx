@@ -5,6 +5,7 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { TONE_RGB, toneFor, toneVars } from "@/lib/calendar/tone";
 import { useChurchDay } from "@/lib/calendar/useChurchDay";
+import { useSpace } from "@/lib/onboarding/useSpace";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
@@ -79,6 +80,8 @@ const TALL = "inline-flex min-h-11 items-center";
 export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
   const { t } = useTranslate();
   const day = useChurchDay();
+  // No fast set on a Catholic's or a Protestant's day (lib/onboarding/road.ts, fastApplies).
+  const { fastApplies } = useSpace();
   const [calendarStyle] = useCalendarStyleDefault();
 
   // The day's liturgical tone, as colour only, on one hairline. Nothing on
@@ -89,7 +92,7 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
     ? toneVars(
         toneFor({
           hasFeast: day.headline?.kind === "feast",
-          fast: day.fast.kind,
+          fast: fastApplies ? day.fast.kind : "normal",
         }),
       )
     : ({ "--tone": TONE_RGB.muted } as CSSProperties);

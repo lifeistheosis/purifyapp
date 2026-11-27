@@ -366,7 +366,7 @@ function SignOutSection() {
  */
 function SpaceSection() {
   const { t } = useTranslate();
-  const { level, intent, fasting } = useSpace();
+  const { level, intent, fasting, fastApplies } = useSpace();
   const again = useOnboardedAgain();
   // A choice here can change its row's height: the line under Familiarity,
   // and the Day 1 under the focus cards, come with a new reader's first
@@ -400,16 +400,19 @@ function SpaceSection() {
           label={t("settings.level")}
         />
       </Row>
-      <Row icon={<Wheat size={22} strokeWidth={1.35} />} label={t("settings.fasting")} sub={t(`onboard.fasting.${fasting}Sub`)}>
-        <Track
-          value={fasting}
-          options={FASTING_RULES.map((f) => ({ value: f, label: t(`onboard.fasting.${f}`) }))}
-          onChange={(f) => {
-            writeFastingRule(f);
-          }}
-          label={t("settings.fasting")}
-        />
-      </Row>
+      {/* No fasting rule to choose where the fast is not set on the reader's day: the Catholic's and the Protestant's roads (lib/onboarding/road.ts, fastApplies). */}
+      {fastApplies ? (
+        <Row icon={<Wheat size={22} strokeWidth={1.35} />} label={t("settings.fasting")} sub={t(`onboard.fasting.${fasting}Sub`)}>
+          <Track
+            value={fasting}
+            options={FASTING_RULES.map((f) => ({ value: f, label: t(`onboard.fasting.${f}`) }))}
+            onChange={(f) => {
+              writeFastingRule(f);
+            }}
+            label={t("settings.fasting")}
+          />
+        </Row>
+      ) : null}
       <Row rowRef={focusRow} icon={<Compass size={17} strokeWidth={1.7} />} label={t("settings.focus")}>
         <FirstFocus
           intent={intent}

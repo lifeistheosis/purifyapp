@@ -12,6 +12,11 @@
 // step, never what a council, a saint or a prayer says. Every road outside
 // the practicing ends at the same door: a parish, and a first Liturgy.
 //
+// One thing is set by the road beyond that, by his word (2026-11-27): the
+// Church's fast as a rule kept on the reader's own day is not shown on the
+// Catholic's road or the Protestant's (fastApplies, below). What the fast is
+// stays theirs to read, as every page of content does.
+//
 // Read from what the reader said, never guessed: no answers, no road, and
 // Purify as it always was. Pure, so the rule is tested directly
 // (lib/onboarding/__tests__/road.test.ts).
@@ -94,6 +99,24 @@ export function roadOf(a: RoadAnswers): Road | null {
       if (a.level !== "inquirer") return null;
       return a.intent && EARLY_CHURCH.includes(a.intent) ? "seeker" : "newcomer";
   }
+}
+
+/**
+ * The roads whose readers are not shown the Church's fast as their own. His
+ * word, 2026-11-27: "make it so that protestants or Roman Catholics don't see
+ * anything fast related that's applied (but they can still learn about it)".
+ * On these roads no fast is set on their Today, their calendar, their
+ * prayers or their journal, the Nativity Fast's days are not counted for
+ * them, and there is no fasting rule to choose. What the fast is stays
+ * theirs to read: the Fast's own page, search, the reading room, Theology,
+ * the FAQ and the prayers of the fast. A Catholic or a Protestant who goes to
+ * the services is on the catechumen's road (roadOf) and meets the fast there.
+ */
+export const FAST_NOT_APPLIED: readonly Road[] = ["catholic", "protestant"];
+
+/** Whether the Church's fast is set on this reader's day as their own. No road: Purify as it always was. */
+export function fastApplies(road: Road | null): boolean {
+  return road === null || !FAST_NOT_APPLIED.includes(road);
 }
 
 /** A Protestant reader's lean, from their first answer. Scripture when they gave none. */

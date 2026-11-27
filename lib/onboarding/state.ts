@@ -19,6 +19,7 @@ import {
   type Level,
 } from "./space";
 import { roadsBuilt } from "./flags";
+import { fastApplies, roadOf } from "./road";
 import { SIGNED_OUT_PREVIEW_KEY, isTesting } from "./testing";
 import { NEW_WEEK, localDay, parseWeek, type WeekState } from "./week";
 
@@ -500,7 +501,10 @@ export function spaceSnapshot(): string {
 export function parseSpaceSnapshot(snapshot: string): {
   level: Level | null;
   intent: Intent | null;
+  /** How the fast shows: the reader's own rule, or "hidden" on a road where the fast is not set on their day (./road.ts, fastApplies). */
   fasting: FastingRule;
+  /** Whether the Church's fast is set on this reader's day at all (./road.ts, fastApplies): false on the Catholic's and the Protestant's roads. */
+  fastApplies: boolean;
   background: Background | null;
   /** Baptized Orthodox, coming back after time away (1.9). */
   returning: boolean;
@@ -508,12 +512,18 @@ export function parseSpaceSnapshot(snapshot: string): {
   intents: Intent[];
 } {
   const [l, i, f, b, r, picks] = snapshot.split("|");
+  const level = isLevel(l) ? l : null;
+  const intent = isIntent(i) ? i : null;
+  const background = isBackground(b) ? b : null;
+  const returning = r === "1";
+  const applies = fastApplies(roadOf({ background, level, intent, returning }));
   return {
-    level: isLevel(l) ? l : null,
-    intent: isIntent(i) ? i : null,
-    fasting: isFastingRule(f) ? f : "strict",
-    background: isBackground(b) ? b : null,
-    returning: r === "1",
+    level,
+    intent,
+    fasting: applies ? (isFastingRule(f) ? f : "strict") : "hidden",
+    fastApplies: applies,
+    background,
+    returning,
     intents: cleanIntents((picks ?? "").split(",")),
   };
 }

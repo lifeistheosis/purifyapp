@@ -7,6 +7,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useToday } from "@/lib/calendar/useToday";
 import { cn } from "@/lib/cn";
+import { useSpace } from "@/lib/onboarding/useSpace";
 import { NATIVITY_PATH, nativityFastDay } from "@/lib/reading/nativity";
 import { NIGHT_H, NIGHT_STARS, STAR_PX, STAR_X, claimRise, riseFrom, starTop } from "@/lib/reading/nativityStar";
 import { claimNativityRow } from "@/lib/reading/useNativityRow";
@@ -51,7 +52,9 @@ export function NativityStarCard({ days, className }: { days: readonly NativityD
   // nativity.ts reads a wall-clock day; useToday carries the reader's day at
   // UTC noon (lib/rhythm/dayKey.ts), so it is handed over as that day at noon.
   const n = today ? nativityFastDay(new Date(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 12), style) : null;
-  const shown = n !== null && n <= days.length;
+  // Not on the Catholic's or the Protestant's road: the fast's days are not counted for them (lib/onboarding/road.ts, fastApplies).
+  const { fastApplies } = useSpace();
+  const shown = fastApplies && n !== null && n <= days.length;
   const day = today ? keyOf(today) : null;
 
   // Whether the star rises this time: once per day, decided once per view

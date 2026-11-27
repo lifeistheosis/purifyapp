@@ -40,6 +40,7 @@ import { pageText, parsePage } from "@/lib/journal/page";
 import type { JournalSource } from "@/lib/journal/entries";
 import { byDay, filterKind, journalChips, localDayKey, type JournalFilter, type JournalItem } from "@/lib/journal/feed";
 import { matchesQuery } from "@/lib/saved/feed";
+import { useSpace } from "@/lib/onboarding/useSpace";
 
 /** Each chip's name, a closed map of literal keys. */
 const FILTER_KEY: Record<JournalFilter, string> = {
@@ -93,6 +94,8 @@ export function JournalFeed({
   railShown?: boolean;
 }) {
   const { t, tn, locale } = useTranslate();
+  // No fast set on a Catholic's or a Protestant's day (lib/onboarding/road.ts, fastApplies).
+  const { fastApplies } = useSpace();
   const [chosen, setChosen] = useState<JournalFilter>("all");
   const [ownBook, setOwnBook] = useState<string | null>(null);
   const book = onNotebook ? (chosenBook ?? null) : ownBook;
@@ -161,11 +164,11 @@ export function JournalFeed({
         when = g.day;
       }
       const church = churchDayLine(date, style);
-      const fast = church.fast ? t(`calendar.fast.${church.fast.ruleId}.label`) : null;
+      const fast = fastApplies && church.fast ? t(`calendar.fast.${church.fast.ruleId}.label`) : null;
       out.set(g.day, [when, church.headline, fast].filter(Boolean).join(" · "));
     }
     return out;
-  }, [groups, today, locale, now, style, t]);
+  }, [groups, today, locale, now, style, t, fastApplies]);
 
   const weekdayOf = (day: string) => {
     const date = dayFromKey(day);

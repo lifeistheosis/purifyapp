@@ -9,6 +9,7 @@ import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault"
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
+import { useSpace } from "@/lib/onboarding/useSpace";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { paschaCount } from "@/lib/today/greeting";
 
@@ -52,6 +53,8 @@ const FAST_SHORT_KEY: Record<FastKind, string> = {
 
 export function TodayMasthead({ day }: { day: ChurchDay | null }) {
   const { t, tn, locale } = useTranslate();
+  // No fast set on a Catholic's or a Protestant's day (lib/onboarding/road.ts, fastApplies).
+  const { fastApplies } = useSpace();
   const toPascha = day ? paschaCount(day.pascha.daysAway) : null;
   const [style] = useCalendarStyleDefault();
 
@@ -115,7 +118,7 @@ export function TodayMasthead({ day }: { day: ChurchDay | null }) {
         </div>
 
         <div className="min-w-0 shrink-0">
-          {day ? (
+          {!fastApplies ? null : day ? (
             <Link
               href="/fasting"
               className={cn("group hit-44 inline-flex items-baseline gap-2.5", FOCUS)}
