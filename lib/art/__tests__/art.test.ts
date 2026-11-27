@@ -61,7 +61,15 @@ describe("Silver Night's pictures", () => {
     expect(read("components/layout/RootFrame.tsx")).toContain("<ArtRoot />");
     expect(read("app/layout.tsx")).toContain('data-art={ART_LIVE ? "" : undefined}');
     const css = read("app/globals.css");
-    for (const folder of ["/saints/", "/history/", "/covers/", "/icons/", "/sections/", "/discover/", "/theology/"]) expect(css, folder).toContain(`img[src^="${folder}"]`);
+    for (const folder of ["/saints/", "/history/", "/covers/", "/icons/", "/sections/", "/discover/", "/theology/", "/audio/art/"]) {
+      expect(css, folder).toContain(`img[src^="${folder}"]`);
+      // An inline picture as exported (url(/x)) and as the app draws it (url("/x")).
+      expect(css, folder).toContain(`[style*="url(${folder}"]`);
+      expect(css, folder).toContain(`[style*='url("${folder}']`);
+    }
+    // The covers and history's pictures as the apps ask them of the website (lib/media/streamed.ts), and the blurred previews.
+    for (const streamed of ["/covers/", "/history/"]) expect(css, streamed).toContain(`img[src^="https://purifyapp.net${streamed}"]`);
+    expect(css).toContain(`[style*='url("data:image']`);
     // A buyer sees the real thing, and a reader's own photos and choices stay theirs.
     for (const kept of ["/shop/", "/eikon/", "/kitchen-photos/", "/themes/", "/whats-new/", "storage/v1/object/public/avatars"]) expect(css, kept).not.toContain(`[src^="${kept}"]`);
     expect(css).toMatch(/html\[data-art\] :is\([\s\S]*?\) \{\n filter: grayscale\(1\);/);

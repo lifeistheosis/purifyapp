@@ -52,21 +52,22 @@ The same treatment on every surface, so the art reads as a system:
 
 ## Built, 2026-11-27 (dark for readers; Testers mode walks it)
 
-His word: "implement everything and send screengrabs at the very end". Commits `bcf1da08` and `a9e3b2b7`.
+His words: "implement everything and send screengrabs at the very end", "yea all", then on round 3 "its all fine just implement". Commits `bcf1da08`, `a9e3b2b7`, `ff838c70`, `3201b9b9` and `d6f97040`.
 
-- **One picture per place** (`lib/art/art.ts`): nine of his picks built into `public/art/` (`scripts/art/build.mjs`, 5 to 25 KB each), shared by Discover's doors, onboarding's answer cards and the places' heads. `ART_LIVE` is off.
-- **Discover as tiles** (`components/art/ArtTiles.tsx`): two across, the name on the picture's dark foot, the app's whole line under it, the reader's own order kept. Seven places have their picture (Find a parish, History, Councils, Chants, Shop, Start here, Reading); the other five show their old picture in grayscale until theirs is made.
-- **Heads that take the carried picture** (`components/art/ArtHead.tsx`): Find a parish and Start here, with the mist drifting at a steady speed (`.art-drift`), still under data-motion="reduce".
-- **Onboarding's answer cards**: the place's picture on the Fathers, the councils, history, a daily rule and quiet; the others in grayscale.
+- **One picture per place** (`lib/art/art.ts`): fifteen of his picks built into `public/art/` (`scripts/art/build.mjs`), shared by Discover's doors, onboarding's answer cards and the places' heads. `ART_LIVE` is off.
+- **Discover as tiles** (`components/art/ArtTiles.tsx`): two across, the name on the picture's dark foot, the app's whole line under it, the reader's own order kept. All twelve doors have their own picture.
+- **Heads that take the carried picture** (`components/art/ArtHead.tsx`): Find a parish, Start here, Saints, the reading room, History, the councils, Theology, Chants, the Calendar and the walkthroughs, with the mist drifting at a steady speed (`.art-drift`), still under data-motion="reduce". Community's head shows its new picture in the old one's place. The shop keeps its featured piece, so no second picture stands over it.
+- **Onboarding's answer cards**: the place's picture on eight answers (saints, beliefs, feasts, the councils, history, the Fathers, a daily rule, quiet); the rest in grayscale.
+- **Plus**: the whole library in the scribe's place, on the Plus sheet and the kept paywall.
 - **Black and white for the rest** (his word: "make the rest black and white so it matches the aesthetic and we will make custom images for them"): while Silver Night is on, `data-art` on `<html>` (`components/art/ArtRoot.tsx`) turns every picture still waiting for its own black and white by its folder (`/sections/`, `/discover/tiles/`, `/theology/subjects/`; app/globals.css). Then, at his word "yea all": the real icons and works too (the saints, history, the covers, the services, theology). Kept in colour by folder: the shop's goods and EIKON, the readers' own photos and campaign pictures, the kitchen's food, the banner looks a reader chose and What's New's pictures of the app.
-- **Held by** `lib/art/__tests__/art.test.ts`; every screen pictured passed checkMock on the five palettes and the two earned (`docs/brand/art/shots.mjs`, `shots/`).
+- **Held by** `lib/art/__tests__/art.test.ts` (every head named) and `lib/ui/__tests__/arrivingImage.test.ts`; every screen pictured passed checkMock on the five palettes and the two earned (`docs/brand/art/shots.mjs`, `shots/`; the heads together in `shots/9-heads-sheet.jpg`).
 
 ## Not built yet, and why
 
-- **The other places' heads and pictures**: Saints, Theology, Calendar, Walkthroughs and Chat need their pictures (the prompts are ready), and each of those pages' tops is drawn for his yes before it changes.
-- **The section heads** (Today, Bible, Prayers, Discover, You): their pictures are not made yet.
+- **The section heads** (Today, Bible, Prayers, Discover, You): their pictures are not made yet (prompts on the page).
+- **Theology's subjects**: three of its four pictures wait (prompts on the page).
+- **Onboarding's other screens and the banners**: prompts on the page.
 - **Empty states**: the pattern is ready to build, but only Offline has a picture, and the app has no offline page today.
 - **Letters**: both have a picture slot, but the release letter's look 3 and the others' look 2 are designs he said yes to as they are; a picture in them waits for his yes on that look.
-- **Theology**: one of its four pictures exists; his call whether Theology changes at all.
 - **Rearranging the tiles**: the hold-to-move is built for a list; the tiles keep the reader's order but cannot be rearranged yet.
 - **Before readers have it**: his yes on these screens, the missing pictures, the gate's walk, then `ART_LIVE`.

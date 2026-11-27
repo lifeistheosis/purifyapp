@@ -77,6 +77,43 @@ try {
   await page.evaluate(() => window.scrollTo(0, 0));
   await keep(page, "4-start-head", "Start here, its head");
 
+  // Each place's head, its picture carried from its Discover door (his word, 2026-11-27: "its all fine just implement").
+  const heads = [
+    ["saints", "/saints"], ["reading", "/reading"], ["history", "/history"], ["councils", "/councils"], ["theology", "/theology"],
+    ["chants", "/chants"], ["calendar", "/calendar"], ["walkthroughs", "/walkthroughs"],
+  ];
+  const sheet = [];
+  for (const [place, route] of heads) {
+    await go(page, route);
+    await page.locator(`[data-art-head="${place}"] img`).first().waitFor({ state: "visible", timeout: 30000 });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await keep(page, `9-head-${place}`, `${route}, its head`);
+    sheet.push(path.join(SHOTS, `9-head-${place}.jpg`));
+  }
+  // Community's head shows its picture on the Pray together half.
+  await go(page, "/community");
+  try {
+    await page.locator('img[src="/art/chat.webp"]').first().waitFor({ state: "visible", timeout: 15000 });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await keep(page, "9-head-community", "/community, its head");
+    sheet.push(path.join(SHOTS, "9-head-community.jpg"));
+  } catch {
+    console.log("  /community: its picture is not on this reader's half; no shot\n");
+  }
+  // One sheet of the heads' tops, to look at together (not a screen; each shot above passed on its own).
+  const W = 780, H = 1100, cols = 3, rows = Math.ceil(sheet.length / cols);
+  const tiles = await Promise.all(sheet.map((f) => sharp(f).extract({ left: 0, top: 0, width: W, height: H }).toBuffer()));
+  // sharp resizes before it composites in one pipeline, so the sheet is laid out first and scaled after.
+  const laid = await sharp({ create: { width: cols * W + (cols + 1) * 24, height: rows * H + (rows + 1) * 24, channels: 3, background: "#0b0b0d" } })
+    .composite(tiles.map((input, i) => ({ input, left: 24 + (i % cols) * (W + 24), top: 24 + Math.floor(i / cols) * (H + 24) })))
+    .png()
+    .toBuffer();
+  await sharp(laid)
+    .resize({ width: 1400 })
+    .jpeg({ quality: 84, mozjpeg: true })
+    .toFile(path.join(SHOTS, "9-heads-sheet.jpg"));
+  console.log("  sheet: docs/brand/art/shots/9-heads-sheet.jpg\n");
+
   // The pictures still waiting for their own, in black and white.
   await go(page, "/prayers");
   await page.locator('img[src^="/sections/"]').first().waitFor({ state: "visible", timeout: 30000 });

@@ -15423,16 +15423,27 @@ body[data-sheet-up] .journal-add {
    Kept in colour, by folder: the shop's goods and EIKON (a buyer sees the real
    thing), the readers' own photos and campaigns (another bucket), the kitchen's
    food, the banner looks a reader chose (/themes/) and What's New's pictures of
-   the app. The second list is the same folders as the website's image
-   optimizer writes them. */
+   the app. The chants' own icons are /audio/art/. The second list is the same
+   folders as the website's image optimizer writes them; the third, the covers
+   and history's pictures as the apps ask them of the website
+   (lib/media/streamed.ts). A picture behind an inline style is written
+   url(/x) in the exported page and url("/x") once the app has drawn it, so
+   both are named. A picture's blurred preview while it comes is a data: URI,
+   drawn only in these places, and stands grey with it. */
 html[data-art] :is(
   img[src^="/saints/"], img[src^="/history/"], img[src^="/covers/"], img[src^="/icons/"],
   img[src^="/sections/"], img[src^="/discover/"], img[src^="/theology/"], img[src^="/learn/"],
-  img[src^="/premium/"], img[src^="/share/"],
+  img[src^="/premium/"], img[src^="/share/"], img[src^="/audio/art/"],
   img[src*="url=%2Fsaints%2F"], img[src*="url=%2Fhistory%2F"], img[src*="url=%2Fcovers%2F"], img[src*="url=%2Ficons%2F"],
-  img[src*="url=%2Fsections%2F"], img[src*="url=%2Fdiscover%2F"], img[src*="url=%2Ftheology%2F"],
+  img[src*="url=%2Fsections%2F"], img[src*="url=%2Fdiscover%2F"], img[src*="url=%2Ftheology%2F"], img[src*="url=%2Faudio%2Fart%2F"],
+  img[src^="https://purifyapp.net/covers/"], img[src^="https://purifyapp.net/history/"],
   [style*="url(/saints/"], [style*="url(/history/"], [style*="url(/covers/"], [style*="url(/icons/"],
-  [style*="url(/discover/"], [style*="url(/theology/"], [style*="url(/sections/"]
+  [style*="url(/discover/"], [style*="url(/theology/"], [style*="url(/sections/"], [style*="url(/audio/art/"],
+  [style*='url("/saints/'], [style*='url("/history/'], [style*='url("/covers/'], [style*='url("/icons/'],
+  [style*='url("/discover/'], [style*='url("/theology/'], [style*='url("/sections/'], [style*='url("/audio/art/'],
+  [style*="url(https://purifyapp.net/covers/"], [style*="url(https://purifyapp.net/history/"],
+  [style*='url("https://purifyapp.net/covers/'], [style*='url("https://purifyapp.net/history/'],
+  [style*="url(data:image"], [style*='url("data:image']
 ) {
  filter: grayscale(1);
 }
