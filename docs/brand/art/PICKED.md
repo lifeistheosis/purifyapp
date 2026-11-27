@@ -40,7 +40,9 @@ His word: "new batch.". Six, each at 16:9, saved in `mist/picked/` and in the ap
 | Discover, Chat | `discover-chat.jpg` | Holds every rule |
 | Purify Plus | `plus-library.jpg` | Holds every rule |
 
-**Edits, in Gemini with the picture attached:**
+**His word, 2026-11-27: "its all fine just implement".** All six stay as they are: the Calendar's faint shafts of light are kept at his word (the one picture where he let light fall in shafts), and the optional fixes are dropped. The lines below are kept only as a record.
+
+**Edits, in Gemini with the picture attached (not needed, at his word):**
 
 - Calendar: "Remove the shafts of light below the windows; keep the mist soft and even. Change nothing else."
 - Saints (optional): "Give the bishops Orthodox staffs topped with a small cross and rounded crowns instead of pointed hats. Change nothing else."
