@@ -36,6 +36,8 @@
 // coded"): where something must stand out, the chosen plan and the feature a
 // reader came for, it is white with a soft white glow.
 
+import { ART } from "@/lib/art/art";
+import { useArt } from "@/lib/art/useArt";
 import Link from "next/link";
 import { useId, type CSSProperties, type ReactNode } from "react";
 
@@ -59,11 +61,13 @@ import { LegalLink } from "@/components/legal/LegalLink";
  * (public/premium), so it is there the moment the screen is.
  */
 export function ScribePicture({ className, focus = "50% 27%" }: { className?: string; focus?: string }) {
+  // Silver Night's picture of the whole library where it is on (2.0, lib/art/art.ts).
+  const artOn = useArt();
   return (
     <div aria-hidden className={cn("relative overflow-hidden", className)}>
       {/* eslint-disable-next-line @next/next/no-img-element -- carried in the apps, served as it is. */}
       <img
-        src="/premium/scribe.v1.webp"
+        src={artOn ? ART.plus.webp : "/premium/scribe.v1.webp"}
         alt=""
         width={600}
         height={750}

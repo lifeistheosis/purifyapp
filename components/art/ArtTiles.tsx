@@ -46,7 +46,7 @@ function ArtTile({ door, priority }: { door: TileDoor; priority: boolean }) {
         {made ? (
           <picture>
             <source type="image/avif" srcSet={made.art.avif} />
-            <img src={made.art.webp} alt="" width={made.art.width} height={made.art.height} loading={loading} decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+            <img src={made.art.webp} alt="" width={made.art.width} height={made.art.height} loading={loading} decoding="async" className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: made.art.focus ?? "50% 50%" }} />
           </picture>
         ) : (
           // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.

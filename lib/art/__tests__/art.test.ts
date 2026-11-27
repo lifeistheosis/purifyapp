@@ -30,7 +30,15 @@ describe("Silver Night's pictures", () => {
     const discover = read("components/mobile/DiscoverMobile.tsx");
     for (const href of Object.keys(DOOR_ART)) expect(discover, href).toContain(`href: "${href}"`);
     for (const answer of Object.keys(ANSWER_ART)) expect(Object.keys(ANSWER_PICTURES), answer).toContain(answer);
-    expect(doorArt("/saints")).toBeNull();
+    // Every one of Discover's twelve doors has its own picture now.
+    for (const href of ["/saints", "/reading", "/history", "/councils", "/theology", "/chants", "/calendar", "/walkthroughs", "/shop", "/community", "/start", "/parishes"]) expect(doorArt(href), href).not.toBeNull();
+    expect(doorArt("/nowhere")).toBeNull();
+  });
+
+  it("the Plus pages show the whole library where Silver Night is on, the scribe everywhere else", () => {
+    for (const file of ["components/premium/PlanScreen.tsx", "components/billing/KeptPaywall.tsx"]) {
+      expect(read(file), file).toContain('src={artOn ? ART.plus.webp : "/premium/scribe.v1.webp"}');
+    }
   });
 
   it("a door's picture travels under the name its place's head takes", () => {

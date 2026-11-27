@@ -20,40 +20,6 @@ Discover's doors, then the mastheads, onboarding's cards, Plus, the empty states
 
 Each picture is saved as `public/art/<surface>/<name>` in AVIF and WebP, like the others, and takes the place of the old one in its map (DiscoverMobile's entries, `lib/onboarding/pictures.ts`, `lib/media/sections.ts`, the Plus pages). Each is recorded in `docs/licensing/SECTION_MEDIA.md` as Purify's own, made with Gemini. Discover's doors are 4:3 tiles while Discover shows wide bands today: his call on the layout comes first.
 
-## Discover's doors (5, 16:9)
-
-Where: Discover, each door's picture (components/mobile/DiscoverMobile.tsx). Six of them also stand on onboarding's answer cards (lib/onboarding/pictures.ts shares them). Made: Find a parish, History, Councils, Chants, Shop, Start here, Reading. Left: these five, at 16:9 with the subject in the middle, so one picture is both the door (cut to 4:3) and the place's head.
-
-**Saints**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A procession of saints walking in single file along a misty mountain ridge at first light, generic figures in long monastic and bishops' robes, each with a faint round halo of soft light, small against a vast sky. Generic, unnamed figures, not copied from any icon. Keep the procession in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
-
-**Theology**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A great spiral staircase of stone inside a tall tower, seen from below, winding up and up into a soft white light at the top, a thin veil of mist hanging in the stairwell. Keep the spiral in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
-
-**Calendar**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: Four small arched windows side by side in a pale stone wall, each framing the same distant monastery in a different season: deep snow, blossoming trees, summer haze, falling leaves. Keep the four windows in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
-
-**Walkthroughs**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: An old stone bridge arching over a misty river, a lone traveler with a walking staff halfway across, seen from behind, the path going on into rolling hills beyond. Keep the bridge in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
-
-**Chat**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: A monastery courtyard at dusk: a few people gathered on wooden benches under a great old tree, talking, as soft silhouettes, a lantern hanging from a low branch, mist low on the ground. Keep the gathering in the middle of the frame. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
-
 ## Section mastheads (5, 16:9)
 
 Where: The head of Bible, Prayers, Discover, Reading and You, and Today's picture (components/mobile/SectionMasthead.tsx, lib/media/sections.ts). Made: Reading. Each is the first thing a section shows, so each names the place at a glance.
@@ -108,16 +74,6 @@ Use the attached image as the style reference and match it exactly: black and gr
 
 ```
 Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 4:3. Scene: A young person seen from behind, sitting cross-legged on a wooden floor surrounded by open books and loose notes, a small lamp beside them, a tall arched window with the night behind. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
-```
-
-## Purify Plus (1, 16:9)
-
-Where: The head of the Plus page and the kept-items sheet (components/premium/PlanScreen.tsx, components/billing/KeptPaywall.tsx). Plus is the whole library: depth, not a lock.
-
-**The whole library**
-
-```
-Use the attached image as the style reference and match it exactly: black and grayscale only, near-black silhouettes, pure neutral white light with soft halos, layered mist, soft airbrushed gradients like a modern animated film, gentle grain. 16:9. Scene: Endless rows of tall bookshelves stretching away into mist, seen straight down a long central aisle, small pools of light along it, one reader walking slowly between them. Keep the subject large and clear, with the bottom third darker and simpler. No color or warm tint, no gold, no sparkles, no faces, no captions.
 ```
 
 ## Empty states (4, 1:1)

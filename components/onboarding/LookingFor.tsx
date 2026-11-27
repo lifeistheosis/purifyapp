@@ -79,7 +79,7 @@ export function LookingFor({
           const n = picks.indexOf(intent) + 1;
           // In Silver Night, the place's own picture where it has one, the old one in grayscale where none is made yet (2.0, lib/art/art.ts).
           const art = artOn ? answerArt(intent) : null;
-          const picture = art ? { ...ANSWER_PICTURES[intent], src: art.webp, focus: "50% 45%" } : ANSWER_PICTURES[intent];
+          const picture = art ? { ...ANSWER_PICTURES[intent], src: art.webp, focus: art.focus ?? "50% 45%" } : ANSWER_PICTURES[intent];
           // An odd last card runs across both columns.
           const wide = i === INTENTS.length - 1 && INTENTS.length % 2 === 1;
           return (

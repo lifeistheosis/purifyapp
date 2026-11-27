@@ -239,3 +239,9 @@ Made with Google's Gemini by the owner from the prompts in `docs/brand/art/PLAN.
 | `public/art/reading.{webp,avif}` | Reading | `mist/picked/masthead-reading.jpg` |
 | `public/art/quiet.{webp,avif}` | Onboarding, Quiet | `mist/picked/onboarding-quiet.jpg` |
 | `public/art/rule.{webp,avif}` | Onboarding, A daily rule | `mist/picked/onboarding-daily-rule.jpg` |
+| `public/art/saints.{webp,avif}` | Saints | `mist/picked/discover-saints.jpg` |
+| `public/art/theology.{webp,avif}` | Theology | `mist/picked/discover-theology.jpg` |
+| `public/art/calendar.{webp,avif}` | Calendar | `mist/picked/discover-calendar.jpg` |
+| `public/art/walkthroughs.{webp,avif}` | Walkthroughs | `mist/picked/discover-walkthroughs.jpg` |
+| `public/art/chat.{webp,avif}` | Chat | `mist/picked/discover-chat.jpg` |
+| `public/art/plus.{webp,avif}` | Purify Plus | `mist/picked/plus-library.jpg` |

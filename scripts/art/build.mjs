@@ -28,6 +28,12 @@ export const SOURCES = {
   reading: ["mist/picked/masthead-reading.jpg", 1024],
   quiet: ["mist/picked/onboarding-quiet.jpg", 768],
   rule: ["mist/picked/onboarding-daily-rule.jpg", 768],
+  saints: ["mist/picked/discover-saints.jpg", 1024],
+  theology: ["mist/picked/discover-theology.jpg", 1024],
+  calendar: ["mist/picked/discover-calendar.jpg", 1024],
+  walkthroughs: ["mist/picked/discover-walkthroughs.jpg", 1024],
+  chat: ["mist/picked/discover-chat.jpg", 1024],
+  plus: ["mist/picked/plus-library.jpg", 1024],
 };
 
 fs.mkdirSync(OUT, { recursive: true });

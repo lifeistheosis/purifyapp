@@ -26,3 +26,22 @@ His word: "im gonna send you a massive batch of all the generated photos I liked
 - Reading masthead (optional): "Make the pointed arches round Byzantine arches. Change nothing else."
 
 **Size:** these came at 1024 wide. Enough for the tiles; the letters and mastheads want 2048 if Gemini will give it.
+
+## Round 3, picked (2026-11-27)
+
+His word: "new batch.". Six, each at 16:9, saved in `mist/picked/` and in the app the same hour (`lib/art/art.ts`): with them every one of Discover's twelve doors has its own picture.
+
+| Spot | Picture | Check |
+|---|---|---|
+| Discover, Saints | `discover-saints.jpg` | Holds every rule: generic saints with soft halos, no icon copied. The bishops' staffs curl like Western croziers and one wears a pointed mitre (optional fix). Cut to 4:3 at 70% across, where the procession walks |
+| Discover, Theology | `discover-theology.jpg` | Holds every rule: the light at the top is a soft round opening, not rays |
+| Discover, Calendar | `discover-calendar.jpg` | Faint shafts of light fall from the windows into the mist: close to his rule against rays (fix below) |
+| Discover, Walkthroughs | `discover-walkthroughs.jpg` | Holds every rule. The traveler carries a hiker's backpack (optional fix) |
+| Discover, Chat | `discover-chat.jpg` | Holds every rule |
+| Purify Plus | `plus-library.jpg` | Holds every rule |
+
+**Edits, in Gemini with the picture attached:**
+
+- Calendar: "Remove the shafts of light below the windows; keep the mist soft and even. Change nothing else."
+- Saints (optional): "Give the bishops Orthodox staffs topped with a small cross and rounded crowns instead of pointed hats. Change nothing else."
+- Walkthroughs (optional): "Replace the backpack with a simple cloth satchel over the shoulder. Change nothing else."

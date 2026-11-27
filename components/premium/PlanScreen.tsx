@@ -12,6 +12,8 @@
 // tiles; what it opens as the paywall's posters. No gold, and none of it in
 // DM Serif Display, which the owner asked to keep out. Dark on every palette.
 
+import { ART } from "@/lib/art/art";
+import { useArt } from "@/lib/art/useArt";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -163,6 +165,8 @@ export function PlanView({ plan }: { plan: ClientPlan }) {
   const bill = billing(plan, t);
   const source = sourceLabel(plan.source, t);
   const delay = (i: number) => ({ animationDelay: `${i * 90}ms` });
+  // Silver Night's picture of the whole library where it is on (2.0, lib/art/art.ts).
+  const artOn = useArt();
 
   return (
     <div className="dark-island relative min-h-[calc(100dvh-72px)] overflow-hidden bg-night pb-14 md:pb-20">
@@ -170,7 +174,7 @@ export function PlanView({ plan }: { plan: ClientPlan }) {
       <div className="relative mx-auto h-[300px] w-full max-w-[680px] overflow-hidden md:h-[340px]">
         {/* eslint-disable-next-line @next/next/no-img-element -- carried in the apps, served as it is. */}
         <img
-          src="/premium/scribe.v1.webp"
+          src={artOn ? ART.plus.webp : "/premium/scribe.v1.webp"}
           alt=""
           width={600}
           height={750}

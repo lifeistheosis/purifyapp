@@ -54,9 +54,11 @@ describe("the premium surfaces", () => {
   it("draw the scribe the apps carry, not one they must fetch", () => {
     expect(fs.existsSync("public/premium/scribe.v1.webp")).toBe(true);
     // The paywall's two places draw him through KeptPaywall (1.8, R2).
+    // In Silver Night (2.0) the whole library's picture in his place, carried the same way (public/art/).
     for (const file of ["components/billing/KeptPaywall.tsx", "components/premium/PlanScreen.tsx"]) {
-      expect(code(file), file).toContain('src="/premium/scribe.v1.webp"');
+      expect(code(file), file).toContain('src={artOn ? ART.plus.webp : "/premium/scribe.v1.webp"}');
     }
+    expect(fs.existsSync("public/art/plus.webp")).toBe(true);
     expect(code("components/billing/PlusPaywall.tsx")).toContain("<KeptHero");
     expect(code("components/billing/UpgradeModal.tsx")).toContain("<KeptHero");
     // A carried picture: the export keeps it (scripts/native-build.mjs sets aside only the streamed folders).

@@ -14,14 +14,6 @@ END = " Keep the subject large and clear, with the bottom third darker and simpl
 END_EMPTY = " Leave plenty of dark empty space around one small, quiet subject. No color or warm tint, no gold, no sparkles, no faces, no captions."
 
 SURFACES = [
- {"key":"discover","name":"Discover's doors","aspect":"16:9","where":"Discover, each door's picture (components/mobile/DiscoverMobile.tsx). Six of them also stand on onboarding's answer cards (lib/onboarding/pictures.ts shares them).","note":"Made: Find a parish, History, Councils, Chants, Shop, Start here, Reading. Left: these five, at 16:9 with the subject in the middle, so one picture is both the door (cut to 4:3) and the place's head.",
-  "items":[
-   ("Saints","A procession of saints walking in single file along a misty mountain ridge at first light, generic figures in long monastic and bishops' robes, each with a faint round halo of soft light, small against a vast sky. Generic, unnamed figures, not copied from any icon. Keep the procession in the middle of the frame."),
-   ("Theology","A great spiral staircase of stone inside a tall tower, seen from below, winding up and up into a soft white light at the top, a thin veil of mist hanging in the stairwell. Keep the spiral in the middle of the frame."),
-   ("Calendar","Four small arched windows side by side in a pale stone wall, each framing the same distant monastery in a different season: deep snow, blossoming trees, summer haze, falling leaves. Keep the four windows in the middle of the frame."),
-   ("Walkthroughs","An old stone bridge arching over a misty river, a lone traveler with a walking staff halfway across, seen from behind, the path going on into rolling hills beyond. Keep the bridge in the middle of the frame."),
-   ("Chat","A monastery courtyard at dusk: a few people gathered on wooden benches under a great old tree, talking, as soft silhouettes, a lantern hanging from a low branch, mist low on the ground. Keep the gathering in the middle of the frame."),
- ]},
  {"key":"sections","name":"Section mastheads","aspect":"16:9","where":"The head of Bible, Prayers, Discover, Reading and You, and Today's picture (components/mobile/SectionMasthead.tsx, lib/media/sections.ts).","note":"Made: Reading. Each is the first thing a section shows, so each names the place at a glance.",
   "items":[
    ("Today","A monk high in an open bell tower at sunrise, seen from behind, pulling the ropes of several bells, the valley far below filled with mist and the first pale light on the horizon."),
@@ -35,10 +27,6 @@ SURFACES = [
    ("The Gospels","Four old leather-bound books standing upright together on a stone shelf, lit softly from one side, a small cross on each spine."),
    ("The Liturgy","Looking down the length of a church from the balcony: worshippers standing in rows as silhouettes, incense rising, and at the far end the open central doors glowing with candlelight, a priest in vestments standing there. Generic figures, not copied from any icon."),
    ("Study","A young person seen from behind, sitting cross-legged on a wooden floor surrounded by open books and loose notes, a small lamp beside them, a tall arched window with the night behind."),
- ]},
- {"key":"plus","name":"Purify Plus","aspect":"16:9","where":"The head of the Plus page and the kept-items sheet (components/premium/PlanScreen.tsx, components/billing/KeptPaywall.tsx).","note":"Plus is the whole library: depth, not a lock.",
-  "items":[
-   ("The whole library","Endless rows of tall bookshelves stretching away into mist, seen straight down a long central aisle, small pools of light along it, one reader walking slowly between them."),
  ]},
  {"key":"empty","name":"Empty states","aspect":"1:1","where":"What a page shows when it has nothing yet: bookmarks, the journal, search, offline, notifications.","note":"Made: Offline. Smaller and quieter than the doors: one subject and a lot of dark.",
   "items":[
