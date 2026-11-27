@@ -15416,10 +15416,23 @@ body[data-sheet-up] .journal-add {
  animation: none;
 }
 
-/* Silver Night (2.0, lib/art/art.ts): every picture still waiting for its own
-   (the section heads and Today's readings, the old Discover pictures wherever
-   they stand, Theology's subjects) stands in black and white, so the app keeps
-   one tone until each is made (components/art/ArtRoot.tsx sets data-art). */
-html[data-art] :is(img[src^="/sections/"], img[src^="/discover/tiles/"], img[src^="/theology/subjects/"]) {
+/* Silver Night (2.0, lib/art/art.ts): the app's pictures stand in black and
+   white while data-art is on (components/art/ArtRoot.tsx): every picture still
+   waiting for its own, and, at his word "yea all" (2026-11-27), the real icons
+   and works too (the saints, history, the covers, the services, theology).
+   Kept in colour, by folder: the shop's goods and EIKON (a buyer sees the real
+   thing), the readers' own photos and campaigns (another bucket), the kitchen's
+   food, the banner looks a reader chose (/themes/) and What's New's pictures of
+   the app. The second list is the same folders as the website's image
+   optimizer writes them. */
+html[data-art] :is(
+  img[src^="/saints/"], img[src^="/history/"], img[src^="/covers/"], img[src^="/icons/"],
+  img[src^="/sections/"], img[src^="/discover/"], img[src^="/theology/"], img[src^="/learn/"],
+  img[src^="/premium/"], img[src^="/share/"],
+  img[src*="url=%2Fsaints%2F"], img[src*="url=%2Fhistory%2F"], img[src*="url=%2Fcovers%2F"], img[src*="url=%2Ficons%2F"],
+  img[src*="url=%2Fsections%2F"], img[src*="url=%2Fdiscover%2F"], img[src*="url=%2Ftheology%2F"],
+  [style*="url(/saints/"], [style*="url(/history/"], [style*="url(/covers/"], [style*="url(/icons/"],
+  [style*="url(/discover/"], [style*="url(/theology/"], [style*="url(/sections/"]
+) {
  filter: grayscale(1);
 }
