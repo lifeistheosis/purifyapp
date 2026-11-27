@@ -910,3 +910,75 @@ Two scores a section, by the same judge and the same measure as the rating of 22
 
 **Waiting on him:** the welcome, yes or no; the "to" line; a picture of Admin, Onboarding, for the baselines; a read of the two privacy sentences; a priest's glance at the five lines about a need; a lifetime price.
 
+
+## Section 5, after day seven: the plan (2026-11-27)
+
+**His word, about 06:45 UTC: "let's continue working on v2.0".** The next piece by the order is section 5 (`docs/handoffs/onboarding-2.0.md`, "Open"). This is the plan only: nothing is drawn or built until his yes.
+
+### What a reader meets at the end of the week today (read in the code, 2026-11-27)
+
+| Moment | As readers have it (1.9) | On the branch (the day's frame, dark) |
+|---|---|---|
+| Day 7 | The card opens its page and is gone | Kept by Done: the card reads "Day 7 of 7, kept" with nothing under it, since there is no tomorrow (`components/onboarding/FirstStepsNudge.tsx`, KeptCard) |
+| Day 8 on | Nothing of the week (`weekOver`, `lib/onboarding/week.ts`) | The same |
+| A week ended by two days passed over | Ends without a word (`PASSES_THAT_END`) | The same |
+| Seven days after the questions | The one Plus card may come, for readers in its test's arm, never on the newcomer's road (`lib/onboarding/plusIntro.ts`). For a reader who missed no day it is the first thing after the week | The same |
+| The Sunday after "Yes, I am going" | The reminder stands on Today up to the chosen Sunday and leaves the day after; nothing asks how it went (`reminderFor`, `lib/start/liturgyPlan.ts`) | The same |
+
+So section 5 stays at 3. A reader who keeps all seven days is told nothing and handed nothing, and the first thing after their week can be Plus.
+
+### What binds the close
+
+- **A finish is a moment of its own** (his word, 2026-11-22): the week's end is shown in the house's motion, smooth and well made. Reduced motion stays still.
+- **No bounce, no light rays, no sparkle** (CLAUDE.md). A move at a steady speed on the house curve, never a pop that settles.
+- **One thing to do** (his word, 2026-11-22: "a little stacked and 2 click here is kinda immersion ruining"): the close stands where the week's card stood, as its only card, with one button.
+- **No dark box holding several things, and each thing once** (his words, 2026-11-22). A Sunday already on Today's Liturgy reminder is not said a second time.
+- **Plus is never in onboarding** (his word, 2026-11-22): the close names no locked page and no price.
+- **No line about the faith without a priest** (`docs/editorial-standards.md`): the close's words say what the reader did and where to go next, by the pages' own names.
+- **Nothing kept leaves the phone and nothing new is counted** until the privacy page's sentence says so (`docs/plans/reader-map.md`, section 12).
+
+### The pieces, in order
+
+**5.1 The week's close.** When day 7 is kept, the week's card becomes the close: one new line that the week is kept, a quiet mark for the seven days, and the next step by name with one button (5.2). From the next day the reader opens Purify, that next step is the card's, kept by its own end as a day of the week is; after it comes 5.4. A week ended by two days passed over has no close: the reader has said no twice, and section 4's "a week that waits" (E) is its answer. Words: one new plain sentence, drafted for his yes ("Your first week is kept."), then twenty languages. Drawn first as stills from the app's own card on the native export, at 390 on the five palettes and in Arabic, with `checkMock` passing and the motion shown as three frames. Built only at his yes, dark behind the frame (`DAY_FRAME_LIVE`), with a test that fails on today's code.
+
+**5.2 The next step, by road.** One thing for each road, from pages Purify already has, by their own names (no new words). Proposed for his yes; his to rearrange, as the weeks were.
+
+| Road | Its day 7 | The next step |
+|---|---|---|
+| Catechumen, Catholic, returning, Protestant (liturgical) | Find a parish | Your first Liturgy (the doors' C, 2026-11-23) |
+| Christian, seeker, newcomer, Protestant (Bible) | Your first Liturgy | The Sunday they chose, when the guide holds one, said once (the close and the reminder are one card that day); otherwise Find a parish |
+| Practicing | The Path of the Fathers | The first day of 5.4 |
+
+**5.3 "I went", asked once.** The first time the reader opens Purify after the Sunday they chose, within a week of it, the Liturgy reminder asks once: "Did you go?", with "I went" and "Not yet". "I went" is a finish of its own, in 5.1's motion, and names the next step (5.4). "Not yet" offers the next Sunday in one tap (`sundaysFrom`), or closes. Kept in the guide's own place on the phone (`purify:firstLiturgy`), never sent, and not counted until the privacy page says so. Words: three short plain lines, then twenty languages.
+
+**5.4 After the close: the Church's own days.** What a reader is handed from day 8. Two ways, his to choose:
+
+- **(a) A second written week for each road:** 63 more days, each a page with an end, on the same machinery. The choice of pages is his to arrange, as the first week's was, and any new line is a priest's to read. About $30 to $50, and his time.
+- **(b) The Church's own day, each day (recommended):** no new list. From day 8 the card offers one thing the day already has and the frame already keeps, in turn: today's readings, the saint of the day, the morning or evening rule. Two days passed over end it, as they end the week. It is the section's method (the Church's rhythm is what keeps a person for years), it uses only pages that exist, and it needs no new words about the faith. Its risk: Today already shows the readings and the saint, so the card must stand in their place and never beside them (each thing once); the drawing settles that. About $10 to $20.
+
+**5.5 Plus at the week's end.** Two things for his word:
+
+- The Plus card comes seven days after the questions, which for a reader who missed no day is the day after the close. **Recommended:** never on the same day as a close or an "I went", and only once the close has been seen. This changes when a running test shows its card (`lib/ab/tests.ts`, plus-introduced), so it is made at the test's end or with the test begun again: his to say.
+- A reading plan as the next step (suggestion A of 2026-11-22) stays out of the close: its Begin is a lock, and his rule keeps Plus out of onboarding. The week's end is where a reader is most ready for more, so it is where Plus would sell best; the Plus card a day later does that job inside his rule.
+
+**Noted, not planned:** on the first day of a fast or a great feast, the Church's day of 5.4 (b) could lead with it. Planned only once (b) is drawn.
+
+### The number
+
+Readers back in their second week (`back_week2`, counted) and after thirty days, by road: both are already in Admin, Onboarding (rows 1 and 2). Nothing new is counted. The baseline waits on the picture of Admin, Onboarding still owed by him.
+
+### The order and the cost
+
+1. **5.1 and 5.2 drawn together:** `npm ci` and one native export (about 20 to 30 minutes of machine, no paid generation), the stills, a page with a reason for each choice. About $8 to $12. Then his yes or no.
+2. **5.1 and 5.2 built, dark:** about $10 to $20, with the twenty languages and a probe for the gate.
+3. **5.3 drawn and built:** about $10 to $15.
+4. **5.4 (b) drawn and built:** about $10 to $20.
+
+Section 5 with (b): about $40 to $65 in all, one piece at a time, each at his yes; with (a) in its place, about $60 to $95. Estimates from the rate in `docs/NOW.md` (Spend), until measured. With 5.1 to 5.3 the work meets what a ten asks; the number then needs readers and weeks. On the branch that reads about 7, and about 8 with 5.4.
+
+### What is his
+
+1. Yes or no to this order, beginning with the drawing of 5.1 and 5.2.
+2. (a) or (b) for 5.4.
+3. The Plus card a day after the close: yes or no, and whether it waits for its test's end.
+4. Once drawn: the close's one line and "I went"'s three.
