@@ -17,7 +17,7 @@ Updated 2026-11-27 about 07:45 UTC by the one chat (session_01VuYTwc1qekL8Gg5GoJ
 - **Stores:** 1.9 on both. Android is build 101, from main `6700c2e65`. The App Store serves 1.9 since 2026-11-21 00:06 UTC (Apple's public lookup); whether Apple approved build 37 or build 39 is his to confirm.
 - **The main web** runs main `1aea88f7` of 2026-11-25 (the admin's money, goals and levels, the owner digest, keeping members, the account step after the welcome, Cloudflare's place for a visit). Its cache version is `purify-1.9.0`.
 - **The branch** holds 2.0 (SCOPE, part A), the promo edits, and every commit of main by content. None of its 2.0 work is on main or in a build, by his word ("Full 2.0, wait").
-- **2.0:** `docs/plans/v2.0/SCOPE.md` is what is in it, the cut line and the order; `docs/plans/v2.0/RELEASE.md` is the steps that ship it. **Now:** section 5's drawing (the week's close), for his yes, in a fresh chat from `docs/handoffs/v2.0-week-close.md` (cap $12): this chat handed over at 244,000 tokens of context, past his 200,000 line.
+- **2.0:** `docs/plans/v2.0/SCOPE.md` is what is in it, the cut line and the order; `docs/plans/v2.0/RELEASE.md` is the steps that ship it. **Now:** section 5's drawing (the week's close), for his yes, by this chat from `docs/handoffs/v2.0-week-close.md` (cap $12).
 - **Two planning documents from him for 2.0** (a growth framework, a growth and money model, 2026-11-22) are confidential and not in this repository, which is public. Ask him when a step needs them.
 
 ## Waiting on him
@@ -35,8 +35,7 @@ Updated 2026-11-27 about 07:45 UTC by the one chat (session_01VuYTwc1qekL8Gg5GoJ
 
 | Chat | Session | State |
 |---|---|---|
-| The one chat until 2026-11-27 | session_01VuYTwc1qekL8Gg5GoJmqaf | Organized 2.0 and planned section 5 ($4.12 at 244,000 tokens of context). Handed over; archive it once the next chat has started |
-| Next: the week's close | (not started) | Draws 5.1 and 5.2 from `docs/handoffs/v2.0-week-close.md`, cap $12; he starts it with the prompt at its foot |
+| This chat | session_01VuYTwc1qekL8Gg5GoJmqaf | The one chat: organized 2.0, planned section 5, draws the week's close (cap $12) |
 | The meek edit | session_01VuYTwarkvEwcFB2CvvjsLA | Idle since 2026-11-26. It pushed to `ccr-8ee9c64a-ex1e9n`; its four commits were brought onto the branch on 2026-11-27 |
 | Store build, then edit 3 | session_01VuYTwcTkdWjfVG9Mi39XAx | Idle since 2026-11-25; the Cradle's film sent |
 | Two-week goals review | session_01VuYTwaU1wvNXTzsfDMk1iv | Idle; its report given |
@@ -48,5 +47,5 @@ An idle chat costs nothing. Each is archived at his word.
 ## Spend
 
 - **The rate** (worked out 2026-11-20): about $0.50 for a million tokens read from the cache, $10 for a million written to it, $25 for a million written as output. A step costs about $0.05 for each 100,000 tokens of context, and coming back after more than an hour writes the whole context again, about $1 for each 100,000.
-- **So a chat stays short:** it hands over with a baton at about 150,000 to 200,000 tokens of context.
+- **Token efficient, whatever a chat's size** (his word, 2026-11-27: "stop worrying about chat limits in your criterias from now on. just be token efficient in general"): no hand-over for size; outputs cut short, files read in part, nothing read twice.
 - **The weekly limit** resets on Fridays at 08:00 UTC; it read "allowed" at 07:00 UTC on 2026-11-27.
