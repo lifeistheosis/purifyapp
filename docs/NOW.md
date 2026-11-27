@@ -8,7 +8,7 @@ Updated 2026-11-27 about 07:45 UTC by the one chat (session_01VuYTwc1qekL8Gg5GoJ
 
 - **One chat,** which is also the worker. A second only at his yes, for one named job, with a cap. Nothing is scheduled.
 - **Talk, a plan in the repo, his yes, then work.** The cost is named before anything that costs.
-- **Super simplified mode is on** (his word, 2026-11-27, about 07:33 UTC: "super simplified mode"): the fewest words, a line or two, emojis welcome, no em dashes. It replaces extra simplified mode (2026-11-20). Only the talk changes, never the work.
+- **Super simplified mode is on** (his word, 2026-11-27, about 07:33 UTC: "super simplified mode"): the fewest words, a line or two, emojis welcome, no em dashes. It replaces extra simplified mode (2026-11-20). Only the talk changes, never the work. **"es"** in his message means extremely simplified: answer in a line (his word, 2026-11-27).
 - **One branch:** `ccr-07896cf2-bo0afd`. Main is the website and moves only at his word.
 - **A fresh chat reads** CLAUDE.md, this page and `docs/plans/v2.0/SCOPE.md`, then only what its step needs.
 
@@ -22,13 +22,13 @@ Updated 2026-11-27 about 07:45 UTC by the one chat (session_01VuYTwc1qekL8Gg5GoJ
 
 ## Waiting on him
 
-1. **The update prompt (R6) is not set.** The main web tells installed apps Android build 78 and iOS build 31 (`https://purifyapp.net/api/app/release`, probed 2026-11-27), while the stores serve 101 and 37 or 39. A reader on a build in between is never told 1.9 exists. On Render: `ANDROID_VERSION_CODE=101` now, and `IOS_BUILD_NUMBER` once he confirms Apple's build (`docs/1.9-build/OWNER-STEPS.md`, R6). A number above what the store serves would prompt readers to a build that does not exist.
+1. **The update prompt (R6):** he set it on Render (his word, 2026-11-27 about 08:15 UTC: "I just updated renders env"). At 08:18 UTC `https://purifyapp.net/api/app/release` still said Android 78 and iOS 31, so the redeploy had not landed; a watch checks it. Apps also keep the answer up to an hour (its cache header).
 2. **Supabase's free quota:** the grace period ends 11 Dec 2026. Watch the Usage page (egress must fall under about 0.13 GB a day) and decide by about 5 Dec whether to pay for one month. Details in the kept page of 11-27, "Waiting on him", item 0.
 3. **2.0's cut line:** yes or no to SCOPE's recommendation (D1 to D3 and D5 to 2.1), and keep or remove Studio Audio (C2).
 4. **Section 5's choices:** 5.4 (a) or (b), and the Plus card a day after the close (`docs/plans/onboarding-2.0.md`, "Section 5, after day seven: the plan", "What is his").
 5. **Keeping members:** his note to the members set to end (Admin, Money, Members), and Google Play's cancel survey in Play Console.
 6. **From the onboarding work:** the privacy page's two drafted sentences (`docs/plans/reader-map.md`, section 12); a lifetime price; whether the Plus card's test runs to 2027-02-09; the readers' email look on his desk (`lib/email/look.ts` stands at "3", so each automatic list email goes to him alone until he clears it); a picture of Admin, Onboarding, for the baselines; the "to" line of the three copies of the 1.9 email.
-7. **Promo edits:** his word on edit 3, the Cradle (its film v4 sent 2026-11-25), and on the meek edit (2026-11-26). Records: `docs/plans/promo-edits/` and `docs/promo/meek-edit/`.
+7. **Promo edits:** posted by him (his word, 2026-11-27). No tracking of what TikTok brings (his word the same day: "don't worry about what tiktok brings in").
 8. **1.9's other after-release steps, if not done:** R2a the board message and the 1.9 note, R2b the terms notice, R2c the faith answers' SQL, R5c open campaigns, and the Psalms 113 to 115 count (`docs/handoffs/arbiter-fable.md`, section 3C).
 
 ## Running
