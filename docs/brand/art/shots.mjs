@@ -59,6 +59,14 @@ try {
   await page.evaluate(() => window.scrollBy(0, -90));
   await keep(page, "2-discover-more", "Discover, further down");
 
+  // The Plus sheet, opened from the pill as a reader opens it: the whole library at its head.
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.getByRole("button", { name: /^Plus$/ }).first().click();
+  await page.locator('img[src="/art/plus.webp"]').first().waitFor({ state: "visible", timeout: 30000 });
+  await keep(page, "8-plus-sheet", "The Plus sheet, its head");
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(800);
+
   await go(page, "/parishes");
   await page.locator('[data-art-head="parish"]').waitFor({ state: "visible", timeout: 30000 });
   await page.evaluate(() => window.scrollTo(0, 0));
