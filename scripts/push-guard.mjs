@@ -25,6 +25,10 @@
 //    tree, so the tree has to be exactly the commit being pushed.
 // 4. PURIFY_SKIP_GUARD=1 skips the checks with a loud warning: an emergency,
 //    at the arbiter's word only. It never lifts the refusal of main.
+// 5. A push to main (allowed) must still serve the apps in readers' hands: the
+//    website runs ahead of the store builds (his word, 2026-11-28), so
+//    scripts/apps-compat.mjs holds what main is about to be to the commits in
+//    data/release/live-apps.json, and refuses what would fail them.
 //
 // docs/OPERATIONS.md, section 5, says the same for people. Everything that
 // decides is a pure function, and lib/build/__tests__/pushGuard.test.ts
@@ -496,6 +500,7 @@ export async function main(args) {
       return plan.kind === "refuse" ? 1 : 0;
     }
     const root = gitOut(["rev-parse", "--show-toplevel"], process.cwd()).trim();
+    if (!appsStillServed(updates, root)) return 1;
     const pushes = updates.map((u) => {
       const files = pushedFiles(u, { cwd: root, remote });
       const peeled = isZero(u.localSha) ? u.localSha : gitOut(["rev-parse", "--verify", "--quiet", `${u.localSha}^{commit}`], root).trim();
@@ -531,6 +536,27 @@ export async function main(args) {
     say("A guard that cannot check lets nothing through. If this is the guard's own fault, tell the arbiter.");
     return 1;
   }
+}
+
+/**
+ * The store builds in readers' hands are still served by what main is about to
+ * be (scripts/apps-compat.mjs; his word, 2026-11-28: "always ensure the public
+ * silent v2.0 on the website doesnt interfere with the mobiles live version").
+ * Only a push to main is held to it, and a main from before the check has none.
+ */
+function appsStillServed(/** @type {{ remoteRef: string; localSha: string }[]} */ updates, /** @type {string} */ root) {
+  const script = path.join(root, "scripts", "apps-compat.mjs");
+  for (const u of updates) {
+    if (u.remoteRef !== MAIN_REF || isZero(u.localSha) || !existsSync(script)) continue;
+    say("push guard: main is the website, ahead of the store builds; checking it still serves them (scripts/apps-compat.mjs) ...");
+    const r = spawnSync(process.execPath, [script, "--web", u.localSha], { cwd: root, encoding: "utf8" });
+    for (const line of `${r.stdout ?? ""}${r.stderr ?? ""}`.trim().split("\n")) if (line) say(`  ${line}`);
+    if (r.status !== 0) {
+      say("push guard: refused. Main would fail an app in readers' hands; see above, mend it, and push again.");
+      return false;
+    }
+  }
+  return true;
 }
 
 /** True when node was started on this file (not when a test imports it). */

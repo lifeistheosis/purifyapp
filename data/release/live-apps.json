@@ -1,0 +1,12 @@
+{
+  "note": "The store builds in readers' hands, and the commit each was cut from. The website runs ahead of them (his word, 2026-11-28: \"keep the website public on v2.0 and drop mobile in announcement update batches\"), so every push to main is held to these by scripts/apps-compat.mjs: nothing the apps fetch from the website may go missing or change under them. When a store serves a new build, add it here with its commit and build numbers (Android's versionCode and iOS's build number are their workflow run numbers); take an old one off only when no reader can still be on it.",
+  "builds": [
+    {
+      "version": "1.9",
+      "commit": "6700c2e6570dae62bb5b602a900fff7abfb613d7",
+      "android": 101,
+      "ios": 39,
+      "from": "Android build run 101 (2026-11-17) and iOS build (signed) run 39 (2026-11-20), both on main at 'Release 1.9'"
+    }
+  ]
+}
