@@ -25,7 +25,11 @@ Kept from 2026-11-28 on, at his word that day ("when v2.0 comes out incorporate 
 
 ## Silent: admin and plumbing
 
+## The website on 2.0
+
+- From `a43e26d4` (2026-11-28) the main web runs 2.0, in silence, at his word: "keep the website public on v2.0 and drop mobile in announcement update batches. (so silently drop v2.0 updates)". The way back is `c3ae34f2`. Every entry above that the website draws is live there from that push; what the apps draw waits for their batch. The store builds are still 1.9 (`data/release/live-apps.json`), held by `scripts/apps-compat.mjs` on every push to main. The gift of Plus went live with it: its table run by hand by the owner, Stripe Tax off, as the shop's checkout has it.
+
 ## For the 2.0 merge
 
-- `components/discover/DoorGrid.tsx` and `lib/discover/__tests__/doorGrid.test.ts` were added on both sides: main's copies (`c3ae34f2`) leave out Silver Night's tiles, which main does not have. Take the branch's copies; the rest of both desktop changes is the same on both sides.
+- Done in `fc83f475`: main merged into 2.0, and 2.0 pushed to main as `a43e26d4`. Main and the branch are one line again; a mobile batch is cut from the branch as before.
 
