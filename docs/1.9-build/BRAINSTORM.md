@@ -1291,3 +1291,5 @@ Claude's proposal, for his word:
 **The bell, yes (his word, 2026-11-28, about 05:55 UTC):** "surr", to the page https://claude.ai/artifact/UmMvWpKzHSCA4Tyaa3ABCG. The universal bell ships with 2.0 as built (`docs/plans/v2.0/bell/`).
 
 **The gift page, built (his word, 2026-11-28, about 06:00 UTC):** "yes build the gift page at 59.99". Built the same day: `docs/plans/goal-5k.md`, first moves, 3.
+
+**Campaigns: how many are praying, and a status bar (his word, 2026-11-28, about 10:20 UTC):** "one note for the update in the app overrral is fior the campaigns to show how much people is participating and a status bar for the campaign (__ posted a announcement, __ just prayed (or someone just prauyed, if they prefer to keep their name private)". What exists: each reader taking part is a row of prayer_campaign_prayers (joined_at, last_prayed_at, prayer_days); the creator's announcements are the campaign's thread. No count is shown today, and there is no choice about a name in campaigns. Asked of him: a name shown by default or hidden by default, and who counts as praying.
