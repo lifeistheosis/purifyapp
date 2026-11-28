@@ -31,6 +31,7 @@ His rule: a release ships finished, and a fault never waits for a point release.
 8. The week's card reads "Tomorrow: Pentecost: the Descent of the Holy Spirit", two colons. His word: proposed, the page's own bar name ("Tomorrow: Pentecost").
 9. Testers mode only: the Testers mark over the Bible's chapter pill, and cut short for "Another Christian tradition".
 10. **Mended 2026-11-27:** the website's hourly heartbeat was cut while it finished a long send, so Render called it failed: the email jobs' share now goes after the answer, as the reminders do (`lib/ops/__tests__/emailAfterAnswer.test.ts`). Reaches the main web with 2.0.
+11. **Mended 2026-11-28:** the Verse of the Day's Listen played the whole verse when the card showed part of a long one (his word: "when you click play it starts playing the whole verse rather than what you see", on Luke 10:20). The recordings are timed by whole verses, so each part's start and end were measured from the sound (`scripts/verse-part-times.py`, a speech model for which word is which, then the silence between words) into `data/today/verse-part-times.json`, and Listen plays only that (`lib/today/versePartTimes.ts`). Tests: `lib/today/__tests__/versePartTimes.test.ts` holds every part to its verse and its words, and `verseListen.test.ts` stops at the part's last word. A pick with a part added later needs the script run again; until then, and for a pick that arrives in a content pack, the whole verse plays.
 
 ## C. To build for 2.0 (recommended in)
 

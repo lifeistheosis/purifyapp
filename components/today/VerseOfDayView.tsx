@@ -148,7 +148,7 @@ export function VerseOfDayView({
             chapter={vod.chapter}
             verse={vod.verse}
             translated={translated ?? undefined}
-            listen={{ title: referenceIn(vod.label, vod.book, books), by: t("today.verseOfDay") }}
+            listen={{ title: referenceIn(vod.label, vod.book, books), by: t("today.verseOfDay"), shown: vod.text }}
           />
         )}
       </div>

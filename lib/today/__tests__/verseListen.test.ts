@@ -117,6 +117,27 @@ describe("Listen on the Verse of the Day", () => {
     expect(isListening()).toBe(false);
   });
 
+  it("hears only the part a card shows of a long verse, and stops at its last word", async () => {
+    // His word, 2026-11-28: "when you click play it starts playing the whole
+    // verse rather than what you see". Luke 8:25 shows its first sentence.
+    const verse = timings("luke", 8)!.verses.find((v) => v.n === 25)!;
+    const { versePartCut } = await import("../versePartTimes");
+    const shown = "And he said unto them, Where is your faith?";
+    const cut = versePartCut("luke", 8, 25, shown)!;
+    expect(cut.end).toBeLessThan(verse.end - 3);
+    listenToVerse({ book: "luke", chapter: 8, verse: 25, shown }, "Luke 8:25", "Verse of the Day");
+    await flush();
+    set({ duration: 400 });
+    expect(calls.at(-1)).toBe(`seek ${cut.at}`);
+    set({ currentTime: (cut.at + cut.end) / 2 });
+    expect(calls).not.toContain("pause");
+    // Past the part's last word, with the rest of the verse still to come: it stops.
+    set({ currentTime: cut.end + 0.05 });
+    await flush();
+    expect(calls.at(-1)).toBe("pause");
+    expect(isListening()).toBe(false);
+  });
+
   it("gives way to anything else put on, and leaves it playing", async () => {
     listenToVerse(LUKE_11_13, "Luke 11:13", "Verse of the Day");
     await flush();

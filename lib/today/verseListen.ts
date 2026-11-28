@@ -5,6 +5,7 @@ import { useState, useSyncExternalStore } from "react";
 import { getAudioSnapshot, pause, play, subscribeAudio } from "@/lib/prayers/persistentAudioStore";
 import { readAloudSrc, useHasReadAloud } from "@/lib/readAloud/chapters";
 import { listeningPlace, startListening, subscribeListening, type ListenPart, type ListenStart } from "@/lib/readings/listen";
+import { versePartCut } from "@/lib/today/versePartTimes";
 
 /**
  * Listen on the Verse of the Day (1.8, the owner's pick B of round 10, "The
@@ -17,15 +18,25 @@ import { listeningPlace, startListening, subscribeListening, type ListenPart, ty
  *
  * Only where that chapter has a recording, the New Testament today: on any
  * other verse the card has no Listen at all.
+ *
+ * A card that shows part of a long verse is heard as it is shown, from the
+ * part's first word to its last (2.0, lib/today/versePartTimes.ts).
  */
-export type VerseAt = { book: string; chapter: number; verse: number };
+export type VerseAt = {
+  book: string;
+  chapter: number;
+  verse: number;
+  /** The words the card shows: when they are part of the verse, only they are heard. */
+  shown?: string | null;
+};
 
-/** The verse alone, as a span to hear: from its first word to its last, and nothing either side. */
+/** The verse alone, as a span to hear: from its first word to its last, or the part shown, and nothing either side. */
 export function verseListenPart(at: VerseAt, title: string, artist: string): ListenPart {
-  return { book: at.book, chapter: at.chapter, from: at.verse, to: at.verse, title, artist };
+  const cut = versePartCut(at.book, at.chapter, at.verse, at.shown);
+  return { book: at.book, chapter: at.chapter, from: at.verse, to: at.verse, title, artist, ...(cut ? { cut } : {}) };
 }
 
-/** Hear the verse: its chapter's recording, from the verse's start to its end. */
+/** Hear the verse: its chapter's recording, from the verse's start to its end (or the part's). */
 export function listenToVerse(at: VerseAt, title: string, artist: string): Promise<ListenStart> {
   return startListening([verseListenPart(at, title, artist)]);
 }

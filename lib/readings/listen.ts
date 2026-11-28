@@ -30,6 +30,13 @@ export type ListenPart = {
   /** What the player shows: the reference, then which reading it is. */
   title: string;
   artist: string;
+  /**
+   * Only part of the verse, in seconds into the chapter's recording: a Verse
+   * of the Day that shows part of a long verse is heard as it is shown (his
+   * word, 2026-11-28: "when you click play it starts playing the whole verse
+   * rather than what you see"). Kept inside the span's own times (partTimes).
+   */
+  cut?: { at: number; end: number };
 };
 
 /** Every span of every reading that has a recording, in the walk's order. */
@@ -55,6 +62,18 @@ export function spanTimes(manifest: ReadAloudManifest, from: number, to: number)
   const inSpan = manifest.verses.filter((v) => v.n >= from && v.n <= to);
   if (!inSpan.length) return null;
   return { start: inSpan[0].at, end: inSpan[inSpan.length - 1].end };
+}
+
+/**
+ * Where a part is heard: its span's times, or its cut's, kept inside them. A
+ * cut that falls outside its verse (timings remade since it was measured) is
+ * not trusted: the whole span is heard, never a word of another verse.
+ */
+export function partTimes(manifest: ReadAloudManifest, part: Pick<ListenPart, "from" | "to" | "cut">): { start: number; end: number } | null {
+  const span = spanTimes(manifest, part.from, part.to);
+  if (!span || !part.cut) return span;
+  const { at, end } = part.cut;
+  return at >= span.start && end <= span.end && at < end ? { start: at, end } : span;
 }
 
 type Run = {
@@ -170,7 +189,7 @@ async function playPart(i: number): Promise<ListenStart> {
   const manifest = await readAloudManifest(part.book, part.chapter);
   // Stopped, or started over, while the timings were on their way.
   if (run !== current) return "replaced";
-  const times = manifest ? spanTimes(manifest, part.from, part.to) : null;
+  const times = manifest ? partTimes(manifest, part) : null;
   if (!manifest || !times) return playPart(i + 1);
   const src = readAloudSrc(part.book, part.chapter);
   const cover = readAloudCover(part.book);

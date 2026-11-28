@@ -1297,3 +1297,5 @@ Claude's proposal, for his word:
 **The campaign card, brief (his word, 2026-11-28, about 10:30 UTC, on a desktop screenshot of Pray together):** "don't actually show the prayer on the overview, the overview should be brief". The card keeps its picture, its kind and days, its name, Pray, In my prayers and Share; the prayer stands on the campaign's own page, which Pray opens.
 
 **The campaign card, one tap (his word, 2026-11-28, about 10:45 UTC):** "and make the whole entire card a button you click and add the pray and in my prayers somewhere". The whole card opens the campaign's own page, where Pray, In my prayers and Share already stood; on the card they are gone, so each stands once.
+
+**The Verse of the Day plays what it shows (his word, 2026-11-28, about 11:00 UTC, on two screenshots of Luke 10:20):** ",when you click play it starts playing the whole verse rather than what you see". The card showed "rejoice, because your names are written in heaven." and Listen played the verse from "Notwithstanding". Mended: Listen plays the part shown, measured from the recording (`docs/plans/v2.0/SCOPE.md`, B11).

@@ -1,0 +1,317 @@
+{
+  "note": "Where each chosen verse's part starts and ends in its recording, in seconds into the chapter. Measured by scripts/verse-part-times.py; do not edit by hand.",
+  "times": {
+    "luke.8.25:And he said unto them, Where is your faith?": {
+      "at": 192.9,
+      "end": 195.11,
+      "verse": [
+        192.9,
+        203.8
+      ]
+    },
+    "luke.8.11:The seed is the word of God.": {
+      "at": 77.75,
+      "end": 79.19,
+      "verse": [
+        76.01,
+        79.19
+      ]
+    },
+    "luke.9.48:he that is least among you all, the same shall be great.": {
+      "at": 357.02,
+      "end": 360.76,
+      "verse": [
+        348.74,
+        360.76
+      ]
+    },
+    "luke.9.56:For the Son of man is not come to destroy men's lives, but to save them.": {
+      "at": 411.42,
+      "end": 415.92,
+      "verse": [
+        411.42,
+        417.77
+      ]
+    },
+    "luke.10.2:The harvest truly is great, but the labourers are few: pray ye therefore the Lord of the harvest, that he would send forth labourers into his harvest.": {
+      "at": 11.12,
+      "end": 20.2,
+      "verse": [
+        9.64,
+        20.2
+      ]
+    },
+    "luke.7.9:I have not found so great faith, no, not in Israel.": {
+      "at": 69.68,
+      "end": 73.27,
+      "verse": [
+        62.31,
+        73.27
+      ]
+    },
+    "luke.16.31:If they hear not Moses and the prophets, neither will they be persuaded, though one rose from the dead.": {
+      "at": 241.8,
+      "end": 247.48,
+      "verse": [
+        240.44,
+        247.48
+      ]
+    },
+    "luke.10.23:Blessed are the eyes which see the things that ye see": {
+      "at": 175.18,
+      "end": 177.62,
+      "verse": [
+        171.67,
+        177.62
+      ]
+    },
+    "luke.11.9:Ask, and it shall be given you; seek, and ye shall find; knock, and it shall be opened unto you.": {
+      "at": 66.59,
+      "end": 72.29,
+      "verse": [
+        65.53,
+        72.29
+      ]
+    },
+    "luke.8.21:My mother and my brethren are these which hear the word of God, and do it.": {
+      "at": 157.91,
+      "end": 162.15,
+      "verse": [
+        156.03,
+        162.15
+      ]
+    },
+    "luke.8.39:Return to thine own house, and shew how great things God hath done unto thee.": {
+      "at": 316.09,
+      "end": 320.65,
+      "verse": [
+        316.09,
+        326.24
+      ]
+    },
+    "1-thessalonians.2.4:not as pleasing men, but God, which trieth our hearts.": {
+      "at": 26.1,
+      "end": 29.77,
+      "verse": [
+        21.38,
+        29.77
+      ]
+    },
+    "luke.12.1:Beware ye of the leaven of the Pharisees, which is hypocrisy.": {
+      "at": 10.52,
+      "end": 14.7,
+      "verse": [
+        0.0,
+        14.7
+      ]
+    },
+    "luke.8.50:Fear not: believe only, and she shall be made whole.": {
+      "at": 409.28,
+      "end": 412.41,
+      "verse": [
+        406.6,
+        412.41
+      ]
+    },
+    "luke.12.48:For unto whomsoever much is given, of him shall be much required": {
+      "at": 351.11,
+      "end": 355.19,
+      "verse": [
+        345.72,
+        358.98
+      ]
+    },
+    "luke.13.34:how often would I have gathered thy children together, as a hen doth gather her brood under her wings, and ye would not!": {
+      "at": 256.1,
+      "end": 262.91,
+      "verse": [
+        250.07,
+        262.91
+      ]
+    },
+    "luke.9.43:And they were all amazed at the mighty power of God.": {
+      "at": 316.37,
+      "end": 319.62,
+      "verse": [
+        316.37,
+        324.93
+      ]
+    },
+    "luke.10.27:Thou shalt love the Lord thy God with all thy heart, and with all thy soul, and with all thy strength, and with all thy mind; and thy neighbour as thyself.": {
+      "at": 200.96,
+      "end": 210.38,
+      "verse": [
+        199.63,
+        210.38
+      ]
+    },
+    "luke.14.13:when thou makest a feast, call the poor, the maimed, the lame, the blind": {
+      "at": 92.08,
+      "end": 96.41,
+      "verse": [
+        92.08,
+        96.41
+      ]
+    },
+    "luke.15.10:I say unto you, there is joy in the presence of the angels of God over one sinner that repenteth.": {
+      "at": 65.47,
+      "end": 71.42,
+      "verse": [
+        64.76,
+        71.42
+      ]
+    },
+    "luke.11.28:blessed are they that hear the word of God, and keep it.": {
+      "at": 206.01,
+      "end": 208.84,
+      "verse": [
+        204.36,
+        208.84
+      ]
+    },
+    "luke.17.21:behold, the kingdom of God is within you.": {
+      "at": 144.34,
+      "end": 146.37,
+      "verse": [
+        140.99,
+        146.37
+      ]
+    },
+    "luke.18.31:Behold, we go up to Jerusalem, and all things that are written by the prophets concerning the Son of man shall be accomplished.": {
+      "at": 204.8,
+      "end": 212.18,
+      "verse": [
+        201.87,
+        212.18
+      ]
+    },
+    "luke.19.17:Well, thou good servant: because thou hast been faithful in a very little, have thou authority over ten cities.": {
+      "at": 115.2,
+      "end": 121.8,
+      "verse": [
+        113.61,
+        121.8
+      ]
+    },
+    "luke.10.20:rejoice, because your names are written in heaven.": {
+      "at": 141.81,
+      "end": 144.49,
+      "verse": [
+        136.21,
+        144.49
+      ]
+    },
+    "luke.19.38:Blessed be the King that cometh in the name of the Lord: peace in heaven, and glory in the highest.": {
+      "at": 254.04,
+      "end": 259.57,
+      "verse": [
+        253.54,
+        259.57
+      ]
+    },
+    "luke.19.46:It is written, My house is the house of prayer: but ye have made it a den of thieves.": {
+      "at": 312.02,
+      "end": 316.83,
+      "verse": [
+        311.02,
+        316.83
+      ]
+    },
+    "luke.20.17:The stone which the builders rejected, the same is become the head of the corner": {
+      "at": 115.43,
+      "end": 119.56,
+      "verse": [
+        111.61,
+        119.56
+      ]
+    },
+    "titus.1.15:Unto the pure all things are pure": {
+      "at": 105.01,
+      "end": 107.15,
+      "verse": [
+        105.01,
+        114.14
+      ]
+    },
+    "luke.14.17:Come; for all things are now ready.": {
+      "at": 120.16,
+      "end": 122.63,
+      "verse": [
+        116.77,
+        122.63
+      ]
+    },
+    "hebrews.4.7:To day if ye will hear his voice, harden not your hearts.": {
+      "at": 53.82,
+      "end": 56.78,
+      "verse": [
+        47.18,
+        56.78
+      ]
+    },
+    "mark.8.34:Whosoever will come after me, let him deny himself, and take up his cross, and follow me.": {
+      "at": 231.13,
+      "end": 236.72,
+      "verse": [
+        226.43,
+        236.72
+      ]
+    },
+    "mark.9.12:it is written of the Son of man, that he must suffer many things, and be set at nought.": {
+      "at": 87.34,
+      "end": 91.73,
+      "verse": [
+        81.24,
+        91.73
+      ]
+    },
+    "mark.9.35:If any man desire to be first, the same shall be last of all, and servant of all.": {
+      "at": 250.94,
+      "end": 255.64,
+      "verse": [
+        247.21,
+        255.64
+      ]
+    },
+    "mark.9.50:Have salt in yourselves, and have peace one with another.": {
+      "at": 362.66,
+      "end": 365.77,
+      "verse": [
+        357.75,
+        365.77
+      ]
+    },
+    "mark.10.14:Suffer the little children to come unto me, and forbid them not: for of such is the kingdom of God.": {
+      "at": 78.06,
+      "end": 83.38,
+      "verse": [
+        73.82,
+        83.38
+      ]
+    },
+    "matthew.2.2:Where is he that is born King of the Jews? for we have seen his star in the east, and are come to worship him.": {
+      "at": 10.03,
+      "end": 16.22,
+      "verse": [
+        9.52,
+        16.22
+      ]
+    },
+    "matthew.2.15:Out of Egypt have I called my son.": {
+      "at": 125.21,
+      "end": 127.37,
+      "verse": [
+        118.26,
+        127.37
+      ]
+    },
+    "mark.10.49:Be of good comfort, rise; he calleth thee.": {
+      "at": 367.84,
+      "end": 370.74,
+      "verse": [
+        361.87,
+        370.74
+      ]
+    }
+  }
+}

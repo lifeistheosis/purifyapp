@@ -75,8 +75,11 @@ export function VerseCardActions({
    * (shareText): what is kept for later is the Bible's own words.
    */
   translated?: Pick<MachineShown, "language" | "text" | "reference" | "note">;
-  /** What the player shows while the verse is heard: its reference, and what it is. */
-  listen?: { title: string; by: string };
+  /**
+   * What the player shows while the verse is heard: its reference, and what
+   * it is; and the words the card shows, so a part of a verse is heard as shown.
+   */
+  listen?: { title: string; by: string; shown?: string | null };
 }) {
   const { t } = useTranslate();
   const router = useRouter();
@@ -91,7 +94,7 @@ export function VerseCardActions({
   // Mounted on the first Share and kept, so it can close as it opened.
   const [pictureMade, setPictureMade] = useState(false);
   const heard = useVerseListen(
-    book && chapter && verse ? { book, chapter, verse } : null,
+    book && chapter && verse ? { book, chapter, verse, shown: listen?.shown } : null,
     listen?.title ?? refLabel,
     listen?.by ?? t("today.verseOfDay"),
   );
