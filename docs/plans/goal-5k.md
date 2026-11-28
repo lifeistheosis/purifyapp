@@ -37,7 +37,7 @@ Scenario total: about $6,300 in, minus $1,040 = **about $5,260 unspent**. It nee
    - **The same Apple account** (his word, 2026-11-28: "nope just the same apple account"), turning into the company's. No app transfer, so the iPhone app can still be updated and RevenueCat's keys stay as they are. Payouts resume once the account's agreements, bank and tax forms are accepted. The terms and the privacy page already name Purify Orthodox LLC (`lib/legal/entity.ts`), so the seller and the legal pages will match.
    - Then set the goal on the Goals tab: "5k unspent", $5,000, by 28 February. Mercury today: $0.32.
 2. **The founding membership** (his call: price, cap, stores and web, the terms' line): the strongest single lever. It was already open as "a lifetime price".
-3. **The Christmas gift of Plus on the web:** about $15 to $30 of work, drawn and justified for his yes first, shipped by about 10 December.
+3. **The Christmas gift of Plus on the web:** drawn and said yes to, then **built 2026-11-28 at $59.99** (his word: "yes build the gift page at 59.99"; commit `c06356a4`). To be live by about 10 December it needs three things from him: his yes to the table's SQL (`supabase/migrations/20261128080347_gift_cards.sql`); the gift alone to the main web ahead of 2.0 (a deploy, his word); and Stripe Tax on or off.
 4. **Christmas edits** pointing to the gift and EIKON (he posts).
 5. **Stop the leaks** (cheap): his note to the five set to end, and a reminder before a trial ends.
 6. **No new spending** unless it pays back before 28 February.
