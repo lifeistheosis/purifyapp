@@ -5777,9 +5777,11 @@ html[data-reading-mode="parchment"] .lm-hero {
   radial-gradient(ellipse 55% 45% at 80% 70%, rgb(255 255 255 / 0.35) 0%, transparent 70%),
   linear-gradient(180deg, #f6efe0 0%, #f1e8d4 55%, #ebe1cb 100%) !important;
 }
-/* A band set into the page (the home page's verse). */
+/* A band set into the page (the home page's verse): a deeper paper, in the
+   page's own ink (the band is white on the dark palettes, its words night). */
 html[data-reading-mode="parchment"] .lm-band {
  background: #e8dec6 !important;
+ color: var(--color-paper) !important;
 }
 /* The account header's violet mood, on paper. */
 html[data-reading-mode="parchment"] .lm-violet {
@@ -13823,14 +13825,23 @@ html[data-look] .lm-hero {
 html[data-look] .lm-hero[role="dialog"] {
  background: var(--color-night) !important;
 }
-/* The website's front page holds one verse on a band (lm-band, bg-black in
-   app/page.tsx). Every look sets it on the look's second ground, a step from
-   the page: on a light look a deeper paper, as Light's own band is; on a
-   dark look the look's soft ground, where it stayed black, a black band
-   across a forest or a mosaic (the arbiter, 2026-11-13).
+/* The website's front page holds one verse on a band (lm-band in
+   app/page.tsx: white on the dark palettes since his word of 2026-11-28).
+   Every look sets it on the look's second ground, a step from the page, in
+   the look's own ink: on a light look a deeper paper, as Light's own band
+   is; on a dark look the look's soft ground, where it stayed black, a black
+   band across a forest or a mosaic (the arbiter, 2026-11-13). The citation
+   keeps the look's gold there, as it had before the band turned white.
    lib/ui/__tests__/lookSurfaces.test.ts holds it. */
 html[data-look] .lm-band {
  background: var(--color-night-soft) !important;
+ color: var(--color-paper) !important;
+}
+html[data-look]:not([data-reading-mode="parchment"]) .lm-band .lm-ink-gold {
+ color: color-mix(in oklab, var(--color-gold) 80%, transparent);
+}
+html[data-look]:not([data-reading-mode="parchment"]) .lm-band .lm-ink-gold:hover {
+ color: var(--color-gold);
 }
 
 /* A light look on Light's rules. Light's own surfaces are paper typed in as

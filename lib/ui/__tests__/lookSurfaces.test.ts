@@ -146,8 +146,6 @@ const NAMED: Named = {
   "app/(app)/discover/page.tsx: #26262b": LM_CARD,
   "app/(app)/discover/page.tsx: #1a1a1d": LM_CARD,
   "app/(app)/discover/page.tsx: #151518": LM_CARD,
-  "app/page.tsx: bg-black":
-    "the website's front page on a computer: one verse held on a band (lm-band), black on Dark's own palettes; Light sets it as a deeper paper and every look on its own second ground (app/globals.css)",
   "app/page.tsx: #26262b": LM_CARD,
   "app/page.tsx: #1a1a1d": LM_CARD,
   "app/page.tsx: #151518": LM_CARD,
@@ -310,7 +308,20 @@ describe("the website's front-page verse band is the look's own on every look", 
   });
 
   it("the band on the page still wears the class the looks reach", () => {
-    expect(uncomment(read("app/page.tsx"))).toMatch(/bg-black text-center lm-band/);
+    expect(uncomment(read("app/page.tsx"))).toMatch(/bg-paper text-night text-center lm-band/);
+  });
+
+  it("is white on the dark palettes, the palette's paper with its night for the ink (his word, 2026-11-28)", () => {
+    // "make this places background white rather than black": the band and its
+    // verse are tokens, so each palette's own white and ink paint it, and Light
+    // and the looks set the band and its words together, never the one alone.
+    const page = uncomment(read("app/page.tsx"));
+    expect(page).not.toMatch(/\bbg-black\b/);
+    for (const rule of ['\nhtml[data-reading-mode="parchment"] .lm-band {', "\nhtml[data-look] .lm-band {"]) {
+      const at = CSS.indexOf(rule);
+      expect(at, rule).toBeGreaterThan(-1);
+      expect(CSS.slice(at, CSS.indexOf("}", at)), rule).toContain("color: var(--color-paper) !important;");
+    }
   });
 
   it("the verse's citation under it is 44 tall to the touch, its words where they stood", () => {
@@ -318,7 +329,7 @@ describe("the website's front-page verse band is the look's own on every look", 
     // Its box starts 12px higher (mt-4 from mt-7) and centres its line in 44, so the words do not move.
     // In sentence case since the fifteen screens' rule 3 (1.9): the small line, never capitals spaced out.
     expect(uncomment(read("app/page.tsx"))).toContain(
-      'className="lm-ink-gold mt-4 inline-flex min-h-11 items-center font-sans text-caption font-semibold text-gold/80',
+      'className="lm-ink-gold mt-4 inline-flex min-h-11 items-center font-sans text-caption font-semibold text-night/70',
     );
   });
 });
