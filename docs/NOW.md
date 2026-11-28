@@ -2,7 +2,11 @@
 
 The state of the work, in one page. Rewritten at each change of state: history goes to the log (`docs/1.9-build/HANDOFF.md`) and his words to `docs/1.9-build/BRAINSTORM.md`. The pages before this one are kept whole: `docs/1.9-build/NOW-to-2026-11-20.md` and `docs/1.9-build/NOW-to-2026-11-27.md`. Read a line of them only when a step needs it.
 
-Updated 2026-11-27 about 07:45 UTC by the one chat (session_01VuYTwc1qekL8Gg5GoJmqaf), at his word "organize everything and start working on v2 0".
+Updated 2026-11-28 about 04:15 UTC by the one chat (session_01VuYTwc1qekL8Gg5GoJmqaf), at his new goal: "5k in 3 months", "5k total unspent".
+
+## The goal (his word, 2026-11-28)
+
+**$5,000 unspent in the bank by about 28 February 2027.** His words: "we have a new major goal. 5k in 3 months", then "5k total unspent". Every piece of work is weighed against it. The plan, the arithmetic and the first moves: `docs/plans/goal-5k.md`. Today Purify spends about $60 a month more than it earns, and store money lands 2 to 6 weeks late, so the cash has to come up front (founding membership, Christmas gifts) in December and January.
 
 ## How we work (his word, 2026-11-20; CLAUDE.md, "The new system")
 
@@ -22,6 +26,8 @@ Updated 2026-11-27 about 07:45 UTC by the one chat (session_01VuYTwc1qekL8Gg5GoJ
 
 ## Waiting on him
 
+0. **The goal's first moves** (`docs/plans/goal-5k.md`): where Play and Apple pay out (Mercury shows one $0.32 payout in 30 days); the founding membership's price and cap; yes to drawing the Christmas gift of Plus on the web; the goal on the Goals tab.
+0b. **The fast for Catholics and Protestants** (built 2026-11-27, SCOPE C6): his calls on the calendar, the Fast page, the widgets and "Candlelight in the fasts"; and which of the tailoring ideas to build (`docs/plans/v2.0/tailored-roads.md`).
 1. **The update prompt (R6): Android live, iOS waits.** He set it on Render (2026-11-27, "I just updated renders env"); `https://purifyapp.net/api/app/release` says Android 101 from 08:23 UTC (probed). iOS still says 31: `IOS_BUILD_NUMBER` waits for his word on which build Apple approved, 37 or 39 (a number above the store's would prompt readers to a build that does not exist).
 2. **Supabase's free quota:** the grace period ends 11 Dec 2026. Watch the Usage page (egress must fall under about 0.13 GB a day) and decide by about 5 Dec whether to pay for one month. Details in the kept page of 11-27, "Waiting on him", item 0.
 3. **2.0's cut line:** yes or no to SCOPE's recommendation (D1 to D3 and D5 to 2.1), and keep or remove Studio Audio (C2).
