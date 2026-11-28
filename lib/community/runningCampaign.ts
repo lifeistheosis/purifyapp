@@ -4,21 +4,9 @@
 // r3-02-community.html). Its card is components/community/CampaignCard.tsx.
 //
 // The card is drawn from a campaign that is really running, with its own
-// picture and the Church's prayer word for word under the printing it is
-// taken from. Never a sample: the sheet's "Memory eternal: forty days for
+// picture, its kind and its name; the prayer itself stands on the campaign's
+// own page (his word, 2026-11-28: "the overview should be brief"). Never a sample: the sheet's "Memory eternal: forty days for
 // Nicholas" was one, and it stays on the sheet.
-
-/** The Church's prayer a campaign carries, word for word, and where it is printed. */
-export type ChurchPrayer = {
-  text: string;
-  /**
-   * The public-domain printing: "Hapgood, Service Book (1906), p. 91". Empty
-   * only for the one line the app itself says over the living (1.9,
-   * lib/prayers/commemoration.ts), which has no printing to name: the card
-   * then draws no line for it.
-   */
-  source: string;
-};
 
 /** A campaign running now, as its card under Pray together's head draws it. */
 export type RunningCampaign = {
@@ -29,7 +17,6 @@ export type RunningCampaign = {
   eyebrow: string | null;
   /** The campaign's own picture. */
   picture: { src: string; alt: string };
-  prayer: ChurchPrayer;
   /** Where Pray opens the campaign's prayer. */
   href: string;
   /** Who it prays for, as Add to my prayers carries a name into the reader's prayers. */

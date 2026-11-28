@@ -17,8 +17,10 @@ import { shareLink } from "@/lib/site";
 /**
  * The campaign running now, under Pray together's head (1.8, the owner's
  * pick of r3-02: "B with A's top"). A's band, its own picture beside it, the
- * kind of campaign, its name, the Church's prayer word for word and the
- * printing it is from, then the three things a reader does with it: Pray
+ * kind of campaign and its name, then the three things a reader does with
+ * it. Brief: the prayer itself stands on the campaign's own page, which Pray
+ * opens (his word, 2026-11-28: "don't actually show the prayer on the
+ * overview, the overview should be brief"). Pray
  * (the campaign's prayer, whole), Add to my prayers (the name goes into the
  * reader's own prayers, as a request on the wall does) and Share.
  *
@@ -51,7 +53,8 @@ export function CampaignCard({
 
   return (
     <article data-campaign-card="" className="community-campaign overflow-hidden rounded-[18px] border border-paper/[0.09]">
-      <div className="flex gap-3">
+      {/* At least as tall as the picture is wide, so the picture stays square beside two lines. */}
+      <div className="flex min-h-[92px] gap-3">
         <div className="relative w-[92px] shrink-0">
           {/* Whole or not at all, as the wall's faces (build 85, note 52). */}
           <ArrivingImage
@@ -62,14 +65,11 @@ export function CampaignCard({
           />
           <span aria-hidden className="community-campaign-edge absolute inset-0" />
         </div>
-        <div className="min-w-0 flex-1 py-3 pe-3">
+        <div className="min-w-0 flex-1 self-center py-3 pe-3">
           {campaign.eyebrow ? (
             <p className="font-sans text-caption font-semibold text-paper/55">{campaign.eyebrow}</p>
           ) : null}
           <h2 dir="auto" className="mt-1 font-heading text-[15.5px] font-semibold leading-[1.25] text-paper">{campaign.title}</h2>
-          {/* The Church's words as printed, faded where the card ends: Pray opens them whole. */}
-          <p className="community-campaign-prayer mt-1.5 font-serif text-[12.5px] italic leading-[1.45] text-paper/75">{campaign.prayer.text}</p>
-          {campaign.prayer.source ? <p className="mt-1 font-sans text-[10.5px] text-paper/50">{campaign.prayer.source}</p> : null}
         </div>
       </div>
       <div className="flex items-center gap-2 border-t border-paper/[0.06] px-3 py-2.5">

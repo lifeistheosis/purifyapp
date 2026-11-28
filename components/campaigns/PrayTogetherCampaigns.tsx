@@ -17,7 +17,6 @@ import { useCampaignUpkeep } from "@/lib/campaigns/useCampaignUpkeep";
 import { useCarried } from "@/lib/campaigns/useCarried";
 import { campaignIcon, dayText, forWhomLabel } from "@/lib/campaigns/words";
 import type { RunningCampaign } from "@/lib/community/runningCampaign";
-import { DEPARTED_PRAYER, departedPrayer } from "@/lib/prayers/commemoration";
 import { getPrayerIcon } from "@/lib/prayers/icons";
 import { todayKey } from "@/lib/rhythm/dayKey";
 
@@ -91,12 +90,6 @@ function Campaigns({ signedIn }: { signedIn: boolean }) {
       title: c.title,
       eyebrow: `${t(forWhomLabel(c.forWhom))} · ${until(c)}`,
       picture: { src: icon?.src ?? "", alt: icon?.alt ?? "" },
-      // The Church's prayer over the reposed, with the name where the book
-      // prints NN.; over the living, the line the app's own prayers say.
-      prayer:
-        c.forWhom === "departed"
-          ? { text: departedPrayer([c.name]).join(" "), source: DEPARTED_PRAYER.source }
-          : { text: t("prayers.commemorate.living"), source: "" },
       href: `${campaignHref(c.id)}#campaign-prayer`,
       name: c.name,
       // The link names nobody, whatever the title says.

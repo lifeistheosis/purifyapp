@@ -125,17 +125,13 @@ describe("Pray together", () => {
     }
   });
 
-  it("draws a campaign that runs under the head: its picture, the Church's words as printed, Pray, Add to my prayers and Share", () => {
+  it("draws a campaign that runs under the head, briefly: its picture, its kind and name, Pray, Add to my prayers and Share", () => {
     // A test's campaign, never the app's: the app draws only one that runs.
     const campaign: RunningCampaign = {
       id: "c1",
       title: "Memory eternal: forty days for Nicholas",
       eyebrow: "The departed",
       picture: { src: "/icons/prayer/anastasis.jpg", alt: "The Resurrection" },
-      prayer: {
-        text: "O God of spirits, and of all flesh, who hast trampled down death, and overthrown the Devil, and given life unto thy world:",
-        source: "Hapgood, Service Book (1906), p. 91",
-      },
       href: "/campaigns/detail?id=c1",
       name: "Nicholas",
     };
@@ -144,13 +140,16 @@ describe("Pray together", () => {
     expect(card).not.toBe("");
     expect(card).toContain('src="/icons/prayer/anastasis.jpg"');
     expect(card).toContain('alt="The Resurrection"');
-    expect(card).toContain(campaign.prayer.text);
-    expect(card).toContain(campaign.prayer.source);
+    expect(card).toContain(campaign.title);
+    // The prayer itself stands on the campaign's page, never on the overview (his word, 2026-11-28: "the overview should be brief").
+    expect(card).not.toContain("O God of spirits");
+    expect(card).not.toContain("Hapgood");
+    expect(card).not.toContain("community-campaign-prayer");
     expect(card).toMatch(/<a[^>]*href="\/campaigns\/detail\?id=c1"[^>]*>[\s\S]*?Pray<\/a>/);
     expect(card).toContain("Add to my prayers");
     expect(card).toContain('aria-label="Share"');
     // Nobody is counted: no number on the card but the page of the printing.
-    expect(card.replace(/<[^>]+>/g, " ").replace(campaign.prayer.source, "")).not.toMatch(/\d/);
+    expect(card.replace(/<[^>]+>/g, " ")).not.toMatch(/\d/);
   });
 
   it("says a name already in the reader's prayers is there", () => {
@@ -159,7 +158,6 @@ describe("Pray together", () => {
       title: "For Maria",
       eyebrow: null,
       picture: { src: "/x.jpg", alt: "" },
-      prayer: { text: "Words", source: "A printing" },
       href: "/campaigns/detail?id=c2",
       name: "Maria",
     } satisfies RunningCampaign;

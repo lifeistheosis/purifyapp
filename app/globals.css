@@ -9877,12 +9877,6 @@ html[data-reading-mode="parchment"] .part-segment[data-state="current"] {
  background: linear-gradient(90deg, transparent 60%, rgb(29 29 32 / 0.6));
  background: linear-gradient(90deg, transparent 60%, color-mix(in srgb, var(--color-night-soft) 60%, transparent));
 }
-.community-campaign-prayer {
- max-height: calc(2 * 1.45em);
- overflow: hidden;
- -webkit-mask-image: linear-gradient(to bottom, #000 50%, transparent);
- mask-image: linear-gradient(to bottom, #000 50%, transparent);
-}
 
 /* The door to Pray together (1.9). The switch between the halves is drawn
    only where prayer campaigns are open for this reader, and the app learns
