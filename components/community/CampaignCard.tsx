@@ -1,58 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 
-import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
-import { Check } from "@/components/ui/icons/Check";
-import { Lampada } from "@/components/ui/icons/Lampada";
-import { Plus } from "@/components/ui/icons/Plus";
-import { Share } from "@/components/ui/icons/Share";
-import { cn } from "@/lib/cn";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import type { RunningCampaign } from "@/lib/community/runningCampaign";
-import { shareOut } from "@/lib/share/shareOut";
-import { shareLink } from "@/lib/site";
 
 /**
- * The campaign running now, under Pray together's head (1.8, the owner's
- * pick of r3-02: "B with A's top"). A's band, its own picture beside it, the
- * kind of campaign and its name, then the three things a reader does with
- * it. Brief: the prayer itself stands on the campaign's own page, which Pray
- * opens (his word, 2026-11-28: "don't actually show the prayer on the
- * overview, the overview should be brief"). Pray
- * (the campaign's prayer, whole), Add to my prayers (the name goes into the
- * reader's own prayers, as a request on the wall does) and Share.
- *
- * No count of anyone praying, as the plan has it (r19/PRAYER-CAMPAIGNS.md:
- * "Nobody is counted"). Drawn only for a campaign that really runs
- * (lib/community/runningCampaign.ts); in 1.8 none does, so it is not drawn.
+ * A prayer campaign on the overview, Pray together (1.8, the owner's pick of
+ * r3-02: "B with A's top"): its own picture, the kind of campaign and its
+ * days, and its name. Brief, and one tap (his words, 2026-11-28: "don't
+ * actually show the prayer on the overview, the overview should be brief",
+ * then "make the whole entire card a button you click and add the pray and
+ * in my prayers somewhere"): the whole card opens the campaign's own page,
+ * where the prayer stands whole and Pray, In my prayers and Share stand once
+ * (components/campaigns/CampaignPage.tsx). One link, stretched over the card,
+ * named by the campaign's title; no control inside it.
  */
-export function CampaignCard({
-  campaign,
-  added,
-  onAdd,
-}: {
-  campaign: RunningCampaign;
-  /** The name is in the reader's prayers already. */
-  added: boolean;
-  onAdd: () => void;
-}) {
-  const { t } = useTranslate();
-  const [copied, setCopied] = useState(false);
-
-  // The phone's own share sheet, in the apps as in a browser (lib/share/shareOut.ts, build 95
-  // note 24); the link copied, and said, only where there is none.
-  async function share() {
-    const said = campaign.shareTitle ?? campaign.title;
-    if ((await shareOut({ title: said, url: shareLink(campaign.href) })) === "copied") {
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
-    }
-  }
-
+export function CampaignCard({ campaign }: { campaign: RunningCampaign }) {
   return (
-    <article data-campaign-card="" className="community-campaign overflow-hidden rounded-[18px] border border-paper/[0.09]">
+    <article data-campaign-card="" className="community-campaign relative overflow-hidden rounded-[18px] border border-paper/[0.09] transition-colors hover:border-paper/[0.2]">
       {/* At least as tall as the picture is wide, so the picture stays square beside two lines. */}
       <div className="flex min-h-[92px] gap-3">
         <div className="relative w-[92px] shrink-0">
@@ -65,41 +32,20 @@ export function CampaignCard({
           />
           <span aria-hidden className="community-campaign-edge absolute inset-0" />
         </div>
-        <div className="min-w-0 flex-1 self-center py-3 pe-3">
+        <div className="min-w-0 flex-1 self-center py-3">
           {campaign.eyebrow ? (
             <p className="font-sans text-caption font-semibold text-paper/55">{campaign.eyebrow}</p>
           ) : null}
-          <h2 dir="auto" className="mt-1 font-heading text-[15.5px] font-semibold leading-[1.25] text-paper">{campaign.title}</h2>
+          <h2 dir="auto" className="mt-1 font-heading text-[15.5px] font-semibold leading-[1.25] text-paper">
+            <Link
+              href={campaign.href}
+              className="after:absolute after:inset-0 after:rounded-[18px] focus-visible:outline-none focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-paper/70"
+            >
+              {campaign.title}
+            </Link>
+          </h2>
         </div>
-      </div>
-      <div className="flex items-center gap-2 border-t border-paper/[0.06] px-3 py-2.5">
-        <Link
-          href={campaign.href}
-          className="tap-press hit-44 reader-lit inline-flex h-[38px] shrink-0 items-center gap-1.5 rounded-pill bg-paper px-3.5 font-sans text-ui font-semibold text-night"
-        >
-          <Lampada size={17} />
-          {t("streak.pray")}
-        </Link>
-        <button
-          type="button"
-          onClick={onAdd}
-          aria-haspopup="dialog"
-          className={cn(
-            "tap-press hit-44 inline-flex h-[38px] min-w-0 items-center gap-1.5 rounded-pill border px-3 font-sans text-detail font-semibold",
-            added ? "border-paper/40 text-paper" : "border-paper/25 text-paper/90 hover:border-paper/45",
-          )}
-        >
-          {added ? <Check size={15} /> : <Plus size={15} />}
-          <span className="truncate">{added ? t("community.wallInMyPrayers") : t("community.wallAdd")}</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => void share()}
-          aria-label={copied ? t("common.linkCopied") : t("common.share")}
-          className="tap-press hit-44 ms-auto inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-paper/[0.18] text-paper/85 hover:text-paper"
-        >
-          {copied ? <Check size={15} /> : <Share size={16} />}
-        </button>
+        <ChevronRight size={18} aria-hidden className="me-3 shrink-0 self-center text-paper/45 rtl:-scale-x-100" />
       </div>
     </article>
   );

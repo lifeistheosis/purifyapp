@@ -17,7 +17,6 @@ import { createElement, type ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { CampaignCard } from "@/components/community/CampaignCard";
 import { COMMUNITY_PICTURE, CommunityHead } from "@/components/community/CommunityHead";
 import { FeedTabs } from "@/components/community/FeedTabs";
 import { PrayTogether } from "@/components/community/PrayTogether";
@@ -125,7 +124,7 @@ describe("Pray together", () => {
     }
   });
 
-  it("draws a campaign that runs under the head, briefly: its picture, its kind and name, Pray, Add to my prayers and Share", () => {
+  it("draws a campaign that runs under the head as one tap: its picture, its kind and its name, opening its page", () => {
     // A test's campaign, never the app's: the app draws only one that runs.
     const campaign: RunningCampaign = {
       id: "c1",
@@ -133,36 +132,32 @@ describe("Pray together", () => {
       eyebrow: "The departed",
       picture: { src: "/icons/prayer/anastasis.jpg", alt: "The Resurrection" },
       href: "/campaigns/detail?id=c1",
-      name: "Nicholas",
     };
     const html = draw(createElement(PrayTogether, { signedIn: true, campaign }));
     const card = /<article data-campaign-card=""[\s\S]*?<\/article>/.exec(html)?.[0] ?? "";
     expect(card).not.toBe("");
     expect(card).toContain('src="/icons/prayer/anastasis.jpg"');
     expect(card).toContain('alt="The Resurrection"');
-    expect(card).toContain(campaign.title);
-    // The prayer itself stands on the campaign's page, never on the overview (his word, 2026-11-28: "the overview should be brief").
-    expect(card).not.toContain("O God of spirits");
-    expect(card).not.toContain("Hapgood");
-    expect(card).not.toContain("community-campaign-prayer");
-    expect(card).toMatch(/<a[^>]*href="\/campaigns\/detail\?id=c1"[^>]*>[\s\S]*?Pray<\/a>/);
-    expect(card).toContain("Add to my prayers");
-    expect(card).toContain('aria-label="Share"');
-    // Nobody is counted: no number on the card but the page of the printing.
+    expect(card).toContain("The departed");
+    // His words, 2026-11-28: "make the whole entire card a button you click": one link, the title its name, stretched over the card.
+    expect(card.match(/<a\b/g)).toHaveLength(1);
+    const link = /<a [^>]*>Memory eternal: forty days for Nicholas<\/a>/.exec(card)?.[0] ?? "";
+    expect(link).toContain('href="/campaigns/detail?id=c1"');
+    expect(link).toContain("after:absolute after:inset-0");
+    expect(card).not.toMatch(/<button\b/);
+    // Brief: no prayer, no printing, no Pray, no Add to my prayers, no Share on the overview.
+    for (const gone of ["O God of spirits", "Hapgood", "community-campaign-prayer", "Add to my prayers", "In my prayers", 'aria-label="Share"']) expect(card).not.toContain(gone);
+    // Nobody is counted on the card.
     expect(card.replace(/<[^>]+>/g, " ")).not.toMatch(/\d/);
   });
 
-  it("says a name already in the reader's prayers is there", () => {
-    const campaign = {
-      id: "c2",
-      title: "For Maria",
-      eyebrow: null,
-      picture: { src: "/x.jpg", alt: "" },
-      href: "/campaigns/detail?id=c2",
-      name: "Maria",
-    } satisfies RunningCampaign;
-    expect(draw(createElement(CampaignCard, { campaign, added: true, onAdd: () => {} }))).toContain("In my prayers");
-    expect(draw(createElement(CampaignCard, { campaign, added: false, onAdd: () => {} }))).toContain("Add to my prayers");
+  it("keeps Pray, In my prayers and Share on the campaign's own page, once", () => {
+    // "add the pray and in my prayers somewhere": where the card leads.
+    const page = readFileSync(join(process.cwd(), "components/campaigns/CampaignPage.tsx"), "utf8");
+    expect(page).toContain('{t("streak.pray")}');
+    expect(page).toContain('t("community.wallInMyPrayers")');
+    expect(page).toContain('t("community.wallAdd")');
+    expect(page).toMatch(/<ShareButton\b/);
   });
 });
 

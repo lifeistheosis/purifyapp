@@ -37,7 +37,8 @@ describe("a reader's own words on a campaign take their own direction", () => {
 
   it("its title wherever it stands as a row or a card", () => {
     expect(read("components/campaigns/CampaignRow.tsx")).toContain('<span dir="auto" className="set-label break-words">{title}</span>');
-    expect(read("components/community/CampaignCard.tsx")).toMatch(/<h2 dir="auto" [^>]*>\{campaign\.title\}<\/h2>/);
+    // From 2026-11-28 the card's title is its one link, stretched over the card; the heading keeps the title's own direction.
+    expect(read("components/community/CampaignCard.tsx")).toMatch(/<h2 dir="auto" [^>]*>\s*<Link[\s\S]*?>\s*\{campaign\.title\}\s*<\/Link>\s*<\/h2>/);
   });
 
   it("and in the moderators' queue, where it is read first", () => {

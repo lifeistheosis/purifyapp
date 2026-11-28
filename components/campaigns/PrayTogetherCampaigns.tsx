@@ -3,13 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { CampaignJoinSheet } from "@/components/campaigns/CampaignJoinSheet";
 import { BoardRow, CampaignRow, campaignHref } from "@/components/campaigns/CampaignRow";
 import { CampaignCard } from "@/components/community/CampaignCard";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Plus } from "@/components/ui/icons/Plus";
 import { SkeletonList } from "@/components/ui/Skeleton";
-import { carriedNow, type CarriedCampaign, type CarryPick } from "@/lib/campaigns/carried";
+import { carriedNow, type CarriedCampaign } from "@/lib/campaigns/carried";
 import { fetchBoard, fetchCircles, type BoardResult } from "@/lib/campaigns/client";
 import type { PublicCampaign } from "@/lib/campaigns/model";
 import { useCampaignsOpen } from "@/lib/campaigns/useCampaignsOpen";
@@ -48,8 +47,6 @@ function Campaigns({ signedIn }: { signedIn: boolean }) {
   // Campaigns kept to the reader's own circles: on no board, so this is where a member finds one.
   const [inCircles, setInCircles] = useState<PublicCampaign[]>([]);
   const [version, setVersion] = useState(0);
-  const [moving, setMoving] = useState<CarriedCampaign | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
   useCampaignUpkeep(true);
 
   useEffect(() => {
@@ -74,9 +71,6 @@ function Campaigns({ signedIn }: { signedIn: boolean }) {
   }, [signedIn, version]);
 
   const [first, ...rest] = carried;
-  const pick: CarryPick | null = moving
-    ? { id: moving.id, name: moving.name, title: moving.title, forWhom: moving.forWhom, prayer: moving.prayer, lastDay: moving.lastDay }
-    : null;
   // Those the reader carries already stand above: the board's rows are the others.
   const mine = new Set(carried.map((c) => c.id));
   const asked = board?.state === "ok" ? board.campaigns.filter((c) => !mine.has(c.id)) : [];
@@ -90,10 +84,8 @@ function Campaigns({ signedIn }: { signedIn: boolean }) {
       title: c.title,
       eyebrow: `${t(forWhomLabel(c.forWhom))} · ${until(c)}`,
       picture: { src: icon?.src ?? "", alt: icon?.alt ?? "" },
-      href: `${campaignHref(c.id)}#campaign-prayer`,
-      name: c.name,
-      // The link names nobody, whatever the title says.
-      shareTitle: t("community.prayerCampaigns"),
+      // The whole card opens the campaign's page, where Pray and In my prayers stand.
+      href: campaignHref(c.id),
     };
   }
 
@@ -114,12 +106,7 @@ function Campaigns({ signedIn }: { signedIn: boolean }) {
 
       {first ? (
         <div className="mt-3">
-          <CampaignCard campaign={cardOf(first)} added onAdd={() => setMoving(first)} />
-          {notice ? (
-            <p role="status" className="mt-2 px-1 font-sans text-caption text-paper/70">
-              {notice}
-            </p>
-          ) : null}
+          <CampaignCard campaign={cardOf(first)} />
         </div>
       ) : null}
       {rest.length > 0 ? (
@@ -187,17 +174,6 @@ function Campaigns({ signedIn }: { signedIn: boolean }) {
           </Link>
         ) : null}
       </p>
-
-      <CampaignJoinSheet
-        key={moving?.id ?? "none"}
-        open={moving !== null}
-        pick={pick}
-        onClose={() => setMoving(null)}
-        onDone={(message) => {
-          setMoving(null);
-          setNotice(message);
-        }}
-      />
     </section>
   );
 }

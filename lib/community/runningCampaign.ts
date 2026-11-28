@@ -17,12 +17,8 @@ export type RunningCampaign = {
   eyebrow: string | null;
   /** The campaign's own picture. */
   picture: { src: string; alt: string };
-  /** Where Pray opens the campaign's prayer. */
+  /** Where the card opens: the campaign's own page. */
   href: string;
-  /** Who it prays for, as Add to my prayers carries a name into the reader's prayers. */
-  name: string;
-  /** What Share says with the link, when the title names a person: "Prayer campaigns". */
-  shareTitle?: string;
 };
 
 /**
