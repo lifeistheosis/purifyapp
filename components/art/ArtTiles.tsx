@@ -17,17 +17,18 @@
 import Link from "next/link";
 import { useMemo, useSyncExternalStore, type ReactNode } from "react";
 import { carryKey, doorArt } from "@/lib/art/art";
+import { cn } from "@/lib/cn";
 import { readOrder, subscribeOrder } from "@/lib/discover/doorOrder";
 
 export type TileDoor = { href: string; title: ReactNode; line: ReactNode; picture: string; focus?: string };
 
-export function ArtTiles({ doors }: { doors: TileDoor[] }) {
+export function ArtTiles({ doors, className }: { doors: TileDoor[]; className?: string }) {
   const first = useMemo(() => doors.map((d) => d.href), [doors]);
   const order = useSyncExternalStore(subscribeOrder, () => readOrder(first).join("|"), () => first.join("|"));
   const byHref = new Map(doors.map((d) => [d.href, d]));
   const shown = order.split("|").flatMap((href) => byHref.get(href) ?? []);
   return (
-    <ul data-art-tiles="" className="grid grid-cols-2 gap-x-3 gap-y-5">
+    <ul data-art-tiles="" className={cn("grid grid-cols-2 gap-x-3 gap-y-5", className)}>
       {shown.map((door, i) => (
         <li key={door.href}>
           <ArtTile door={door} priority={i < 4} />
