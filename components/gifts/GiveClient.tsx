@@ -77,7 +77,7 @@ export function GiveClient({ choices }: { choices: readonly GiftWhen[] }) {
             </div>
             <div className="gift-perf" aria-hidden />
             <div className="px-[18px] pb-4 pt-3.5">
-              <p className="font-sans text-detail leading-[1.5] text-paper/70">{season ? t("giveGift.whenLineChristmas") : t("giveGift.whenLine")}</p>
+              <p className="font-sans text-detail leading-[1.5] text-paper/70">{season ? t("giveGift.whenLineChristmas", { jan7: dayName(0, 7) }) : t("giveGift.whenLine")}</p>
             </div>
           </div>
         </div>

@@ -32,14 +32,16 @@ let ok = true;
 
 async function keep(page, name, label) {
   await page.waitForTimeout(1200);
-  ok = printMockCheck(await checkMock(page, "body"), label) && ok;
+  // The gift's own section: the website's footer under it is the website's, not this
+  // work's, and is not in the apps (its findings are recorded in docs/1.9-build/HANDOFF.md).
+  ok = printMockCheck(await checkMock(page, "section.gift-page"), label) && ok;
   const file = path.join(IMG, `${name}.jpg`);
   await sharp(await page.screenshot({ type: "png" })).jpeg({ quality: 86, mozjpeg: true }).toFile(file);
   console.log(`  still: ${path.relative(ROOT, file)}\n`);
 }
 
 try {
-  const ctx = await browser.newContext({ ...devices["Pixel 7"], colorScheme: "dark", reducedMotion: "reduce", locale: "en-US" });
+  const ctx = await browser.newContext({ ...devices["Pixel 7"], colorScheme: "dark", locale: "en-US" });
   await ctx.addInitScript(() => {
     localStorage.setItem("purify:whatsNewSeen", "99");
     localStorage.setItem("purify:onboarded", "99");
@@ -49,7 +51,9 @@ try {
   );
   const page = await ctx.newPage();
 
-  await page.goto(`${BASE}/give`, { waitUntil: "networkidle" });
+  // The site keeps live connections open, so a page is waited for by its own elements.
+  await page.goto(`${BASE}/give`, { waitUntil: "load" });
+  await page.locator("#give-from").waitFor({ state: "visible", timeout: 30000 });
   await page.locator("#give-from").fill("Anna");
   await page.locator("#give-to").fill("Maria");
   await page.locator("#give-email").fill("maria@example.com");
@@ -57,10 +61,11 @@ try {
   await page.evaluate(() => window.scrollTo(0, 0));
   await keep(page, "built-give", "The giver's page, as built");
 
-  await page.goto(`${BASE}/give/thanks?on=2026-12-25`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/give/thanks?on=2026-12-25`, { waitUntil: "load" });
+  await page.locator("#gift-title").waitFor({ state: "visible", timeout: 30000 });
   await keep(page, "built-thanks", "After giving, as built");
 
-  await page.goto(`${BASE}/gift/card?code=${CODE}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/gift/card?code=${CODE}`, { waitUntil: "load" });
   await page.getByText("A gift from Anna").first().waitFor({ state: "visible", timeout: 30000 });
   await keep(page, "built-card", "The gift card's page, signed out, as built");
   await ctx.close();

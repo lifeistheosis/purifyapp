@@ -5599,7 +5599,7 @@
   "giveGift.eyebrowChristmas": "A gift for Christmas",
   "giveGift.eyebrow": "A gift",
   "giveGift.meta": "A year, from you",
-  "giveGift.whenLineChristmas": "They open it on the day you choose: Christmas Day, or the Nativity on 7 January.",
+  "giveGift.whenLineChristmas": "They open it on the day you choose: Christmas Day, or the Nativity on {jan7}.",
   "giveGift.whenLine": "It reaches them as soon as it is paid for.",
   "giveGift.from": "From",
   "giveGift.to": "To",
