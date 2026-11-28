@@ -13,7 +13,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, "../../..");
 const TEMPLATE = fs.readFileSync(path.join(ROOT, "docs/brand/kit/artifact-template.html"), "utf8");
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-for (const n of ["give", "opened"]) {
+for (const n of ["give", "opened", "built-give", "built-thanks", "built-card"]) {
   if (!fs.existsSync(path.join(HERE, "img", `${n}.jpg`))) throw new Error(`run mock-gift.mjs first: img/${n}.jpg is missing`);
 }
 const phone = (name, alt, caption) => `<figure class="k-figure k-phone">
@@ -59,11 +59,28 @@ const body = `<main class="k-page">
   </section>
 
   <section class="k-section">
+    <h2>As built, 28 November</h2>
+    <p>Your yes, then the build: the same pages from the website's own production build, at phone width, with sample names. The dates follow the reader's own format.</p>
+    ${phone("built-give", "The giver's page as built: A gift for Christmas, Purify Plus, A year, from you; From Anna, To Maria, their email, a line; When it arrives: Now, December 25 (chosen), January 7; Give a year · $59.99.", "The giver's page.")}
+    ${phone("built-thanks", "After paying: Thank you, Purify Plus, It will reach them on December 25, Your receipt comes by email from our payment provider, Back to Purify.", "After paying.")}
+    ${phone("built-card", "The card's page, signed out: A gift from Anna, Purify Plus, A year, given to you, her line on the tear line, Sign in to receive it, What Plus opens.", "What Maria sees from her email.")}
+  </section>
+
+  <section class="k-section">
     <h2>Why each choice</h2>
     ${table(["The choice", "Why", "For the reader", "The look", "The goal"], reasons)}
   </section>
 
   <hr class="k-rule">
+
+  <section class="k-section">
+    <h2>To go live, your three calls</h2>
+    <ol>
+      <li><strong>The table's SQL:</strong> <code style="overflow-wrap:anywhere">supabase/migrations/20261128080347_gift_cards.sql</code>. Read and say yes; merging runs it on production. Tested here: it runs twice cleanly, and a card opens once only.</li>
+      <li><strong>The gift alone to the main web, ahead of 2.0:</strong> a deploy, at your word. The apps need no update: giving is on the web, and the email opens on the web.</li>
+      <li><strong>Stripe Tax:</strong> on or off for this sale.</li>
+    </ol>
+  </section>
 
   <section class="k-section">
     <h2>What it takes to build, at your yes</h2>

@@ -949,6 +949,23 @@ body {
   </section>
 
   <section class="k-section">
+    <h2>As built, 28 November</h2>
+    <p>Your yes, then the build: the same pages from the website's own production build, at phone width, with sample names. The dates follow the reader's own format.</p>
+    <figure class="k-figure k-phone">
+      <img src="img/built-give.jpg" width="780" height="1688" alt="The giver's page as built: A gift for Christmas, Purify Plus, A year, from you; From Anna, To Maria, their email, a line; When it arrives: Now, December 25 (chosen), January 7; Give a year · $59.99.">
+      <figcaption>The giver's page.</figcaption>
+    </figure>
+    <figure class="k-figure k-phone">
+      <img src="img/built-thanks.jpg" width="780" height="1688" alt="After paying: Thank you, Purify Plus, It will reach them on December 25, Your receipt comes by email from our payment provider, Back to Purify.">
+      <figcaption>After paying.</figcaption>
+    </figure>
+    <figure class="k-figure k-phone">
+      <img src="img/built-card.jpg" width="780" height="1688" alt="The card's page, signed out: A gift from Anna, Purify Plus, A year, given to you, her line on the tear line, Sign in to receive it, What Plus opens.">
+      <figcaption>What Maria sees from her email.</figcaption>
+    </figure>
+  </section>
+
+  <section class="k-section">
     <h2>Why each choice</h2>
     <div class="k-table-wrap">
       <table class="k-table">
@@ -959,6 +976,15 @@ body {
   </section>
 
   <hr class="k-rule">
+
+  <section class="k-section">
+    <h2>To go live, your three calls</h2>
+    <ol>
+      <li><strong>The table's SQL:</strong> <code style="overflow-wrap:anywhere">supabase/migrations/20261128080347_gift_cards.sql</code>. Read and say yes; merging runs it on production. Tested here: it runs twice cleanly, and a card opens once only.</li>
+      <li><strong>The gift alone to the main web, ahead of 2.0:</strong> a deploy, at your word. The apps need no update: giving is on the web, and the email opens on the web.</li>
+      <li><strong>Stripe Tax:</strong> on or off for this sale.</li>
+    </ol>
+  </section>
 
   <section class="k-section">
     <h2>What it takes to build, at your yes</h2>
