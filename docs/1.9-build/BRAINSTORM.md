@@ -1285,3 +1285,5 @@ Claude's proposal, for his word:
 **Where the money lands (his word, 2026-11-28, about 04:30 UTC):** "Google plays payouts I still in transit and apple is still switching to developer". Recorded in `docs/plans/goal-5k.md`, first moves, 1.
 
 **The Apple switch (his word, 2026-11-28, about 04:40 UTC):** "nope just the same apple account". No app transfer; recorded in `docs/plans/goal-5k.md`.
+
+**The gift page and the bell (his word, 2026-11-28, about 04:50 UTC):** "yes draw the gift page and also real quick make the notification button on the app a universal notification system (updates/announcements from purify, updates about their orders, updates to pray, updates from community etc)". The gift page drawn for his yes: https://claude.ai/artifact/FZAGa5taESXxcyMCQDrFBc (`docs/plans/gift/`).
