@@ -11,9 +11,11 @@ import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { Sheet } from "@/components/ui/Sheet";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
-import { fromPurify, useInbox, type CommunityNotification } from "@/lib/community/inbox";
+import { aboutPrayer, fromPurify, useInbox, type CommunityNotification } from "@/lib/community/inbox";
 import { campaignNoticeHref, notificationTarget } from "@/lib/community/notificationTarget";
 import { relativeTime } from "@/lib/community/relativeTime";
+import type { OrderNotice } from "@/lib/notifications/orders";
+import type { BoardMessage } from "@/lib/whatsNew/board";
 
 /** Rows shown here; the whole inbox is in Chat. */
 const SHOWN = 20;
@@ -115,6 +117,10 @@ export function NotificationsSheet({
   fresh,
   whatsNewFresh,
   freshDownloads = NO_KEYS,
+  orders = [],
+  freshOrders = NO_KEYS,
+  board = null,
+  boardFresh = false,
 }: {
   open: boolean;
   onClose: () => void;
@@ -126,19 +132,65 @@ export function NotificationsSheet({
   whatsNewFresh: boolean;
   /** The downloads whose end was new as the sheet opened. */
   freshDownloads?: ReadonlySet<string>;
+  /** The reader's orders as the bell shows them (lib/notifications/orders.ts). */
+  orders?: readonly OrderNotice[];
+  /** The orders whose word was new as the sheet opened. */
+  freshOrders?: ReadonlySet<string>;
+  /** Purify's announcement, the board message What's New opens with. */
+  board?: BoardMessage | null;
+  /** Whether it was new as the sheet opened. */
+  boardFresh?: boolean;
 }) {
-  const { t, locale } = useTranslate();
+  const { t, tn, locale } = useTranslate();
   const pathname = usePathname() ?? "/";
   const inbox = useInbox();
   const rows = inbox.notifications.slice(0, SHOWN);
   // What Purify's moderators sent stands under "From Purify" (lib/community/inbox.ts, fromPurify).
-  const fromReaders = rows.filter((n) => !fromPurify(n));
+  // One bell for everything (2.0, his word 2026-11-28): the reader's orders,
+  // prayer (Pray together), other readers, and Purify, each under its own
+  // name, each thing once.
+  const prayer = rows.filter(aboutPrayer);
+  const fromReaders = rows.filter((n) => !fromPurify(n) && !aboutPrayer(n));
   const purifySent = signedIn && inbox.loaded ? rows.filter(fromPurify) : [];
+  const shownOrders = signedIn ? orders : [];
 
   return (
     <Sheet open={open} onClose={onClose} title={t("settings.notifications")} bodyClassName="pt-1">
       <DownloadsSection fresh={freshDownloads} />
-      <section>
+      {shownOrders.length > 0 ? (
+        <section className="mb-6" data-bell="orders">
+          <Heading>{t("shop.yourOrders")}</Heading>
+          <ul className={INDEX_LIST_LOOK}>
+            {shownOrders.map((o, i) => (
+              <li key={o.id} className={i > 0 ? "border-t border-paper/[0.06]" : undefined}>
+                <Link href={o.href} onClick={onClose} className={cn(ROW, "transition-colors active:bg-paper/[0.04]")}>
+                  <span className="min-w-0 flex-1">
+                    <span className={cn("block font-heading text-ui font-semibold leading-tight", freshOrders.has(o.id) ? "text-paper" : "text-paper/75")}>
+                      {o.first}
+                      {o.more ? <span className="font-sans font-medium text-paper/60"> {tn("shop.andMore", o.more)}</span> : null}
+                    </span>
+                    <span className="mt-0.5 block font-sans text-caption leading-snug text-paper/55">
+                      {t(o.statusKey)} · {relativeTime(o.at, locale)}
+                    </span>
+                  </span>
+                  <Forward />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+      {signedIn && inbox.loaded && prayer.length > 0 ? (
+        <section className="mb-6" data-bell="prayer">
+          <Heading>{t("community.prayTogether")}</Heading>
+          <ul className={INDEX_LIST_LOOK}>
+            {prayer.map((n, i) => (
+              <NoticeRow key={n.id} n={n} first={i === 0} fresh={fresh} locale={locale} onClose={onClose} />
+            ))}
+          </ul>
+        </section>
+      ) : null}
+      <section data-bell="readers">
         <Heading>{t("community.notifications")}</Heading>
         {!signedIn ? (
           <div className={cn(INDEX_LIST_LOOK, "px-4 pt-3 pb-1")}>
@@ -171,14 +223,26 @@ export function NotificationsSheet({
         )}
       </section>
 
-      <section className="mt-6">
+      <section className="mt-6" data-bell="purify">
         <Heading>{t("notifications.fromPurify")}</Heading>
         <ul className={INDEX_LIST_LOOK}>
+          {/* Purify's announcement, the board message What's New opens with. */}
+          {board ? (
+            <li>
+              <Link href="/whats-new" onClick={onClose} className={cn(ROW, "transition-colors active:bg-paper/[0.04]")}>
+                <span className="min-w-0 flex-1">
+                  <span className={cn("block font-heading text-ui font-semibold leading-tight", boardFresh ? "text-paper" : "text-paper/75")}>{board.headline}</span>
+                  <span className="mt-0.5 block font-sans text-caption leading-snug text-paper/55">{board.eyebrow}</span>
+                </span>
+                <Forward />
+              </Link>
+            </li>
+          ) : null}
           {/* What Purify's moderators sent this reader, newest first, above What's new. */}
           {purifySent.map((n, i) => (
-            <NoticeRow key={n.id} n={n} first={i === 0} fresh={fresh} locale={locale} onClose={onClose} />
+            <NoticeRow key={n.id} n={n} first={i === 0 && !board} fresh={fresh} locale={locale} onClose={onClose} />
           ))}
-          <li className={purifySent.length > 0 ? "border-t border-paper/[0.06]" : undefined}>
+          <li className={purifySent.length > 0 || board ? "border-t border-paper/[0.06]" : undefined}>
             <Link href="/whats-new" onClick={onClose} className={cn(ROW, "transition-colors active:bg-paper/[0.04]")}>
               <span className="min-w-0 flex-1">
                 <span className={cn("block font-heading text-ui font-semibold leading-tight", whatsNewFresh ? "text-paper" : "text-paper/75")}>

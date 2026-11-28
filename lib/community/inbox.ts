@@ -54,6 +54,17 @@ export function fromPurify(n: Pick<CommunityNotification, "kind">): boolean {
   return n.kind === "approved" || n.kind === "removed" || n.kind === "care";
 }
 
+/**
+ * A row about prayer, which the bell's sheet sets under Pray together (2.0,
+ * his word, 2026-11-28: "updates to pray"): someone prayed for the reader, a
+ * name day, or news of a prayer campaign they keep. What Purify sent stays
+ * under From Purify, whatever it is about.
+ */
+export function aboutPrayer(n: Pick<CommunityNotification, "kind" | "target_kind">): boolean {
+  if (fromPurify(n)) return false;
+  return n.kind === "prayed" || n.kind === "name_day" || n.target_kind === "campaign";
+}
+
 export type Inbox = {
   notifications: CommunityNotification[];
   unread: number;

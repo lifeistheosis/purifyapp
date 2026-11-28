@@ -7,14 +7,21 @@ import { NotificationsSheet } from "@/components/nav/NotificationsSheet";
 import { Bell } from "@/components/ui/icons/Bell";
 import { getInbox, markInboxRead, refreshInbox, useInbox } from "@/lib/community/inbox";
 import { hasUnseenEnd, isEnded, markDownloadsSeen, readDownloads, useDownloads } from "@/lib/downloads/log";
+import { boardFresh, markBoardSeen, readBoardSeen, seedBoardSeen } from "@/lib/notifications/board";
+import { freshOrders, getOrdersBell, markOrdersSeen, readOrderNoticeRows, readOrdersSeen, refreshOrdersBell, useOrdersBell } from "@/lib/notifications/orders";
+import { useBoardMessage } from "@/lib/packs/usePacks";
+import { createClient } from "@/lib/supabase/client";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { haptic } from "@/lib/ui/motion";
+import { useMounted } from "@/lib/useMounted";
+import { currentBoardMessage } from "@/lib/whatsNew/board";
 import { getSeenSnapshot, markWhatsNewSeen, subscribeSeen } from "@/lib/whatsNew/seenStore";
 import { CURRENT_VERSION, whatsNewUnseen } from "@/lib/whatsNew/version";
 
 /** Before the page is live this build's own version stands in, so the bell
  *  is never drawn lit and then put out by the first frame on the device. */
 const seenOnServer = () => CURRENT_VERSION;
+const NONE: ReadonlySet<string> = new Set();
 
 /**
  * The bell in the phone tab bar (MobileHeader), on all five tabs. It opens
@@ -43,13 +50,30 @@ export function NotificationsButton() {
   const [whatsNewFresh, setWhatsNewFresh] = useState(false);
   const [freshDownloads, setFreshDownloads] = useState<ReadonlySet<string>>(() => new Set());
   const downloads = useDownloads();
+  // The rest of the universal bell (2.0, his word 2026-11-28): Purify's
+  // announcement and the reader's orders, each lighting it once when new
+  // (lib/notifications/board.ts, lib/notifications/orders.ts).
+  const board = useBoardMessage(currentBoardMessage() ?? null);
+  const orders = useOrdersBell();
+  const mounted = useMounted();
+  const [boardWasNew, setBoardWasNew] = useState(false);
+  const [freshOrderIds, setFreshOrderIds] = useState<ReadonlySet<string>>(() => new Set());
+  useEffect(() => seedBoardSeen(board), [board]);
+  useEffect(() => {
+    const user = readLocalSessionUser();
+    if (user) void refreshOrdersBell(user.id, () => readOrderNoticeRows(createClient()));
+  }, []);
+  // Read from the device, after the first frame (the server knows neither).
+  const boardNew = mounted && boardFresh(board, readBoardSeen());
+  // Only the signed-in reader's own: an account signed out on this device lights nothing.
+  const ordersNew = mounted && orders.userId && readLocalSessionUser()?.id === orders.userId ? freshOrders(orders.notices, readOrdersSeen(orders.userId)) : NONE;
 
   useEffect(() => {
     if (!getInbox().loaded && readLocalSessionUser()) void refreshInbox();
   }, []);
 
   // A download's end the reader has not seen lights it too (1.9, build 95 note 23).
-  const lit = inbox.unread > 0 || whatsNewUnseen(seen) || hasUnseenEnd(downloads);
+  const lit = inbox.unread > 0 || whatsNewUnseen(seen) || hasUnseenEnd(downloads) || boardNew || ordersNew.size > 0;
 
   function openSheet() {
     haptic("light");
@@ -63,8 +87,23 @@ export function NotificationsButton() {
     setFresh(new Set(getInbox().notifications.filter((n) => !n.read_at).map((n) => n.id)));
     setFreshDownloads(new Set(readDownloads().filter((d) => isEnded(d) && !d.seen).map((d) => d.key)));
     markDownloadsSeen();
+    // The announcement and the orders: new as the sheet opens, then seen.
+    setBoardWasNew(boardNew);
+    if (board) markBoardSeen(board.date);
+    const bell = getOrdersBell();
+    setFreshOrderIds(ordersNew);
+    if (bell.userId) markOrdersSeen(bell.userId, bell.notices);
     setOpen(true);
     if (!account) return;
+    const user = readLocalSessionUser();
+    if (user) {
+      void refreshOrdersBell(user.id, () => readOrderNoticeRows(createClient()), { force: true }).then(() => {
+        const now = getOrdersBell();
+        const changed = freshOrders(now.notices, readOrdersSeen(user.id));
+        if (changed.size > 0) setFreshOrderIds((before) => new Set([...before, ...changed]));
+        markOrdersSeen(user.id, now.notices);
+      });
+    }
     void refreshInbox().then(() => {
       const unread = getInbox().notifications.filter((n) => !n.read_at).map((n) => n.id);
       if (unread.length > 0) setFresh((before) => new Set([...before, ...unread]));
@@ -98,6 +137,10 @@ export function NotificationsButton() {
         fresh={fresh}
         whatsNewFresh={whatsNewFresh}
         freshDownloads={freshDownloads}
+        orders={orders.notices}
+        freshOrders={freshOrderIds}
+        board={board}
+        boardFresh={boardWasNew}
       />
     </>
   );
