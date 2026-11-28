@@ -34,7 +34,7 @@ export function CampaignCard({ campaign }: { campaign: RunningCampaign }) {
         </div>
         <div className="min-w-0 flex-1 self-center py-3">
           {campaign.eyebrow ? (
-            <p className="font-sans text-caption font-semibold text-paper/55">{campaign.eyebrow}</p>
+            <p className="text-balance font-sans text-caption font-semibold text-paper/55">{campaign.eyebrow}</p>
           ) : null}
           <h2 dir="auto" className="mt-1 font-heading text-[15.5px] font-semibold leading-[1.25] text-paper">
             <Link

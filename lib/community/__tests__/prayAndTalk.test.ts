@@ -139,6 +139,8 @@ describe("Pray together", () => {
     expect(card).toContain('src="/icons/prayer/anastasis.jpg"');
     expect(card).toContain('alt="The Resurrection"');
     expect(card).toContain("The departed");
+    // Its kind and days balanced over two lines, so a date never leaves its day alone ("December / 28", seen 2026-11-28).
+    expect(card).toMatch(/<p class="text-balance [^"]*">The departed<\/p>/);
     // His words, 2026-11-28: "make the whole entire card a button you click": one link, the title its name, stretched over the card.
     expect(card.match(/<a\b/g)).toHaveLength(1);
     const link = /<a [^>]*>Memory eternal: forty days for Nicholas<\/a>/.exec(card)?.[0] ?? "";
