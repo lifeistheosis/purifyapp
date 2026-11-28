@@ -1,8 +1,11 @@
 -- A year of Plus given by email (2.0, the Christmas gift). His word,
 -- 2026-11-28: "yes build the gift page at 59.99".
 --
--- NOT SIGNED OFF. Merging this file to main runs it against production
--- (AGENTS.md): the owner reads this SQL and says yes before the merge.
+-- Run by hand by the owner in the SQL editor on 2026-11-28, before the merge
+-- (his word: "i ran the sql"). Probed the same day with the public key: the
+-- table answers 200 with no rows (row security, no policy) and the function
+-- refuses anon (42501), as written. The merge runs it again; every statement
+-- here can run twice.
 --
 -- The gift a reader already gives another reader (public.gifts) needs an
 -- account to land in. This one is bought on the website for anyone with an
