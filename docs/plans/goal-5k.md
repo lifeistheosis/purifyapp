@@ -31,7 +31,11 @@ Scenario total: about $6,300 in, minus $1,040 = **about $5,260 unspent**. It nee
 
 ## The first moves, this week, each at his yes
 
-1. **Settle where the money lands** (his, about 10 minutes): Play Console's payments profile and App Store Connect's banking both pay to Mercury, so the goal is counted in one place. Then set it on the Goals tab: "5k unspent", $5,000, by 28 February.
+1. **Settle where the money lands.** His answer, 2026-11-28: "Google plays payouts I still in transit and apple is still switching to developer". So:
+   - **Google Play** pays to Mercury; the payout is on its way. It counts the day it lands.
+   - **Apple** pays nothing until the developer account's switch is done. What Apple earns is held, not lost. But December's Apple sales reach Mercury by 28 February only if the switch is finished by about mid-January (Apple pays within 45 days of the end of its month). Later than that, Apple's money misses the deadline. So **the web (Stripe) goes first** for the founding membership and the gift.
+   - **One check, his:** if the switch moves the app to another Apple account (an app transfer), the iPhone app cannot be updated during the move, and RevenueCat needs the new account's keys, or iPhone purchases stop being checked. If it only turns the same account into a company's, payouts simply resume once its agreements, bank and tax forms are accepted.
+   - Then set the goal on the Goals tab: "5k unspent", $5,000, by 28 February. Mercury today: $0.32.
 2. **The founding membership** (his call: price, cap, stores and web, the terms' line): the strongest single lever. It was already open as "a lifetime price".
 3. **The Christmas gift of Plus on the web:** about $15 to $30 of work, drawn and justified for his yes first, shipped by about 10 December.
 4. **Christmas edits** pointing to the gift and EIKON (he posts).

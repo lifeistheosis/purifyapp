@@ -1281,3 +1281,5 @@ Claude's proposal, for his word:
 **Tailored to who the reader is (his word, 2026-11-27, about 21:15 UTC):** "Remember, it must be tailored to the user and who the user is ... just brainstorm ways so that if there's any pre-assumptions, right, it's tailored towards the user and them being a Protestant, Roman Catholic ... let's brainstorm." The brainstorm: `docs/plans/v2.0/tailored-roads.md`.
 
 **The new major goal (his word, 2026-11-28, about 04:05 UTC):** "we have a new major goal. 5k in 3 months." Asked which 5k: "5k total unspent". $5,000 in the bank after costs by about 28 February 2027. The plan: `docs/plans/goal-5k.md`.
+
+**Where the money lands (his word, 2026-11-28, about 04:30 UTC):** "Google plays payouts I still in transit and apple is still switching to developer". Recorded in `docs/plans/goal-5k.md`, first moves, 1.
