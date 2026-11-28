@@ -626,6 +626,13 @@ function PrivacyEn() {
  us, so we can fulfill and support your order.
  </li>
  <li>
+ <strong>A gift of Plus</strong>, when you give someone a year of
+ Purify Plus, we keep the names you write, the line you add and the
+ email address you give for them, so we can send the gift on the day
+ you choose and let them open it. That address is used for nothing
+ else. The gift is paid on Stripe, like an order.
+ </li>
+ <li>
  <strong>Stripe</strong>, our payment processor. Card payment happens
  on Stripe; we never receive or store your full card number. Stripe
  handles it under its own privacy policy and PCI standards and returns
@@ -1523,6 +1530,15 @@ function PrivacyDe() {
  an der Kasse eingibst, gespeichert in unserer Supabase-Datenbank,
  nur für dich und uns sichtbar, damit wir deine Bestellung
  ausführen und betreuen können.
+ </li>
+ <li>
+ <strong>Ein Geschenk von Plus</strong>, wenn du jemandem ein Jahr
+ Purify Plus schenkst, speichern wir die Namen, die du schreibst, die
+ Zeile, die du hinzufügst, und die E-Mail-Adresse, die du für die
+ Person angibst, damit wir das Geschenk an dem Tag senden, den du
+ wählst, und sie es öffnen kann. Diese Adresse wird für nichts
+ anderes verwendet. Das Geschenk wird bei Stripe bezahlt, wie eine
+ Bestellung.
  </li>
  <li>
  <strong>Stripe</strong>, unser Zahlungsdienstleister. Die

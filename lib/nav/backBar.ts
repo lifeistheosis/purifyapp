@@ -112,6 +112,9 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // QR lands. Its own bar starts clear over the card in the light and takes
   // the page's name once the ticket's heading has scrolled away.
   /^\/gift$/,
+  // The gift card (2.0): its own page under /gift, and the giver's pages on the website.
+  /^\/gift\/card$/,
+  /^\/give(\/thanks)?$/,
   /^\/journal$/,
   /^\/plans$/,
   /^\/plans\/[^/]+$/,

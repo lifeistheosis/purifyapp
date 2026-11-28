@@ -29,8 +29,10 @@ describe("the email jobs on the heartbeat", () => {
     const report = await runMaintenance({} as never, noonish, { later: (task) => later.push(task) });
     expect(sends.calls, "nothing sent before the answer").toBe(0);
     expect(report.emailJobs).toEqual({ ran: false, detail: "after the response" });
-    expect(later).toHaveLength(1);
-    await later[0]();
+    // The email jobs' share, then the gift cards' (2.0, lib/gifts/cardSend.ts), both after the answer.
+    expect(later).toHaveLength(2);
+    expect(report.giftCards).toEqual({ ran: false, detail: "after the response" });
+    for (const task of later) await task();
     expect(sends.calls).toBe(1);
   });
 

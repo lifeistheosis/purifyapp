@@ -132,6 +132,9 @@ export const SCREEN_NAMES: Record<ScreenKey, string> = {
   "shop-other": "Another shop page",
   seller: "Selling in the shop",
   "order-gift": "The order gift (card QR)",
+  "gift-card": "A gift card, opened from its email",
+  give: "Giving a year of Plus (website)",
+  "give-thanks": "After giving a year of Plus",
   other: "Another page",
 };
 

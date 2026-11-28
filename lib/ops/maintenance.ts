@@ -11,6 +11,7 @@ import { forgetJulyRows } from "@/lib/campaigns/julyRows";
 import { runCampaignUpkeep } from "@/lib/campaigns/upkeep";
 import { endPrayerRequests } from "@/lib/community/prayerRequestsEnd";
 import { runEmailJobs } from "@/lib/email/jobs";
+import { sendDueGiftCards } from "@/lib/gifts/cardSend";
 import { sweepAbandonedCheckouts, type SweepReport } from "@/lib/shop/abandonedSweep";
 import { sendCartReminders } from "@/lib/shop/cartReminderSweep";
 
@@ -128,6 +129,19 @@ export async function runMaintenance(admin: SupabaseClient, now: number = Date.n
     } else {
       report.emailJobs = await share();
     }
+  }
+  // Gift cards (lib/gifts/cardSend.ts, 2.0): each paid card's email on its
+  // day, hourly. A card is claimed before it is sent, so the webhook's own
+  // send and this one never both go; after the answer, as the email jobs.
+  const cards = () => every("giftCards", 55 * 60_000, now, () => sendDueGiftCards(admin, new Date(now)));
+  if (opts.later) {
+    opts.later(async () => {
+      const r = await cards();
+      if (r.ran) console.log("[maintenance] giftCards", JSON.stringify(r));
+    });
+    report.giftCards = { ran: false, detail: "after the response" };
+  } else {
+    report.giftCards = await cards();
   }
   // Ambassador commissions (lib/ambassadors/payouts.ts): what has passed its
   // refund window clears hourly; cleared balances are paid once a day at

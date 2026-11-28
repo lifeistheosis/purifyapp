@@ -71,7 +71,8 @@ import {
 import { cn } from "@/lib/cn";
 import { movePage } from "@/lib/ui/inPageMove";
 
-const PILL =
+/** The gift pages' one white button. */
+export const PILL =
   "rule-pray tap-press flex min-h-12 w-full items-center justify-center gap-1.5 rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night disabled:opacity-60";
 
 /**
@@ -79,7 +80,8 @@ const PILL =
  * is theirs each row is a way straight to it, as the Plus sheet's "What is
  * yours now" (components/billing/UpgradeModal.tsx, the same addresses).
  */
-const FEATURES = [
+/** What Plus opens, as the gift pages list it (here, and the gift card's pages: GiftFeatures). */
+export const FEATURES = [
   { Icon: CrossRefs, title: "orderGift.feat.crossrefs", desc: "orderGift.feat.crossrefsDesc", href: "/bible/john/1" },
   { Icon: Codex, title: "orderGift.feat.wordstudy", desc: "orderGift.feat.wordstudyDesc", href: "/bible/genesis/1" },
   { Icon: Rain, title: "orderGift.feat.ambience", desc: "orderGift.feat.ambienceDesc", href: "/bible/john/1" },

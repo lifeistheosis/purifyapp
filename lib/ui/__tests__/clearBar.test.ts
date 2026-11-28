@@ -76,6 +76,10 @@ const FIRST_WORDS: Record<string, { file: string; drawn: RegExp }> = {
   "app/(app)/theology/[topic]/page.tsx": { file: "components/theology/TopicReader.tsx", drawn: /firstId=\{epigraph \? DOCTRINE_FIRST_WORDS : undefined\}[\s\S]*?id=\{epigraph \? undefined : DOCTRINE_FIRST_WORDS\}/ },
   // The gift's caption under the cards comes before its ticket's eyebrow and name.
   "app/(app)/gift/page.tsx": { file: "components/gifts/OrderGiftClient.tsx", drawn: /<p id="gift-caption" className="gift-caption[^"]*">\{t\("orderGift\.caption"\)\}<\/p>/ },
+  // The gift card's pages (2.0): the ticket's head, its eyebrow above the name, comes first.
+  "app/(app)/give/page.tsx": { file: "components/gifts/GiveClient.tsx", drawn: /<div id="gift-first" className="px-\[18px\] pb-4 pt-\[18px\]">/ },
+  "app/(app)/give/thanks/page.tsx": { file: "components/gifts/GiveThanks.tsx", drawn: /<div id="gift-first" className="px-\[18px\] pb-4 pt-\[18px\]">/ },
+  "app/(app)/gift/card/page.tsx": { file: "components/gifts/CardGiftClient.tsx", drawn: /<div id="gift-first" className="px-\[18px\] pb-4 pt-\[18px\]">/ },
 };
 
 describe("a bar that starts clear over a picture turns solid at the head's first words", () => {

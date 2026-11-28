@@ -241,6 +241,10 @@ const STASH_PATHS = [
   // recorded after a build is heard in it. Appended, for the slot-index
   // reason above.
   ["public", "audio", "listen"],
+  // Giving a year of Plus (2.0, the Christmas gift): paid on the web, which the
+  // app stores do not allow inside the apps, and rendered per request for the
+  // day's choices. Opening a gift (/gift/card) stays in the apps.
+  ["app", "(app)", "give"],
 ];
 
 // Setting them aside, putting them back, and what a stopped build left

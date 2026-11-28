@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import type Stripe from "stripe";
 
 import { sendOrderConfirmationEmail } from "@/lib/shop/orderEmails";
@@ -15,6 +15,8 @@ import { notifyOwner, saleAlert } from "@/lib/admin/ownerAlert";
 import { logActivity } from "@/lib/admin/activityLog";
 import { insertNotifications } from "@/lib/community/notify";
 import { giftOf, isGiftSession, settleGiftSession, type GiftDb, type GiftSession } from "@/lib/gifts/purchase";
+import { cardDue, isGiftCardSession, settleGiftCardSession, type CardDb, type CardSession } from "@/lib/gifts/card";
+import { sendGiftCard } from "@/lib/gifts/cardSend";
 
 /**
  * Stripe webhook. The signature is verified with STRIPE_WEBHOOK_SECRET; with
@@ -126,6 +128,34 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ received: true, result });
+  }
+
+  // A year of Plus given by email (app/api/gifts/card/checkout/route.ts, 2.0).
+  // Told apart by the metadata that route writes, and settled before the shop's
+  // path. Paid in full or nothing (lib/gifts/card.ts, paidInFull); the session
+  // id makes a redelivery do nothing. A card for "now" is sent at once, after
+  // the answer; a dated one waits for the hourly run on its day.
+  if (settlesCheckout(event) && isGiftCardSession(event.data.object as unknown as CardSession)) {
+    const session = event.data.object as unknown as CardSession;
+    const admin = createAdminClient();
+    const settled = await settleGiftCardSession(admin as unknown as CardDb, session);
+    if (settled.result === "failed") {
+      // 500 so Stripe retries; the session id makes the retry idempotent.
+      return NextResponse.json({ error: "Gift card write failed." }, { status: 500 });
+    }
+    if (settled.result === "saved") {
+      void notifyOwner(saleAlert(session.amount_total ?? 0, session.currency ?? "usd"));
+      const card = settled.card;
+      if (cardDue(card.deliver_on, new Date())) after(async () => void (await sendGiftCard(admin, card)));
+    }
+    void logActivity({
+      actorEmail: "stripe-webhook",
+      action: "gift_card.webhook",
+      entityType: "gift_cards",
+      entityId: session.id,
+      detail: { eventType: event.type, result: settled.result },
+    });
+    return NextResponse.json({ received: true, result: settled.result });
   }
 
   // Plus bought as a gift (app/api/gifts/checkout/route.ts). Told apart by the

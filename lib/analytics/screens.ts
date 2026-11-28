@@ -125,6 +125,9 @@ export const SCREENS = [
   "seller",
   // The QR on the EIKON thank-you card: the Plus that comes with an order.
   "order-gift",
+  "gift-card",
+  "give",
+  "give-thanks",
   // Anything else.
   "other",
 ] as const;
@@ -257,6 +260,10 @@ const RULES: readonly (readonly [string, ScreenKey])[] = [
   // Where the change-of-email links land (Admin's 80536b131): part of account settings.
   ["/email/change", "account-settings"],
 
+  // The gift card (2.0): opened from its email, and given on the website.
+  ["/gift/card", "gift-card"],
+  ["/give/thanks", "give-thanks"],
+  ["/give", "give"],
   ["/gift", "order-gift"],
   ["/shop", "shop"],
   ["/shop/icons/*", "shop-item"],
