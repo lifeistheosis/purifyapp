@@ -13,14 +13,23 @@ type Snap = { src: string | null; playing: boolean; currentTime: number; duratio
 
 const calls: string[] = [];
 let audio: Snap = { src: null, playing: false, currentTime: 0, duration: 0 };
+// When the place was last given, so the element's own clock runs on between pieces of news.
+let givenAt = Date.now();
 const subscribers = new Set<() => void>();
 const set = (patch: Partial<Snap>) => {
+  if ("currentTime" in patch || "playing" in patch) {
+    if (!("currentTime" in patch)) patch = { ...patch, currentTime: now() };
+    givenAt = Date.now();
+  }
   audio = { ...audio, ...patch };
   [...subscribers].forEach((f) => f());
 };
+/** The element's own clock: where it was told, and on from there while it plays. */
+const now = () => audio.currentTime + (audio.playing ? (Date.now() - givenAt) / 1000 : 0);
 
 vi.mock("@/lib/prayers/persistentAudioStore", () => ({
   getAudioSnapshot: () => audio,
+  currentTimeNow: () => now(),
   subscribeAudio: (f: () => void) => {
     subscribers.add(f);
     return () => subscribers.delete(f);
@@ -134,6 +143,23 @@ describe("Listen on the Verse of the Day", () => {
     // Past the part's last word, with the rest of the verse still to come: it stops.
     set({ currentTime: cut.end + 0.05 });
     await flush();
+    expect(calls.at(-1)).toBe("pause");
+    expect(isListening()).toBe(false);
+  });
+
+  it("stops on the part's last word itself, not at the player's next news a quarter second on", async () => {
+    // The walk of 2026-11-28 heard Luke 10:20 run 0.17 s past its end. Luke
+    // 8:25's part ends inside its verse: a late stop lets the next word begin.
+    const { versePartCut } = await import("../versePartTimes");
+    const shown = "And he said unto them, Where is your faith?";
+    const cut = versePartCut("luke", 8, 25, shown)!;
+    listenToVerse({ book: "luke", chapter: 8, verse: 25, shown }, "Luke 8:25", "Verse of the Day");
+    await flush();
+    set({ duration: 400 });
+    // The player's last news: 0.2 s before the end. No more news comes.
+    set({ currentTime: cut.end - 0.2 });
+    expect(calls).not.toContain("pause");
+    await new Promise((r) => setTimeout(r, 350));
     expect(calls.at(-1)).toBe("pause");
     expect(isListening()).toBe(false);
   });

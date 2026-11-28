@@ -1,5 +1,5 @@
 import { readSpeed } from "@/lib/player/speed";
-import { getAudioSnapshot, pause, play, seek, setLoopMode, setTrack, subscribeAudio } from "@/lib/prayers/persistentAudioStore";
+import { currentTimeNow, getAudioSnapshot, pause, play, seek, setLoopMode, setTrack, subscribeAudio } from "@/lib/prayers/persistentAudioStore";
 import { hasReadAloud, readAloudManifest, readAloudSrc, verseCaptions, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 import { readAloudCover } from "@/lib/readAloud/covers";
 
@@ -156,8 +156,47 @@ export function startListening(parts: ListenPart[]): Promise<ListenStart> {
 export function stopListening(): void {
   stopWatching?.();
   stopWatching = null;
+  clearEndTimer();
   run = null;
   tellPlace();
+}
+
+/**
+ * A span's end, on the moment (2.0). The player says where it is about four
+ * times a second, so a span stopped only on that news runs up to a quarter
+ * of a second past its end: the walk of 2026-11-28 heard Luke 10:20 run 0.17 s
+ * on, and a part that ends inside its verse would let the next word begin.
+ * Once the end is nearer than the next news, a timer stops it there, by the
+ * player's own clock (currentTimeNow).
+ */
+const NEAR = 0.45;
+let endTimer: ReturnType<typeof setTimeout> | null = null;
+
+function clearEndTimer(): void {
+  if (endTimer) clearTimeout(endTimer);
+  endTimer = null;
+}
+
+function stopAtEnd(current: Run, rate: number): void {
+  const left = (current.end - currentTimeNow()) / rate;
+  if (left > NEAR) return;
+  endTimer = setTimeout(() => {
+    endTimer = null;
+    const s = getAudioSnapshot();
+    if (run !== current || current.loading || !s.playing || s.src !== current.src) return;
+    // Late by more than a moment's worth, or early: the player's own news decides.
+    if (currentTimeNow() < current.end - 0.06) return stopAtEnd(current, rate);
+    finishSpan(current);
+  }, Math.max(0, left * 1000));
+}
+
+/** The span is heard: on to the next, or the readings' end. */
+function finishSpan(current: Run): void {
+  clearEndTimer();
+  // Marked first, so the pause's own news does not move it on twice.
+  current.loading = true;
+  pause();
+  void playPart(current.at + 1);
 }
 
 /**
@@ -216,6 +255,8 @@ async function playPart(i: number): Promise<ListenStart> {
 }
 
 function watch(): void {
+  // Every piece of news sets the end's timer again: a pause, a seek or a new speed moves it.
+  clearEndTimer();
   const current = run;
   if (!current || current.loading || current.at < 0) return;
   const s = getAudioSnapshot();
@@ -235,11 +276,9 @@ function watch(): void {
   // end (the player rewinds itself to 0 then, so the last place seen says it).
   const ranOut = !s.playing && s.currentTime === 0 && current.last >= current.end - 1;
   if (s.currentTime >= current.end || ranOut) {
-    // Marked first, so the pause's own news does not move it on twice.
-    current.loading = true;
-    pause();
-    void playPart(current.at + 1);
+    finishSpan(current);
     return;
   }
   current.last = s.currentTime;
+  if (s.playing && current.end - s.currentTime < 1) stopAtEnd(current, s.rate || 1);
 }

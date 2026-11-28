@@ -19,6 +19,7 @@ const set = (patch: Partial<Snap>) => {
 
 vi.mock("@/lib/prayers/persistentAudioStore", () => ({
   getAudioSnapshot: () => audio,
+  currentTimeNow: () => audio.currentTime,
   subscribeAudio: (f: () => void) => {
     subscribers.add(f);
     return () => subscribers.delete(f);
