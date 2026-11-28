@@ -356,18 +356,21 @@ export default async function Home() {
      and the app rising into view with the scroll. */}
  <AppsSection className={`${sectionBase} ${desktopOnly}`} ratings={proof.ratings} reviews={proof.reviews} />
 
- {/* SCRIPTURE — one verse held on black, like a single illuminated page.
-            (Was a full-bleed white band that broke the candlelit palette.) */}
- <section className={`${sectionBase} ${desktopOnly} bg-black text-center lm-band`}>
+ {/* SCRIPTURE: one verse held on white, like a page of the Bible open on
+            the table (his word, 2026-11-28: "make this places background white
+            rather than black"). The palette's own paper, with its night for the
+            ink; Light and every look set it on their own second ground instead
+            (lm-band, app/globals.css), where the page is already light or its own. */}
+ <section className={`${sectionBase} ${desktopOnly} bg-paper text-night text-center lm-band`}>
  <div className="mx-auto max-w-[820px] w-full">
- <p lang="en" dir="ltr" className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em] text-paper">
+ <p lang="en" dir="ltr" className="font-serif text-title md:text-display-sm leading-[1.15] tracking-[-0.01em]">
  {`“${FRONT_VERSE.en}”`}
  </p>
  {/* 44 tall to the touch (it was 20, the line's own height), its words
      where they stood: the box starts 12px higher and centres them. */}
  <Link
  href="/bible/nahum/1#v7"
- className="lm-ink-gold mt-4 inline-flex min-h-11 items-center font-sans text-caption font-semibold text-gold/80 hover:text-gold transition-colors underline-offset-4 hover:underline"
+ className="lm-ink-gold mt-4 inline-flex min-h-11 items-center font-sans text-caption font-semibold text-night/70 hover:text-night transition-colors underline-offset-4 hover:underline"
  >
  {/* The verse and its Bible, as every quotation of Scripture in the
      app names them (1.8, lib/marketing/frontVerse.ts). */}
