@@ -27,7 +27,6 @@ Updated 2026-11-28 about 04:15 UTC by the one chat (session_01VuYTwc1qekL8Gg5GoJ
 ## Waiting on him
 
 0. **The goal's first moves** (`docs/plans/goal-5k.md`): the founding membership's price and cap; yes or no to the Christmas gift page, drawn 2026-11-28 (https://claude.ai/artifact/FZAGa5taESXxcyMCQDrFBc, price $59.99 proposed); the goal on the Goals tab. Play's payout is on its way; Apple's waits for the same account's switch to the company (his word, 2026-11-28).
-0a. **The universal bell** (built 2026-11-28, `docs/plans/v2.0/bell/`): yes or no on its screens, https://claude.ai/artifact/UmMvWpKzHSCA4Tyaa3ABCG.
 0b. **The fast for Catholics and Protestants** (built 2026-11-27, SCOPE C6): his calls on the calendar, the Fast page, the widgets and "Candlelight in the fasts"; and which of the tailoring ideas to build (`docs/plans/v2.0/tailored-roads.md`).
 1. **The update prompt (R6): Android live, iOS waits.** He set it on Render (2026-11-27, "I just updated renders env"); `https://purifyapp.net/api/app/release` says Android 101 from 08:23 UTC (probed). iOS still says 31: `IOS_BUILD_NUMBER` waits for his word on which build Apple approved, 37 or 39 (a number above the store's would prompt readers to a build that does not exist).
 2. **Supabase's free quota:** the grace period ends 11 Dec 2026. Watch the Usage page (egress must fall under about 0.13 GB a day) and decide by about 5 Dec whether to pay for one month. Details in the kept page of 11-27, "Waiting on him", item 0.
