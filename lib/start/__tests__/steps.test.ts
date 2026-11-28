@@ -77,7 +77,8 @@ describe("the seven steps", () => {
 describe("the ways in", () => {
   it("are on Discover on a phone and on a computer, and in its menu", () => {
     expect(read("components", "mobile", "DiscoverMobile.tsx")).toContain('href: "/start"');
-    expect(read("app", "(app)", "discover", "page.tsx")).toContain('href: "/start"');
+    // The computer draws the phone's own doors (2.0, lib/discover/__tests__/doorGrid.test.ts).
+    expect(read("app", "(app)", "discover", "page.tsx")).toMatch(/<DoorGrid\s+doors=\{discoverEntries\(\)\.map/);
     expect(read("components", "nav", "DiscoverDropdown.tsx")).toContain('href: "/start"');
   });
 

@@ -150,6 +150,9 @@ export function subscribeOrder(onChange: () => void): () => void {
  * runs it (React draws a <script> that does not run), and does not need it:
  * the list reads the order itself before it is drawn.
  *
+ * The computer's grid of the same doors (components/discover/DoorGrid.tsx,
+ * 2.0) takes the same order from the same style, by its own mark.
+ *
  * ES5 and no imports, as lib/ui/motionPrepaint.ts and
  * lib/platform/storePrepaint.ts are.
  */
@@ -162,7 +165,7 @@ export function orderPrepaint(first: readonly string[]): string {
     "var seen={},o=[],i,id;",
     "for(i=0;i<s.length;i++){id=s[i];if(typeof id==='string'&&f.indexOf(id)>-1&&!seen[id]){seen[id]=1;o.push(id);}}",
     "for(i=0;i<f.length;i++){if(!seen[f[i]])o.splice(Math.min(i,o.length),0,f[i]);}",
-    "var css='';for(i=0;i<o.length;i++)css+='[data-door-list]>[data-door=\"'+o[i]+'\"]{order:'+i+'}';",
+    "var css='';for(i=0;i<o.length;i++)css+='[data-door-list]>[data-door=\"'+o[i]+'\"]{order:'+i+'}[data-door-grid]>[data-door=\"'+o[i]+'\"]{order:'+i+'}';",
     `var el=document.createElement('style');el.id=${JSON.stringify(PREPAINT_ID)};el.textContent=css;document.head.appendChild(el);`,
     "}catch(e){}})();",
   ].join("");

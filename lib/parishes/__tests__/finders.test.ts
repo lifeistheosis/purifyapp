@@ -185,7 +185,6 @@ describe("the words", () => {
   const SAID: [key: string, file: string[]][] = [
     ["discover.tile.parishes", ["components", "mobile", "DiscoverMobile.tsx"]],
     ["discover.tile.parishesBlurb", ["components", "mobile", "DiscoverMobile.tsx"]],
-    ["discover.tile.parishes", ["app", "(app)", "discover", "page.tsx"]],
     ["parishes.title", ["components", "parishes", "ParishFinderList.tsx"]],
     ["parishes.intro", ["components", "parishes", "ParishFinderList.tsx"]],
     ["parishes.leaving", ["components", "parishes", "ParishFinderList.tsx"]],
@@ -204,7 +203,8 @@ describe("the words", () => {
 describe("the ways in", () => {
   it("is on Discover, on a phone and on a desktop", () => {
     expect(read("components", "mobile", "DiscoverMobile.tsx")).toContain('href: "/parishes"');
-    expect(read("app", "(app)", "discover", "page.tsx")).toContain('href: "/parishes"');
+    // The computer draws the phone's own doors (2.0, lib/discover/__tests__/doorGrid.test.ts).
+    expect(read("app", "(app)", "discover", "page.tsx")).toMatch(/<DoorGrid\s+doors=\{discoverEntries\(\)\.map/);
     expect(read("components", "nav", "DiscoverDropdown.tsx")).toContain('href: "/parishes"');
   });
 

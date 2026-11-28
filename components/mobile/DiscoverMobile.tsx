@@ -12,7 +12,7 @@ import { UnreadDot } from "@/components/community/NotificationsInbox";
 import { T } from "@/components/i18n/T";
 
 /** One door of the library, as its band draws it. */
-type DiscoverEntry = {
+export type DiscoverEntry = {
   /** Words to draw, not a string: a <T> island, so they follow the reader's
    *  language in the apps, where a server's string is frozen in English. */
   label: ReactNode;
@@ -37,52 +37,10 @@ function nameKeyOf(label: ReactNode): string {
 }
 
 /**
- * Discover mobile shell: the library's front door.
- *
- *   1. A search field that says what it finds (opens the one search).
- *   2. The library as a gallery: each door a wide band with its picture, its
- *      name and the app's own line on what is inside. Saints, Reading,
- *      History, Councils, Theology, Chants, Calendar, Walkthroughs; then the
- *      Shop and Chat; then Start here and Find a parish.
- *   3. Closing colophon.
- *
- * The gallery is the owner's pick of 2026-10-27 (round 7b, D, "each part of
- * the library a wide band with its picture and the app's line on what is
- * inside, like Theology"; Homebase/boards/purify-master/variants/
- * 07b-discover.png). The band is Theology's own (components/ui/GalleryBand),
- * so the two galleries are one pattern. Until then the library was picture
- * tiles two across (1.7, his pick of 2026-10-15 after Hallow's Discover),
- * which showed a name and no line, with the last two as narrow rows; every
- * door the tiles had is a band now, in the same order, and each says what
- * is behind it.
- *
- * "Featured today" (a topic card and a council card) used to sit between the
- * library and the colophon and was removed in 1.7. It cost a loadAllTopics()
- * off disk on every render of this server component to summarise two cards,
- * and the Android export froze the pick at build time anyway, so the "today"
- * in its name was not true in the app.
- *
- * Shop and Chat were tabs until 2026-10-13, when the owner chose a bar of
- * five and You came back to it. They are doors here, after the library and
- * before the two closing ones. MobileTabBar's Discover predicate claims
- * /shop, /community and /campaigns, so this tab stays lit while a reader is
- * in either.
- *
- * The order below is the first order. A reader can hold a door and move it,
- * and the order they leave is kept on the phone (1.9, build 95 note 9, his
- * word: "allow the user to hold down each section ... and they can move each
- * section according to their wants"): components/discover/DoorOrder.tsx. The
- * small script before the list lays that order on the doors before the page
- * is first drawn (lib/discover/doorOrder.ts, orderPrepaint); `nonce` is the
- * website's, for its policy on scripts, and the apps have none.
+ * The library's doors, the phone's and the computer's (app/(app)/discover/page.tsx
+ * lays the same doors three across since 2.0): one list, so the two never disagree.
  */
-export function DiscoverMobile({ nonce }: { nonce?: string } = {}) {
-  // Every word on this surface is a <T> island, never a string the server
-  // looked up. This component ships into the apps' export, where the server
-  // ran once, in English: until 1.6 a phone set to Greek opened Today in
-  // Greek and found this tab in English, though every line of it was already
-  // translated. lib/i18n/__tests__/serverWords.test.ts keeps it so.
-
+export function discoverEntries(): DiscoverEntry[] {
   // The library. Order reads like a menologion table of contents: people
   // first (saints), then the reading room and the record of the Church (its
   // history, its councils, its theology), then what is sung and kept through
@@ -241,6 +199,56 @@ export function DiscoverMobile({ nonce }: { nonce?: string } = {}) {
       picture: "/discover/tiles/parishes.v2.webp",
     },
   ];
+  return entries;
+}
+
+/**
+ * Discover mobile shell: the library's front door.
+ *
+ *   1. A search field that says what it finds (opens the one search).
+ *   2. The library as a gallery: each door a wide band with its picture, its
+ *      name and the app's own line on what is inside. Saints, Reading,
+ *      History, Councils, Theology, Chants, Calendar, Walkthroughs; then the
+ *      Shop and Chat; then Start here and Find a parish.
+ *   3. Closing colophon.
+ *
+ * The gallery is the owner's pick of 2026-10-27 (round 7b, D, "each part of
+ * the library a wide band with its picture and the app's line on what is
+ * inside, like Theology"; Homebase/boards/purify-master/variants/
+ * 07b-discover.png). The band is Theology's own (components/ui/GalleryBand),
+ * so the two galleries are one pattern. Until then the library was picture
+ * tiles two across (1.7, his pick of 2026-10-15 after Hallow's Discover),
+ * which showed a name and no line, with the last two as narrow rows; every
+ * door the tiles had is a band now, in the same order, and each says what
+ * is behind it.
+ *
+ * "Featured today" (a topic card and a council card) used to sit between the
+ * library and the colophon and was removed in 1.7. It cost a loadAllTopics()
+ * off disk on every render of this server component to summarise two cards,
+ * and the Android export froze the pick at build time anyway, so the "today"
+ * in its name was not true in the app.
+ *
+ * Shop and Chat were tabs until 2026-10-13, when the owner chose a bar of
+ * five and You came back to it. They are doors here, after the library and
+ * before the two closing ones. MobileTabBar's Discover predicate claims
+ * /shop, /community and /campaigns, so this tab stays lit while a reader is
+ * in either.
+ *
+ * The order below is the first order. A reader can hold a door and move it,
+ * and the order they leave is kept on the phone (1.9, build 95 note 9, his
+ * word: "allow the user to hold down each section ... and they can move each
+ * section according to their wants"): components/discover/DoorOrder.tsx. The
+ * small script before the list lays that order on the doors before the page
+ * is first drawn (lib/discover/doorOrder.ts, orderPrepaint); `nonce` is the
+ * website's, for its policy on scripts, and the apps have none.
+ */
+export function DiscoverMobile({ nonce }: { nonce?: string } = {}) {
+  // Every word on this surface is a <T> island, never a string the server
+  // looked up. This component ships into the apps' export, where the server
+  // ran once, in English: until 1.6 a phone set to Greek opened Today in
+  // Greek and found this tab in English, though every line of it was already
+  // translated. lib/i18n/__tests__/serverWords.test.ts keeps it so.
+  const entries = discoverEntries();
 
   return (
     // The tab bar every tab wears (1.7): the same search and bell on the
